@@ -1,0 +1,60 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+        exclude: "\\.idea/(.)*"
+      - id: trailing-whitespace
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.29.1
+    hooks:
+      - id: pyupgrade
+        args: ["--py37-plus"]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+  - repo: https://github.com/psf/black
+    rev: 21.11b1
+    hooks:
+      - id: black
+        args: [--config=./pyproject.toml]
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.1
+    hooks:
+      - id: bandit
+        args: ["-iii", "-ll", "-s=B308,B703"]
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          [
+            "flake8-bugbear",
+            "flake8-comprehensions",
+            "flake8-mutable",
+            "flake8-print",
+            "flake8-simplify",
+            "flake8-type-checking",
+          ]
+  - repo: https://github.com/pycqa/pylint
+    rev: "v2.12.2"
+    hooks:
+      - id: pylint
+        exclude: "test_*"
+        args:
+          [
+            "--unsafe-load-any-extension=y"
+          ]
+        additional_dependencies: [
+          pydantic,
+          starlette
+        ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v0.910-1"
+    hooks:
+      - id: mypy

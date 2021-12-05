@@ -1,0 +1,13 @@
+# folders
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.idea/
+__pycache__/
+dist/
+
+# files
+.DS_Store
+coverage.*
+.coverage
+.python-version
