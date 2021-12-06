@@ -1,3 +1,3 @@
 # starlite
 
-WIP
+Pre-Alpha WIP.
