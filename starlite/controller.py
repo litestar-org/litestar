@@ -8,11 +8,12 @@ from starlette.routing import Route
 from starlite.decorators import RouteInfo
 from starlite.enums import HttpMethod
 from starlite.exceptions import ConfigurationException
+from starlite.types import RouteHandler
 from starlite.utils.endpoint import handle_request
-from starlite.utils.http_handler import extract_route_info, is_http_handler
+from starlite.utils.http_handler import is_http_handler
 
 
-def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, Callable]) -> Callable:
+def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
     """
     Helper to create an endpoint handler given a dictionary mapping http-methods to callables
 
@@ -21,7 +22,7 @@ def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, Callable]) ->
     async def inner(request: Request) -> Response:
         request_method = cast(HttpMethod, request.method.lower())
         handler = http_handler_mapping[request_method]
-        return await handle_request(function=handler, request=request)
+        return await handle_request(route_handler=handler, request=request)
 
     return inner
 
@@ -30,34 +31,33 @@ class Controller:
     dependencies: Optional[Dict[str, Callable]]
 
     @cached_property
-    def http_method_handlers(self) -> Dict[str, List[Tuple[Callable, RouteInfo]]]:
+    def route_handlers(self) -> Dict[str, List[Tuple[RouteHandler, RouteInfo]]]:
         """
         Returns dictionary that maps urls (keys) to a list of methods (values)
         """
-        methods: List[Callable] = [
+        route_handlers: List[RouteHandler] = [
             getattr(self, f_name)
             for f_name in dir(self)
             if f_name not in dir(Controller) and is_http_handler(getattr(self, f_name))
         ]
 
-        url_method_map: Dict[str, List[Tuple[Callable, RouteInfo]]] = {}
+        url_route_handler_map: Dict[str, List[Tuple[RouteHandler, RouteInfo]]] = {}
 
-        for method in methods:
-            route_info = extract_route_info(method)
-            assert route_info, "missing route_info data"
-            url = route_info.url or "/"
-            if not url_method_map.get(url):
-                url_method_map[url] = []
-            url_method_map[url].append((method, route_info))
+        for route_handler in route_handlers:
+            assert route_handler.route_info, "missing route_info data"
+            url = route_handler.route_info.url or "/"
+            if not url_route_handler_map.get(url):
+                url_route_handler_map[url] = []
+            url_route_handler_map[url].append((route_handler, route_handler.route_info))
 
-        return url_method_map
+        return url_route_handler_map
 
     @cached_property
     def routes(self) -> List[Route]:
         """Maps http handler method defined on the class into a list of Starlette Route instances"""
         routes = []
-        for url, method_group in self.http_method_handlers.items():
-            method_map: Dict[HttpMethod, Callable] = {}
+        for url, method_group in self.route_handlers.items():
+            method_map: Dict[HttpMethod, RouteHandler] = {}
             endpoint_name = None
             include_in_schema = True
             for method, route_info in method_group:

@@ -1,4 +1,5 @@
 from functools import wraps
+from inspect import getfullargspec, signature
 from typing import Any, Callable, Optional, Union
 
 from pydantic import BaseModel, validate_arguments, validator
@@ -63,7 +64,8 @@ def route(
                 url=url,
             ),
         )
-
+        setattr(inner_wrapper, "annotations", getfullargspec(method).annotations)
+        setattr(inner_wrapper, "signature", signature(method))
         return inner_wrapper
 
     return outer_wrapper
