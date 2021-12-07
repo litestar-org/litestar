@@ -29,7 +29,4 @@ def test_http_exception(status_code, message):
     result = HTTPException(status_code=status_code, message=message)
     assert isinstance(result, StarLiteException)
     assert isinstance(result, StarletteHTTPException)
-    if message:
-        assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.message}"
-    else:
-        assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__}"
+    assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.message}"

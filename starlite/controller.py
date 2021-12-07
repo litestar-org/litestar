@@ -6,9 +6,9 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from starlite.decorators import RouteInfo
-from starlite.endpoint import handle_request
 from starlite.enums import HttpMethod
 from starlite.exceptions import ConfigurationException
+from starlite.request import handle_request
 from starlite.types import RouteHandler
 
 
