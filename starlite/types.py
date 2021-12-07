@@ -1,5 +1,4 @@
-from inspect import Signature
-from typing import Any, Dict
+from typing import Any
 
 from starlite.decorators import RouteInfo
 
@@ -11,5 +10,3 @@ class RouteHandler:
         ...  # pragma: no cover
 
     route_info: RouteInfo
-    signature: Signature
-    annotations: Dict[str, Any]

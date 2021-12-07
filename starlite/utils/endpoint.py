@@ -1,4 +1,4 @@
-from inspect import isawaitable
+from inspect import getfullargspec, isawaitable, signature
 from typing import Any, Dict, List, Tuple, Union, cast
 
 from pydantic import BaseModel, create_model
@@ -33,11 +33,11 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
 def model_function_signature(route_handler: RouteHandler, annotations: Dict[str, Any]) -> Type[BaseModel]:
 
     """Creates a pydantic model from a given dictionary of type annotations"""
-
+    handler_signature = signature(route_handler)
     field_definitions: Dict[str, Tuple[Any, Any]] = {}
     for key, value in annotations.items():
-        parameter = route_handler.signature.parameters[key]
-        if parameter.default is not route_handler.signature.empty:
+        parameter = handler_signature.parameters[key]
+        if parameter.default is not handler_signature.empty:
             field_definitions[key] = (value, parameter.default)
         elif not repr(parameter.annotation).startswith("typing.Optional"):
             field_definitions[key] = (value, ...)
@@ -51,15 +51,15 @@ async def get_http_handler_parameters(route_handler: RouteHandler, request: Requ
     Parse a given http handler function and return values matching function parameter keys
     """
     parameters: Dict[str, Any] = {}
-
-    t_headers = route_handler.annotations.pop("headers") if "headers" in route_handler.annotations else None
+    annotations = getfullargspec(route_handler).annotations
+    t_headers = annotations.pop("headers") if "headers" in annotations else None
     if t_headers:
         headers = dict(request.headers.items())
         if issubclass(t_headers, BaseModel):
             parameters["headers"] = t_headers(**headers)
         else:
             parameters["headers"] = headers
-    t_data = route_handler.annotations.pop("data") if "data" in route_handler.annotations else None
+    t_data = annotations.pop("data") if "data" in annotations else None
     if t_data:
         # TODO: handle form data, stream etc.
         data = await request.json()
@@ -68,7 +68,7 @@ async def get_http_handler_parameters(route_handler: RouteHandler, request: Requ
         else:
             parameters["data"] = data
     return {
-        **model_function_signature(route_handler=route_handler, annotations=route_handler.annotations)(
+        **model_function_signature(route_handler=route_handler, annotations=annotations)(
             **parse_query_params(request=request), **request.path_params
         ).dict(),
         **parameters,

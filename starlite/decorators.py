@@ -1,5 +1,3 @@
-from functools import wraps
-from inspect import getfullargspec, signature
 from typing import Any, Callable, Optional, Union
 
 from pydantic import BaseModel, validate_arguments, validator
@@ -45,30 +43,21 @@ def route(
 ) -> Callable:
     """Decorator that wraps a given method and sets an instance of RouteInfo as an attribute of the returned method"""
 
-    def outer_wrapper(method: Callable):
-        @wraps(method)
-        def inner_wrapper(self, *args, **kwargs) -> Any:
-            return method(self, *args, **kwargs)
-
-        setattr(
-            inner_wrapper,
-            "route_info",
-            RouteInfo(
-                http_method=http_method,
-                media_type=media_type,
-                include_in_schema=include_in_schema,
-                name=name,
-                response_class=response_class,
-                response_headers=response_headers,
-                status_code=status_code,
-                url=url,
-            ),
+    def decorator(method: Callable):
+        route_info = RouteInfo(
+            http_method=http_method,
+            media_type=media_type,
+            include_in_schema=include_in_schema,
+            name=name,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            url=url,
         )
-        setattr(inner_wrapper, "annotations", getfullargspec(method).annotations)
-        setattr(inner_wrapper, "signature", signature(method))
-        return inner_wrapper
+        setattr(method, "route_info", route_info)
+        return method
 
-    return outer_wrapper
+    return decorator
 
 
 @validate_arguments
