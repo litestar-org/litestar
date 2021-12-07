@@ -1,5 +1,5 @@
 from inspect import getfullargspec, isawaitable, signature
-from typing import Any, Dict, List, Tuple, Union, cast
+from typing import Any, Callable, Dict, List, Tuple, Union, cast
 
 from pydantic import BaseModel, create_model
 from starlette.requests import Request
@@ -39,9 +39,10 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     return params
 
 
-def model_function_signature(route_handler: RouteHandler, annotations: Dict[str, Any]) -> Type[BaseModel]:
-
-    """Creates a pydantic model from a given dictionary of type annotations"""
+def model_function_signature(route_handler: Callable, annotations: Dict[str, Any]) -> Type[BaseModel]:
+    """
+    Creates a pydantic model from a given dictionary of type annotations
+    """
     handler_signature = signature(route_handler)
     field_definitions: Dict[str, Tuple[Any, Any]] = {}
     for key, value in annotations.items():
@@ -55,33 +56,43 @@ def model_function_signature(route_handler: RouteHandler, annotations: Dict[str,
     return create_model("ParamModel", **field_definitions)
 
 
-async def get_http_handler_parameters(route_handler: RouteHandler, request: Request) -> Dict[str, Any]:
+async def get_http_handler_parameters(route_handler: Callable, request: Request) -> Dict[str, Any]:
     """
     Parse a given http handler function and return values matching function parameter keys
     """
-    parameters: Dict[str, Any] = {}
+
     annotations = getfullargspec(route_handler).annotations
-    t_headers = annotations.pop("headers") if "headers" in annotations else None
-    if t_headers:
-        headers = dict(request.headers.items())
-        if issubclass(t_headers, BaseModel):
-            parameters["headers"] = t_headers(**headers)
-        else:
-            parameters["headers"] = headers
-    t_data = annotations.pop("data") if "data" in annotations else None
-    if t_data:
-        # TODO: handle form data, stream etc.
-        data = await request.json()
-        if issubclass(t_data, BaseModel):
-            parameters["data"] = t_data(**data)
-        else:
-            parameters["data"] = data
-    return {
-        **model_function_signature(route_handler=route_handler, annotations=annotations)(
-            **parse_query_params(request=request), **request.path_params
-        ).dict(),
-        **parameters,
-    }
+
+    include_request = False
+    if "request" in annotations:
+        del annotations["request"]
+        include_request = True
+
+    model = model_function_signature(route_handler=route_handler, annotations=annotations)
+    model_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
+
+    if "data" in annotations:
+        model_kwargs["data"] = await request.json()
+
+    if "headers" in annotations:
+        model_kwargs["headers"] = dict(request.headers.items())
+
+    parameters = model(**model_kwargs).dict()
+
+    if include_request:
+        parameters["request"] = request
+
+    return parameters
+
+
+def get_default_status_code(http_method: HttpMethod) -> int:
+    """Return the default status code for the given http_method"""
+
+    if http_method == HttpMethod.POST:
+        return HTTP_201_CREATED
+    if http_method == HttpMethod.DELETE:
+        return HTTP_204_NO_CONTENT
+    return HTTP_200_OK
 
 
 async def handle_request(route_handler: RouteHandler, request: Request) -> Response:
@@ -97,18 +108,11 @@ async def handle_request(route_handler: RouteHandler, request: Request) -> Respo
     if isawaitable(data):
         data = await data
 
-    if route_handler.route_info.status_code:
-        status_code = route_handler.route_info.status_code
-    elif route_handler.route_info.http_method == HttpMethod.POST:
-        status_code = HTTP_201_CREATED
-    elif route_handler.route_info.http_method == HttpMethod.DELETE:
-        status_code = HTTP_204_NO_CONTENT
-    else:
-        status_code = HTTP_200_OK
-
+    status_code = route_handler.route_info.status_code or get_default_status_code(route_handler.route_info.http_method)
+    media_type = route_handler.route_info.media_type or response_class.media_type or MediaType.JSON
     return response_class(
         content=data,
         headers=route_handler.route_info.response_headers,
         status_code=status_code,
-        media_type=route_handler.route_info.media_type or MediaType.JSON,
+        media_type=media_type,
     )
