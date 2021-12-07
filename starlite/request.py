@@ -1,3 +1,4 @@
+import json
 from inspect import getfullargspec, isawaitable, signature
 from typing import Any, Callable, Dict, List, Tuple, Union, cast
 
@@ -7,6 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.types import RouteHandler
 
@@ -72,7 +74,9 @@ async def get_http_handler_parameters(route_handler: Callable, request: Request)
     model_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
     if "data" in annotations:
-        model_kwargs["data"] = await request.json()
+        if request.method.lower() == HttpMethod.GET:
+            raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET http handlers")
+        model_kwargs["data"] = json.loads(await request.json())
 
     if "headers" in annotations:
         model_kwargs["headers"] = dict(request.headers.items())

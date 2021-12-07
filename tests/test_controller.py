@@ -1,12 +1,19 @@
+import json
 from typing import List, Optional
 
 import pytest
 from pydantic import BaseModel, Field
 from pydantic_factories import ModelFactory
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED
+from starlette.requests import Request
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 
-from starlite import Controller
-from starlite.decorators import get
+from starlite import Controller, HttpMethod
+from starlite.decorators import delete, get, patch, post, put
 
 
 class Person(BaseModel):
@@ -32,72 +39,206 @@ class QueryParamsFactory(ModelFactory):
 person_instance = PersonFactory.build()
 
 
-@pytest.mark.asyncio
-def test_controller_get(create_test_client):
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_controller_http_method(decorator, http_method, expected_status_code, create_test_client):
     path = "/person"
 
     class MyController(Controller):
-        @get(url=path)
-        def get_method(self, **kwargs):
+        @decorator(url=path)
+        def test_method(self):
             return person_instance
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.get(path)
-        assert response.status_code == HTTP_200_OK
+        response = client.request(http_method, path)
+        assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()
 
 
-@pytest.mark.asyncio
-def test_path_params(create_test_client):
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_path_params(decorator, http_method, expected_status_code, create_test_client):
     path = "/person/{person_id:int}"
 
     class MyController(Controller):
-        @get(url=path)
-        def get_method(self, person_id: int, **kwargs):
+        @decorator(url=path)
+        def test_method(self, person_id: int):
             assert person_id == person_instance.id
-            return person_instance
+            return None
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.get(f"/person/{person_instance.id}")
-        assert response.status_code == HTTP_200_OK
+        response = client.request(http_method, f"/person/{person_instance.id}")
+        assert response.status_code == expected_status_code
 
 
-@pytest.mark.asyncio
-def test_query_params(create_test_client):
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_query_params(decorator, http_method, expected_status_code, create_test_client):
     path = "/person"
 
     query_params_instance = QueryParamsFactory.build()
 
     class MyController(Controller):
-        @get(url=path)
-        async def get(self, first: str, second: List[str], third: Optional[int] = None, **kwargs):
+        @decorator(url=path)
+        def test_method(self, first: str, second: List[str], third: Optional[int] = None):
             assert first == query_params_instance.first
             assert second == query_params_instance.second
             assert third == query_params_instance.third
-            return person_instance
+            return None
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.get("/person", params=query_params_instance.dict())
-        assert response.status_code == HTTP_200_OK
+        response = client.request(http_method, path, params=query_params_instance.dict())
+        assert response.status_code == expected_status_code
 
 
-@pytest.mark.asyncio
-def test_config_status_code(create_test_client):
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_header_params(decorator, http_method, expected_status_code, create_test_client):
+    path = "/person"
+
+    request_headers = {
+        "application-type": "web",
+        "site": "www.example.com",
+        "user-agent": "some-thing",
+        "accept": "*/*",
+    }
+
+    class MyController(Controller):
+        @decorator(url=path)
+        def test_method(self, headers: dict):
+            for key, value in request_headers.items():
+                assert headers[key] == value
+
+    controller = MyController()
+
+    with create_test_client(controller.routes) as client:
+        response = client.request(http_method, path, headers=request_headers)
+        assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_request(decorator, http_method, expected_status_code, create_test_client):
     path = "/person"
 
     class MyController(Controller):
-        @get(url=path, status_code=HTTP_201_CREATED)
-        def get(self, **kwargs):
-            return person_instance
+        @decorator(url=path)
+        def test_method(self, request: Request):
+            assert isinstance(request, Request)
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.get("/person")
-        assert response.status_code == HTTP_201_CREATED
+        response = client.request(http_method, path)
+        assert response.status_code == expected_status_code
+
+
+def test_defining_data_for_get_handler_raises_exception(create_test_client):
+    path = "/person"
+
+    class MyController(Controller):
+        @get(url=path)
+        def test_method(self, data: Person):
+            assert data == person_instance
+
+    controller = MyController()
+
+    with create_test_client(controller.routes) as client:
+        response = client.get(path)
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_data_using_model(decorator, http_method, expected_status_code, create_test_client):
+    path = "/person"
+
+    class MyController(Controller):
+        @decorator(url=path)
+        def test_method(self, data: Person):
+            assert data == person_instance
+
+    controller = MyController()
+
+    with create_test_client(controller.routes) as client:
+        response = client.request(http_method, path, json=person_instance.json())
+        assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_data_using_list_of_models(decorator, http_method, expected_status_code, create_test_client):
+    path = "/person"
+
+    people = PersonFactory.batch(size=5)
+
+    class MyController(Controller):
+        @decorator(url=path)
+        def test_method(self, data: List[Person]):
+            assert data == people
+
+    controller = MyController()
+
+    with create_test_client(controller.routes) as client:
+        response = client.request(http_method, path, json=json.dumps([p.dict() for p in people]))
+        assert response.status_code == expected_status_code

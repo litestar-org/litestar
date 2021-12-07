@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import Callable, Dict, List, Optional, Tuple, cast
 
 from starlette.requests import Request
@@ -7,7 +6,7 @@ from starlette.routing import Route
 
 from starlite.decorators import RouteInfo
 from starlite.enums import HttpMethod
-from starlite.exceptions import ConfigurationException
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.request import handle_request
 from starlite.types import RouteHandler
 
@@ -29,7 +28,7 @@ def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]
 class Controller:
     dependencies: Optional[Dict[str, Callable]]
 
-    @cached_property
+    @property
     def route_handlers(self) -> Dict[str, List[Tuple[RouteHandler, RouteInfo]]]:
         """
         Returns dictionary that maps urls (keys) to a list of methods (values)
@@ -51,7 +50,7 @@ class Controller:
 
         return url_route_handler_map
 
-    @cached_property
+    @property
     def routes(self) -> List[Route]:
         """Maps http handler method defined on the class into a list of Starlette Route instances"""
         routes = []
@@ -61,7 +60,7 @@ class Controller:
             include_in_schema = True
             for method, route_info in method_group:
                 if method_map.get(route_info.http_method):
-                    raise ConfigurationException(
+                    raise ImproperlyConfiguredException(
                         f"handler already registered for url {url} and http method {route_info.http_method}"
                     )
                 method_map[route_info.http_method] = method

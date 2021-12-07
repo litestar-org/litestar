@@ -2,7 +2,7 @@
 from .controller import Controller
 from .decorators import delete, get, patch, post, put, route
 from .enums import HttpMethod, MediaType
-from .exceptions import ConfigurationException, HTTPException, StarLiteException
+from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .response import Response
 
 __all__ = [
@@ -18,5 +18,5 @@ __all__ = [
     "Response",
     "StarLiteException",
     "HTTPException",
-    "ConfigurationException",
+    "ImproperlyConfiguredException",
 ]
