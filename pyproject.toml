@@ -36,11 +36,12 @@ pydantic = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
+hypothesis = "*"
+pydantic-factories = "*"
 pytest = "*"
 pytest-asyncio = "*"
+pytest-cov = "*"
 requests = "*"
-pydantic-factories = "*"
-hypothesis = {extras = ["cli"], version = "*"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

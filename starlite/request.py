@@ -19,12 +19,21 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     """
     params: Dict[str, Union[str, List[str]]] = {}
     for key, value in request.query_params.multi_items():
-        current_params = params.get(key)
-        if current_params:
-            if isinstance(current_params, str):
-                params[key] = [current_params, value]
+        if value.replace(".", "").isnumeric():
+            if "." in value:
+                value = float(value)
             else:
-                params[key] = [*cast(list, current_params), value]
+                value = int(value)
+        elif value in ["True", "true"]:
+            value = True
+        elif value in ["False", "false"]:
+            value = False
+        param = params.get(key)
+        if param:
+            if isinstance(param, str):
+                params[key] = [param, value]
+            else:
+                params[key] = [*cast(list, param), value]
         else:
             params[key] = value
     return params
