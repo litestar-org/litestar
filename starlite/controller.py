@@ -6,11 +6,10 @@ from starlette.responses import Response
 from starlette.routing import Route
 
 from starlite.decorators import RouteInfo
+from starlite.endpoint import handle_request
 from starlite.enums import HttpMethod
 from starlite.exceptions import ConfigurationException
 from starlite.types import RouteHandler
-from starlite.utils.endpoint import handle_request
-from starlite.utils.http_handler import is_http_handler
 
 
 def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
@@ -38,7 +37,7 @@ class Controller:
         route_handlers: List[RouteHandler] = [
             getattr(self, f_name)
             for f_name in dir(self)
-            if f_name not in dir(Controller) and is_http_handler(getattr(self, f_name))
+            if f_name not in dir(Controller) and hasattr(getattr(self, f_name), "route_info")
         ]
 
         url_route_handler_map: Dict[str, List[Tuple[RouteHandler, RouteInfo]]] = {}

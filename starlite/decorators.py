@@ -82,3 +82,99 @@ def get(
         status_code=status_code,
         url=url,
     )
+
+
+@validate_arguments
+def post(
+    *,
+    media_type: Optional[MediaType] = None,
+    include_in_schema: Optional[bool] = None,
+    name: Optional[str] = None,
+    response_class: Optional[Type[Response]] = None,
+    response_headers: Optional[Union[dict, BaseModel]] = None,
+    status_code: Optional[int] = None,
+    url: Optional[str] = None,
+):
+    """Route decorator with pre-set http_method POST"""
+    return route(
+        http_method=HttpMethod.POST,
+        include_in_schema=include_in_schema,
+        media_type=media_type,
+        name=name,
+        response_class=response_class,
+        response_headers=response_headers,
+        status_code=status_code,
+        url=url,
+    )
+
+
+@validate_arguments
+def put(
+    *,
+    media_type: Optional[MediaType] = None,
+    include_in_schema: Optional[bool] = None,
+    name: Optional[str] = None,
+    response_class: Optional[Type[Response]] = None,
+    response_headers: Optional[Union[dict, BaseModel]] = None,
+    status_code: Optional[int] = None,
+    url: Optional[str] = None,
+):
+    """Route decorator with pre-set http_method PUT"""
+    return route(
+        http_method=HttpMethod.PUT,
+        include_in_schema=include_in_schema,
+        media_type=media_type,
+        name=name,
+        response_class=response_class,
+        response_headers=response_headers,
+        status_code=status_code,
+        url=url,
+    )
+
+
+@validate_arguments
+def patch(
+    *,
+    media_type: Optional[MediaType] = None,
+    include_in_schema: Optional[bool] = None,
+    name: Optional[str] = None,
+    response_class: Optional[Type[Response]] = None,
+    response_headers: Optional[Union[dict, BaseModel]] = None,
+    status_code: Optional[int] = None,
+    url: Optional[str] = None,
+):
+    """Route decorator with pre-set http_method PATCH"""
+    return route(
+        http_method=HttpMethod.PATCH,
+        include_in_schema=include_in_schema,
+        media_type=media_type,
+        name=name,
+        response_class=response_class,
+        response_headers=response_headers,
+        status_code=status_code,
+        url=url,
+    )
+
+
+@validate_arguments
+def delete(
+    *,
+    media_type: Optional[MediaType] = None,
+    include_in_schema: Optional[bool] = None,
+    name: Optional[str] = None,
+    response_class: Optional[Type[Response]] = None,
+    response_headers: Optional[Union[dict, BaseModel]] = None,
+    status_code: Optional[int] = None,
+    url: Optional[str] = None,
+):
+    """Route decorator with pre-set http_method DELETE"""
+    return route(
+        http_method=HttpMethod.DELETE,
+        include_in_schema=include_in_schema,
+        media_type=media_type,
+        name=name,
+        response_class=response_class,
+        response_headers=response_headers,
+        status_code=status_code,
+        url=url,
+    )

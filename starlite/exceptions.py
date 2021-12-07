@@ -16,13 +16,13 @@ class StarLiteException(Exception):
 
 
 class HTTPException(StarLiteException, StarletteHTTPException):
-    def __init__(
+    def __init__(  # pylint: disable=super-init-not-called
         self,
         status_code: int,
         message: Optional[str] = None,
     ):
         self.status_code = status_code
-        super().__init__(message or HTTPStatus(status_code).phrase)
+        self.message = message or HTTPStatus(status_code).phrase
 
     def __repr__(self) -> str:
         if self.message:
