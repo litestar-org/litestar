@@ -9,6 +9,7 @@ from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.request import handle_request
 from starlite.types import RouteHandler
+from starlite.utils import cached_property
 
 
 def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
@@ -28,7 +29,7 @@ def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]
 class Controller:
     dependencies: Optional[Dict[str, Callable]]
 
-    @property
+    @cached_property
     def route_handlers(self) -> Dict[str, List[Tuple[RouteHandler, RouteInfo]]]:
         """
         Returns dictionary that maps urls (keys) to a list of methods (values)
@@ -50,7 +51,7 @@ class Controller:
 
         return url_route_handler_map
 
-    @property
+    @cached_property
     def routes(self) -> List[Route]:
         """Maps http handler method defined on the class into a list of Starlette Route instances"""
         routes = []

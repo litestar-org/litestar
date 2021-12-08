@@ -4,6 +4,7 @@ from .decorators import delete, get, patch, post, put, route
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .response import Response
+from .utils import cached_property
 
 __all__ = [
     "Controller",
@@ -19,4 +20,5 @@ __all__ = [
     "StarLiteException",
     "HTTPException",
     "ImproperlyConfiguredException",
+    "cached_property",
 ]
