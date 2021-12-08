@@ -69,7 +69,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code, cr
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()
@@ -98,7 +98,7 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, f"{test_path}/{person_instance.id}")
         assert response.status_code == expected_status_code
 
@@ -130,7 +130,7 @@ def test_query_params(decorator, http_method, expected_status_code, create_test_
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path, params=query_params_instance.dict())
         assert response.status_code == expected_status_code
 
@@ -165,7 +165,7 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
@@ -192,7 +192,7 @@ def test_request(decorator, http_method, expected_status_code, create_test_clien
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 
@@ -209,7 +209,7 @@ def test_defining_data_for_get_handler_raises_exception(create_test_client):
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.get(test_path)
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -235,7 +235,7 @@ def test_data_using_model(decorator, http_method, expected_status_code, create_t
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path, json=person_instance.json())
         assert response.status_code == expected_status_code
 
@@ -263,6 +263,6 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code,
 
     controller = MyController()
 
-    with create_test_client(controller.routes) as client:
+    with create_test_client(controller) as client:
         response = client.request(http_method, test_path, json=json.dumps([p.dict() for p in people]))
         assert response.status_code == expected_status_code

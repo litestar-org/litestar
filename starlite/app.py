@@ -38,7 +38,7 @@ class StarliteAPP(Starlette):
         self.global_dependencies = global_dependencies
         self._debug = debug
         self.state = State()
-        self.router = Router(path="/", routes=routes, on_startup=on_startup, on_shutdown=on_shutdown, lifespan=lifespan)
+        self.router = Router(path="", routes=routes, on_startup=on_startup, on_shutdown=on_shutdown, lifespan=lifespan)
         self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
         self.user_middleware = list(middleware) if middleware else []
         self.middleware_stack = self.build_middleware_stack()
