@@ -18,7 +18,8 @@ def test_cached_property():
         assert not callable(class_attribute)
         assert isinstance(class_attribute, cached_property)
 
-        # because we also return "object()", the result is not identical between different instances, but is a cached
+        # because we also return "object()", the result is not identical between different instances
         assert getattr(instance, "my_property") != getattr(c_type(), "my_property")
+        # result is identical because its cached
         assert getattr(instance, "my_property") == getattr(instance, "my_property")
         assert getattr(instance, "my_property")[0] is True
