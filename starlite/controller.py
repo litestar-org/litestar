@@ -9,7 +9,7 @@ from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.request import handle_request
 from starlite.types import RouteHandler
-from starlite.utils import cached_property
+from starlite.utils import as_iterable, cached_property, join_paths, normalize_path
 
 
 def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
@@ -27,7 +27,14 @@ def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]
 
 
 class Controller:
-    dependencies: Optional[Dict[str, Callable]]
+    path: str
+    dependencies: Optional[Dict[str, Callable]] = None
+
+    def __init__(self):
+        if not hasattr(self, "path") or not self.path:
+            raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
+        if not self.path.startswith("/"):
+            self.path = normalize_path(self.path)
 
     @cached_property
     def route_handlers(self) -> Dict[str, List[Tuple[RouteHandler, RouteInfo]]]:
@@ -41,10 +48,9 @@ class Controller:
         ]
 
         url_route_handler_map: Dict[str, List[Tuple[RouteHandler, RouteInfo]]] = {}
-
         for route_handler in route_handlers:
             assert route_handler.route_info, "missing route_info data"
-            url = route_handler.route_info.url or "/"
+            url = join_paths([self.path, route_handler.route_info.path]) if route_handler.route_info.path else self.path
             if not url_route_handler_map.get(url):
                 url_route_handler_map[url] = []
             url_route_handler_map[url].append((route_handler, route_handler.route_info))
@@ -55,21 +61,21 @@ class Controller:
     def routes(self) -> List[Route]:
         """Maps http handler method defined on the class into a list of Starlette Route instances"""
         routes = []
-        for url, method_group in self.route_handlers.items():
+        for url, handler_grouping in self.route_handlers.items():
             method_map: Dict[HttpMethod, RouteHandler] = {}
             endpoint_name = None
             include_in_schema = True
-            for method, route_info in method_group:
-                if method_map.get(route_info.http_method):
-                    raise ImproperlyConfiguredException(
-                        f"handler already registered for url {url} and http method {route_info.http_method}"
-                    )
-                method_map[route_info.http_method] = method
-                if not endpoint_name and route_info.name:
-                    endpoint_name = route_info.name
-                if route_info.include_in_schema is False:
-                    include_in_schema = False
-
+            for route_handler, route_info in handler_grouping:
+                for http_method in as_iterable(route_info.http_method):
+                    if method_map.get(http_method):
+                        raise ImproperlyConfiguredException(
+                            f"handler already registered for url {url!r} and http method {http_method}"
+                        )
+                    method_map[http_method] = route_handler
+                    if not endpoint_name and route_info.name:
+                        endpoint_name = route_info.name
+                    if route_info.include_in_schema is False:
+                        include_in_schema = False
             routes.append(
                 Route(
                     path=url,

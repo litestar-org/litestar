@@ -12,7 +12,7 @@ from starlette.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
-from starlite import Controller, HttpMethod
+from starlite import Controller, HttpMethod, ImproperlyConfiguredException
 from starlite.decorators import delete, get, patch, post, put
 
 
@@ -39,6 +39,14 @@ class QueryParamsFactory(ModelFactory):
 person_instance = PersonFactory.build()
 
 
+def test_controller_raises_exception_when_base_path_not_set():
+    class MyController(Controller):
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        MyController()
+
+
 @pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
@@ -50,17 +58,19 @@ person_instance = PersonFactory.build()
     ],
 )
 def test_controller_http_method(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self):
             return person_instance
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path)
+        response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()
 
@@ -76,10 +86,12 @@ def test_controller_http_method(decorator, http_method, expected_status_code, cr
     ],
 )
 def test_path_params(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person/{person_id:int}"
+    test_path = "/person"
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator(path="/{person_id:int}")
         def test_method(self, person_id: int):
             assert person_id == person_instance.id
             return None
@@ -87,7 +99,7 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, f"/person/{person_instance.id}")
+        response = client.request(http_method, f"{test_path}/{person_instance.id}")
         assert response.status_code == expected_status_code
 
 
@@ -102,12 +114,14 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
     ],
 )
 def test_query_params(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     query_params_instance = QueryParamsFactory.build()
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self, first: str, second: List[str], third: Optional[int] = None):
             assert first == query_params_instance.first
             assert second == query_params_instance.second
@@ -117,7 +131,7 @@ def test_query_params(decorator, http_method, expected_status_code, create_test_
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path, params=query_params_instance.dict())
+        response = client.request(http_method, test_path, params=query_params_instance.dict())
         assert response.status_code == expected_status_code
 
 
@@ -132,7 +146,7 @@ def test_query_params(decorator, http_method, expected_status_code, create_test_
     ],
 )
 def test_header_params(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     request_headers = {
         "application-type": "web",
@@ -142,7 +156,9 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
     }
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self, headers: dict):
             for key, value in request_headers.items():
                 assert headers[key] == value
@@ -150,7 +166,7 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path, headers=request_headers)
+        response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
 
@@ -165,32 +181,36 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
     ],
 )
 def test_request(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self, request: Request):
             assert isinstance(request, Request)
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path)
+        response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 
 
 def test_defining_data_for_get_handler_raises_exception(create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     class MyController(Controller):
-        @get(url=path)
+        path = test_path
+
+        @get()
         def test_method(self, data: Person):
             assert data == person_instance
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.get(path)
+        response = client.get(test_path)
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -204,17 +224,19 @@ def test_defining_data_for_get_handler_raises_exception(create_test_client):
     ],
 )
 def test_data_using_model(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self, data: Person):
             assert data == person_instance
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path, json=person_instance.json())
+        response = client.request(http_method, test_path, json=person_instance.json())
         assert response.status_code == expected_status_code
 
 
@@ -228,17 +250,19 @@ def test_data_using_model(decorator, http_method, expected_status_code, create_t
     ],
 )
 def test_data_using_list_of_models(decorator, http_method, expected_status_code, create_test_client):
-    path = "/person"
+    test_path = "/person"
 
     people = PersonFactory.batch(size=5)
 
     class MyController(Controller):
-        @decorator(url=path)
+        path = test_path
+
+        @decorator()
         def test_method(self, data: List[Person]):
             assert data == people
 
     controller = MyController()
 
     with create_test_client(controller.routes) as client:
-        response = client.request(http_method, path, json=json.dumps([p.dict() for p in people]))
+        response = client.request(http_method, test_path, json=json.dumps([p.dict() for p in people]))
         assert response.status_code == expected_status_code

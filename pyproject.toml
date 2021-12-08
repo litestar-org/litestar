@@ -56,7 +56,7 @@ profile = "black"
 multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
-disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "import-outside-toplevel"]
+disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "import-outside-toplevel", "duplicate-code"]
 enable = "useless-suppression"
 
 [tool.pylint.REPORTS]

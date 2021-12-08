@@ -7,6 +7,7 @@ from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Type
 
+from starlite.decorators import RouteInfo
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
@@ -89,9 +90,17 @@ async def get_http_handler_parameters(route_handler: Callable, request: Request)
     return parameters
 
 
-def get_default_status_code(http_method: HttpMethod) -> int:
+def get_route_status_code(route_info: RouteInfo) -> int:
     """Return the default status code for the given http_method"""
-
+    if route_info.status_code:
+        return route_info.status_code
+    http_method = route_info.http_method
+    if isinstance(http_method, list):
+        if not len(http_method) == 1:
+            raise ImproperlyConfiguredException(
+                f"route {route_info.path!r} with methods: {', '.join(http_method)} must define a status_code"
+            )
+        http_method = http_method[0]
     if http_method == HttpMethod.POST:
         return HTTP_201_CREATED
     if http_method == HttpMethod.DELETE:
@@ -112,7 +121,7 @@ async def handle_request(route_handler: RouteHandler, request: Request) -> Respo
     if isawaitable(data):
         data = await data
 
-    status_code = route_handler.route_info.status_code or get_default_status_code(route_handler.route_info.http_method)
+    status_code = get_route_status_code(route_handler.route_info)
     media_type = route_handler.route_info.media_type or response_class.media_type or MediaType.JSON
     return response_class(
         content=data,

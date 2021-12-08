@@ -1,4 +1,4 @@
-from typing import cast
+from typing import List, cast
 
 import pytest
 from hypothesis import given
@@ -39,7 +39,7 @@ def test_route_info_model(
         name=name,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
 
 
@@ -49,7 +49,7 @@ def test_route_info_model_validation():
 
 
 @given(
-    http_method=st.sampled_from(HttpMethod),
+    http_method=st.one_of(st.sampled_from(HttpMethod), st.from_type(List[HttpMethod])),
     media_type=st.one_of(st.none(), st.sampled_from(MediaType)),
     include_in_schema=st.one_of(st.none(), st.booleans()),
     name=st.one_of(st.none(), st.text()),
@@ -76,7 +76,7 @@ def test_route(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
@@ -87,7 +87,7 @@ def test_route(
     assert route_info.response_class == response_class
     assert route_info.response_headers == response_headers
     assert route_info.status_code == status_code
-    assert route_info.url == url
+    assert route_info.path == url
 
 
 @given(
@@ -115,7 +115,7 @@ def test_delete(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
@@ -147,7 +147,7 @@ def test_get(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
@@ -179,7 +179,7 @@ def test_patch(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
@@ -211,7 +211,7 @@ def test_post(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
@@ -243,7 +243,7 @@ def test_put(
         response_class=response_class,
         response_headers=response_headers,
         status_code=status_code,
-        url=url,
+        path=url,
     )
     result = decorator(lambda x: x)
     route_info = cast(RouteInfo, getattr(result, "route_info"))
