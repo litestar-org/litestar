@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Optional
 
-from starlite.decorators import RouteHandler
+from starlite.decorators import RouteHandlerFunction
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import normalize_path
 
@@ -14,7 +14,7 @@ class Controller:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
         self.path = normalize_path(self.path)
 
-    def get_route_handlers(self) -> List[RouteHandler]:
+    def get_route_handlers(self) -> List[RouteHandlerFunction]:
         """
         Returns a list of route handlers defined on the controller
         """

@@ -1,3 +1,4 @@
+from contextlib import suppress
 from typing import Any, Iterable, List, Optional, Sequence, TypeVar, Union, cast
 
 T = TypeVar("T")
@@ -12,24 +13,24 @@ def compact(list_to_filter: List[Optional[T]], none_only: bool = False) -> List[
     return cast(List[T], list(filter(lambda x: x is not None if none_only else bool(x), list_to_filter)))
 
 
-def as_iterable(value: Union[T, Sequence[T], Iterable[T]]) -> Iterable[T]:
-    """Given a value, return the value if its iterable or a list enveloping it"""
-    try:
-        iter(value)
-        if not isinstance(value, str):
-            return value
-        return [value]
-    except TypeError:
-        return [value]
+def as_list(value: Union[T, Sequence[T], Iterable[T]]) -> List[T]:
+    """Given a value, return the value enveloped as a list, unless it's already a list"""
+    if not isinstance(value, str):
+        with suppress(TypeError):
+            return list(iter(cast(Iterable[T], value)))
+    return cast(List[T], [value])
 
 
 def find(target_list: List[T], key: str, value: Any) -> int:
     """Find element in list given a key and value. List elements can be dicts or classes"""
-    for i, el in enumerate(target_list):
-        if isinstance(el, dict):
-            return i if dict.get(key) == value else -1
-        return i if getattr(el, key) == value else -1
+    for i, element in enumerate(target_list):
+        if (isinstance(element, dict) and element.get(key) == value) or (
+            not isinstance(element, dict) and getattr(element, key) == value
+        ):
+            return i
+    return -1
 
 
-def unique(target_list: Union[Sequence[T], Iterable[T]]) -> List[T]:
-    return list(set(target_list))
+def unique(value: Iterable[T]) -> List[T]:
+    """Return all unique values in a given sequence or iterator"""
+    return list(set(value))

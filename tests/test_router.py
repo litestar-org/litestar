@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import Controller, HttpMethod, get, patch, post, route as route_decorator
+from starlite import Controller, HttpMethod, get, patch, post
+from starlite import route as route_decorator
 from starlite.routing import Router
 
 
@@ -22,7 +23,7 @@ class MyController(Controller):
 
 @pytest.mark.parametrize("controller", [MyController, MyController()])
 def test_register_with_controller_class(controller):
-    router = Router(path="/base", route_handlers=[controller])
+    router = Router(path="/base", route_handlers=[MyController])
     assert len(router.routes) == 2
     for route in router.routes:
         if len(route.methods) == 2:
@@ -33,7 +34,7 @@ def test_register_with_controller_class(controller):
             assert route.path == "/base/test"
 
 
-def test_register_with_router_class():
+def test_register_with_router_instance():
     top_level_router = Router(path="/top-level", route_handlers=[MyController])
     base_router = Router(path="/base", route_handlers=[top_level_router])
 

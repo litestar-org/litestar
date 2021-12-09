@@ -1,11 +1,11 @@
 import pytest
 
-from starlite.utils.sequence import as_iterable, compact
+from starlite.utils.sequence import as_list, compact
 
 
-@pytest.mark.parametrize("value, expected", [["123", ["123"]], [[], []], [(), ()], [1, [1]], [True, [True]]])
+@pytest.mark.parametrize("value, expected", [["123", ["123"]], [[], []], [(), []], [1, [1]], [True, [True]]])
 def test_as_iterable(value, expected):
-    assert as_iterable(value) == expected
+    assert as_list(value) == expected
 
 
 def test_compact():

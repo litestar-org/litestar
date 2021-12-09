@@ -16,10 +16,8 @@ from starlette.middleware import Middleware
 from starlette.responses import Response
 from typing_extensions import Type
 
-from starlite.controller import Controller
-from starlite.decorators import RouteHandler
 from starlite.enums import HttpMethod, MediaType
-from starlite.routing import Route, Router
+from starlite.routing import RouteHandler, Router
 
 
 # noinspection PyMethodOverriding
@@ -29,7 +27,7 @@ class Starlite(Starlette):
         debug: bool = False,
         middleware: Sequence[Middleware] = None,
         exception_handlers: Dict[Union[int, Type[Exception]], Callable] = None,
-        route_handlers: Optional[Sequence[Union[Type[Controller], Controller, RouteHandler, Router, Route]]] = None,
+        route_handlers: Optional[Sequence[RouteHandler]] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
@@ -45,13 +43,9 @@ class Starlite(Starlette):
         self.user_middleware = list(middleware) if middleware else []
         self.middleware_stack = self.build_middleware_stack()
 
-    def register(self, route_handler: Union[Type[Controller], Controller, Router, RouteHandler]):
+    def register(self, route_handler: RouteHandler):
         """
-        Register a Controller, Route instance or route_handler function on the application main router
-
-        Accepts a subclass of Controller, an instance of Router or a function/method that has been decorated
-        by any of the routing decorators (e.g. route, get, post...) exported from starlite.decorators
-
+        Proxy method for Route.register(**kwargs)
         """
         self.router.register(route_handler=route_handler)
 
@@ -66,6 +60,9 @@ class Starlite(Starlette):
         response_headers: Optional[Union[dict, BaseModel]] = None,
         status_code: Optional[int] = None,
     ) -> Callable:
+        """
+        Proxy method for Router.route(**kwargs)
+        """
         return self.router.route(
             path=path,
             http_method=http_method,
@@ -89,6 +86,9 @@ class Starlite(Starlette):
         response_headers: Optional[Union[dict, BaseModel]] = None,
         status_code: Optional[int] = None,
     ):
+        """
+        Proxy method for Route.add_route(**kwargs)
+        """
         return self.router.add_route(
             endpoint=endpoint,
             http_method=http_method,

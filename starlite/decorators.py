@@ -41,7 +41,7 @@ class RouteInfo(BaseModel):
         raise ValueError("response_class must be a sub-class of starlette.responses.Response")
 
 
-class RouteHandler:
+class RouteHandlerFunction:
     """This is a specific version of 'Callable' that represents the function returned from the route decorator"""
 
     def __call__(self, *args, **kwargs) -> Any:
@@ -61,10 +61,10 @@ def route(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Decorator that wraps a given method and sets an instance of RouteInfo as an attribute of the returned method"""
 
-    def decorator(function: Callable) -> RouteHandler:
+    def decorator(function: Callable) -> RouteHandlerFunction:
         route_info = RouteInfo(
             http_method=http_method,
             include_in_schema=include_in_schema,
@@ -76,7 +76,7 @@ def route(
             status_code=status_code,
         )
         setattr(function, "route_info", route_info)
-        return cast(RouteHandler, function)
+        return cast(RouteHandlerFunction, function)
 
     return decorator
 
@@ -91,7 +91,7 @@ def get(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Route decorator with pre-set http_method GET"""
     return route(
         http_method=HttpMethod.GET,
@@ -115,7 +115,7 @@ def post(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Route decorator with pre-set http_method POST"""
     return route(
         http_method=HttpMethod.POST,
@@ -139,7 +139,7 @@ def put(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Route decorator with pre-set http_method PUT"""
     return route(
         http_method=HttpMethod.PUT,
@@ -163,7 +163,7 @@ def patch(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Route decorator with pre-set http_method PATCH"""
     return route(
         http_method=HttpMethod.PATCH,
@@ -187,7 +187,7 @@ def delete(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable[[Callable], RouteHandler]:
+) -> Callable[[Callable], RouteHandlerFunction]:
     """Route decorator with pre-set http_method DELETE"""
     return route(
         http_method=HttpMethod.DELETE,

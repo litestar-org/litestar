@@ -7,7 +7,7 @@ from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Type
 
-from starlite.decorators import RouteHandler, RouteInfo
+from starlite.decorators import RouteHandlerFunction, RouteInfo
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
@@ -107,7 +107,7 @@ def get_route_status_code(route_info: RouteInfo) -> int:
     return HTTP_200_OK
 
 
-async def handle_request(route_handler: RouteHandler, request: Request) -> Response:
+async def handle_request(route_handler: RouteHandlerFunction, request: Request) -> Response:
     """
     Handles a given request by both calling the passed in function,
     and parsing the RouteInfo stored as an attribute on it.

@@ -16,8 +16,9 @@ class HttpMethod(str, Enum):
 
     @classmethod
     def from_str(cls, value: str) -> "HttpMethod":
+        """Given a string value, return an enum member or raise a ValueError"""
         if cls.is_http_method(value):
-            return cast(cls, value.lower())
+            return cast(HttpMethod, value.lower())
         raise ValueError(f"value {value} is not a supported http method")
 
 
