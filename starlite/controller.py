@@ -1,29 +1,8 @@
-from typing import Callable, Dict, List, Optional, Tuple, cast
+from typing import Callable, Dict, List, Optional
 
-from starlette.requests import Request
-from starlette.responses import Response
-from starlette.routing import Route
-
-from starlite.decorators import RouteInfo
-from starlite.enums import HttpMethod
+from starlite.decorators import RouteHandler
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.request import handle_request
-from starlite.types import RouteHandler
-from starlite.utils import as_iterable, cached_property, join_paths, normalize_path
-
-
-def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
-    """
-    Helper to create an endpoint handler given a dictionary mapping http-methods to callables
-
-    """
-
-    async def inner(request: Request) -> Response:
-        request_method = cast(HttpMethod, request.method.lower())
-        handler = http_handler_mapping[request_method]
-        return await handle_request(route_handler=handler, request=request)
-
-    return inner
+from starlite.utils import normalize_path
 
 
 class Controller:
@@ -33,56 +12,14 @@ class Controller:
     def __init__(self):
         if not hasattr(self, "path") or not self.path:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
-        if not self.path.startswith("/"):
-            self.path = normalize_path(self.path)
+        self.path = normalize_path(self.path)
 
-    @cached_property
-    def route_handlers(self) -> Dict[str, List[Tuple[RouteHandler, RouteInfo]]]:
+    def get_route_handlers(self) -> List[RouteHandler]:
         """
-        Returns dictionary that maps urls (keys) to a list of methods (values)
+        Returns a list of route handlers defined on the controller
         """
-        route_handlers: List[RouteHandler] = [
+        return [
             getattr(self, f_name)
             for f_name in dir(self)
             if f_name not in dir(Controller) and hasattr(getattr(self, f_name), "route_info")
         ]
-
-        url_route_handler_map: Dict[str, List[Tuple[RouteHandler, RouteInfo]]] = {}
-        for route_handler in route_handlers:
-            assert route_handler.route_info, "missing route_info data"
-            url = join_paths([self.path, route_handler.route_info.path]) if route_handler.route_info.path else self.path
-            if not url_route_handler_map.get(url):
-                url_route_handler_map[url] = []
-            url_route_handler_map[url].append((route_handler, route_handler.route_info))
-
-        return url_route_handler_map
-
-    @cached_property
-    def routes(self) -> List[Route]:
-        """Maps http handler method defined on the class into a list of Starlette Route instances"""
-        routes = []
-        for url, handler_grouping in self.route_handlers.items():
-            method_map: Dict[HttpMethod, RouteHandler] = {}
-            endpoint_name = None
-            include_in_schema = True
-            for route_handler, route_info in handler_grouping:
-                for http_method in as_iterable(route_info.http_method):
-                    if method_map.get(http_method):
-                        raise ImproperlyConfiguredException(
-                            f"handler already registered for url {url!r} and http method {http_method}"
-                        )
-                    method_map[http_method] = route_handler
-                    if not endpoint_name and route_info.name:
-                        endpoint_name = route_info.name
-                    if route_info.include_in_schema is False:
-                        include_in_schema = False
-            routes.append(
-                Route(
-                    path=url,
-                    endpoint=create_endpoint_handler(method_map),
-                    methods=list(map(lambda x: x.upper(), method_map.keys())),
-                    include_in_schema=include_in_schema,
-                    name=endpoint_name,
-                )
-            )
-        return routes

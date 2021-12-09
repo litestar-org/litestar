@@ -7,11 +7,10 @@ from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Type
 
-from starlite.decorators import RouteInfo
+from starlite.decorators import RouteHandler, RouteInfo
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
-from starlite.types import RouteHandler
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:

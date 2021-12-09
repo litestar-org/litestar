@@ -67,9 +67,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code, cr
         def test_method(self):
             return person_instance
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()
@@ -96,9 +94,7 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
             assert person_id == person_instance.id
             return None
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, f"{test_path}/{person_instance.id}")
         assert response.status_code == expected_status_code
 
@@ -128,9 +124,7 @@ def test_query_params(decorator, http_method, expected_status_code, create_test_
             assert third == query_params_instance.third
             return None
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, params=query_params_instance.dict())
         assert response.status_code == expected_status_code
 
@@ -163,9 +157,7 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
             for key, value in request_headers.items():
                 assert headers[key] == value
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, headers=request_headers)
         assert response.status_code == expected_status_code
 
@@ -190,9 +182,7 @@ def test_request(decorator, http_method, expected_status_code, create_test_clien
         def test_method(self, request: Request):
             assert isinstance(request, Request)
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
 
@@ -207,9 +197,7 @@ def test_defining_data_for_get_handler_raises_exception(create_test_client):
         def test_method(self, data: Person):
             assert data == person_instance
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.get(test_path)
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -233,9 +221,7 @@ def test_data_using_model(decorator, http_method, expected_status_code, create_t
         def test_method(self, data: Person):
             assert data == person_instance
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, json=person_instance.json())
         assert response.status_code == expected_status_code
 
@@ -261,8 +247,6 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code,
         def test_method(self, data: List[Person]):
             assert data == people
 
-    controller = MyController()
-
-    with create_test_client(controller) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, json=json.dumps([p.dict() for p in people]))
         assert response.status_code == expected_status_code

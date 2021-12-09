@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union, cast
 
 from pydantic import BaseModel, validate_arguments, validator
 from starlette.responses import Response
@@ -41,6 +41,15 @@ class RouteInfo(BaseModel):
         raise ValueError("response_class must be a sub-class of starlette.responses.Response")
 
 
+class RouteHandler:
+    """This is a specific version of 'Callable' that represents the function returned from the route decorator"""
+
+    def __call__(self, *args, **kwargs) -> Any:
+        ...  # pragma: no cover
+
+    route_info: RouteInfo
+
+
 @validate_arguments
 def route(
     *,
@@ -52,10 +61,10 @@ def route(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-) -> Callable:
+) -> Callable[[Callable], RouteHandler]:
     """Decorator that wraps a given method and sets an instance of RouteInfo as an attribute of the returned method"""
 
-    def decorator(function: Callable):
+    def decorator(function: Callable) -> RouteHandler:
         route_info = RouteInfo(
             http_method=http_method,
             include_in_schema=include_in_schema,
@@ -67,7 +76,7 @@ def route(
             status_code=status_code,
         )
         setattr(function, "route_info", route_info)
-        return function
+        return cast(RouteHandler, function)
 
     return decorator
 
@@ -82,7 +91,7 @@ def get(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-):
+) -> Callable[[Callable], RouteHandler]:
     """Route decorator with pre-set http_method GET"""
     return route(
         http_method=HttpMethod.GET,
@@ -106,7 +115,7 @@ def post(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-):
+) -> Callable[[Callable], RouteHandler]:
     """Route decorator with pre-set http_method POST"""
     return route(
         http_method=HttpMethod.POST,
@@ -130,7 +139,7 @@ def put(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-):
+) -> Callable[[Callable], RouteHandler]:
     """Route decorator with pre-set http_method PUT"""
     return route(
         http_method=HttpMethod.PUT,
@@ -154,7 +163,7 @@ def patch(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-):
+) -> Callable[[Callable], RouteHandler]:
     """Route decorator with pre-set http_method PATCH"""
     return route(
         http_method=HttpMethod.PATCH,
@@ -178,7 +187,7 @@ def delete(
     response_class: Optional[Type[Response]] = None,
     response_headers: Optional[Union[dict, BaseModel]] = None,
     status_code: Optional[int] = None,
-):
+) -> Callable[[Callable], RouteHandler]:
     """Route decorator with pre-set http_method DELETE"""
     return route(
         http_method=HttpMethod.DELETE,

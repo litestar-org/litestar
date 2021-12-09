@@ -17,19 +17,19 @@ from starlette.responses import Response
 from typing_extensions import Type
 
 from starlite.controller import Controller
+from starlite.decorators import RouteHandler
 from starlite.enums import HttpMethod, MediaType
-from starlite.routing import Router
-from starlite.types import RouteHandler
+from starlite.routing import Route, Router
 
 
 # noinspection PyMethodOverriding
-class StarliteAPP(Starlette):
+class Starlite(Starlette):
     def __init__(  # pylint: disable=super-init-not-called
         self,
         debug: bool = False,
         middleware: Sequence[Middleware] = None,
         exception_handlers: Dict[Union[int, Type[Exception]], Callable] = None,
-        routes: Optional[Sequence[Union[Type[Controller], Controller, Router, RouteHandler]]] = None,
+        route_handlers: Optional[Sequence[Union[Type[Controller], Controller, RouteHandler, Router, Route]]] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
@@ -38,7 +38,9 @@ class StarliteAPP(Starlette):
         self.global_dependencies = global_dependencies
         self._debug = debug
         self.state = State()
-        self.router = Router(path="", routes=routes, on_startup=on_startup, on_shutdown=on_shutdown, lifespan=lifespan)
+        self.router = Router(
+            path="", route_handlers=route_handlers, on_startup=on_startup, on_shutdown=on_shutdown, lifespan=lifespan
+        )
         self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
         self.user_middleware = list(middleware) if middleware else []
         self.middleware_stack = self.build_middleware_stack()
