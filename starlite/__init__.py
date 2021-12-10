@@ -2,6 +2,7 @@
 from .app import Starlite
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
+from .request import Partial
 from .response import Response
 from .routing import Controller, Route, Router, delete, get, patch, post, put, route
 
@@ -13,6 +14,7 @@ __all__ = [
     "HttpMethod",
     "ImproperlyConfiguredException",
     "MediaType",
+    "Partial",
     "patch",
     "post",
     "put",

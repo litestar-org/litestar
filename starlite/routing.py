@@ -22,7 +22,7 @@ from typing_extensions import AsyncContextManager, Literal, Type
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.request import handle_request
-from starlite.utils.sequence import as_list, find, unique
+from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
 
 
@@ -53,7 +53,7 @@ class SignatureWrapper:
                     field_definitions[key] = (value, None)
             return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
         except (TypeError, ValueError) as e:
-            raise ImproperlyConfiguredException("") from e
+            raise ImproperlyConfiguredException("Unsupported callable passed to Inject") from e
 
 
 class Inject(SignatureWrapper):
@@ -136,9 +136,10 @@ class RouteHandler(SignatureWrapper, BaseModel):
         Validates that status code is set for lists of 2 or more HttpMethods,
         and sets default for other cases where the status_code is not set.
         """
-        http_method = values["http_method"]
         if value:
             return value
+
+        http_method = values["http_method"]
         if isinstance(http_method, list):
             raise ValueError("When defining multiple methods for a given path, a status_code is required")
         if http_method == HttpMethod.POST:
@@ -243,7 +244,7 @@ class Route(StarletteRoute):
         name: Optional[str] = None
         include_in_schema = True
 
-        for route_handler in as_list(route_handlers):  # type: RouteHandler
+        for route_handler in route_handlers if isinstance(route_handlers, list) else [route_handlers]:
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
                     raise ImproperlyConfiguredException(
@@ -383,8 +384,8 @@ class Router(StarletteRouter):
             path = join_paths([self.path, route_path])
             route_handlers = unique(method_map.values())
             if self.route_handler_method_map.get(path):
-                existing_route_index = find(self.routes, "path", path)
-                assert existing_route_index != -1, "unable to find existing route index"
+                existing_route_index = find_index(self.routes, "path", path)
+                assert existing_route_index != -1, "unable to find_index existing route index"
                 self.routes[existing_route_index] = Route(
                     path=path,
                     route_handlers=unique([*list(self.route_handler_method_map[path].values()), *route_handlers]),
