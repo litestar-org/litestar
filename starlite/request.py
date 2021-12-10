@@ -3,7 +3,6 @@ from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
 from starlette.requests import Request
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -57,24 +56,6 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
     return model(**model_kwargs).dict()
 
 
-def get_route_status_code(route_handler: "RouteHandler") -> int:
-    """Return the default status code for the given http_method"""
-    if route_handler.status_code:
-        return route_handler.status_code
-    http_method = route_handler.http_method
-    if isinstance(http_method, list):
-        if not len(http_method) == 1:
-            raise ImproperlyConfiguredException(
-                f"route {route_handler.path!r} with methods: {', '.join(http_method)} must define a status_code"
-            )
-        http_method = http_method[0]
-    if http_method == HttpMethod.POST:
-        return HTTP_201_CREATED
-    if http_method == HttpMethod.DELETE:
-        return HTTP_204_NO_CONTENT
-    return HTTP_200_OK
-
-
 async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:
     """
     Handles a given request by both calling the passed in function,
@@ -88,11 +69,10 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
     if isawaitable(data):
         data = await data
 
-    status_code = get_route_status_code(route_handler)
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     return response_class(
         content=data,
         headers=route_handler.response_headers,
-        status_code=status_code,
+        status_code=route_handler.status_code,
         media_type=media_type,
     )

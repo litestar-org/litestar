@@ -6,6 +6,7 @@ from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
 from starlette.responses import Response
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
 from starlite.routing import RouteHandler
@@ -65,7 +66,7 @@ def test_model_function_signature():
 
 def test_route_info_model_validation():
     with pytest.raises(ValidationError):
-        RouteHandler(response_class=dict())
+        RouteHandler(http_method=HttpMethod.GET, response_class=dict())
 
 
 @given(
@@ -75,7 +76,7 @@ def test_route_info_model_validation():
     name=st.one_of(st.none(), st.text()),
     response_class=st.one_of(st.none(), st.just(Response)),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
-    status_code=st.one_of(st.none(), st.integers()),
+    status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     url=st.one_of(st.none(), st.text()),
 )
 def test_route(
@@ -88,25 +89,75 @@ def test_route(
     status_code,
     url,
 ):
-    decorator = route(
-        http_method=http_method,
-        media_type=media_type,
-        include_in_schema=include_in_schema,
-        name=name,
-        response_class=response_class,
-        response_headers=response_headers,
-        status_code=status_code,
-        path=url,
-    )
-    result = decorator(lambda x: x)
-    assert result.http_method == http_method
-    assert result.media_type == media_type
-    assert result.include_in_schema == include_in_schema
-    assert result.name == name
-    assert result.response_class == response_class
-    assert result.response_headers == response_headers
-    assert result.status_code == status_code
-    assert result.path == url
+    if isinstance(http_method, list) and len(http_method) == 0:
+        with pytest.raises(ValidationError):
+            route(http_method=http_method)
+    elif not status_code and isinstance(http_method, list) and len(http_method) > 1:
+        with pytest.raises(ValidationError):
+            route(
+                http_method=http_method,
+                status_code=status_code,
+            )
+    else:
+        decorator = route(
+            http_method=http_method,
+            media_type=media_type,
+            include_in_schema=include_in_schema,
+            name=name,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            path=url,
+        )
+        result = decorator(lambda x: x)
+        if not isinstance(http_method, list) or len(http_method) > 1:
+            assert result.http_method == http_method
+        else:
+            assert result.http_method == http_method[0]
+        assert result.media_type == media_type
+        assert result.include_in_schema == include_in_schema
+        assert result.name == name
+        assert result.response_class == response_class
+        assert result.response_headers == response_headers
+        assert result.path == url
+        if status_code:
+            assert result.status_code == status_code
+        else:
+            if http_method == HttpMethod.POST:
+                assert result.status_code == HTTP_201_CREATED
+            elif http_method == HttpMethod.DELETE:
+                assert result.status_code == HTTP_204_NO_CONTENT
+            else:
+                assert result.status_code == HTTP_200_OK
+
+
+# @pytest.mark.parametrize(
+#     "http_method, expected_status_code",
+#     [
+#         (HttpMethod.POST, HTTP_201_CREATED),
+#         (HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+#         (HttpMethod.GET, HTTP_200_OK),
+#         (HttpMethod.PUT, HTTP_200_OK),
+#         (HttpMethod.PATCH, HTTP_200_OK),
+#         ([HttpMethod.POST], HTTP_201_CREATED),
+#         ([HttpMethod.DELETE], HTTP_204_NO_CONTENT),
+#         ([HttpMethod.GET], HTTP_200_OK),
+#         ([HttpMethod.PUT], HTTP_200_OK),
+#         ([HttpMethod.PATCH], HTTP_200_OK),
+#     ],
+# )
+# def test_get_default_status_code(http_method, expected_status_code):
+#     route_info = RouteHandler(http_method=http_method)
+#     result = get_route_status_code(route_info)
+#     assert result == expected_status_code
+#
+#
+# def test_get_default_status_code_multiple_methods():
+#     route_info = RouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
+#     with pytest.raises(ImproperlyConfiguredException):
+#         get_route_status_code(route_info)
+#     route_info.status_code = HTTP_200_OK
+#     assert get_route_status_code(route_info) == HTTP_200_OK
 
 
 @given(

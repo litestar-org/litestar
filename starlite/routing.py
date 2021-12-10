@@ -1,11 +1,20 @@
 from inspect import Signature, getfullargspec, isclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union, cast
 
-from pydantic import BaseConfig, BaseModel, Field, create_model, validator
+from pydantic import (
+    BaseConfig,
+    BaseModel,
+    Extra,
+    Field,
+    create_model,
+    validate_arguments,
+    validator,
+)
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route as StarletteRoute
 from starlette.routing import Router as StarletteRouter
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlette.types import ASGIApp
 from typing_extensions import AsyncContextManager, Literal, Type
 
@@ -19,19 +28,20 @@ from starlite.utils.url import join_paths, normalize_path
 class RouteHandler(BaseModel):
     class Config:
         arbitrary_types_allowed = True
+        extra = Extra.allow
 
     http_method: Union[HttpMethod, List[HttpMethod]]
+    status_code: Optional[int] = None
     include_in_schema: Optional[bool] = None
     media_type: Optional[MediaType] = None
     name: Optional[str] = None
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[Union[dict, BaseModel]] = None
-    status_code: Optional[int] = None
     dependencies: Optional[Dict[str, Callable]] = None
 
-    fn: Optional[Callable] = None
-    owner: Optional[Type["Controller"]] = None
+    fn: Callable = None
+    owner: Union[Type["Controller"], "Router"] = None
 
     def __set_name__(self, owner: Optional[Type["Controller"]], *args):
         """
@@ -48,11 +58,15 @@ class RouteHandler(BaseModel):
             if self.owner:
                 return self.fn(self.owner, *args, **kwargs)
             return self.fn(*args, **kwargs)
+
         self.fn = cast(Callable, args[0])
         return self
 
-    def __eq__(self, other):
-        return super().__eq__(other) and self.fn == other.fn
+    def __eq__(self, other: object) -> bool:
+        try:
+            return super().__eq__(other) and hasattr(other, "fn") and self.fn == other.fn
+        except AttributeError:
+            return False
 
     def get_signature_model(self) -> Type[BaseModel]:
         """
@@ -77,19 +91,30 @@ class RouteHandler(BaseModel):
                 field_definitions[key] = (value, None)
         return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
 
-    @classmethod
-    @validator("http_method")
-    def validate_http_method(cls, value: Any) -> Optional[Union[HttpMethod, List[HttpMethod]]]:
-        """Validates that a given value is either None, HttpMethod enum member or list thereof"""
-        if (
-            value is None
-            or HttpMethod.is_http_method(value)
-            or (isinstance(value, list) and len(value) > 0 and all(HttpMethod.is_http_method(v) for v in value))
-        ):
-            return value
-        raise ValueError()
+    @validator("http_method", always=True, pre=True)
+    def validate_http_method(cls, value: Union[HttpMethod, List[HttpMethod]]) -> Union[HttpMethod, List[HttpMethod]]:
+        if isinstance(value, list):
+            if len(value) == 1:
+                value = value[0]
+            elif value == 0:
+                raise ValueError("An http_method parameter is required")
+        return value
 
-    @classmethod
+    @validator("status_code", always=True)
+    def validate_status_code(cls, value: Optional[int], values: Dict[str, Any]) -> int:
+        """Validates that a given value is either None, HttpMethod enum member or list thereof"""
+        http_method = values["http_method"]
+        if not value:
+            if isinstance(http_method, list):
+                raise ValueError("When defining multiple methods for a given path, a status_code is required")
+            if http_method == HttpMethod.POST:
+                value = HTTP_201_CREATED
+            elif http_method == HttpMethod.DELETE:
+                value = HTTP_204_NO_CONTENT
+            else:
+                value = HTTP_200_OK
+        return value
+
     @validator("response_class")
     def validate_response_class(cls, value: Any) -> Optional[Type[Response]]:
         """
@@ -105,6 +130,21 @@ class RouteHandler(BaseModel):
         Returns a list of the RouteHandler's HttpMethod members
         """
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
+
+    @property
+    def resolved_dependenceis(self) -> Dict[str, Callable]:
+        dependencies_list: List[Dict[str, Callable]] = []
+        if self.dependencies:
+            dependencies_list.append(self.dependencies)
+        cur = self.owner
+        while cur is not None:
+            if cur.dependencies:
+                dependencies_list.append(cur.dependencies)
+            cur = cur.owner
+        resolved_dependencies: Dict[str, Callable] = {}
+        for dependencies_dict in reversed(dependencies_list):
+            resolved_dependencies = {**resolved_dependencies, **dependencies_dict}
+        return resolved_dependencies
 
 
 route = RouteHandler
@@ -133,11 +173,13 @@ class delete(route):
 class Controller:
     path: str
     dependencies: Optional[Dict[str, Callable]] = None
+    owner: "Router" = None
 
-    def __init__(self):
+    def __init__(self, owner: "Router"):
         if not hasattr(self, "path") or not self.path:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
         self.path = normalize_path(self.path)
+        self.owner = owner
 
     def get_route_handlers(self) -> List[RouteHandler]:
         """
@@ -153,6 +195,7 @@ class Controller:
 class Route(StarletteRoute):
     route_handler_map: Dict[HttpMethod, RouteHandler]
 
+    @validate_arguments()
     def __init__(
         self,
         *,
@@ -202,22 +245,23 @@ class Route(StarletteRoute):
 # noinspection PyMethodOverriding
 class Router(StarletteRouter):
     routes: List[Route]
+    owner: Optional["Router"] = None
 
     def __init__(
         self,
         path: str,
-        route_handlers: Optional[
-            Sequence[Union[Type[Controller], Controller, RouteHandler, "Router", Callable]]
-        ] = None,
+        route_handlers: Optional[Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]]] = None,
         redirect_slashes: bool = True,
         default: Optional[ASGIApp] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
+        dependencies: Optional[Dict[str, Callable]] = None,
     ):
         if on_startup or on_shutdown:
             assert not lifespan, "Use either 'lifespan' or 'on_startup'/'on_shutdown', not both."
         self.path = normalize_path(path)
+        self.dependencies = dependencies
         super().__init__(
             default=default,
             lifespan=lifespan,
@@ -227,7 +271,7 @@ class Router(StarletteRouter):
             routes=[],
         )
         for route_handler in route_handlers or []:
-            self.register(value=cast(Union[Type[Controller], Controller, RouteHandler, "Router"], route_handler))
+            self.register(value=cast(Union[Type[Controller], RouteHandler, "Router"], route_handler))
 
     @property
     def route_handler_method_map(self) -> Dict[str, Dict[HttpMethod, RouteHandler]]:
@@ -265,7 +309,7 @@ class Router(StarletteRouter):
                     handlers_map[path][http_method] = route_handler
         return handlers_map
 
-    def register(self, value: Union[Type[Controller], Controller, RouteHandler, "Router"]):
+    def register(self, value: Union[Type[Controller], RouteHandler, "Router"]):
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -273,14 +317,14 @@ class Router(StarletteRouter):
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         if isclass(value) and issubclass(cast(Type[Controller], value), Controller):
-            value = cast(Type[Controller], value)()
+            value = cast(Type[Controller], value)(owner=self)
         if not isinstance(value, (Controller, Router, RouteHandler)):
             raise ImproperlyConfiguredException(
                 "Unsupported value passed to `Router.register`. "
                 "If you passed in a function or method, "
                 "make sure to decorate it first with one of the routing decorators"
             )
-        handlers_map = self.create_handler_http_method_map(value=value)
+        handlers_map = self.create_handler_http_method_map(value=cast(Union[Controller, RouteHandler, "Router"], value))
 
         for route_path, method_map in handlers_map.items():
             path = join_paths([self.path, route_path])

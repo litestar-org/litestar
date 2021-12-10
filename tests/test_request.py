@@ -2,13 +2,10 @@ import json
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlencode
 
-import pytest
 from starlette.requests import Request
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
-from starlite import HttpMethod, ImproperlyConfiguredException
-from starlite.request import get_route_status_code, parse_query_params
-from starlite.routing import RouteHandler
+from starlite import HttpMethod
+from starlite.request import parse_query_params
 
 
 def create_test_request(
@@ -46,32 +43,3 @@ def test_parse_query_params():
     request = create_test_request(query=query)
     result = parse_query_params(request=request)
     assert result == query
-
-
-@pytest.mark.parametrize(
-    "http_method, expected_status_code",
-    [
-        (HttpMethod.POST, HTTP_201_CREATED),
-        (HttpMethod.DELETE, HTTP_204_NO_CONTENT),
-        (HttpMethod.GET, HTTP_200_OK),
-        (HttpMethod.PUT, HTTP_200_OK),
-        (HttpMethod.PATCH, HTTP_200_OK),
-        ([HttpMethod.POST], HTTP_201_CREATED),
-        ([HttpMethod.DELETE], HTTP_204_NO_CONTENT),
-        ([HttpMethod.GET], HTTP_200_OK),
-        ([HttpMethod.PUT], HTTP_200_OK),
-        ([HttpMethod.PATCH], HTTP_200_OK),
-    ],
-)
-def test_get_default_status_code(http_method, expected_status_code):
-    route_info = RouteHandler(http_method=http_method)
-    result = get_route_status_code(route_info)
-    assert result == expected_status_code
-
-
-def test_get_default_status_code_multiple_methods():
-    route_info = RouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
-    with pytest.raises(ImproperlyConfiguredException):
-        get_route_status_code(route_info)
-    route_info.status_code = HTTP_200_OK
-    assert get_route_status_code(route_info) == HTTP_200_OK

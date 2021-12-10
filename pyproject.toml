@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/Goldziher/starlite"
 repository = "https://github.com/Goldziher/starlite"
 documentation = "https://github.com/Goldziher/starlite"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi"]
+keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi", "framework"]
 classifiers = [
     "Environment :: Web Environment",
     "License :: OSI Approved :: MIT License",

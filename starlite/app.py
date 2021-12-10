@@ -31,13 +31,17 @@ class Starlite(Starlette):
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
-        global_dependencies: Optional[Dict[str, Callable]] = None,
+        dependencies: Optional[Dict[str, Callable]] = None,
     ):
-        self.global_dependencies = global_dependencies
         self._debug = debug
         self.state = State()
         self.router = Router(
-            path="", route_handlers=route_handlers, on_startup=on_startup, on_shutdown=on_shutdown, lifespan=lifespan
+            path="",
+            route_handlers=route_handlers,
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            lifespan=lifespan,
+            dependencies=dependencies,
         )
         self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
         self.user_middleware = list(middleware) if middleware else []
