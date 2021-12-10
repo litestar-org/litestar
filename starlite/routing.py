@@ -1,4 +1,5 @@
-from inspect import Signature, getfullargspec, isclass
+from functools import partial
+from inspect import Signature, getfullargspec, isclass, ismethod
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union, cast
 
 from pydantic import (
@@ -25,7 +26,54 @@ from starlite.utils.sequence import as_list, find, unique
 from starlite.utils.url import join_paths, normalize_path
 
 
-class RouteHandler(BaseModel):
+class SignatureWrapper:
+    fn: Optional[Callable] = None
+
+    def get_signature_model(self) -> Type[BaseModel]:
+        """
+        Creates a pydantic model for the signature of a given function
+        """
+        if not self.fn:
+            raise ValueError("get_signature_model can only be called once self.fn is set")
+
+        class Config(BaseConfig):
+            arbitrary_types_allowed = True
+
+        try:
+            signature = Signature.from_callable(self.fn)
+            field_definitions: Dict[str, Tuple[Any, Any]] = {}
+
+            for key, value in getfullargspec(self.fn).annotations.items():
+                parameter = signature.parameters[key]
+                if parameter.default is not signature.empty:
+                    field_definitions[key] = (value, parameter.default)
+                elif not repr(parameter.annotation).startswith("typing.Optional"):
+                    field_definitions[key] = (value, ...)
+                else:
+                    field_definitions[key] = (value, None)
+            return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
+        except (TypeError, ValueError) as e:
+            raise ImproperlyConfiguredException("") from e
+
+
+class Inject(SignatureWrapper):
+    def __init__(self, dependency: Callable):
+        self.fn = dependency
+        if ismethod(dependency) and hasattr(dependency, "__self__"):
+            # ensure that the method's self argument is preserved
+            self.fn = partial(dependency, dependency.__self__)  # type: ignore
+        # TODO: re-add caching logic
+
+    def __call__(self, **kwargs) -> Any:
+        """
+        Proxies call to 'self.proxy'
+        """
+        if not self.fn:
+            raise ValueError()
+        return self.fn(**kwargs)
+
+
+class RouteHandler(SignatureWrapper, BaseModel):
     class Config:
         arbitrary_types_allowed = True
         extra = Extra.allow
@@ -38,10 +86,10 @@ class RouteHandler(BaseModel):
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[Union[dict, BaseModel]] = None
-    dependencies: Optional[Dict[str, Callable]] = None
+    dependencies: Optional[Dict[str, Inject]] = None
 
-    fn: Callable = None
-    owner: Union[Type["Controller"], "Router"] = None
+    fn: Optional[Callable] = None
+    owner: Optional[Union[Type["Controller"], "Router"]] = None
 
     def __set_name__(self, owner: Optional[Type["Controller"]], *args):
         """
@@ -62,37 +110,17 @@ class RouteHandler(BaseModel):
         self.fn = cast(Callable, args[0])
         return self
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: Any) -> bool:
         try:
-            return super().__eq__(other) and hasattr(other, "fn") and self.fn == other.fn
-        except AttributeError:
+            return super().__eq__(other) and self.fn == other.fn
+        except (AttributeError, ValueError):
             return False
 
-    def get_signature_model(self) -> Type[BaseModel]:
-        """
-        Creates a pydantic model for the signature of a given function
-        """
-        if not self.fn:
-            raise ValueError()
-
-        class Config(BaseConfig):
-            arbitrary_types_allowed = True
-
-        signature = Signature.from_callable(self.fn)
-        field_definitions: Dict[str, Tuple[Any, Any]] = {}
-
-        for key, value in getfullargspec(self.fn).annotations.items():
-            parameter = signature.parameters[key]
-            if parameter.default is not signature.empty:
-                field_definitions[key] = (value, parameter.default)
-            elif not repr(parameter.annotation).startswith("typing.Optional"):
-                field_definitions[key] = (value, ...)
-            else:
-                field_definitions[key] = (value, None)
-        return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
-
     @validator("http_method", always=True, pre=True)
-    def validate_http_method(cls, value: Union[HttpMethod, List[HttpMethod]]) -> Union[HttpMethod, List[HttpMethod]]:
+    def validate_http_method(  # pylint: disable=no-self-argument,no-self-use
+        cls, value: Union[HttpMethod, List[HttpMethod]]
+    ) -> Union[HttpMethod, List[HttpMethod]]:
+        """Validates that a given value is an HttpMethod enum member or list thereof"""
         if isinstance(value, list):
             if len(value) == 1:
                 value = value[0]
@@ -101,22 +129,28 @@ class RouteHandler(BaseModel):
         return value
 
     @validator("status_code", always=True)
-    def validate_status_code(cls, value: Optional[int], values: Dict[str, Any]) -> int:
-        """Validates that a given value is either None, HttpMethod enum member or list thereof"""
+    def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
+        cls, value: Optional[int], values: Dict[str, Any]
+    ) -> int:
+        """
+        Validates that status code is set for lists of 2 or more HttpMethods,
+        and sets default for other cases where the status_code is not set.
+        """
         http_method = values["http_method"]
-        if not value:
-            if isinstance(http_method, list):
-                raise ValueError("When defining multiple methods for a given path, a status_code is required")
-            if http_method == HttpMethod.POST:
-                value = HTTP_201_CREATED
-            elif http_method == HttpMethod.DELETE:
-                value = HTTP_204_NO_CONTENT
-            else:
-                value = HTTP_200_OK
-        return value
+        if value:
+            return value
+        if isinstance(http_method, list):
+            raise ValueError("When defining multiple methods for a given path, a status_code is required")
+        if http_method == HttpMethod.POST:
+            return HTTP_201_CREATED
+        if http_method == HttpMethod.DELETE:
+            return HTTP_204_NO_CONTENT
+        return HTTP_200_OK
 
     @validator("response_class")
-    def validate_response_class(cls, value: Any) -> Optional[Type[Response]]:
+    def validate_response_class(  # pylint: disable=no-self-argument,no-self-use
+        cls, value: Any
+    ) -> Optional[Type[Response]]:
         """
         Valides that value is either None or subclass of Starlette Response
         """
@@ -132,8 +166,11 @@ class RouteHandler(BaseModel):
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
 
     @property
-    def resolved_dependenceis(self) -> Dict[str, Callable]:
-        dependencies_list: List[Dict[str, Callable]] = []
+    def resolved_dependencies(self) -> Dict[str, Inject]:
+        """
+        Returns all dependencies that exist in the given handler's scopes
+        """
+        dependencies_list: List[Dict[str, Inject]] = []
         if self.dependencies:
             dependencies_list.append(self.dependencies)
         cur = self.owner
@@ -141,7 +178,7 @@ class RouteHandler(BaseModel):
             if cur.dependencies:
                 dependencies_list.append(cur.dependencies)
             cur = cur.owner
-        resolved_dependencies: Dict[str, Callable] = {}
+        resolved_dependencies: Dict[str, Inject] = {}
         for dependencies_dict in reversed(dependencies_list):
             resolved_dependencies = {**resolved_dependencies, **dependencies_dict}
         return resolved_dependencies
@@ -172,8 +209,8 @@ class delete(route):
 
 class Controller:
     path: str
-    dependencies: Optional[Dict[str, Callable]] = None
-    owner: "Router" = None
+    dependencies: Optional[Dict[str, Inject]] = None
+    owner: "Router" = None  # type: ignore[assignment]
 
     def __init__(self, owner: "Router"):
         if not hasattr(self, "path") or not self.path:
@@ -256,7 +293,7 @@ class Router(StarletteRouter):
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
-        dependencies: Optional[Dict[str, Callable]] = None,
+        dependencies: Optional[Dict[str, Inject]] = None,
     ):
         if on_startup or on_shutdown:
             assert not lifespan, "Use either 'lifespan' or 'on_startup'/'on_shutdown', not both."
@@ -309,6 +346,27 @@ class Router(StarletteRouter):
                     handlers_map[path][http_method] = route_handler
         return handlers_map
 
+    def validate_registration_value(
+        self, value: Union[Type[Controller], RouteHandler, "Router"]
+    ) -> Union[Controller, RouteHandler, "Router"]:
+        """
+        Validates that the value passed to the register method is supported
+        """
+        if isclass(value) and issubclass(value, Controller):
+            return value(owner=self)
+        if not isinstance(value, (Router, RouteHandler)):
+            raise ImproperlyConfiguredException(
+                "Unsupported value passed to `Router.register`. "
+                "If you passed in a function or method, "
+                "make sure to decorate it first with one of the routing decorators"
+            )
+        if isinstance(value, Router):
+            if value.owner:
+                raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
+            if value == self:
+                raise ImproperlyConfiguredException("Cannot register a router on itself")
+        return cast(Union[Controller, RouteHandler, "Router"], value)
+
     def register(self, value: Union[Type[Controller], RouteHandler, "Router"]):
         """
         Register a Controller, Route instance or RouteHandler on the router
@@ -316,15 +374,10 @@ class Router(StarletteRouter):
         Accepts a subclass or instance of Controller, an instance of Router or a function/method that has been decorated
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
-        if isclass(value) and issubclass(cast(Type[Controller], value), Controller):
-            value = cast(Type[Controller], value)(owner=self)
-        if not isinstance(value, (Controller, Router, RouteHandler)):
-            raise ImproperlyConfiguredException(
-                "Unsupported value passed to `Router.register`. "
-                "If you passed in a function or method, "
-                "make sure to decorate it first with one of the routing decorators"
-            )
-        handlers_map = self.create_handler_http_method_map(value=cast(Union[Controller, RouteHandler, "Router"], value))
+        validated_value = self.validate_registration_value(value)
+        if not validated_value.owner:
+            validated_value.owner = self
+        handlers_map = self.create_handler_http_method_map(value=validated_value)
 
         for route_path, method_map in handlers_map.items():
             path = join_paths([self.path, route_path])

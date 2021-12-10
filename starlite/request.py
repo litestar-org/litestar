@@ -2,6 +2,7 @@ import json
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
+from pydantic.fields import ModelField
 from starlette.requests import Request
 
 from starlite.enums import HttpMethod, MediaType
@@ -37,23 +38,43 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     return params
 
 
+async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField]) -> Dict[str, Any]:
+    """
+    Given a function's signature Model fields,
+    determine whether it requires the request, headers or data and return these as kwargs.
+    """
+    kwargs: Dict[str, Any] = {}
+    if "request" in fields:
+        kwargs["request"] = request
+    if "headers" in fields:
+        kwargs["headers"] = dict(request.headers.items())
+    if "data" in fields:
+        if request.method.lower() == HttpMethod.GET:
+            raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
+        kwargs["data"] = json.loads(await request.json())
+    return kwargs
+
+
 async def get_http_handler_parameters(route_handler: "RouteHandler", request: Request) -> Dict[str, Any]:
     """
     Parse a given http handler function and return values matching function parameter keys
     """
 
     model = route_handler.get_signature_model()
-    model_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
+    base_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
-    if "request" in model.__fields__:
-        model_kwargs["request"] = request
-    if "headers" in model.__fields__:
-        model_kwargs["headers"] = dict(request.headers.items())
-    if "data" in model.__fields__:
-        if request.method.lower() == HttpMethod.GET:
-            raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET http handlers")
-        model_kwargs["data"] = json.loads(await request.json())
-    return model(**model_kwargs).dict()
+    # dependency injection
+    dependencies: Dict[str, Any] = {}
+    for key, injected in route_handler.resolved_dependencies.items():
+        if key in model.__fields__:
+            injected_model = injected.get_signature_model()
+            injected_kwargs = await get_kwargs_from_request(request=request, fields=injected_model.__fields__)
+            value = injected(**injected_model(**base_kwargs, **injected_kwargs).dict())
+            if isawaitable(value):
+                value = await value
+            dependencies[key] = value
+    model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
+    return model(**model_kwargs, **base_kwargs, **dependencies).dict()
 
 
 async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:

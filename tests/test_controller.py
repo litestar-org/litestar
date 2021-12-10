@@ -1,5 +1,6 @@
 import json
-from typing import List, Optional
+from asyncio import sleep
+from typing import Any, List, Optional
 
 import pytest
 from pydantic import BaseModel, Field
@@ -23,6 +24,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.routing import Inject
 
 
 class Person(BaseModel):
@@ -190,6 +192,43 @@ def test_request(decorator, http_method, expected_status_code, create_test_clien
         @decorator()
         def test_method(self, request: Request):
             assert isinstance(request, Request)
+
+    with create_test_client(MyController) as client:
+        response = client.request(http_method, test_path)
+        assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_dependency_injection(decorator, http_method, expected_status_code, create_test_client):
+    test_path = "/person"
+
+    def first_dependency(headers: Any):
+        assert headers
+        return object()
+
+    async def second_dependency(request: Request):
+        assert request
+        await sleep(0.1)
+        return object()
+
+    class MyController(Controller):
+        path = test_path
+        dependencies = {"first": Inject(first_dependency), "second": Inject(second_dependency)}
+
+        @decorator()
+        def test_method(self, first: object, second: object):
+            assert first
+            assert second
+            assert first != second
 
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)

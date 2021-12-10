@@ -17,7 +17,7 @@ from starlette.responses import Response
 from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
-from starlite.routing import RouteHandler, Router
+from starlite.routing import Inject, RouteHandler, Router
 
 
 # noinspection PyMethodOverriding
@@ -31,7 +31,7 @@ class Starlite(Starlette):
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
-        dependencies: Optional[Dict[str, Callable]] = None,
+        dependencies: Optional[Dict[str, Inject]] = None,
     ):
         self._debug = debug
         self.state = State()
