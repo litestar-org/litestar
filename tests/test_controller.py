@@ -12,8 +12,16 @@ from starlette.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
-from starlite import Controller, HttpMethod, ImproperlyConfiguredException
-from starlite.decorators import delete, get, patch, post, put
+from starlite import (
+    Controller,
+    HttpMethod,
+    ImproperlyConfiguredException,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+)
 
 
 class Person(BaseModel):
@@ -67,7 +75,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code, cr
         def test_method(self):
             return person_instance
 
-    with create_test_client(MyController) as client:
+    with create_test_client(MyController()) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()

@@ -33,4 +33,11 @@ def find(target_list: List[T], key: str, value: Any) -> int:
 
 def unique(value: Iterable[T]) -> List[T]:
     """Return all unique values in a given sequence or iterator"""
-    return list(set(value))
+    try:
+        return list(set(value))
+    except TypeError:
+        output: List[T] = []
+        for element in value:
+            if not any(v == element for v in output):
+                output.append(element)
+        return output

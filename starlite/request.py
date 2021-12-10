@@ -1,16 +1,16 @@
 import json
-from inspect import getfullargspec, isawaitable, signature
-from typing import Any, Callable, Dict, List, Tuple, Union, cast
+from inspect import isawaitable
+from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-from pydantic import BaseModel, create_model
 from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from typing_extensions import Type
 
-from starlite.decorators import RouteHandlerFunction, RouteInfo
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
+
+if TYPE_CHECKING:
+    from starlite.routing import RouteHandler
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -22,10 +22,7 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     params: Dict[str, Union[str, List[str]]] = {}
     for key, value in request.query_params.multi_items():
         if value.replace(".", "").isnumeric():
-            if "." in value:
-                value = float(value)
-            else:
-                value = int(value)
+            value = float(value) if "." in value else int(value)
         elif value in ["True", "true"]:
             value = True
         elif value in ["False", "false"]:
@@ -41,63 +38,34 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     return params
 
 
-def model_function_signature(route_handler: Callable, annotations: Dict[str, Any]) -> Type[BaseModel]:
-    """
-    Creates a pydantic model from a given dictionary of type annotations
-    """
-    handler_signature = signature(route_handler)
-    field_definitions: Dict[str, Tuple[Any, Any]] = {}
-    for key, value in annotations.items():
-        parameter = handler_signature.parameters[key]
-        if parameter.default is not handler_signature.empty:
-            field_definitions[key] = (value, parameter.default)
-        elif not repr(parameter.annotation).startswith("typing.Optional"):
-            field_definitions[key] = (value, ...)
-        else:
-            field_definitions[key] = (value, None)
-    return create_model("ParamModel", **field_definitions)
-
-
-async def get_http_handler_parameters(route_handler: Callable, request: Request) -> Dict[str, Any]:
+async def get_http_handler_parameters(route_handler: "RouteHandler", request: Request) -> Dict[str, Any]:
     """
     Parse a given http handler function and return values matching function parameter keys
     """
 
-    annotations = getfullargspec(route_handler).annotations
-
-    include_request = False
-    if "request" in annotations:
-        del annotations["request"]
-        include_request = True
-
-    model = model_function_signature(route_handler=route_handler, annotations=annotations)
+    model = route_handler.get_signature_model()
     model_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
-    if "data" in annotations:
+    if "request" in model.__fields__:
+        model_kwargs["request"] = request
+    if "headers" in model.__fields__:
+        model_kwargs["headers"] = dict(request.headers.items())
+    if "data" in model.__fields__:
         if request.method.lower() == HttpMethod.GET:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET http handlers")
         model_kwargs["data"] = json.loads(await request.json())
-
-    if "headers" in annotations:
-        model_kwargs["headers"] = dict(request.headers.items())
-
-    parameters = model(**model_kwargs).dict()
-
-    if include_request:
-        parameters["request"] = request
-
-    return parameters
+    return model(**model_kwargs).dict()
 
 
-def get_route_status_code(route_info: RouteInfo) -> int:
+def get_route_status_code(route_handler: "RouteHandler") -> int:
     """Return the default status code for the given http_method"""
-    if route_info.status_code:
-        return route_info.status_code
-    http_method = route_info.http_method
+    if route_handler.status_code:
+        return route_handler.status_code
+    http_method = route_handler.http_method
     if isinstance(http_method, list):
         if not len(http_method) == 1:
             raise ImproperlyConfiguredException(
-                f"route {route_info.path!r} with methods: {', '.join(http_method)} must define a status_code"
+                f"route {route_handler.path!r} with methods: {', '.join(http_method)} must define a status_code"
             )
         http_method = http_method[0]
     if http_method == HttpMethod.POST:
@@ -107,12 +75,12 @@ def get_route_status_code(route_info: RouteInfo) -> int:
     return HTTP_200_OK
 
 
-async def handle_request(route_handler: RouteHandlerFunction, request: Request) -> Response:
+async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:
     """
     Handles a given request by both calling the passed in function,
-    and parsing the RouteInfo stored as an attribute on it.
+    and parsing the RouteHandler stored as an attribute on it.
     """
-    response_class = route_handler.route_info.response_class or Response
+    response_class = route_handler.response_class or Response
 
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
     data = route_handler(**params)
@@ -120,11 +88,11 @@ async def handle_request(route_handler: RouteHandlerFunction, request: Request) 
     if isawaitable(data):
         data = await data
 
-    status_code = get_route_status_code(route_handler.route_info)
-    media_type = route_handler.route_info.media_type or response_class.media_type or MediaType.JSON
+    status_code = get_route_status_code(route_handler)
+    media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     return response_class(
         content=data,
-        headers=route_handler.route_info.response_headers,
+        headers=route_handler.response_headers,
         status_code=status_code,
         media_type=media_type,
     )

@@ -47,7 +47,7 @@ class Starlite(Starlette):
         """
         Proxy method for Route.register(**kwargs)
         """
-        self.router.register(route_handler=route_handler)
+        self.router.register(value=route_handler)
 
     def route(  # pylint: disable=arguments-differ
         self,

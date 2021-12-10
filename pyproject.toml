@@ -56,7 +56,7 @@ profile = "black"
 multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
-disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "import-outside-toplevel", "duplicate-code"]
+disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "invalid-name", "duplicate-code"]
 enable = "useless-suppression"
 
 [tool.pylint.REPORTS]
@@ -76,7 +76,7 @@ max-returns = 10
 ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
-good-names = "_,i,e,mm,yy,T,lt,le,gt,ge,cb"
+good-names = "_,i,e,fn"
 
 [tool.mypy]
 warn_unused_ignores = true
