@@ -1,8 +1,11 @@
 from http import HTTPStatus
 from typing import Optional
 
+from pydantic.error_wrappers import ValidationError as PydanticValidationError
+from pydantic.error_wrappers import display_errors
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.requests import Request
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 
 class StarLiteException(Exception):
@@ -31,6 +34,15 @@ class HTTPException(StarLiteException, StarletteHTTPException):
         return f"{self.status_code} - {self.__class__.__name__}"
 
 
-class ImproperlyConfiguredException(HTTPException):
+class ImproperlyConfiguredException(HTTPException, ValueError):
     def __init__(self, detail: str):
         super().__init__(detail=detail, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ValidationError(HTTPException, ValueError):
+    def __init__(self, pydantic_validation_error: PydanticValidationError, request: Request):
+        detail = (
+            f"Validation failed for {request.method} {request.url}: "
+            f"\n\n {display_errors(pydantic_validation_error.errors())} "
+        )
+        super().__init__(detail=detail, status_code=HTTP_400_BAD_REQUEST)

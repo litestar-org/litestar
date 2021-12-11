@@ -15,12 +15,13 @@ from typing import (  # type: ignore
 )
 
 from pydantic import BaseModel
+from pydantic.error_wrappers import ValidationError as PydanticValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
 from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, ValidationError
 from starlite.response import Response
 from starlite.utils.models import set_field_optional
 
@@ -95,18 +96,21 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
     model = route_handler.get_signature_model()
     base_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
-    # dependency injection
-    dependencies: Dict[str, Any] = {}
-    for key, injected in route_handler.resolved_dependencies.items():
-        if key in model.__fields__:
-            injected_model = injected.get_signature_model()
-            injected_kwargs = await get_kwargs_from_request(request=request, fields=injected_model.__fields__)
-            value = injected(**injected_model(**base_kwargs, **injected_kwargs).dict())
-            if isawaitable(value):
-                value = await value
-            dependencies[key] = value
-    model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
-    return model(**model_kwargs, **base_kwargs, **dependencies).dict()
+    try:
+        # dependency injection
+        dependencies: Dict[str, Any] = {}
+        for key, injected in route_handler.resolve_dependencies().items():
+            if key in model.__fields__:
+                injected_model = injected.get_signature_model()
+                injected_kwargs = await get_kwargs_from_request(request=request, fields=injected_model.__fields__)
+                value = injected(**injected_model(**base_kwargs, **injected_kwargs).dict())
+                if isawaitable(value):
+                    value = await value
+                dependencies[key] = value
+        model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
+        return model(**model_kwargs, **base_kwargs, **dependencies).dict()
+    except PydanticValidationError as e:
+        raise ValidationError(e, request) from e
 
 
 async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:

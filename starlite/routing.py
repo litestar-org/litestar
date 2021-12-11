@@ -34,7 +34,7 @@ class SignatureWrapper:
         Creates a pydantic model for the signature of a given function
         """
         if not self.fn:
-            raise ValueError("get_signature_model can only be called once self.fn is set")
+            raise ImproperlyConfiguredException("get_signature_model can only be called once self.fn is set")
 
         class Config(BaseConfig):
             arbitrary_types_allowed = True
@@ -69,7 +69,7 @@ class Inject(SignatureWrapper):
         Proxies call to 'self.proxy'
         """
         if not self.fn:
-            raise ValueError()
+            raise ImproperlyConfiguredException("Cannot call dependency without setting it first")
         return self.fn(**kwargs)
 
 
@@ -89,24 +89,16 @@ class RouteHandler(SignatureWrapper, BaseModel):
     dependencies: Optional[Dict[str, Inject]] = None
 
     fn: Optional[Callable] = None
-    owner: Optional[Union[Type["Controller"], "Router"]] = None
-
-    def __set_name__(self, owner: Optional[Type["Controller"]], *args):
-        """
-        __set_name__ is a hook that is called when a class is initialised,
-        hence we are able to store the method's self argument as a field value
-        """
-        self.owner = owner
+    owner: Optional[Union["Controller", "Router"]] = None
 
     def __call__(self, *args, **kwargs) -> Any:
         """
         If wrapper is None, set fn from args[0], otherwise, call fn and pass the *args and **kwargs to it
         """
         if self.fn:
-            if self.owner:
+            if isinstance(self.owner, Controller):
                 return self.fn(self.owner, *args, **kwargs)
             return self.fn(*args, **kwargs)
-
         self.fn = cast(Callable, args[0])
         return self
 
@@ -166,8 +158,7 @@ class RouteHandler(SignatureWrapper, BaseModel):
         """
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
 
-    @property
-    def resolved_dependencies(self) -> Dict[str, Inject]:
+    def resolve_dependencies(self) -> Dict[str, Inject]:
         """
         Returns all dependencies that exist in the given handler's scopes
         """
@@ -179,9 +170,15 @@ class RouteHandler(SignatureWrapper, BaseModel):
             if cur.dependencies:
                 dependencies_list.append(cur.dependencies)
             cur = cur.owner
+        injectables: List[Inject] = []
         resolved_dependencies: Dict[str, Inject] = {}
-        for dependencies_dict in reversed(dependencies_list):
-            resolved_dependencies = {**resolved_dependencies, **dependencies_dict}
+        for dependencies_dict in dependencies_list:
+            for key, value in dependencies_dict.items():
+                if key not in resolved_dependencies:
+                    if value in injectables:
+                        raise ImproperlyConfiguredException(f"injectable dependency with key {key} is already defined")
+                    injectables.append(value)
+                    resolved_dependencies[key] = value
         return resolved_dependencies
 
 
@@ -218,6 +215,8 @@ class Controller:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
         self.path = normalize_path(self.path)
         self.owner = owner
+        for route_handler in self.get_route_handlers():
+            route_handler.owner = self
 
     def get_route_handlers(self) -> List[RouteHandler]:
         """

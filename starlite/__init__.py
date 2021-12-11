@@ -4,7 +4,18 @@ from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .request import Partial
 from .response import Response
-from .routing import Controller, Route, Router, delete, get, patch, post, put, route
+from .routing import (
+    Controller,
+    Inject,
+    Route,
+    Router,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+    route,
+)
 
 __all__ = [
     "Controller",
@@ -24,4 +35,5 @@ __all__ = [
     "Router",
     "Starlite",
     "StarLiteException",
+    "Inject",
 ]
