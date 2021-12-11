@@ -1,14 +1,12 @@
-from typing import Any, Iterable, List, TypeVar
+from typing import Callable, Iterable, List, TypeVar
 
 T = TypeVar("T")
 
 
-def find_index(target_list: List[T], key: str, value: Any) -> int:
+def find_index(target_list: List[T], predicate: Callable[[T], bool]) -> int:
     """Find element in list given a key and value. List elements can be dicts or classes"""
     for i, element in enumerate(target_list):
-        if (isinstance(element, dict) and element.get(key) == value) or (
-            not isinstance(element, dict) and getattr(element, key) == value
-        ):
+        if predicate(element):
             return i
     return -1
 

@@ -2,7 +2,7 @@ from typing import Optional, _UnionGenericAlias  # type: ignore
 
 from pydantic import UUID4, BaseModel
 
-from starlite import Partial
+from starlite.types import Partial
 
 
 class Person(BaseModel):

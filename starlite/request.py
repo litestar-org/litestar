@@ -1,49 +1,17 @@
 import json
-from copy import deepcopy
 from inspect import isawaitable
-from typing import (  # type: ignore
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-    _UnionGenericAlias,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
-from pydantic import BaseModel
-from pydantic.error_wrappers import ValidationError as PydanticValidationError
+from pydantic.error_wrappers import ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
-from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
-from starlite.exceptions import ImproperlyConfiguredException, ValidationError
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
-from starlite.utils.models import set_field_optional
 
 if TYPE_CHECKING:
     from starlite.routing import RouteHandler
-
-T = TypeVar("T", bound=Type[BaseModel])
-
-
-class Partial(Generic[T]):
-    def __class_getitem__(cls, item: T) -> T:
-        """
-        Modifies a given T subclass of BaseModel to be all optional
-        """
-        item_copy = deepcopy(item)
-        for field_name, field_type in item_copy.__annotations__.items():
-            # we modify the field annotations to make it optional
-            if not isinstance(field_type, _UnionGenericAlias) or type(None) not in field_type.__args__:
-                item_copy.__annotations__[field_name] = Optional[field_type]
-        for field_name, field in item_copy.__fields__.items():
-            setattr(item_copy, field_name, set_field_optional(field))
-        return item_copy
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -109,8 +77,8 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
                 dependencies[key] = value
         model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
         return model(**model_kwargs, **base_kwargs, **dependencies).dict()
-    except PydanticValidationError as e:
-        raise ValidationError(e, request) from e
+    except ValidationError as e:
+        raise ValidationException(e, request) from e
 
 
 async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:

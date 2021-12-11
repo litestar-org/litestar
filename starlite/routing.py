@@ -383,7 +383,9 @@ class Router(StarletteRouter):
             path = join_paths([self.path, route_path])
             route_handlers = unique(method_map.values())
             if self.route_handler_method_map.get(path):
-                existing_route_index = find_index(self.routes, "path", path)
+                existing_route_index = find_index(
+                    self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
+                )
                 assert existing_route_index != -1, "unable to find_index existing route index"
                 self.routes[existing_route_index] = Route(
                     path=path,

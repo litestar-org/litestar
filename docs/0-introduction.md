@@ -8,7 +8,8 @@ Starlite supports class API components called "Controllers". Controllers are mea
 
 ```python3
 from pydantic import BaseModel, UUID4
-from starlite import Controller, delete, get, Partial, patch, post, put, Starlite
+from starlite import Controller, delete, get, patch, post, put, Starlite
+from starlite.types import Partial
 
 
 class User(BaseModel):

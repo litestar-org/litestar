@@ -2,7 +2,6 @@
 from .app import Starlite
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
-from .request import Partial
 from .response import Response
 from .routing import (
     Controller,
@@ -16,6 +15,8 @@ from .routing import (
     put,
     route,
 )
+from .testing import create_test_request
+from .types import Partial
 
 __all__ = [
     "Controller",
@@ -25,7 +26,6 @@ __all__ = [
     "HttpMethod",
     "ImproperlyConfiguredException",
     "MediaType",
-    "Partial",
     "patch",
     "post",
     "put",
@@ -36,4 +36,6 @@ __all__ = [
     "Starlite",
     "StarLiteException",
     "Inject",
+    "Partial",
+    "create_test_request",
 ]
