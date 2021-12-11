@@ -1,5 +1,12 @@
-from starlite.request import parse_query_params
+import pytest
+from pydantic import BaseConfig
+from pydantic.fields import ModelField
+from starlette.requests import Request
+
+from starlite import HttpMethod
+from starlite.request import get_kwargs_from_request, parse_query_params
 from starlite.testing import create_test_request
+from tests.utils import Person, PersonFactory
 
 
 def test_parse_query_params():
@@ -13,3 +20,24 @@ def test_parse_query_params():
     request = create_test_request(query=query)
     result = parse_query_params(request=request)
     assert result == query
+
+
+@pytest.mark.asyncio
+async def test_get_kwargs_from_request():
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+
+    person_instance = PersonFactory.build()
+    fields = {
+        **Person.__fields__,
+        "data": ModelField(name="data", type_=Person, class_validators=[], model_config=Config),
+        "headers": ModelField(name="headers", type_=dict, class_validators=[], model_config=Config),
+        "request": ModelField(name="request", type_=Request, class_validators=[], model_config=Config),
+    }
+    request = create_test_request(
+        content=person_instance, headers={"MyHeader": "xyz"}, query={"user": "123"}, http_method=HttpMethod.POST
+    )
+    result = await get_kwargs_from_request(request=request, fields=fields)
+    assert result["data"]
+    assert result["headers"]
+    assert result["request"]

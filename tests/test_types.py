@@ -1,16 +1,10 @@
-from typing import Dict, List, Optional, _UnionGenericAlias  # type: ignore
-
-from pydantic import UUID4, BaseModel
-
 from starlite.types import Partial
+from tests.utils import Person
 
-
-class Person(BaseModel):
-    first_name: str
-    last_name: str
-    id: UUID4
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
+try:  # pragma: no cover
+    from typing import _UnionGenericAlias as GenericAlias  # type: ignore
+except ImportError:
+    from typing import _GenericAlias as GenericAlias  # type: ignore
 
 
 def test_partial():
@@ -20,5 +14,5 @@ def test_partial():
         assert field.allow_none
         assert not field.required
     for field in partial.__annotations__.values():
-        assert isinstance(field, _UnionGenericAlias)
+        assert isinstance(field, GenericAlias)
         assert type(None) in field.__args__

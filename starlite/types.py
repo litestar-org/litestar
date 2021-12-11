@@ -1,8 +1,15 @@
 from copy import deepcopy
-from typing import Generic, Optional, Type, TypeVar, _UnionGenericAlias  # type: ignore
+from typing import Generic, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 from pydantic.fields import ModelField
+
+try:  # pragma: no cover
+    # python 3.9 changed these variable
+    from typing import _UnionGenericAlias as GenericAlias  # type: ignore
+except ImportError:
+    from typing import _GenericAlias as GenericAlias  # type: ignore
+
 
 T = TypeVar("T", bound=Type[BaseModel])
 
@@ -25,7 +32,7 @@ class Partial(Generic[T]):
         item_copy = deepcopy(item)
         for field_name, field_type in item_copy.__annotations__.items():
             # we modify the field annotations to make it optional
-            if not isinstance(field_type, _UnionGenericAlias) or type(None) not in field_type.__args__:
+            if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
                 item_copy.__annotations__[field_name] = Optional[field_type]
         for field_name, field in item_copy.__fields__.items():
             setattr(item_copy, field_name, set_field_optional(field))

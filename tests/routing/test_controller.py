@@ -23,22 +23,13 @@ from starlite import (
     post,
     put,
 )
-
-
-class Person(BaseModel):
-    id: int
-    first_name: str
-    last_name: str
+from tests.utils import Person, PersonFactory
 
 
 class QueryParams(BaseModel):
     first: str
     second: List[str] = Field(min_items=3)
     third: Optional[int]
-
-
-class PersonFactory(ModelFactory):
-    __model__ = Person
 
 
 class QueryParamsFactory(ModelFactory):
@@ -98,8 +89,8 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
     class MyController(Controller):
         path = test_path
 
-        @decorator(path="/{person_id:int}")
-        def test_method(self, person_id: int):
+        @decorator(path="/{person_id:str}")
+        def test_method(self, person_id: str):
             assert person_id == person_instance.id
             return None
 

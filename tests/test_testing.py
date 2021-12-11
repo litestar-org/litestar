@@ -1,12 +1,8 @@
 from hypothesis import given
 from hypothesis import strategies as st
-from pydantic import BaseModel
 
 from starlite import HttpMethod, create_test_request
-
-
-class Model(BaseModel):
-    prop: str
+from tests.utils import Person
 
 
 @given(
@@ -23,7 +19,7 @@ class Model(BaseModel):
     headers=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
     content=st.one_of(
         st.none(),
-        st.builds(Model),
+        st.builds(Person),
         st.dictionaries(keys=st.text(), values=st.builds(dict)),
     ),
 )

@@ -39,7 +39,7 @@ def create_test_request(
     request = Request(scope=scope)
     if content:
         if isinstance(content, BaseModel):
-            request._body = content.json()
+            request._body = content.json().encode("utf-8")
         else:
             request._body = dumps(
                 content,

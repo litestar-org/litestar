@@ -52,7 +52,8 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
     if "data" in fields:
         if request.method.lower() == HttpMethod.GET:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
-        kwargs["data"] = json.loads(await request.json())
+        data = await request.json()
+        kwargs["data"] = json.loads(data) if isinstance(data, (str, bytes, bytearray)) else data
     return kwargs
 
 
