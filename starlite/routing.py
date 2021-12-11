@@ -57,20 +57,25 @@ class SignatureWrapper:
 
 
 class Provide(SignatureWrapper):
-    def __init__(self, dependency: Callable):
+    def __init__(self, dependency: Callable, use_cache: bool = False):
         self.fn = dependency
+        self.use_cache = use_cache
+        self.value = None
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved
             self.fn = partial(dependency, dependency.__self__)  # type: ignore
-        # TODO: re-add caching logic
 
     def __call__(self, **kwargs) -> Any:
         """
         Proxies call to 'self.proxy'
         """
-        if not self.fn:
-            raise ImproperlyConfiguredException("Cannot call dependency without setting it first")
-        return self.fn(**kwargs)
+
+        if self.use_cache and self.value:
+            return self.value
+        value = cast(Callable, self.fn)(**kwargs)
+        if self.use_cache:
+            self.value = value
+        return value
 
 
 class RouteHandler(SignatureWrapper, BaseModel):

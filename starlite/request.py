@@ -21,22 +21,25 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     supports list query params
     """
     params: Dict[str, Union[str, List[str]]] = {}
-    for key, value in request.query_params.multi_items():
-        if value.replace(".", "").isnumeric():
-            value = float(value) if "." in value else int(value)
-        elif value in ["True", "true"]:
-            value = True
-        elif value in ["False", "false"]:
-            value = False
-        param = params.get(key)
-        if param:
-            if isinstance(param, str):
-                params[key] = [param, value]
+    try:
+        for key, value in request.query_params.multi_items():
+            if value.replace(".", "").isnumeric():
+                value = float(value) if "." in value else int(value)
+            elif value in ["True", "true"]:
+                value = True
+            elif value in ["False", "false"]:
+                value = False
+            param = params.get(key)
+            if param:
+                if isinstance(param, str):
+                    params[key] = [param, value]
+                else:
+                    params[key] = [*cast(list, param), value]
             else:
-                params[key] = [*cast(list, param), value]
-        else:
-            params[key] = value
-    return params
+                params[key] = value
+        return params
+    except KeyError:
+        return params
 
 
 async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField]) -> Dict[str, Any]:
@@ -77,7 +80,9 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
                     value = await value
                 dependencies[key] = value
         model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
-        return model(**model_kwargs, **base_kwargs, **dependencies).dict()
+        # we return the model's attributes as a dict in order to preserve any nested models
+        fields = list(model.__fields__.keys())
+        return {key: model(**model_kwargs, **base_kwargs, **dependencies).__getattribute__(key) for key in fields}
     except ValidationError as e:
         raise ValidationException(e, request) from e
 

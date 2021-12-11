@@ -1,10 +1,11 @@
-from hypothesis import given
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from starlite import HttpMethod, create_test_request
 from tests.utils import Person
 
 
+@settings(suppress_health_check=HealthCheck.all())
 @given(
     http_method=st.sampled_from(HttpMethod),
     scheme=st.text(),
