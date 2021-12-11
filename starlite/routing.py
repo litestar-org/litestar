@@ -131,7 +131,9 @@ class RouteHandler(SignatureWrapper, BaseModel):
         if value:
             return value
 
-        http_method = values["http_method"]
+        http_method = values.get("http_method")
+        if not http_method:
+            raise ValueError("http_method is not set")
         if isinstance(http_method, list):
             raise ValueError("When defining multiple methods for a given path, a status_code is required")
         if http_method == HttpMethod.POST:

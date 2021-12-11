@@ -1,4 +1,4 @@
-from typing import Optional, _UnionGenericAlias  # type: ignore
+from typing import Dict, List, Optional, _UnionGenericAlias  # type: ignore
 
 from pydantic import UUID4, BaseModel
 
@@ -10,6 +10,7 @@ class Person(BaseModel):
     last_name: str
     id: UUID4
     optional: Optional[str]
+    complex: Dict[str, List[Dict[str, str]]]
 
 
 def test_partial():

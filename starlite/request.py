@@ -10,7 +10,7 @@ from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import RouteHandler
 
 
