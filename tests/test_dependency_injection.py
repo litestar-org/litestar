@@ -4,7 +4,7 @@ from typing import Any, Dict
 from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from starlite import Controller, Inject, get
+from starlite import Controller, Provide, get
 
 
 def router_first_dependency():
@@ -42,12 +42,12 @@ test_path = "/test"
 
 class TestController(Controller):
     path = test_path
-    dependencies = {"first": Inject(controller_first_dependency), "second": Inject(controller_second_dependency)}
+    dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
 
     @get(
         path="/{path_param}",
         dependencies={
-            "first": Inject(local_method_first_dependency),
+            "first": Provide(local_method_first_dependency),
         },
     )
     def test_method(self, first: int, second: dict, third: bool):
@@ -60,8 +60,8 @@ def test_controller_dependency_injection(create_test_client):
     with create_test_client(
         TestController,
         dependencies={
-            "second": Inject(router_first_dependency),
-            "third": Inject(router_second_dependency),
+            "second": Provide(router_first_dependency),
+            "third": Provide(router_second_dependency),
         },
     ) as client:
         response = client.get(f"{test_path}/abcdef?query_param=12345")
@@ -72,8 +72,8 @@ def test_function_dependency_injection(create_test_client):
     @get(
         path=test_path + "/{path_param}",
         dependencies={
-            "first": Inject(local_method_first_dependency),
-            "third": Inject(local_method_second_dependency),
+            "first": Provide(local_method_first_dependency),
+            "third": Provide(local_method_second_dependency),
         },
     )
     def test_function(first: int, second: bool, third: str):
@@ -84,8 +84,8 @@ def test_function_dependency_injection(create_test_client):
     with create_test_client(
         test_function,
         dependencies={
-            "first": Inject(router_first_dependency),
-            "second": Inject(router_second_dependency),
+            "first": Provide(router_first_dependency),
+            "second": Provide(router_second_dependency),
         },
     ) as client:
         response = client.get(f"{test_path}/abcdef?query_param=12345")
@@ -109,8 +109,8 @@ def test_dependency_validation(create_test_client):
     @get(
         path=test_path + "/{path_param}",
         dependencies={
-            "first": Inject(local_method_first_dependency),
-            "third": Inject(local_method_second_dependency),
+            "first": Provide(local_method_first_dependency),
+            "third": Provide(local_method_second_dependency),
         },
     )
     def test_function(first: int, second: bool, third: str):
@@ -121,7 +121,7 @@ def test_dependency_validation(create_test_client):
     with create_test_client(
         test_function,
         dependencies={
-            "third": Inject(local_method_first_dependency),
+            "third": Provide(local_method_first_dependency),
         },
     ) as client:
         response = client.get(f"{test_path}/abcdef?query_param=12345")

@@ -5,7 +5,7 @@ from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteEx
 from .response import Response
 from .routing import (
     Controller,
-    Inject,
+    Provide,
     Route,
     Router,
     delete,
@@ -35,7 +35,7 @@ __all__ = [
     "Router",
     "Starlite",
     "StarLiteException",
-    "Inject",
+    "Provide",
     "Partial",
     "create_test_request",
 ]

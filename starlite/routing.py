@@ -53,10 +53,10 @@ class SignatureWrapper:
             return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
             # due to different behaviours across different python versions, we have to fix pydantic's behaviour
         except (TypeError, ValueError) as e:
-            raise ImproperlyConfiguredException("Unsupported callable passed to Inject") from e
+            raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
 
 
-class Inject(SignatureWrapper):
+class Provide(SignatureWrapper):
     def __init__(self, dependency: Callable):
         self.fn = dependency
         if ismethod(dependency) and hasattr(dependency, "__self__"):
@@ -86,7 +86,7 @@ class RouteHandler(SignatureWrapper, BaseModel):
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[Union[dict, BaseModel]] = None
-    dependencies: Optional[Dict[str, Inject]] = None
+    dependencies: Optional[Dict[str, Provide]] = None
 
     fn: Optional[Callable] = None
     owner: Optional[Union["Controller", "Router"]] = None
@@ -160,11 +160,11 @@ class RouteHandler(SignatureWrapper, BaseModel):
         """
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
 
-    def resolve_dependencies(self) -> Dict[str, Inject]:
+    def resolve_dependencies(self) -> Dict[str, Provide]:
         """
         Returns all dependencies that exist in the given handler's scopes
         """
-        dependencies_list: List[Dict[str, Inject]] = []
+        dependencies_list: List[Dict[str, Provide]] = []
         if self.dependencies:
             dependencies_list.append(self.dependencies)
         cur = self.owner
@@ -172,8 +172,8 @@ class RouteHandler(SignatureWrapper, BaseModel):
             if cur.dependencies:
                 dependencies_list.append(cur.dependencies)
             cur = cur.owner
-        injectables: List[Inject] = []
-        resolved_dependencies: Dict[str, Inject] = {}
+        injectables: List[Provide] = []
+        resolved_dependencies: Dict[str, Provide] = {}
         for dependencies_dict in dependencies_list:
             for key, value in dependencies_dict.items():
                 if key not in resolved_dependencies:
@@ -209,7 +209,7 @@ class delete(route):
 
 class Controller:
     path: str
-    dependencies: Optional[Dict[str, Inject]] = None
+    dependencies: Optional[Dict[str, Provide]] = None
     owner: "Router" = None  # type: ignore[assignment]
 
     def __init__(self, owner: "Router"):
@@ -295,7 +295,7 @@ class Router(StarletteRouter):
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
-        dependencies: Optional[Dict[str, Inject]] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
     ):
         if on_startup or on_shutdown:
             assert not lifespan, "Use either 'lifespan' or 'on_startup'/'on_shutdown', not both."

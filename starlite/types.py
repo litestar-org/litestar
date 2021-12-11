@@ -4,10 +4,10 @@ from typing import Generic, Optional, Type, TypeVar
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 
-try:  # pragma: no cover
+try:
     # python 3.9 changed these variable
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore
-except ImportError:
+except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 
