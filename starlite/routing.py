@@ -42,7 +42,6 @@ class SignatureWrapper:
         try:
             signature = Signature.from_callable(self.fn)
             field_definitions: Dict[str, Tuple[Any, Any]] = {}
-
             for key, value in getfullargspec(self.fn).annotations.items():
                 parameter = signature.parameters[key]
                 if parameter.default is not signature.empty:
@@ -52,6 +51,7 @@ class SignatureWrapper:
                 else:
                     field_definitions[key] = (value, None)
             return create_model(self.fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
+            # due to different behaviours across different python versions, we have to fix pydantic's behaviour
         except (TypeError, ValueError) as e:
             raise ImproperlyConfiguredException("Unsupported callable passed to Inject") from e
 

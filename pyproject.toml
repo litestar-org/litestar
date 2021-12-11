@@ -36,7 +36,7 @@ pydantic = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
-hypothesis = {extras = ["cli"], version = "^6.31.3"}
+hypothesis = {extras = ["cli"], version = "*"}
 pydantic-factories = "*"
 pytest = "*"
 pytest-asyncio = "*"

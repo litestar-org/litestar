@@ -114,11 +114,12 @@ def test_model_function_signature():
     assert fields.get("b").type_ == str
     assert fields.get("b").required
     assert fields.get("c").type_ == bytes
-    assert not fields.get("c").required
+    assert fields.get("c").allow_none
+    assert fields.get("c").default is None
     assert fields.get("d").type_ == bytes
     assert fields.get("d").default == b"123"
     assert fields.get("e").type_ == dict
-    assert not fields.get("e").required
+    assert fields.get("e").allow_none
     assert fields.get("e").default is None
 
 
