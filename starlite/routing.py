@@ -1,7 +1,7 @@
 from inspect import isclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 
-from pydantic import BaseModel, validate_arguments
+from pydantic import validate_arguments
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route as StarletteRoute
@@ -10,11 +10,12 @@ from starlette.types import ASGIApp
 from typing_extensions import AsyncContextManager, Type
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod, MediaType
+from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
 from starlite.provide import Provide
 from starlite.request import handle_request
+from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
 
@@ -27,13 +28,14 @@ class Route(StarletteRoute):
         self,
         *,
         path: str,
-        route_handlers: Union[RouteHandler, Sequence[RouteHandler]],
+        route_handlers: Union[RouteHandler, List[RouteHandler]],
     ):
+        route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
         self.route_handler_map = {}
-        name: Optional[str] = None
+        name = cast(Callable, route_handlers[0].fn).__name__
         include_in_schema = True
 
-        for route_handler in route_handlers if isinstance(route_handlers, list) else [route_handlers]:
+        for route_handler in route_handlers:
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
                     raise ImproperlyConfiguredException(
@@ -85,7 +87,7 @@ class Router(StarletteRouter):
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
     ):
-        if on_startup or on_shutdown:
+        if on_startup or on_shutdown:  # pragma: no cover
             assert not lifespan, "Use either 'lifespan' or 'on_startup'/'on_shutdown', not both."
         self.path = normalize_path(path)
         self.dependencies = dependencies
@@ -184,63 +186,6 @@ class Router(StarletteRouter):
             else:
                 self.routes.append(Route(path=path, route_handlers=route_handlers))
 
-    def route(  # pylint: disable=arguments-differ
-        self,
-        path: str,
-        http_method: Union[HttpMethod, List[HttpMethod]],
-        include_in_schema: Optional[bool] = None,
-        media_type: Optional[MediaType] = None,
-        name: Optional[str] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Union[dict, BaseModel]] = None,
-        status_code: Optional[int] = None,
-    ) -> Callable:
-        """
-        Decorator that creates a route, similarly to the route decorator exported from 'starlite.routing',
-        and then registers it on the given router.
-        """
-
-        def inner(fn: Callable) -> RouteHandler:
-            route_handler = RouteHandler(
-                http_method=http_method,
-                include_in_schema=include_in_schema,
-                media_type=media_type,
-                name=name,
-                path=path,
-                response_class=response_class,
-                response_headers=response_headers,
-                status_code=status_code,
-                fn=fn,
-            )
-            self.register(value=route_handler)
-            return route_handler
-
-        return inner
-
-    def add_route(  # pylint: disable=arguments-differ
-        self,
-        path: str,
-        endpoint: Callable,
-        http_method: Union[HttpMethod, List[HttpMethod]],
-        include_in_schema: Optional[bool] = None,
-        media_type: Optional[MediaType] = None,
-        name: Optional[str] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Union[dict, BaseModel]] = None,
-        status_code: Optional[int] = None,
-    ) -> None:
-        """
-        Creates a route handler function using router.route(**kwargs), and then registers it on the given router.
-        """
-        route_handler = RouteHandler(
-            http_method=http_method,
-            include_in_schema=include_in_schema,
-            media_type=media_type,
-            name=name,
-            path=path,
-            response_class=response_class,
-            response_headers=response_headers,
-            status_code=status_code,
-            fn=endpoint,
-        )
-        self.register(value=route_handler)
+    # these Starlette properties are not supported
+    route = DeprecatedProperty()
+    add_route = DeprecatedProperty()

@@ -15,7 +15,7 @@ from starlite.routing import Router
 class MyController(Controller):
     path = "/test"
 
-    @post()
+    @post(name="first", include_in_schema=False)
     def post_method(self):
         pass
 
@@ -35,9 +35,13 @@ def test_register_with_controller_class():
         if len(route.methods) == 2:
             assert sorted(route.methods) == sorted(["GET", "HEAD"])
             assert route.path == "/base/test/{id:int}"
+            assert route.name == MyController.get_by_id_method.fn.__name__
+            assert route.include_in_schema is True
         else:
             assert sorted(route.methods) == sorted(["GET", "POST", "HEAD"])
             assert route.path == "/base/test"
+            assert route.name == "first"
+            assert route.include_in_schema is False
 
 
 def test_register_with_router_instance():
@@ -119,3 +123,16 @@ def test_register_router_on_itself():
 
     with pytest.raises(ImproperlyConfiguredException):
         router.register(router)
+
+
+def test_deprecates_properties_correctly():
+    router = Router(path="/first", route_handlers=[])
+
+    def my_fn():
+        pass
+
+    with pytest.raises(AttributeError):
+        router.route(my_fn)
+
+    with pytest.raises(AttributeError):
+        router.add_route(my_fn)
