@@ -5,6 +5,8 @@ def normalize_path(path: str) -> str:
     """
     Normalizes a given path by ensuring it starts with a slash and does not end with a slash
     """
+    if path == "/":
+        return path
     if not path.startswith("/"):
         path = "/" + path
     if path.endswith("/"):
