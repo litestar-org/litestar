@@ -17,7 +17,7 @@ class HttpMethod(str, Enum):
         return isinstance(value, str) and value.lower() in list(cls)
 
     @classmethod
-    def from_str(cls, value: str) -> "HttpMethod":
+    def from_str(cls, value: Any) -> "HttpMethod":
         """Given a string value, return an enum member or raise a ValueError"""
         if cls.is_http_method(value):
             return cast(HttpMethod, value.lower())

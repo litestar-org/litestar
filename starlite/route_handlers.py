@@ -43,22 +43,19 @@ class RouteHandler(BaseModel):
         self.fn = cast(Callable, args[0])
         return self
 
-    def __eq__(self, other: Any) -> bool:
-        try:
-            return super().__eq__(other) and self.fn == other.fn
-        except (AttributeError, ValueError):
-            return False
-
     @validator("http_method", always=True, pre=True)
     def validate_http_method(  # pylint: disable=no-self-argument,no-self-use
         cls, value: Union[HttpMethod, List[HttpMethod]]
     ) -> Union[HttpMethod, List[HttpMethod]]:
         """Validates that a given value is an HttpMethod enum member or list thereof"""
+        if not value:
+            raise ValueError("An http_method parameter is required")
         if isinstance(value, list):
+            value = [HttpMethod.from_str(v) for v in value]
             if len(value) == 1:
                 value = value[0]
-            elif value == 0:
-                raise ValueError("An http_method parameter is required")
+        else:
+            value = HttpMethod.from_str(value)
         return value
 
     @validator("status_code", always=True)

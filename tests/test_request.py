@@ -1,4 +1,5 @@
 from asyncio import sleep
+from functools import lru_cache
 from typing import Any, Optional, cast
 
 import pytest
@@ -6,7 +7,7 @@ from pydantic import BaseConfig
 from pydantic.fields import ModelField
 from starlette.requests import Request
 
-from starlite import HttpMethod, get, route
+from starlite import HttpMethod, ImproperlyConfiguredException, Provide, get, route
 from starlite.request import (
     create_function_signature_model,
     get_kwargs_from_request,
@@ -70,6 +71,13 @@ def test_create_function_signature_model():
     assert fields.get("e").type_ == dict
     assert fields.get("e").allow_none
     assert fields.get("e").default is None
+
+
+def test_create_function_signature_model_validation():
+    provide = Provide(lru_cache(lambda x: x))
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_function_signature_model(provide.dependency)
 
 
 @pytest.mark.asyncio

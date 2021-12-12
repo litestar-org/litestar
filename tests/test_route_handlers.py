@@ -3,7 +3,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import Response
+from starlette.responses import Response, StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
@@ -92,15 +92,37 @@ def test_route_handler_default_status_code(http_method, expected_status_code):
     assert route_handler.status_code == expected_status_code
 
 
-def test_route_handler_multiple_methods():
+def test_route_handler_validation_http_method():
+    # doesn't raise for http methods
+    for value in [*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))]:
+        assert route(http_method=value)
+
+    # raises for invalid values
+    for value in [None, "", 123, "deleze"]:
+        with pytest.raises(ValidationError):
+            RouteHandler(http_method=value)
+
+    # doesn't raise when status_code is provided for multiple http_methods
+    assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
+
+    # raises otherwise
     with pytest.raises(ValidationError):
         RouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
-    # doesn't raise when status_code is provided
-    result = route(http_method=[HttpMethod.GET, HttpMethod.POST], status_code=HTTP_200_OK)
-    assert sorted(result.http_methods) == sorted([HttpMethod.GET, HttpMethod.POST])
+
+    # also when passing an empty list
+    with pytest.raises(ValidationError):
+        route(http_method=[], status_code=HTTP_200_OK)
+
+    # also when passing malformed tokens
+    with pytest.raises(ValidationError):
+        route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)
 
 
-def test_route_info_model_validation():
+def test_route_handler_validation_response_class():
+    # doesn't raise when subclass of starlette response is passed
+    assert RouteHandler(http_method=HttpMethod.GET, response_class=StreamingResponse)
+
+    # raises otherwise
     with pytest.raises(ValidationError):
         RouteHandler(http_method=HttpMethod.GET, response_class=dict())
 
