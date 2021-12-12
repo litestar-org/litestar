@@ -30,7 +30,7 @@ class Provide:
 
     def __eq__(self, other):
         # check if memory address is identical, otherwise compare attributes
-        return (
+        return other is self or (
             isinstance(other, self.__class__)
             and other.dependency == self.dependency
             and other.use_cache == self.use_cache

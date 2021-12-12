@@ -153,7 +153,7 @@ class Router(StarletteRouter):
         if isinstance(value, Router):
             if value.owner:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
-            if value == self:
+            if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
         return cast(Union[Controller, RouteHandler, "Router"], value)
 
