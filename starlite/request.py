@@ -6,6 +6,7 @@ from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.error_wrappers import ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
+from starlette.responses import Response as StarletteResponse
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
@@ -136,6 +137,9 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
 
     if isawaitable(data):
         data = await data
+
+    if isinstance(data, StarletteResponse):
+        return data
 
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     return response_class(
