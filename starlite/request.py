@@ -7,6 +7,7 @@ from pydantic.error_wrappers import ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
 
+from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
@@ -120,7 +121,13 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
     response_class = route_handler.response_class or Response
 
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
-    data = route_handler(**params)
+
+    endpoint = cast(Callable, route_handler.fn)
+
+    if isinstance(route_handler.owner, Controller):
+        data = endpoint(route_handler.owner, **params)
+    else:
+        data = endpoint(**params)
 
     if isawaitable(data):
         data = await data

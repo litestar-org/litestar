@@ -31,6 +31,7 @@ def create_test_client(
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
 ) -> TestClient:
+    """Create a TestClient"""
     app = Starlite(
         dependencies=dependencies,
         exception_handlers=exception_handlers,

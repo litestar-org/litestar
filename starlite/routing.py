@@ -143,7 +143,7 @@ class Router(StarletteRouter):
         Validates that the value passed to the register method is supported
         """
         if isclass(value) and issubclass(value, Controller):
-            return value(owner=self)
+            return cast(Type[Controller], value)(owner=self)
         if not isinstance(value, (Router, RouteHandler)):
             raise ImproperlyConfiguredException(
                 "Unsupported value passed to `Router.register`. "

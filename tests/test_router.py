@@ -1,4 +1,13 @@
-from starlite import Controller, HttpMethod, get, patch, post
+import pytest
+
+from starlite import (
+    Controller,
+    HttpMethod,
+    ImproperlyConfiguredException,
+    get,
+    patch,
+    post,
+)
 from starlite import route as route_decorator
 from starlite.routing import Router
 
@@ -68,3 +77,16 @@ def test_register_with_route_handler_functions():
             assert sorted(route.methods) == sorted(["GET", "POST", "PATCH", "HEAD"])
             assert route.path == "/base/first"
             assert route.path == "/base/first"
+
+
+def test_register_validation():
+    @get(path="/first")
+    def first_route_handler():
+        pass
+
+    @get(path="/first")
+    def second_route_handler():
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Router(path="/base", route_handlers=[first_route_handler, second_route_handler])

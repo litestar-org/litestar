@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra, Field, validator
 from starlette.responses import Response
@@ -32,15 +32,11 @@ class RouteHandler(BaseModel):
     fn: Optional[Callable] = None
     owner: Optional[Union[Controller, "Router"]] = None
 
-    def __call__(self, *args, **kwargs) -> Any:
+    def __call__(self, fn: Callable) -> "RouteHandler":
         """
-        If wrapper is None, set fn from args[0], otherwise, call fn and pass the *args and **kwargs to it
+        Replaces a function with itself
         """
-        if self.fn:
-            if isinstance(self.owner, Controller):
-                return self.fn(self.owner, *args, **kwargs)
-            return self.fn(*args, **kwargs)
-        self.fn = cast(Callable, args[0])
+        self.fn = fn
         return self
 
     @validator("http_method", always=True, pre=True)
