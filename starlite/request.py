@@ -1,7 +1,8 @@
 import json
-from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
+from inspect import Signature, getfullargspec, isawaitable
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union, cast
 
+from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.error_wrappers import ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
@@ -11,7 +12,7 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.response import Response
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.routing import RouteHandler
+    from starlite.route_handlers import RouteHandler
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -60,12 +61,36 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
     return kwargs
 
 
+def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
+    """
+    Creates a pydantic model for the signature of a given function
+    """
+
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+
+    try:
+        signature = Signature.from_callable(fn)
+        field_definitions: Dict[str, Tuple[Any, Any]] = {}
+        for key, value in getfullargspec(fn).annotations.items():
+            parameter = signature.parameters[key]
+            if parameter.default is not signature.empty:
+                field_definitions[key] = (value, parameter.default)
+            elif not repr(parameter.annotation).startswith("typing.Optional"):
+                field_definitions[key] = (value, ...)
+            else:
+                field_definitions[key] = (value, None)
+        return create_model(fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
+    except (TypeError, ValueError) as e:
+        raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
+
+
 async def get_http_handler_parameters(route_handler: "RouteHandler", request: Request) -> Dict[str, Any]:
     """
     Parse a given http handler function and return values matching function parameter keys
     """
 
-    model = route_handler.get_signature_model()
+    model = create_function_signature_model(cast(Callable, route_handler.fn))
     base_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
     try:
@@ -73,7 +98,7 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
         dependencies: Dict[str, Any] = {}
         for key, injected in route_handler.resolve_dependencies().items():
             if key in model.__fields__:
-                injected_model = injected.get_signature_model()
+                injected_model = create_function_signature_model(injected.dependency)
                 injected_kwargs = await get_kwargs_from_request(request=request, fields=injected_model.__fields__)
                 value = injected(**injected_model(**base_kwargs, **injected_kwargs).dict())
                 if isawaitable(value):

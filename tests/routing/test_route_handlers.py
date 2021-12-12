@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -9,7 +7,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.routing import RouteHandler
+from starlite.route_handlers import RouteHandler
 
 
 @given(
@@ -100,27 +98,6 @@ def test_route_handler_multiple_methods():
     # doesn't raise when status_code is provided
     result = route(http_method=[HttpMethod.GET, HttpMethod.POST], status_code=HTTP_200_OK)
     assert sorted(result.http_methods) == sorted([HttpMethod.GET, HttpMethod.POST])
-
-
-def test_model_function_signature():
-    @get()
-    def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None):
-        pass
-
-    model = my_fn.get_signature_model()
-    fields = model.__fields__
-    assert fields.get("a").type_ == int
-    assert fields.get("a").required
-    assert fields.get("b").type_ == str
-    assert fields.get("b").required
-    assert fields.get("c").type_ == bytes
-    assert fields.get("c").allow_none
-    assert fields.get("c").default is None
-    assert fields.get("d").type_ == bytes
-    assert fields.get("d").default == b"123"
-    assert fields.get("e").type_ == dict
-    assert fields.get("e").allow_none
-    assert fields.get("e").default is None
 
 
 def test_route_info_model_validation():

@@ -17,7 +17,9 @@ from starlette.responses import Response
 from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
-from starlite.routing import Provide, RouteHandler, Router
+from starlite.provide import Provide
+from starlite.route_handlers import RouteHandler
+from starlite.routing import Router
 
 
 # noinspection PyMethodOverriding

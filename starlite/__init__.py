@@ -1,41 +1,34 @@
 # flake8: noqa
 from .app import Starlite
+from .controller import Controller
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
+from .provide import Provide
 from .response import Response
-from .routing import (
-    Controller,
-    Provide,
-    Route,
-    Router,
-    delete,
-    get,
-    patch,
-    post,
-    put,
-    route,
-)
+from .route_handlers import RouteHandler, delete, get, patch, post, put, route
+from .routing import Route, Router
 from .testing import create_test_request
 from .types import Partial
 
 __all__ = [
-    "Controller",
-    "delete",
-    "get",
     "HTTPException",
     "HttpMethod",
     "ImproperlyConfiguredException",
     "MediaType",
-    "patch",
-    "post",
-    "put",
     "Response",
-    "route",
     "Route",
     "Router",
     "Starlite",
     "StarLiteException",
-    "Provide",
     "Partial",
     "create_test_request",
+    "route",
+    "get",
+    "post",
+    "put",
+    "patch",
+    "delete",
+    "Controller",
+    "Provide",
+    "RouteHandler",
 ]
