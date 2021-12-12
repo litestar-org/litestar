@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Any, cast
 
+from starlite.exceptions import ImproperlyConfiguredException
+
 
 class HttpMethod(str, Enum):
     GET = "get"
@@ -19,7 +21,7 @@ class HttpMethod(str, Enum):
         """Given a string value, return an enum member or raise a ValueError"""
         if cls.is_http_method(value):
             return cast(HttpMethod, value.lower())
-        raise ValueError(f"value {value} is not a supported http method")
+        raise ImproperlyConfiguredException(f"value {value} is not a supported http method")
 
 
 class MediaType(str, Enum):
