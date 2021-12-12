@@ -7,7 +7,7 @@ from pydantic import BaseConfig
 from pydantic.fields import ModelField
 from starlette.requests import Request
 
-from starlite import HttpMethod, ImproperlyConfiguredException, Provide, get, route, Starlite
+from starlite import HttpMethod, ImproperlyConfiguredException, Provide, get, route
 from starlite.request import (
     create_function_signature_model,
     get_kwargs_from_request,
@@ -97,7 +97,7 @@ async def test_handle_request():
 
 @pytest.mark.asyncio
 async def test_handle_return_annotation():
-    @get(path='/health', status_code=204)
+    @get(path="/health", status_code=204)
     async def health_check() -> None:
         return
 

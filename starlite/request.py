@@ -74,6 +74,11 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
         signature = Signature.from_callable(fn)
         field_definitions: Dict[str, Tuple[Any, Any]] = {}
         for key, value in getfullargspec(fn).annotations.items():
+
+            # discard return annotations
+            if key == "return":
+                continue
+
             parameter = signature.parameters[key]
             if parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
