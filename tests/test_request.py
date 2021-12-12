@@ -7,7 +7,14 @@ from pydantic import BaseConfig
 from pydantic.fields import ModelField
 from starlette.requests import Request
 
-from starlite import HttpMethod, ImproperlyConfiguredException, Provide, get, route
+from starlite import (
+    HttpMethod,
+    ImproperlyConfiguredException,
+    Provide,
+    Response,
+    get,
+    route,
+)
 from starlite.request import (
     create_function_signature_model,
     get_kwargs_from_request,
@@ -93,3 +100,25 @@ async def test_handle_request():
 
     response = await handle_request(route_handler=cast(Any, test_function), request=request)
     assert response.body.decode("utf-8") == person_instance.json()
+
+
+@pytest.mark.asyncio
+async def test_handle_return_annotation():
+    @get(path="/health", status_code=204)
+    async def health_check() -> None:
+        return
+
+    r = create_function_signature_model(health_check.fn)
+    assert r().dict() == {}
+
+
+@pytest.mark.asyncio
+async def test_handle_request_with_response():
+    @get(path="/health")
+    async def health_check():
+        return Response(status_code=204)
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    response = await handle_request(route_handler=cast(Any, health_check), request=request)
+    assert response.status_code == 204
+    assert not hasattr(response, "content")

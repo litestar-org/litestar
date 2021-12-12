@@ -6,6 +6,7 @@ from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.error_wrappers import ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
+from starlette.responses import Response as StarletteResponse
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
@@ -74,6 +75,11 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
         signature = Signature.from_callable(fn)
         field_definitions: Dict[str, Tuple[Any, Any]] = {}
         for key, value in getfullargspec(fn).annotations.items():
+
+            # discard return annotations
+            if key == "return":
+                continue
+
             parameter = signature.parameters[key]
             if parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
@@ -131,6 +137,9 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
 
     if isawaitable(data):
         data = await data
+
+    if isinstance(data, StarletteResponse):
+        return data
 
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     return response_class(
