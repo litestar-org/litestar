@@ -108,7 +108,8 @@ async def test_handle_return_annotation():
     async def health_check() -> None:
         return
 
-    create_function_signature_model(health_check.fn)
+    r = create_function_signature_model(health_check.fn)
+    assert r().dict() == {}
 
 
 @pytest.mark.asyncio
@@ -118,4 +119,6 @@ async def test_handle_request_with_response():
         return Response(status_code=204)
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    await handle_request(route_handler=cast(Any, health_check), request=request)
+    response = await handle_request(route_handler=cast(Any, health_check), request=request)
+    assert response.status_code == 204
+    assert not hasattr(response, "content")
