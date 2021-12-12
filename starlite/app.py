@@ -1,4 +1,5 @@
 from typing import (
+    TYPE_CHECKING,
     Any,
     AsyncContextManager,
     Callable,
@@ -17,9 +18,12 @@ from starlette.responses import Response
 from typing_extensions import Type
 
 from starlite.enums import HttpMethod, MediaType
+from starlite.handlers import RouteHandler
 from starlite.provide import Provide
-from starlite.route_handlers import RouteHandler
 from starlite.routing import Router
+
+if TYPE_CHECKING:
+    from starlite.controller import Controller
 
 
 # noinspection PyMethodOverriding
@@ -29,7 +33,7 @@ class Starlite(Starlette):
         debug: bool = False,
         middleware: Sequence[Middleware] = None,
         exception_handlers: Dict[Union[int, Type[Exception]], Callable] = None,
-        route_handlers: Optional[Sequence[RouteHandler]] = None,
+        route_handlers: Optional[Sequence[Union[Type["Controller"], RouteHandler, Router]]] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,

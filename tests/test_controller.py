@@ -17,6 +17,7 @@ from starlite import (
     HttpMethod,
     ImproperlyConfiguredException,
     Router,
+    create_test_client,
     delete,
     get,
     patch,
@@ -57,7 +58,7 @@ def test_controller_raises_exception_when_base_path_not_set():
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_controller_http_method(decorator, http_method, expected_status_code, create_test_client):
+def test_controller_http_method(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     class MyController(Controller):
@@ -83,7 +84,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code, cr
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_path_params(decorator, http_method, expected_status_code, create_test_client):
+def test_path_params(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     class MyController(Controller):
@@ -109,7 +110,7 @@ def test_path_params(decorator, http_method, expected_status_code, create_test_c
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_query_params(decorator, http_method, expected_status_code, create_test_client):
+def test_query_params(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     query_params_instance = QueryParamsFactory.build()
@@ -139,7 +140,7 @@ def test_query_params(decorator, http_method, expected_status_code, create_test_
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_header_params(decorator, http_method, expected_status_code, create_test_client):
+def test_header_params(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     request_headers = {
@@ -172,7 +173,7 @@ def test_header_params(decorator, http_method, expected_status_code, create_test
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_request(decorator, http_method, expected_status_code, create_test_client):
+def test_request(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     class MyController(Controller):
@@ -187,7 +188,7 @@ def test_request(decorator, http_method, expected_status_code, create_test_clien
         assert response.status_code == expected_status_code
 
 
-def test_defining_data_for_get_handler_raises_exception(create_test_client):
+def test_defining_data_for_get_handler_raises_exception():
     test_path = "/person"
 
     class MyController(Controller):
@@ -211,7 +212,7 @@ def test_defining_data_for_get_handler_raises_exception(create_test_client):
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_data_using_model(decorator, http_method, expected_status_code, create_test_client):
+def test_data_using_model(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     class MyController(Controller):
@@ -235,7 +236,7 @@ def test_data_using_model(decorator, http_method, expected_status_code, create_t
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_data_using_list_of_models(decorator, http_method, expected_status_code, create_test_client):
+def test_data_using_list_of_models(decorator, http_method, expected_status_code):
     test_path = "/person"
 
     people = PersonFactory.batch(size=5)

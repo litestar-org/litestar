@@ -3,11 +3,11 @@ from .app import Starlite
 from .controller import Controller
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
+from .handlers import RouteHandler, delete, get, patch, post, put, route
 from .provide import Provide
 from .response import Response
-from .route_handlers import RouteHandler, delete, get, patch, post, put, route
 from .routing import Route, Router
-from .testing import create_test_request
+from .testing import create_test_client, create_test_request
 from .types import Partial
 
 __all__ = [
@@ -22,6 +22,7 @@ __all__ = [
     "StarLiteException",
     "Partial",
     "create_test_request",
+    "create_test_client",
     "route",
     "get",
     "post",

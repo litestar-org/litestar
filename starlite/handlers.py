@@ -80,23 +80,24 @@ class RouteHandler(BaseModel):
             return HTTP_204_NO_CONTENT
         return HTTP_200_OK
 
-    @validator("response_class")
-    def validate_response_class(  # pylint: disable=no-self-argument,no-self-use
-        cls, value: Any
-    ) -> Optional[Type[Response]]:
-        """
-        Valides that value is either None or subclass of Starlette Response
-        """
-        if value is None or issubclass(value, Response):
-            return value
-        raise ValueError("response_class must be a sub-class of starlette.responses.Response")
-
     @property
     def http_methods(self) -> List[HttpMethod]:
         """
         Returns a list of the RouteHandler's HttpMethod members
         """
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
+
+    @staticmethod
+    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide):
+        """
+        Validates that a given provider has not been already defined under a different key
+        """
+        for dependency_key, value in dependencies.items():
+            if provider == value:
+                raise ImproperlyConfiguredException(
+                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
+                    f"If you wish to override a provider, it must have the same key."
+                )
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
@@ -110,14 +111,11 @@ class RouteHandler(BaseModel):
             if cur.dependencies:
                 dependencies_list.append(cur.dependencies)
             cur = cur.owner
-        injectables: List[Provide] = []
         resolved_dependencies: Dict[str, Provide] = {}
         for dependencies_dict in dependencies_list:
             for key, value in dependencies_dict.items():
                 if key not in resolved_dependencies:
-                    if value in injectables:
-                        raise ImproperlyConfiguredException(f"injectable dependency with key {key} is already defined")
-                    injectables.append(value)
+                    self.validate_dependency_is_unique(dependencies=resolved_dependencies, key=key, provider=value)
                     resolved_dependencies[key] = value
         return resolved_dependencies
 

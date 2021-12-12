@@ -74,7 +74,7 @@ def test_create_function_signature_model():
 
 
 def test_create_function_signature_model_validation():
-    provide = Provide(lru_cache(lambda x: x))
+    provide = Provide(lru_cache(maxsize=0)(lambda x: x))
 
     with pytest.raises(ImproperlyConfiguredException):
         create_function_signature_model(provide.dependency)

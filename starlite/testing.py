@@ -1,11 +1,53 @@
 from json import dumps
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 from urllib.parse import urlencode
 
 from pydantic import BaseModel
+from starlette.middleware import Middleware
 from starlette.requests import Request
+from starlette.testclient import TestClient
+from typing_extensions import AsyncContextManager, Type
 
+from starlite import Controller, Provide, Router
+from starlite.app import Starlite
 from starlite.enums import HttpMethod
+from starlite.handlers import RouteHandler
+
+
+def create_test_client(
+    route_handlers: Union[
+        Union[Type[Controller], RouteHandler, Router, Callable],
+        List[Union[Type[Controller], RouteHandler, Router, Callable]],
+    ],
+    dependencies: Optional[Dict[str, Provide]] = None,
+    exception_handlers: Any = None,
+    lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
+    middleware: Sequence[Middleware] = None,
+    on_shutdown: Optional[Sequence[Callable]] = None,
+    on_startup: Optional[Sequence[Callable]] = None,
+    base_url: str = "http://testserver",
+    raise_server_exceptions: bool = True,
+    root_path: str = "",
+    backend: str = "asyncio",
+    backend_options: Optional[Dict[str, Any]] = None,
+) -> TestClient:
+    app = Starlite(
+        dependencies=dependencies,
+        exception_handlers=exception_handlers,
+        lifespan=lifespan,
+        middleware=middleware,
+        on_shutdown=on_shutdown,
+        on_startup=on_startup,
+        route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+    )
+    return TestClient(
+        app=app,
+        base_url=base_url,
+        raise_server_exceptions=raise_server_exceptions,
+        root_path=root_path,
+        backend=backend,
+        backend_options=backend_options,
+    )
 
 
 def create_test_request(

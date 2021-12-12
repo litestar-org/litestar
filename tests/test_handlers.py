@@ -7,7 +7,7 @@ from starlette.responses import Response, StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.route_handlers import RouteHandler
+from starlite.handlers import RouteHandler
 
 
 @given(

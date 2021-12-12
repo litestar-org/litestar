@@ -2,9 +2,13 @@ from asyncio import sleep
 from typing import Any, Dict
 
 from starlette.requests import Request
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 
-from starlite import Controller, Provide, get
+from starlite import Controller, Provide, create_test_client, get
 
 
 def router_first_dependency():
@@ -56,7 +60,7 @@ class TestController(Controller):
         assert third is False
 
 
-def test_controller_dependency_injection(create_test_client):
+def test_controller_dependency_injection():
     with create_test_client(
         TestController,
         dependencies={
@@ -68,7 +72,7 @@ def test_controller_dependency_injection(create_test_client):
         assert response.status_code == HTTP_200_OK
 
 
-def test_function_dependency_injection(create_test_client):
+def test_function_dependency_injection():
     @get(
         path=test_path + "/{path_param}",
         dependencies={
@@ -92,7 +96,7 @@ def test_function_dependency_injection(create_test_client):
         assert response.status_code == HTTP_200_OK
 
 
-def test_dependency_isolation(create_test_client):
+def test_dependency_isolation():
     class SecondController(Controller):
         path = "/second"
 
@@ -105,18 +109,16 @@ def test_dependency_isolation(create_test_client):
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 
-def test_dependency_validation(create_test_client):
+def test_dependency_validation():
     @get(
         path=test_path + "/{path_param}",
         dependencies={
             "first": Provide(local_method_first_dependency),
-            "third": Provide(local_method_second_dependency),
+            "second": Provide(local_method_second_dependency),
         },
     )
-    def test_function(first: int, second: bool, third: str):
-        assert isinstance(first, int)
-        assert second is False
-        assert isinstance(third, str)
+    def test_function(first: int, second: str, third: int):
+        pass
 
     with create_test_client(
         test_function,
@@ -125,4 +127,4 @@ def test_dependency_validation(create_test_client):
         },
     ) as client:
         response = client.get(f"{test_path}/abcdef?query_param=12345")
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

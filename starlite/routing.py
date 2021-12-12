@@ -12,9 +12,9 @@ from typing_extensions import AsyncContextManager, Type
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers import RouteHandler
 from starlite.provide import Provide
 from starlite.request import handle_request
-from starlite.route_handlers import RouteHandler
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
 

@@ -4,8 +4,8 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
+    from starlite.handlers import RouteHandler
     from starlite.provide import Provide
-    from starlite.route_handlers import RouteHandler
     from starlite.routing import Router
 
 
@@ -29,7 +29,7 @@ class Controller:
         """
         Returns a list of route handlers defined on the controller
         """
-        from starlite.route_handlers import (  # pylint: disable=import-outside-toplevel
+        from starlite.handlers import (  # pylint: disable=import-outside-toplevel
             RouteHandler,
         )
 

@@ -12,7 +12,7 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.response import Response
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.route_handlers import RouteHandler
+    from starlite.handlers import RouteHandler
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
