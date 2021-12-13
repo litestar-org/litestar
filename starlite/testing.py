@@ -1,7 +1,7 @@
-from json import dumps
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 from urllib.parse import urlencode
 
+from orjson import dumps
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.requests import Request
@@ -84,11 +84,5 @@ def create_test_request(
         if isinstance(content, BaseModel):
             request._body = content.json().encode("utf-8")
         else:
-            request._body = dumps(
-                content,
-                ensure_ascii=False,
-                allow_nan=False,
-                indent=None,
-                separators=(",", ":"),
-            ).encode("utf-8")
+            request._body = dumps(content)
     return request

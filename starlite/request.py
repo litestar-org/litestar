@@ -3,9 +3,11 @@ from inspect import Signature, getfullargspec, isawaitable
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
-from pydantic.error_wrappers import ValidationError
+from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import ModelField
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
+from starlette.responses import Response as StarletteResponse
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
@@ -110,7 +112,9 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
         fields = list(model.__fields__.keys())
         return {key: model(**model_kwargs, **base_kwargs, **dependencies).__getattribute__(key) for key in fields}
     except ValidationError as e:
-        raise ValidationException(e, request) from e
+        raise ValidationException(
+            detail=f"Validation failed for {request.method} {request.url}:\n\n{display_errors(e.errors())}"
+        ) from e
 
 
 async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:
@@ -119,9 +123,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
     and parsing the RouteHandler stored as an attribute on it.
     """
     response_class = route_handler.response_class or Response
-
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
-
     endpoint = cast(Callable, route_handler.fn)
 
     if isinstance(route_handler.owner, Controller):
@@ -132,10 +134,17 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
     if isawaitable(data):
         data = await data
 
+    if isinstance(data, StarletteResponse):
+        return data
+
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
-    return response_class(
-        content=data,
+    response_kwargs = dict(
         headers=route_handler.response_headers,
         status_code=route_handler.status_code,
         media_type=media_type,
     )
+    if issubclass(response_class, RedirectResponse):
+        response_kwargs["url"] = data
+    else:
+        response_kwargs["content"] = data
+    return response_class(**response_kwargs)

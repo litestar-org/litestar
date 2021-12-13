@@ -34,6 +34,7 @@ python = ">=3.7,<4.0"
 starlette = "*"
 pydantic = "*"
 typing-extensions = "*"
+orjson = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = {extras = ["cli"], version = "*"}

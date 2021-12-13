@@ -52,9 +52,13 @@ repos:
           ]
         additional_dependencies: [
           pydantic,
-          starlette
+          starlette,
+          orjson
         ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.910-1"
     hooks:
       - id: mypy
+        additional_dependencies: [
+            orjson
+        ]

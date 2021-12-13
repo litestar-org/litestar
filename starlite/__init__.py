@@ -4,8 +4,9 @@ from .controller import Controller
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .handlers import RouteHandler, delete, get, patch, post, put, route
+from .params import Header
 from .provide import Provide
-from .response import Response
+from .response import FileResponse, RedirectResponse, Response, StreamingResponse
 from .routing import Route, Router
 from .testing import create_test_client, create_test_request
 from .types import Partial
@@ -16,6 +17,9 @@ __all__ = [
     "ImproperlyConfiguredException",
     "MediaType",
     "Response",
+    "StreamingResponse",
+    "FileResponse",
+    "RedirectResponse",
     "Route",
     "Router",
     "Starlite",
@@ -32,4 +36,5 @@ __all__ = [
     "Controller",
     "Provide",
     "RouteHandler",
+    "Header",
 ]
