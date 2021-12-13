@@ -6,6 +6,16 @@ import pytest
 from pydantic import BaseConfig
 from pydantic.fields import ModelField
 from starlette.requests import Request
+from starlette.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+)
+from starlette.responses import Response as StarletteResponse
+from starlette.responses import StreamingResponse
+from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from starlite import (
     HttpMethod,
@@ -59,7 +69,7 @@ async def test_get_kwargs_from_request():
     assert result["request"]
 
 
-def test_create_function_signature_model():
+def test_create_function_signature_model_parameter_parsing():
     @get()
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None):
         pass
@@ -80,6 +90,14 @@ def test_create_function_signature_model():
     assert fields.get("e").default is None
 
 
+def test_create_function_signature_model_ignore_return_annotation():
+    @get(path="/health", status_code=HTTP_204_NO_CONTENT)
+    async def health_check() -> None:
+        return
+
+    assert create_function_signature_model(health_check.fn)().dict() == {}
+
+
 def test_create_function_signature_model_validation():
     provide = Provide(lru_cache(maxsize=0)(lambda x: x))
 
@@ -88,7 +106,7 @@ def test_create_function_signature_model_validation():
 
 
 @pytest.mark.asyncio
-async def test_handle_request():
+async def test_handle_request_async_await():
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person):
         assert isinstance(data, Person)
@@ -103,22 +121,35 @@ async def test_handle_request():
 
 
 @pytest.mark.asyncio
-async def test_handle_return_annotation():
-    @get(path="/health", status_code=204)
-    async def health_check() -> None:
-        return
+@pytest.mark.parametrize(
+    "response",
+    [
+        Response(status_code=HTTP_200_OK, content=b"abc"),
+        StarletteResponse(status_code=HTTP_200_OK, content=b"abc"),
+        PlainTextResponse(content="abc"),
+        HTMLResponse(content="<div><span/></div"),
+        JSONResponse(status_code=HTTP_200_OK, content={}),
+        RedirectResponse(url="/person"),
+        StreamingResponse(status_code=HTTP_200_OK, content=b"abc"),
+        FileResponse("./test_request.py"),
+    ],
+)
+async def test_handle_request_when_handler_returns_starlette_responses(response):
+    @get(path="/test")
+    def test_path():
+        return response
 
-    r = create_function_signature_model(health_check.fn)
-    assert r().dict() == {}
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    assert await handle_request(route_handler=cast(Any, test_path), request=request) == response
 
 
 @pytest.mark.asyncio
-async def test_handle_request_with_response():
-    @get(path="/health")
-    async def health_check():
-        return Response(status_code=204)
+async def test_handle_request_redirect_response():
+    @get(path="/test", response_class=RedirectResponse)
+    def test_path():
+        return "/somewhere-else"
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    response = await handle_request(route_handler=cast(Any, health_check), request=request)
-    assert response.status_code == 204
-    assert not hasattr(response, "content")
+    response = await handle_request(route_handler=cast(Any, test_path), request=request)
+    assert isinstance(response, RedirectResponse)
+    assert response.headers["location"] == "/somewhere-else"

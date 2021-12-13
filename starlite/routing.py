@@ -100,7 +100,7 @@ class Router(StarletteRouter):
             routes=[],
         )
         for route_handler in route_handlers or []:
-            self.register(value=cast(Union[Type[Controller], RouteHandler, "Router"], route_handler))
+            self.register(value=route_handler)
 
     @property
     def route_handler_method_map(self) -> Dict[str, Dict[HttpMethod, RouteHandler]]:
@@ -139,12 +139,12 @@ class Router(StarletteRouter):
         return handlers_map
 
     def validate_registration_value(
-        self, value: Union[Type[Controller], RouteHandler, "Router"]
+        self, value: Union[Type[Controller], RouteHandler, "Router", Callable]
     ) -> Union[Controller, RouteHandler, "Router"]:
         """
         Validates that the value passed to the register method is supported
         """
-        if isclass(value) and issubclass(value, Controller):
+        if isclass(value) and issubclass(cast(Type[Controller], value), Controller):
             return cast(Type[Controller], value)(owner=self)
         if not isinstance(value, (Router, RouteHandler)):
             raise ImproperlyConfiguredException(
@@ -159,7 +159,7 @@ class Router(StarletteRouter):
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
         return cast(Union[Controller, RouteHandler, "Router"], value)
 
-    def register(self, value: Union[Type[Controller], RouteHandler, "Router"]):
+    def register(self, value: Union[Type[Controller], RouteHandler, "Router", Callable]):
         """
         Register a Controller, Route instance or RouteHandler on the router
 

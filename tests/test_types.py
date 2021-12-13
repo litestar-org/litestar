@@ -1,7 +1,7 @@
 from starlite.types import Partial
 from tests.utils import Person
 
-try:  # pragma: no cover
+try:
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore
 except ImportError:
     from typing import _GenericAlias as GenericAlias  # type: ignore

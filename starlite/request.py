@@ -12,6 +12,7 @@ from starlette.responses import Response as StarletteResponse
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.params import Header
 from starlite.response import Response
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -61,6 +62,9 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
         data = await request.json()
         kwargs["data"] = json.loads(data) if isinstance(data, (str, bytes, bytearray)) else data
+    for field_name, field in fields.items():
+        if isinstance(field.default, Header):
+            kwargs[field_name] = field.default(request=request)
     return kwargs
 
 
@@ -120,7 +124,7 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
         ) from e
 
 
-async def handle_request(route_handler: "RouteHandler", request: Request) -> Response:
+async def handle_request(route_handler: "RouteHandler", request: Request) -> StarletteResponse:
     """
     Handles a given request by both calling the passed in function,
     and parsing the RouteHandler stored as an attribute on it.
@@ -141,13 +145,11 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Res
         return data
 
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
-    response_kwargs = dict(
+    if issubclass(response_class, RedirectResponse):
+        return response_class(headers=route_handler.response_headers, status_code=route_handler.status_code, url=data)  # type: ignore
+    return response_class(
         headers=route_handler.response_headers,
         status_code=route_handler.status_code,
+        content=data,
         media_type=media_type,
     )
-    if issubclass(response_class, RedirectResponse):
-        response_kwargs["url"] = data
-    else:
-        response_kwargs["content"] = data
-    return response_class(**response_kwargs)

@@ -19,7 +19,7 @@ from starlite.provide import Provide
 from starlite.routing import Router
 from starlite.utils import DeprecatedProperty
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
 
 
@@ -30,7 +30,7 @@ class Starlite(Starlette):
         debug: bool = False,
         middleware: Sequence[Middleware] = None,
         exception_handlers: Dict[Union[int, Type[Exception]], Callable] = None,
-        route_handlers: Optional[Sequence[Union[Type["Controller"], RouteHandler, Router]]] = None,
+        route_handlers: Optional[Sequence[Union[Type["Controller"], RouteHandler, Router, Callable]]] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
@@ -50,7 +50,7 @@ class Starlite(Starlette):
         self.user_middleware = list(middleware) if middleware else []
         self.middleware_stack = self.build_middleware_stack()
 
-    def register(self, route_handler: RouteHandler):
+    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, Callable]):
         """
         Proxy method for Route.register(**kwargs)
         """

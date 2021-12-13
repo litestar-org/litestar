@@ -5,10 +5,11 @@ from starlette.requests import Request
 from starlite.exceptions import ValidationException
 
 
-class Header:
+class Header(str):
     __slots__ = ("key", "allow_none")
 
     def __init__(self, key: str, allow_none: bool = False):
+        super().__init__()
         self.key = key.lower()
         self.allow_none = allow_none
 
