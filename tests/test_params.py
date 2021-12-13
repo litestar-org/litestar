@@ -17,7 +17,7 @@ def test_header_params_key():
     }
 
     @get(path=test_path)
-    def test_method(special_header: str = Header(key="special-header")):
+    def test_method(special_header: str = Header("special-header")):
         assert special_header == request_headers["special-header"]
 
     with create_test_client(test_method) as client:
@@ -29,7 +29,7 @@ def test_header_params_allow_none():
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: Optional[str] = Header(key="special-header", allow_none=True)):
+    def test_method(special_header: Optional[str] = Header("special-header")):
         assert special_header is None
 
     with create_test_client(test_method) as client:
@@ -41,7 +41,7 @@ def test_header_params_validation():
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: Optional[str] = Header(key="special-header")):
+    def test_method(special_header: str = Header("special-header")):
         return special_header
 
     with create_test_client(test_method) as client:

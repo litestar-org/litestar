@@ -6,18 +6,14 @@ from starlite.exceptions import ValidationException
 
 
 class Header(str):
-    __slots__ = ("key", "allow_none")
-
-    def __init__(self, key: str, allow_none: bool = False):
-        super().__init__()
-        self.key = key.lower()
-        self.allow_none = allow_none
-
-    def __call__(self, request: Request) -> Optional[str]:
-        value = request.headers.get(self.key)
-        if value or self.allow_none:
+    def value_from_request(self, request: Request, allow_none: bool) -> Optional[str]:
+        """
+        Given a request object, return the headers value or raise an exception if None is not allowed
+        """
+        value = request.headers.get(self)
+        if value or allow_none:
             return value
         raise ValidationException(
-            detail=f"Missing header parameter {self.key}."
+            detail=f"Missing header parameter {self}."
             f"\n\nIf this parameter is not required, define it with 'allow_none = True'."
         )

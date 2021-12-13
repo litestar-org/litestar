@@ -64,7 +64,7 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
         kwargs["data"] = json.loads(data) if isinstance(data, (str, bytes, bytearray)) else data
     for field_name, field in fields.items():
         if isinstance(field.default, Header):
-            kwargs[field_name] = field.default(request=request)
+            kwargs[field_name] = field.default.value_from_request(request=request, allow_none=field.allow_none)
     return kwargs
 
 
