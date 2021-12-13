@@ -78,6 +78,7 @@ class Router(StarletteRouter):
 
     def __init__(
         self,
+        *,
         path: str,
         route_handlers: Optional[Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]]] = None,
         redirect_slashes: bool = True,
