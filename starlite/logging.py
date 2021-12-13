@@ -1,7 +1,8 @@
 from logging import config
-from typing import Dict, Literal, Optional, Union
+from typing import Dict, Optional, Union
 
 from pydantic import BaseModel
+from typing_extensions import Literal
 
 
 class LoggingConfig(BaseModel):

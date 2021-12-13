@@ -7,7 +7,7 @@ from starlite.logging import LoggingConfig
 def test_logging_debug(dictConfigMock: Mock):
     config = LoggingConfig()
     config.configure()
-    assert dictConfigMock.call_args.args[0]["loggers"]["starlite"]["level"] == "INFO"
+    assert dictConfigMock.mock_calls[0][1][0]["loggers"]["starlite"]["level"] == "INFO"
     dictConfigMock.reset_mock()
     config.configure(debug=True)
-    assert dictConfigMock.call_args.args[0]["loggers"]["starlite"]["level"] == "DEBUG"
+    assert dictConfigMock.mock_calls[0][1][0]["loggers"]["starlite"]["level"] == "DEBUG"
