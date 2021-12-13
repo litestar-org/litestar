@@ -15,6 +15,7 @@ from starlette.middleware import Middleware
 from typing_extensions import Type
 
 from starlite.handlers import RouteHandler
+from starlite.logging import LoggingConfig
 from starlite.provide import Provide
 from starlite.routing import Router
 from starlite.utils import DeprecatedProperty
@@ -27,6 +28,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class Starlite(Starlette):
     def __init__(  # pylint: disable=super-init-not-called
         self,
+        *,
         debug: bool = False,
         middleware: Sequence[Middleware] = None,
         exception_handlers: Dict[Union[int, Type[Exception]], Callable] = None,
@@ -35,7 +37,10 @@ class Starlite(Starlette):
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        logging_config: Optional[LoggingConfig] = LoggingConfig()
     ):
+        if logging_config:
+            logging_config.configure(debug)
         self._debug = debug
         self.state = State()
         self.router = Router(
