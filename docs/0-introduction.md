@@ -1,10 +1,12 @@
-# Starlite
+# StarLite
 
-Starlite is a flexible and extensible ASGI API framework built on top of Starlette and Pydantic.
+Starlite is a simple, flexible and extensible ASGI API framework built on top of Starlette and Pydantic. It was inspired
+by FastAPI and NestJS.
 
 ## Example: Controller Pattern
 
-Starlite supports class API components called "Controllers". Controllers are meant to group logical subcomponents, for example - consider the following `UserController`:
+Starlite supports class API components called "Controllers". Controllers are meant to group logical subcomponents, for
+example - consider the following `UserController`:
 
 ```python3
 from pydantic import BaseModel, UUID4
