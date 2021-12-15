@@ -68,7 +68,7 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
     return kwargs
 
 
-def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
+def create_function_signature_model(fn: Callable, ignore_return: bool = True) -> Type[BaseModel]:
     """
     Creates a pydantic model for the signature of a given function
     """
@@ -80,17 +80,17 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
         signature = Signature.from_callable(fn)
         field_definitions: Dict[str, Tuple[Any, Any]] = {}
         for key, value in getfullargspec(fn).annotations.items():
-            # discard return annotations
-            if key == "return":
+            parameter = signature.parameters.get(key)
+            if not parameter or (key == "return" and ignore_return):
                 continue
-            parameter = signature.parameters[key]
             if parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
             elif not repr(parameter.annotation).startswith("typing.Optional"):
                 field_definitions[key] = (value, ...)
             else:
                 field_definitions[key] = (value, None)
-        return create_model(fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
+        name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
+        return create_model(name, __config__=Config, **field_definitions)
     except (TypeError, ValueError) as e:
         raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
 

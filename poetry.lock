@@ -133,7 +133,7 @@ toml = ["tomli"]
 name = "exrex"
 version = "0.10.5"
 description = "Irregular methods for regular expressions"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -141,7 +141,7 @@ python-versions = "*"
 name = "faker"
 version = "10.0.0"
 description = "Faker is a Python package that generates fake data for you."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -223,6 +223,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "openapi-schema-pydantic"
+version = "1.2.1"
+description = "OpenAPI (v3) specification schema as pydantic class"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+pydantic = ">=1.8.2"
+
+[[package]]
 name = "orjson"
 version = "3.6.5"
 description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
@@ -301,9 +312,9 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "0.5.0"
+version = "0.6.0"
 description = "Mock data generation for pydantic based models"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 
@@ -387,7 +398,7 @@ testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtuale
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
@@ -433,7 +444,7 @@ jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -472,7 +483,7 @@ full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests"]
 name = "text-unidecode"
 version = "1.3"
 description = "The most basic Text::Unidecode port"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -486,7 +497,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "tomli"
-version = "1.2.2"
+version = "1.2.3"
 description = "A lil' TOML parser"
 category = "dev"
 optional = false
@@ -536,7 +547,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "485bd3cf17472d65b98dea8aa6c044b7c7480e0c562a6eb62cbb55a2030c4f4a"
+content-hash = "0fe1ca0816e30fa553842e29ea69693f6eb91723192cb749827ea1ed184ae5ba"
 
 [metadata.files]
 anyio = [
@@ -651,6 +662,10 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
+openapi-schema-pydantic = [
+    {file = "openapi-schema-pydantic-1.2.1.tar.gz", hash = "sha256:241e4074c0e651d8a83ae9abe56daedd57634ef8e95e92d38df623a14292455c"},
+    {file = "openapi_schema_pydantic-1.2.1-py3-none-any.whl", hash = "sha256:840b60bc2fcbe7d2dc2a63f66bdf71decabe59a422d4b8030cc6cb3213111a8e"},
+]
 orjson = [
     {file = "orjson-3.6.5-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:6c444edc073eb69cf85b28851a7a957807a41ce9bb3a9c14eefa8b33030cf050"},
     {file = "orjson-3.6.5-cp310-cp310-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:432c6da3d8d4630739f5303dcc45e8029d357b7ff8e70b7239be7bd047df6b19"},
@@ -722,8 +737,8 @@ pydantic = [
     {file = "pydantic-1.8.2.tar.gz", hash = "sha256:26464e57ccaafe72b7ad156fdaa4e9b9ef051f69e175dbbb463283000c05ab7b"},
 ]
 pydantic-factories = [
-    {file = "pydantic-factories-0.5.0.tar.gz", hash = "sha256:412b3960de868dac52b5ddb77bb2a242bde3506b09c16910041f549f01788f47"},
-    {file = "pydantic_factories-0.5.0-py3-none-any.whl", hash = "sha256:a7467688931814a637b67379dcdbbd4456e40c1e0b9591097e194e5073bc64ef"},
+    {file = "pydantic-factories-0.6.0.tar.gz", hash = "sha256:10c98d80cc494e5539fbc21dae5390bdc35e8a06af3e5a5cf665f0936c79576f"},
+    {file = "pydantic_factories-0.6.0-py3-none-any.whl", hash = "sha256:f92e1535454791086160fbb9850da7c0fb23f703bc775d0c041394259ee601f3"},
 ]
 pygments = [
     {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
@@ -782,8 +797,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 tomli = [
-    {file = "tomli-1.2.2-py3-none-any.whl", hash = "sha256:f04066f68f5554911363063a30b108d2b5a5b1a010aa8b6132af78489fe3aade"},
-    {file = "tomli-1.2.2.tar.gz", hash = "sha256:c6ce0015eb38820eaf32b5db832dbc26deb3dd427bd5f6556cf0acac2c214fee"},
+    {file = "tomli-1.2.3-py3-none-any.whl", hash = "sha256:e3069e4be3ead9668e21cb9b074cd948f7b3113fd9c8bba083f48247aab8b11c"},
+    {file = "tomli-1.2.3.tar.gz", hash = "sha256:05b6166bff487dc068d322585c7ea4ef78deed501cc124060e0f238e89a9231f"},
 ]
 typed-ast = [
     {file = "typed_ast-1.5.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:5d8314c92414ce7481eee7ad42b353943679cf6f30237b5ecbf7d835519e1212"},
