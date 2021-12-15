@@ -11,3 +11,4 @@ dist/
 coverage.*
 .coverage
 .python-version
+*.iml
