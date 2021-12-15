@@ -1,7 +1,7 @@
 from typing import List
 
 from starlite import Controller, Partial, Starlite, delete, get, patch, put
-from starlite.openapi import create_openapi_schema
+from starlite.openapi import create_openapi_schema_dict
 from tests.utils import Person
 
 
@@ -25,11 +25,11 @@ class PersonController(Controller):
         pass
 
     @delete(path="/{person_id:str}")
-    def delete_person(self, person_id: str) -> Person:
+    def delete_person(self, person_id: str) -> None:
         pass
 
 
 def test_openapi():
     app = Starlite(route_handlers=[PersonController])
-    openapi_doc = create_openapi_schema(app=app)
-    assert openapi_doc
+    openapi_doc = create_openapi_schema_dict(app=app)
+    assert isinstance(openapi_doc, dict)

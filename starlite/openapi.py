@@ -2,7 +2,19 @@ from collections import deque
 from dataclasses import is_dataclass
 from datetime import date, datetime, time, timedelta
 from enum import Enum, EnumMeta
-from typing import Any, Dict, List, Optional, Pattern, Type, Union
+from inspect import Signature
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Pattern,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 from uuid import UUID
 
 from openapi_schema_pydantic import Header, Info
@@ -17,7 +29,10 @@ from openapi_schema_pydantic import (
     Responses,
     Schema,
 )
-from openapi_schema_pydantic.util import PydanticSchema
+from openapi_schema_pydantic.util import (
+    PydanticSchema,
+    construct_open_api_with_schema_class,
+)
 from pydantic import (
     UUID1,
     UUID3,
@@ -59,6 +74,7 @@ from pydantic import (
     StrictFloat,
     StrictInt,
     StrictStr,
+    create_model,
 )
 from pydantic.fields import (
     SHAPE_DEFAULTDICT,
@@ -80,6 +96,7 @@ from pydantic_factories.utils import (
     is_pydantic_model,
     is_union,
 )
+from starlette.routing import get_name
 
 from starlite.app import Starlite
 from starlite.enums import MediaType
@@ -347,7 +364,7 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     if is_any(field):
         return Schema()
     if is_optional(field) and not ignore_optional:
-        return Schema(oneOf=["null", create_schema(field, ignore_optional=True)])
+        return Schema(oneOf=[Schema(type=OpenAPIType.NULL), create_schema(field, ignore_optional=True)])
     if is_pydantic_model(field.outer_type_):
         return PydanticSchema(schema_class=field.outer_type_)
     if is_dataclass(field.outer_type_):
@@ -408,16 +425,26 @@ def get_media_type(route_handler: RouteHandler) -> MediaType:
     return MediaType.JSON
 
 
-def create_responses(route_handler: RouteHandler, handler_fields: Dict[str, ModelField]) -> Optional[Responses]:
+def dict_to_pydantic_model(**kwargs: Tuple[Any, Any]) -> Dict[str, ModelField]:
+    """Create a pydantic model and return its fields from the given kwargs dict"""
+    return create_model("ReturnModel", **kwargs).__fields__
+
+
+def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
     """
     Create a Response model embedded in a responses dictionary for the given RouteHandler or return None
     """
-    if "return" in handler_fields and handler_fields["return"]:
+    return_annotation = Signature.from_callable(cast(Callable, route_handler.fn)).return_annotation
+    if return_annotation:
+        as_parsed_model_field = dict_to_pydantic_model(
+            return_annotation=(
+                return_annotation,
+                ... if not repr(return_annotation).startswith("typing.Optional") else None,
+            )
+        )["return_annotation"]
         response = Response(
             content={
-                get_media_type(route_handler): OpenAPIMediaType(
-                    media_type_schema=create_schema(handler_fields["return"])
-                )
+                get_media_type(route_handler): OpenAPIMediaType(media_type_schema=create_schema(as_parsed_model_field))
             },
             description="",
         )
@@ -451,14 +478,14 @@ def create_path_item(route: Route) -> PathItem:
     """
     path_item = PathItem()
     for http_method, route_handler in route.route_handler_map.items():
-        handler_fields = create_function_signature_model(fn=route_handler, ignore_return=False).__fields__
+        handler_fields = create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__
         operation = Operation(
-            operationId=route_handler.operation_id,
+            operationId=route_handler.operation_id or get_name(route_handler.fn),
             tags=route_handler.tags,
             summary=route_handler.summary,
             description=route_handler.description,
             deprecated=route_handler.deprecated,
-            responses=create_responses(route_handler=route_handler, handler_fields=handler_fields),
+            responses=create_responses(route_handler=route_handler),
             requestBody=get_request_body(route_handler=route_handler, handler_fields=handler_fields),
             parameters=create_parameters(route_handler=route_handler, handler_fields=handler_fields, path=route.path)
             or None,
@@ -467,14 +494,15 @@ def create_path_item(route: Route) -> PathItem:
     return path_item
 
 
-def create_openapi_schema(app: Starlite) -> OpenAPI:
+def create_openapi_schema_dict(app: Starlite) -> dict:
     """
     Create OpenAPI model for the given app
     """
     info = Info(title="starlite app", version="v1.0.0")
-    return OpenAPI(
+    openapi_schema = OpenAPI(
         info=info,
         paths={
             route.path or "/": create_path_item(route=route) for route in app.router.routes if route.include_in_schema
         },
     )
+    return construct_open_api_with_schema_class(openapi_schema).dict(exclude_none=True)

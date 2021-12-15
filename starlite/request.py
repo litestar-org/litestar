@@ -68,7 +68,7 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
     return kwargs
 
 
-def create_function_signature_model(fn: Callable, ignore_return: bool = True) -> Type[BaseModel]:
+def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
     """
     Creates a pydantic model for the signature of a given function
     """
@@ -80,9 +80,9 @@ def create_function_signature_model(fn: Callable, ignore_return: bool = True) ->
         signature = Signature.from_callable(fn)
         field_definitions: Dict[str, Tuple[Any, Any]] = {}
         for key, value in getfullargspec(fn).annotations.items():
-            parameter = signature.parameters.get(key)
-            if not parameter or (key == "return" and ignore_return):
+            if key == "return":
                 continue
+            parameter = signature.parameters[key]
             if parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
             elif not repr(parameter.annotation).startswith("typing.Optional"):
