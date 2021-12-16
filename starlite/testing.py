@@ -1,8 +1,18 @@
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 from urllib.parse import urlencode
 
+from openapi_schema_pydantic import (
+    Contact,
+    ExternalDocumentation,
+    License,
+    PathItem,
+    Reference,
+    SecurityRequirement,
+    Server,
+    Tag,
+)
 from orjson import dumps
-from pydantic import BaseModel
+from pydantic import AnyUrl, BaseModel
 from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.testclient import TestClient
@@ -10,7 +20,7 @@ from typing_extensions import AsyncContextManager, Type
 
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
-from starlite.enums import HttpMethod
+from starlite.enums import HttpMethod, OpenAPIMediaType
 from starlite.handlers import RouteHandler
 
 
@@ -30,6 +40,21 @@ def create_test_client(
     root_path: str = "",
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
+    # openapi config below
+    openapi_schema_url: str = "/schema",
+    openapi_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML,
+    title: str = "StarLite API",
+    version: str = "1.0.0",
+    contact: Optional[Contact] = None,
+    description: Optional[str] = None,
+    external_docs: Optional[ExternalDocumentation] = None,
+    license: Optional[License] = None,  # pylint: disable=redefined-builtin
+    security: Optional[List[SecurityRequirement]] = None,
+    servers: Optional[List[Server]] = None,
+    summary: Optional[str] = None,
+    tags: Optional[List[Tag]] = None,
+    terms_of_service: Optional[AnyUrl] = None,
+    webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None,
 ) -> TestClient:
     """Create a TestClient"""
     app = Starlite(
@@ -40,6 +65,20 @@ def create_test_client(
         on_shutdown=on_shutdown,
         on_startup=on_startup,
         route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+        openapi_schema_url=openapi_schema_url,
+        openapi_media_type=openapi_media_type,
+        title=title,
+        version=version,
+        contact=contact,
+        description=description,
+        external_docs=external_docs,
+        license=license,
+        security=security,
+        servers=servers,
+        summary=summary,
+        tags=tags,
+        terms_of_service=terms_of_service,
+        webhooks=webhooks,
     )
     return TestClient(
         app=app,

@@ -31,18 +31,21 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-starlette = "*"
-pydantic = "*"
-typing-extensions = "*"
+openapi-schema-pydantic = "*"
 orjson = "*"
+pydantic = "*"
+pydantic-factories = "*"
+starlette = "*"
+typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = {extras = ["cli"], version = "*"}
-pydantic-factories = "*"
+openapi-schema-pydantic = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 requests = "*"
+pyyaml = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -68,10 +71,10 @@ reports = "no"
 max-line-length = "120"
 
 [tool.pylint.DESIGN]
-max-args = 10
-max-attributes = 10
+max-args = 15
+max-attributes = 15
 max-locals = 15
-max-returns = 10
+max-returns = 15
 
 [tool.pylint.VARIABLES]
 ignored-argument-names = "args|kwargs|_|__"

@@ -22,15 +22,22 @@ class RouteHandler(BaseModel):
     http_method: Union[HttpMethod, List[HttpMethod]]
     status_code: Optional[int] = None
     include_in_schema: Optional[bool] = None
-    media_type: Optional[MediaType] = None
-    name: Optional[str] = None
+    media_type: Optional[Union[MediaType, str]] = None
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
-    response_headers: Optional[Union[dict, BaseModel]] = None
+    response_headers: Optional[BaseModel] = None
     dependencies: Optional[Dict[str, Provide]] = None
 
     fn: Optional[Callable] = None
     owner: Optional[Union[Controller, "Router"]] = None
+
+    # OpenAPI attributes
+    name: Optional[str] = None
+    tags: Optional[List[str]] = None
+    summary: Optional[str] = None
+    description: Optional[str] = None
+    operation_id: Optional[str] = None
+    deprecated: bool = False
 
     def __call__(self, fn: Callable) -> "RouteHandler":
         """
@@ -135,5 +142,5 @@ class patch(RouteHandler):
     http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH)
 
 
-class delete(route):
+class delete(RouteHandler):
     http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE)

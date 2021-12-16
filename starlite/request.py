@@ -80,7 +80,6 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
         signature = Signature.from_callable(fn)
         field_definitions: Dict[str, Tuple[Any, Any]] = {}
         for key, value in getfullargspec(fn).annotations.items():
-            # discard return annotations
             if key == "return":
                 continue
             parameter = signature.parameters[key]
@@ -90,7 +89,8 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
                 field_definitions[key] = (value, ...)
             else:
                 field_definitions[key] = (value, None)
-        return create_model(fn.__name__ + "SignatureModel", __config__=Config, **field_definitions)
+        name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
+        return create_model(name, __config__=Config, **field_definitions)
     except (TypeError, ValueError) as e:
         raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
 

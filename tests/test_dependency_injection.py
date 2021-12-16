@@ -1,14 +1,18 @@
 from asyncio import sleep
 from typing import Any, Dict
 
+import pytest
 from starlette.requests import Request
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_400_BAD_REQUEST,
-    HTTP_500_INTERNAL_SERVER_ERROR,
-)
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from starlite import Controller, Provide, create_test_client, get
+from starlite import (
+    Controller,
+    ImproperlyConfiguredException,
+    Provide,
+    Starlite,
+    create_test_client,
+    get,
+)
 
 
 def router_first_dependency():
@@ -120,11 +124,10 @@ def test_dependency_validation():
     def test_function(first: int, second: str, third: int):
         pass
 
-    with create_test_client(
-        test_function,
-        dependencies={
-            "third": Provide(local_method_first_dependency),
-        },
-    ) as client:
-        response = client.get(f"{test_path}/abcdef?query_param=12345")
-        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(
+            route_handlers=[test_function],
+            dependencies={
+                "third": Provide(local_method_first_dependency),
+            },
+        )
