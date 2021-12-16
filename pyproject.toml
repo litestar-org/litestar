@@ -70,10 +70,10 @@ reports = "no"
 max-line-length = "120"
 
 [tool.pylint.DESIGN]
-max-args = 10
-max-attributes = 10
+max-args = 15
+max-attributes = 15
 max-locals = 15
-max-returns = 10
+max-returns = 15
 
 [tool.pylint.VARIABLES]
 ignored-argument-names = "args|kwargs|_|__"

@@ -14,15 +14,19 @@ T = TypeVar("T", bound=Type[BaseModel])
 
 
 class Partial(Generic[T]):
+    _models: Dict[T, Any] = {}
+
     def __class_getitem__(cls, item: T) -> T:
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
-        field_definitions: Dict[str, Tuple[Any, None]] = {}
-        for field_name, field_type in item.__annotations__.items():
-            # we modify the field annotations to make it optional
-            if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
-                field_definitions[field_name] = (Optional[field_type], None)
-            else:
-                field_definitions[field_name] = (field_type, None)
-        return cast(T, create_model("Partial" + item.__name__, **field_definitions))
+        if not cls._models.get(item):
+            field_definitions: Dict[str, Tuple[Any, None]] = {}
+            for field_name, field_type in item.__annotations__.items():
+                # we modify the field annotations to make it optional
+                if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
+                    field_definitions[field_name] = (Optional[field_type], None)
+                else:
+                    field_definitions[field_name] = (field_type, None)
+                cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)
+        return cast(T, cls._models.get(item))

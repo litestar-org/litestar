@@ -1,6 +1,7 @@
 from inspect import isclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 
+from openapi_schema_pydantic import OpenAPI
 from pydantic import validate_arguments
 from starlette.requests import Request
 from starlette.responses import Response
@@ -75,6 +76,7 @@ class Route(StarletteRoute):
 class Router(StarletteRouter):
     routes: List[Route]
     owner: Optional["Router"] = None
+    openapi_schema: Optional[OpenAPI] = None
 
     def __init__(
         self,

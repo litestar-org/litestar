@@ -3,24 +3,12 @@ from dataclasses import is_dataclass
 from datetime import date, datetime, time, timedelta
 from enum import Enum, EnumMeta
 from inspect import Signature
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Pattern,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import Any, Callable, Dict, List, Optional, Pattern, Type, Union, cast
 from uuid import UUID
 
-from openapi_schema_pydantic import Header, Info
+from openapi_schema_pydantic import Header as OpenAPIHeader
 from openapi_schema_pydantic import MediaType as OpenAPIMediaType
 from openapi_schema_pydantic import (
-    OpenAPI,
     Operation,
     Parameter,
     PathItem,
@@ -98,6 +86,7 @@ from pydantic_factories.utils import (
 )
 from starlette.routing import get_name
 
+from starlite import Header, ImproperlyConfiguredException
 from starlite.app import Starlite
 from starlite.enums import MediaType
 from starlite.handlers import RouteHandler
@@ -284,15 +273,15 @@ def create_numerical_constrained_field_schema(
     """
     Create Schema from Constrained Int/Float/Decimal field
     """
-    schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, ConstrainedInt) else OpenAPIType.NUMBER)
+    schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
+    if field_type.le is not None:
+        schema.maximum = field_type.le
+    if field_type.lt is not None:
+        schema.exclusiveMaximum = field_type.lt
     if field_type.ge is not None:
         schema.minimum = field_type.ge
     if field_type.gt is not None:
-        schema.exclusiveMaximum = field_type.ge
-    if field_type.ge is not None:
-        schema.minimum = field_type.ge
-    if field_type.gt is not None:
-        schema.exclusiveMinimum = field_type.ge
+        schema.exclusiveMinimum = field_type.gt
     if field_type.multiple_of is not None:
         schema.multipleOf = field_type.multiple_of
     return schema
@@ -303,11 +292,11 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
     Create Schema from Constrained Str/Bytes field
     """
     schema = Schema(type=OpenAPIType.STRING)
-    if field_type.max_length:
+    if field_type.min_length:
         schema.minLength = field_type.min_length
     if field_type.max_length:
         schema.maxLength = field_type.max_length
-    if field_type.regex:
+    if hasattr(field_type, "regex") and field_type.regex:
         schema.pattern = field_type.regex
     if field_type.to_lower:
         schema.description = "must be in lower case"
@@ -331,7 +320,8 @@ def create_collection_constrained_field_schema(
     if sub_fields:
         schema.items = [create_schema(sub_field) for sub_field in sub_fields]
     else:
-        schema.items = create_schema(field_type.item_type)
+        parsed_model_field = create_parsed_model_field(field_type.item_type)
+        schema.items = create_schema(parsed_model_field)
     return schema
 
 
@@ -377,7 +367,7 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     if ModelFactory.is_constrained_field(field_type):
         return create_constrained_field_schema(field_type=field_type, sub_fields=field.sub_fields)
     if isinstance(field_type, EnumMeta):
-        enum_values: List[Union[str, int]] = list(field_type)
+        enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
     if field.sub_fields:
@@ -391,7 +381,9 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     return Schema()
 
 
-def create_parameters(route_handler: RouteHandler, handler_fields: Dict[str, ModelField], path: str) -> List[Parameter]:
+def create_parameters(
+    route_handler: RouteHandler, handler_fields: Dict[str, ModelField], path_format: str
+) -> List[Parameter]:
     """
     Create a list of path/query/header Parameter models for the given PathHandler
     """
@@ -400,16 +392,17 @@ def create_parameters(route_handler: RouteHandler, handler_fields: Dict[str, Mod
     ignored_fields = ["data", "request", "headers", *list(route_handler.resolve_dependencies().keys())]
     for f_name, field in handler_fields.items():
         if f_name not in ignored_fields:
-            if "{" + f_name in path:
+            required = field.required
+            if "{" + f_name + "}" in path_format:
                 param_in = "path"
             elif isinstance(field.default, Header):
                 param_in = "header"
+                # for header params we assume they are always required unless marked with optional
+                required = not is_optional(field)
             else:
                 param_in = "query"
             parameters.append(
-                Parameter(
-                    name=f_name, param_in=param_in, param_schema=create_schema(field), required=not is_optional(field)
-                )
+                Parameter(name=f_name, param_in=param_in, param_schema=create_schema(field), required=required)
             )
     return parameters
 
@@ -425,9 +418,11 @@ def get_media_type(route_handler: RouteHandler) -> MediaType:
     return MediaType.JSON
 
 
-def dict_to_pydantic_model(**kwargs: Tuple[Any, Any]) -> Dict[str, ModelField]:
-    """Create a pydantic model and return its fields from the given kwargs dict"""
-    return create_model("ReturnModel", **kwargs).__fields__
+def create_parsed_model_field(value: Any) -> ModelField:
+    """Create a pydantic model with the passed in value as its sole field, and return the parsed field"""
+    return create_model(
+        "temp", **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)}
+    ).__fields__["value"]
 
 
 def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
@@ -436,12 +431,7 @@ def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
     """
     return_annotation = Signature.from_callable(cast(Callable, route_handler.fn)).return_annotation
     if return_annotation:
-        as_parsed_model_field = dict_to_pydantic_model(
-            return_annotation=(
-                return_annotation,
-                ... if not repr(return_annotation).startswith("typing.Optional") else None,
-            )
-        )["return_annotation"]
+        as_parsed_model_field = create_parsed_model_field(return_annotation)
         response = Response(
             content={
                 get_media_type(route_handler): OpenAPIMediaType(media_type_schema=create_schema(as_parsed_model_field))
@@ -454,12 +444,12 @@ def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
             for key, value in headers.items():
                 if value.alias:
                     key = value.alias
-                response.headers[key] = Header(param_schema=create_schema(value))
+                response.headers[key] = OpenAPIHeader(param_schema=create_schema(value))
         return {str(route_handler.status_code): response}
     return None
 
 
-def get_request_body(route_handler: RouteHandler, handler_fields: Dict[str, ModelField]) -> Optional[RequestBody]:
+def create_request_body(route_handler: RouteHandler, handler_fields: Dict[str, ModelField]) -> Optional[RequestBody]:
     """
     Create a RequestBody model for the given RouteHandler or return None
     """
@@ -486,8 +476,10 @@ def create_path_item(route: Route) -> PathItem:
             description=route_handler.description,
             deprecated=route_handler.deprecated,
             responses=create_responses(route_handler=route_handler),
-            requestBody=get_request_body(route_handler=route_handler, handler_fields=handler_fields),
-            parameters=create_parameters(route_handler=route_handler, handler_fields=handler_fields, path=route.path)
+            requestBody=create_request_body(route_handler=route_handler, handler_fields=handler_fields),
+            parameters=create_parameters(
+                route_handler=route_handler, handler_fields=handler_fields, path_format=route.path_format
+            )
             or None,
         )
         setattr(path_item, http_method, operation)
@@ -498,11 +490,14 @@ def create_openapi_schema_dict(app: Starlite) -> dict:
     """
     Create OpenAPI model for the given app
     """
-    info = Info(title="starlite app", version="v1.0.0")
-    openapi_schema = OpenAPI(
-        info=info,
-        paths={
-            route.path or "/": create_path_item(route=route) for route in app.router.routes if route.include_in_schema
-        },
-    )
-    return construct_open_api_with_schema_class(openapi_schema).dict(exclude_none=True)
+    if not app.router.openapi_schema:
+        raise ImproperlyConfiguredException(
+            "App does not have an openapi config, "
+            "call the '.config_openapi()' method to create it after creating your app instance."
+        )
+    app.router.openapi_schema.paths = {
+        route.path_format or "/": create_path_item(route=route)
+        for route in app.router.routes
+        if route.include_in_schema
+    }
+    return construct_open_api_with_schema_class(app.router.openapi_schema).dict(exclude_none=True)
