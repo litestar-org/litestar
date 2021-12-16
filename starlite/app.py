@@ -28,10 +28,11 @@ from starlette.datastructures import State
 from starlette.middleware import Middleware
 from typing_extensions import Type
 
+from starlite.enums import OpenAPIMediaType
 from starlite.handlers import RouteHandler
 from starlite.logging import LoggingConfig
 from starlite.provide import Provide
-from starlite.routing import Router
+from starlite.routing import RootRouter, Router
 from starlite.utils import DeprecatedProperty
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -40,7 +41,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # noinspection PyMethodOverriding
 class Starlite(Starlette):
-    def __init__(  # pylint: disable=super-init-not-called
+    def __init__(  # pylint: disable=super-init-not-called, too-many-locals
         self,
         *,
         debug: bool = False,
@@ -52,33 +53,11 @@ class Starlite(Starlette):
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         logging_config: Optional[LoggingConfig] = LoggingConfig(),
-    ):
-        if logging_config:
-            logging_config.configure(debug)
-        self._debug = debug
-        self.state = State()
-        self.router = Router(
-            path="",
-            route_handlers=route_handlers,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            lifespan=lifespan,
-            dependencies=dependencies,
-        )
-        self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
-        self.user_middleware = list(middleware) if middleware else []
-        self.middleware_stack = self.build_middleware_stack()
-
-    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, Callable]):
-        """
-        Proxy method for Route.register(**kwargs)
-        """
-        self.router.register(value=route_handler)
-
-    def config_openapi(
-        self,
-        title: str,
-        version: str,
+        # openapi config below
+        openapi_schema_url: str = "/schema",
+        openapi_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML,
+        title: str = "StarLite API",
+        version: str = "1.0.0",
         contact: Optional[Contact] = None,
         description: Optional[str] = None,
         external_docs: Optional[ExternalDocumentation] = None,
@@ -90,23 +69,44 @@ class Starlite(Starlette):
         terms_of_service: Optional[AnyUrl] = None,
         webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None,
     ):
-        """Sets the base OpenAPI config for the API. This method must be called before API specs are generated"""
-        self.router.openapi_schema = OpenAPI(
-            externalDocs=external_docs,
-            security=security,
-            servers=servers or [Server(url="/")],
-            tags=tags,
-            webhooks=webhooks,
-            info=Info(
-                title=title,
-                version=version,
-                description=description,
-                contact=contact,
-                license=license,
-                summary=summary,
-                termsOfService=terms_of_service,
+        if logging_config:
+            logging_config.configure(debug)
+        self._debug = debug
+        self.state = State()
+        self.router = RootRouter(
+            route_handlers=route_handlers or [],
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            lifespan=lifespan,
+            dependencies=dependencies,
+            openapi_media_type=openapi_media_type,
+            openapi_schema_url=openapi_schema_url,
+            openapi_schema=OpenAPI(
+                externalDocs=external_docs,
+                security=security,
+                servers=servers or [Server(url="/")],
+                tags=tags,
+                webhooks=webhooks,
+                info=Info(
+                    title=title,
+                    version=version,
+                    description=description,
+                    contact=contact,
+                    license=license,
+                    summary=summary,
+                    termsOfService=terms_of_service,
+                ),
             ),
         )
+        self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
+        self.user_middleware = list(middleware) if middleware else []
+        self.middleware_stack = self.build_middleware_stack()
+
+    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, Callable]):
+        """
+        Proxy method for Route.register(**kwargs)
+        """
+        self.router.register(value=route_handler)
 
     # these Starlette properties are not supported
     route = DeprecatedProperty()

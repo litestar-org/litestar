@@ -31,7 +31,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-openapi-schema-pydantic = "^1.2.1"
+openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
@@ -45,6 +45,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 requests = "*"
+pyyaml = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

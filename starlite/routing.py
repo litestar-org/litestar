@@ -2,6 +2,7 @@ from inspect import isclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 
 from openapi_schema_pydantic import OpenAPI
+from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import validate_arguments
 from starlette.requests import Request
 from starlette.responses import Response
@@ -11,9 +12,10 @@ from starlette.types import ASGIApp
 from typing_extensions import AsyncContextManager, Type
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod
+from starlite.enums import HttpMethod, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
+from starlite.openapi import create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
 from starlite.utils.helpers import DeprecatedProperty
@@ -76,7 +78,6 @@ class Route(StarletteRoute):
 class Router(StarletteRouter):
     routes: List[Route]
     owner: Optional["Router"] = None
-    openapi_schema: Optional[OpenAPI] = None
 
     def __init__(
         self,
@@ -192,3 +193,64 @@ class Router(StarletteRouter):
     # these Starlette properties are not supported
     route = DeprecatedProperty()
     add_route = DeprecatedProperty()
+
+
+class RootRouter(Router):
+    def __init__(
+        self,
+        *,
+        openapi_schema: OpenAPI,
+        openapi_schema_url: str,
+        openapi_media_type: OpenAPIMediaType,
+        route_handlers: Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]] = None,
+        on_startup: Optional[Sequence[Callable]] = None,
+        on_shutdown: Optional[Sequence[Callable]] = None,
+        lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+    ):
+        self.openapi_schema = openapi_schema
+        self.openapi_schema_url = openapi_schema_url
+        self.openapi_media_type = openapi_media_type
+        super().__init__(
+            path="",
+            route_handlers=route_handlers,
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            lifespan=lifespan,
+            dependencies=dependencies,
+        )
+        self.routes.append(self.create_schema_endpoint())
+
+    def register(self, value: Union[Type[Controller], RouteHandler, "Router", Callable]):
+        super().register(value=value)
+        self.update_openapi_schema_paths()
+
+    def update_openapi_schema_paths(self):
+        """
+        Updates the OpenAPI schema with all paths registered on the root router
+        """
+        if not self.openapi_schema.paths:
+            self.openapi_schema.paths = {}
+        for route in self.routes:
+            if route.include_in_schema and (route.path_format or "/") not in self.openapi_schema.paths:
+                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(route=route)
+
+    # TODO: extend this to support customization, security etc.
+    def create_schema_endpoint(self) -> Route:
+        """Create a schema endpoint"""
+
+        def get_openapi_schema() -> OpenAPI:
+            """handler function that returns a constructed OpenAPI model"""
+            return construct_open_api_with_schema_class(self.openapi_schema)
+
+        return Route(
+            path=normalize_path(self.openapi_schema_url),
+            route_handlers=[
+                RouteHandler(
+                    http_method=HttpMethod.GET,
+                    media_type=self.openapi_media_type,
+                    fn=get_openapi_schema,
+                    include_in_schema=False,
+                )
+            ],
+        )

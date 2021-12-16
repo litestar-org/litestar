@@ -22,7 +22,7 @@ class RouteHandler(BaseModel):
     http_method: Union[HttpMethod, List[HttpMethod]]
     status_code: Optional[int] = None
     include_in_schema: Optional[bool] = None
-    media_type: Optional[MediaType] = None
+    media_type: Optional[Union[MediaType, str]] = None
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[BaseModel] = None
@@ -142,5 +142,5 @@ class patch(RouteHandler):
     http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH)
 
 
-class delete(route):
+class delete(RouteHandler):
     http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE)

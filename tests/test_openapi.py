@@ -3,8 +3,10 @@ from enum import Enum
 from inspect import Signature
 from typing import Any, Callable, List, Optional, Union, cast
 
+import yaml
 from hypothesis import given
 from hypothesis import strategies as st
+from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic.types import (
     conbytes,
     condecimal,
@@ -15,25 +17,28 @@ from pydantic.types import (
     constr,
 )
 from starlette.responses import HTMLResponse
+from starlette.status import HTTP_200_OK
 
 from starlite import (
     Controller,
     Header,
     MediaType,
     Partial,
+    Router,
     Starlite,
+    create_test_client,
     delete,
     get,
     patch,
     post,
     put,
 )
+from starlite.enums import OpenAPIMediaType
 from starlite.openapi import (
     OpenAPIType,
     create_collection_constrained_field_schema,
     create_constrained_field_schema,
     create_numerical_constrained_field_schema,
-    create_openapi_schema_dict,
     create_parameters,
     create_parsed_model_field,
     create_path_item,
@@ -44,7 +49,7 @@ from starlite.openapi import (
 )
 from starlite.request import create_function_signature_model
 from starlite.utils import find_index
-from tests.utils import Person
+from tests.utils import Person, VanillaDataClassPerson
 
 
 class Gender(str, Enum):
@@ -112,6 +117,18 @@ class PersonController(Controller):
         pass
 
 
+class MysteryController(Controller):
+    path = "/mystery"
+
+    @get()
+    def mysterious_endpoint(self) -> Any:
+        pass
+
+    @get(path="/dataclass")
+    def mysterious_dataclass_endpoint(self, data: VanillaDataClassPerson) -> VanillaDataClassPerson:
+        pass
+
+
 constrained_numbers = [
     conint(gt=10, lt=100),
     conint(ge=10, le=100),
@@ -150,15 +167,32 @@ constrained_collection = [
 ]
 
 
-def test_openapi():
-    app = Starlite(route_handlers=[PersonController])
-    app.config_openapi(title="test app", version="1.0.0")
-    assert app.router.openapi_schema
-    openapi_schema = app.router.openapi_schema
-    assert openapi_schema.paths is None
-    openapi_doc = create_openapi_schema_dict(app=app)
-    assert openapi_schema.paths
-    assert isinstance(openapi_doc, dict)
+def test_openapi_yaml():
+    with create_test_client([PersonController, MysteryController]) as client:
+        app = cast(Starlite, client.app)
+        assert app.router.openapi_schema
+        openapi_schema = app.router.openapi_schema
+        assert openapi_schema.paths
+        response = client.get("/schema")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_YAML.value
+        assert yaml.safe_load(response.content) == construct_open_api_with_schema_class(app.router.openapi_schema).dict(
+            exclude_none=True
+        )
+
+
+def test_openapi_json():
+    with create_test_client(
+        [PersonController, MysteryController], openapi_media_type=OpenAPIMediaType.OPENAPI_JSON
+    ) as client:
+        app = cast(Starlite, client.app)
+        assert app.router.openapi_schema
+        openapi_schema = app.router.openapi_schema
+        assert openapi_schema.paths
+        response = client.get("/schema")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_JSON.value
+        assert response.json() == construct_open_api_with_schema_class(app.router.openapi_schema).dict()
 
 
 @given(
@@ -299,9 +333,9 @@ def test_create_parameters():
 
 
 def test_create_path_item():
-    app = Starlite(route_handlers=[PersonController])
-    index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id:str}")
-    route = app.router.routes[index]
+    router = Router(path="", route_handlers=[PersonController])
+    index = find_index(router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id:str}")
+    route = router.routes[index]
     schema = create_path_item(route=route)
     assert schema.delete
     assert schema.delete.operationId == "delete_person"

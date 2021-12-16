@@ -7,7 +7,7 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 
-from starlite.enums import MediaType
+from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 
 
@@ -17,7 +17,7 @@ class Response(StarletteResponse):
         content: Any = None,
         status_code: Optional[int] = None,
         headers: Optional[Dict[str, str]] = None,
-        media_type: Optional[Union[MediaType, str]] = None,
+        media_type: Optional[Union[MediaType, OpenAPIMediaType, str]] = None,
         background: BackgroundTask = None,
     ):
         super().__init__(
@@ -30,13 +30,23 @@ class Response(StarletteResponse):
 
     def render(self, content: Any) -> bytes:
         try:
-            if self.media_type == MediaType.JSON:
+            if self.media_type in [MediaType.JSON, OpenAPIMediaType.OPENAPI_JSON]:
                 if isinstance(content, BaseModel):
                     return content.json().encode("utf-8")
                 return dumps(content)
+            if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+                import yaml  # pylint: disable=import-outside-toplevel
+
+                content_dict = content.dict(exclude_none=True) if isinstance(content, BaseModel) else content
+                return yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+        except ImportError as e:  # pragma: no cover
+            raise ImproperlyConfiguredException(
+                "pyyaml is not installed\n\nTo generate yaml based openapi responses, "
+                "please install it or change the media_type to JSON."
+            ) from e
 
 
 __all__ = ["Response", "StreamingResponse", "FileResponse", "RedirectResponse"]

@@ -7,7 +7,7 @@ def test_app_register():
         pass
 
     app = Starlite()
-    assert not app.router.routes
+    assert len(app.router.routes) == 1
 
     app.register(my_fn)
-    assert app.router.routes
+    assert len(app.router.routes) == 2

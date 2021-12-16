@@ -62,5 +62,6 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [
-            orjson
+            orjson,
+            types-PyYAML
         ]

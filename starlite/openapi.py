@@ -3,7 +3,18 @@ from dataclasses import is_dataclass
 from datetime import date, datetime, time, timedelta
 from enum import Enum, EnumMeta
 from inspect import Signature
-from typing import Any, Callable, Dict, List, Optional, Pattern, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Pattern,
+    Type,
+    Union,
+    cast,
+)
 from uuid import UUID
 
 from openapi_schema_pydantic import Header as OpenAPIHeader
@@ -17,10 +28,7 @@ from openapi_schema_pydantic import (
     Responses,
     Schema,
 )
-from openapi_schema_pydantic.util import (
-    PydanticSchema,
-    construct_open_api_with_schema_class,
-)
+from openapi_schema_pydantic.util import PydanticSchema
 from pydantic import (
     UUID1,
     UUID3,
@@ -28,6 +36,7 @@ from pydantic import (
     UUID5,
     AnyHttpUrl,
     AnyUrl,
+    BaseModel,
     ByteSize,
     ConstrainedBytes,
     ConstrainedDecimal,
@@ -86,12 +95,13 @@ from pydantic_factories.utils import (
 )
 from starlette.routing import get_name
 
-from starlite import Header, ImproperlyConfiguredException
-from starlite.app import Starlite
 from starlite.enums import MediaType
 from starlite.handlers import RouteHandler
+from starlite.params import Header
 from starlite.request import create_function_signature_model
-from starlite.routing import Route
+
+if TYPE_CHECKING:
+    from starlite.routing import Route
 
 
 class OpenAPIFormat(str, Enum):
@@ -347,6 +357,9 @@ def create_constrained_field_schema(
     return create_collection_constrained_field_schema(field_type=field_type, sub_fields=sub_fields)
 
 
+_dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
+
+
 def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     """
     Create a Schema model for a given ModelField
@@ -358,7 +371,9 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     if is_pydantic_model(field.outer_type_):
         return PydanticSchema(schema_class=field.outer_type_)
     if is_dataclass(field.outer_type_):
-        return PydanticSchema(schema_class=create_model_from_dataclass(field.outer_type_))
+        if not _dataclass_model_map.get(field.outer_type_):
+            _dataclass_model_map[field.outer_type_] = create_model_from_dataclass(field.outer_type_)
+        return PydanticSchema(schema_class=_dataclass_model_map[field.outer_type_])
     if is_union(field):
         return Schema(oneOf=[create_schema(sub_field) for sub_field in field.sub_fields or []])
     field_type = field.outer_type_
@@ -412,13 +427,13 @@ def get_media_type(route_handler: RouteHandler) -> MediaType:
     Return a MediaType enum member for the given RouteHandler or a default value
     """
     if route_handler.media_type:
-        return route_handler.media_type
+        return cast(MediaType, route_handler.media_type)
     if route_handler.response_class and route_handler.response_class.media_type:
-        return route_handler.response_class.media_type
+        return cast(MediaType, route_handler.response_class.media_type)
     return MediaType.JSON
 
 
-def create_parsed_model_field(value: Any) -> ModelField:
+def create_parsed_model_field(value: Type) -> ModelField:
     """Create a pydantic model with the passed in value as its sole field, and return the parsed field"""
     return create_model(
         "temp", **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)}
@@ -429,9 +444,9 @@ def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
     """
     Create a Response model embedded in a responses dictionary for the given RouteHandler or return None
     """
-    return_annotation = Signature.from_callable(cast(Callable, route_handler.fn)).return_annotation
-    if return_annotation:
-        as_parsed_model_field = create_parsed_model_field(return_annotation)
+    signature = Signature.from_callable(cast(Callable, route_handler.fn))
+    if signature.return_annotation not in [signature.empty, None]:
+        as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         response = Response(
             content={
                 get_media_type(route_handler): OpenAPIMediaType(media_type_schema=create_schema(as_parsed_model_field))
@@ -462,7 +477,7 @@ def create_request_body(route_handler: RouteHandler, handler_fields: Dict[str, M
     return None
 
 
-def create_path_item(route: Route) -> PathItem:
+def create_path_item(route: "Route") -> PathItem:
     """
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """
@@ -484,20 +499,3 @@ def create_path_item(route: Route) -> PathItem:
         )
         setattr(path_item, http_method, operation)
     return path_item
-
-
-def create_openapi_schema_dict(app: Starlite) -> dict:
-    """
-    Create OpenAPI model for the given app
-    """
-    if not app.router.openapi_schema:
-        raise ImproperlyConfiguredException(
-            "App does not have an openapi config, "
-            "call the '.config_openapi()' method to create it after creating your app instance."
-        )
-    app.router.openapi_schema.paths = {
-        route.path_format or "/": create_path_item(route=route)
-        for route in app.router.routes
-        if route.include_in_schema
-    }
-    return construct_open_api_with_schema_class(app.router.openapi_schema).dict(exclude_none=True)

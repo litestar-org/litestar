@@ -28,3 +28,8 @@ class MediaType(str, Enum):
     JSON = "application/json"
     HTML = "text/html"
     TEXT = "text/plain"
+
+
+class OpenAPIMediaType(str, Enum):
+    OPENAPI_YAML = "application/vnd.oai.openapi"
+    OPENAPI_JSON = "application/vnd.oai.openapi+json"
