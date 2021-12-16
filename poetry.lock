@@ -312,7 +312,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "0.6.2"
+version = "0.6.3"
 description = "Mock data generation for pydantic based models"
 category = "main"
 optional = false
@@ -520,14 +520,6 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "types-pyyaml"
-version = "6.0.1"
-description = "Typing stubs for PyYAML"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "typing-extensions"
 version = "4.0.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
@@ -563,7 +555,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "d52894fc507a71bbaafd7650f2a1311724360333a6a28ca17e69082a149b3b66"
+content-hash = "a162899222e3e18d7eacf9e55f88b3ce78874ccc98ff1a6a616206d487220d09"
 
 [metadata.files]
 anyio = [
@@ -753,8 +745,8 @@ pydantic = [
     {file = "pydantic-1.8.2.tar.gz", hash = "sha256:26464e57ccaafe72b7ad156fdaa4e9b9ef051f69e175dbbb463283000c05ab7b"},
 ]
 pydantic-factories = [
-    {file = "pydantic-factories-0.6.2.tar.gz", hash = "sha256:e108c7b449dbae0ceede81587f8db12fefb0cfcff8bcf7b8c7c2eea794d3a73f"},
-    {file = "pydantic_factories-0.6.2-py3-none-any.whl", hash = "sha256:318cf79d454fce6d694d65974f5d13ab243cde356c052a15bbba2855a3158a9d"},
+    {file = "pydantic-factories-0.6.3.tar.gz", hash = "sha256:d2c7e385a8d05e433af0857883dac62c92d81447d0a184fcdbca9e37bd4258b8"},
+    {file = "pydantic_factories-0.6.3-py3-none-any.whl", hash = "sha256:f0a0ef6d2de90d689b643b08b41d6d7b4cefcc91393319d509b6298a25e329f4"},
 ]
 pygments = [
     {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
@@ -871,10 +863,6 @@ typed-ast = [
     {file = "typed_ast-1.5.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a2b8d7007f6280e36fa42652df47087ac7b0a7d7f09f9468f07792ba646aac2d"},
     {file = "typed_ast-1.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:b6d17f37f6edd879141e64a5db17b67488cfeffeedad8c5cec0392305e9bc775"},
     {file = "typed_ast-1.5.1.tar.gz", hash = "sha256:484137cab8ecf47e137260daa20bafbba5f4e3ec7fda1c1e69ab299b75fa81c5"},
-]
-types-pyyaml = [
-    {file = "types-PyYAML-6.0.1.tar.gz", hash = "sha256:2e27b0118ca4248a646101c5c318dc02e4ca2866d6bc42e84045dbb851555a76"},
-    {file = "types_PyYAML-6.0.1-py3-none-any.whl", hash = "sha256:d5b318269652e809b5c30a5fe666c50159ab80bfd41cd6bafe655bf20b29fcba"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
