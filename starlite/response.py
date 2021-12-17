@@ -46,9 +46,10 @@ class Response(StarletteResponse):
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
                     import yaml  # pylint: disable=import-outside-toplevel
 
-                    content_dict = content.dict(exclude_none=True) if isinstance(content, BaseModel) else content
-                    return yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
-                return content.json(exclude_none=True).encode("utf-8")
+                    return yaml.dump(content.dict(by_alias=True, exclude_none=True), default_flow_style=False).encode(
+                        "utf-8"
+                    )
+                return content.json(by_alias=True, exclude_none=True, indent=2).encode("utf-8")
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
