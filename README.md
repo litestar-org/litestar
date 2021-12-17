@@ -12,6 +12,72 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 
-# starlite
+# StarLite
 
-Pre-Alpha WIP.
+StarLite is a flexible, extensible and opinionated ASGI API framework built on top of pydantic and Starlette.
+
+Features and roadmap:
+
+- [x] sync and async API endpoints
+- [x] class based controllers
+- [x] decorators based configuration
+- [x] rigorous typing and type inference
+- [x] layered dependency injection
+- [x] automatic OpenAPI schema generation
+- [x] support for pydantic models and pydantic dataclasses
+- [x] support for vanilla python dataclasses
+- [x] extended testing support
+- [ ] request interceptors
+- [ ] route guards
+- [ ] schemathesis integration
+
+## Example: Controller Pattern
+
+Starlite supports class API components called "Controllers". Controllers are meant to group logical subcomponents, for
+example - consider the following `UserController`:
+
+```python3
+from pydantic import BaseModel, UUID4
+from starlite import Starlite
+from starlite.controller import Controller
+from starlite.handlers import get, post, put, patch, delete
+from starlite.types import Partial
+
+
+class User(BaseModel):
+    first_name: str
+    last_name: str
+    id: UUID4
+
+
+class UserController(Controller):
+    path = "/users"
+
+    @post()
+    async def create(self, data: User) -> User:
+        ...
+
+    @get()
+    async def get_users(self) -> list[User]:
+        ...
+
+    @patch()
+    async def partial_update_user(self, data: Partial[User]) -> User:
+        ...
+
+    @put()
+    async def bulk_update_users(self, data: list[User]) -> list[User]:
+        ...
+
+    @get(path="/{user_id}")
+    async def get_user_by_id(self, user_id: UUID4) -> User:
+        ...
+
+    @delete(path="/{user_id}")
+    async def delete_user_by_id(self, user_id: UUID4) -> User:
+        ...
+
+
+app = Starlite(route_handlers=[UserController])
+
+```
