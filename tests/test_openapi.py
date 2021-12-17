@@ -35,6 +35,7 @@ from starlite import (
 )
 from starlite.enums import OpenAPIMediaType
 from starlite.openapi import (
+    OpenAPIConfig,
     OpenAPIType,
     create_collection_constrained_field_schema,
     create_constrained_field_schema,
@@ -49,7 +50,7 @@ from starlite.openapi import (
 )
 from starlite.request import create_function_signature_model
 from starlite.utils import find_index
-from tests.utils import Person, VanillaDataClassPerson
+from tests.utils import Person, Pet, ResponseHeaders, VanillaDataClassPerson
 
 
 class Gender(str, Enum):
@@ -68,12 +69,13 @@ class PersonController(Controller):
         # expected to be ignored
         headers: Any,
         request: Any,
-        # path parameter
-        service_id: int,
-        # query parameters below
+        # required query parameters below
         page: int,
         page_size: int,
         name: Optional[Union[str, List[str]]],  # intentionally without default
+        # path parameter
+        service_id: int = conint(gt=0),
+        # non-required query parameters below
         from_date: Optional[Union[int, datetime, date]] = None,
         to_date: Optional[Union[int, datetime, date]] = None,
         gender: Optional[Union[Gender, List[Gender]]] = None,
@@ -116,16 +118,20 @@ class PersonController(Controller):
     def delete_person(self, person_id: str) -> None:
         pass
 
-
-class MysteryController(Controller):
-    path = "/mystery"
-
-    @get()
-    def mysterious_endpoint(self) -> Any:
+    @get(path="/dataclass")
+    def get_person_dataclass(self) -> VanillaDataClassPerson:
         pass
 
-    @get(path="/dataclass")
-    def mysterious_dataclass_endpoint(self, data: VanillaDataClassPerson) -> VanillaDataClassPerson:
+
+class PetController(Controller):
+    path = "/pet"
+
+    @get()
+    def pets(self) -> List[Pet]:
+        pass
+
+    @get(path="/owner-or-pet", response_headers=ResponseHeaders(x_my_tag="123"))
+    def get_pets_or_owners(self) -> List[Union[Person, Pet]]:
         pass
 
 
@@ -168,7 +174,7 @@ constrained_collection = [
 
 
 def test_openapi_yaml():
-    with create_test_client([PersonController, MysteryController]) as client:
+    with create_test_client([PersonController, PetController], openapi_config=OpenAPIConfig()) as client:
         app = cast(Starlite, client.app)
         assert app.router.openapi_schema
         openapi_schema = app.router.openapi_schema
@@ -183,7 +189,8 @@ def test_openapi_yaml():
 
 def test_openapi_json():
     with create_test_client(
-        [PersonController, MysteryController], openapi_media_type=OpenAPIMediaType.OPENAPI_JSON
+        [PersonController, PetController],
+        openapi_config=OpenAPIConfig(schema_response_media_type=OpenAPIMediaType.OPENAPI_JSON),
     ) as client:
         app = cast(Starlite, client.app)
         assert app.router.openapi_schema
@@ -192,7 +199,9 @@ def test_openapi_json():
         response = client.get("/schema")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_JSON.value
-        assert response.json() == construct_open_api_with_schema_class(app.router.openapi_schema).dict()
+        assert response.json() == construct_open_api_with_schema_class(app.router.openapi_schema).dict(
+            exclude_none=True
+        )
 
 
 @given(
@@ -268,7 +277,7 @@ def test_create_parameters():
         path_format=route.path_format,
     )
     assert len(parameters) == 8
-    service_id, page, page_size, name, from_date, to_date, gender, secret_header = tuple(parameters)
+    page, page_size, name, service_id, from_date, to_date, gender, secret_header = tuple(parameters)
     assert service_id.param_in == "path"
     assert service_id.param_schema.type == OpenAPIType.INTEGER
     assert service_id.required
@@ -334,7 +343,7 @@ def test_create_parameters():
 
 def test_create_path_item():
     router = Router(path="", route_handlers=[PersonController])
-    index = find_index(router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id:str}")
+    index = find_index(router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     route = router.routes[index]
     schema = create_path_item(route=route)
     assert schema.delete
@@ -355,6 +364,14 @@ def test_create_responses():
                 assert responses
             else:
                 assert not responses
+
+    responses = create_responses(PetController.get_pets_or_owners)
+    assert "200" in responses
+    response = responses["200"]
+    assert response.headers["application-type"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["Access-Control-Allow-Origin"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["x-my-tag"].param_schema.type == OpenAPIType.STRING
+    assert len(response.headers["omitted-tag"].param_schema.oneOf) == 2
 
 
 def test_get_media_type():

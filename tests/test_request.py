@@ -1,5 +1,6 @@
 from asyncio import sleep
 from functools import lru_cache
+from json import loads
 from typing import Any, Optional, cast
 
 import pytest
@@ -29,10 +30,11 @@ from starlite.request import (
     create_function_signature_model,
     get_kwargs_from_request,
     handle_request,
+    normalize_headers,
     parse_query_params,
 )
 from starlite.testing import create_test_request
-from tests.utils import Person, PersonFactory
+from tests.utils import Person, PersonFactory, ResponseHeaders
 
 
 def test_parse_query_params():
@@ -117,7 +119,7 @@ async def test_handle_request_async_await():
     request = create_test_request(content=person_instance, http_method=HttpMethod.POST)
 
     response = await handle_request(route_handler=cast(Any, test_function), request=request)
-    assert response.body.decode("utf-8") == person_instance.json()
+    assert loads(response.body) == person_instance.dict()
 
 
 @pytest.mark.asyncio
@@ -153,3 +155,11 @@ async def test_handle_request_redirect_response():
     response = await handle_request(route_handler=cast(Any, test_path), request=request)
     assert isinstance(response, RedirectResponse)
     assert response.headers["location"] == "/somewhere-else"
+
+
+def test_normalize_headers():
+    headers = normalize_headers(ResponseHeaders(x_my_tag="123"))
+    assert headers["application-type"] == "APP"
+    assert headers["Access-Control-Allow-Origin"] == "*"
+    assert headers["x-my-tag"] == "123"
+    assert not headers.get("omitted_tag")

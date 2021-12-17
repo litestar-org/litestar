@@ -17,16 +17,23 @@ from typing import (
 )
 from uuid import UUID
 
+from openapi_schema_pydantic import Contact, ExternalDocumentation
 from openapi_schema_pydantic import Header as OpenAPIHeader
-from openapi_schema_pydantic import MediaType as OpenAPIMediaType
+from openapi_schema_pydantic import Info, License
+from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import (
+    OpenAPI,
     Operation,
     Parameter,
     PathItem,
+    Reference,
     RequestBody,
     Response,
     Responses,
     Schema,
+    SecurityRequirement,
+    Server,
+    Tag,
 )
 from openapi_schema_pydantic.util import PydanticSchema
 from pydantic import (
@@ -88,19 +95,19 @@ from pydantic.fields import (
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import (
     create_model_from_dataclass,
-    is_any,
     is_optional,
     is_pydantic_model,
     is_union,
 )
 from starlette.routing import get_name
 
-from starlite.enums import MediaType
+from starlite.enums import MediaType as RouteHandlerMediaType
+from starlite.enums import OpenAPIMediaType
 from starlite.handlers import RouteHandler
 from starlite.params import Header
 from starlite.request import create_function_signature_model
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Route
 
 
@@ -360,20 +367,23 @@ def create_constrained_field_schema(
 _dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
 
 
+def handle_dataclass(dataclass: Any) -> Type[BaseModel]:
+    """Converts a dataclass to a pydantic model and memoizes the result"""
+    if not _dataclass_model_map.get(dataclass):
+        _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)
+    return _dataclass_model_map[dataclass]
+
+
 def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     """
     Create a Schema model for a given ModelField
     """
-    if is_any(field):
-        return Schema()
     if is_optional(field) and not ignore_optional:
         return Schema(oneOf=[Schema(type=OpenAPIType.NULL), create_schema(field, ignore_optional=True)])
     if is_pydantic_model(field.outer_type_):
         return PydanticSchema(schema_class=field.outer_type_)
     if is_dataclass(field.outer_type_):
-        if not _dataclass_model_map.get(field.outer_type_):
-            _dataclass_model_map[field.outer_type_] = create_model_from_dataclass(field.outer_type_)
-        return PydanticSchema(schema_class=_dataclass_model_map[field.outer_type_])
+        return PydanticSchema(schema_class=handle_dataclass(field.outer_type_))
     if is_union(field):
         return Schema(oneOf=[create_schema(sub_field) for sub_field in field.sub_fields or []])
     field_type = field.outer_type_
@@ -422,15 +432,15 @@ def create_parameters(
     return parameters
 
 
-def get_media_type(route_handler: RouteHandler) -> MediaType:
+def get_media_type(route_handler: RouteHandler) -> RouteHandlerMediaType:
     """
     Return a MediaType enum member for the given RouteHandler or a default value
     """
     if route_handler.media_type:
-        return cast(MediaType, route_handler.media_type)
+        return cast(RouteHandlerMediaType, route_handler.media_type)
     if route_handler.response_class and route_handler.response_class.media_type:
-        return cast(MediaType, route_handler.response_class.media_type)
-    return MediaType.JSON
+        return cast(RouteHandlerMediaType, route_handler.response_class.media_type)
+    return RouteHandlerMediaType.JSON
 
 
 def create_parsed_model_field(value: Type) -> ModelField:
@@ -449,17 +459,16 @@ def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         response = Response(
             content={
-                get_media_type(route_handler): OpenAPIMediaType(media_type_schema=create_schema(as_parsed_model_field))
+                get_media_type(route_handler): OpenAPISchemaMediaType(
+                    media_type_schema=create_schema(as_parsed_model_field)
+                )
             },
             description="",
         )
         if route_handler.response_headers:
             response.headers = {}
-            headers = route_handler.response_headers.__fields__
-            for key, value in headers.items():
-                if value.alias:
-                    key = value.alias
-                response.headers[key] = OpenAPIHeader(param_schema=create_schema(value))
+            for key, value in route_handler.response_headers.__fields__.items():
+                response.headers[key.replace("_", "-")] = OpenAPIHeader(param_schema=create_schema(value))
         return {str(route_handler.status_code): response}
     return None
 
@@ -471,7 +480,9 @@ def create_request_body(route_handler: RouteHandler, handler_fields: Dict[str, M
     if "data" in handler_fields:
         return RequestBody(
             content={
-                get_media_type(route_handler): OpenAPIMediaType(media_type_schema=create_schema(handler_fields["data"]))
+                get_media_type(route_handler): OpenAPISchemaMediaType(
+                    media_type_schema=create_schema(handler_fields["data"])
+                )
             }
         )
     return None
@@ -499,3 +510,42 @@ def create_path_item(route: "Route") -> PathItem:
         )
         setattr(path_item, http_method, operation)
     return path_item
+
+
+class OpenAPIConfig(BaseModel):
+    # endpoint config
+    schema_endpoint_url: str = "/schema"
+    schema_response_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML
+
+    # schema config
+    title: str = "StarLite API"
+    version: str = "1.0.0"
+    contact: Optional[Contact] = None
+    description: Optional[str] = None
+    external_docs: Optional[ExternalDocumentation] = None
+    license: Optional[License] = None
+    security: Optional[List[SecurityRequirement]] = None
+    servers: List[Server] = [Server(url="/")]
+    summary: Optional[str] = None
+    tags: Optional[List[Tag]] = None
+    terms_of_service: Optional[AnyUrl] = None
+    webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
+
+    def to_openapi_schema(self) -> OpenAPI:
+        """Generates an OpenAPI model"""
+        return OpenAPI(
+            externalDocs=self.external_docs,
+            security=self.security,
+            servers=self.servers,
+            tags=self.tags,
+            webhooks=self.webhooks,
+            info=Info(
+                title=self.title,
+                version=self.version,
+                description=self.description,
+                contact=self.contact,
+                license=self.license,
+                summary=self.summary,
+                termsOfService=self.terms_of_service,
+            ),
+        )

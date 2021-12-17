@@ -20,7 +20,6 @@ The `Starlite` class supports the following (optional) kwargs:
 * `on_shutdown`: a sequence of callables to be called during the application shutdown
 * `lifespan`: an async-context that handles startup and shutdown
 * `dependencies`: a dictionary mapping keys to dependency providers
-* `logging_config`: either a subclass of `starlite.logging.LoggingConfig` or None (disable logging)
 
 > :warning: **Warning**: debug should not be used in production
 > :warning: **Warning**: you can specify either `on_startup`/`on_shutdown` or `lifespan` but not both

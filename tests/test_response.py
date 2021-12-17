@@ -1,3 +1,6 @@
+from json import loads
+from typing import Any
+
 import pytest
 
 from starlite import ImproperlyConfiguredException, MediaType, Response
@@ -20,9 +23,12 @@ from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClass
         ["<div/>", MediaType.HTML],
     ],
 )
-def test_response_serialization(content, media_type):
+def test_response_serialization(content: Any, media_type: MediaType):
     response = Response(content=content, media_type=media_type)
-    assert response.body
+    if media_type == MediaType.JSON:
+        assert content.__class__(**loads(response.body)) == content
+    else:
+        assert response.body == content.encode("utf-8")
 
 
 def test_response_error_handling():

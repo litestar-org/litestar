@@ -44,8 +44,8 @@ openapi-schema-pydantic = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-requests = "*"
 pyyaml = "*"
+requests = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

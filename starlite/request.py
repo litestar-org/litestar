@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Type, Union,
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import ModelField
+from pydantic_factories import ModelFactory
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -17,6 +18,15 @@ from starlite.response import Response
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
+
+
+def normalize_headers(headers: BaseModel) -> Dict[str, str]:
+    """Normalizes response headers"""
+    output: Dict[str, str] = {}
+    for key, value in headers.dict(exclude_none=True).items():
+        key = key.replace("_", "-")
+        output[key] = value
+    return output
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -83,7 +93,9 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
             if key == "return":
                 continue
             parameter = signature.parameters[key]
-            if parameter.default is not signature.empty:
+            if ModelFactory.is_constrained_field(parameter.default):
+                field_definitions[key] = (parameter.default, ...)
+            elif parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
             elif not repr(parameter.annotation).startswith("typing.Optional"):
                 field_definitions[key] = (value, ...)
@@ -145,10 +157,11 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
         return data
 
     media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
+    headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else None
     if issubclass(response_class, RedirectResponse):
-        return response_class(headers=route_handler.response_headers, status_code=route_handler.status_code, url=data)  # type: ignore
+        return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
     return response_class(
-        headers=route_handler.response_headers,
+        headers=headers,
         status_code=route_handler.status_code,
         content=data,
         media_type=media_type,

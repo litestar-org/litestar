@@ -9,13 +9,13 @@ from starlette.responses import Response
 from starlette.routing import Route as StarletteRoute
 from starlette.routing import Router as StarletteRouter
 from starlette.types import ASGIApp
-from typing_extensions import AsyncContextManager, Type
+from typing_extensions import AsyncContextManager, Literal, Type
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod, OpenAPIMediaType
+from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
-from starlite.openapi import create_path_item
+from starlite.openapi import OpenAPIConfig, create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
 from starlite.utils.helpers import DeprecatedProperty
@@ -196,21 +196,21 @@ class Router(StarletteRouter):
 
 
 class RootRouter(Router):
+    owner: Literal[None] = None
+
     def __init__(
         self,
         *,
-        openapi_schema: OpenAPI,
-        openapi_schema_url: str,
-        openapi_media_type: OpenAPIMediaType,
-        route_handlers: Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]] = None,
+        openapi_config: Optional[OpenAPIConfig],
+        route_handlers: Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]],
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
         lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
     ):
-        self.openapi_schema = openapi_schema
-        self.openapi_schema_url = openapi_schema_url
-        self.openapi_media_type = openapi_media_type
+        self.openapi_schema = None
+        self.schema_endpoint_url = None
+        self.schema_response_media_type = None
         super().__init__(
             path="",
             route_handlers=route_handlers,
@@ -219,11 +219,17 @@ class RootRouter(Router):
             lifespan=lifespan,
             dependencies=dependencies,
         )
-        self.routes.append(self.create_schema_endpoint())
+        if openapi_config:
+            self.openapi_schema = openapi_config.to_openapi_schema()
+            self.schema_endpoint_url = openapi_config.schema_endpoint_url
+            self.schema_response_media_type = openapi_config.schema_response_media_type
+            self.update_openapi_schema_paths()
+            self.routes.append(self.create_schema_endpoint())
 
     def register(self, value: Union[Type[Controller], RouteHandler, "Router", Callable]):
         super().register(value=value)
-        self.update_openapi_schema_paths()
+        if self.openapi_schema:
+            self.update_openapi_schema_paths()
 
     def update_openapi_schema_paths(self):
         """
@@ -238,17 +244,20 @@ class RootRouter(Router):
     # TODO: extend this to support customization, security etc.
     def create_schema_endpoint(self) -> Route:
         """Create a schema endpoint"""
+        assert (
+            self.schema_endpoint_url and self.schema_endpoint_url and self.schema_response_media_type
+        ), "schema configuration must be set to generate a schema endpoint"
 
         def get_openapi_schema() -> OpenAPI:
             """handler function that returns a constructed OpenAPI model"""
             return construct_open_api_with_schema_class(self.openapi_schema)
 
         return Route(
-            path=normalize_path(self.openapi_schema_url),
+            path=normalize_path(self.schema_endpoint_url),
             route_handlers=[
                 RouteHandler(
                     http_method=HttpMethod.GET,
-                    media_type=self.openapi_media_type,
+                    media_type=self.schema_response_media_type,
                     fn=get_openapi_schema,
                     include_in_schema=False,
                 )

@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional, Union
 
+from openapi_schema_pydantic import OpenAPI
 from orjson import dumps
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
@@ -9,6 +10,13 @@ from starlette.responses import StreamingResponse
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+
+
+def orjson_default(value: Any) -> dict:
+    """Serializer hook for orjson to handle pydantic models"""
+    if isinstance(value, BaseModel):
+        return value.dict()
+    raise TypeError  # pragma: no cover
 
 
 class Response(StarletteResponse):
@@ -29,16 +37,18 @@ class Response(StarletteResponse):
         )
 
     def render(self, content: Any) -> bytes:
+        """Renders content into bytes"""
         try:
-            if self.media_type in [MediaType.JSON, OpenAPIMediaType.OPENAPI_JSON]:
-                if isinstance(content, BaseModel):
-                    return content.json().encode("utf-8")
-                return dumps(content)
-            if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                import yaml  # pylint: disable=import-outside-toplevel
 
-                content_dict = content.dict(exclude_none=True) if isinstance(content, BaseModel) else content
-                return yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
+            if self.media_type == MediaType.JSON:
+                return dumps(content, default=orjson_default)
+            if isinstance(content, OpenAPI):
+                if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+                    import yaml  # pylint: disable=import-outside-toplevel
+
+                    content_dict = content.dict(exclude_none=True) if isinstance(content, BaseModel) else content
+                    return yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
+                return content.json(exclude_none=True).encode("utf-8")
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
