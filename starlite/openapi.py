@@ -406,26 +406,42 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
     return Schema()
 
 
+def create_path_parameter(path_param: str) -> Parameter:
+    """Create a path parameter from the given path_param string in the format param_name:type"""
+    parameter_name, type_name = tuple(path_param.split(":"))
+    for key, value in TYPE_MAP.items():
+        if key and (hasattr(key, "__name__") and key.__name__ == type_name):
+            param_schema = value
+            break
+    else:
+        param_schema = Schema()
+    return Parameter(name=parameter_name, param_in="path", required=True, param_schema=param_schema)
+
+
 def create_parameters(
-    route_handler: RouteHandler, handler_fields: Dict[str, ModelField], path_format: str
+    route_handler: RouteHandler, handler_fields: Dict[str, ModelField], path_parameters: List[str]
 ) -> List[Parameter]:
     """
     Create a list of path/query/header Parameter models for the given PathHandler
     """
     parameters: List[Parameter] = []
 
-    ignored_fields = ["data", "request", "headers", *list(route_handler.resolve_dependencies().keys())]
+    ignored_fields = [
+        "data",
+        "request",
+        "headers",
+        *[path_param.split(":")[0] for path_param in path_parameters],
+        *list(route_handler.resolve_dependencies().keys()),
+    ]
     for f_name, field in handler_fields.items():
         if f_name not in ignored_fields:
-            required = field.required
-            if "{" + f_name + "}" in path_format:
-                param_in = "path"
-            elif isinstance(field.default, Header):
+            if isinstance(field.default, Header):
                 param_in = "header"
                 # for header params we assume they are always required unless marked with optional
                 required = not is_optional(field)
             else:
                 param_in = "query"
+                required = field.required
             parameters.append(
                 Parameter(name=f_name, param_in=param_in, param_schema=create_schema(field), required=required)
             )
@@ -492,7 +508,7 @@ def create_path_item(route: "Route") -> PathItem:
     """
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """
-    path_item = PathItem()
+    path_item = PathItem(parameters=list(map(create_path_parameter, route.path_parameters)) or None)
     for http_method, route_handler in route.route_handler_map.items():
         handler_fields = create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__
         operation = Operation(
@@ -504,7 +520,9 @@ def create_path_item(route: "Route") -> PathItem:
             responses=create_responses(route_handler=route_handler),
             requestBody=create_request_body(route_handler=route_handler, handler_fields=handler_fields),
             parameters=create_parameters(
-                route_handler=route_handler, handler_fields=handler_fields, path_format=route.path_format
+                route_handler=route_handler,
+                handler_fields=handler_fields,
+                path_parameters=route.path_parameters,
             )
             or None,
         )

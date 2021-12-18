@@ -53,7 +53,7 @@ class TestController(Controller):
     dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
 
     @get(
-        path="/{path_param}",
+        path="/{path_param:str}",
         dependencies={
             "first": Provide(local_method_first_dependency),
         },
@@ -78,7 +78,7 @@ def test_controller_dependency_injection():
 
 def test_function_dependency_injection():
     @get(
-        path=test_path + "/{path_param}",
+        path=test_path + "/{path_param:str}",
         dependencies={
             "first": Provide(local_method_first_dependency),
             "third": Provide(local_method_second_dependency),

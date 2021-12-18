@@ -43,6 +43,7 @@ from starlite.openapi import (
     create_parameters,
     create_parsed_model_field,
     create_path_item,
+    create_path_parameter,
     create_request_body,
     create_responses,
     create_string_constrained_field_schema,
@@ -266,6 +267,17 @@ def test_create_constrained_field_schema(field_type):
     assert schema
 
 
+def test_create_path_parameter():
+    app = Starlite(route_handlers=[PersonController])
+    index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person")
+    route = app.router.routes[index]
+    service_id = create_path_parameter(route.path_parameters[0])
+    assert service_id.name == "service_id"
+    assert service_id.param_in == "path"
+    assert service_id.param_schema.type == OpenAPIType.INTEGER
+    assert service_id.required
+
+
 def test_create_parameters():
     app = Starlite(route_handlers=[PersonController])
     index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person")
@@ -274,28 +286,26 @@ def test_create_parameters():
     parameters = create_parameters(
         route_handler=route_handler,
         handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__,
-        path_format=route.path_format,
+        path_parameters=route.path_parameters,
     )
-    assert len(parameters) == 8
-    page, page_size, name, service_id, from_date, to_date, gender, secret_header = tuple(parameters)
-    assert service_id.param_in == "path"
-    assert service_id.param_schema.type == OpenAPIType.INTEGER
-    assert service_id.required
+    assert len(parameters) == 7
+    page, page_size, name, from_date, to_date, gender, secret_header = tuple(parameters)
     assert page.param_in == "query"
+    assert page.name == "page"
     assert page.param_schema.type == OpenAPIType.INTEGER
     assert page.required
     assert page_size.param_in == "query"
-    assert page_size.param_schema.type == OpenAPIType.INTEGER
-    assert page_size.required
-    assert page_size.param_in == "query"
+    assert page_size.name == "page_size"
     assert page_size.param_schema.type == OpenAPIType.INTEGER
     assert page_size.required
     assert name.param_in == "query"
+    assert name.name == "name"
     assert name.param_schema.dict(exclude_none=True) == {
         "oneOf": [{"type": "string"}, {"items": [{"type": "string"}], "type": "array"}]
     }
     assert name.required
     assert from_date.param_in == "query"
+    assert from_date.name == "from_date"
     assert from_date.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
@@ -310,6 +320,7 @@ def test_create_parameters():
     }
     assert not from_date.required
     assert to_date.param_in == "query"
+    assert to_date.name == "to_date"
     assert to_date.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
@@ -324,6 +335,7 @@ def test_create_parameters():
     }
     assert not to_date.required
     assert gender.param_in == "query"
+    assert gender.name == "gender"
     assert gender.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},

@@ -1,3 +1,4 @@
+import re
 from inspect import isclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
 
@@ -21,6 +22,8 @@ from starlite.request import handle_request
 from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
+
+param_match_regex = re.compile(r"\{(.*?)\}")
 
 
 class Route(StarletteRoute):
@@ -57,6 +60,10 @@ class Route(StarletteRoute):
             include_in_schema=include_in_schema,
             methods=[method.upper() for method in self.route_handler_map],
         )
+        self.path_parameters: List[str] = param_match_regex.findall(self.path)
+        for parameter in self.path_parameters:
+            if ":" not in parameter or not parameter.split(":")[1]:
+                raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
 
     @staticmethod
     def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:

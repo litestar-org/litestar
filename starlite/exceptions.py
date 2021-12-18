@@ -2,7 +2,13 @@ from http import HTTPStatus
 from typing import Optional
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+    HTTP_503_SERVICE_UNAVAILABLE,
+)
 
 
 class StarLiteException(Exception):
@@ -18,6 +24,7 @@ class StarLiteException(Exception):
 
 class HTTPException(StarLiteException, StarletteHTTPException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
+    extra: Optional[dict] = None
 
     def __init__(  # pylint: disable=super-init-not-called
         self,
@@ -39,3 +46,19 @@ class ImproperlyConfiguredException(HTTPException, ValueError):
 
 class ValidationException(HTTPException, ValueError):
     status_code = HTTP_400_BAD_REQUEST
+
+
+class NotAuthorizedException(HTTPException):
+    status_code = HTTP_401_UNAUTHORIZED
+
+
+class PermissionDeniedException(HTTPException):
+    status_code = HTTP_403_FORBIDDEN
+
+
+class InternalServerException(HTTPException):
+    status_code = HTTP_500_INTERNAL_SERVER_ERROR
+
+
+class ServiceUnavailableException(HTTPException):
+    status_code = HTTP_503_SERVICE_UNAVAILABLE
