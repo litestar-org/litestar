@@ -1,22 +1,17 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncContextManager,
-    Callable,
-    Dict,
-    Optional,
-    Sequence,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Sequence, Union
 
 from starlette.applications import Starlette
 from starlette.datastructures import State
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 from typing_extensions import Type
 
+from starlite.enums import MediaType
+from starlite.exceptions import HTTPException
 from starlite.handlers import RouteHandler
 from starlite.openapi import OpenAPIConfig
 from starlite.provide import Provide
+from starlite.response import Response
 from starlite.routing import RootRouter, Router
 from starlite.utils import DeprecatedProperty
 
@@ -37,7 +32,6 @@ class Starlite(Starlette):
         route_handlers: Optional[Sequence[Union[Type["Controller"], RouteHandler, Router, Callable]]] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
-        lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG
     ):
@@ -47,11 +41,10 @@ class Starlite(Starlette):
             route_handlers=route_handlers or [],
             on_startup=on_startup,
             on_shutdown=on_shutdown,
-            lifespan=lifespan,
             dependencies=dependencies,
             openapi_config=openapi_config,
         )
-        self.exception_handlers = dict(exception_handlers) if exception_handlers else {}
+        self.exception_handlers = {StarletteHTTPException: self.handle_http_exception, **(exception_handlers or {})}
         self.user_middleware = list(middleware) if middleware else []
         self.middleware_stack = self.build_middleware_stack()
 
@@ -61,6 +54,28 @@ class Starlite(Starlette):
         """
         self.router.register(value=route_handler)
 
+    @staticmethod
+    def handle_http_exception(_, exc: Union[HTTPException, StarletteHTTPException]) -> Response:
+        """Default handler for exceptions subclassed from HTTPException"""
+        if isinstance(exc, HTTPException):
+            content = {"detail": exc.detail, "extra": exc.extra}
+        else:
+            content = {"detail": exc.detail}
+        return Response(
+            media_type=MediaType.JSON,
+            content=content,
+            status_code=exc.status_code,
+        )
+
     # these Starlette properties are not supported
     route = DeprecatedProperty()
     add_route = DeprecatedProperty()
+    on_event = DeprecatedProperty()
+    mount = DeprecatedProperty()
+    host = DeprecatedProperty()
+    add_middleware = DeprecatedProperty()
+    add_exception_handler = DeprecatedProperty()
+    add_event_handler = DeprecatedProperty()
+    add_websocket_route = DeprecatedProperty()
+    websocket_route = DeprecatedProperty()
+    middleware = DeprecatedProperty()

@@ -1,7 +1,9 @@
+import re
 from collections import deque
 from dataclasses import is_dataclass
 from datetime import date, datetime, time, timedelta
 from enum import Enum, EnumMeta
+from http import HTTPStatus
 from inspect import Signature
 from typing import (
     TYPE_CHECKING,
@@ -103,12 +105,20 @@ from starlette.routing import get_name
 
 from starlite.enums import MediaType as RouteHandlerMediaType
 from starlite.enums import OpenAPIMediaType
+from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import RouteHandler
 from starlite.params import Header
 from starlite.request import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Route
+
+CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
+
+
+def pascal_case_to_text(s: str) -> str:
+    """Given a PascalCased string, return its split form- 'Pascal Cased'"""
+    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, s)).strip()
 
 
 class OpenAPIFormat(str, Enum):
@@ -466,11 +476,12 @@ def create_parsed_model_field(value: Type) -> ModelField:
     ).__fields__["value"]
 
 
-def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
+def create_responses(route_handler: RouteHandler, raises_validation_error: bool) -> Optional[Responses]:
     """
     Create a Response model embedded in a responses dictionary for the given RouteHandler or return None
     """
     signature = Signature.from_callable(cast(Callable, route_handler.fn))
+    responses: Responses = {}
     if signature.return_annotation not in [signature.empty, None]:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         response = Response(
@@ -479,14 +490,52 @@ def create_responses(route_handler: RouteHandler) -> Optional[Responses]:
                     media_type_schema=create_schema(as_parsed_model_field)
                 )
             },
-            description="",
+            description=HTTPStatus(cast(int, route_handler.status_code)).description,
         )
-        if route_handler.response_headers:
-            response.headers = {}
-            for key, value in route_handler.response_headers.__fields__.items():
-                response.headers[key.replace("_", "-")] = OpenAPIHeader(param_schema=create_schema(value))
-        return {str(route_handler.status_code): response}
-    return None
+    else:
+        response = Response(
+            content=None,
+            description=HTTPStatus(cast(int, route_handler.status_code)).description,
+        )
+    if route_handler.response_headers:
+        response.headers = {}
+        for key, value in route_handler.response_headers.__fields__.items():
+            response.headers[key.replace("_", "-")] = OpenAPIHeader(param_schema=create_schema(value))
+    responses[str(route_handler.status_code)] = response
+
+    exceptions = route_handler.raises or []
+    if raises_validation_error and ValidationException not in exceptions:
+        exceptions.append(ValidationException)
+    if exceptions:
+        grouped_exceptions: Dict[int, List[Type[HTTPException]]] = {}
+        for exc in exceptions:
+            if not grouped_exceptions.get(exc.status_code):
+                grouped_exceptions[exc.status_code] = []
+            grouped_exceptions[exc.status_code].append(exc)
+        for status_code, exception_group in grouped_exceptions.items():
+            exceptions_schemas = [
+                Schema(
+                    type=OpenAPIType.OBJECT,
+                    required=["detail", "status_code"],
+                    properties=dict(
+                        status_code=Schema(type=OpenAPIType.INTEGER),
+                        detail=Schema(type=OpenAPIType.STRING),
+                        extra=Schema(type=OpenAPIType.OBJECT, additionalProperties=Schema()),
+                    ),
+                    description=pascal_case_to_text(get_name(exc)),
+                    example={"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}},
+                )
+                for exc in exception_group
+            ]
+            if len(exceptions_schemas) > 1:
+                schema = Schema(oneOf=exceptions_schemas)
+            else:
+                schema = exceptions_schemas[0]
+            responses[str(status_code)] = Response(
+                description=HTTPStatus(status_code).description,
+                content={RouteHandlerMediaType.JSON: OpenAPISchemaMediaType(media_type_schema=schema)},
+            )
+    return responses or None
 
 
 def create_request_body(route_handler: RouteHandler, handler_fields: Dict[str, ModelField]) -> Optional[RequestBody]:
@@ -510,23 +559,31 @@ def create_path_item(route: "Route") -> PathItem:
     """
     path_item = PathItem(parameters=list(map(create_path_parameter, route.path_parameters)) or None)
     for http_method, route_handler in route.route_handler_map.items():
-        handler_fields = create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__
-        operation = Operation(
-            operationId=route_handler.operation_id or get_name(route_handler.fn),
-            tags=route_handler.tags,
-            summary=route_handler.summary,
-            description=route_handler.description,
-            deprecated=route_handler.deprecated,
-            responses=create_responses(route_handler=route_handler),
-            requestBody=create_request_body(route_handler=route_handler, handler_fields=handler_fields),
-            parameters=create_parameters(
-                route_handler=route_handler,
-                handler_fields=handler_fields,
-                path_parameters=route.path_parameters,
+        if route_handler.include_in_schema:
+            handler_fields = create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__
+            parameters = (
+                create_parameters(
+                    route_handler=route_handler,
+                    handler_fields=handler_fields,
+                    path_parameters=route.path_parameters,
+                )
+                or None
             )
-            or None,
-        )
-        setattr(path_item, http_method, operation)
+            raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
+            handler_name = get_name(route_handler.fn)
+            operation = Operation(
+                operationId=route_handler.operation_id or handler_name,
+                tags=route_handler.tags,
+                summary=route_handler.summary,
+                description=route_handler.description,
+                deprecated=route_handler.deprecated,
+                responses=create_responses(
+                    route_handler=route_handler, raises_validation_error=raises_validation_error
+                ),
+                requestBody=create_request_body(route_handler=route_handler, handler_fields=handler_fields),
+                parameters=parameters,
+            )
+            setattr(path_item, http_method, operation)
     return path_item
 
 

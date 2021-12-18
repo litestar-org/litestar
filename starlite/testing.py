@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.requests import Request
 from starlette.testclient import TestClient as StarletteTestClient
-from typing_extensions import AsyncContextManager, Type
+from typing_extensions import Type
 
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
@@ -44,7 +44,6 @@ def create_test_client(
     ],
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Any = None,
-    lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
     middleware: Sequence[Middleware] = None,
     on_shutdown: Optional[Sequence[Callable]] = None,
     on_startup: Optional[Sequence[Callable]] = None,
@@ -59,7 +58,6 @@ def create_test_client(
     app = Starlite(
         dependencies=dependencies,
         exception_handlers=exception_handlers,
-        lifespan=lifespan,
         middleware=middleware,
         on_shutdown=on_shutdown,
         on_startup=on_startup,

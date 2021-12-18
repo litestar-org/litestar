@@ -35,13 +35,9 @@ def test_register_with_controller_class():
         if len(route.methods) == 2:
             assert sorted(route.methods) == sorted(["GET", "HEAD"])
             assert route.path == "/base/test/{id:int}"
-            assert route.name == MyController.get_by_id_method.fn.__name__
-            assert route.include_in_schema is True
         else:
             assert sorted(route.methods) == sorted(["GET", "POST", "HEAD"])
             assert route.path == "/base/test"
-            assert route.name == "first"
-            assert route.include_in_schema is False
 
 
 def test_register_with_router_instance():

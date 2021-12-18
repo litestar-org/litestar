@@ -27,14 +27,12 @@ class HTTPException(StarLiteException, StarletteHTTPException):
     extra: Optional[dict] = None
 
     def __init__(  # pylint: disable=super-init-not-called
-        self,
-        detail: Optional[str] = None,
-        status_code: Optional[int] = None,
+        self, detail: Optional[str] = None, status_code: Optional[int] = None, extra: Optional[dict] = None
     ):
         if status_code:
             self.status_code = status_code
-
         self.detail = detail or HTTPStatus(self.status_code).phrase
+        self.extra = extra
 
     def __repr__(self) -> str:
         return f"{self.status_code} - {self.__class__.__name__} - {self.detail}"

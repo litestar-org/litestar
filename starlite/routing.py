@@ -1,6 +1,6 @@
 import re
 from inspect import isclass
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
+from typing import Callable, Dict, List, Optional, Sequence, Union, cast
 
 from openapi_schema_pydantic import OpenAPI
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
@@ -9,8 +9,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route as StarletteRoute
 from starlette.routing import Router as StarletteRouter
-from starlette.types import ASGIApp
-from typing_extensions import AsyncContextManager, Literal, Type
+from typing_extensions import Literal, Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
@@ -23,7 +22,7 @@ from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
 
-param_match_regex = re.compile(r"\{(.*?)\}")
+param_match_regex = re.compile(r"{(.*?)}")
 
 
 class Route(StarletteRoute):
@@ -36,34 +35,31 @@ class Route(StarletteRoute):
         path: str,
         route_handlers: Union[RouteHandler, List[RouteHandler]],
     ):
-        route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
-        self.route_handler_map = {}
-        name = cast(Callable, route_handlers[0].fn).__name__
-        include_in_schema = True
-
-        for route_handler in route_handlers:
-            for http_method in route_handler.http_methods:
-                if self.route_handler_map.get(http_method):
-                    raise ImproperlyConfiguredException(
-                        f"handler already registered for path {path!r} and http method {http_method}"
-                    )
-                self.route_handler_map[http_method] = route_handler
-                if route_handler.name:
-                    name = route_handler.name
-                if route_handler.include_in_schema is not None:
-                    include_in_schema = route_handler.include_in_schema
-
+        self.route_handler_map = self.parse_route_handlers(route_handlers=list(route_handlers), path=path)
         super().__init__(
             path=path,
             endpoint=self.create_endpoint_handler(self.route_handler_map),
-            name=name,
-            include_in_schema=include_in_schema,
             methods=[method.upper() for method in self.route_handler_map],
         )
         self.path_parameters: List[str] = param_match_regex.findall(self.path)
         for parameter in self.path_parameters:
             if ":" not in parameter or not parameter.split(":")[1]:
                 raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
+
+    @staticmethod  #
+    def parse_route_handlers(route_handlers: List[RouteHandler], path: str) -> Dict[HttpMethod, RouteHandler]:
+        """
+        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
+        """
+        mapped_route_handlers: Dict[HttpMethod, RouteHandler] = {}
+        for route_handler in route_handlers:
+            for http_method in route_handler.http_methods:
+                if mapped_route_handlers.get(http_method):
+                    raise ImproperlyConfiguredException(
+                        f"handler already registered for path {path!r} and http method {http_method}"
+                    )
+                mapped_route_handlers[http_method] = route_handler
+        return mapped_route_handlers
 
     @staticmethod
     def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
@@ -92,19 +88,13 @@ class Router(StarletteRouter):
         path: str,
         route_handlers: Optional[Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]]] = None,
         redirect_slashes: bool = True,
-        default: Optional[ASGIApp] = None,
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
-        lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
     ):
-        if on_startup or on_shutdown:  # pragma: no cover
-            assert not lifespan, "Use either 'lifespan' or 'on_startup'/'on_shutdown', not both."
         self.path = normalize_path(path)
         self.dependencies = dependencies
         super().__init__(
-            default=default,
-            lifespan=lifespan,
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             redirect_slashes=redirect_slashes,
@@ -200,6 +190,14 @@ class Router(StarletteRouter):
     # these Starlette properties are not supported
     route = DeprecatedProperty()
     add_route = DeprecatedProperty()
+    on_event = DeprecatedProperty()
+    mount = DeprecatedProperty()
+    host = DeprecatedProperty()
+    add_middleware = DeprecatedProperty()
+    add_exception_handler = DeprecatedProperty()
+    add_event_handler = DeprecatedProperty()
+    add_websocket_route = DeprecatedProperty()
+    websocket_route = DeprecatedProperty()
 
 
 class RootRouter(Router):
@@ -212,7 +210,6 @@ class RootRouter(Router):
         route_handlers: Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]],
         on_startup: Optional[Sequence[Callable]] = None,
         on_shutdown: Optional[Sequence[Callable]] = None,
-        lifespan: Optional[Callable[[Any], AsyncContextManager]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
     ):
         self.openapi_schema = None
@@ -223,7 +220,6 @@ class RootRouter(Router):
             route_handlers=route_handlers,
             on_startup=on_startup,
             on_shutdown=on_shutdown,
-            lifespan=lifespan,
             dependencies=dependencies,
         )
         if openapi_config:
@@ -252,7 +248,7 @@ class RootRouter(Router):
     def create_schema_endpoint(self) -> Route:
         """Create a schema endpoint"""
         assert (
-            self.schema_endpoint_url and self.schema_endpoint_url and self.schema_response_media_type
+            self.openapi_schema and self.schema_endpoint_url and self.schema_response_media_type
         ), "schema configuration must be set to generate a schema endpoint"
 
         def get_openapi_schema() -> OpenAPI:

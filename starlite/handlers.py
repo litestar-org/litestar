@@ -7,7 +7,7 @@ from typing_extensions import Literal
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.provide import Provide
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -21,7 +21,7 @@ class RouteHandler(BaseModel):
 
     http_method: Union[HttpMethod, List[HttpMethod]]
     status_code: Optional[int] = None
-    include_in_schema: Optional[bool] = None
+    include_in_schema: bool = True
     media_type: Optional[Union[MediaType, str]] = None
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
@@ -32,12 +32,12 @@ class RouteHandler(BaseModel):
     owner: Optional[Union[Controller, "Router"]] = None
 
     # OpenAPI attributes
-    name: Optional[str] = None
     tags: Optional[List[str]] = None
     summary: Optional[str] = None
     description: Optional[str] = None
     operation_id: Optional[str] = None
     deprecated: bool = False
+    raises: Optional[List[Type[HTTPException]]] = None
 
     def __call__(self, fn: Callable) -> "RouteHandler":
         """

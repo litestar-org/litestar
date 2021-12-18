@@ -1,6 +1,5 @@
 from datetime import date, datetime
 from enum import Enum
-from inspect import Signature
 from typing import Any, Callable, List, Optional, Union, cast
 
 import yaml
@@ -17,7 +16,7 @@ from pydantic.types import (
     constr,
 )
 from starlette.responses import HTMLResponse
-from starlette.status import HTTP_200_OK
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import (
     Controller,
@@ -184,7 +183,7 @@ def test_openapi_yaml():
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_YAML.value
         assert yaml.safe_load(response.content) == construct_open_api_with_schema_class(app.router.openapi_schema).dict(
-            exclude_none=True
+            by_alias=True, exclude_none=True
         )
 
 
@@ -201,7 +200,7 @@ def test_openapi_json():
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_JSON.value
         assert response.json() == construct_open_api_with_schema_class(app.router.openapi_schema).dict(
-            exclude_none=True
+            by_alias=True, exclude_none=True
         )
 
 
@@ -371,15 +370,14 @@ def test_create_path_item():
 def test_create_responses():
     for route in Starlite(route_handlers=[PersonController]).router.routes:
         for route_handler in route.route_handler_map.values():
-            responses = create_responses(route_handler=route_handler)
-            if Signature.from_callable(cast(Callable, route_handler.fn)).return_annotation:
-                assert responses
-            else:
-                assert not responses
+            responses = create_responses(route_handler=route_handler, raises_validation_error=True)
+            assert str(route_handler.status_code) in responses
+            assert str(HTTP_400_BAD_REQUEST) in responses
 
-    responses = create_responses(PetController.get_pets_or_owners)
-    assert "200" in responses
-    response = responses["200"]
+    responses = create_responses(route_handler=PetController.get_pets_or_owners, raises_validation_error=False)
+    assert str(HTTP_400_BAD_REQUEST) not in responses
+    assert str(HTTP_200_OK) in responses
+    response = responses[str(HTTP_200_OK)]
     assert response.headers["application-type"].param_schema.type == OpenAPIType.STRING
     assert response.headers["Access-Control-Allow-Origin"].param_schema.type == OpenAPIType.STRING
     assert response.headers["x-my-tag"].param_schema.type == OpenAPIType.STRING

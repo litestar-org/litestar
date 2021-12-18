@@ -13,9 +13,8 @@ from starlite.handlers import RouteHandler
 @given(
     http_method=st.sampled_from(HttpMethod),
     media_type=st.one_of(st.none(), st.sampled_from(MediaType)),
-    include_in_schema=st.one_of(st.none(), st.booleans()),
+    include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
-    name=st.one_of(st.none(), st.text()),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
     status_code=st.one_of(st.none(), st.integers()),
     url=st.one_of(st.none(), st.text()),
@@ -25,7 +24,6 @@ def test_route_handler_param_handling(
     media_type,
     include_in_schema,
     response_class,
-    name,
     response_headers,
     status_code,
     url,
@@ -44,7 +42,6 @@ def test_route_handler_param_handling(
             http_method=http_method,
             media_type=media_type,
             include_in_schema=include_in_schema,
-            name=name,
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
@@ -57,7 +54,6 @@ def test_route_handler_param_handling(
             assert result.http_method == http_method[0]
         assert result.media_type == media_type
         assert result.include_in_schema == include_in_schema
-        assert result.name == name
         assert result.response_class == response_class
         assert result.response_headers == response_headers
         assert result.path == url
