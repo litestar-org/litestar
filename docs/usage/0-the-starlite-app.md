@@ -81,4 +81,32 @@ app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres
 
 ## Logging
 
-TODO
+Another thing most applications will need to set up as part of the application startup is logging. Although StarLite
+does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
+can use like so:
+
+```python
+# my_api/main.py
+
+from starlite import Starlite, LoggingConfig
+
+my_app_logging_config = LoggingConfig(
+    loggers={
+        "my_app": {
+            "level": "INFO",
+            "handlers": ["console"],
+        }
+    }
+)
+
+app = Starlite(on_startup=[my_app_logging_config.configure])
+```
+
+`LoggingConfig` is merely a convenience wrapper around the standard library's DictConfig options, which can be rather
+confusing. In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of
+INFO severity or above will be logged by it. We also defined it so it will log using the `LoggingConfig` default console
+handler, which will emit logging messages to _sys.stderr_.
+
+You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from StarLite itself, and you are
+free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
+setup up logging - then the on_startup hook is a good place to do so.

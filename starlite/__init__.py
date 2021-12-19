@@ -4,6 +4,7 @@ from .controller import Controller
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .handlers import RouteHandler, delete, get, patch, post, put, route
+from .logging import LoggingConfig
 from .params import Header
 from .provide import Provide
 from .response import FileResponse, RedirectResponse, Response, StreamingResponse
@@ -37,4 +38,5 @@ __all__ = [
     "Provide",
     "RouteHandler",
     "Header",
+    "LoggingConfig",
 ]

@@ -24,9 +24,7 @@ class LoggingConfig(BaseModel):
     }
     root: Dict[str, Union[dict, list, str]] = {"handlers": ["console"], "level": "WARNING"}
 
-    def configure(self, debug: bool = False):
+    def configure(self):
         """Configure logging by converting 'self' to dict and passing it to logging.config.dictConfig"""
-        logging_config = self.dict(exclude_none=True)
-        if debug and "starlite" in logging_config["loggers"]:
-            logging_config["loggers"]["starlite"]["level"] = "DEBUG"
-        config.dictConfig(logging_config)
+
+        config.dictConfig(self.dict(exclude_none=True))
