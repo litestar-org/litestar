@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union, cast
 
 from starlette.applications import Starlette
 from starlette.datastructures import State
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from typing_extensions import Type
 
 from starlite.enums import MediaType
@@ -27,11 +28,11 @@ class Starlite(Starlette):
         self,
         *,
         debug: bool = False,
-        middleware: Optional[Sequence[Middleware]] = None,
+        middleware: Optional[List[Union[Middleware, BaseHTTPMiddleware]]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], Callable]] = None,
-        route_handlers: Optional[Sequence[Union[Type["Controller"], RouteHandler, Router, Callable]]] = None,
-        on_startup: Optional[Sequence[Callable]] = None,
-        on_shutdown: Optional[Sequence[Callable]] = None,
+        route_handlers: Optional[List[Union[Type["Controller"], RouteHandler, Router, Callable]]] = None,
+        on_startup: Optional[List[Callable]] = None,
+        on_shutdown: Optional[List[Callable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG
     ):
@@ -45,8 +46,13 @@ class Starlite(Starlette):
             openapi_config=openapi_config,
         )
         self.exception_handlers = {StarletteHTTPException: self.handle_http_exception, **(exception_handlers or {})}
-        self.user_middleware = list(middleware) if middleware else []
+        self.user_middleware = self.set_user_middleware(middleware or [])
         self.middleware_stack = self.build_middleware_stack()
+
+    @staticmethod
+    def set_user_middleware(middleware: List[Union[Middleware, BaseHTTPMiddleware]]) -> List[Middleware]:
+        """Normalizes the passed in middleware"""
+        return [Middleware(cast(Type, m)) if isinstance(m, BaseHTTPMiddleware) else m for m in middleware]
 
     def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, Callable]):
         """

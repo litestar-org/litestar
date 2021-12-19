@@ -1,9 +1,10 @@
-from typing import Any, Callable, Dict, List, Optional, Sequence, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
 from pydantic import BaseModel
 from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.testclient import TestClient as StarletteTestClient
 from typing_extensions import Type
@@ -43,10 +44,10 @@ def create_test_client(
         List[Union[Type[Controller], RouteHandler, Router, Callable]],
     ],
     dependencies: Optional[Dict[str, Provide]] = None,
-    exception_handlers: Any = None,
-    middleware: Sequence[Middleware] = None,
-    on_shutdown: Optional[Sequence[Callable]] = None,
-    on_startup: Optional[Sequence[Callable]] = None,
+    exception_handlers: Optional[Dict[Union[int, Type[Exception]], Callable]] = None,
+    middleware: Optional[List[Union[Middleware, BaseHTTPMiddleware]]] = None,
+    on_shutdown: Optional[List[Callable]] = None,
+    on_startup: Optional[List[Callable]] = None,
     base_url: str = "http://testserver",
     raise_server_exceptions: bool = True,
     root_path: str = "",

@@ -169,5 +169,5 @@ a different path:
 
 ### Contributing
 
-StarLite is open to contributions big and small. You can always join our discord server to discuss contributions and
+StarLite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server to discuss contributions and
 project maintenance. For guidelines on how to contribute, please see [the contribution guide](CONTRIBUTING.md).
