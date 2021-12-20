@@ -19,9 +19,13 @@ from typing import (
 )
 from uuid import UUID
 
-from openapi_schema_pydantic import Contact, ExternalDocumentation
-from openapi_schema_pydantic import Header as OpenAPIHeader
-from openapi_schema_pydantic import Info, License
+from openapi_schema_pydantic import (
+    Contact,
+    ExternalDocumentation,
+    Header,
+    Info,
+    License,
+)
 from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import (
     OpenAPI,
@@ -444,10 +448,17 @@ def create_parameters(
     ]
     for f_name, field in handler_fields.items():
         if f_name not in ignored_fields:
-            if "starlite_header_key" in field.field_info.extra:
+            extra = field.field_info.extra
+            header_key = extra.get("header")
+            cookie_key = extra.get("header")
+            if header_key:
+                f_name = header_key
                 param_in = "header"
-                # for header params we assume they are always required unless marked with optional
-                required = not is_optional(field)
+                required = field.field_info.extra["required"]
+            elif cookie_key:
+                f_name = cookie_key
+                param_in = "cookie"
+                required = field.field_info.extra["required"]
             else:
                 param_in = "query"
                 required = field.required
@@ -499,7 +510,7 @@ def create_responses(route_handler: RouteHandler, raises_validation_error: bool)
     if route_handler.response_headers:
         response.headers = {}
         for key, value in route_handler.response_headers.__fields__.items():
-            response.headers[key.replace("_", "-")] = OpenAPIHeader(param_schema=create_schema(value))
+            response.headers[key.replace("_", "-")] = Header(param_schema=create_schema(value))
     responses[str(route_handler.status_code)] = response
 
     exceptions = route_handler.raises or []

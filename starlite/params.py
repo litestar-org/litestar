@@ -1,12 +1,19 @@
 from typing import Any, Optional
 
+from openapi_schema_pydantic import ExternalDocumentation
 from pydantic.fields import Field, Undefined
 from pydantic.typing import NoArgAnyCallable
 
 
-def Header(
-    header_key: str,
+def Parameter(
     *,
+    header: Optional[str] = None,
+    cookie: Optional[str] = None,
+    query: Optional[str] = None,
+    example: Any = None,
+    examples: Optional[list] = None,
+    external_docs: Optional[ExternalDocumentation] = None,
+    content_encoding: Optional[str] = None,
     required: bool = True,
     default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
@@ -23,15 +30,21 @@ def Header(
     max_items: int = None,
     min_length: int = None,
     max_length: int = None,
-    allow_mutation: bool = True,
     regex: str = None,
     **extra: Any,
 ) -> Any:
     """
-    Creates a pydantic FieldInfo instance with the header_key and required kwargs as part of the extra dict
+    Creates a pydantic FieldInfo instance with an extra kwargs,
+    used for both parameter parsing and OpenAPI schema generation.
     """
-    extra.update(starlite_header_key=header_key)
-    extra.update(starlite_required=required)
+    extra.update(header=header)
+    extra.update(cookie=cookie)
+    extra.update(query=query)
+    extra.update(required=required)
+    extra.update(example=example)
+    extra.update(examples=examples)
+    extra.update(external_docs=external_docs)
+    extra.update(content_encoding=content_encoding)
     return Field(
         default,
         default_factory=default_factory,
@@ -48,7 +61,6 @@ def Header(
         max_items=max_items,
         min_length=min_length,
         max_length=max_length,
-        allow_mutation=allow_mutation,
         regex=regex,
         **extra,
     )

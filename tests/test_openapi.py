@@ -20,8 +20,8 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import (
     Controller,
-    Header,
     MediaType,
+    Parameter,
     Partial,
     Router,
     Starlite,
@@ -80,25 +80,27 @@ class PersonController(Controller):
         to_date: Optional[Union[int, datetime, date]] = None,
         gender: Optional[Union[Gender, List[Gender]]] = None,
         # header parameter
-        secret_header: str = Header("secret"),
+        secret_header: str = Parameter(header="secret"),
     ) -> List[Person]:
         pass
 
     @post()
-    def create_person(self, data: Person, secret_header: str = Header("secret"), media_type=MediaType.TEXT) -> Person:
+    def create_person(
+        self, data: Person, secret_header: str = Parameter(header="secret"), media_type=MediaType.TEXT
+    ) -> Person:
         pass
 
     @post(path="/bulk")
-    def bulk_create_person(self, data: List[Person], secret_header: str = Header("secret")) -> List[Person]:
+    def bulk_create_person(self, data: List[Person], secret_header: str = Parameter(header="secret")) -> List[Person]:
         pass
 
     @put(path="/bulk")
-    def bulk_update_person(self, data: List[Person], secret_header: str = Header("secret")) -> List[Person]:
+    def bulk_update_person(self, data: List[Person], secret_header: str = Parameter(header="secret")) -> List[Person]:
         pass
 
     @patch(path="/bulk")
     def bulk_partial_update_person(
-        self, data: List[Partial[Person]], secret_header: str = Header("secret")
+        self, data: List[Partial[Person]], secret_header: str = Parameter(header="secret")
     ) -> List[Person]:
         pass
 

@@ -58,30 +58,49 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
 
 async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField]) -> Dict[str, Any]:
     """
-    Given a function's signature Model fields,
-    determine whether it requires the request, headers or data and return these as kwargs.
+    Given a function's signature Model fields, populate its kwargs from the Request object
     """
     kwargs: Dict[str, Any] = {}
+    query_params = parse_query_params(request=request)
     if "request" in fields:
         kwargs["request"] = request
     if "headers" in fields:
         kwargs["headers"] = dict(request.headers.items())
+    if "cookies" in fields:
+        kwargs["cookies"] = request.cookies
+    if "query" in fields:
+        kwargs["query"] = query_params
     if "data" in fields:
         if request.method.lower() == HttpMethod.GET:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
         data = await request.json()
         kwargs["data"] = json.loads(data) if isinstance(data, (str, bytes, bytearray)) else data
     for field_name, field in fields.items():
-        parameter_name = field.field_info.extra.get("starlite_header_key")
-
-        if parameter_name:
-            parameter_is_required = field.field_info.extra.get("starlite_required")
-            try:
-                kwargs[field_name] = request.headers[parameter_name]
-            except KeyError as e:
-                if parameter_is_required:
-                    raise ValidationException(f"Missing required header parameter {parameter_name}") from e
-                kwargs[field_name] = None
+        if field_name in request.path_params:
+            kwargs[field_name] = request.path_params[field_name]
+        elif field_name in query_params:
+            kwargs[field_name] = query_params[field_name]
+        else:
+            extra = field.field_info.extra
+            parameter_name = extra.get("query")
+            source = None
+            if extra.get("query"):
+                parameter_name = extra["query"]
+                source = query_params
+            if extra.get("header"):
+                parameter_name = extra["header"]
+                source = request.headers
+            if extra.get("cookie"):
+                parameter_name = extra["cookie"]
+                source = request.cookies
+            if parameter_name:
+                parameter_is_required = extra["required"]
+                try:
+                    kwargs[field_name] = source[parameter_name]
+                except KeyError as e:
+                    if parameter_is_required:
+                        raise ValidationException(f"Missing required parameter {parameter_name}") from e
+                    kwargs[field_name] = None
     return kwargs
 
 
@@ -111,6 +130,8 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
         name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
         return create_model(name, __config__=Config, **field_definitions)
     except (TypeError, ValueError) as e:
+        if isinstance(e, ValidationError):
+            raise e
         raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
 
 
@@ -120,7 +141,6 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
     """
 
     model = create_function_signature_model(cast(Callable, route_handler.fn))
-    base_kwargs: Dict[str, Any] = {**parse_query_params(request=request), **request.path_params}
 
     try:
         # dependency injection
@@ -129,14 +149,14 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
             if key in model.__fields__:
                 injected_model = create_function_signature_model(injected.dependency)
                 injected_kwargs = await get_kwargs_from_request(request=request, fields=injected_model.__fields__)
-                value = injected(**injected_model(**base_kwargs, **injected_kwargs).dict())
+                value = injected(**injected_model(**injected_kwargs).dict())
                 if isawaitable(value):
                     value = await value
                 dependencies[key] = value
         model_kwargs = await get_kwargs_from_request(request=request, fields=model.__fields__)
         # we return the model's attributes as a dict in order to preserve any nested models
         fields = list(model.__fields__.keys())
-        return {key: model(**model_kwargs, **base_kwargs, **dependencies).__getattribute__(key) for key in fields}
+        return {key: model(**model_kwargs, **dependencies).__getattribute__(key) for key in fields}
     except ValidationError as e:
         raise ValidationException(
             detail=f"Validation failed for {request.method} {request.url}:\n\n{display_errors(e.errors())}"
