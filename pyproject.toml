@@ -73,7 +73,7 @@ max-line-length = "120"
 [tool.pylint.DESIGN]
 max-args = 15
 max-attributes = 15
-max-locals = 15
+max-locals = 20
 max-returns = 15
 
 [tool.pylint.VARIABLES]

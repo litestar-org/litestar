@@ -62,8 +62,8 @@ from starlite import get
 @get(path="/orders")
 def get_orders(
         page: int,
+        brands: List[str],
         page_size: int = 10,
-        brands: Optional[List[str]] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None
 ):
@@ -99,9 +99,9 @@ from pydantic import conlist, conint
 def get_orders(
         page: int,
         page_size: int = conint(gt=0, le=100),
-        brands: Optional[List[str]] = conlist(min_items=1, max_items=3),
+        brands: List[str] = conlist(str, min_items=1, max_items=3),
         from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None
+        to_date: Optional[datetime] = None,
 ):
     ...
 ```

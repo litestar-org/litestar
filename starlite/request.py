@@ -13,7 +13,6 @@ from starlette.responses import Response as StarletteResponse
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.params import Header
 from starlite.response import Response
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -73,8 +72,16 @@ async def get_kwargs_from_request(request: Request, fields: Dict[str, ModelField
         data = await request.json()
         kwargs["data"] = json.loads(data) if isinstance(data, (str, bytes, bytearray)) else data
     for field_name, field in fields.items():
-        if isinstance(field.default, Header):
-            kwargs[field_name] = field.default.value_from_request(request=request, allow_none=field.allow_none)
+        parameter_name = field.field_info.extra.get("starlite_header_key")
+
+        if parameter_name:
+            parameter_is_required = field.field_info.extra.get("starlite_required")
+            try:
+                kwargs[field_name] = request.headers[parameter_name]
+            except KeyError as e:
+                if parameter_is_required:
+                    raise ValidationException(f"Missing required header parameter {parameter_name}") from e
+                kwargs[field_name] = None
     return kwargs
 
 

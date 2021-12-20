@@ -107,7 +107,6 @@ from starlite.enums import MediaType as RouteHandlerMediaType
 from starlite.enums import OpenAPIMediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import RouteHandler
-from starlite.params import Header
 from starlite.request import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -445,7 +444,7 @@ def create_parameters(
     ]
     for f_name, field in handler_fields.items():
         if f_name not in ignored_fields:
-            if isinstance(field.default, Header):
+            if "starlite_header_key" in field.field_info.extra:
                 param_in = "header"
                 # for header params we assume they are always required unless marked with optional
                 required = not is_optional(field)
