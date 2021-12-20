@@ -104,7 +104,7 @@ app = Starlite(on_startup=[my_app_logging_config.configure])
 
 `LoggingConfig` is merely a convenience wrapper around the standard library's DictConfig options, which can be rather
 confusing. In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of
-INFO severity or above will be logged by it. We also defined it so it will log using the `LoggingConfig` default console
+INFO severity or above will be logged by it. We also defined it, so it will log using the `LoggingConfig` default console
 handler, which will emit logging messages to _sys.stderr_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from StarLite itself, and you are

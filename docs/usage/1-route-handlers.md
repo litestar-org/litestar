@@ -1,6 +1,8 @@
 # Route Handlers
 
-Route handlers are functions or methods that have been decorated by one of the route decorators exported by StarLite.
+Route handlers are the core of StarLite. These are functions or methods that have been decorated by one of the route
+decorators exported by StarLite.
+
 The base decorator is called `route`:
 
 ```python
@@ -28,7 +30,7 @@ def my_endpoint():
 
 The `route` decorator has two required kwargs -
 
-* `path` - a path string, with or without [path parameters](#path-parameters).
+* `path` - a path string, with or without [path parameters](2-parameter.md#path-parameters).
 * `http_method` a member of the `HttpMethod` enum or a list of members, e.g. `HttpMethod.GET`
   or `[HttpMethod.Patch, HttpMethod.Put]`.
 
@@ -84,6 +86,10 @@ def my_post_handler():
     ...
 ```
 
-## Function Parameters
-
-### Request, Headers and Data
+The distinct advantage of using _get_, _patch_, _put_, _delete_ or _create_ vis-à-vis _route_ is the clearer semantics.
+Furthermore, in the OpenAPI specification each unique combination of http method (or verb) and path is regarded as a
+distinct [operation](https://spec.openapis.org/oas/latest.html#operation-object). Each operation should be distinguished
+by a unique `operationId` and optimally also have a `summary` and `description` sections. As such, using the route
+decorator is discouraged. Instead, the preferred pattern is to share code using secondary class methods or by
+abstracting code to reusable functions. Keeping the route handling functions as simple as possible.
+Each unique combination of path+http method (or verb)
