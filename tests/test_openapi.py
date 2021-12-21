@@ -83,6 +83,8 @@ class PersonController(Controller):
         gender: Optional[Union[Gender, List[Gender]]] = None,
         # header parameter
         secret_header: str = Parameter(header="secret"),
+        # cookie parameter
+        cookie_value: int = Parameter(cookie="value"),
     ) -> List[Person]:
         pass
 
@@ -291,8 +293,8 @@ def test_create_parameters():
         handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__,
         path_parameters=route.path_parameters,
     )
-    assert len(parameters) == 7
-    page, page_size, name, from_date, to_date, gender, secret_header = tuple(parameters)
+    assert len(parameters) == 8
+    page, page_size, name, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
     assert page.param_in == "query"
     assert page.name == "page"
     assert page.param_schema.type == OpenAPIType.INTEGER
@@ -354,6 +356,9 @@ def test_create_parameters():
     assert secret_header.param_in == "header"
     assert secret_header.param_schema.type == OpenAPIType.STRING
     assert secret_header.required
+    assert cookie_value.param_in == "cookie"
+    assert cookie_value.param_schema.type == OpenAPIType.INTEGER
+    assert cookie_value.required
 
 
 def test_create_path_item():

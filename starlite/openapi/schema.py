@@ -131,4 +131,4 @@ def create_schema(field: ModelField, ignore_optional: bool = False) -> Schema:
         if openapi_type == OpenAPIType.ARRAY:
             schema.items = [create_schema(sub_field) for sub_field in field.sub_fields]
         return schema
-    return Schema()
+    return Schema()  # pragma: no cover

@@ -9,7 +9,13 @@ from pydantic.fields import FieldInfo
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from typing_extensions import Type
 
-from starlite import Parameter, create_test_client, get
+from starlite import (
+    ImproperlyConfiguredException,
+    Parameter,
+    Starlite,
+    create_test_client,
+    get,
+)
 
 
 @pytest.mark.parametrize(
@@ -181,6 +187,15 @@ def test_path_params(params_dict: dict, should_raise: bool):
             assert response.status_code == HTTP_400_BAD_REQUEST
         else:
             assert response.status_code == HTTP_200_OK
+
+
+def test_path_param_validation():
+    @get(path="/{param}")
+    def test_method():
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[test_method])
 
 
 @pytest.mark.parametrize(
