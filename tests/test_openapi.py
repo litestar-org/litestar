@@ -33,24 +33,26 @@ from starlite import (
     put,
 )
 from starlite.enums import OpenAPIMediaType
-from starlite.openapi import (
-    OpenAPIConfig,
-    OpenAPIType,
+from starlite.openapi.config import OpenAPIConfig, SchemaGenerationConfig
+from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.parameters import create_parameters, create_path_parameter
+from starlite.openapi.path_item import create_path_item, create_request_body
+from starlite.openapi.responses import create_responses
+from starlite.openapi.schema import (
     create_collection_constrained_field_schema,
     create_constrained_field_schema,
     create_numerical_constrained_field_schema,
-    create_parameters,
-    create_parsed_model_field,
-    create_path_item,
-    create_path_parameter,
-    create_request_body,
-    create_responses,
     create_string_constrained_field_schema,
-    get_media_type,
 )
+from starlite.openapi.utils import get_media_type
 from starlite.utils import find_index
-from starlite.utils.model import create_function_signature_model
+from starlite.utils.model import (
+    create_function_signature_model,
+    create_parsed_model_field,
+)
 from tests.utils import Person, Pet, ResponseHeaders, VanillaDataClassPerson
+
+default_config = SchemaGenerationConfig()
 
 
 class Gender(str, Enum):
@@ -358,7 +360,7 @@ def test_create_path_item():
     router = Router(path="", route_handlers=[PersonController])
     index = find_index(router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     route = router.routes[index]
-    schema = create_path_item(route=route)
+    schema = create_path_item(route=route, config=default_config)
     assert schema.delete
     assert schema.delete.operationId == "delete_person"
     assert schema.get
@@ -372,11 +374,15 @@ def test_create_path_item():
 def test_create_responses():
     for route in Starlite(route_handlers=[PersonController]).router.routes:
         for route_handler in route.route_handler_map.values():
-            responses = create_responses(route_handler=route_handler, raises_validation_error=True)
+            responses = create_responses(
+                route_handler=route_handler, raises_validation_error=True, default_response_headers=None
+            )
             assert str(route_handler.status_code) in responses
             assert str(HTTP_400_BAD_REQUEST) in responses
 
-    responses = create_responses(route_handler=PetController.get_pets_or_owners, raises_validation_error=False)
+    responses = create_responses(
+        route_handler=PetController.get_pets_or_owners, raises_validation_error=False, default_response_headers=None
+    )
     assert str(HTTP_400_BAD_REQUEST) not in responses
     assert str(HTTP_200_OK) in responses
     response = responses[str(HTTP_200_OK)]

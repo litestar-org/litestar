@@ -15,7 +15,8 @@ from starlite.controller import Controller
 from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
-from starlite.openapi import OpenAPIConfig, create_path_item
+from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.path_item import create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
 from starlite.utils.helpers import DeprecatedProperty
@@ -213,8 +214,7 @@ class RootRouter(Router):
         dependencies: Optional[Dict[str, Provide]] = None,
     ):
         self.openapi_schema = None
-        self.schema_endpoint_url = None
-        self.schema_response_media_type = None
+        self.schema_generation_config = None
         super().__init__(
             path="",
             route_handlers=route_handlers,
@@ -224,8 +224,7 @@ class RootRouter(Router):
         )
         if openapi_config:
             self.openapi_schema = openapi_config.to_openapi_schema()
-            self.schema_endpoint_url = openapi_config.schema_endpoint_url
-            self.schema_response_media_type = openapi_config.schema_response_media_type
+            self.schema_generation_config = openapi_config.to_schema_generation_config()
             self.update_openapi_schema_paths()
             self.routes.append(self.create_schema_endpoint())
 
@@ -242,13 +241,15 @@ class RootRouter(Router):
             self.openapi_schema.paths = {}
         for route in self.routes:
             if route.include_in_schema and (route.path_format or "/") not in self.openapi_schema.paths:
-                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(route=route)
+                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(
+                    route=route, config=self.schema_generation_config
+                )
 
     # TODO: extend this to support customization, security etc.
     def create_schema_endpoint(self) -> Route:
         """Create a schema endpoint"""
         assert (
-            self.openapi_schema and self.schema_endpoint_url and self.schema_response_media_type
+            self.openapi_schema and self.schema_generation_config
         ), "schema configuration must be set to generate a schema endpoint"
 
         def get_openapi_schema() -> OpenAPI:
@@ -256,11 +257,11 @@ class RootRouter(Router):
             return construct_open_api_with_schema_class(self.openapi_schema)
 
         return Route(
-            path=normalize_path(self.schema_endpoint_url),
+            path=normalize_path(self.schema_generation_config.schema_endpoint_url),
             route_handlers=[
                 RouteHandler(
                     http_method=HttpMethod.GET,
-                    media_type=self.schema_response_media_type,
+                    media_type=self.schema_generation_config.schema_response_media_type,
                     fn=get_openapi_schema,
                     include_in_schema=False,
                 )

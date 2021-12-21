@@ -10,7 +10,7 @@ from typing_extensions import Type
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
 from starlite.handlers import RouteHandler
-from starlite.openapi import OpenAPIConfig
+from starlite.openapi.config import OpenAPIConfig
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import RootRouter, Router

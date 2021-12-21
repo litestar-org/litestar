@@ -13,7 +13,7 @@ from starlite import Controller, Provide, Router
 from starlite.app import Starlite
 from starlite.enums import HttpMethod
 from starlite.handlers import RouteHandler
-from starlite.openapi import OpenAPIConfig
+from starlite.openapi.config import OpenAPIConfig
 
 
 class TestClient(StarletteTestClient):
