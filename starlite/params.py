@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from openapi_schema_pydantic import ExternalDocumentation
 from pydantic.fields import Field, Undefined
@@ -17,26 +17,25 @@ def Parameter(  # pylint: disable=too-many-locals
     required: bool = True,
     default: Any = Undefined,
     default_factory: Optional[NoArgAnyCallable] = None,
-    alias: str = None,
-    title: str = None,
-    description: str = None,
-    const: bool = None,
-    gt: float = None,
-    ge: float = None,
-    lt: float = None,
-    le: float = None,
-    multiple_of: float = None,
-    min_items: int = None,
-    max_items: int = None,
-    min_length: int = None,
-    max_length: int = None,
-    regex: str = None,
-    **extra: Any,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    const: Optional[bool] = None,
+    gt: Optional[float] = None,
+    ge: Optional[float] = None,
+    lt: Optional[float] = None,
+    le: Optional[float] = None,
+    multiple_of: Optional[float] = None,
+    min_items: Optional[int] = None,
+    max_items: Optional[int] = None,
+    min_length: Optional[int] = None,
+    max_length: Optional[int] = None,
+    regex: Optional[str] = None
 ) -> Any:
     """
     Creates a pydantic FieldInfo instance with an extra kwargs,
     used for both parameter parsing and OpenAPI schema generation.
     """
+    extra: Dict[str, Any] = {}
     extra.update(header=header)
     extra.update(cookie=cookie)
     extra.update(query=query)
@@ -48,7 +47,7 @@ def Parameter(  # pylint: disable=too-many-locals
     return Field(
         default,
         default_factory=default_factory,
-        alias=alias,
+        alias="",
         title=title,
         description=description,
         const=const,
