@@ -18,13 +18,14 @@ from tests.utils import Person
         st.dictionaries(keys=st.text(), values=st.one_of(st.lists(st.text()), st.text())),
     ),
     headers=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
+    cookie=st.one_of(st.none(), st.text()),
     content=st.one_of(
         st.none(),
         st.builds(Person),
         st.dictionaries(keys=st.text(), values=st.builds(dict)),
     ),
 )
-def test_create_test_request(http_method, scheme, server, port, root_path, path, query, headers, content):
+def test_create_test_request(http_method, scheme, server, port, root_path, path, query, headers, cookie, content):
     create_test_request(
         http_method=http_method,
         scheme=scheme,
@@ -34,5 +35,6 @@ def test_create_test_request(http_method, scheme, server, port, root_path, path,
         path=path,
         query=query,
         headers=headers,
+        cookie=cookie,
         content=content,
     )

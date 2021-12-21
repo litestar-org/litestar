@@ -27,21 +27,21 @@ from starlite import (
     route,
 )
 from starlite.request import (
-    create_function_signature_model,
-    get_kwargs_from_request,
+    get_model_kwargs_from_request,
     handle_request,
     normalize_headers,
     parse_query_params,
 )
 from starlite.testing import create_test_request
+from starlite.utils.model import create_function_signature_model
 from tests.utils import Person, PersonFactory, ResponseHeaders
 
 
 def test_parse_query_params():
     query = {
-        "value": 10,
+        "value": "10",
         "veggies": ["tomato", "potato", "aubergine"],
-        "calories": 122.53,
+        "calories": "122.53",
         "healthy": True,
         "polluting": False,
     }
@@ -51,7 +51,7 @@ def test_parse_query_params():
 
 
 @pytest.mark.asyncio
-async def test_get_kwargs_from_request():
+async def test_get_model_kwargs_from_request():
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -60,15 +60,23 @@ async def test_get_kwargs_from_request():
         **Person.__fields__,
         "data": ModelField(name="data", type_=Person, class_validators=[], model_config=Config),
         "headers": ModelField(name="headers", type_=dict, class_validators=[], model_config=Config),
+        "query": ModelField(name="headers", type_=dict, class_validators=[], model_config=Config),
+        "cookies": ModelField(name="headers", type_=dict, class_validators=[], model_config=Config),
         "request": ModelField(name="request", type_=Request, class_validators=[], model_config=Config),
     }
     request = create_test_request(
-        content=person_instance, headers={"MyHeader": "xyz"}, query={"user": "123"}, http_method=HttpMethod.POST
+        content=person_instance,
+        headers={"MyHeader": "xyz"},
+        query={"user": "123"},
+        cookie="abcdefg",
+        http_method=HttpMethod.POST,
     )
-    result = await get_kwargs_from_request(request=request, fields=fields)
+    result = await get_model_kwargs_from_request(request=request, fields=fields)
     assert result["data"]
     assert result["headers"]
     assert result["request"]
+    assert result["query"]
+    assert result["cookies"]
 
 
 def test_create_function_signature_model_parameter_parsing():
@@ -101,10 +109,8 @@ def test_create_function_signature_model_ignore_return_annotation():
 
 
 def test_create_function_signature_model_validation():
-    provide = Provide(lru_cache(maxsize=0)(lambda x: x))
-
     with pytest.raises(ImproperlyConfiguredException):
-        create_function_signature_model(provide.dependency)
+        Provide(lru_cache(maxsize=0)(lambda x: x))
 
 
 @pytest.mark.asyncio

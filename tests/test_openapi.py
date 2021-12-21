@@ -48,8 +48,8 @@ from starlite.openapi import (
     create_string_constrained_field_schema,
     get_media_type,
 )
-from starlite.request import create_function_signature_model
 from starlite.utils import find_index
+from starlite.utils.model import create_function_signature_model
 from tests.utils import Person, Pet, ResponseHeaders, VanillaDataClassPerson
 
 

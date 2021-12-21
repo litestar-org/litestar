@@ -111,7 +111,7 @@ from starlite.enums import MediaType as RouteHandlerMediaType
 from starlite.enums import OpenAPIMediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import RouteHandler
-from starlite.request import create_function_signature_model
+from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Route

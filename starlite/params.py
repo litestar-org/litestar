@@ -5,7 +5,7 @@ from pydantic.fields import Field, Undefined
 from pydantic.typing import NoArgAnyCallable
 
 
-def Parameter(
+def Parameter(  # pylint: disable=too-many-locals
     *,
     header: Optional[str] = None,
     cookie: Optional[str] = None,

@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import Any, List, Optional, Union
+from typing import List, Optional
 from urllib.parse import urlencode
 from uuid import uuid1, uuid4
 
 import pytest
 from pydantic import UUID4
+from pydantic.fields import FieldInfo
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from typing_extensions import Type
 
@@ -195,15 +196,13 @@ def test_path_params(params_dict: dict, should_raise: bool):
         (Optional[int], {}, Parameter(header="special-header", ge=100, le=120, required=False), False),
     ],
 )
-def test_header_params(t_type: Type, param_dict: dict, param: Parameter, should_raise: bool):
+def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_raise: bool):
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: t_type = param):
+    def test_method(special_header: t_type = param):  # type: ignore
         if special_header:
-            assert special_header == param_dict.get("special-header") or special_header == int(
-                param_dict.get("special-header")
-            )
+            assert special_header in [param_dict.get("special-header"), int(param_dict.get("special-header"))]  # type: ignore
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, headers=param_dict)
@@ -226,15 +225,13 @@ def test_header_params(t_type: Type, param_dict: dict, param: Parameter, should_
         (Optional[int], {}, Parameter(cookie="special-cookie", ge=100, le=120, required=False), False),
     ],
 )
-def test_cookie_params(t_type: Type, param_dict: dict, param: Parameter, should_raise: bool):
+def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_raise: bool):
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_cookie: t_type = param):
+    def test_method(special_cookie: t_type = param):  # type: ignore
         if special_cookie:
-            assert special_cookie == param_dict.get("special-cookie") or special_cookie == int(
-                param_dict.get("special-cookie")
-            )
+            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]  # type: ignore
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, cookies=param_dict)

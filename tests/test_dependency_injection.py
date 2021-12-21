@@ -115,7 +115,7 @@ def test_dependency_isolation():
 
 def test_dependency_validation():
     @get(
-        path=test_path + "/{path_param}",
+        path=test_path + "/{path_param:int}",
         dependencies={
             "first": Provide(local_method_first_dependency),
             "second": Provide(local_method_second_dependency),

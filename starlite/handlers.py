@@ -9,6 +9,7 @@ from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.provide import Provide
+from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -30,6 +31,8 @@ class RouteHandler(BaseModel):
 
     fn: Optional[Callable] = None
     owner: Optional[Union[Controller, "Router"]] = None
+    resolved_dependencies: Optional[Dict[str, Provide]]
+    signature_model: Optional[Type[BaseModel]] = None
 
     # OpenAPI attributes
     tags: Optional[List[str]] = None
@@ -44,6 +47,7 @@ class RouteHandler(BaseModel):
         Replaces a function with itself
         """
         self.fn = fn
+        self.signature_model = create_function_signature_model(fn)
         return self
 
     @validator("http_method", always=True, pre=True)
@@ -104,23 +108,21 @@ class RouteHandler(BaseModel):
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
-        Returns all dependencies that exist in the given handler's scopes
+        Returns all dependencies correlating to handler.fn kwargs in the given handler's scopes
         """
-        dependencies_list: List[Dict[str, Provide]] = []
-        if self.dependencies:
-            dependencies_list.append(self.dependencies)
-        cur = self.owner
-        while cur is not None:
-            if cur.dependencies:
-                dependencies_list.append(cur.dependencies)
-            cur = cur.owner
-        resolved_dependencies: Dict[str, Provide] = {}
-        for dependencies_dict in dependencies_list:
-            for key, value in dependencies_dict.items():
-                if key not in resolved_dependencies:
-                    self.validate_dependency_is_unique(dependencies=resolved_dependencies, key=key, provider=value)
-                    resolved_dependencies[key] = value
-        return resolved_dependencies
+        assert self.signature_model, "resolve_dependencies cannot be called before a signature model has been generated"
+        if self.resolved_dependencies is None:
+            field_names = list(self.signature_model.__fields__.keys())
+            dependencies: Dict[str, Provide] = {}
+            cur: Any = self
+            while cur is not None:
+                for key, value in (cur.dependencies or {}).items():
+                    self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
+                    if key in field_names and key not in dependencies:
+                        dependencies[key] = value
+                cur = cur.owner
+            self.resolved_dependencies = dependencies
+        return self.resolved_dependencies
 
 
 route = RouteHandler

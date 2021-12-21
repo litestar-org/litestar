@@ -4,14 +4,17 @@ from typing import Any, Callable
 
 from pydantic.fields import Undefined
 
+from starlite.utils.model import create_function_signature_model
+
 
 class Provide:
-    __slots__ = ("dependency", "use_cache", "value", "identifier")
+    __slots__ = ("dependency", "use_cache", "value", "identifier", "signature_model")
 
     def __init__(self, dependency: Callable, use_cache: bool = False):
         self.dependency = dependency
         self.use_cache = use_cache
         self.value = Undefined
+        self.signature_model = create_function_signature_model(dependency)
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved
             self.dependency = partial(dependency, dependency.__self__)  # type: ignore

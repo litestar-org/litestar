@@ -1,4 +1,3 @@
-import json
 from typing import List, Optional
 
 import pytest
@@ -223,7 +222,7 @@ def test_data_using_model(decorator, http_method, expected_status_code):
             assert data == person_instance
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=person_instance.json())
+        response = client.request(http_method, test_path, json=person_instance.dict())
         assert response.status_code == expected_status_code
 
 
@@ -249,5 +248,5 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
             assert data == people
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, json=json.dumps([p.dict() for p in people]))
+        response = client.request(http_method, test_path, json=[p.dict() for p in people])
         assert response.status_code == expected_status_code

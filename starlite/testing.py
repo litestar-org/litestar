@@ -84,6 +84,7 @@ def create_test_request(
     path: str = "",
     query: Optional[Dict[str, Union[str, List[str]]]] = None,
     headers: Optional[Dict[str, str]] = None,
+    cookie: Optional[str] = None,
     content: Optional[Union[Dict[str, Any], BaseModel]] = None,
 ) -> Request:
     """Create a starlette request using passed in parameters"""
@@ -98,6 +99,10 @@ def create_test_request(
     )
     if query:
         scope["query_string"] = urlencode(query, doseq=True)
+    if cookie:
+        if not headers:
+            headers = {}
+        headers.update(cookie=cookie)
     if headers:
         scope["headers"] = [
             (key.lower().encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
