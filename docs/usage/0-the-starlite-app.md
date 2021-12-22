@@ -27,7 +27,7 @@ The `Starlite` class supports the following kwargs, all of which are optional:
 * `dependencies`: a dictionary mapping string keys to dependencies.
   See [dependency-injection](3-dependency-injection.md) for further details.
 
-## LifeCycle
+## Lifecycle
 
 Starlette, on top of which StatLite is built, supports twp kinds of application lifecycle management - `on_statup`
 / `on_shutdown` hooks, which accept a sequence of callables, and `lifespan`, which accepts an `AsyncContextManager`. To
