@@ -133,7 +133,7 @@ app = Starlite(route_handlers=[UserController])
 To run you application, use an ASGI server such as uvicorn:
 
 ```shell
-uvicorn my_app.main:app --host 0.0.0.0 --port "3000"
+uvicorn my_app.main:app --reload
 ```
 
 ## Project and Status
