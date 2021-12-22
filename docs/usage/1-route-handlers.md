@@ -18,7 +18,7 @@ def my_endpoint():
 ```
 
 What route does is wrap the given function or class method and replace it with an instance of the class `RouteHandler`.
-In fact, route is merely an alias for `RouteHandler`, thus you could have done this instead (although less pythonic):
+In fact, route is merely an alias for `RouteHandler`, thus you could have done this instead:
 
 ```python
 from starlite import HttpMethod, RouteHandler
