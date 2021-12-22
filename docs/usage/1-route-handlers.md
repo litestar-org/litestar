@@ -1,7 +1,7 @@
 # Route Handlers
 
-Route handlers are the core of Starlite. These are functions or methods that have been decorated by one of the route
-decorators exported by Starlite.
+Route handlers are the core of Starlite. They are constructed by decorating a function or method with one of the handler
+decorators exported from Starlite.
 
 ## The Route Decorator
 
@@ -43,8 +43,8 @@ The `route` decorator receives the following kwargs -
   response. Defaults to `MediaType.JSON`.
 * `response_class`: The response class to use. The value must be either a `Starlette` response class or a class that
   extends it. Defaults to `starlite.Response`.
-* `response_headers`: A _dataclass_ or _pydantic model_ that describes the response headers. This value is
-  used only in the OpenAPI schema. Defaults to `None`.
+* `response_headers`: A _dataclass_ or _pydantic model_ that describes the response headers. This value is used only in
+  the OpenAPI schema. Defaults to `None`.
 * `dependencies`: A dictionary mapping dependency injection Providers to keys. Defaults to `None`.
 * `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.

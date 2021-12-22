@@ -37,13 +37,6 @@ OR
 pipenv install starlite
 ```
 
-You will also need an ASGI server such as [uvicorn](https://github.com/encode/uvicorn)
-or [daphne](https://github.com/django/daphne/), e.g.:
-
-```shell
-pip install uvicorn
-```
-
 ## Minimal Example
 
 Define your data model using pydantic or any library based on it (see for example ormar, beanie, SQLModel etc.):
@@ -138,15 +131,18 @@ uvicorn my_app.main:app --reload
 
 ## Project and Status
 
-This project was inspired by FastAPI, which also uses Starlette and pydantic as a basis, but with an intent of following
-a different path:
+This project builds on top the Starlette ASGI toolkit and pydantic modelling to create a higher-order opinionated
+framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
+this regard (and some others) was a source of inspiration for this framework. Nonetheless, Starlite is not FastAPI - it
+has a different design, different project goals and a completely different codebase.
 
 1. The goal of this project is to become a community driven project. That is, not to have a single "owner" but rather a
    core team of maintainers that leads the project, as well as community contributors.
 2. Starlite draws inspiration from NestJS - a contemporary TypeScript framework - which places opinions and patterns at
    its core. As such, the design of the API breaks from the Starlette design and instead offers an opinionated
-   alternative- python OOP is extremely powerful and versatile. Starlite seeks to build on this by offering class based
-   Controllers.
+   alternative.
+3. Finally, Python OOP is extremely powerful and versatile. While still allowing for function based endpoints, Starlite
+   seeks to build on this by placing class based Controllers at its core.
 
 ### Features and roadmap:
 
@@ -168,5 +164,6 @@ a different path:
 
 ### Contributing
 
-Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server to discuss contributions and
-project maintenance. For guidelines on how to contribute, please see [the contribution guide](CONTRIBUTING.md).
+Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
+to discuss contributions and project maintenance. For guidelines on how to contribute, please
+see [the contribution guide](CONTRIBUTING.md).
