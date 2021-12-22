@@ -5,6 +5,7 @@ from typing import Any, Callable, List, Optional, Union, cast
 import yaml
 from hypothesis import given
 from hypothesis import strategies as st
+from openapi_schema_pydantic import Example
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic.types import (
     conbytes,
@@ -35,7 +36,7 @@ from starlite import (
 from starlite.enums import OpenAPIMediaType
 from starlite.openapi.config import OpenAPIConfig, SchemaGenerationConfig
 from starlite.openapi.enums import OpenAPIType
-from starlite.openapi.parameters import create_parameters, create_path_parameter
+from starlite.openapi.parameters import create_parameters
 from starlite.openapi.path_item import create_path_item, create_request_body
 from starlite.openapi.responses import create_responses
 from starlite.openapi.schema import (
@@ -73,8 +74,13 @@ class PersonController(Controller):
         request: Any,
         # required query parameters below
         page: int,
-        page_size: int,
         name: Optional[Union[str, List[str]]],  # intentionally without default
+        page_size: int = Parameter(
+            query="pageSize",
+            description="Page Size Description",
+            title="Page Size Title",
+            examples=[Example(description="example value", value=1)],
+        ),
         # path parameter
         service_id: int = conint(gt=0),
         # non-required query parameters below
@@ -272,17 +278,6 @@ def test_create_constrained_field_schema(field_type):
     assert schema
 
 
-def test_create_path_parameter():
-    app = Starlite(route_handlers=[PersonController])
-    index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person")
-    route = app.router.routes[index]
-    service_id = create_path_parameter(route.path_parameters[0])
-    assert service_id.name == "service_id"
-    assert service_id.param_in == "path"
-    assert service_id.param_schema.type == OpenAPIType.INTEGER
-    assert service_id.required
-
-
 def test_create_parameters():
     app = Starlite(route_handlers=[PersonController])
     index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person")
@@ -292,17 +287,24 @@ def test_create_parameters():
         route_handler=route_handler,
         handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__,
         path_parameters=route.path_parameters,
+        generate_examples=True,
     )
-    assert len(parameters) == 8
-    page, page_size, name, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    assert len(parameters) == 9
+    page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    assert service_id.name == "service_id"
+    assert service_id.param_in == "path"
+    assert service_id.param_schema.type == OpenAPIType.INTEGER
+    assert service_id.required
     assert page.param_in == "query"
     assert page.name == "page"
     assert page.param_schema.type == OpenAPIType.INTEGER
     assert page.required
     assert page_size.param_in == "query"
-    assert page_size.name == "page_size"
+    assert page_size.name == "pageSize"
     assert page_size.param_schema.type == OpenAPIType.INTEGER
     assert page_size.required
+    assert page_size.description == "Page Size Description"
+    assert page_size.param_schema.examples[0].value == 1
     assert name.param_in == "query"
     assert name.name == "name"
     assert name.param_schema.dict(exclude_none=True) == {
@@ -314,13 +316,9 @@ def test_create_parameters():
     assert from_date.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
-            {
-                "oneOf": [
-                    {"type": "integer"},
-                    {"type": "string", "schema_format": "date-time"},
-                    {"type": "string", "schema_format": "date"},
-                ]
-            },
+            {"type": "integer"},
+            {"type": "string", "schema_format": "date-time"},
+            {"type": "string", "schema_format": "date"},
         ]
     }
     assert not from_date.required
@@ -329,13 +327,9 @@ def test_create_parameters():
     assert to_date.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
-            {
-                "oneOf": [
-                    {"type": "integer"},
-                    {"type": "string", "schema_format": "date-time"},
-                    {"type": "string", "schema_format": "date"},
-                ]
-            },
+            {"type": "integer"},
+            {"type": "string", "schema_format": "date-time"},
+            {"type": "string", "schema_format": "date"},
         ]
     }
     assert not to_date.required
@@ -344,12 +338,8 @@ def test_create_parameters():
     assert gender.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
-            {
-                "oneOf": [
-                    {"type": "string", "enum": ["M", "F", "O", "A"]},
-                    {"items": [{"type": "string", "enum": ["M", "F", "O", "A"]}], "type": "array"},
-                ]
-            },
+            {"type": "string", "enum": ["M", "F", "O", "A"]},
+            {"items": [{"type": "string", "enum": ["M", "F", "O", "A"]}], "type": "array"},
         ]
     }
     assert not gender.required
@@ -380,13 +370,19 @@ def test_create_responses():
     for route in Starlite(route_handlers=[PersonController]).router.routes:
         for route_handler in route.route_handler_map.values():
             responses = create_responses(
-                route_handler=route_handler, raises_validation_error=True, default_response_headers=None
+                route_handler=route_handler,
+                raises_validation_error=True,
+                default_response_headers=None,
+                generate_examples=True,
             )
             assert str(route_handler.status_code) in responses
             assert str(HTTP_400_BAD_REQUEST) in responses
 
     responses = create_responses(
-        route_handler=PetController.get_pets_or_owners, raises_validation_error=False, default_response_headers=None
+        route_handler=PetController.get_pets_or_owners,
+        raises_validation_error=False,
+        default_response_headers=None,
+        generate_examples=True,
     )
     assert str(HTTP_400_BAD_REQUEST) not in responses
     assert str(HTTP_200_OK) in responses
@@ -394,7 +390,7 @@ def test_create_responses():
     assert response.headers["application-type"].param_schema.type == OpenAPIType.STRING
     assert response.headers["Access-Control-Allow-Origin"].param_schema.type == OpenAPIType.STRING
     assert response.headers["x-my-tag"].param_schema.type == OpenAPIType.STRING
-    assert len(response.headers["omitted-tag"].param_schema.oneOf) == 2
+    assert not response.headers["omitted-tag"].param_schema.required
 
 
 def test_get_media_type():
@@ -413,7 +409,9 @@ def test_create_request_body():
     for route in Starlite(route_handlers=[PersonController]).router.routes:
         for route_handler in route.route_handler_map.values():
             handler_fields = route_handler.__fields__
-            request_body = create_request_body(route_handler=route_handler, handler_fields=handler_fields)
+            request_body = create_request_body(
+                route_handler=route_handler, handler_fields=handler_fields, generate_examples=True
+            )
             if "data" in handler_fields:
                 assert request_body
             else:

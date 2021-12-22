@@ -1,6 +1,6 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
-from openapi_schema_pydantic import ExternalDocumentation
+from openapi_schema_pydantic import Example, ExternalDocumentation
 from pydantic.fields import Field, Undefined
 from pydantic.typing import NoArgAnyCallable
 
@@ -10,8 +10,7 @@ def Parameter(  # pylint: disable=too-many-locals
     header: Optional[str] = None,
     cookie: Optional[str] = None,
     query: Optional[str] = None,
-    example: Any = None,
-    examples: Optional[list] = None,
+    examples: Optional[List[Example]] = None,
     external_docs: Optional[ExternalDocumentation] = None,
     content_encoding: Optional[str] = None,
     required: bool = True,
@@ -40,7 +39,6 @@ def Parameter(  # pylint: disable=too-many-locals
     extra.update(cookie=cookie)
     extra.update(query=query)
     extra.update(required=required)
-    extra.update(example=example)
     extra.update(examples=examples)
     extra.update(external_docs=external_docs)
     extra.update(content_encoding=content_encoding)

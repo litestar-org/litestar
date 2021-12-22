@@ -185,3 +185,27 @@ TYPE_MAP: Dict[Union[Type, None, Any], Schema] = {
     StrictInt: Schema(type=OpenAPIType.INTEGER),
     StrictStr: Schema(type=OpenAPIType.STRING),
 }
+
+
+PYDANTIC_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
+    "default": "default",
+    "multiple_of": "multipleOf",
+    "ge": "minimum",
+    "le": "maximum",
+    "lt": "exclusiveMaximum",
+    "gt": "exclusiveMinimum",
+    "max_length": "maxLength",
+    "min_length": "minLength",
+    "max_items": "maxItems",
+    "min_items": "minItems",
+    "regex": "pattern",
+    "title": "title",
+    "description": "description",
+}
+
+EXTRA_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
+    "example": "example",
+    "examples": "examples",
+    "external_docs": "externalDocs",
+    "content_encoding": "contentEncoding",
+}

@@ -21,6 +21,7 @@ from starlite.utils.model import create_parsed_model_field
 def create_success_response(
     route_handler: RouteHandler,
     default_response_headers: Optional[Union[Type[DataclassProtocol], Type[BaseModel]]],
+    generate_examples: bool,
 ):
     """
     Creates the schema for a success response
@@ -31,7 +32,7 @@ def create_success_response(
         response = Response(
             content={
                 get_media_type(route_handler): OpenAPISchemaMediaType(
-                    media_type_schema=create_schema(as_parsed_model_field)
+                    media_type_schema=create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
                 )
             },
             description=HTTPStatus(cast(int, route_handler.status_code)).description,
@@ -45,7 +46,9 @@ def create_success_response(
     if response_headers:
         response.headers = {}
         for key, value in response_headers.__fields__.items():
-            response.headers[key.replace("_", "-")] = Header(param_schema=create_schema(value))
+            response.headers[key.replace("_", "-")] = Header(
+                param_schema=create_schema(field=value, generate_examples=generate_examples)
+            )
     return response
 
 
@@ -69,7 +72,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
                     extra=Schema(type=OpenAPIType.OBJECT, additionalProperties=Schema()),
                 ),
                 description=pascal_case_to_text(get_name(exc)),
-                example={"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}},
+                examples=[{"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}}],
             )
             for exc in exception_group
         ]
@@ -87,13 +90,16 @@ def create_responses(
     route_handler: RouteHandler,
     raises_validation_error: bool,
     default_response_headers: Optional[Union[Type[DataclassProtocol], Type[BaseModel]]],
+    generate_examples: bool,
 ) -> Optional[Responses]:
     """
     Create a Response model embedded in a responses dictionary for the given RouteHandler or return None
     """
     responses: Responses = {
         str(route_handler.status_code): create_success_response(
-            route_handler=route_handler, default_response_headers=default_response_headers
+            route_handler=route_handler,
+            default_response_headers=default_response_headers,
+            generate_examples=generate_examples,
         )
     }
     exceptions = route_handler.raises or []
