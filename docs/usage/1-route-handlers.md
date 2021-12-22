@@ -74,28 +74,28 @@ Starlite also includes the following decorators, which as their names suggest al
 from starlite import delete, get, patch, post, put
 
 
-@delete(path="/my-endpoint")
-def my_post_handler():
+@get(path="/resources")
+def list_resources():
     ...
 
-
-@get(path="/my-endpoint")
-def my_get_handler():
+@post(path="/resources")
+def create_resource():
     ...
 
-
-@patch(path="/my-endpoint")
-def my_post_handler():
+@get(path="/resources/{pk:int}")
+def retrieve_resource(pk: int):
     ...
 
-
-@post(path="/my-endpoint")
-def my_post_handler():
+@put(path="/resources/{pk:int}")
+def update_resource(pk: int):
+    ...
+    
+@patch(path="/resources/{pk:int}")
+def partially_update_resource(pk: int):
     ...
 
-
-@put(path="/my-endpoint")
-def my_post_handler():
+@delete(path="/resources/{pk:int}")
+def delete_resource(pk: int):
     ...
 ```
 
