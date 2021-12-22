@@ -29,7 +29,7 @@ The `Starlite` class supports the following kwargs, all of which are optional:
 
 ## Lifecycle
 
-Starlette, on top of which StatLite is built, supports twp kinds of application lifecycle management - `on_statup`
+Starlette, on top of which StatLite is built, supports two kinds of application lifecycle management - `on_statup`
 / `on_shutdown` hooks, which accept a sequence of callables, and `lifespan`, which accepts an `AsyncContextManager`. To
 simplify matters, Starlite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a __list__ of
 callables - sync and/or async - which will be called respectively during the application startup and shutdown.
