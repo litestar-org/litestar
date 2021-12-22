@@ -204,7 +204,6 @@ PYDANTIC_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
 }
 
 EXTRA_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
-    "example": "example",
     "examples": "examples",
     "external_docs": "externalDocs",
     "content_encoding": "contentEncoding",

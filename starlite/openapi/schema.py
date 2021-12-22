@@ -29,34 +29,28 @@ from starlite.openapi.enums import OpenAPIType
 from starlite.utils.model import create_parsed_model_field, handle_dataclass
 
 
+def normalize_example_value(value: Any) -> Any:
+    """Normalize the example value to make it look a bit prettier"""
+    if isinstance(value, (Decimal, float)):
+        value = round(value, 2)
+    if isinstance(value, Enum):
+        value = value.value
+    if is_dataclass(value):
+        value = handle_dataclass(value)
+    if isinstance(value, BaseModel):
+        value = value.dict()
+    if isinstance(value, (list, set)):
+        value = [normalize_example_value(v) for v in value]
+    if isinstance(value, dict):
+        for k, v in value.items():
+            value[k] = normalize_example_value(v)
+    return value
+
+
 class ExampleFactory(ModelFactory):
-    """A subclass of model factory that makes nice looking examples"""
+    """A factory that always returns values"""
 
-    __model__ = Example
     __allow_none_optionals__ = False
-
-    @classmethod
-    def normalize_value(cls, value: Any) -> Any:
-        if isinstance(value, (Decimal, float)):
-            value = round(value, 2)
-        if isinstance(value, Enum):
-            value = value.value
-        if is_dataclass(value):
-            value = handle_dataclass(value)
-        if isinstance(value, BaseModel):
-            value = value.dict()
-        if isinstance(value, (list, set)):
-            value = [cls.normalize_value(v) for v in value]
-        if isinstance(value, dict):
-            for k, v in value.items():
-                value[k] = cls.normalize_value(v)
-        return value
-
-    @classmethod
-    def build(cls, field: ModelField) -> Example:
-        value = cls.get_field_value(model_field=field)
-        value = cls.normalize_value(value=value)
-        return Example(description=f"Example {field.name} value", value=value)
 
 
 def create_numerical_constrained_field_schema(
@@ -172,15 +166,16 @@ def get_schema_for_field_type(field: ModelField) -> Schema:
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
-    return Schema()
+    # this is a failsafe to ensure we always return a value
+    return Schema()  # pragma: no cover
 
 
 def create_examples_for_field(field: ModelField) -> List[Example]:
     """
     Use the pydantic-factories package to create an example value for the given schema
     """
-    value = ModelFactory.get_field_value(field)
-    return [Example(description="Example value", value=value)]
+    value = normalize_example_value(ExampleFactory.get_field_value(field))
+    return [Example(description=f"Example {field.name} value", value=value)]
 
 
 def create_schema(field: ModelField, generate_examples: bool, ignore_optional: bool = False) -> Schema:
@@ -220,5 +215,5 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
     if not ignore_optional:
         schema = update_schema_with_field_info(schema=schema, field_info=field.field_info)
     if not schema.examples and generate_examples:
-        schema.examples = ExampleFactory.build(field=field)
+        schema.examples = create_examples_for_field(field=field)
     return schema

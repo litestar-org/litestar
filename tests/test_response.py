@@ -12,7 +12,7 @@ from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClass
     [
         [PersonFactory.build(), MediaType.JSON],
         [VanillaDataClassPerson(**PersonFactory.build().dict()), MediaType.JSON],
-        [PydanticDataClassPerson(**PersonFactory.build().dict()), MediaType.JSON],
+        [PydanticDataClassPerson(**PersonFactory.build().dict()), MediaType.JSON],  # type: ignore
         [
             {
                 "key": [{"nested": 1}],
