@@ -26,9 +26,10 @@ class SchemaGenerationConfig(BaseModel):
     schema_endpoint_url: str = "/schema"
     schema_response_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML
 
-    # schema config
+    # default response headers to append to all responses
     response_headers: Optional[Union[Type[BaseModel], Type[DataclassProtocol]]] = None
-    create_examples: bool = True
+    # determines whether examples will be auto-generated using the pydantic-factories library
+    create_examples: bool = False
 
 
 class OpenAPIConfig(SchemaGenerationConfig):

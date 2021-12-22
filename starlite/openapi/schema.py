@@ -1,10 +1,12 @@
 from dataclasses import is_dataclass
-from enum import EnumMeta
-from typing import List, Optional, Type, Union
+from decimal import Decimal
+from enum import Enum, EnumMeta
+from typing import Any, List, Optional, Type, Union
 
-from openapi_schema_pydantic import Schema
+from openapi_schema_pydantic import Example, Schema
 from openapi_schema_pydantic.util import PydanticSchema
 from pydantic import (
+    BaseModel,
     ConstrainedBytes,
     ConstrainedDecimal,
     ConstrainedFloat,
@@ -25,6 +27,36 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIType
 from starlite.utils.model import create_parsed_model_field, handle_dataclass
+
+
+class ExampleFactory(ModelFactory):
+    """A subclass of model factory that makes nice looking examples"""
+
+    __model__ = Example
+    __allow_none_optionals__ = False
+
+    @classmethod
+    def normalize_value(cls, value: Any) -> Any:
+        if isinstance(value, (Decimal, float)):
+            value = round(value, 2)
+        if isinstance(value, Enum):
+            value = value.value
+        if is_dataclass(value):
+            value = handle_dataclass(value)
+        if isinstance(value, BaseModel):
+            value = value.dict()
+        if isinstance(value, (list, set)):
+            value = [cls.normalize_value(v) for v in value]
+        if isinstance(value, dict):
+            for k, v in value.items():
+                value[k] = cls.normalize_value(v)
+        return value
+
+    @classmethod
+    def build(cls, field: ModelField) -> Example:
+        value = cls.get_field_value(model_field=field)
+        value = cls.normalize_value(value=value)
+        return Example(description=f"Example {field.name} value", value=value)
 
 
 def create_numerical_constrained_field_schema(
@@ -78,10 +110,10 @@ def create_collection_constrained_field_schema(
     if issubclass(field_type, ConstrainedSet):
         schema.uniqueItems = True
     if sub_fields:
-        schema.items = [create_schema(field=sub_field, generate_examples=True) for sub_field in sub_fields]
+        schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in sub_fields]
     else:
         parsed_model_field = create_parsed_model_field(field_type.item_type)
-        schema.items = create_schema(field=parsed_model_field, generate_examples=True)
+        schema.items = create_schema(field=parsed_model_field, generate_examples=False)
     return schema
 
 
@@ -98,7 +130,7 @@ def create_constrained_field_schema(
     sub_fields: Optional[List[ModelField]],
 ) -> Schema:
     """
-    Create Schema for Pydantic Constrained fields (created using constr(), conint() etc.) or by subclassing
+    Create Schema for Pydantic Constrained fields (created using constr(), conint() etc. or by subclassing Constrained*)
     """
     if issubclass(field_type, (ConstrainedFloat, ConstrainedInt, ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)
@@ -125,46 +157,68 @@ def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Sche
     return schema
 
 
-def create_schema(field: ModelField, generate_examples: bool, ignore_optional: bool = False) -> Schema:
+def get_schema_for_field_type(field: ModelField) -> Schema:
     """
-    Create a Schema model for a given ModelField
+    Get or create a Schema object for the given field type
     """
     field_type = field.outer_type_
-    schema = Schema()
     if field_type in TYPE_MAP:
-        schema = TYPE_MAP[field_type].copy()
-    elif is_pydantic_model(field_type):
-        schema = PydanticSchema(schema_class=field_type)
-    elif is_dataclass(field_type):
-        schema = PydanticSchema(schema_class=handle_dataclass(field_type))
-    elif is_optional(field) and not ignore_optional:
-        non_optional_schema = create_schema(field=field, generate_examples=generate_examples, ignore_optional=True)
+        return TYPE_MAP[field_type].copy()
+    if is_pydantic_model(field_type):
+        return PydanticSchema(schema_class=field_type)
+    if is_dataclass(field_type):
+        return PydanticSchema(schema_class=handle_dataclass(field_type))
+    if isinstance(field_type, EnumMeta):
+        enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
+        openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
+        return Schema(type=openapi_type, enum=enum_values)
+    return Schema()
+
+
+def create_examples_for_field(field: ModelField) -> List[Example]:
+    """
+    Use the pydantic-factories package to create an example value for the given schema
+    """
+    value = ModelFactory.get_field_value(field)
+    return [Example(description="Example value", value=value)]
+
+
+def create_schema(field: ModelField, generate_examples: bool, ignore_optional: bool = False) -> Schema:
+    """
+    Create a Schema model for a given ModelField and if needed - recursively traverse its sub_fields as well.
+    """
+
+    if is_optional(field) and not ignore_optional:
+        non_optional_schema = create_schema(
+            field=field,
+            generate_examples=False,
+            ignore_optional=True,
+        )
         if non_optional_schema.oneOf:
             schema = Schema(oneOf=[Schema(type=OpenAPIType.NULL), *non_optional_schema.oneOf])
         else:
             schema = Schema(oneOf=[Schema(type=OpenAPIType.NULL), non_optional_schema])
     elif is_union(field):
         schema = Schema(
-            oneOf=[
-                create_schema(field=sub_field, generate_examples=generate_examples)
-                for sub_field in field.sub_fields or []
-            ]
+            oneOf=[create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields or []]
         )
-    elif ModelFactory.is_constrained_field(field_type):
-        schema = create_constrained_field_schema(field_type=field_type, sub_fields=field.sub_fields)
-    elif isinstance(field_type, EnumMeta):
-        enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
-        openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
-        schema = Schema(type=openapi_type, enum=enum_values)
+    elif ModelFactory.is_constrained_field(field.type_):
+        # constrained fields are those created using the pydantic functions constr, conint, conlist etc.
+        # or subclasses of the Constrained* pydantic classes by other means
+        field.outer_type_ = field.type_
+        schema = create_constrained_field_schema(field_type=field.outer_type_, sub_fields=field.sub_fields)
     elif field.sub_fields:
         # we are dealing with complex types in this case
         # the problem here is that the Python typing system is too crude to define OpenAPI objects properly
         openapi_type = PYDANTIC_FIELD_SHAPE_MAP[field.shape]
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
-            schema.items = [
-                create_schema(field=sub_field, generate_examples=generate_examples) for sub_field in field.sub_fields
-            ]
+            schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
+    else:
+        # value is not a complex typing - hence we can try and get the value schema directly
+        schema = get_schema_for_field_type(field=field)
     if not ignore_optional:
         schema = update_schema_with_field_info(schema=schema, field_info=field.field_info)
+    if not schema.examples and generate_examples:
+        schema.examples = ExampleFactory.build(field=field)
     return schema

@@ -89,7 +89,7 @@ def retrieve_resource(pk: int):
 @put(path="/resources/{pk:int}")
 def update_resource(pk: int):
     ...
-    
+
 @patch(path="/resources/{pk:int}")
 def partially_update_resource(pk: int):
     ...
