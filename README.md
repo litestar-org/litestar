@@ -1,4 +1,4 @@
-<img alt="StarLite logo" src="./starlite-logo.svg" width=100%, height="auto">
+<img alt="Starlite logo" src="./starlite-logo.svg" width=100%, height="auto">
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
@@ -12,9 +12,9 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 
-# StarLite
+# Starlite
 
-StarLite is a light, opinionated and flexible ASGI API framework built on top
+Starlite is a light, opinionated and flexible ASGI API framework built on top
 of [pydantic](https://github.com/samuelcolvin/pydantic) and [Starlette](https://github.com/encode/starlette).
 
 ## Installation
@@ -100,12 +100,12 @@ class UserController(Controller):
     async def get_users(self) -> list[User]:
         ...
 
-    @patch()
-    async def partial_update_user(self, data: Partial[User]) -> User:
+    @patch(path="/{user_id:uuid}")
+    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
         ...
 
-    @put()
-    async def bulk_update_users(self, data: list[User]) -> list[User]:
+    @put(path="/{user_id:uuid}")
+    async def update_user(self, user_id: UUID4, data: list[User]) -> list[User]:
         ...
 
     @get(path="/{user_id:uuid}")
@@ -144,9 +144,9 @@ a different path:
 
 1. The goal of this project is to become a community driven project. That is, not to have a single "owner" but rather a
    core team of maintainers that leads the project, as well as community contributors.
-2. StarLite draws inspiration from NestJS - a contemporary TypeScript framework - which places opinions and patterns at
+2. Starlite draws inspiration from NestJS - a contemporary TypeScript framework - which places opinions and patterns at
    its core. As such, the design of the API breaks from the Starlette design and instead offers an opinionated
-   alternative- python OOP is extremely powerful and versatile. StarLite seeks to build on this by offering class based
+   alternative- python OOP is extremely powerful and versatile. Starlite seeks to build on this by offering class based
    Controllers.
 
 ### Features and roadmap:
@@ -169,5 +169,5 @@ a different path:
 
 ### Contributing
 
-StarLite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server to discuss contributions and
+Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server to discuss contributions and
 project maintenance. For guidelines on how to contribute, please see [the contribution guide](CONTRIBUTING.md).

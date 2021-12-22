@@ -1,6 +1,6 @@
 # The Starlite App
 
-At the root of every StarLite application is an instance of the `Starlite` class or a subclass of it. Typically, this
+At the root of every Starlite application is an instance of the `Starlite` class or a subclass of it. Typically, this
 code will be placed in a file called `main.py` at the project's source folder root.
 
 Instantiating the app is straightforward:
@@ -31,7 +31,7 @@ The `Starlite` class supports the following kwargs, all of which are optional:
 
 Starlette, on top of which StatLite is built, supports twp kinds of application lifecycle management - `on_statup`
 / `on_shutdown` hooks, which accept a sequence of callables, and `lifespan`, which accepts an `AsyncContextManager`. To
-simplify matters, StarLite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a __list__ of
+simplify matters, Starlite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a __list__ of
 callables - sync and/or async - which will be called respectively during the application startup and shutdown.
 
 A classic example of this would be establishing a connection to a DB on startup and closing it on shutdown. For example,
@@ -67,7 +67,7 @@ async def close_postgres_connection():
         await cast(AsyncEngine, state["postgres_connection"]).dispose()
 ```
 
-We now simply need to pass these to the StarLite init method to ensure these are called correctly:
+We now simply need to pass these to the Starlite init method to ensure these are called correctly:
 
 ```python
 # my_api/main.py
@@ -81,7 +81,7 @@ app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres
 
 ## Logging
 
-Another thing most applications will need to set up as part of the application startup is logging. Although StarLite
+Another thing most applications will need to set up as part of the application startup is logging. Although Starlite
 does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
 can use like so:
 
@@ -107,6 +107,6 @@ confusing. In the above we defined a logger for the "my_app" namespace with a le
 INFO severity or above will be logged by it. We also defined it, so it will log using the `LoggingConfig` default console
 handler, which will emit logging messages to _sys.stderr_.
 
-You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from StarLite itself, and you are
+You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
 setup up logging - then the on_startup hook is a good place to do so.

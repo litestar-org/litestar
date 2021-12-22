@@ -1,7 +1,7 @@
 # Route Handlers
 
-Route handlers are the core of StarLite. These are functions or methods that have been decorated by one of the route
-decorators exported by StarLite.
+Route handlers are the core of Starlite. These are functions or methods that have been decorated by one of the route
+decorators exported by Starlite.
 
 ## The Route Decorator
 
@@ -57,12 +57,12 @@ The `route` decorator receives the following kwargs -
 * `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
   to `False`.
 * `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
-  exceptions raised within the route handler's function/method. The StarLite `ValidationException` will be added
+  exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
   automatically for the schema if any validation is involved.
 
 ## Semantic Handler Decorators
 
-StarLite also includes the following decorators, which as their names suggest already pre-set the `http_method` kwarg:
+Starlite also includes the following decorators, which as their names suggest already pre-set the `http_method` kwarg:
 
 * `delete`
 * `get`
@@ -113,7 +113,7 @@ class methods or by abstracting code to reusable functions.
 
 While the handler decorators discussed above wrap a function or method, it's the job of that function or method to
 handle the request. To this end it needs access to various data that is part of the request. This data will be injected
-into the function by StarLite based on the names of the kwargs and their typings.
+into the function by Starlite based on the names of the kwargs and their typings.
 
 ### Path Parameters
 
@@ -133,7 +133,7 @@ In the above there are two components:
 First, the path parameter is defined inside the `path` kwarg passed to the _@get_ decorator inside curly brackets and
 following the form `{parameter_name:parameter_type}`. This definition of the path parameter is based on
 the [Starlette path parameter](https://www.starlette.io/routing/#path-parameters)
-mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types, StarLite
+mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types, Starlite
 enforces this typing, with the following types supported: _int_, _float_, _str_, _uuid_.
 
 Second, the `get_user` function defines a parameter with the same name as defined in the `path` kwarg. This ensures that
@@ -163,7 +163,7 @@ function. If the path parameter is part of the path, but you do not actually nee
 fine to omit it from the function declaration - it will still be validated and added to the openapi schema correctly.
 
 If you do want to add validation or enhance the OpenAPI documentation generated for a given path parameter, you can do
-so using the `Parameter` function exported from StarLite:
+so using the `Parameter` function exported from Starlite:
 
 ```python
 from starlite import get, Parameter
