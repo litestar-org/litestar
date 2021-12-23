@@ -35,16 +35,15 @@ openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
+pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = {extras = ["cli"], version = "*"}
-openapi-schema-pydantic = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-pyyaml = "*"
 requests = "*"
 
 [build-system]

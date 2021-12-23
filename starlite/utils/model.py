@@ -50,12 +50,8 @@ _dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
 
 def handle_dataclass(dataclass: Any) -> Type[BaseModel]:
     """Converts a dataclass to a pydantic model and memoizes the result"""
-    try:
-        if not isclass(dataclass) and hasattr(dataclass, "__class__"):
-            dataclass = dataclass.__class__
-        if not _dataclass_model_map.get(dataclass):
-            _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)
-        return _dataclass_model_map[dataclass]
-    except TypeError:
-        # dataclass has no hash function
-        return create_model_from_dataclass(dataclass)
+    if not isclass(dataclass) and hasattr(dataclass, "__class__"):
+        dataclass = dataclass.__class__
+    if not _dataclass_model_map.get(dataclass):
+        _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)
+    return _dataclass_model_map[dataclass]

@@ -12,17 +12,12 @@ from starlite.openapi.schema import update_schema_with_field_info
 def test_update_schema_with_field_info():
     test_str = "abc"
     extra = {
-        "header": "headerKey",
-        "cookie": "cookieKey",
-        "query": "queryKey",
-        "required": True,
         "examples": [Example(value=1)],
         "external_docs": "https://example.com/docs",
         "content_encoding": "utf-8",
     }
     field_info = FieldInfo(
         default=test_str,
-        default_factory=lambda x: x,
         title=test_str,
         description=test_str,
         const=True,

@@ -21,6 +21,7 @@ from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite import (
     HttpMethod,
     ImproperlyConfiguredException,
+    MediaType,
     Provide,
     Response,
     get,
@@ -132,7 +133,7 @@ async def test_handle_request_async_await():
 @pytest.mark.parametrize(
     "response",
     [
-        Response(status_code=HTTP_200_OK, content=b"abc"),
+        Response(status_code=HTTP_200_OK, content=b"abc", media_type=MediaType.TEXT),
         StarletteResponse(status_code=HTTP_200_OK, content=b"abc"),
         PlainTextResponse(content="abc"),
         HTMLResponse(content="<div><span/></div"),

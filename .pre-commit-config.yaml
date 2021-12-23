@@ -55,6 +55,7 @@ repos:
           orjson,
           pydantic,
           pydantic_factories,
+          pyyaml,
           starlette,
         ]
   - repo: https://github.com/pre-commit/mirrors-mypy

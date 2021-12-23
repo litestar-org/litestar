@@ -180,7 +180,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
         return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
     return response_class(
         headers=headers,
-        status_code=route_handler.status_code,
+        status_code=cast(int, route_handler.status_code),
         content=data,
         media_type=media_type,
     )

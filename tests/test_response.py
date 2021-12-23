@@ -2,6 +2,7 @@ from json import loads
 from typing import Any
 
 import pytest
+from starlette.status import HTTP_200_OK
 
 from starlite import ImproperlyConfiguredException, MediaType, Response
 from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
@@ -11,6 +12,8 @@ from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClass
     "content, media_type",
     [
         [PersonFactory.build(), MediaType.JSON],
+        [{"key": 123}, MediaType.JSON],
+        [[{"key": 123}], MediaType.JSON],
         [VanillaDataClassPerson(**PersonFactory.build().dict()), MediaType.JSON],
         [PydanticDataClassPerson(**PersonFactory.build().dict()), MediaType.JSON],  # type: ignore
         [
@@ -24,13 +27,17 @@ from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClass
     ],
 )
 def test_response_serialization(content: Any, media_type: MediaType):
-    response = Response(content=content, media_type=media_type)
+    response = Response(content=content, media_type=media_type, status_code=HTTP_200_OK)
     if media_type == MediaType.JSON:
-        assert content.__class__(**loads(response.body)) == content
+        value = loads(response.body)
+        if isinstance(value, dict):
+            assert content.__class__(**value) == content
+        else:
+            assert [content[0].__class__(**value[0])] == content
     else:
         assert response.body == content.encode("utf-8")
 
 
 def test_response_error_handling():
     with pytest.raises(ImproperlyConfiguredException):
-        Response(content={}, media_type=MediaType.TEXT)
+        Response(content={}, media_type=MediaType.TEXT, status_code=HTTP_200_OK)

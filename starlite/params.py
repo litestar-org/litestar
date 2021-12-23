@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional
 
 from openapi_schema_pydantic import Example, ExternalDocumentation
 from pydantic.fields import Field, Undefined
-from pydantic.typing import NoArgAnyCallable
 
 
 def Parameter(  # pylint: disable=too-many-locals
@@ -15,7 +14,6 @@ def Parameter(  # pylint: disable=too-many-locals
     content_encoding: Optional[str] = None,
     required: bool = True,
     default: Any = Undefined,
-    default_factory: Optional[NoArgAnyCallable] = None,
     title: Optional[str] = None,
     description: Optional[str] = None,
     const: Optional[bool] = None,
@@ -44,7 +42,6 @@ def Parameter(  # pylint: disable=too-many-locals
     extra.update(content_encoding=content_encoding)
     return Field(
         default,
-        default_factory=default_factory,
         alias="",
         title=title,
         description=description,
