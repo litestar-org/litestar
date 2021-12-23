@@ -3,7 +3,7 @@ from .app import Starlite
 from .controller import Controller
 from .enums import HttpMethod, MediaType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
-from .handlers import RouteHandler, delete, get, patch, post, put, route
+from .handlers import RouteHandler, delete, get, patch, post, put, redirect, route
 from .logging import LoggingConfig
 from .params import Parameter
 from .provide import Provide
@@ -23,6 +23,7 @@ __all__ = [
     "RedirectResponse",
     "Route",
     "Router",
+    "redirect",
     "Starlite",
     "StarLiteException",
     "Partial",

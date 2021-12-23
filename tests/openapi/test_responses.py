@@ -2,14 +2,18 @@ from http import HTTPStatus
 
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_406_NOT_ACCEPTABLE
 
-from starlite import MediaType, Starlite
+from starlite import HttpMethod, MediaType, Starlite, redirect
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
     ValidationException,
 )
 from starlite.openapi.enums import OpenAPIType
-from starlite.openapi.responses import create_error_responses, create_responses
+from starlite.openapi.responses import (
+    create_error_responses,
+    create_responses,
+    create_success_response,
+)
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
@@ -92,3 +96,14 @@ def test_create_error_responses():
         assert schema.properties
         assert schema.required
         assert schema.type
+
+
+def test_create_success_response():
+    @redirect(path="/test", http_method=[HttpMethod.GET, HttpMethod.POST])
+    def redirect_handler() -> str:
+        return "/target"
+
+    response = create_success_response(redirect_handler, None, True)
+    assert response.description == "Redirect Response"
+    assert response.headers["location"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["location"].description

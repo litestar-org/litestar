@@ -1,8 +1,13 @@
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra, Field, validator
-from starlette.responses import Response
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlette.responses import RedirectResponse, Response
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
 from typing_extensions import Literal
 
 from starlite.controller import Controller
@@ -129,20 +134,32 @@ route = RouteHandler
 
 
 class get(RouteHandler):
-    http_method: Literal[HttpMethod.GET] = Field(default=HttpMethod.GET)
+    http_method: Literal[HttpMethod.GET] = Field(default=HttpMethod.GET, const=True)
 
 
 class post(RouteHandler):
-    http_method: Literal[HttpMethod.POST] = Field(default=HttpMethod.POST)
+    http_method: Literal[HttpMethod.POST] = Field(default=HttpMethod.POST, const=True)
 
 
 class put(RouteHandler):
-    http_method: Literal[HttpMethod.PUT] = Field(default=HttpMethod.PUT)
+    http_method: Literal[HttpMethod.PUT] = Field(default=HttpMethod.PUT, const=True)
 
 
 class patch(RouteHandler):
-    http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH)
+    http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH, const=True)
 
 
 class delete(RouteHandler):
-    http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE)
+    http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE, const=True)
+
+
+class redirect(RouteHandler):
+    media_type: Literal[None] = None
+    response_class: Type[RedirectResponse] = RedirectResponse
+    status_code: Union[
+        Literal[301],
+        Literal[302],
+        Literal[303],
+        Literal[307],
+        Literal[308],
+    ] = HTTP_307_TEMPORARY_REDIRECT

@@ -62,13 +62,16 @@ The `route` decorator receives the following kwargs -
 
 ## Semantic Handler Decorators
 
-Starlite also includes the following decorators, which as their names suggest already pre-set the `http_method` kwarg:
+Starlite also includes the following decorators:
 
 * `delete`
 * `get`
 * `patch`
 * `post`
 * `put`
+
+The above decorators pre-set the http_method to the one designated by their name. Additionally, there is the `redirect`
+decorator which is discussed after these.
 
 ```python
 from typing import List
@@ -82,21 +85,26 @@ from my_api.models import Resource
 def list_resources() -> List[Resource]:
     ...
 
+
 @post(path="/resources")
 def create_resource() -> Resource:
     ...
+
 
 @get(path="/resources/{pk:int}")
 def retrieve_resource(pk: int) -> Resource:
     ...
 
+
 @put(path="/resources/{pk:int}")
 def update_resource(pk: int) -> Resource:
     ...
 
+
 @patch(path="/resources/{pk:int}")
 def partially_update_resource(pk: int) -> Resource:
     ...
+
 
 @delete(path="/resources/{pk:int}")
 def delete_resource(pk: int) -> None:
@@ -112,6 +120,30 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
+
+### Redirect
+
+The `redirect` decorator is a special subclass of RouteHandler that is used to return a `Redirect` response from a given
+function or method:
+
+```python
+from starlite import redirect, HttpMethod
+
+
+@redirect(http_method=[HttpMethod.GET, HttpMethod.POST], path="/some-path")
+def redirect_handler() -> str:
+    # do something
+    # ...
+    # then return the path to redirect to:
+    return "/other-path"
+```
+
+Redirect has the following restrictions:
+
+1. You have to specify the `http_method` or methods to use, as for `route`.
+2. You can specify `status_code` only from the following values - 301, 302, 303, 307, 308, with the default being 307.
+3. You have to return the target url for the redirect from the function. This can either be a string value or a `URL`
+   object from the standard library.
 
 ## Parameters
 
@@ -310,9 +342,9 @@ follow this pattern.
 
 The Parameter (named like a class for aesthetic reasons) is a wrapper on top of the
 pydantic [Field](https://pydantic-docs.helpmanual.io/usage/schema/#field-customization) function. As such, you can use
-most of the kwargs of Field (`alias`, `extra` and `default_factory` are removed) with Parameter and have an identical result - the
-additional kwargs accepted by `Parameter` are passed to the resulting pydantic `FieldInfo` as an `extra` dictionary and
-have no effect on the working of pydantic itself.
+most of the kwargs of Field (`alias`, `extra` and `default_factory` are removed) with Parameter and have an identical
+result - the additional kwargs accepted by `Parameter` are passed to the resulting pydantic `FieldInfo` as an `extra`
+dictionary and have no effect on the working of pydantic itself.
 
 `Parameter` accepts the following optional kwargs:
 

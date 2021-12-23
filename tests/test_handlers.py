@@ -3,11 +3,16 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import Response, StreamingResponse
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlette.responses import RedirectResponse, Response, StreamingResponse
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.handlers import RouteHandler
+from starlite.handlers import RouteHandler, redirect
 
 
 @given(
@@ -140,3 +145,18 @@ def test_route_handler_sub_classes(sub, http_method, expected_status_code):
 
     with pytest.raises(ValidationError):
         sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)
+
+
+def test_redirect_route_handler():
+    @redirect(path="/", http_method=HttpMethod.GET)
+    def redirect_method():
+        return
+
+    assert redirect_method.response_class is RedirectResponse
+    assert redirect_method.status_code == HTTP_307_TEMPORARY_REDIRECT
+
+    with pytest.raises(ValidationError):
+        redirect(path="/", http_method=HttpMethod.GET, response_class=Response)
+
+    with pytest.raises(ValidationError):
+        redirect(path="/", http_method=HttpMethod.GET, status_code=HTTP_200_OK)

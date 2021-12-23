@@ -174,10 +174,11 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     if isinstance(data, StarletteResponse):
         return data
 
-    media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else None
     if issubclass(response_class, RedirectResponse):
         return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
+
+    media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
     return response_class(
         headers=headers,
         status_code=cast(int, route_handler.status_code),

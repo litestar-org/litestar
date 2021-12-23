@@ -7,6 +7,7 @@ from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic import BaseModel
 from pydantic_factories.protocols import DataclassProtocol
+from starlette.responses import RedirectResponse
 from starlette.routing import get_name
 
 from starlite.enums import MediaType
@@ -22,12 +23,13 @@ def create_success_response(
     route_handler: RouteHandler,
     default_response_headers: Optional[Union[Type[DataclassProtocol], Type[BaseModel]]],
     generate_examples: bool,
-):
+) -> Response:
     """
     Creates the schema for a success response
     """
+    is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
     signature = Signature.from_callable(cast(Callable, route_handler.fn))
-    if signature.return_annotation not in [signature.empty, None]:
+    if signature.return_annotation not in [signature.empty, None] and not is_redirect:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         response = Response(
             content={
@@ -37,18 +39,27 @@ def create_success_response(
             },
             description=HTTPStatus(cast(int, route_handler.status_code)).description,
         )
+    elif is_redirect:
+        response = Response(
+            content=None,
+            description="Redirect Response",
+        )
     else:
         response = Response(
             content=None,
             description=HTTPStatus(cast(int, route_handler.status_code)).description,
         )
     response_headers = route_handler.response_headers or default_response_headers
+    response.headers = {}
     if response_headers:
-        response.headers = {}
         for key, value in response_headers.__fields__.items():
             response.headers[key.replace("_", "-")] = Header(
                 param_schema=create_schema(field=value, generate_examples=generate_examples)
             )
+    if is_redirect and not response.headers.get("location"):
+        response.headers["location"] = Header(
+            param_schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
+        )
     return response
 
 
