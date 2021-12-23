@@ -1,3 +1,4 @@
+from enum import Enum
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union, cast
 
@@ -6,13 +7,14 @@ from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import ModelField
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
+from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod, MediaType
+from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
+from starlite.types import FileData
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
@@ -178,7 +180,14 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     if issubclass(response_class, RedirectResponse):
         return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
 
-    media_type = route_handler.media_type or response_class.media_type or MediaType.JSON
+    media_type = (
+        route_handler.media_type.value if isinstance(route_handler.media_type, Enum) else route_handler.media_type
+    )
+    if issubclass(response_class, FileResponse):
+        if isinstance(data, FileData):
+            return response_class(media_type=media_type, headers=headers, **data.dict())
+        raise ImproperlyConfiguredException("File responses must return an instance of `starlite.types.FileData`")
+
     return response_class(
         headers=headers,
         status_code=cast(int, route_handler.status_code),

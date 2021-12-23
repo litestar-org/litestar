@@ -1,9 +1,11 @@
+from typing import Tuple
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import RedirectResponse, Response, StreamingResponse
+from starlette.responses import FileResponse, RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -12,12 +14,13 @@ from starlette.status import (
 )
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.handlers import RouteHandler, redirect
+from starlite.handlers import RouteHandler, file, redirect
+from starlite.response import Response
 
 
 @given(
     http_method=st.sampled_from(HttpMethod),
-    media_type=st.one_of(st.none(), st.sampled_from(MediaType)),
+    media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
@@ -121,7 +124,10 @@ def test_route_handler_validation_http_method():
 
 def test_route_handler_validation_response_class():
     # doesn't raise when subclass of starlette response is passed
-    assert RouteHandler(http_method=HttpMethod.GET, response_class=StreamingResponse)
+    class SpecialResponse(Response):
+        pass
+
+    assert RouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
 
     # raises otherwise
     with pytest.raises(ValidationError):
@@ -160,3 +166,16 @@ def test_redirect_route_handler():
 
     with pytest.raises(ValidationError):
         redirect(path="/", http_method=HttpMethod.GET, status_code=HTTP_200_OK)
+
+
+def test_file_route_handler():
+    @file(path="/", http_method=HttpMethod.GET)
+    def file_method() -> Tuple[str, str]:
+        return ("/", "x.png")
+
+    assert file_method.response_class is FileResponse
+    assert file_method.media_type == MediaType.TEXT
+    assert file_method.content_encoding == "application/octet-stream"
+
+    with pytest.raises(ValidationError):
+        file(path="/", http_method=HttpMethod.GET, response_class=Response)

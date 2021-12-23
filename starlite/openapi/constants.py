@@ -48,6 +48,7 @@ from pydantic.fields import (
     SHAPE_LIST,
     SHAPE_SEQUENCE,
     SHAPE_SET,
+    SHAPE_TUPLE,
     SHAPE_TUPLE_ELLIPSIS,
 )
 
@@ -56,6 +57,7 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 PYDANTIC_FIELD_SHAPE_MAP: Dict[int, OpenAPIType] = {
     SHAPE_LIST: OpenAPIType.ARRAY,
     SHAPE_SET: OpenAPIType.ARRAY,
+    SHAPE_TUPLE: OpenAPIType.ARRAY,
     SHAPE_TUPLE_ELLIPSIS: OpenAPIType.ARRAY,
     SHAPE_SEQUENCE: OpenAPIType.ARRAY,
     SHAPE_FROZENSET: OpenAPIType.ARRAY,

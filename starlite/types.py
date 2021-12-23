@@ -1,6 +1,7 @@
+import os
 from typing import Any, Dict, Generic, Optional, Tuple, TypeVar, cast
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, FilePath, create_model, validator
 from typing_extensions import Type
 
 try:
@@ -30,3 +31,19 @@ class Partial(Generic[T]):
                     field_definitions[field_name] = (field_type, None)
                 cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)
         return cast(T, cls._models.get(item))
+
+
+class FileData(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    path: FilePath
+    filename: str
+    stat_result: Optional[os.stat_result] = None
+
+    @validator("stat_result", always=True)
+    def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
+        cls, _: Optional[tuple], values: Dict[str, Any]
+    ) -> os.stat_result:
+        """Set the stat_result value for the given filepath"""
+        return os.stat(cast(str, values.get("path")))

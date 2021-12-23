@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Union
 
 from openapi_schema_pydantic import Example
 from pydantic import conbytes, condecimal, confloat, conint, conlist, conset, constr
-from starlette.responses import HTMLResponse
 
 from starlite import (
     Controller,
@@ -100,7 +99,7 @@ class PersonController(Controller):
     def update_person(self, person_id: str, data: Person) -> Person:
         pass
 
-    @delete(path="/{person_id:str}", response_class=HTMLResponse)
+    @delete(path="/{person_id:str}")
     def delete_person(self, person_id: str) -> None:
         pass
 

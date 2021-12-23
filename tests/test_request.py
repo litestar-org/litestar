@@ -1,6 +1,7 @@
 from asyncio import sleep
 from functools import lru_cache
 from json import loads
+from pathlib import Path
 from typing import Any, Optional, cast
 
 import pytest
@@ -19,12 +20,15 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from starlite import (
+    FileData,
     HttpMethod,
     ImproperlyConfiguredException,
     MediaType,
     Provide,
     Response,
+    file,
     get,
+    redirect,
     route,
 )
 from starlite.request import (
@@ -145,23 +149,45 @@ async def test_handle_request_async_await():
 )
 async def test_handle_request_when_handler_returns_starlette_responses(response):
     @get(path="/test")
-    def test_path():
+    def test_function():
         return response
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    assert await handle_request(route_handler=cast(Any, test_path), request=request) == response
+    assert await handle_request(route_handler=cast(Any, test_function), request=request) == response
 
 
 @pytest.mark.asyncio
 async def test_handle_request_redirect_response():
-    @get(path="/test", response_class=RedirectResponse)
-    def test_path():
+    @redirect(http_method=[HttpMethod.GET], path="/test")
+    def test_handler():
         return "/somewhere-else"
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    response = await handle_request(route_handler=cast(Any, test_path), request=request)
+    response = await handle_request(route_handler=cast(Any, test_handler), request=request)
     assert isinstance(response, RedirectResponse)
     assert response.headers["location"] == "/somewhere-else"
+
+
+@pytest.mark.asyncio
+async def test_handle_request_file_response():
+    current_file_path = Path(__file__).resolve()
+    filename = Path(__file__).name
+
+    @file(http_method=[HttpMethod.GET], path="/test")
+    def test_function() -> FileData:
+        return FileData(path=current_file_path, filename=filename)
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    response = await handle_request(route_handler=cast(Any, test_function), request=request)
+    assert isinstance(response, FileResponse)
+    assert response.stat_result
+
+    @file(http_method=[HttpMethod.GET], path="/test")
+    def test_function_with_stat_result() -> dict:
+        return dict()
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await handle_request(route_handler=cast(Any, test_function_with_stat_result), request=request)
 
 
 def test_normalize_headers():

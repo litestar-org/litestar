@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra, Field, validator
-from starlette.responses import RedirectResponse, Response
+from starlette.responses import FileResponse, RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -14,6 +14,7 @@ from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.provide import Provide
+from starlite.response import Response
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,10 +29,9 @@ class RouteHandler(BaseModel):
     http_method: Union[HttpMethod, List[HttpMethod]]
     status_code: Optional[int] = None
     include_in_schema: bool = True
-    media_type: Optional[Union[MediaType, str]] = None
+    media_type: Union[MediaType, str] = MediaType.JSON
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
-    response_headers: Optional[BaseModel] = None
     dependencies: Optional[Dict[str, Provide]] = None
 
     fn: Optional[Callable] = None
@@ -46,6 +46,9 @@ class RouteHandler(BaseModel):
     operation_id: Optional[str] = None
     deprecated: bool = False
     raises: Optional[List[Type[HTTPException]]] = None
+    content_encoding: Optional[str] = None
+    content_media_type: Optional[str] = None
+    response_headers: Optional[BaseModel] = None
 
     def __call__(self, fn: Callable) -> "RouteHandler":
         """
@@ -154,7 +157,6 @@ class delete(RouteHandler):
 
 
 class redirect(RouteHandler):
-    media_type: Literal[None] = None
     response_class: Type[RedirectResponse] = RedirectResponse
     status_code: Union[
         Literal[301],
@@ -163,3 +165,10 @@ class redirect(RouteHandler):
         Literal[307],
         Literal[308],
     ] = HTTP_307_TEMPORARY_REDIRECT
+
+
+class file(RouteHandler):
+    media_type: Union[str, Literal[MediaType.TEXT]] = MediaType.TEXT
+    response_class: Type[FileResponse] = FileResponse
+    status_code: int = HTTP_200_OK
+    content_encoding = "application/octet-stream"

@@ -7,7 +7,7 @@ from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic import BaseModel
 from pydantic_factories.protocols import DataclassProtocol
-from starlette.responses import RedirectResponse
+from starlette.responses import FileResponse, RedirectResponse
 from starlette.routing import get_name
 
 from starlite.enums import MediaType
@@ -15,7 +15,7 @@ from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import RouteHandler
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.schema import create_schema
-from starlite.openapi.utils import get_media_type, pascal_case_to_text
+from starlite.openapi.utils import pascal_case_to_text
 from starlite.utils.model import create_parsed_model_field
 
 
@@ -28,13 +28,17 @@ def create_success_response(
     Creates the schema for a success response
     """
     is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
+    is_file = route_handler.response_class and issubclass(route_handler.response_class, FileResponse)
     signature = Signature.from_callable(cast(Callable, route_handler.fn))
-    if signature.return_annotation not in [signature.empty, None] and not is_redirect:
+    if signature.return_annotation not in [signature.empty, None] and not is_redirect and not is_file:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
+        schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
+        schema.contentEncoding = route_handler.content_encoding
+        schema.contentMediaType = route_handler.content_media_type
         response = Response(
             content={
-                get_media_type(route_handler): OpenAPISchemaMediaType(
-                    media_type_schema=create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
+                route_handler.media_type: OpenAPISchemaMediaType(
+                    media_type_schema=schema,
                 )
             },
             description=HTTPStatus(cast(int, route_handler.status_code)).description,
@@ -43,6 +47,19 @@ def create_success_response(
         response = Response(
             content=None,
             description="Redirect Response",
+        )
+    elif is_file:
+        response = Response(
+            content={
+                route_handler.media_type: OpenAPISchemaMediaType(
+                    media_type_schema=Schema(
+                        type=OpenAPIType.STRING,
+                        contentEncoding=route_handler.content_encoding,
+                        contentMediaType=route_handler.content_media_type,
+                    ),
+                )
+            },
+            description="File Download",
         )
     else:
         response = Response(

@@ -10,7 +10,6 @@ from starlite.openapi.config import SchemaGenerationConfig
 from starlite.openapi.parameters import create_parameters
 from starlite.openapi.responses import create_responses
 from starlite.openapi.schema import create_schema, update_schema_with_field_info
-from starlite.openapi.utils import get_media_type
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -27,7 +26,7 @@ def create_request_body(
         field = handler_fields["data"]
         schema = create_schema(field=field, generate_examples=generate_examples)
         update_schema_with_field_info(schema=schema, field_info=field.field_info)
-        return RequestBody(content={get_media_type(route_handler): OpenAPISchemaMediaType(media_type_schema=schema)})
+        return RequestBody(content={route_handler.media_type: OpenAPISchemaMediaType(media_type_schema=schema)})
     return None
 
 

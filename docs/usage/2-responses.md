@@ -1,14 +1,5 @@
 # Responses
 
-There are two ways to return responses from route handlers:
-
-1. return a serializable value from the handler function and let Starlite take care of the response for you.
-2. return an instance of a Starlette `Response` or any of its subclasses.
-
-We'll discuss the use cases for these two scenarios in this order
-
-## Returning Values from Route Handlers
-
 When you return a value from a route handler function, Starlite takes the value and passes it to the constructor of the
 Starlite `Response` class (_starlite.response.Response_), as the response's `content` kwarg. It also sets the
 response's `status_code` and `media_type` kwargs based on either what was defined in the route handler decorator or
@@ -93,9 +84,11 @@ receiver / OpenAPI specs. This enum has 3 members, each correlating with a speci
 * MediaType.TEXT: text/plain
 * MediaType.HTML: text/html
 
-The return value of the handler should correlate with the correct _media_type_.
+The return value of the handler should correlate with the correct _media_type_:
 
-For `MediaType.TEXT` the value should be of type **string** or **bytes**:
+#### Text Responses
+
+For `MediaType.TEXT`, route handlers should return a value of type **string** or **bytes**:
 
 ```python
 from starlite import get, MediaType
@@ -106,7 +99,9 @@ def health_check() -> str:
     return "healthy"
 ```
 
-For `MediaType.HTML` the value should be a **string** or **bytes** that contain valid HTML; and for `MediaType.HTML`
+#### HTML Responses
+
+For `MediaType.HTML`, route handlers should return a value of type **string** or **bytes** that contains HTML:
 
 ```python
 from starlite import get, MediaType
@@ -125,7 +120,13 @@ def health_check() -> str:
     """
 ```
 
-For `MediaType.JSON` you should return any of the following supported value types:
+Note: there is no validation involved in Starlite, so you should make sure to return valid HTML by whatever means you
+see fit. It's a good idea to use a templating engine for more complex HTML responses and to write the template
+itself in a separate file rather than a string.
+
+#### JSON Responses
+
+As previously mentioned, the default _media_type_ is `MediaType.JSON`, which supports the following values:
 
 * dictionaries
 * dataclasses from the standard library
@@ -142,25 +143,11 @@ JSON (also in requests), you can use the following values as part of your respon
 * datetime classes
 * numpy primitives and objects (see [orjson docs](https://github.com/ijl/orjson#numpy))
 
-The return value of the handler will be passed the Starlite `Response` constructor alongside the the media-type defined
-for the route handler, which is by default `MediaType.JSON` (i.e. "application/json"). Because in this instance the
-value is a pydantic model - which can be serialized by the response, this
+If you need to return other values and would like to extend serialization you can do this [using Custom Responses](#using-custom-responses).
 
-Based on the media-type, the Starlite will determine that this value is an instance of a pydantic model, and thus
-serialize it correctly using the pydantic.json() method. This also works for serializing list of pydantic models.
+### Returning Responses
 
-Starlite supports serializing into json all uses the excellent and very fast
-library [orjson](https://github.com/ijl/orjson) to serializing the following value types into JSON by default:
-
-1. pydantic models
-2. dataclasses (both pydantic and standard library)
-3. vanilla python dataclasses
-4. all python primitives
-5. datetime
-6. UUIDs
-
-Note: If you need to return other values that are not supported by orjson, see [Using Custom Responses](#using-custom-responses) at the bottom of this page.
-
-##
+You can also return an instance of any Starlette response class or a subclass of it directly from a route handler. You
+should do this only if you have a use case for these specific response types and otherwise
 
 ## Using Custom Responses

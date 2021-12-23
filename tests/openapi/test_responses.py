@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Tuple
 
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_406_NOT_ACCEPTABLE
 
@@ -8,6 +9,7 @@ from starlite.exceptions import (
     PermissionDeniedException,
     ValidationException,
 )
+from starlite.handlers import file
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.responses import (
     create_error_responses,
@@ -107,3 +109,10 @@ def test_create_success_response():
     assert response.description == "Redirect Response"
     assert response.headers["location"].param_schema.type == OpenAPIType.STRING
     assert response.headers["location"].description
+
+    @file(path="/test", http_method=[HttpMethod.GET, HttpMethod.POST])
+    def file_handler() -> Tuple[str, str]:
+        return ("/target", "x.png")
+
+    response = create_success_response(file_handler, None, True)
+    assert response.description == "File Download"
