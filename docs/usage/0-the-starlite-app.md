@@ -3,29 +3,42 @@
 At the root of every Starlite application is an instance of the `Starlite` class or a subclass of it. Typically, this
 code will be placed in a file called `main.py` at the project's source folder root.
 
-Instantiating the app is straightforward:
+Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
+or [route_handlers](2-route-handlers.md):
 
 ```python
 # my_api/main.py
 
-from starlite import Starlite
+from starlite import Starlite, get
 
-app = Starlite()
+
+@get("/")
+def health_check() -> str:
+    return "healthy"
+
+
+app = Starlite(route_handlers=[health_check])
 ```
 
-The `Starlite` class supports the following kwargs, all of which are optional:
+The app instance is the root level of the app - it has the base path of "/" and all root level Controllers, Routers and
+Route Handlers should be registered on it. See [registering routes](1-routers-and-controllers.md#registering-routes) for
+full details.
+
+You can additionally pass the following kwargs to the Starlite constructor:
 
 * `debug`: a boolean flag toggling debug mode on and off, if True 404 errors will be rendered as HTML with a stack
   trace. This option should *not* be used in production. Default: `False`.
-* `on_startup`: a list of sync and/or async callables that are called during the application startup
-* `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown
+* `on_startup`: a list of sync and/or async callables that are called during the application startup,
+  see [life-cycle](#lifecycle).
+* `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown,
+  see [life-cycle](#lifecycle).
 * `middleware`: a list of starlette `Middleware` instances or classes extending `BaseHTTPMiddleware`.
-  See [middleware](4-middleware.md) for further details.
+  See [middleware](7-middleware.md).
 * `exception_handlers`: a dictionary mapping exceptions or exception codes to callables.
-  See [exception-handlers](5-exceptions.md) for further details.
-* `route_handlers`: a list of route handlers, see [route-handlers](1-route-handlers.md) for further details.
+  See [exception-handlers](6-exceptions.md).
 * `dependencies`: a dictionary mapping string keys to dependencies.
-  See [dependency-injection](3-dependency-injection.md) for further details.
+  See [dependency-injection](5-dependency-injection.md).
+* `response_headers`: A dictionary of `ResponseHeader` instances.
 
 ## Lifecycle
 
@@ -102,10 +115,10 @@ my_app_logging_config = LoggingConfig(
 app = Starlite(on_startup=[my_app_logging_config.configure])
 ```
 
-`LoggingConfig` is merely a convenience wrapper around the standard library's DictConfig options, which can be rather
+`LoggingConfig` is merely a convenience wrapper around the standard library's _DictConfig_ options, which can be rather
 confusing. In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of
-INFO severity or above will be logged by it. We also defined it, so it will log using the `LoggingConfig` default console
-handler, which will emit logging messages to _sys.stderr_.
+INFO severity or above will be logged by it. We also defined it, so it will log using the `LoggingConfig` default
+console handler, which will emit logging messages to _sys.stderr_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do

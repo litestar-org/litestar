@@ -31,10 +31,10 @@ class Starlite(Starlette):
     def __init__(  # pylint: disable=super-init-not-called
         self,
         *,
+        route_handlers: List[Union[Type["Controller"], RouteHandler, Router, AnyCallable]],
         debug: bool = False,
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware]]]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
-        route_handlers: Optional[List[Union[Type["Controller"], RouteHandler, Router, AnyCallable]]] = None,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -62,12 +62,6 @@ class Starlite(Starlette):
     def set_user_middleware(middleware: List[Union[Middleware, Type[BaseHTTPMiddleware]]]) -> List[Middleware]:
         """Normalizes the passed in middleware"""
         return [m if isinstance(m, Middleware) else Middleware(m) for m in middleware]
-
-    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, AnyCallable]) -> None:
-        """
-        Proxy method for Route.register(**kwargs)
-        """
-        self.router.register(value=route_handler)
 
     @staticmethod
     def handle_http_exception(_: Request, exc: Union[HTTPException, StarletteHTTPException]) -> Response:

@@ -1,150 +1,3 @@
-# Route Handlers
-
-Route handlers are the core of Starlite. They are constructed by decorating a function or method with one of the handler
-decorators exported from Starlite.
-
-## The Route Decorator
-
-The base decorator is called `route`:
-
-```python
-from starlite import HttpMethod, route
-
-
-@route(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
-def my_endpoint():
-    ...
-
-```
-
-What route does is wrap the given function or class method and replace it with an instance of the class `RouteHandler`.
-In fact, route is merely an alias for `RouteHandler`, thus you could have done this instead:
-
-```python
-from starlite import HttpMethod, RouteHandler
-
-
-@RouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
-def my_endpoint():
-    ...
-
-```
-
-The `route` decorator receives the following kwargs -
-
-* `path` (**required**) - a path string, with or without [path parameters](#path-parameters).
-* `http_method` (**required**) - a member of the `HttpMethod` enum or a list of members, e.g. `HttpMethod.GET`
-  or `[HttpMethod.Patch, HttpMethod.Put]`.
-* `status_code`: the status code for a success response. If not specified, a default value will be used:
-  HTTP_200_OK for _get_, _put_ and _patch_, HTTP_204_NO_CONTENT for _delete_, and HTTP_201_CREATED for _post_. **
-  Important note**: if you specify more than one http method, as in the example above, you must specify the status_code
-  to use for the response.
-* `media_type`: A string or a member of the enum `starlite.MediaType`, which specifies the MIME Media Type for the
-  response. Defaults to `MediaType.JSON`.
-* `response_class`: The response class to use. The value must be either a `Starlette` response class or a class that
-  extends it. Defaults to `starlite.Response`.
-* `response_headers`: A _dataclass_ or _pydantic model_ that describes the response headers. This value is used only in
-  the OpenAPI schema. Defaults to `None`.
-* `dependencies`: A dictionary mapping dependency injection Providers to keys. Defaults to `None`.
-* `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
-  schema. Defaults to `True`.
-* `tags`: a list of openapi-pydantic `Tag` models, which correlate to
-  the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object). Defaults to `None`.
-* `summary`: Text used for the route's schema _summary_ section. Defaults to `None`.
-* `description`: Text used for the route's schema _description_ section. Defaults to `None`.
-* `operation_id`: An identifier used for the route's schema _operationId_. Defaults to `None`. Because this is a
-  required OpenAPI value, if it's not provided by the user, the function/method's name will be used.
-* `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
-  to `False`.
-* `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
-  exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
-  automatically for the schema if any validation is involved.
-
-## Semantic Handler Decorators
-
-Starlite also includes the following decorators:
-
-* `delete`
-* `get`
-* `patch`
-* `post`
-* `put`
-
-The above decorators pre-set the http_method to the one designated by their name. Additionally, there is the `redirect`
-decorator which is discussed after these.
-
-```python
-from typing import List
-
-from starlite import delete, get, patch, post, put
-
-from my_api.models import Resource
-
-
-@get(path="/resources")
-def list_resources() -> List[Resource]:
-    ...
-
-
-@post(path="/resources")
-def create_resource() -> Resource:
-    ...
-
-
-@get(path="/resources/{pk:int}")
-def retrieve_resource(pk: int) -> Resource:
-    ...
-
-
-@put(path="/resources/{pk:int}")
-def update_resource(pk: int) -> Resource:
-    ...
-
-
-@patch(path="/resources/{pk:int}")
-def partially_update_resource(pk: int) -> Resource:
-    ...
-
-
-@delete(path="/resources/{pk:int}")
-def delete_resource(pk: int) -> None:
-    ...
-```
-
-Although these decorators are merely subclasses of `PathHandler` that pre-set the `http_method`, using  _get_, _patch_
-, _put_, _delete_ or _post_ instead of _route_ makes the code clearer and simpler.
-
-Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
-regarded as a distinct [operation](https://spec.openapis.org/oas/latest.html#operation-object), and each operation
-should be distinguished by a unique `operationId` and optimally also have a `summary` and `description` sections.
-
-As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
-class methods or by abstracting code to reusable functions.
-
-### Redirect
-
-The `redirect` decorator is a special subclass of RouteHandler that is used to return a `Redirect` response from a given
-function or method:
-
-```python
-from starlite import redirect, HttpMethod
-
-
-@redirect(http_method=[HttpMethod.GET, HttpMethod.POST], path="/some-path")
-def redirect_handler() -> str:
-    # do something
-    # ...
-    # then return the path to redirect to:
-    return "/other-path"
-```
-
-Redirect has the following restrictions:
-
-1. You have to specify the `http_method` or methods to use, as for `route`.
-2. You can specify `status_code` only from the following values - 301, 302, 303, 307, 308, with the default being 307.
-3. You have to return the target url for the redirect from the function. This can either be a string value or a `URL`
-   object from the standard library.
-
 ## Parameters
 
 While the handler decorators discussed above wrap a function or method, it's the job of that function or method to
@@ -158,9 +11,11 @@ Defining path parameters is straightforward:
 ```python
 from starlite import get
 
+from my_api.models import User
+
 
 @get(path="/user/{user_id:int}")
-def get_user(user_id: int):
+def get_user(user_id: int) -> User:
     ...
 ```
 
@@ -180,12 +35,15 @@ this should be ok. For example, consider this:
 
 ```python
 from datetime import datetime
+from typing import List
 
 from starlite import get
 
+from my_api.models import Order
+
 
 @get(path="/orders/{from_date:int}")
-def get_orders(from_date: datetime):
+def get_orders(from_date: datetime) -> List[Order]:
     ...
 ```
 
@@ -202,7 +60,10 @@ If you do want to add validation or enhance the OpenAPI documentation generated 
 so using the `Parameter` function exported from Starlite:
 
 ```python
+from openapi_schema_pydantic import Example
 from starlite import get, Parameter
+
+from my_api.models import Version
 
 
 @get(path="/versions/{version:int}")
@@ -211,16 +72,14 @@ def get_product_version(version: int = Parameter(
     le=10,
     title="Available Product Versions",
     description="Get a specific specification version spec from the available specs",
-    example=1,
-    examples=[1, 2, 3],
+    examples=[Example(value=1)],
     external_docs="https://mywebsite.com/documentation/product#versions",
-)
-):
+)) -> Version:
     ...
 ```
 
 In the above example, `Parameter` is used to restrict version to range between 1 and 10, and then set the title,
-description, example, examples and externalDocs sections of the schema. For more details about this function,
+description, examples and externalDocs sections of the schema. For more details about this function,
 see [Parameter](#the-parameter-function).
 
 ### Query Parameters
@@ -233,6 +92,8 @@ from typing import List, Optional
 
 from starlite import get
 
+from my_api.models import Order
+
 
 @get(path="/orders")
 def get_orders(
@@ -241,7 +102,7 @@ def get_orders(
         page_size: int = 10,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None
-):
+) -> List[Order]:
     ...
 ```
 
@@ -268,6 +129,8 @@ from typing import Optional, List
 
 from starlite import get
 
+from my_api.models import Order
+
 
 @get(path="/orders")
 def get_orders(
@@ -276,7 +139,7 @@ def get_orders(
         pageSize: int = 10,
         fromDate: Optional[datetime] = None,
         toDate: Optional[datetime] = None
-):
+) -> List[Order]:
     ...
 ```
 
@@ -288,6 +151,8 @@ from typing import Optional, List
 
 from starlite import get, Parameter
 
+from my_api.models import Order
+
 
 @get(path="/orders")
 def get_orders(
@@ -296,7 +161,7 @@ def get_orders(
         brands: List[str] = Parameter(min_items=2, max_items=5),
         from_Date: Optional[datetime] = Parameter(query="fromDate"),
         to_date: Optional[datetime] = Parameter(query="fromDate")
-):
+) -> List[Order]:
     ...
 ```
 
@@ -311,12 +176,14 @@ Unlike Query parameters, Header and Cookie parameters have to be declared using 
 from pydantic import UUID4
 from starlite import get, Parameter
 
+from my_api.models import User
+
 
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
         user_id: UUID4,
         token: Parameter(header="X-API-KEY"),
-):
+) -> User:
     ...
 ```
 
@@ -326,12 +193,14 @@ OR
 from pydantic import UUID4
 from starlite import get, Parameter
 
+from my_api.models import User
+
 
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
         user_id: UUID4,
         cookie: Parameter(cookie="my-cookie-param"),
-):
+) -> User:
     ...
 ```
 
@@ -340,7 +209,7 @@ follow this pattern.
 
 ### The Parameter Function
 
-The Parameter (named like a class for aesthetic reasons) is a wrapper on top of the
+The Parameter is a wrapper on top of the
 pydantic [Field](https://pydantic-docs.helpmanual.io/usage/schema/#field-customization) function. As such, you can use
 most of the kwargs of Field (`alias`, `extra` and `default_factory` are removed) with Parameter and have an identical
 result - the additional kwargs accepted by `Parameter` are passed to the resulting pydantic `FieldInfo` as an `extra`

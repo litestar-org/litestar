@@ -91,7 +91,7 @@ class Router(StarletteRouter):
         self,
         *,
         path: str,
-        route_handlers: Optional[List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]]] = None,
+        route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
         redirect_slashes: bool = True,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
@@ -102,8 +102,6 @@ class Router(StarletteRouter):
         self.dependencies = dependencies
         self.response_headers = response_headers
         super().__init__(
-            on_shutdown=on_shutdown or [],
-            on_startup=on_startup or [],
             redirect_slashes=redirect_slashes,
             routes=[],
         )
@@ -217,13 +215,13 @@ class RootRouter(Router):
         dependencies: Optional[Dict[str, Provide]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
+        self.on_startup = on_startup or []
+        self.on_shutdown = on_shutdown or []
         self.openapi_schema = None
         self.schema_generation_config = None
         super().__init__(
             path="",
             route_handlers=route_handlers,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
             dependencies=dependencies,
             response_headers=response_headers,
         )
