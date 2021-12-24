@@ -183,10 +183,8 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     media_type = (
         route_handler.media_type.value if isinstance(route_handler.media_type, Enum) else route_handler.media_type
     )
-    if issubclass(response_class, FileResponse):
-        if isinstance(data, FileData):
-            return response_class(media_type=media_type, headers=headers, **data.dict())
-        raise ImproperlyConfiguredException("File responses must return an instance of `starlite.types.FileData`")
+    if isinstance(data, FileData):
+        return FileResponse(media_type=media_type, headers=headers, **data.dict())
 
     return response_class(
         headers=headers,

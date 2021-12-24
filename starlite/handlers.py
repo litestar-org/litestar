@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra, Field, validator
-from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -165,10 +165,3 @@ class redirect(RouteHandler):
         Literal[307],
         Literal[308],
     ] = HTTP_307_TEMPORARY_REDIRECT
-
-
-class file(RouteHandler):
-    media_type: Union[str, Literal[MediaType.TEXT]] = MediaType.TEXT
-    response_class: Type[FileResponse] = FileResponse
-    status_code: int = HTTP_200_OK
-    content_encoding = "application/octet-stream"

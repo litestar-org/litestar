@@ -1,11 +1,9 @@
-from typing import Tuple
-
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -14,7 +12,7 @@ from starlette.status import (
 )
 
 from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.handlers import RouteHandler, file, redirect
+from starlite.handlers import RouteHandler, redirect
 from starlite.response import Response
 
 
@@ -166,16 +164,3 @@ def test_redirect_route_handler():
 
     with pytest.raises(ValidationError):
         redirect(path="/", http_method=HttpMethod.GET, status_code=HTTP_200_OK)
-
-
-def test_file_route_handler():
-    @file(path="/", http_method=HttpMethod.GET)
-    def file_method() -> Tuple[str, str]:
-        return ("/", "x.png")
-
-    assert file_method.response_class is FileResponse
-    assert file_method.media_type == MediaType.TEXT
-    assert file_method.content_encoding == "application/octet-stream"
-
-    with pytest.raises(ValidationError):
-        file(path="/", http_method=HttpMethod.GET, response_class=Response)

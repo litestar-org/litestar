@@ -7,7 +7,7 @@ from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic import BaseModel
 from pydantic_factories.protocols import DataclassProtocol
-from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import RedirectResponse
 from starlette.routing import get_name
 
 from starlite.enums import MediaType
@@ -16,6 +16,7 @@ from starlite.handlers import RouteHandler
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
+from starlite.types import FileData
 from starlite.utils.model import create_parsed_model_field
 
 
@@ -27,10 +28,11 @@ def create_success_response(
     """
     Creates the schema for a success response
     """
-    is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
-    is_file = route_handler.response_class and issubclass(route_handler.response_class, FileResponse)
+
     signature = Signature.from_callable(cast(Callable, route_handler.fn))
-    if signature.return_annotation not in [signature.empty, None] and not is_redirect and not is_file:
+    is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
+    is_file = signature.return_annotation is FileData
+    if signature.return_annotation not in [signature.empty, None, FileData] and not is_redirect:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
         schema.contentEncoding = route_handler.content_encoding
@@ -54,7 +56,7 @@ def create_success_response(
                 route_handler.media_type: OpenAPISchemaMediaType(
                     media_type_schema=Schema(
                         type=OpenAPIType.STRING,
-                        contentEncoding=route_handler.content_encoding,
+                        contentEncoding=route_handler.content_encoding or "application/octet-stream",
                         contentMediaType=route_handler.content_media_type,
                     ),
                 )

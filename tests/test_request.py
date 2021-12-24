@@ -26,7 +26,6 @@ from starlite import (
     MediaType,
     Provide,
     Response,
-    file,
     get,
     redirect,
     route,
@@ -173,7 +172,7 @@ async def test_handle_request_file_response():
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
 
-    @file(http_method=[HttpMethod.GET], path="/test")
+    @get(path="/test")
     def test_function() -> FileData:
         return FileData(path=current_file_path, filename=filename)
 
@@ -181,13 +180,6 @@ async def test_handle_request_file_response():
     response = await handle_request(route_handler=cast(Any, test_function), request=request)
     assert isinstance(response, FileResponse)
     assert response.stat_result
-
-    @file(http_method=[HttpMethod.GET], path="/test")
-    def test_function_with_stat_result() -> dict:
-        return dict()
-
-    with pytest.raises(ImproperlyConfiguredException):
-        await handle_request(route_handler=cast(Any, test_function_with_stat_result), request=request)
 
 
 def test_normalize_headers():
