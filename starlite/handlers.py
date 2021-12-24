@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseModel, Extra, Field, validator
 from pydantic.typing import AnyCallable
-from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Literal
 
+from starlite import Response
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
@@ -37,7 +37,7 @@ class RouteHandler(BaseModel):
     include_in_schema: bool = True
     media_type: Union[MediaType, str] = MediaType.JSON
     path: Optional[str] = None
-    response_class: Optional[Type[StarletteResponse]] = None
+    response_class: Optional[Type[Response]] = None
     response_headers: Optional[Dict[str, ResponseHeader]] = None
     dependencies: Optional[Dict[str, Provide]] = None
 

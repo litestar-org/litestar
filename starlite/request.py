@@ -9,12 +9,13 @@ from pydantic.typing import AnyCallable
 from starlette.requests import Request
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
+from starlette.responses import StreamingResponse
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
-from starlite.types import FileData, Redirect
+from starlite.types import FileData, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
@@ -152,7 +153,6 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     Handles a given request by both calling the passed in function,
     and parsing the RouteHandler stored as an attribute on it.
     """
-    response_class = route_handler.response_class or Response
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
     endpoint = cast(AnyCallable, route_handler.fn)
 
@@ -175,7 +175,10 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     )
     if isinstance(data, FileData):
         return FileResponse(media_type=media_type, headers=headers, **data.dict())
+    if isinstance(data, Stream):
+        return StreamingResponse(content=data.iterator, status_code=status_code, media_type=media_type, headers=headers)
 
+    response_class = route_handler.response_class or Response
     return response_class(
         headers=headers,
         status_code=status_code,

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Optional, cast
 
 import pytest
-from pydantic import BaseConfig
+from pydantic import BaseConfig, ValidationError
 from pydantic.fields import ModelField
 from starlette.requests import Request
 from starlette.responses import (
@@ -36,6 +36,7 @@ from starlite.request import (
     parse_query_params,
 )
 from starlite.testing import create_test_request
+from starlite.types import Stream
 from starlite.utils.model import create_function_signature_model
 from tests.utils import Person, PersonFactory
 
@@ -179,3 +180,36 @@ async def test_handle_request_file_response():
     response = await handle_request(route_handler=cast(Any, test_function), request=request)
     assert isinstance(response, FileResponse)
     assert response.stat_result
+
+
+def my_iterator():
+    count = 0
+    while True:
+        count += 1
+        yield count
+
+
+async def my_async_iterator():
+    count = 0
+    while True:
+        count += 1
+        yield count
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "iterator, should_raise", [[my_iterator(), False], [my_async_iterator(), False], [{"key": 1}, True]]
+)
+async def test_streaming_response(iterator: Any, should_raise: bool):
+    if not should_raise:
+
+        @get(path="/test")
+        def test_function() -> Stream:
+            return Stream(iterator=iterator)
+
+        request = create_test_request(content=None, http_method=HttpMethod.GET)
+        response = await handle_request(route_handler=cast(Any, test_function), request=request)
+        assert isinstance(response, StreamingResponse)
+    else:
+        with pytest.raises(ValidationError):
+            Stream(iterator=iterator)

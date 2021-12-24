@@ -19,7 +19,7 @@ from starlite.openapi.responses import (
     create_responses,
     create_success_response,
 )
-from starlite.types import ResponseHeader
+from starlite.types import ResponseHeader, Stream
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
@@ -114,6 +114,15 @@ def test_create_success_response_with_headers():
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"
     assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER
     assert response.headers["special-header"].description == "super-duper special"
+
+
+def test_create_success_response_with_stream():
+    @get(path="/test")
+    def handler() -> Stream:
+        pass
+
+    response = create_success_response(handler, True)
+    assert response.description == "Stream Response"
 
 
 def test_create_success_response_redirect():

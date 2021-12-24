@@ -5,6 +5,7 @@ from typing import (
     Callable,
     Dict,
     Generic,
+    Iterator,
     Optional,
     Tuple,
     TypeVar,
@@ -17,7 +18,7 @@ from pydantic import BaseModel, FilePath, create_model, validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import Response as StarletteResponse
-from typing_extensions import Type
+from typing_extensions import AsyncIterator, Type
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response
@@ -74,6 +75,13 @@ class FileData(BaseModel):
 
 class Redirect(BaseModel):
     path: str
+
+
+class Stream(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    iterator: Union[Iterator[Any], AsyncIterator[Any]]
 
 
 class ResponseHeader(Header):  # type: ignore
