@@ -1,8 +1,9 @@
 from functools import partial
 from inspect import ismethod
-from typing import Any, Callable
+from typing import Any
 
 from pydantic.fields import Undefined
+from pydantic.typing import AnyCallable
 
 from starlite.utils.model import create_function_signature_model
 
@@ -10,7 +11,7 @@ from starlite.utils.model import create_function_signature_model
 class Provide:
     __slots__ = ("dependency", "use_cache", "value", "identifier", "signature_model")
 
-    def __init__(self, dependency: Callable, use_cache: bool = False):
+    def __init__(self, dependency: AnyCallable, use_cache: bool = False):
         self.dependency = dependency
         self.use_cache = use_cache
         self.value = Undefined
@@ -19,7 +20,7 @@ class Provide:
             # ensure that the method's self argument is preserved
             self.dependency = partial(dependency, dependency.__self__)  # type: ignore
 
-    def __call__(self, **kwargs) -> Any:
+    def __call__(self, **kwargs: Any) -> Any:
         """
         Proxies call to 'self.proxy'
         """
@@ -31,7 +32,7 @@ class Provide:
             self.value = value
         return value
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         # check if memory address is identical, otherwise compare attributes
         return other is self or (
             isinstance(other, self.__class__)

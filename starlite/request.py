@@ -1,11 +1,12 @@
 from enum import Enum
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
 from orjson import loads
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import ModelField
+from pydantic.typing import AnyCallable
 from starlette.requests import Request
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -39,15 +40,15 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
     try:
         for key, value in request.query_params.multi_items():
             if value in ["True", "true"]:
-                value = True
+                value = True  # type: ignore
             elif value in ["False", "false"]:
-                value = False
+                value = False  # type: ignore
             param = params.get(key)
             if param:
                 if isinstance(param, str):
                     params[key] = [param, value]
                 else:
-                    params[key] = [*cast(list, param), value]
+                    params[key] = [*cast(List[Any], param), value]
             else:
                 params[key] = value
         return params
@@ -163,7 +164,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     """
     response_class = route_handler.response_class or Response
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
-    endpoint = cast(Callable, route_handler.fn)
+    endpoint = cast(AnyCallable, route_handler.fn)
 
     if isinstance(route_handler.owner, Controller):
         data = endpoint(route_handler.owner, **params)
@@ -176,7 +177,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     if isinstance(data, StarletteResponse):
         return data
 
-    headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else None
+    headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else {}
     if issubclass(response_class, RedirectResponse):
         return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
 

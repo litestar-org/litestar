@@ -13,7 +13,6 @@ from openapi_schema_pydantic import (
     Tag,
 )
 from pydantic import AnyUrl, BaseModel
-from pydantic_factories.protocols import DataclassProtocol
 from typing_extensions import Type
 
 from starlite.enums import OpenAPIMediaType
@@ -27,7 +26,7 @@ class SchemaGenerationConfig(BaseModel):
     schema_response_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML
 
     # default response headers to append to all responses
-    response_headers: Optional[Union[Type[BaseModel], Type[DataclassProtocol]]] = None
+    response_headers: Optional[Union[Type[BaseModel], BaseModel]] = None
     # determines whether examples will be auto-generated using the pydantic-factories library
     create_examples: bool = False
 

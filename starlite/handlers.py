@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseModel, Extra, Field, validator
+from pydantic.typing import AnyCallable
 from starlette.responses import RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
@@ -34,7 +35,7 @@ class RouteHandler(BaseModel):
     response_class: Optional[Type[Response]] = None
     dependencies: Optional[Dict[str, Provide]] = None
 
-    fn: Optional[Callable] = None
+    fn: Optional[AnyCallable] = None
     owner: Optional[Union[Controller, "Router"]] = None
     resolved_dependencies: Optional[Dict[str, Provide]]
     signature_model: Optional[Type[BaseModel]] = None
@@ -50,7 +51,7 @@ class RouteHandler(BaseModel):
     content_media_type: Optional[str] = None
     response_headers: Optional[BaseModel] = None
 
-    def __call__(self, fn: Callable) -> "RouteHandler":
+    def __call__(self, fn: AnyCallable) -> "RouteHandler":
         """
         Replaces a function with itself
         """
@@ -103,7 +104,7 @@ class RouteHandler(BaseModel):
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
 
     @staticmethod
-    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide):
+    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
         """
         Validates that a given provider has not been already defined under a different key
         """
@@ -157,11 +158,11 @@ class delete(RouteHandler):
 
 
 class redirect(RouteHandler):
-    response_class: Type[RedirectResponse] = RedirectResponse
+    response_class: Type[RedirectResponse] = RedirectResponse  # type: ignore
     status_code: Union[
         Literal[301],
         Literal[302],
         Literal[303],
         Literal[307],
         Literal[308],
-    ] = HTTP_307_TEMPORARY_REDIRECT
+    ] = cast(Literal[307], HTTP_307_TEMPORARY_REDIRECT)

@@ -66,7 +66,7 @@ PYDANTIC_FIELD_SHAPE_MAP: Dict[int, OpenAPIType] = {
     SHAPE_DICT: OpenAPIType.OBJECT,
     SHAPE_DEFAULTDICT: OpenAPIType.OBJECT,
 }
-TYPE_MAP: Dict[Union[Type, None, Any], Schema] = {
+TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
     str: Schema(type=OpenAPIType.STRING),
     bool: Schema(type=OpenAPIType.BOOLEAN),
     int: Schema(type=OpenAPIType.INTEGER),

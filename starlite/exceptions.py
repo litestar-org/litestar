@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import (
@@ -12,7 +12,7 @@ from starlette.status import (
 
 
 class StarLiteException(Exception):
-    def __init__(self, detail: Optional[str] = None):
+    def __init__(self, detail: str = ""):
         self.detail = detail
         super().__init__()
 
@@ -24,10 +24,10 @@ class StarLiteException(Exception):
 
 class HTTPException(StarLiteException, StarletteHTTPException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
-    extra: Optional[dict] = None
+    extra: Optional[Dict[str, Any]] = None
 
     def __init__(  # pylint: disable=super-init-not-called
-        self, detail: Optional[str] = None, status_code: Optional[int] = None, extra: Optional[dict] = None
+        self, detail: Optional[str] = None, status_code: Optional[int] = None, extra: Optional[Dict[str, Any]] = None
     ):
         if status_code:
             self.status_code = status_code

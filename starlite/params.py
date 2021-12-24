@@ -43,18 +43,18 @@ def Parameter(  # pylint: disable=too-many-locals
     return Field(
         default,
         alias="",
-        title=title,
-        description=description,
-        const=const,
-        gt=gt,
-        ge=ge,
-        lt=lt,
-        le=le,
-        multiple_of=multiple_of,
-        min_items=min_items,
-        max_items=max_items,
-        min_length=min_length,
-        max_length=max_length,
-        regex=regex,
+        title=title,  # type: ignore
+        description=description,  # type: ignore
+        const=const,  # type: ignore
+        gt=gt,  # type: ignore
+        ge=ge,  # type: ignore
+        lt=lt,  # type: ignore
+        le=le,  # type: ignore
+        multiple_of=multiple_of,  # type: ignore
+        min_items=min_items,  # type: ignore
+        max_items=max_items,  # type: ignore
+        min_length=min_length,  # type: ignore
+        max_length=max_length,  # type: ignore
+        regex=regex,  # type: ignore
         **extra,
     )

@@ -47,9 +47,10 @@ def normalize_example_value(value: Any) -> Any:
     return value
 
 
-class ExampleFactory(ModelFactory):
+class ExampleFactory(ModelFactory[BaseModel]):
     """A factory that always returns values"""
 
+    __model__ = BaseModel
     __allow_none_optionals__ = False
 
 
@@ -82,7 +83,7 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
         schema.minLength = field_type.min_length
     if field_type.max_length:
         schema.maxLength = field_type.max_length
-    if hasattr(field_type, "regex") and field_type.regex:
+    if issubclass(field_type, ConstrainedStr):
         schema.pattern = field_type.regex
     if field_type.to_lower:
         schema.description = "must be in lower case"

@@ -1,8 +1,25 @@
 import os
-from typing import Any, Dict, Generic, Optional, Tuple, TypeVar, cast
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from pydantic import BaseModel, FilePath, create_model, validator
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.requests import Request
+from starlette.responses import Response as StarletteResponse
 from typing_extensions import Type
+
+from starlite.exceptions import HTTPException
+from starlite.response import Response
 
 try:
     # python 3.9 changed these variable
@@ -10,6 +27,11 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
+
+EXCEPTION_HANDLER = Callable[
+    [Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
+]
+ENDPOINT_HANDLER = Callable[[Request], Awaitable[Union[Response, StarletteResponse]]]
 
 T = TypeVar("T", bound=Type[BaseModel])
 
@@ -29,7 +51,7 @@ class Partial(Generic[T]):
                     field_definitions[field_name] = (Optional[field_type], None)
                 else:
                     field_definitions[field_name] = (field_type, None)
-                cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)
+                cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)  # type: ignore
         return cast(T, cls._models.get(item))
 
 
@@ -43,7 +65,7 @@ class FileData(BaseModel):
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
-        cls, _: Optional[tuple], values: Dict[str, Any]
+        cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath"""
-        return os.stat(cast(str, values.get("path")))
+        return value or os.stat(cast(str, values.get("path")))

@@ -1,10 +1,13 @@
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
+from pydantic.typing import AnyCallable, NoArgAnyCallable
 from starlette.applications import Starlette
 from starlette.datastructures import State
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.types import ASGIApp
 from typing_extensions import Type
 
 from starlite.enums import MediaType
@@ -14,6 +17,7 @@ from starlite.openapi.config import OpenAPIConfig
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import RootRouter, Router
+from starlite.types import EXCEPTION_HANDLER
 from starlite.utils import DeprecatedProperty
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,40 +32,43 @@ class Starlite(Starlette):
         self,
         *,
         debug: bool = False,
-        middleware: Optional[List[Union[Middleware, BaseHTTPMiddleware]]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], Callable]] = None,
-        route_handlers: Optional[List[Union[Type["Controller"], RouteHandler, Router, Callable]]] = None,
-        on_startup: Optional[List[Callable]] = None,
-        on_shutdown: Optional[List[Callable]] = None,
+        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware]]]] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
+        route_handlers: Optional[List[Union[Type["Controller"], RouteHandler, Router, AnyCallable]]] = None,
+        on_startup: Optional[List[NoArgAnyCallable]] = None,
+        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG
     ):
-        self._debug = debug
-        self.state = State()
-        self.router = RootRouter(
+        self._debug: bool = debug
+        self.state: State = State()
+        self.router: RootRouter = RootRouter(
             route_handlers=route_handlers or [],
             on_startup=on_startup,
             on_shutdown=on_shutdown,
             dependencies=dependencies,
             openapi_config=openapi_config,
         )
-        self.exception_handlers = {StarletteHTTPException: self.handle_http_exception, **(exception_handlers or {})}
-        self.user_middleware = self.set_user_middleware(middleware or [])
-        self.middleware_stack = self.build_middleware_stack()
+        self.exception_handlers: Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER] = {
+            StarletteHTTPException: self.handle_http_exception,
+            **(exception_handlers or {}),
+        }
+        self.user_middleware: List[Middleware] = self.set_user_middleware(middleware or [])
+        self.middleware_stack: ASGIApp = self.build_middleware_stack()
 
     @staticmethod
-    def set_user_middleware(middleware: List[Union[Middleware, BaseHTTPMiddleware]]) -> List[Middleware]:
+    def set_user_middleware(middleware: List[Union[Middleware, Type[BaseHTTPMiddleware]]]) -> List[Middleware]:
         """Normalizes the passed in middleware"""
-        return [Middleware(cast(Type, m)) if isinstance(m, BaseHTTPMiddleware) else m for m in middleware]
+        return [m if isinstance(m, Middleware) else Middleware(m) for m in middleware]
 
-    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, Callable]):
+    def register(self, route_handler: Union[Type["Controller"], RouteHandler, Router, AnyCallable]) -> None:
         """
         Proxy method for Route.register(**kwargs)
         """
         self.router.register(value=route_handler)
 
     @staticmethod
-    def handle_http_exception(_, exc: Union[HTTPException, StarletteHTTPException]) -> Response:
+    def handle_http_exception(_: Request, exc: Union[HTTPException, StarletteHTTPException]) -> Response:
         """Default handler for exceptions subclassed from HTTPException"""
         if isinstance(exc, HTTPException):
             content = {"detail": exc.detail, "extra": exc.extra}
@@ -74,14 +81,14 @@ class Starlite(Starlette):
         )
 
     # these Starlette properties are not supported
-    route = DeprecatedProperty()
-    add_route = DeprecatedProperty()
-    on_event = DeprecatedProperty()
-    mount = DeprecatedProperty()
-    host = DeprecatedProperty()
-    add_middleware = DeprecatedProperty()
-    add_exception_handler = DeprecatedProperty()
-    add_event_handler = DeprecatedProperty()
-    add_websocket_route = DeprecatedProperty()
-    websocket_route = DeprecatedProperty()
-    middleware = DeprecatedProperty()
+    route = DeprecatedProperty()  # type: ignore
+    add_route = DeprecatedProperty()  # type: ignore
+    on_event = DeprecatedProperty()  # type: ignore
+    mount = DeprecatedProperty()  # type: ignore
+    host = DeprecatedProperty()  # type: ignore
+    add_middleware = DeprecatedProperty()  # type: ignore
+    add_exception_handler = DeprecatedProperty()  # type: ignore
+    add_event_handler = DeprecatedProperty()  # type: ignore
+    add_websocket_route = DeprecatedProperty()  # type: ignore
+    websocket_route = DeprecatedProperty()  # type: ignore
+    middleware = DeprecatedProperty()  # type: ignore

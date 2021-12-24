@@ -12,7 +12,7 @@ class HttpMethod(str, Enum):
     DELETE = "delete"
 
     @classmethod
-    def is_http_method(cls, value: Any):
+    def is_http_method(cls, value: Any) -> bool:
         """Validates that a given value is a member of the HttpMethod enum"""
         return isinstance(value, str) and value.lower() in list(cls)
 

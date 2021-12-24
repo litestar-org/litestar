@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 from uuid import UUID
 
 from openapi_schema_pydantic import Parameter, Schema
@@ -11,7 +11,7 @@ from starlite.openapi.schema import create_schema
 
 def create_path_parameter_schema(path_parameter: str, field: ModelField, generate_examples: bool) -> Schema:
     """Create a path parameter from the given path_param string in the format param_name:type"""
-    param_type_map: Dict[str, Type] = {
+    param_type_map: Dict[str, Type[Any]] = {
         "str": str,
         "float": float,
         "int": int,

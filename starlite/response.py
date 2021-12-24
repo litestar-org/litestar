@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, cast
 
 import yaml
 from openapi_schema_pydantic import OpenAPI
@@ -25,13 +25,13 @@ class Response(StarletteResponse):
         super().__init__(
             content=content,
             status_code=status_code,
-            headers=headers,
+            headers=headers or {},
             media_type=media_type,
-            background=background,
+            background=background,  # type: ignore
         )
 
     @staticmethod
-    def serializer(value: Any) -> dict:
+    def serializer(value: Any) -> Dict[str, Any]:
         """
         Serializer hook for orjson to handle pydantic models.
 
@@ -49,7 +49,8 @@ class Response(StarletteResponse):
             if isinstance(content, OpenAPI):
                 content_dict = content.dict(by_alias=True, exclude_none=True)
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                    return yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
+                    encoded = yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
+                    return cast(bytes, encoded)
                 return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:

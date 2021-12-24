@@ -1,8 +1,9 @@
-from typing import Any, Callable, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
 from pydantic import BaseModel
+from pydantic.typing import AnyCallable, NoArgAnyCallable
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -14,6 +15,7 @@ from starlite.app import Starlite
 from starlite.enums import HttpMethod
 from starlite.handlers import RouteHandler
 from starlite.openapi.config import OpenAPIConfig
+from starlite.types import EXCEPTION_HANDLER
 
 
 class TestClient(StarletteTestClient):
@@ -40,14 +42,14 @@ class TestClient(StarletteTestClient):
 
 def create_test_client(
     route_handlers: Union[
-        Union[Type[Controller], RouteHandler, Router, Callable],
-        List[Union[Type[Controller], RouteHandler, Router, Callable]],
+        Union[Type[Controller], RouteHandler, Router, AnyCallable],
+        List[Union[Type[Controller], RouteHandler, Router, AnyCallable]],
     ],
     dependencies: Optional[Dict[str, Provide]] = None,
-    exception_handlers: Optional[Dict[Union[int, Type[Exception]], Callable]] = None,
-    middleware: Optional[List[Union[Middleware, BaseHTTPMiddleware]]] = None,
-    on_shutdown: Optional[List[Callable]] = None,
-    on_startup: Optional[List[Callable]] = None,
+    exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
+    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware]]]] = None,
+    on_shutdown: Optional[List[NoArgAnyCallable]] = None,
+    on_startup: Optional[List[NoArgAnyCallable]] = None,
     base_url: str = "http://testserver",
     raise_server_exceptions: bool = True,
     root_path: str = "",

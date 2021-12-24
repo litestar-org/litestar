@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Callable, Dict, Optional, cast
+from typing import TYPE_CHECKING, Dict, Optional, cast
 
 from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Operation, PathItem, RequestBody
 from pydantic.fields import ModelField
+from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
 from starlite.handlers import RouteHandler
@@ -37,7 +38,8 @@ def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem
     path_item = PathItem()
     for http_method, route_handler in route.route_handler_map.items():
         if route_handler.include_in_schema:
-            handler_fields = create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__
+            route_handler_fn = cast(AnyCallable, route_handler.fn)
+            handler_fields = create_function_signature_model(fn=route_handler_fn).__fields__
             parameters = (
                 create_parameters(
                     route_handler=route_handler,
@@ -48,7 +50,7 @@ def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = get_name(route_handler.fn)
+            handler_name = get_name(route_handler_fn)
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
                 tags=route_handler.tags,

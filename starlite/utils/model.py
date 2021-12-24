@@ -1,15 +1,16 @@
 from inspect import Signature, getfullargspec, isclass
-from typing import Any, Callable, Dict, Tuple, Type
+from typing import Any, Dict, Tuple, Type, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import ModelField
+from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import create_model_from_dataclass
 
 from starlite.exceptions import ImproperlyConfiguredException
 
 
-def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
+def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
     """
     Creates a pydantic model for the signature of a given function
     """
@@ -33,16 +34,16 @@ def create_function_signature_model(fn: Callable) -> Type[BaseModel]:
             else:
                 field_definitions[key] = (value, None)
         name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
-        return create_model(name, __config__=Config, **field_definitions)
+        return create_model(name, __config__=Config, **field_definitions)  # type: ignore
     except TypeError as e:
         raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
 
 
-def create_parsed_model_field(value: Type) -> ModelField:
+def create_parsed_model_field(value: Type[Any]) -> ModelField:
     """Create a pydantic model with the passed in value as its sole field, and return the parsed field"""
-    return create_model(
-        "temp", **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)}
-    ).__fields__["value"]
+
+    model = create_model("temp", **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)})  # type: ignore
+    return cast(BaseModel, model).__fields__["value"]
 
 
 _dataclass_model_map: Dict[Any, Type[BaseModel]] = {}

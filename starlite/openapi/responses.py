@@ -1,12 +1,12 @@
 from http import HTTPStatus
 from inspect import Signature
-from typing import Callable, Dict, Iterator, List, Optional, Tuple, Type, Union, cast
+from typing import Dict, Iterator, List, Optional, Tuple, Type, Union, cast
 
 from openapi_schema_pydantic import Header
 from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic import BaseModel
-from pydantic_factories.protocols import DataclassProtocol
+from pydantic.typing import AnyCallable
 from starlette.responses import RedirectResponse
 from starlette.routing import get_name
 
@@ -22,14 +22,14 @@ from starlite.utils.model import create_parsed_model_field
 
 def create_success_response(
     route_handler: RouteHandler,
-    default_response_headers: Optional[Union[Type[DataclassProtocol], Type[BaseModel]]],
+    default_response_headers: Optional[Union[Type[BaseModel], BaseModel]],
     generate_examples: bool,
 ) -> Response:
     """
     Creates the schema for a success response
     """
 
-    signature = Signature.from_callable(cast(Callable, route_handler.fn))
+    signature = Signature.from_callable(cast(AnyCallable, route_handler.fn))
     is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
     is_file = signature.return_annotation is FileData
     if signature.return_annotation not in [signature.empty, None, FileData] and not is_redirect:
@@ -71,7 +71,9 @@ def create_success_response(
     response_headers = route_handler.response_headers or default_response_headers
     response.headers = {}
     if response_headers:
-        for key, value in response_headers.__fields__.items():
+        for key, value in (
+            response_headers.__class__ if isinstance(response_headers, BaseModel) else response_headers
+        ).__fields__.items():
             response.headers[key.replace("_", "-")] = Header(
                 param_schema=create_schema(field=value, generate_examples=generate_examples)
             )
@@ -119,11 +121,11 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 def create_responses(
     route_handler: RouteHandler,
     raises_validation_error: bool,
-    default_response_headers: Optional[Union[Type[DataclassProtocol], Type[BaseModel]]],
+    default_response_headers: Optional[Union[Type[BaseModel], BaseModel]],
     generate_examples: bool,
 ) -> Optional[Responses]:
     """
-    Create a Response model embedded in a responses dictionary for the given RouteHandler or return None
+    Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None
     """
     responses: Responses = {
         str(route_handler.status_code): create_success_response(
