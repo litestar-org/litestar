@@ -1,8 +1,9 @@
 from inspect import Signature, isclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseModel, Extra, Field, validator
 from pydantic.typing import AnyCallable
+from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Literal
 
@@ -15,12 +16,15 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.provide import Provide
-from starlite.response import Response
-from starlite.types import FileData, Redirect
+from starlite.types import FileData, Redirect, ResponseHeader
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
+
+
+class _empty:
+    """Placeholder"""
 
 
 class RouteHandler(BaseModel):
@@ -33,24 +37,26 @@ class RouteHandler(BaseModel):
     include_in_schema: bool = True
     media_type: Union[MediaType, str] = MediaType.JSON
     path: Optional[str] = None
-    response_class: Optional[Type[Response]] = None
+    response_class: Optional[Type[StarletteResponse]] = None
+    response_headers: Optional[Dict[str, ResponseHeader]] = None
     dependencies: Optional[Dict[str, Provide]] = None
 
     fn: Optional[AnyCallable] = None
     owner: Optional[Union[Controller, "Router"]] = None
-    resolved_dependencies: Optional[Dict[str, Provide]]
+    resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
+    resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
     signature_model: Optional[Type[BaseModel]] = None
 
     # OpenAPI attributes
-    tags: Optional[List[str]] = None
-    summary: Optional[str] = None
-    description: Optional[str] = None
-    operation_id: Optional[str] = None
-    deprecated: bool = False
-    raises: Optional[List[Type[HTTPException]]] = None
     content_encoding: Optional[str] = None
     content_media_type: Optional[str] = None
-    response_headers: Optional[BaseModel] = None
+    deprecated: bool = False
+    description: Optional[str] = None
+    operation_id: Optional[str] = None
+    raises: Optional[List[Type[HTTPException]]] = None
+    response_description: Optional[str] = None
+    summary: Optional[str] = None
+    tags: Optional[List[str]] = None
 
     def __call__(self, fn: AnyCallable) -> "RouteHandler":
         """
@@ -60,6 +66,39 @@ class RouteHandler(BaseModel):
         self.signature_model = create_function_signature_model(fn)
         self.validate_handler_function()
         return self
+
+    def resolve_dependencies(self) -> Dict[str, Provide]:
+        """
+        Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
+        """
+        assert self.signature_model, "resolve_dependencies cannot be called before a signature model has been generated"
+        if self.resolved_dependencies is _empty:
+            field_names = list(self.signature_model.__fields__.keys())
+            dependencies: Dict[str, Provide] = {}
+            cur: Any = self
+            while cur is not None:
+                for key, value in (cur.dependencies or {}).items():
+                    self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
+                    if key in field_names and key not in dependencies:
+                        dependencies[key] = value
+                cur = cur.owner
+            self.resolved_dependencies = dependencies
+        return cast(Dict[str, Provide], self.resolved_dependencies)
+
+    def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
+        """
+        Returns all header parameters in the scope of the handler function
+        """
+        if self.resolved_headers is _empty:
+            headers: Dict[str, ResponseHeader] = {}
+            cur: Any = self
+            while cur is not None:
+                for key, value in (cur.response_headers or {}).items():
+                    if key not in headers:
+                        headers[key] = value
+                cur = cur.owner
+            self.resolved_headers = headers
+        return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
     @validator("http_method", always=True, pre=True)
     def validate_http_method(  # pylint: disable=no-self-argument,no-self-use
@@ -116,24 +155,6 @@ class RouteHandler(BaseModel):
                     f"Provider for key {key} is already defined under the different key {dependency_key}. "
                     f"If you wish to override a provider, it must have the same key."
                 )
-
-    def resolve_dependencies(self) -> Dict[str, Provide]:
-        """
-        Returns all dependencies correlating to handler.fn kwargs in the given handler's scopes
-        """
-        assert self.signature_model, "resolve_dependencies cannot be called before a signature model has been generated"
-        if self.resolved_dependencies is None:
-            field_names = list(self.signature_model.__fields__.keys())
-            dependencies: Dict[str, Provide] = {}
-            cur: Any = self
-            while cur is not None:
-                for key, value in (cur.dependencies or {}).items():
-                    self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
-                    if key in field_names and key not in dependencies:
-                        dependencies[key] = value
-                cur = cur.owner
-            self.resolved_dependencies = dependencies
-        return self.resolved_dependencies
 
     def validate_handler_function(self) -> None:
         """

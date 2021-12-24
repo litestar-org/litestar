@@ -60,7 +60,6 @@ def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem
                 responses=create_responses(
                     route_handler=route_handler,
                     raises_validation_error=raises_validation_error,
-                    default_response_headers=config.response_headers,
                     generate_examples=config.create_examples,
                 ),
                 requestBody=create_request_body(

@@ -20,7 +20,7 @@ from starlite.openapi.config import OpenAPIConfig
 from starlite.openapi.path_item import create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
-from starlite.types import ENDPOINT_HANDLER
+from starlite.types import ENDPOINT_HANDLER, ResponseHeader
 from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
@@ -96,9 +96,11 @@ class Router(StarletteRouter):
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.path = normalize_path(path)
         self.dependencies = dependencies
+        self.response_headers = response_headers
         super().__init__(
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
@@ -213,6 +215,7 @@ class RootRouter(Router):
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.openapi_schema = None
         self.schema_generation_config = None
@@ -222,6 +225,7 @@ class RootRouter(Router):
             on_startup=on_startup,
             on_shutdown=on_shutdown,
             dependencies=dependencies,
+            response_headers=response_headers,
         )
         if openapi_config:
             self.openapi_schema = openapi_config.to_openapi_schema()

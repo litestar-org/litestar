@@ -3,7 +3,6 @@ from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
 from orjson import loads
-from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import ModelField
 from pydantic.typing import AnyCallable
@@ -19,15 +18,6 @@ from starlite.types import FileData, Redirect
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
-
-
-def normalize_headers(headers: BaseModel) -> Dict[str, str]:
-    """Normalizes response headers"""
-    output: Dict[str, str] = {}
-    for key, value in headers.dict(exclude_none=True).items():
-        key = key.replace("_", "-")
-        output[key] = value
-    return output
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -176,7 +166,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
         return data
 
     status_code = cast(int, route_handler.status_code)
-    headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else {}
+    headers = {k: v.value for k, v in route_handler.resolve_response_headers().items()}
     if isinstance(data, Redirect):
         return RedirectResponse(headers=headers, status_code=status_code, url=data.path)
 

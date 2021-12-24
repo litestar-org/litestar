@@ -33,12 +33,11 @@ from starlite import (
 from starlite.request import (
     get_model_kwargs_from_request,
     handle_request,
-    normalize_headers,
     parse_query_params,
 )
 from starlite.testing import create_test_request
 from starlite.utils.model import create_function_signature_model
-from tests.utils import Person, PersonFactory, ResponseHeaders
+from tests.utils import Person, PersonFactory
 
 
 def test_parse_query_params():
@@ -180,11 +179,3 @@ async def test_handle_request_file_response():
     response = await handle_request(route_handler=cast(Any, test_function), request=request)
     assert isinstance(response, FileResponse)
     assert response.stat_result
-
-
-def test_normalize_headers():
-    headers = normalize_headers(ResponseHeaders(x_my_tag="123"))
-    assert headers["application-type"] == "APP"
-    assert headers["Access-Control-Allow-Origin"] == "*"
-    assert headers["x-my-tag"] == "123"
-    assert not headers.get("omitted_tag")

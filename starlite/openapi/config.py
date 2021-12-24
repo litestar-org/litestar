@@ -13,7 +13,6 @@ from openapi_schema_pydantic import (
     Tag,
 )
 from pydantic import AnyUrl, BaseModel
-from typing_extensions import Type
 
 from starlite.enums import OpenAPIMediaType
 
@@ -24,9 +23,6 @@ class SchemaGenerationConfig(BaseModel):
     # endpoint config
     schema_endpoint_url: str = "/schema"
     schema_response_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML
-
-    # default response headers to append to all responses
-    response_headers: Optional[Union[Type[BaseModel], BaseModel]] = None
     # determines whether examples will be auto-generated using the pydantic-factories library
     create_examples: bool = False
 
@@ -71,6 +67,5 @@ class OpenAPIConfig(SchemaGenerationConfig):
         return SchemaGenerationConfig(
             schema_endpoint_url=self.schema_endpoint_url,
             schema_response_media_type=self.schema_response_media_type,
-            response_headers=self.response_headers,
             create_examples=self.create_examples,
         )

@@ -18,7 +18,8 @@ from starlite import (
     put,
 )
 from starlite.openapi.config import SchemaGenerationConfig
-from tests.utils import Person, Pet, ResponseHeaders, VanillaDataClassPerson
+from starlite.types import ResponseHeader
+from tests.utils import Person, Pet, VanillaDataClassPerson
 
 default_config = SchemaGenerationConfig()
 
@@ -115,7 +116,7 @@ class PetController(Controller):
     def pets(self) -> List[Pet]:
         pass
 
-    @get(path="/owner-or-pet", response_headers=ResponseHeaders(x_my_tag="123"), raises=[PetException])
+    @get(path="/owner-or-pet", response_headers={"x-my-tag": ResponseHeader(value="123")}, raises=[PetException])
     def get_pets_or_owners(self) -> List[Union[Person, Pet]]:
         pass
 

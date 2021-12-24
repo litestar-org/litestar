@@ -17,7 +17,7 @@ from starlite.openapi.config import OpenAPIConfig
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import RootRouter, Router
-from starlite.types import EXCEPTION_HANDLER
+from starlite.types import EXCEPTION_HANDLER, ResponseHeader
 from starlite.utils import DeprecatedProperty
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -38,7 +38,8 @@ class Starlite(Starlette):
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
-        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG
+        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None
     ):
         self._debug: bool = debug
         self.state: State = State()
@@ -48,6 +49,7 @@ class Starlite(Starlette):
             on_shutdown=on_shutdown,
             dependencies=dependencies,
             openapi_config=openapi_config,
+            response_headers=response_headers,
         )
         self.exception_handlers: Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER] = {
             StarletteHTTPException: self.handle_http_exception,

@@ -19,6 +19,7 @@ from starlite.openapi.responses import (
     create_responses,
     create_success_response,
 )
+from starlite.types import ResponseHeader
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
@@ -29,7 +30,6 @@ def test_create_responses():
                 responses = create_responses(
                     route_handler=route_handler,
                     raises_validation_error=True,
-                    default_response_headers=None,
                     generate_examples=True,
                 )
                 assert str(route_handler.status_code) in responses
@@ -38,17 +38,11 @@ def test_create_responses():
     responses = create_responses(
         route_handler=PetController.get_pets_or_owners,
         raises_validation_error=False,
-        default_response_headers=None,
         generate_examples=True,
     )
     assert str(HTTP_400_BAD_REQUEST) not in responses
     assert str(HTTP_406_NOT_ACCEPTABLE) in responses
     assert str(HTTP_200_OK) in responses
-    response = responses[str(HTTP_200_OK)]
-    assert response.headers["application-type"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["Access-Control-Allow-Origin"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["x-my-tag"].param_schema.type == OpenAPIType.STRING
-    assert not response.headers["omitted-tag"].param_schema.required
 
 
 def test_create_error_responses():
@@ -103,19 +97,46 @@ def test_create_error_responses():
         assert schema.type
 
 
-def test_create_success_response():
+def test_create_success_response_with_headers():
+    @get(
+        path="/test",
+        response_headers={"special-header": ResponseHeader(value=100, description="super-duper special")},
+        response_description="test",
+        content_encoding="base64",
+        content_media_type="image/png",
+    )
+    def handler() -> list:
+        pass
+
+    response = create_success_response(handler, True)
+    assert response.description == "test"
+    assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"
+    assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"
+    assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER
+    assert response.headers["special-header"].description == "super-duper special"
+
+
+def test_create_success_response_redirect():
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
 
-    response = create_success_response(redirect_handler, None, True)
+    response = create_success_response(redirect_handler, True)
     assert response.description == "Redirect Response"
     assert response.headers["location"].param_schema.type == OpenAPIType.STRING
     assert response.headers["location"].description
 
+
+def test_create_success_response_file_data():
     @get(path="/test")
     def file_handler() -> FileData:
         ...
 
-    response = create_success_response(file_handler, None, True)
+    response = create_success_response(file_handler, True)
     assert response.description == "File Download"
+    assert response.headers["content-length"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["content-length"].description
+    assert response.headers["last-modified"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["last-modified"].description
+    assert response.headers["etag"].param_schema.type == OpenAPIType.STRING
+    assert response.headers["etag"].description

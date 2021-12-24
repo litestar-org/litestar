@@ -12,6 +12,7 @@ from typing import (
     cast,
 )
 
+from openapi_schema_pydantic import Header
 from pydantic import BaseModel, FilePath, create_model, validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
@@ -73,3 +74,7 @@ class FileData(BaseModel):
 
 class Redirect(BaseModel):
     path: str
+
+
+class ResponseHeader(Header):  # type: ignore
+    value: Any = ...

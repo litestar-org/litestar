@@ -48,7 +48,7 @@ def local_method_second_dependency(path_param: str):
 test_path = "/test"
 
 
-class TestController(Controller):
+class FirstController(Controller):
     path = test_path
     dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
 
@@ -66,7 +66,7 @@ class TestController(Controller):
 
 def test_controller_dependency_injection():
     with create_test_client(
-        TestController,
+        FirstController,
         dependencies={
             "second": Provide(router_first_dependency),
             "third": Provide(router_second_dependency),
@@ -108,7 +108,7 @@ def test_dependency_isolation():
         def test_method(self, first: dict) -> None:
             pass
 
-    with create_test_client([TestController, SecondController]) as client:
+    with create_test_client([FirstController, SecondController]) as client:
         response = client.get("/second")
         assert response.status_code == HTTP_400_BAD_REQUEST
 

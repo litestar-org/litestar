@@ -1,11 +1,10 @@
 from http import HTTPStatus
 from inspect import Signature
-from typing import Dict, Iterator, List, Optional, Tuple, Type, Union, cast
+from typing import Dict, Iterator, List, Optional, Tuple, Type, cast
 
 from openapi_schema_pydantic import Header
 from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
-from pydantic import BaseModel
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
@@ -21,7 +20,6 @@ from starlite.utils.model import create_parsed_model_field
 
 def create_success_response(
     route_handler: RouteHandler,
-    default_response_headers: Optional[Union[Type[BaseModel], BaseModel]],
     generate_examples: bool,
 ) -> Response:
     """
@@ -36,20 +34,22 @@ def create_success_response(
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
         schema.contentEncoding = route_handler.content_encoding
         schema.contentMediaType = route_handler.content_media_type
+
         response = Response(
             content={
                 route_handler.media_type: OpenAPISchemaMediaType(
                     media_type_schema=schema,
                 )
             },
-            description=HTTPStatus(cast(int, route_handler.status_code)).description,
+            description=route_handler.response_description
+            or HTTPStatus(cast(int, route_handler.status_code)).description,
         )
     elif is_redirect:
         response = Response(
             content=None,
-            description="Redirect Response",
+            description=route_handler.response_description or "Redirect Response",
             headers={
-                "locations": Header(
+                "location": Header(
                     param_schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
                 )
             },
@@ -65,7 +65,7 @@ def create_success_response(
                     ),
                 )
             },
-            description="File Download",
+            description=route_handler.response_description or "File Download",
             headers={
                 "content-length": Header(
                     param_schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
@@ -80,17 +80,20 @@ def create_success_response(
     else:
         response = Response(
             content=None,
-            description=HTTPStatus(cast(int, route_handler.status_code)).description,
+            description=route_handler.response_description
+            or HTTPStatus(cast(int, route_handler.status_code)).description,
         )
-    response_headers = route_handler.response_headers or default_response_headers
-    response.headers = {}
-    if response_headers:
-        for key, value in (
-            response_headers.__class__ if isinstance(response_headers, BaseModel) else response_headers
-        ).__fields__.items():
-            response.headers[key.replace("_", "-")] = Header(
-                param_schema=create_schema(field=value, generate_examples=generate_examples)
-            )
+    if response.headers is None:
+        response.headers = {}
+    for key, value in route_handler.resolve_response_headers().items():
+        header = Header()
+        for attribute_name, attribute_value in value.dict(exclude_none=True).items():
+            if attribute_name == "value":
+                model_field = create_parsed_model_field(type(attribute_value))
+                header.param_schema = create_schema(field=model_field, generate_examples=False)
+            else:
+                setattr(header, attribute_name, attribute_value)
+        response.headers[key] = header
     return response
 
 
@@ -131,7 +134,6 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 def create_responses(
     route_handler: RouteHandler,
     raises_validation_error: bool,
-    default_response_headers: Optional[Union[Type[BaseModel], BaseModel]],
     generate_examples: bool,
 ) -> Optional[Responses]:
     """
@@ -140,7 +142,6 @@ def create_responses(
     responses: Responses = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
-            default_response_headers=default_response_headers,
             generate_examples=generate_examples,
         )
     }

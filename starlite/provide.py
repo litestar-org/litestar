@@ -18,7 +18,7 @@ class Provide:
         self.signature_model = create_function_signature_model(dependency)
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved
-            self.dependency = partial(dependency, dependency.__self__)  # type: ignore
+            self.dependency = partial(dependency, dependency.__self__)
 
     def __call__(self, **kwargs: Any) -> Any:
         """
