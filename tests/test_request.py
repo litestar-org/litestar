@@ -25,9 +25,9 @@ from starlite import (
     ImproperlyConfiguredException,
     MediaType,
     Provide,
+    Redirect,
     Response,
     get,
-    redirect,
     route,
 )
 from starlite.request import (
@@ -85,7 +85,7 @@ async def test_get_model_kwargs_from_request():
 
 def test_create_function_signature_model_parameter_parsing():
     @get()
-    def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None):
+    def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
     model = create_function_signature_model(my_fn.fn)
@@ -120,7 +120,7 @@ def test_create_function_signature_model_validation():
 @pytest.mark.asyncio
 async def test_handle_request_async_await():
     @route(http_method=HttpMethod.POST, path="/person")
-    async def test_function(data: Person):
+    async def test_function(data: Person) -> None:
         assert isinstance(data, Person)
         await sleep(0.1)
         return data
@@ -148,7 +148,7 @@ async def test_handle_request_async_await():
 )
 async def test_handle_request_when_handler_returns_starlette_responses(response):
     @get(path="/test")
-    def test_function():
+    def test_function() -> StarletteResponse:
         return response
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
@@ -157,9 +157,9 @@ async def test_handle_request_when_handler_returns_starlette_responses(response)
 
 @pytest.mark.asyncio
 async def test_handle_request_redirect_response():
-    @redirect(http_method=[HttpMethod.GET], path="/test")
-    def test_handler():
-        return "/somewhere-else"
+    @get(http_method=[HttpMethod.GET], path="/test")
+    def test_handler() -> None:
+        return Redirect(path="/somewhere-else")
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
     response = await handle_request(route_handler=cast(Any, test_handler), request=request)

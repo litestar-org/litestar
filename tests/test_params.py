@@ -99,7 +99,7 @@ def test_query_params(params_dict: dict, should_raise: bool):
         brands: List[str] = Parameter(min_items=1, max_items=3),
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
-    ):
+    ) -> None:
         assert page
         assert page_size
         assert brands
@@ -173,7 +173,7 @@ def test_path_params(params_dict: dict, should_raise: bool):
         version: float = Parameter(gt=0.1, le=4.0),
         service_id: int = Parameter(gt=0, le=100),
         user_id: str = Parameter(min_length=1, max_length=10),
-    ):
+    ) -> None:
         assert version
         assert service_id
         assert user_id
@@ -191,7 +191,7 @@ def test_path_params(params_dict: dict, should_raise: bool):
 
 def test_path_param_validation():
     @get(path="/{param}")
-    def test_method():
+    def test_method() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -215,7 +215,7 @@ def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: t_type = param):  # type: ignore
+    def test_method(special_header: t_type = param) -> None:  # type: ignore
         if special_header:
             assert special_header in [param_dict.get("special-header"), int(param_dict.get("special-header"))]  # type: ignore
 
@@ -244,7 +244,7 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_cookie: t_type = param):  # type: ignore
+    def test_method(special_cookie: t_type = param) -> None:  # type: ignore
         if special_cookie:
             assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]  # type: ignore
 

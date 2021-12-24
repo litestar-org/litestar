@@ -7,16 +7,15 @@ from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
 from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
-from starlette.responses import RedirectResponse
 from starlette.routing import get_name
 
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import RouteHandler
-from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
-from starlite.types import FileData
+from starlite.types import FileData, Redirect
 from starlite.utils.model import create_parsed_model_field
 
 
@@ -30,7 +29,7 @@ def create_success_response(
     """
 
     signature = Signature.from_callable(cast(AnyCallable, route_handler.fn))
-    is_redirect = route_handler.response_class and issubclass(route_handler.response_class, RedirectResponse)
+    is_redirect = signature.return_annotation is Redirect
     is_file = signature.return_annotation is FileData
     if signature.return_annotation not in [signature.empty, None, FileData] and not is_redirect:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
@@ -49,6 +48,11 @@ def create_success_response(
         response = Response(
             content=None,
             description="Redirect Response",
+            headers={
+                "locations": Header(
+                    param_schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
+                )
+            },
         )
     elif is_file:
         response = Response(
@@ -62,6 +66,16 @@ def create_success_response(
                 )
             },
             description="File Download",
+            headers={
+                "content-length": Header(
+                    param_schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
+                ),
+                "last-modified": Header(
+                    param_schema=Schema(type=OpenAPIType.STRING, schema_format=OpenAPIFormat.DATE_TIME),
+                    description="Last modified data-time in RFC 2822 format",
+                ),
+                "etag": Header(param_schema=Schema(type=OpenAPIType.STRING), description="Entity tag"),
+            },
         )
     else:
         response = Response(
@@ -77,10 +91,6 @@ def create_success_response(
             response.headers[key.replace("_", "-")] = Header(
                 param_schema=create_schema(field=value, generate_examples=generate_examples)
             )
-    if is_redirect and not response.headers.get("location"):
-        response.headers["location"] = Header(
-            param_schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
-        )
     return response
 
 

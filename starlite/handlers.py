@@ -1,21 +1,22 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from inspect import Signature, isclass
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from pydantic import BaseModel, Extra, Field, validator
 from pydantic.typing import AnyCallable
-from starlette.responses import RedirectResponse
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_307_TEMPORARY_REDIRECT,
-)
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Literal
 
+from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
-from starlite.exceptions import HTTPException, ImproperlyConfiguredException
+from starlite.exceptions import (
+    HTTPException,
+    ImproperlyConfiguredException,
+    ValidationException,
+)
 from starlite.provide import Provide
 from starlite.response import Response
+from starlite.types import FileData, Redirect
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -57,6 +58,7 @@ class RouteHandler(BaseModel):
         """
         self.fn = fn
         self.signature_model = create_function_signature_model(fn)
+        self.validate_handler_function()
         return self
 
     @validator("http_method", always=True, pre=True)
@@ -133,6 +135,27 @@ class RouteHandler(BaseModel):
             self.resolved_dependencies = dependencies
         return self.resolved_dependencies
 
+    def validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once its set by inspecting its return annotations
+        """
+        assert self.fn, "cannot call validate_handler_function without first setting self.fn"
+
+        return_annotation = Signature.from_callable(self.fn).return_annotation
+        if return_annotation is Signature.empty:
+            raise ValidationException(
+                "A return value of a route handler function should be type annotated."
+                "If your function doesn't return a value or returns None, annotate it as returning None."
+            )
+        if isclass(return_annotation):
+            if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
+                raise ValidationException(
+                    f"Redirect responses should have one of "
+                    f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+                )
+            if issubclass(return_annotation, FileData) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+                self.media_type = MediaType.TEXT
+
 
 route = RouteHandler
 
@@ -155,14 +178,3 @@ class patch(RouteHandler):
 
 class delete(RouteHandler):
     http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE, const=True)
-
-
-class redirect(RouteHandler):
-    response_class: Type[RedirectResponse] = RedirectResponse  # type: ignore
-    status_code: Union[
-        Literal[301],
-        Literal[302],
-        Literal[303],
-        Literal[307],
-        Literal[308],
-    ] = cast(Literal[307], HTTP_307_TEMPORARY_REDIRECT)

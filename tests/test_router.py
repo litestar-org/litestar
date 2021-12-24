@@ -16,15 +16,15 @@ class MyController(Controller):
     path = "/test"
 
     @post(name="first", include_in_schema=False)
-    def post_method(self):
+    def post_method(self) -> None:
         pass
 
     @get()
-    def get_method(self):
+    def get_method(self) -> None:
         pass
 
     @get(path="/{id:int}")
-    def get_by_id_method(self):
+    def get_by_id_method(self) -> None:
         pass
 
 
@@ -56,15 +56,15 @@ def test_register_with_router_instance():
 
 def test_register_with_route_handler_functions():
     @route_decorator(path="/first", http_method=[HttpMethod.GET, HttpMethod.POST], status_code=200)
-    def first_route_handler():
+    def first_route_handler() -> None:
         pass
 
     @get(path="/second")
-    def second_route_handler():
+    def second_route_handler() -> None:
         pass
 
     @patch(path="/first")
-    def third_route_handler():
+    def third_route_handler() -> None:
         pass
 
     router = Router(path="/base", route_handlers=[first_route_handler, second_route_handler, third_route_handler])
@@ -81,11 +81,11 @@ def test_register_with_route_handler_functions():
 
 def test_register_validation_duplicate_handlers_for_same_route_and_method():
     @get(path="/first")
-    def first_route_handler():
+    def first_route_handler() -> None:
         pass
 
     @get(path="/first")
-    def second_route_handler():
+    def second_route_handler() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -95,11 +95,11 @@ def test_register_validation_duplicate_handlers_for_same_route_and_method():
 def test_register_validation_wrong_class():
     class MyCustomClass:
         @get(path="/first")
-        def first_route_handler(self):
+        def first_route_handler(self) -> None:
             pass
 
         @get(path="/first")
-        def second_route_handler(self):
+        def second_route_handler(self) -> None:
             pass
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -124,7 +124,7 @@ def test_register_router_on_itself():
 def test_deprecates_properties_correctly():
     router = Router(path="/first", route_handlers=[])
 
-    def my_fn():
+    def my_fn() -> None:
         pass
 
     with pytest.raises(AttributeError):

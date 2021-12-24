@@ -1,8 +1,13 @@
 from http import HTTPStatus
 
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_406_NOT_ACCEPTABLE
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_307_TEMPORARY_REDIRECT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_406_NOT_ACCEPTABLE,
+)
 
-from starlite import FileData, HttpMethod, MediaType, Starlite, get, redirect
+from starlite import FileData, MediaType, Redirect, Starlite, get
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -99,9 +104,9 @@ def test_create_error_responses():
 
 
 def test_create_success_response():
-    @redirect(path="/test", http_method=[HttpMethod.GET, HttpMethod.POST])
-    def redirect_handler() -> str:
-        return "/target"
+    @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT)
+    def redirect_handler() -> Redirect:
+        return Redirect(path="/target")
 
     response = create_success_response(redirect_handler, None, True)
     assert response.description == "Redirect Response"

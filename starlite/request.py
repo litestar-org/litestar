@@ -15,7 +15,7 @@ from starlite.controller import Controller
 from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
-from starlite.types import FileData
+from starlite.types import FileData, Redirect
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
@@ -170,16 +170,15 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
         data = endpoint(route_handler.owner, **params)
     else:
         data = endpoint(**params)
-
     if isawaitable(data):
         data = await data
-
     if isinstance(data, StarletteResponse):
         return data
 
+    status_code = cast(int, route_handler.status_code)
     headers = normalize_headers(route_handler.response_headers) if route_handler.response_headers else {}
-    if issubclass(response_class, RedirectResponse):
-        return response_class(headers=headers, status_code=route_handler.status_code, url=data)  # type: ignore
+    if isinstance(data, Redirect):
+        return RedirectResponse(headers=headers, status_code=status_code, url=data.path)
 
     media_type = (
         route_handler.media_type.value if isinstance(route_handler.media_type, Enum) else route_handler.media_type
@@ -189,7 +188,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
 
     return response_class(
         headers=headers,
-        status_code=cast(int, route_handler.status_code),
+        status_code=status_code,
         content=data,
         media_type=media_type,
     )

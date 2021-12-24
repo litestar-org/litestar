@@ -69,3 +69,7 @@ class FileData(BaseModel):
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath"""
         return value or os.stat(cast(str, values.get("path")))
+
+
+class Redirect(BaseModel):
+    path: str

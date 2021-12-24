@@ -3,7 +3,6 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import RedirectResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -11,9 +10,25 @@ from starlette.status import (
     HTTP_307_TEMPORARY_REDIRECT,
 )
 
-from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
-from starlite.handlers import RouteHandler, redirect
+from starlite import (
+    FileData,
+    HttpMethod,
+    MediaType,
+    Redirect,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+    route,
+)
+from starlite.exceptions import ValidationException
+from starlite.handlers import RouteHandler
 from starlite.response import Response
+
+
+def dummy_method() -> None:
+    pass
 
 
 @given(
@@ -53,7 +68,7 @@ def test_route_handler_param_handling(
             status_code=status_code,
             path=url,
         )
-        result = decorator(lambda x: x)
+        result = decorator(dummy_method)
         if not isinstance(http_method, list) or len(http_method) > 1:
             assert result.http_method == http_method
         else:
@@ -143,7 +158,7 @@ def test_route_handler_validation_response_class():
     ],
 )
 def test_route_handler_sub_classes(sub, http_method, expected_status_code):
-    result = sub()(lambda x: x)
+    result = sub()(dummy_method)
     assert result.http_method == http_method
     assert result.status_code == expected_status_code
 
@@ -151,16 +166,25 @@ def test_route_handler_sub_classes(sub, http_method, expected_status_code):
         sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)
 
 
-def test_redirect_route_handler():
-    @redirect(path="/", http_method=HttpMethod.GET)
-    def redirect_method():
-        return
+def test_route_handler_function_validation():
+    with pytest.raises(ValidationException):
 
-    assert redirect_method.response_class is RedirectResponse
-    assert redirect_method.status_code == HTTP_307_TEMPORARY_REDIRECT
+        @get(path="/")
+        def method_with_no_annotation():
+            pass
 
-    with pytest.raises(ValidationError):
-        redirect(path="/", http_method=HttpMethod.GET, response_class=Response)
+    with pytest.raises(ValidationException):
 
-    with pytest.raises(ValidationError):
-        redirect(path="/", http_method=HttpMethod.GET, status_code=HTTP_200_OK)
+        @get(path="/", status_code=HTTP_200_OK)
+        def redirect_method_without_proper_status() -> Redirect:
+            pass
+
+    @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
+    def redirect_method() -> Redirect:
+        return Redirect("/test")
+
+    @get(path="/")
+    def file_method() -> FileData:
+        pass
+
+    assert file_method.media_type == MediaType.TEXT

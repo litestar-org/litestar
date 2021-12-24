@@ -64,7 +64,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator()
-        def test_method(self):
+        def test_method(self) -> Person:
             return person_instance
 
     with create_test_client(MyController) as client:
@@ -90,7 +90,7 @@ def test_path_params(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator(path="/{person_id:str}")
-        def test_method(self, person_id: str):
+        def test_method(self, person_id: str) -> None:
             assert person_id == person_instance.id
             return None
 
@@ -118,7 +118,7 @@ def test_query_params(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator()
-        def test_method(self, first: str, second: List[str], third: Optional[int] = None):
+        def test_method(self, first: str, second: List[str], third: Optional[int] = None) -> None:
             assert first == query_params_instance.first
             assert second == query_params_instance.second
             assert third == query_params_instance.third
@@ -153,7 +153,7 @@ def test_header_params(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator()
-        def test_method(self, headers: dict):
+        def test_method(self, headers: dict) -> None:
             for key, value in request_headers.items():
                 assert headers[key] == value
 
@@ -179,7 +179,7 @@ def test_request(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator()
-        def test_method(self, request: Request):
+        def test_method(self, request: Request) -> None:
             assert isinstance(request, Request)
 
     with create_test_client(MyController) as client:
@@ -194,7 +194,7 @@ def test_defining_data_for_get_handler_raises_exception():
         path = test_path
 
         @get()
-        def test_method(self, data: Person):
+        def test_method(self, data: Person) -> None:
             assert data == person_instance
 
     with create_test_client(MyController) as client:
@@ -218,7 +218,7 @@ def test_data_using_model(decorator, http_method, expected_status_code):
         path = test_path
 
         @decorator()
-        def test_method(self, data: Person):
+        def test_method(self, data: Person) -> None:
             assert data == person_instance
 
     with create_test_client(MyController) as client:
@@ -244,7 +244,7 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
         path = test_path
 
         @decorator()
-        def test_method(self, data: List[Person]):
+        def test_method(self, data: List[Person]) -> None:
             assert data == people
 
     with create_test_client(MyController) as client:

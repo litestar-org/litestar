@@ -8,7 +8,7 @@ from starlite import HTTPException, Starlite, get
 
 def test_app_register():
     @get(path="/")
-    def my_fn():
+    def my_fn() -> None:
         pass
 
     app = Starlite()

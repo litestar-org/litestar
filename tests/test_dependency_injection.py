@@ -58,7 +58,7 @@ class TestController(Controller):
             "first": Provide(local_method_first_dependency),
         },
     )
-    def test_method(self, first: int, second: dict, third: bool):
+    def test_method(self, first: int, second: dict, third: bool) -> None:
         assert isinstance(first, int)
         assert isinstance(second, dict)
         assert third is False
@@ -84,7 +84,7 @@ def test_function_dependency_injection():
             "third": Provide(local_method_second_dependency),
         },
     )
-    def test_function(first: int, second: bool, third: str):
+    def test_function(first: int, second: bool, third: str) -> None:
         assert isinstance(first, int)
         assert second is False
         assert isinstance(third, str)
@@ -105,7 +105,7 @@ def test_dependency_isolation():
         path = "/second"
 
         @get()
-        def test_method(self, first: dict):
+        def test_method(self, first: dict) -> None:
             pass
 
     with create_test_client([TestController, SecondController]) as client:
@@ -121,7 +121,7 @@ def test_dependency_validation():
             "second": Provide(local_method_second_dependency),
         },
     )
-    def test_function(first: int, second: str, third: int):
+    def test_function(first: int, second: str, third: int) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
