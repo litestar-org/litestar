@@ -14,7 +14,7 @@ from starlite.handlers import RouteHandler
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
-from starlite.types import FileData, Redirect, Stream
+from starlite.types import File, Redirect, Stream
 from starlite.utils.model import create_parsed_model_field
 
 
@@ -30,14 +30,14 @@ def create_success_response(
     default_descriptions: Dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",
-        FileData: "File Download",
+        File: "File Download",
     }
     description = (
         route_handler.response_description
         or default_descriptions.get(signature.return_annotation)
         or HTTPStatus(cast(int, route_handler.status_code)).description
     )
-    if signature.return_annotation not in [signature.empty, None, Redirect, FileData, Stream]:
+    if signature.return_annotation not in [signature.empty, None, Redirect, File, Stream]:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
         schema.contentEncoding = route_handler.content_encoding
@@ -60,7 +60,7 @@ def create_success_response(
                 )
             },
         )
-    elif signature.return_annotation in [FileData, Stream]:
+    elif signature.return_annotation in [File, Stream]:
         response = Response(
             content={
                 route_handler.media_type: OpenAPISchemaMediaType(

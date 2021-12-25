@@ -6,7 +6,6 @@ from pydantic.typing import AnyCallable
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Literal
 
-from starlite import Response
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, MediaType
@@ -16,7 +15,8 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.provide import Provide
-from starlite.types import FileData, Redirect, ResponseHeader
+from starlite.response import Response
+from starlite.types import File, Redirect, ResponseHeader
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -174,7 +174,7 @@ class RouteHandler(BaseModel):
                     f"Redirect responses should have one of "
                     f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
                 )
-            if issubclass(return_annotation, FileData) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+            if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
                 self.media_type = MediaType.TEXT
 
 

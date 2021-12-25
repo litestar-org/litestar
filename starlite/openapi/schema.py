@@ -32,7 +32,7 @@ from starlite.utils.model import create_parsed_model_field, handle_dataclass
 def normalize_example_value(value: Any) -> Any:
     """Normalize the example value to make it look a bit prettier"""
     if isinstance(value, (Decimal, float)):
-        value = round(value, 2)
+        value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
     if is_dataclass(value):

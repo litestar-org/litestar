@@ -11,7 +11,7 @@ from starlette.status import (
 )
 
 from starlite import (
-    FileData,
+    File,
     HttpMethod,
     MediaType,
     Redirect,
@@ -184,7 +184,7 @@ def test_route_handler_function_validation():
         return Redirect("/test")
 
     @get(path="/")
-    def file_method() -> FileData:
+    def file_method() -> File:
         pass
 
     assert file_method.media_type == MediaType.TEXT

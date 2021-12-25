@@ -38,6 +38,7 @@ pydantic-factories = "*"
 pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
+python-multipart = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = {extras = ["cli"], version = "*"}

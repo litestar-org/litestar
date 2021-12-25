@@ -3,19 +3,7 @@ import json
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HTTPException, Starlite, get
-
-
-def test_app_register():
-    @get(path="/")
-    def my_fn() -> None:
-        pass
-
-    app = Starlite()
-    assert len(app.router.routes) == 1
-
-    app.register(my_fn)
-    assert len(app.router.routes) == 2
+from starlite import HTTPException, Starlite
 
 
 def test_handle_http_exception():

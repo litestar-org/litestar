@@ -1,34 +1,17 @@
-from typing import TYPE_CHECKING, Dict, Optional, cast
+from typing import TYPE_CHECKING, cast
 
-from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
-from openapi_schema_pydantic import Operation, PathItem, RequestBody
-from pydantic.fields import ModelField
+from openapi_schema_pydantic import Operation, PathItem
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
-from starlite.handlers import RouteHandler
 from starlite.openapi.config import SchemaGenerationConfig
 from starlite.openapi.parameters import create_parameters
+from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
-from starlite.openapi.schema import create_schema, update_schema_with_field_info
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Route
-
-
-def create_request_body(
-    route_handler: RouteHandler, handler_fields: Dict[str, ModelField], generate_examples: bool
-) -> Optional[RequestBody]:
-    """
-    Create a RequestBody model for the given RouteHandler or return None
-    """
-    if "data" in handler_fields:
-        field = handler_fields["data"]
-        schema = create_schema(field=field, generate_examples=generate_examples)
-        update_schema_with_field_info(schema=schema, field_info=field.field_info)
-        return RequestBody(content={route_handler.media_type: OpenAPISchemaMediaType(media_type_schema=schema)})
-    return None
 
 
 def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem:
@@ -51,6 +34,11 @@ def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
             handler_name = get_name(route_handler_fn)
+            request_body = None
+            if "data" in handler_fields:
+                request_body = create_request_body(
+                    field=handler_fields["data"], generate_examples=config.create_examples
+                )
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
                 tags=route_handler.tags,
@@ -62,11 +50,7 @@ def create_path_item(route: "Route", config: SchemaGenerationConfig) -> PathItem
                     raises_validation_error=raises_validation_error,
                     generate_examples=config.create_examples,
                 ),
-                requestBody=create_request_body(
-                    route_handler=route_handler,
-                    handler_fields=handler_fields,
-                    generate_examples=config.create_examples,
-                ),
+                requestBody=request_body,
                 parameters=parameters,
             )
             setattr(path_item, http_method, operation)

@@ -7,7 +7,7 @@ from starlette.status import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 
-from starlite import FileData, MediaType, Redirect, Starlite, get
+from starlite import File, MediaType, Redirect, Starlite, get
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -138,7 +138,7 @@ def test_create_success_response_redirect():
 
 def test_create_success_response_file_data():
     @get(path="/test")
-    def file_handler() -> FileData:
+    def file_handler() -> File:
         ...
 
     response = create_success_response(file_handler, True)

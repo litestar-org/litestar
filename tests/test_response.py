@@ -5,7 +5,7 @@ import pytest
 from starlette.status import HTTP_200_OK
 
 from starlite import ImproperlyConfiguredException, MediaType, Response
-from tests.utils import PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
+from tests import PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
 
 
 @pytest.mark.parametrize(

@@ -57,7 +57,7 @@ class Partial(Generic[T]):
         return cast(T, cls._models.get(item))
 
 
-class FileData(BaseModel):
+class File(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 

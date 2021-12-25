@@ -4,18 +4,19 @@ from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
 
 from orjson import loads
 from pydantic.error_wrappers import ValidationError, display_errors
-from pydantic.fields import ModelField
+from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from pydantic.typing import AnyCallable
+from starlette.datastructures import UploadFile
 from starlette.requests import Request
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod
+from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.response import Response
-from starlite.types import FileData, Redirect, Stream
+from starlite.types import File, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
@@ -47,13 +48,23 @@ def parse_query_params(request: Request) -> Dict[str, Any]:
         return params
 
 
-async def get_request_data(request: Request) -> Any:
+async def get_request_data(request: Request, field: ModelField) -> Any:
     """Given a request, parse its data - either as json or form data and return it"""
     if request.method.lower() == HttpMethod.GET:
         raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
-    body = await request.body()
-    json_data = request._json = loads(body)
-    return json_data
+    media_type = field.field_info.extra.get("media_type")
+    if not media_type or media_type == RequestEncodingType.JSON:
+        body = await request.body()
+        json_data = request._json = loads(body)
+        return json_data
+    form_data = await request.form()
+    as_dict = dict(form_data.multi_items())
+    if media_type == RequestEncodingType.MULTI_PART:
+        if field.shape is SHAPE_LIST:
+            return list(as_dict.values())
+        if field.shape is SHAPE_SINGLETON and field.type_ is UploadFile and as_dict:
+            return list(as_dict.values())[0]
+    return as_dict
 
 
 def get_request_parameters(
@@ -105,7 +116,7 @@ async def get_model_kwargs_from_request(request: Request, fields: Dict[str, Mode
         elif field_name == "query":
             kwargs["query"] = query_params
         elif field_name == "data":
-            kwargs["data"] = await get_request_data(request=request)
+            kwargs["data"] = await get_request_data(request=request, field=field)
         else:
             kwargs[field_name] = get_request_parameters(
                 request=request,
@@ -173,7 +184,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     media_type = (
         route_handler.media_type.value if isinstance(route_handler.media_type, Enum) else route_handler.media_type
     )
-    if isinstance(data, FileData):
+    if isinstance(data, File):
         return FileResponse(media_type=media_type, headers=headers, **data.dict())
     if isinstance(data, Stream):
         return StreamingResponse(content=data.iterator, status_code=status_code, media_type=media_type, headers=headers)

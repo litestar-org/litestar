@@ -66,6 +66,7 @@ repos:
         additional_dependencies: [
             orjson,
             types-PyYAML,
+            types-requests,
             openapi_schema_pydantic,
             pydantic,
             pydantic_factories,

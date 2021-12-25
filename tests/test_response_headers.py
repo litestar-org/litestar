@@ -31,7 +31,7 @@ first_router = Router(
     path="/users", response_headers={"second": router_first, "third": router_second}, route_handlers=[MyController]
 )
 
-second_router = Router(path="/external", response_headers={"external": ResponseHeader(value="nope")})
+second_router = Router(path="/external", response_headers={"external": ResponseHeader(value="nope")}, route_handlers=[])
 
 app = Starlite(
     response_headers={"first": app_first, "fourth": app_second}, route_handlers=[first_router, second_router]

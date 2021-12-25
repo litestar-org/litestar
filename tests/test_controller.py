@@ -23,7 +23,7 @@ from starlite import (
     post,
     put,
 )
-from tests.utils import Person, PersonFactory
+from tests import Person, PersonFactory
 
 
 class QueryParams(BaseModel):
@@ -44,7 +44,7 @@ def test_controller_raises_exception_when_base_path_not_set():
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        MyController(owner=Router(path=""))
+        MyController(owner=Router(path="", route_handlers=[]))
 
 
 @pytest.mark.parametrize(

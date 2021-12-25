@@ -19,7 +19,7 @@ from starlite import (
 )
 from starlite.openapi.config import SchemaGenerationConfig
 from starlite.types import ResponseHeader
-from tests.utils import Person, Pet, VanillaDataClassPerson
+from tests import Person, Pet, VanillaDataClassPerson
 
 default_config = SchemaGenerationConfig()
 

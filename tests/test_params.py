@@ -1,20 +1,24 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 from uuid import uuid1, uuid4
 
 import pytest
-from pydantic import UUID4
+from pydantic import UUID4, BaseModel
 from pydantic.fields import FieldInfo
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlette.datastructures import UploadFile
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from typing_extensions import Type
 
 from starlite import (
+    Body,
     ImproperlyConfiguredException,
     Parameter,
+    RequestEncodingType,
     Starlite,
     create_test_client,
     get,
+    post,
 )
 
 
@@ -215,9 +219,9 @@ def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_header: t_type = param) -> None:  # type: ignore
+    def test_method(special_header: t_type = param) -> None:
         if special_header:
-            assert special_header in [param_dict.get("special-header"), int(param_dict.get("special-header"))]  # type: ignore
+            assert special_header in [param_dict.get("special-header"), int(param_dict.get("special-header"))]
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, headers=param_dict)
@@ -244,9 +248,9 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_cookie: t_type = param) -> None:  # type: ignore
+    def test_method(special_cookie: t_type = param) -> None:
         if special_cookie:
-            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]  # type: ignore
+            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, cookies=param_dict)
@@ -254,3 +258,65 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
             assert response.status_code == HTTP_400_BAD_REQUEST
         else:
             assert response.status_code == HTTP_200_OK
+
+
+class Form(BaseModel):
+    name: str
+    age: int
+    programmer: bool
+
+
+def test_request_body_json():
+    body = Body(media_type=RequestEncodingType.JSON)
+
+    test_path = "/test"
+    data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
+
+    @post(path=test_path)
+    def test_method(data: Form = body) -> None:
+        assert isinstance(data, Form)
+
+    with create_test_client(test_method) as client:
+        response = client.post(test_path, json=data)
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_request_body_url_encoded():
+    body = Body(media_type=RequestEncodingType.URL_ENCODED)
+
+    test_path = "/test"
+    data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
+
+    @post(path=test_path)
+    def test_method(data: Form = body) -> None:
+        assert isinstance(data, Form)
+
+    with create_test_client(test_method) as client:
+        response = client.post(test_path, data=data)
+        assert response.status_code == HTTP_201_CREATED
+
+
+class FormData(BaseModel):
+    name: UploadFile
+    age: UploadFile
+    programmer: UploadFile
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+@pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])
+def test_request_body_multi_part(t_type: Type[Any]):
+
+    body = Body(media_type=RequestEncodingType.MULTI_PART)
+
+    test_path = "/test"
+    data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
+
+    @post(path=test_path)
+    def test_method(data: t_type = body) -> None:
+        assert data
+
+    with create_test_client(test_method) as client:
+        response = client.post(test_path, files=data)
+        assert response.status_code == HTTP_201_CREATED
