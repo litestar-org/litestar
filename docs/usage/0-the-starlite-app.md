@@ -33,11 +33,11 @@ You can additionally pass the following kwargs to the Starlite constructor:
 * `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown,
   see [life-cycle](#lifecycle).
 * `middleware`: a list of starlette `Middleware` instances or classes extending `BaseHTTPMiddleware`.
-  See [middleware](7-middleware.md).
+  See [middleware](8-middleware.md).
 * `exception_handlers`: a dictionary mapping exceptions or exception codes to callables.
-  See [exception-handlers](6-exceptions.md).
+  See [exception-handlers](7-exceptions.md).
 * `dependencies`: a dictionary mapping string keys to dependencies.
-  See [dependency-injection](5-dependency-injection.md).
+  See [dependency-injection](6-dependency-injection.md).
 * `response_headers`: A dictionary of `ResponseHeader` instances.
 
 ## Lifecycle

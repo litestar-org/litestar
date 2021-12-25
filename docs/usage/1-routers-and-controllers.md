@@ -46,9 +46,9 @@ path `/user/{order_id:uuid}"`.
 Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
 
 * `dependencies`: a list of `Provide` classes that will be available as injectable dependencies for all methods defined
-  on the controller. See [dependency-injection](5-dependency-injection.md) for more details.
+  on the controller. See [dependency-injection](6-dependency-injection.md) for more details.
 * `response_headers`: a dictionary of `ResponseHeader` instances that will be set for all methods defined on the
-  controller. See [response headers](4-responses.md).
+  controller. See [response headers](5-responses.md).
 
 ## Routers
 
@@ -70,9 +70,9 @@ Assuming that the `UserOrderController` defines a _path_ of "/user" and `Partner
 Aside from `path` and `route_handlers` which are required kwargs, you can also pass the following kwargs to Router:
 
 * `dependencies`: a list of `Provide` classes that will be available as injectable dependencies for all methods defined
-  on the controller. See [dependency-injection](5-dependency-injection.md) for more details.
+  on the controller. See [dependency-injection](6-dependency-injection.md) for more details.
 * `response_headers`: a dictionary of `ResponseHeader` instances that will be set for all methods defined on the
-  controller. See [response headers](4-responses.md).
+  controller. See [response headers](5-responses.md).
 * `redirect_slashes`: enables or disables optional trailing slash, defaults to `True`.
 
 ## Registering Routes

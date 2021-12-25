@@ -41,14 +41,14 @@ The `route` decorator accepts the following required kwargs -
 Additionally, you can pass the following optional kwargs:
 
 * `status_code`: the status code for a success response. If not
-  specified, [a default value will be used](4-responses.md#status-codes), unless you specify more than one http method,
+  specified, [a default value will be used](5-responses.md#status-codes), unless you specify more than one http method,
   in which case you must specify a value or an exception will be raised.
 * `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
-  response. Defaults to `MediaType.JSON`. See [media-type](4-responses.md#media-type).
+  response. Defaults to `MediaType.JSON`. See [media-type](5-responses.md#media-type).
 * `response_class`: The response class to use. The value must be a subclass of `starlite.Response`.
-  See [using custom responses](4-responses.md#using-custom-responses).
+  See [using custom responses](5-responses.md#using-custom-responses).
 * `response_headers`: A dictionary of `ResponseHeader` instances.
-* `dependencies`: A dictionary of `Provide` instances. See [dependency-injection](5-dependency-injection.md)
+* `dependencies`: A dictionary of `Provide` instances. See [dependency-injection](6-dependency-injection.md)
 * `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.
 * `tags`: a list of openapi-pydantic `Tag` models, which correlate to
