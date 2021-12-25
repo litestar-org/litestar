@@ -95,11 +95,12 @@ def health_check() -> str:
 app = Starlite(route_handlers=[health_check, UserController, order_router])
 ```
 
-You can combine Routers, Controllers and individual route handler functions as the need arises. You can also do the same
-for routers - that is, you can register on a router exactly the same component that you can register on the Starlite
-app.
+The root level components registered on the app have whatever path is defined on them without anything appended to it.
+Thus, the `health_check` function above is available on "/" and the methods of `UserController` are available
+on `/users`.
 
-Thus, you can also register other instance of `Router` on a router:
+To handle more complex path schemas you should use routers, which can register Controllers, individual functions but
+also other routers:
 
 ```python
 # my_app/order/router.py
@@ -112,9 +113,10 @@ order_router = Router(path="/orders", route_handlers=[UserOrderController, Partn
 other_router = Router(path="/base", route_handlers=[order_router])
 ```
 
-Once order_router is registered on `other_router`, the previously mentioned paths will now be: "/base/orders/user" and "
-/base/order/partner" respectively. You can nest routers as you see fit - but be aware that once a router has been
-registered it cannot be re-registered or an exception will be raised.
+Once `order_router` is registered on `other_router`, the controllers registered on it will be respectively available
+on: "/base/orders/user" and "/base/order/partner".
+
+You can nest routers as you see fit - but be aware that once a router has been registered it cannot be re-registered or an exception will be raised.
 
 Finally, you should note that you can register a controller on different routers, the same way you can register
 individual functions:

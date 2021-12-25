@@ -94,7 +94,7 @@ app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres
 
 ## Logging
 
-Another thing most applications will need to set up as part of the application startup is logging. Although Starlite
+Another thing most applications will need to set up as part of startup is logging. Although Starlite
 does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
 can use like so:
 
