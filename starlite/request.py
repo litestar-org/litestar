@@ -189,7 +189,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     if isinstance(data, Stream):
         return StreamingResponse(content=data.iterator, status_code=status_code, media_type=media_type, headers=headers)
 
-    response_class = route_handler.response_class or Response
+    response_class = route_handler.get_response_class() or Response
     return response_class(
         headers=headers,
         status_code=status_code,

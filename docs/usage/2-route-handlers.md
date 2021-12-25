@@ -82,7 +82,7 @@ from typing import List
 
 from starlite import delete, get, patch, post, put
 
-from my_api.models import Resource
+from my_app.models import Resource
 
 
 @get(path="/resources")

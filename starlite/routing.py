@@ -7,7 +7,7 @@ from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable, NoArgAnyCallable
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response as StarletteResponse
 from starlette.routing import Route as StarletteRoute
 from starlette.routing import Router as StarletteRouter
 from typing_extensions import Literal, Type
@@ -20,6 +20,7 @@ from starlite.openapi.config import OpenAPIConfig
 from starlite.openapi.path_item import create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
+from starlite.response import Response
 from starlite.types import ENDPOINT_HANDLER, ResponseHeader
 from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
@@ -74,7 +75,7 @@ class Route(StarletteRoute):
         Using this method, Starlite is able to support different handler functions for the same path.
         """
 
-        async def endpoint_handler(request: Request) -> Response:
+        async def endpoint_handler(request: Request) -> StarletteResponse:
             request_method = HttpMethod.from_str(request.method)
             handler = http_handler_mapping[request_method]
             return await handle_request(route_handler=handler, request=request)
@@ -93,12 +94,12 @@ class Router(StarletteRouter):
         path: str,
         route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
         redirect_slashes: bool = True,
-        on_startup: Optional[List[NoArgAnyCallable]] = None,
-        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
+        response_class: Optional[Type[Response]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.path = normalize_path(path)
+        self.response_class = response_class
         self.dependencies = dependencies
         self.response_headers = response_headers
         super().__init__(
@@ -214,6 +215,7 @@ class RootRouter(Router):
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[Type[Response]] = None,
     ):
         self.on_startup = on_startup or []
         self.on_shutdown = on_shutdown or []
@@ -224,6 +226,7 @@ class RootRouter(Router):
             route_handlers=route_handlers,
             dependencies=dependencies,
             response_headers=response_headers,
+            response_class=response_class,
         )
         if openapi_config:
             self.openapi_schema = openapi_config.to_openapi_schema()

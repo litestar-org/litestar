@@ -37,6 +37,7 @@ class Starlite(Starlette):
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
+        response_class: Optional[Type[Response]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         response_headers: Optional[Dict[str, ResponseHeader]] = None
@@ -50,6 +51,7 @@ class Starlite(Starlette):
             dependencies=dependencies,
             openapi_config=openapi_config,
             response_headers=response_headers,
+            response_class=response_class,
         )
         self.exception_handlers: Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER] = {
             StarletteHTTPException: self.handle_http_exception,

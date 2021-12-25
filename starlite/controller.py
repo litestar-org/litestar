@@ -1,6 +1,9 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from typing_extensions import Type
+
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import Response
 from starlite.types import ResponseHeader
 from starlite.utils import normalize_path
 
@@ -11,18 +14,20 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Controller:
-    __slots__ = ("dependencies", "owner", "path", "response_headers")
+    __slots__ = ("dependencies", "owner", "path", "response_headers", "response_class")
     dependencies: Optional[Dict[str, "Provide"]]
     owner: "Router"
     path: str
     response_headers: Optional[Dict[str, ResponseHeader]]
+    response_class: Optional[Type[Response]]
 
     def __init__(self, owner: "Router"):
         if not hasattr(self, "path") or not self.path:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
-        for key in ["dependencies", "response_headers"]:
+        for key in ["dependencies", "response_headers", "response_class"]:
             if not hasattr(self, key):
                 setattr(self, key, None)
+
         self.path = normalize_path(self.path)
         self.owner = owner
         for route_handler in self.get_route_handlers():

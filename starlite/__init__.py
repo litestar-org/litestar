@@ -7,10 +7,10 @@ from .handlers import RouteHandler, delete, get, patch, post, put, route
 from .logging import LoggingConfig
 from .params import Body, Parameter
 from .provide import Provide
-from .response import FileResponse, RedirectResponse, Response, StreamingResponse
+from .response import Response
 from .routing import Route, Router
 from .testing import create_test_client, create_test_request
-from .types import File, Partial, Redirect
+from .types import File, Partial, Redirect, Stream
 
 __all__ = [
     "Body",
@@ -19,7 +19,6 @@ __all__ = [
     "create_test_request",
     "delete",
     "File",
-    "FileResponse",
     "get",
     "HTTPException",
     "HttpMethod",
@@ -33,7 +32,6 @@ __all__ = [
     "Provide",
     "put",
     "Redirect",
-    "RedirectResponse",
     "RequestEncodingType",
     "Response",
     "Route",
@@ -42,5 +40,5 @@ __all__ = [
     "Router",
     "Starlite",
     "StarLiteException",
-    "StreamingResponse",
+    "Stream",
 ]

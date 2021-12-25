@@ -369,8 +369,7 @@ from starlette.datastructures import UploadFile
 
 class FormData(BaseModel):
     cv: UploadFile
-    age: UploadFile
-    programmer: UploadFile
+    image: UploadFile
 
     class Config:
         arbitrary_types_allowed = True
@@ -379,7 +378,7 @@ class FormData(BaseModel):
 ```python
 from starlite import Body, post, RequestEncodingType
 
-from my_api.models import FormData
+from my_app.models import FormData
 
 
 @post(path="/file-upload")

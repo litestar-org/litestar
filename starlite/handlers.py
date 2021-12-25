@@ -67,6 +67,15 @@ class RouteHandler(BaseModel):
         self.validate_handler_function()
         return self
 
+    def get_response_class(self) -> Optional[Type[Response]]:
+        """Return the closest custom Response class in the owner graph, if any"""
+        cur: Union[Controller, "Router", RouteHandler] = self
+        while cur:
+            if cur.response_class:
+                return cur.response_class
+            cur = self.owner  # type: ignore
+        return None
+
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope

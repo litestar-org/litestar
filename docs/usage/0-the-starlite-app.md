@@ -7,7 +7,7 @@ Creating an app is straightforward, with the only required kwarg being list of C
 or [route_handlers](2-route-handlers.md):
 
 ```python
-# my_api/main.py
+# my_app/main.py
 
 from starlite import Starlite, get
 
@@ -53,7 +53,7 @@ from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html)
 one to get or create the connection, and another to close it:
 
 ```python
-# my_api/postgres.py
+# my_app/postgres.py
 
 from os import environ
 from typing import cast
@@ -83,11 +83,11 @@ async def close_postgres_connection():
 We now simply need to pass these to the Starlite init method to ensure these are called correctly:
 
 ```python
-# my_api/main.py
+# my_app/main.py
 
 from starlite import Starlite
 
-from my_api.postgres import get_postgres_connection, close_postgres_connection
+from my_app.postgres import get_postgres_connection, close_postgres_connection
 
 app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres_connection])
 ```
@@ -99,7 +99,7 @@ does not configure logging for you, it does come with a convenience `pydantic` m
 can use like so:
 
 ```python
-# my_api/main.py
+# my_app/main.py
 
 from starlite import Starlite, LoggingConfig
 
