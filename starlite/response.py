@@ -33,7 +33,7 @@ class Response(StarletteResponse):
         """
         Serializer hook for orjson to handle pydantic models.
 
-        This method can be overriden to extend json serialization
+        This method can be overridden to extend json serialization
         """
         if isinstance(value, BaseModel):
             return value.dict()

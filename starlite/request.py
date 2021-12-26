@@ -1,8 +1,9 @@
 from enum import Enum
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Dict, List, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
 from orjson import loads
+from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from pydantic.typing import AnyCallable
@@ -11,6 +12,7 @@ from starlette.requests import Request
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
+from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, RequestEncodingType
@@ -19,6 +21,13 @@ from starlite.types import File, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
+
+
+T = TypeVar("T", bound=Type[BaseModel])
+
+
+class CustomRequest(Request, Generic[T]):
+    user_class: T
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:

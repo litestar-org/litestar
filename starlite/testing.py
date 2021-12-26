@@ -16,7 +16,7 @@ from starlite.app import Starlite
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import RouteHandler
 from starlite.openapi.config import OpenAPIConfig
-from starlite.types import EXCEPTION_HANDLER
+from starlite.types import EXCEPTION_HANDLER, MiddlewareProtocol
 
 
 class RequestEncoder(RequestEncodingMixin):
@@ -62,7 +62,7 @@ def create_test_client(
     ],
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
-    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware]]]] = None,
+    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
     on_shutdown: Optional[List[NoArgAnyCallable]] = None,
     on_startup: Optional[List[NoArgAnyCallable]] = None,
     base_url: str = "http://testserver",

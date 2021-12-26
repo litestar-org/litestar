@@ -1,13 +1,15 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from pydantic.typing import AnyCallable, NoArgAnyCallable
-from starlette.applications import Starlette
 from starlette.datastructures import State
+from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.requests import Request
-from starlette.types import ASGIApp
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.enums import MediaType
@@ -17,8 +19,7 @@ from starlite.openapi.config import OpenAPIConfig
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import RootRouter, Router
-from starlite.types import EXCEPTION_HANDLER, ResponseHeader
-from starlite.utils import DeprecatedProperty
+from starlite.types import EXCEPTION_HANDLER, MiddlewareProtocol, ResponseHeader
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
@@ -26,14 +27,13 @@ if TYPE_CHECKING:  # pragma: no cover
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig()
 
 
-# noinspection PyMethodOverriding
-class Starlite(Starlette):
-    def __init__(  # pylint: disable=super-init-not-called
+class Starlite:
+    def __init__(
         self,
         *,
         route_handlers: List[Union[Type["Controller"], RouteHandler, Router, AnyCallable]],
         debug: bool = False,
-        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware]]]] = None,
+        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
@@ -42,7 +42,7 @@ class Starlite(Starlette):
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         response_headers: Optional[Dict[str, ResponseHeader]] = None
     ):
-        self._debug: bool = debug
+        self.debug = debug
         self.state: State = State()
         self.router: RootRouter = RootRouter(
             route_handlers=route_handlers or [],
@@ -57,13 +57,31 @@ class Starlite(Starlette):
             StarletteHTTPException: self.handle_http_exception,
             **(exception_handlers or {}),
         }
-        self.user_middleware: List[Middleware] = self.set_user_middleware(middleware or [])
-        self.middleware_stack: ASGIApp = self.build_middleware_stack()
+        self.middleware_stack: ASGIApp = self.build_middleware_stack(middleware or [])
 
-    @staticmethod
-    def set_user_middleware(middleware: List[Union[Middleware, Type[BaseHTTPMiddleware]]]) -> List[Middleware]:
-        """Normalizes the passed in middleware"""
-        return [m if isinstance(m, Middleware) else Middleware(m) for m in middleware]
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        scope["app"] = self
+        await self.middleware_stack(scope, receive, send)
+
+    def build_middleware_stack(
+        self, user_middleware: List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]
+    ) -> ASGIApp:
+        """
+        Builds the middleware by sandwiching the user middleware between
+        the Starlette ExceptionMiddleware and the starlette ServerErrorMiddleware
+        """
+        current_app: ASGIApp = ExceptionMiddleware(handlers=self.exception_handlers, debug=self.debug, app=self.router)
+        for middleware in user_middleware:
+            if isinstance(middleware, Middleware):
+                cls, options = middleware
+                current_app = cls(app=current_app, **options)
+            else:
+                current_app = middleware(app=current_app)
+        return ServerErrorMiddleware(
+            handler=self.exception_handlers.get(HTTP_500_INTERNAL_SERVER_ERROR, self.handle_http_exception),
+            debug=self.debug,
+            app=current_app,
+        )
 
     @staticmethod
     def handle_http_exception(_: Request, exc: Union[HTTPException, StarletteHTTPException]) -> Response:
@@ -77,16 +95,3 @@ class Starlite(Starlette):
             content=content,
             status_code=exc.status_code,
         )
-
-    # these Starlette properties are not supported
-    route = DeprecatedProperty()  # type: ignore
-    add_route = DeprecatedProperty()  # type: ignore
-    on_event = DeprecatedProperty()  # type: ignore
-    mount = DeprecatedProperty()  # type: ignore
-    host = DeprecatedProperty()  # type: ignore
-    add_middleware = DeprecatedProperty()  # type: ignore
-    add_exception_handler = DeprecatedProperty()  # type: ignore
-    add_event_handler = DeprecatedProperty()  # type: ignore
-    add_websocket_route = DeprecatedProperty()  # type: ignore
-    websocket_route = DeprecatedProperty()  # type: ignore
-    middleware = DeprecatedProperty()  # type: ignore

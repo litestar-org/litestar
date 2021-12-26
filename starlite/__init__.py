@@ -5,6 +5,7 @@ from .enums import HttpMethod, MediaType, RequestEncodingType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
 from .handlers import RouteHandler, delete, get, patch, post, put, route
 from .logging import LoggingConfig
+from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .params import Body, Parameter
 from .provide import Provide
 from .response import Response
@@ -13,6 +14,8 @@ from .testing import create_test_client, create_test_request
 from .types import File, Partial, Redirect, Stream
 
 __all__ = [
+    "AbstractAuthenticationMiddleware",
+    "AuthenticationResult",
     "Body",
     "Controller",
     "create_test_client",

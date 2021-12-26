@@ -7,6 +7,7 @@ from typing import (
     Generic,
     Iterator,
     Optional,
+    Protocol,
     Tuple,
     TypeVar,
     Union,
@@ -18,6 +19,7 @@ from pydantic import BaseModel, FilePath, create_model, validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import Response as StarletteResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import AsyncIterator, Type
 
 from starlite.exceptions import HTTPException
@@ -29,11 +31,19 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
-
 EXCEPTION_HANDLER = Callable[
     [Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
 ]
 ENDPOINT_HANDLER = Callable[[Request], Awaitable[Union[Response, StarletteResponse]]]
+
+
+class MiddlewareProtocol(Protocol):
+    def __init__(self, app: ASGIApp):  # pragma: no cover  # pylint: disable=super-init-not-called
+        ...
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        ...
+
 
 T = TypeVar("T", bound=Type[BaseModel])
 
