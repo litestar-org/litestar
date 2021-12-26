@@ -124,3 +124,39 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
+
+## Handler Function Kwargs
+
+Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
+kwargs are inspected by Starlite and then injected into the request handler.
+
+The following sources can be accessed using annotated function kwargs:
+
+1. [path, query, header and cookie parameters](3-parameters.md)
+2. [the request body](4-request-body.md)
+3. [dependencies](6-dependency-injection.md)
+
+Additionally, you can specify the following kwargs:
+
+* `request`: injects the request instance
+* `headers`: injects the request `headers` as a parsed dictionary
+* `query`: injects the request `query_params` as a parsed dictionary
+* `cookies`: injects the request `cookies` as a parsed dictionary
+
+For example:
+
+```python
+from typing import Any, Dict
+from starlette.requests import Request
+from starlite import get
+
+
+@get(path="/")
+def my_request_handler(
+        request: Request,
+        headers: Dict[str, Any],
+        query: Dict[str, Any],
+        cookies: Dict[str, Any]
+) -> None:
+  ...
+```
