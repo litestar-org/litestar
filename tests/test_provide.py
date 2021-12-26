@@ -29,7 +29,7 @@ def test_provide_cached():
 def test_provide_method():
     class MyClass:
         def my_method(self):
-            assert self
+            assert self is MyClass
 
     provider = Provide(dependency=MyClass().my_method)
     assert isinstance(provider.dependency, partial)

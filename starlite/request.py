@@ -15,7 +15,6 @@ from starlette.responses import StreamingResponse
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.response import Response
 from starlite.types import File, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -189,7 +188,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     if isinstance(data, Stream):
         return StreamingResponse(content=data.iterator, status_code=status_code, media_type=media_type, headers=headers)
 
-    response_class = route_handler.get_response_class() or Response
+    response_class = route_handler.resolve_response_class()
     return response_class(
         headers=headers,
         status_code=status_code,

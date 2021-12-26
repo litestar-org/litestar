@@ -45,6 +45,7 @@ class RouteHandler(BaseModel):
     owner: Optional[Union[Controller, "Router"]] = None
     resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
     resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
+    resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
     signature_model: Optional[Type[BaseModel]] = None
 
     # OpenAPI attributes
@@ -67,14 +68,17 @@ class RouteHandler(BaseModel):
         self.validate_handler_function()
         return self
 
-    def get_response_class(self) -> Optional[Type[Response]]:
-        """Return the closest custom Response class in the owner graph, if any"""
-        cur: Union[Controller, "Router", RouteHandler] = self
-        while cur:
-            if cur.response_class:
-                return cur.response_class
-            cur = self.owner  # type: ignore
-        return None
+    def resolve_response_class(self) -> Type[Response]:
+        """Return the closest custom Response class in the owner graph or the default Response class"""
+        if self.resolved_response_class is _empty:
+            self.resolved_response_class = Response
+            cur: Any = self
+            while cur is not None:
+                if cur.response_class is not None:
+                    self.resolved_response_class = cast(Type[Response], cur.response_class)
+                    break
+                cur = cur.owner
+        return cast(Type[Response], self.resolved_response_class)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
