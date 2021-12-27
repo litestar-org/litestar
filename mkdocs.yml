@@ -1,0 +1,5 @@
+site_name: Starlite
+theme:
+  name: material
+  favicon: images/favicon.ico
+  logo: images/starlite-icon.png

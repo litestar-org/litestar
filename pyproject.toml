@@ -47,6 +47,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 requests = "*"
 uvicorn = "*"
+mkdocs-material = "^8.1.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
