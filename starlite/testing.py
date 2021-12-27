@@ -1,4 +1,3 @@
-from sre_parse import State
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urlencode
 
@@ -6,6 +5,7 @@ from orjson import dumps
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable, NoArgAnyCallable
 from requests.models import RequestEncodingMixin
+from starlette.datastructures import State
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
@@ -17,7 +17,7 @@ from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import RouteHandler
 from starlite.request import Request
-from starlite.types import ExceptionHandler, MiddlewareProtocol
+from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol
 
 
 class RequestEncoder(RequestEncodingMixin):
@@ -68,6 +68,7 @@ def create_test_client(
     cors_config: Optional[CORSConfig] = None,
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+    guards: Optional[List[Guard]] = None,
     middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
     on_shutdown: Optional[List[NoArgAnyCallable]] = None,
     on_startup: Optional[List[NoArgAnyCallable]] = None,
@@ -81,6 +82,7 @@ def create_test_client(
         cors_config=cors_config,
         dependencies=dependencies,
         exception_handlers=exception_handlers,
+        guards=guards,
         middleware=middleware,
         on_shutdown=on_shutdown,
         on_startup=on_startup,

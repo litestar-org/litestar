@@ -21,3 +21,9 @@ def test_handle_http_exception():
     assert json.loads(response.body) == {
         "detail": "starlite_exception",
     }
+
+    response = Starlite.handle_http_exception("", AttributeError("oops"))
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert json.loads(response.body) == {
+        "detail": repr(AttributeError("oops")),
+    }

@@ -46,7 +46,7 @@ class AbstractAuthenticationMiddleware(ABC):
         )
 
     @abstractmethod
-    async def authenticate_request(self, request: Request) -> AuthenticationResult:
+    async def authenticate_request(self, request: Request) -> AuthenticationResult:  # pragma: no cover
         """
         Given a request, return an instance of AuthenticationResult
         containing a user and any relevant auth context, e.g. a JWT token.

@@ -129,11 +129,8 @@ async def get_model_kwargs_from_request(request: Request, fields: Dict[str, Mode
     kwargs: Dict[str, Any] = {}
     query_params = parse_query_params(request=request)
     header_params = dict(request.headers.items())
-    app = request.app
     for field_name, field in fields.items():
-        if field_name == "state":
-            kwargs["state"] = app.state
-        elif field_name == "request":
+        if field_name == "request":
             kwargs["request"] = request
         elif field_name == "headers":
             kwargs["headers"] = header_params
@@ -159,9 +156,7 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
     Parse a given http handler function and return values matching function parameter keys
     """
     model = route_handler.signature_model
-    if not model:
-        # if the route_handler has no parameters, it will also have no signature_model
-        return {}
+    assert model, "route handler has no signature model"
     try:
         # dependency injection
         dependencies: Dict[str, Any] = {}

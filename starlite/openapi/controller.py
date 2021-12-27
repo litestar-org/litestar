@@ -26,7 +26,7 @@ class OpenAPIController(Controller):
         return self.schema_from_request(request)
 
     @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
-    def redoc(self, request: Request) -> str:
+    def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
         dumped_schema = dumps(
             request.app.openapi_schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2

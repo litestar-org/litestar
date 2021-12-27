@@ -190,10 +190,12 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
             generate_examples=False,
             ignore_optional=True,
         )
-        if non_optional_schema.oneOf:
-            schema = Schema(oneOf=[Schema(type=OpenAPIType.NULL), *non_optional_schema.oneOf])
-        else:
-            schema = Schema(oneOf=[Schema(type=OpenAPIType.NULL), non_optional_schema])
+        schema = Schema(
+            oneOf=[
+                Schema(type=OpenAPIType.NULL),
+                *(non_optional_schema.oneOf if non_optional_schema.oneOf else [non_optional_schema]),
+            ]
+        )
     elif is_union(field):
         schema = Schema(
             oneOf=[create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields or []]

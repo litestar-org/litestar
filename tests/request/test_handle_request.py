@@ -49,7 +49,7 @@ async def test_handle_request_async_await():
         JSONResponse(status_code=HTTP_200_OK, content={}),
         RedirectResponse(url="/person"),
         StreamingResponse(status_code=HTTP_200_OK, content=b"abc"),
-        FileResponse("./test_request.py"),
+        FileResponse("./test_handle_request.py"),
     ],
 )
 async def test_handle_request_when_handler_returns_starlette_responses(response):

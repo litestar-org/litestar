@@ -53,7 +53,7 @@ class Starlite(Router):
         route_handlers: List[Union[Type[Controller], RouteHandler, Router, AnyCallable]],
     ):
         self.debug = debug
-        self.state: State = State()
+        self.state = State()
         super().__init__(
             dependencies=dependencies,
             guards=guards,
