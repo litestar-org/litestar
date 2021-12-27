@@ -8,7 +8,6 @@ from typing import (
     Generic,
     Iterator,
     Optional,
-    Protocol,
     Tuple,
     TypeVar,
     Union,
@@ -20,7 +19,7 @@ from pydantic import BaseModel, FilePath, create_model, validator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import AsyncIterator, Type, runtime_checkable
+from typing_extensions import AsyncIterator, Protocol, Type, runtime_checkable
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response
