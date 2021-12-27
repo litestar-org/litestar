@@ -24,7 +24,7 @@ from tests.openapi.utils import PersonController, PetController, PetException
 
 
 def test_create_responses():
-    for route in Starlite(route_handlers=[PersonController]).router.routes:
+    for route in Starlite(route_handlers=[PersonController]).routes:
         for route_handler in route.route_handler_map.values():
             if route_handler.include_in_schema:
                 responses = create_responses(

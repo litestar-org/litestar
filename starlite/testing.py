@@ -1,3 +1,4 @@
+from sre_parse import State
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urlencode
 
@@ -7,7 +8,6 @@ from pydantic.typing import AnyCallable, NoArgAnyCallable
 from requests.models import RequestEncodingMixin
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
 from starlette.testclient import TestClient as StarletteTestClient
 from typing_extensions import Type
 
@@ -16,12 +16,13 @@ from starlite.app import Starlite
 from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import RouteHandler
+from starlite.request import Request
 from starlite.types import ExceptionHandler, MiddlewareProtocol
 
 
 class RequestEncoder(RequestEncodingMixin):
     def multipart_encode(self, data: Dict[str, Any]) -> Tuple[bytes, str]:
-        class ForceMultipartDict(dict):  # type: ignore
+        class ForceMultipartDict(dict):
             # code borrowed from here:
             # https://github.com/encode/starlette/blob/d222b87cb4601ecda5d642ab504a14974d364db4/tests/test_formparsers.py#L14
             def __bool__(self) -> bool:
@@ -108,8 +109,13 @@ def create_test_request(
     cookie: Optional[str] = None,
     content: Optional[Union[Dict[str, Any], BaseModel]] = None,
     request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+    app: Optional[Starlite] = None,
 ) -> Request:
     """Create a starlette request using passed in parameters"""
+
+    class App:
+        state = State()
+
     scope = dict(
         type="http",
         method=http_method,
@@ -118,6 +124,7 @@ def create_test_request(
         root_path=root_path,
         path=path,
         headers=[],
+        app=app or App(),
     )
     if not headers:
         headers = {}
@@ -143,7 +150,7 @@ def create_test_request(
             (key.lower().encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
             for key, value in headers.items()
         ]
-    request = Request(scope=scope)
+    request: Request[Any, Any] = Request(scope=scope)
     if body:
         request._body = body
     return request

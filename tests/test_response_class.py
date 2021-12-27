@@ -29,7 +29,7 @@ class MyController(Controller):
 def test_response_class(layer: Optional[int], expected: Response):
     router = Router(path="/users", route_handlers=[MyController])
     app = Starlite(route_handlers=[router])
-    route_handler = app.router.routes[0].route_handler_map[HttpMethod.GET]
+    route_handler = app.routes[0].route_handler_map[HttpMethod.GET]
     layer_map = {
         0: route_handler,
         1: route_handler.owner,

@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Union
 
 from pydantic import BaseModel
-from starlette.requests import Request
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.enums import MediaType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
+from starlite.request import Request
 from starlite.response import Response
 
 

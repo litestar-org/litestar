@@ -46,6 +46,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 requests = "*"
+uvicorn = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

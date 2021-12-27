@@ -3,7 +3,6 @@ from typing import List, Optional
 import pytest
 from pydantic import BaseModel, Field
 from pydantic_factories import ModelFactory
-from starlette.requests import Request
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -23,6 +22,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.request import Request
 from tests import Person, PersonFactory
 
 

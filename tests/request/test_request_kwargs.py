@@ -3,10 +3,9 @@ from typing import Any, Optional, Type
 import pytest
 from pydantic import BaseConfig
 from pydantic.fields import FieldInfo, ModelField
-from starlette.requests import Request
 
 from starlite import HttpMethod, RequestEncodingType, create_test_request
-from starlite.request import get_model_kwargs_from_request, get_request_data
+from starlite.request import Request, get_model_kwargs_from_request, get_request_data
 from tests import Person, PersonFactory
 
 

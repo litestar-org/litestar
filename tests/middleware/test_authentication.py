@@ -1,10 +1,11 @@
 from pydantic import BaseModel
-from starlette.requests import HTTPConnection, Request
+from starlette.requests import HTTPConnection
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
 from starlite import create_test_client, get
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
+from starlite.request import Request
 
 
 class User(BaseModel):
@@ -31,7 +32,7 @@ class AuthMiddleware(AbstractAuthenticationMiddleware):
 
 
 @get(path="/")
-def route_handler(request: Request) -> None:
+def route_handler(request: Request[User, Auth]) -> None:
     assert isinstance(request.user, User)
     assert isinstance(request.auth, Auth)
     return None

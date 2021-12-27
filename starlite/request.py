@@ -3,16 +3,14 @@ from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
 from orjson import loads
-from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from pydantic.typing import AnyCallable
 from starlette.datastructures import UploadFile
-from starlette.requests import Request
+from starlette.requests import Request as StarletteRequest
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
-from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, RequestEncodingType
@@ -20,14 +18,27 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.types import File, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
+    from starlite.app import Starlite
     from starlite.handlers import RouteHandler
 
+User = TypeVar("User")
+Auth = TypeVar("Auth")
 
-T = TypeVar("T", bound=Type[BaseModel])
 
+class Request(StarletteRequest, Generic[User, Auth]):
+    @property
+    def app(self) -> "Starlite":
+        return cast("Starlite", self.scope["app"])
 
-class CustomRequest(Request, Generic[T]):
-    user_class: T
+    @property
+    def user(self) -> User:
+        assert "user" in self.scope, "user is not defined in scope, you should install an AuthMiddleware to set it"
+        return cast(User, self.scope["user"])
+
+    @property
+    def auth(self) -> Auth:
+        assert "auth" in self.scope, "auth is not defined in scope, you should install an AuthMiddleware to set it"
+        return cast(Auth, self.scope["auth"])
 
 
 def parse_query_params(request: Request) -> Dict[str, Any]:
@@ -76,7 +87,11 @@ async def get_request_data(request: Request, field: ModelField) -> Any:
 
 
 def get_request_parameters(
-    request: Request, field_name: str, field: ModelField, query_params: Dict[str, Any], header_params: Dict[str, Any]
+    request: Request,
+    field_name: str,
+    field: ModelField,
+    query_params: Dict[str, Any],
+    header_params: Dict[str, Any],
 ) -> Any:
     """Extract path, query, header and cookie parameters correlating to field_names from the request"""
     if field_name in request.path_params:
@@ -114,8 +129,11 @@ async def get_model_kwargs_from_request(request: Request, fields: Dict[str, Mode
     kwargs: Dict[str, Any] = {}
     query_params = parse_query_params(request=request)
     header_params = dict(request.headers.items())
+    app = request.app
     for field_name, field in fields.items():
-        if field_name == "request":
+        if field_name == "state":
+            kwargs["state"] = app.state
+        elif field_name == "request":
             kwargs["request"] = request
         elif field_name == "headers":
             kwargs["headers"] = header_params

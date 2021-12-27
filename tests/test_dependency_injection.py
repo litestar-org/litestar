@@ -2,7 +2,6 @@ from asyncio import sleep
 from typing import Any, Dict
 
 import pytest
-from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import (
@@ -13,6 +12,7 @@ from starlite import (
     create_test_client,
     get,
 )
+from starlite.request import Request
 
 
 def router_first_dependency():

@@ -1,14 +1,14 @@
 from starlite import Router
 from starlite.openapi.path_item import create_path_item
 from starlite.utils import find_index
-from tests.openapi.utils import PersonController, default_config
+from tests.openapi.utils import PersonController
 
 
 def test_create_path_item():
     router = Router(path="", route_handlers=[PersonController])
     index = find_index(router.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     route = router.routes[index]
-    schema = create_path_item(route=route, config=default_config)
+    schema = create_path_item(route=route, create_examples=True)
     assert schema.delete
     assert schema.delete.operationId == "delete_person"
     assert schema.get

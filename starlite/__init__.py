@@ -7,6 +7,7 @@ from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteEx
 from .handlers import RouteHandler, delete, get, patch, post, put, route
 from .logging import LoggingConfig
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
+from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .provide import Provide
 from .response import Response
@@ -15,12 +16,11 @@ from .testing import create_test_client, create_test_request
 from .types import File, Partial, Redirect, Stream
 
 __all__ = [
-    "OpenAPIConfig",
-    "CORSConfig",
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
     "Body",
     "Controller",
+    "CORSConfig",
     "create_test_client",
     "create_test_request",
     "delete",
@@ -31,6 +31,8 @@ __all__ = [
     "ImproperlyConfiguredException",
     "LoggingConfig",
     "MediaType",
+    "OpenAPIConfig",
+    "OpenAPIController",
     "Parameter",
     "Partial",
     "patch",

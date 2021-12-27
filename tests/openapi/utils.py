@@ -17,11 +17,8 @@ from starlite import (
     post,
     put,
 )
-from starlite.config import SchemaGenerationConfig
 from starlite.types import ResponseHeader
 from tests import Person, Pet, VanillaDataClassPerson
-
-default_config = SchemaGenerationConfig()
 
 
 class PetException(HTTPException):

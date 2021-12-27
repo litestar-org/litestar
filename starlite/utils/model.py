@@ -25,7 +25,9 @@ def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
             if key == "return":
                 continue
             parameter = signature.parameters[key]
-            if ModelFactory.is_constrained_field(parameter.default):
+            if key == "request":
+                field_definitions[key] = (Any, ...)
+            elif ModelFactory.is_constrained_field(parameter.default):
                 field_definitions[key] = (parameter.default, ...)
             elif parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
@@ -36,7 +38,7 @@ def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
         name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
         return create_model(name, __config__=Config, **field_definitions)  # type: ignore
     except TypeError as e:
-        raise ImproperlyConfiguredException("Unsupported callable passed to Provide") from e
+        raise ImproperlyConfiguredException(repr(e)) from e
 
 
 def create_parsed_model_field(value: Type[Any]) -> ModelField:
@@ -49,7 +51,7 @@ def create_parsed_model_field(value: Type[Any]) -> ModelField:
 _dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
 
 
-def handle_dataclass(dataclass: Any) -> Type[BaseModel]:
+def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
     """Converts a dataclass to a pydantic model and memoizes the result"""
     if not isclass(dataclass) and hasattr(dataclass, "__class__"):
         dataclass = dataclass.__class__

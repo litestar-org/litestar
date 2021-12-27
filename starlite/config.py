@@ -14,8 +14,6 @@ from openapi_schema_pydantic import (
 )
 from pydantic import AnyUrl, BaseModel
 
-from starlite.enums import OpenAPIMediaType
-
 
 class CORSConfig(BaseModel):
     allow_origins: List[str] = ["*"]
@@ -27,18 +25,10 @@ class CORSConfig(BaseModel):
     max_age: int = 600
 
 
-class SchemaGenerationConfig(BaseModel):
-    """Class containing generator settings"""
-
-    # endpoint config
-    schema_endpoint_url: str = "/schema"
-    schema_response_media_type: OpenAPIMediaType = OpenAPIMediaType.OPENAPI_YAML
-    # determines whether examples will be auto-generated using the pydantic-factories library
-    create_examples: bool = False
-
-
-class OpenAPIConfig(SchemaGenerationConfig):
+class OpenAPIConfig(BaseModel):
     """Class containing Settings and Schema Properties"""
+
+    create_examples: bool = False
 
     title: str = "StarLite API"
     version: str = "1.0.0"
@@ -70,12 +60,4 @@ class OpenAPIConfig(SchemaGenerationConfig):
                 summary=self.summary,
                 termsOfService=self.terms_of_service,
             ),
-        )
-
-    def to_schema_generation_config(self) -> SchemaGenerationConfig:
-        """Create a SchemaGenerationConfig"""
-        return SchemaGenerationConfig(
-            schema_endpoint_url=self.schema_endpoint_url,
-            schema_response_media_type=self.schema_response_media_type,
-            create_examples=self.create_examples,
         )

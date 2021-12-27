@@ -10,8 +10,8 @@ from tests.openapi.utils import PersonController
 
 def test_create_parameters():
     app = Starlite(route_handlers=[PersonController])
-    index = find_index(app.router.routes, lambda x: x.path_format == "/{service_id}/person")
-    route = app.router.routes[index]
+    index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person")
+    route = app.routes[index]
     route_handler = PersonController.get_persons
     parameters = create_parameters(
         route_handler=route_handler,
