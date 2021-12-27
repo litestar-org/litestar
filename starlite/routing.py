@@ -1,24 +1,21 @@
 import re
 from inspect import isclass
-from typing import Callable, Dict, List, Optional, Sequence, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
-from openapi_schema_pydantic import OpenAPI
-from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import validate_arguments
-from starlette.requests import Request
-from starlette.responses import Response
+from pydantic.typing import AnyCallable
 from starlette.routing import Route as StarletteRoute
-from starlette.routing import Router as StarletteRouter
-from typing_extensions import Literal, Type
+from starlette.types import ASGIApp, Receive, Scope, Send
+from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
-from starlite.openapi import OpenAPIConfig, create_path_item
 from starlite.provide import Provide
-from starlite.request import handle_request
-from starlite.utils.helpers import DeprecatedProperty
+from starlite.request import Request, handle_request
+from starlite.response import Response
+from starlite.types import Guard, ResponseHeader
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
 
@@ -35,12 +32,12 @@ class Route(StarletteRoute):
         path: str,
         route_handlers: Union[RouteHandler, List[RouteHandler]],
     ):
-        self.route_handler_map = self.parse_route_handlers(route_handlers=list(route_handlers), path=path)
-        super().__init__(
-            path=path,
-            endpoint=self.create_endpoint_handler(self.route_handler_map),
-            methods=[method.upper() for method in self.route_handler_map],
+        self.route_handler_map = self.parse_route_handlers(
+            route_handlers=route_handlers if isinstance(route_handlers, list) else [route_handlers], path=path
         )
+        # we are passing a dud lambda function as the endpoint kwarg here because we are setting self.app ourselves
+        super().__init__(path=path, methods=[method.upper() for method in self.route_handler_map], endpoint=lambda x: x)
+        self.app = self.create_endpoint_handler(self.route_handler_map)
         self.path_parameters: List[str] = param_match_regex.findall(self.path)
         for parameter in self.path_parameters:
             if ":" not in parameter or not parameter.split(":")[1]:
@@ -62,44 +59,42 @@ class Route(StarletteRoute):
         return mapped_route_handlers
 
     @staticmethod
-    def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> Callable:
+    def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> ASGIApp:
         """
-        Create a Starlette endpoint handler given a dictionary mapping of http-methods to RouteHandlers
+        Create an ASGIApp that routes to the correct route handler based on the scope.
 
         Using this method, Starlite is able to support different handler functions for the same path.
         """
 
-        async def endpoint_handler(request: Request) -> Response:
+        async def endpoint_handler(scope: Scope, receive: Receive, send: Send) -> None:
+            request: Request[Any, Any] = Request(scope, receive=receive, send=send)
             request_method = HttpMethod.from_str(request.method)
             handler = http_handler_mapping[request_method]
-            return await handle_request(route_handler=handler, request=request)
+            response = await handle_request(route_handler=handler, request=request)
+            await response(scope, receive, send)
 
         return endpoint_handler
 
 
 # noinspection PyMethodOverriding
-class Router(StarletteRouter):
-    routes: List[Route]
-    owner: Optional["Router"] = None
-
+class Router:
     def __init__(
         self,
         *,
         path: str,
-        route_handlers: Optional[Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]]] = None,
-        redirect_slashes: bool = True,
-        on_startup: Optional[Sequence[Callable]] = None,
-        on_shutdown: Optional[Sequence[Callable]] = None,
+        route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
         dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
+        self.owner: Optional["Router"] = None
+        self.routes: List[Route] = []
         self.path = normalize_path(path)
+        self.response_class = response_class
         self.dependencies = dependencies
-        super().__init__(
-            on_shutdown=on_shutdown,
-            on_startup=on_startup,
-            redirect_slashes=redirect_slashes,
-            routes=[],
-        )
+        self.response_headers = response_headers
+        self.guards = guards
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 
@@ -131,8 +126,7 @@ class Router(StarletteRouter):
         else:
             # we reassign the variable to give it a clearer meaning
             for route_handler in value.get_route_handlers():
-                controller = cast(Controller, value)
-                path = join_paths([controller.path, route_handler.path]) if route_handler.path else controller.path
+                path = join_paths([value.path, route_handler.path]) if route_handler.path else value.path
                 if not handlers_map.get(path):
                     handlers_map[path] = {}
                 for http_method in route_handler.http_methods:
@@ -140,7 +134,7 @@ class Router(StarletteRouter):
         return handlers_map
 
     def validate_registration_value(
-        self, value: Union[Type[Controller], RouteHandler, "Router", Callable]
+        self, value: Union[Type[Controller], RouteHandler, "Router", AnyCallable]
     ) -> Union[Controller, RouteHandler, "Router"]:
         """
         Validates that the value passed to the register method is supported
@@ -160,7 +154,7 @@ class Router(StarletteRouter):
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
         return cast(Union[Controller, RouteHandler, "Router"], value)
 
-    def register(self, value: Union[Type[Controller], RouteHandler, "Router", Callable]):
+    def register(self, value: Union[Type[Controller], RouteHandler, "Router", AnyCallable]) -> None:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -186,83 +180,3 @@ class Router(StarletteRouter):
                 )
             else:
                 self.routes.append(Route(path=path, route_handlers=route_handlers))
-
-    # these Starlette properties are not supported
-    route = DeprecatedProperty()
-    add_route = DeprecatedProperty()
-    on_event = DeprecatedProperty()
-    mount = DeprecatedProperty()
-    host = DeprecatedProperty()
-    add_middleware = DeprecatedProperty()
-    add_exception_handler = DeprecatedProperty()
-    add_event_handler = DeprecatedProperty()
-    add_websocket_route = DeprecatedProperty()
-    websocket_route = DeprecatedProperty()
-
-
-class RootRouter(Router):
-    owner: Literal[None] = None
-
-    def __init__(
-        self,
-        *,
-        openapi_config: Optional[OpenAPIConfig],
-        route_handlers: Sequence[Union[Type[Controller], RouteHandler, "Router", Callable]],
-        on_startup: Optional[Sequence[Callable]] = None,
-        on_shutdown: Optional[Sequence[Callable]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-    ):
-        self.openapi_schema = None
-        self.schema_endpoint_url = None
-        self.schema_response_media_type = None
-        super().__init__(
-            path="",
-            route_handlers=route_handlers,
-            on_startup=on_startup,
-            on_shutdown=on_shutdown,
-            dependencies=dependencies,
-        )
-        if openapi_config:
-            self.openapi_schema = openapi_config.to_openapi_schema()
-            self.schema_endpoint_url = openapi_config.schema_endpoint_url
-            self.schema_response_media_type = openapi_config.schema_response_media_type
-            self.update_openapi_schema_paths()
-            self.routes.append(self.create_schema_endpoint())
-
-    def register(self, value: Union[Type[Controller], RouteHandler, "Router", Callable]):
-        super().register(value=value)
-        if self.openapi_schema:
-            self.update_openapi_schema_paths()
-
-    def update_openapi_schema_paths(self):
-        """
-        Updates the OpenAPI schema with all paths registered on the root router
-        """
-        if not self.openapi_schema.paths:
-            self.openapi_schema.paths = {}
-        for route in self.routes:
-            if route.include_in_schema and (route.path_format or "/") not in self.openapi_schema.paths:
-                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(route=route)
-
-    # TODO: extend this to support customization, security etc.
-    def create_schema_endpoint(self) -> Route:
-        """Create a schema endpoint"""
-        assert (
-            self.openapi_schema and self.schema_endpoint_url and self.schema_response_media_type
-        ), "schema configuration must be set to generate a schema endpoint"
-
-        def get_openapi_schema() -> OpenAPI:
-            """handler function that returns a constructed OpenAPI model"""
-            return construct_open_api_with_schema_class(self.openapi_schema)
-
-        return Route(
-            path=normalize_path(self.schema_endpoint_url),
-            route_handlers=[
-                RouteHandler(
-                    http_method=HttpMethod.GET,
-                    media_type=self.schema_response_media_type,
-                    fn=get_openapi_schema,
-                    include_in_schema=False,
-                )
-            ],
-        )

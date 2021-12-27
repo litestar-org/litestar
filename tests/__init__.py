@@ -51,10 +51,3 @@ class PydanticDataClassPerson:
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
     pets: Optional[List[Pet]] = None
-
-
-class ResponseHeaders(BaseModel):
-    application_type: str = "APP"
-    Access_Control_Allow_Origin: str = "*"
-    x_my_tag: str
-    omitted_tag: Optional[str] = None

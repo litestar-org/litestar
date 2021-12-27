@@ -12,7 +12,7 @@ class HttpMethod(str, Enum):
     DELETE = "delete"
 
     @classmethod
-    def is_http_method(cls, value: Any):
+    def is_http_method(cls, value: Any) -> bool:
         """Validates that a given value is a member of the HttpMethod enum"""
         return isinstance(value, str) and value.lower() in list(cls)
 
@@ -33,3 +33,9 @@ class MediaType(str, Enum):
 class OpenAPIMediaType(str, Enum):
     OPENAPI_YAML = "application/vnd.oai.openapi"
     OPENAPI_JSON = "application/vnd.oai.openapi+json"
+
+
+class RequestEncodingType(str, Enum):
+    JSON = "application/json"
+    MULTI_PART = "multipart/form-data"
+    URL_ENCODED = "application/x-www-form-urlencoded"

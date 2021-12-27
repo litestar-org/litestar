@@ -3,16 +3,37 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
-from starlette.responses import Response, StreamingResponse
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
 
-from starlite import HttpMethod, MediaType, delete, get, patch, post, put, route
+from starlite import (
+    File,
+    HttpMethod,
+    MediaType,
+    Redirect,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+    route,
+)
+from starlite.exceptions import ValidationException
 from starlite.handlers import RouteHandler
+from starlite.response import Response
+
+
+def dummy_method() -> None:
+    pass
 
 
 @given(
     http_method=st.sampled_from(HttpMethod),
-    media_type=st.one_of(st.none(), st.sampled_from(MediaType)),
+    media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
@@ -47,7 +68,7 @@ def test_route_handler_param_handling(
             status_code=status_code,
             path=url,
         )
-        result = decorator(lambda x: x)
+        result = decorator(dummy_method)
         if not isinstance(http_method, list) or len(http_method) > 1:
             assert result.http_method == http_method
         else:
@@ -116,7 +137,10 @@ def test_route_handler_validation_http_method():
 
 def test_route_handler_validation_response_class():
     # doesn't raise when subclass of starlette response is passed
-    assert RouteHandler(http_method=HttpMethod.GET, response_class=StreamingResponse)
+    class SpecialResponse(Response):
+        pass
+
+    assert RouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
 
     # raises otherwise
     with pytest.raises(ValidationError):
@@ -134,9 +158,33 @@ def test_route_handler_validation_response_class():
     ],
 )
 def test_route_handler_sub_classes(sub, http_method, expected_status_code):
-    result = sub()(lambda x: x)
+    result = sub()(dummy_method)
     assert result.http_method == http_method
     assert result.status_code == expected_status_code
 
     with pytest.raises(ValidationError):
         sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)
+
+
+def test_route_handler_function_validation():
+    with pytest.raises(ValidationException):
+
+        @get(path="/")
+        def method_with_no_annotation():
+            pass
+
+    with pytest.raises(ValidationException):
+
+        @get(path="/", status_code=HTTP_200_OK)
+        def redirect_method_without_proper_status() -> Redirect:
+            pass
+
+    @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
+    def redirect_method() -> Redirect:
+        return Redirect("/test")
+
+    @get(path="/")
+    def file_method() -> File:
+        pass
+
+    assert file_method.media_type == MediaType.TEXT

@@ -1,5 +1,5 @@
 from starlite.types import Partial
-from tests.utils import Person
+from tests import Person
 
 try:
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore

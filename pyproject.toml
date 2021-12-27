@@ -35,17 +35,18 @@ openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
+pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
+python-multipart = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = {extras = ["cli"], version = "*"}
-openapi-schema-pydantic = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-pyyaml = "*"
 requests = "*"
+uvicorn = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -73,7 +74,7 @@ max-line-length = "120"
 [tool.pylint.DESIGN]
 max-args = 15
 max-attributes = 15
-max-locals = 15
+max-locals = 20
 max-returns = 15
 
 [tool.pylint.VARIABLES]
@@ -81,12 +82,6 @@ ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
 good-names = "_,i,e,fn"
-
-[tool.mypy]
-warn_unused_ignores = true
-warn_redundant_casts = true
-strict_optional = true
-implicit_reexport = false
 
 [tool.coverage.run]
 omit = ["*/tests/*"]

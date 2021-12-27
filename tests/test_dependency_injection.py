@@ -2,7 +2,6 @@ from asyncio import sleep
 from typing import Any, Dict
 
 import pytest
-from starlette.requests import Request
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import (
@@ -13,6 +12,7 @@ from starlite import (
     create_test_client,
     get,
 )
+from starlite.request import Request
 
 
 def router_first_dependency():
@@ -48,7 +48,7 @@ def local_method_second_dependency(path_param: str):
 test_path = "/test"
 
 
-class TestController(Controller):
+class FirstController(Controller):
     path = test_path
     dependencies = {"first": Provide(controller_first_dependency), "second": Provide(controller_second_dependency)}
 
@@ -58,7 +58,7 @@ class TestController(Controller):
             "first": Provide(local_method_first_dependency),
         },
     )
-    def test_method(self, first: int, second: dict, third: bool):
+    def test_method(self, first: int, second: dict, third: bool) -> None:
         assert isinstance(first, int)
         assert isinstance(second, dict)
         assert third is False
@@ -66,7 +66,7 @@ class TestController(Controller):
 
 def test_controller_dependency_injection():
     with create_test_client(
-        TestController,
+        FirstController,
         dependencies={
             "second": Provide(router_first_dependency),
             "third": Provide(router_second_dependency),
@@ -84,7 +84,7 @@ def test_function_dependency_injection():
             "third": Provide(local_method_second_dependency),
         },
     )
-    def test_function(first: int, second: bool, third: str):
+    def test_function(first: int, second: bool, third: str) -> None:
         assert isinstance(first, int)
         assert second is False
         assert isinstance(third, str)
@@ -105,23 +105,23 @@ def test_dependency_isolation():
         path = "/second"
 
         @get()
-        def test_method(self, first: dict):
+        def test_method(self, first: dict) -> None:
             pass
 
-    with create_test_client([TestController, SecondController]) as client:
+    with create_test_client([FirstController, SecondController]) as client:
         response = client.get("/second")
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 
 def test_dependency_validation():
     @get(
-        path=test_path + "/{path_param}",
+        path=test_path + "/{path_param:int}",
         dependencies={
             "first": Provide(local_method_first_dependency),
             "second": Provide(local_method_second_dependency),
         },
     )
-    def test_function(first: int, second: str, third: int):
+    def test_function(first: int, second: str, third: int) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):

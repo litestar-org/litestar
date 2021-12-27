@@ -1,8 +1,8 @@
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from starlite import HttpMethod, create_test_request
-from tests.utils import Person
+from starlite import HttpMethod, RequestEncodingType, create_test_request
+from tests import Person
 
 
 @settings(suppress_health_check=HealthCheck.all())
@@ -18,13 +18,17 @@ from tests.utils import Person
         st.dictionaries(keys=st.text(), values=st.one_of(st.lists(st.text()), st.text())),
     ),
     headers=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
+    cookie=st.one_of(st.none(), st.text()),
     content=st.one_of(
         st.none(),
         st.builds(Person),
         st.dictionaries(keys=st.text(), values=st.builds(dict)),
     ),
+    request_media_type=st.sampled_from(RequestEncodingType),
 )
-def test_create_test_request(http_method, scheme, server, port, root_path, path, query, headers, content):
+def test_create_test_request(
+    http_method, scheme, server, port, root_path, path, query, headers, cookie, content, request_media_type
+):
     create_test_request(
         http_method=http_method,
         scheme=scheme,
@@ -34,5 +38,7 @@ def test_create_test_request(http_method, scheme, server, port, root_path, path,
         path=path,
         query=query,
         headers=headers,
+        cookie=cookie,
         content=content,
+        request_media_type=request_media_type,
     )
