@@ -17,7 +17,7 @@ from starlite import (
     post,
     put,
 )
-from starlite.openapi.config import SchemaGenerationConfig
+from starlite.config import SchemaGenerationConfig
 from starlite.types import ResponseHeader
 from tests import Person, Pet, VanillaDataClassPerson
 

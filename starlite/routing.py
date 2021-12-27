@@ -12,16 +12,16 @@ from starlette.routing import Route as StarletteRoute
 from starlette.routing import Router as StarletteRouter
 from typing_extensions import Literal, Type
 
+from starlite.config import OpenAPIConfig
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import RouteHandler
-from starlite.openapi.config import OpenAPIConfig
 from starlite.openapi.path_item import create_path_item
 from starlite.provide import Provide
 from starlite.request import handle_request
 from starlite.response import Response
-from starlite.types import ENDPOINT_HANDLER, ResponseHeader
+from starlite.types import EndpointHandler, Guard, ResponseHeader
 from starlite.utils.helpers import DeprecatedProperty
 from starlite.utils.sequence import find_index, unique
 from starlite.utils.url import join_paths, normalize_path
@@ -68,7 +68,7 @@ class Route(StarletteRoute):
         return mapped_route_handlers
 
     @staticmethod
-    def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> ENDPOINT_HANDLER:
+    def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> EndpointHandler:
         """
         Create a Starlette endpoint handler given a dictionary mapping of http-methods to RouteHandlers
 
@@ -93,15 +93,17 @@ class Router(StarletteRouter):
         *,
         path: str,
         route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.path = normalize_path(path)
         self.response_class = response_class
         self.dependencies = dependencies
         self.response_headers = response_headers
+        self.guards = guards
         super().__init__(
             redirect_slashes=redirect_slashes,
             routes=[],
@@ -211,22 +213,24 @@ class RootRouter(Router):
         *,
         openapi_config: Optional[OpenAPIConfig],
         route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
-        on_startup: Optional[List[NoArgAnyCallable]] = None,
-        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        guards: Optional[List[Guard]] = None,
+        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
+        on_startup: Optional[List[NoArgAnyCallable]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.on_startup = on_startup or []
         self.on_shutdown = on_shutdown or []
         self.openapi_schema = None
         self.schema_generation_config = None
         super().__init__(
-            path="",
-            route_handlers=route_handlers,
             dependencies=dependencies,
-            response_headers=response_headers,
+            guards=guards,
+            path="",
             response_class=response_class,
+            response_headers=response_headers,
+            route_handlers=route_handlers,
         )
         if openapi_config:
             self.openapi_schema = openapi_config.to_openapi_schema()

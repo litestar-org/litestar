@@ -16,7 +16,7 @@ from starlite.exceptions import (
 )
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.types import File, Redirect, ResponseHeader
+from starlite.types import File, Guard, Redirect, ResponseHeader
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -32,20 +32,22 @@ class RouteHandler(BaseModel):
         arbitrary_types_allowed = True
         extra = Extra.allow
 
+    dependencies: Optional[Dict[str, Provide]] = None
+    guards: Optional[List[Guard]] = None
     http_method: Union[HttpMethod, List[HttpMethod]]
-    status_code: Optional[int] = None
     include_in_schema: bool = True
     media_type: Union[MediaType, str] = MediaType.JSON
     path: Optional[str] = None
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[Dict[str, ResponseHeader]] = None
-    dependencies: Optional[Dict[str, Provide]] = None
+    status_code: Optional[int] = None
 
     fn: Optional[AnyCallable] = None
     owner: Optional[Union[Controller, "Router"]] = None
     resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
     resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
     resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
+    resolved_guards: Union[List[Guard], Type[_empty]] = _empty
     signature_model: Optional[Type[BaseModel]] = None
 
     # OpenAPI attributes
@@ -67,6 +69,19 @@ class RouteHandler(BaseModel):
         self.signature_model = create_function_signature_model(fn)
         self.validate_handler_function()
         return self
+
+    def resolve_guards(self) -> List[Guard]:
+        """Returns all guards in the handlers scope, starting from highest to current layer"""
+        if self.resolved_guards is _empty:
+            resolved_guards: List[Guard] = []
+            cur: Any = self
+            while cur is not None:
+                if cur.guards:
+                    resolved_guards.extend(cur.guards)
+                cur = cur.owner
+            # we reverse the list to ensure that the highest level guards are called first
+            self.resolved_guards = list(reversed(resolved_guards))
+        return cast(List[Guard], self.resolved_guards)
 
     def resolve_response_class(self) -> Type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class"""

@@ -13,10 +13,10 @@ from typing_extensions import Type
 
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
+from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import RouteHandler
-from starlite.openapi.config import OpenAPIConfig
-from starlite.types import EXCEPTION_HANDLER, MiddlewareProtocol
+from starlite.types import ExceptionHandler, MiddlewareProtocol
 
 
 class RequestEncoder(RequestEncodingMixin):
@@ -60,27 +60,31 @@ def create_test_client(
         Union[Type[Controller], RouteHandler, Router, AnyCallable],
         List[Union[Type[Controller], RouteHandler, Router, AnyCallable]],
     ],
+    allowed_hosts: Optional[List[str]] = None,
+    backend: str = "asyncio",
+    backend_options: Optional[Dict[str, Any]] = None,
+    base_url: str = "http://testserver",
+    cors_config: Optional[CORSConfig] = None,
     dependencies: Optional[Dict[str, Provide]] = None,
-    exception_handlers: Optional[Dict[Union[int, Type[Exception]], EXCEPTION_HANDLER]] = None,
+    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
     on_shutdown: Optional[List[NoArgAnyCallable]] = None,
     on_startup: Optional[List[NoArgAnyCallable]] = None,
-    base_url: str = "http://testserver",
+    openapi_config: Optional[OpenAPIConfig] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
-    backend: str = "asyncio",
-    backend_options: Optional[Dict[str, Any]] = None,
-    openapi_config: Optional[OpenAPIConfig] = None,
 ) -> TestClient:
     """Create a TestClient"""
     app = Starlite(
+        allowed_hosts=allowed_hosts,
+        cors_config=cors_config,
         dependencies=dependencies,
         exception_handlers=exception_handlers,
         middleware=middleware,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
-        route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
         openapi_config=openapi_config,
+        route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
     )
     return TestClient(
         app=app,

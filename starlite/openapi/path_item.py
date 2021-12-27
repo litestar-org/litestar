@@ -4,7 +4,7 @@ from openapi_schema_pydantic import Operation, PathItem
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
-from starlite.openapi.config import SchemaGenerationConfig
+from starlite.config import SchemaGenerationConfig
 from starlite.openapi.parameters import create_parameters
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses

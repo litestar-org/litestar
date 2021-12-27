@@ -17,6 +17,16 @@ from pydantic import AnyUrl, BaseModel
 from starlite.enums import OpenAPIMediaType
 
 
+class CORSConfig(BaseModel):
+    allow_origins: List[str] = ["*"]
+    allow_methods: List[str] = ["*"]
+    allow_headers: List[str] = ["*"]
+    allow_credentials: bool = False
+    allow_origin_regex: Optional[str] = None
+    expose_headers: List[str] = []
+    max_age: int = 600
+
+
 class SchemaGenerationConfig(BaseModel):
     """Class containing generator settings"""
 

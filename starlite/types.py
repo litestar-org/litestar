@@ -20,7 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import AsyncIterator, Type
+from typing_extensions import AsyncIterator, Type, runtime_checkable
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response
@@ -31,12 +31,12 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
-EXCEPTION_HANDLER = Callable[
-    [Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
-]
-ENDPOINT_HANDLER = Callable[[Request], Awaitable[Union[Response, StarletteResponse]]]
+ExceptionHandler = Callable[[Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]]
+EndpointHandler = Callable[[Request], Awaitable[Union[Response, StarletteResponse]]]
+Guard = Union[Callable[[Request], Awaitable[None]], Callable[[Request], None]]
 
 
+@runtime_checkable
 class MiddlewareProtocol(Protocol):
     def __init__(self, app: ASGIApp):  # pragma: no cover  # pylint: disable=super-init-not-called
         ...

@@ -1,5 +1,6 @@
 # flake8: noqa
 from .app import Starlite
+from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
 from .enums import HttpMethod, MediaType, RequestEncodingType
 from .exceptions import HTTPException, ImproperlyConfiguredException, StarLiteException
@@ -14,6 +15,8 @@ from .testing import create_test_client, create_test_request
 from .types import File, Partial, Redirect, Stream
 
 __all__ = [
+    "OpenAPIConfig",
+    "CORSConfig",
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
     "Body",

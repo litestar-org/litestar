@@ -6,8 +6,8 @@ from orjson import loads
 from starlette.status import HTTP_200_OK
 
 from starlite import Starlite, create_test_client
+from starlite.config import OpenAPIConfig
 from starlite.enums import OpenAPIMediaType
-from starlite.openapi.config import OpenAPIConfig
 from tests.openapi.utils import PersonController, PetController
 
 

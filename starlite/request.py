@@ -173,6 +173,12 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     and parsing the RouteHandler stored as an attribute on it.
     """
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
+
+    for guard in route_handler.resolve_guards():
+        result = guard(request)
+        if isawaitable(result):
+            await result
+
     endpoint = cast(AnyCallable, route_handler.fn)
 
     if isinstance(route_handler.owner, Controller):
