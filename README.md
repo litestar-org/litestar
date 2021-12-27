@@ -156,10 +156,9 @@ has a different design, different project goals and a completely different codeb
 - [x] support for pydantic models and pydantic dataclasses
 - [x] support for vanilla python dataclasses
 - [x] extended testing support
+- [x] built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
+- [x] route guards
 - [ ] detailed documentation
-- [ ] built-in redoc based OpenAPI UI
-- [ ] request interceptors
-- [ ] route guards
 - [ ] schemathesis integration
 
 ### Contributing
