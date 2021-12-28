@@ -12,7 +12,6 @@ from starlite import HttpMethod, route
 @route(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
-
 ```
 
 What route does is wrap the given function or class method and replace it with an instance of the class `RouteHandler`.
@@ -25,7 +24,6 @@ from starlite import HttpMethod, RouteHandler
 @RouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
-
 ```
 
 !!! important
@@ -156,7 +154,7 @@ def my_request_handler(
     request: Request,
     headers: Dict[str, Any],
     query: Dict[str, Any],
-    cookies: Dict[str, Any]
+    cookies: Dict[str, Any],
 ) -> None:
-  ...
+    ...
 ```

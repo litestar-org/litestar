@@ -28,7 +28,9 @@ from my_app.models import User
 
 
 @post(path="/user")
-async def create_user(data: User = Body(title="Create User", description="Create a new user.")) -> User:
+async def create_user(
+    data: User = Body(title="Create User", description="Create a new user.")
+) -> User:
     ...
 ```
 
@@ -77,7 +79,9 @@ from my_app.models import User
 
 
 @post(path="/user")
-async def create_user(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
+async def create_user(
+    data: User = Body(media_type=RequestEncodingType.URL_ENCODED),
+) -> User:
     ...
 ```
 
@@ -99,7 +103,9 @@ from starlite import Body, post, RequestEncodingType
 
 
 @post(path="/file-upload")
-async def handle_file_upload(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+async def handle_file_upload(
+    data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART),
+) -> None:
     ...
 ```
 
@@ -127,7 +133,9 @@ from my_app.models import FormData
 
 
 @post(path="/file-upload")
-async def handle_file_upload(data: FormData = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+async def handle_file_upload(
+    data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
+) -> None:
     ...
 ```
 
@@ -141,7 +149,9 @@ from typing import Dict
 
 
 @post(path="/file-upload")
-async def handle_file_upload(data: Dict[str, UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+async def handle_file_upload(
+    data: Dict[str, UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)
+) -> None:
     ...
 ```
 
@@ -154,6 +164,8 @@ from typing import List
 
 
 @post(path="/file-upload")
-async def handle_file_upload(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+async def handle_file_upload(
+    data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
+) -> None:
     ...
 ```

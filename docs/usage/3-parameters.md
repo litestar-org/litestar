@@ -63,14 +63,16 @@ from my_app.models import Version
 
 
 @get(path="/versions/{version:int}")
-def get_product_version(version: int = Parameter(
-    ge=1,
-    le=10,
-    title="Available Product Versions",
-    description="Get a specific specification version spec from the available specs",
-    examples=[Example(value=1)],
-    external_docs="https://mywebsite.com/documentation/product#versions",
-)) -> Version:
+def get_product_version(
+    version: int = Parameter(
+        ge=1,
+        le=10,
+        title="Available Product Versions",
+        description="Get a specific specification version spec from the available specs",
+        examples=[Example(value=1)],
+        external_docs="https://mywebsite.com/documentation/product#versions",
+    )
+) -> Version:
     ...
 ```
 
@@ -93,11 +95,11 @@ from my_app.models import Order
 
 @get(path="/orders")
 def get_orders(
-        page: int,
-        brands: List[str],
-        page_size: int = 10,
-        from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None
+    page: int,
+    brands: List[str],
+    page_size: int = 10,
+    from_date: Optional[datetime] = None,
+    to_date: Optional[datetime] = None,
 ) -> List[Order]:
     ...
 ```
@@ -130,11 +132,11 @@ from my_app.models import Order
 
 @get(path="/orders")
 def get_orders(
-        page: int,
-        brands: List[str],
-        pageSize: int = 10,
-        fromDate: Optional[datetime] = None,
-        toDate: Optional[datetime] = None
+    page: int,
+    brands: List[str],
+    pageSize: int = 10,
+    fromDate: Optional[datetime] = None,
+    toDate: Optional[datetime] = None,
 ) -> List[Order]:
     ...
 ```
@@ -152,11 +154,11 @@ from my_app.models import Order
 
 @get(path="/orders")
 def get_orders(
-        page: int,
-        page_size: int = Parameter(query="pageSize", gt=0, le=100),
-        brands: List[str] = Parameter(min_items=2, max_items=5),
-        from_Date: Optional[datetime] = Parameter(query="fromDate"),
-        to_date: Optional[datetime] = Parameter(query="fromDate")
+    page: int,
+    page_size: int = Parameter(query="pageSize", gt=0, le=100),
+    brands: List[str] = Parameter(min_items=2, max_items=5),
+    from_Date: Optional[datetime] = Parameter(query="fromDate"),
+    to_date: Optional[datetime] = Parameter(query="fromDate"),
 ) -> List[Order]:
     ...
 ```
@@ -177,8 +179,8 @@ from my_app.models import User
 
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
-        user_id: UUID4,
-        token: Parameter(header="X-API-KEY"),
+    user_id: UUID4,
+    token: Parameter(header="X-API-KEY"),
 ) -> User:
     ...
 ```
@@ -194,8 +196,8 @@ from my_app.models import User
 
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
-        user_id: UUID4,
-        cookie: Parameter(cookie="my-cookie-param"),
+    user_id: UUID4,
+    cookie: Parameter(cookie="my-cookie-param"),
 ) -> User:
     ...
 ```

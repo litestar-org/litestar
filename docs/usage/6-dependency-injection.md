@@ -31,29 +31,32 @@ from my_app.dependencies import bool_fn, dict_fn, int_fn, list_fn
 class MyController(Controller):
     path = "/controller"
     # on the controller
-    dependencies = {
-        "controller_dependency": Provide(list_fn)
-    }
+    dependencies = {"controller_dependency": Provide(list_fn)}
 
     # on the route handler
-    @get(path="/handler", dependencies={
-        "local_dependency": Provide(int_fn)
-    })
-    def my_route_handler(self,
-         app_dependency: bool,
-         router_dependency: dict,
-         controller_dependency: list,
-         local_dependency: int
-     ) -> None:
+    @get(path="/handler", dependencies={"local_dependency": Provide(int_fn)})
+    def my_route_handler(
+        self,
+        app_dependency: bool,
+        router_dependency: dict,
+        controller_dependency: list,
+        local_dependency: int,
+    ) -> None:
         ...
 
     # on the router
 
 
-my_router = Router(path="/router", dependencies={"router_dependency": Provide(dict_fn)}, route_handlers=[MyController])
+my_router = Router(
+    path="/router",
+    dependencies={"router_dependency": Provide(dict_fn)},
+    route_handlers=[MyController],
+)
 
 # on the app
-app = Starlite(route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)})
+app = Starlite(
+    route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
+)
 ```
 
 In the above example, the route handler function `my_route_handler` has four different dependencies injected into it as
@@ -148,16 +151,13 @@ from my_app.dependencies import bool_fn, dict_fn
 class MyController(Controller):
     path = "/controller"
     # on the controller
-    dependencies = {
-        "some_dependency": Provide(dict_fn)
-    }
+    dependencies = {"some_dependency": Provide(dict_fn)}
 
     # on the route handler
-    @get(path="/handler", dependencies={
-        "some_dependency": Provide(bool_fn)
-    })
-    def my_route_handler(self,
-         some_dependency: bool,
+    @get(path="/handler", dependencies={"some_dependency": Provide(bool_fn)})
+    def my_route_handler(
+        self,
+        some_dependency: bool,
     ) -> None:
         ...
 ```

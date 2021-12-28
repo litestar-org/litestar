@@ -31,7 +31,6 @@ from my_api.db import ResourceRepository
 async def retrieve_resource(resource_id: int) -> Resource:
     resource = await ResourceRepository.find(id=resource_id)
     return resource
-
 ```
 
 When the `retrieve_resource` handler is called and returns, Starlite will use the return value to create a `Response`
@@ -55,7 +54,6 @@ from my_api.db import ResourceRepository
 async def retrieve_resource(resource_id: int) -> Resource:
     resource = await ResourceRepository.find(id=resource_id)
     return resource
-
 ```
 
 Setting the `status_code` kwarg is optional for _delete_, _get_, _patch_, _post_ and _put_ decorators, and also for
@@ -183,7 +181,10 @@ from starlite import get, File
 
 @get(path="/file-download")
 def handle_file_download() -> File:
-    return File(path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"), filename="repost.pdf")
+    return File(
+        path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
+        filename="repost.pdf",
+    )
 ```
 
 The File class expects two kwargs:
@@ -208,7 +209,10 @@ from starlite import get, File
 
 @get(path="/file-download", media_type="application/pdf")
 def handle_file_download() -> File:
-    return File(path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"), filename="repost.pdf")
+    return File(
+        path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
+        filename="repost.pdf",
+    )
 ```
 
 ### Streaming Responses
@@ -255,7 +259,6 @@ class MyDocument(Document):
     name = Keyword()
     level = Integer()
     type = Keyword()
-
 ```
 
 It would be best if we had a generic response class that was able to handle all `Document` subclasses. Luckily,
@@ -287,7 +290,6 @@ from my_app.responses import DocumentResponse
 @get(path="/document", response_class=DocumentResponse)
 def get_document() -> Document:
     ...
-
 ```
 
 You can specify the response class to use at all levels of your application. On specific route handlers, as above, on a
@@ -328,7 +330,7 @@ from starlette.responses import Response
 
 @get(path="/")
 def my_route_handler() -> Response:
-  return Response(...)
+    return Response(...)
 ```
 
 OR
@@ -339,7 +341,7 @@ from starlite import get, Response
 
 @get(path="/")
 def my_route_handler() -> Response:
-  return Response(...)
+    return Response(...)
 ```
 
 !!! important
