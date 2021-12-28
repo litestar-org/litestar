@@ -158,4 +158,4 @@ has a different design, different project goals and a completely different codeb
 
 Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](./contributing.md).
+see [the contribution guide](CONTRIBUTING.md).
