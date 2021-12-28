@@ -109,7 +109,7 @@ going to use this must declare this path parameter in its path.
 
 Thus, our `UserController` has a method that does exactly that:
 
-```python title="my_app/user/controller.py
+```python title="my_app/user/controller.py"
 from starlite import Controller, get
 
 from my_app.models import User
