@@ -27,13 +27,13 @@ pip install starlite
 
 OR
 
-```shell
+```sh
 poetry add starlite
 ```
 
 OR
 
-```shell
+```sh
 pipenv install starlite
 ```
 
@@ -41,9 +41,7 @@ pipenv install starlite
 
 Define your data model using pydantic or any library based on it (see for example ormar, beanie, SQLModel etc.):
 
-```python
-# my_app/models/user.py
-
+```python title="my_app/models/user.py"
 from pydantic import BaseModel, UUID4
 
 
@@ -55,13 +53,11 @@ class User(BaseModel):
 
 You can alternatively use a dataclass, either the standard library one or the one from pydantic:
 
-```python
-# my_app/models/user.py
+```python title="my_app/models/user.py"
 from uuid import UUID
 
 # from pydantic.dataclasses import dataclass
 from dataclasses import dataclass
-
 
 @dataclass
 class User:
@@ -72,8 +68,7 @@ class User:
 
 Define a Controller for your data model:
 
-```python
-# my_app/controllers/user.py
+```python title="my_app/controllers/user.py"
 from pydantic import UUID4
 from starlite.controller import Controller
 from starlite.handlers import get, post, put, patch, delete
@@ -113,9 +108,7 @@ class UserController(Controller):
 
 Import your controller into your application's entry-point and pass it to Starlite when instantiating your app:
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite
 
 from my_app.controllers.user import UserController
@@ -123,13 +116,13 @@ from my_app.controllers.user import UserController
 app = Starlite(route_handlers=[UserController])
 ```
 
-To run you application, use an ASGI server such as uvicorn:
+To run you application, use an ASGI server such as [uvicorn](https://www.uvicorn.org/):
 
 ```shell
 uvicorn my_app.main:app --reload
 ```
 
-## Project and Status
+## Project and Roadmap
 
 This project builds on top the Starlette ASGI toolkit and pydantic modelling to create a higher-order opinionated
 framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
@@ -165,4 +158,4 @@ has a different design, different project goals and a completely different codeb
 
 Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.md).
+see [the contribution guide](./contributing.md).
