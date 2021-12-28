@@ -107,8 +107,7 @@ async def handle_file_upload(data: UploadFile = Body(media_type=RequestEncodingT
 
 To access multiple files with known filenames, you can use a pydantic model:
 
-```python
-# my_app/models.py
+```python title="my_app/models.py"
 from pydantic import BaseModel
 from starlette.datastructures import UploadFile
 

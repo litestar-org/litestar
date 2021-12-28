@@ -6,9 +6,7 @@ code will be placed in a file called `main.py` at the project's source folder ro
 Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
 or [route_handlers](2-route-handlers.md):
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite, get
 
 
@@ -32,13 +30,20 @@ You can additionally pass the following kwargs to the Starlite constructor:
   see [life-cycle](#lifecycle).
 * `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown,
   see [life-cycle](#lifecycle).
-* `middleware`: a list of starlette `Middleware` instances or classes extending `BaseHTTPMiddleware`.
+* `middleware`: a list of classes adhereing to Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware` class, or subclasses of the Starlette `BaseHTTPMiddleware` class.
   See [middleware](8-middleware.md).
 * `exception_handlers`: a dictionary mapping exceptions or exception codes to callables.
   See [exception-handlers](7-exceptions.md).
 * `dependencies`: a dictionary mapping string keys to dependencies.
   See [dependency-injection](6-dependency-injection.md).
-* `response_headers`: A dictionary of `ResponseHeader` instances.
+* `response_headers`: A dictionary of `ResponseHeader` instances. See:
+* `guards`: A list of callables. See:
+* `response_class`: A custom response class to be used as the app default. See:
+* `allowed_hosts`: A list of host strings
+* `cory_config`: An instance of `starlite.config.CORSConfig`
+* `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config. See:
+* `redirect_slashes`: A boolean flag... Defaults to `True`.
+
 
 ## Lifecycle
 
@@ -52,9 +57,7 @@ lets assume we create establish a connection to a Postgres DB using the async en
 from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html). We might thus create two functions,
 one to get or create the connection, and another to close it:
 
-```python
-# my_app/postgres.py
-
+```python title="my_app/postgres.py"
 from os import environ
 from typing import cast
 
@@ -82,9 +85,7 @@ async def close_postgres_connection():
 
 We now simply need to pass these to the Starlite init method to ensure these are called correctly:
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite
 
 from my_app.postgres import get_postgres_connection, close_postgres_connection
@@ -98,9 +99,7 @@ Another thing most applications will need to set up as part of startup is loggin
 does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
 can use like so:
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite, LoggingConfig
 
 my_app_logging_config = LoggingConfig(
