@@ -8,9 +8,7 @@ default values.
 For example, lets assume we have a model named `Resource` which we persist using some orm abstracted into a repository
 pattern:
 
-```python
-# my_api/models/resource.py
-
+```python title="my_api/models/resource.py"
 from pydantic import BaseModel
 
 
@@ -195,10 +193,13 @@ The File class expects two kwargs:
   response [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
   attachment.
 
-**Important Note**: When a route handler's return value is annotated with `File`, the default `media_type` for the
-route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-the value for `media_type` instead. For example:
+!!! important
+    When a route handler's return value is annotated with `File`, the default `media_type` for the
+    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+    the value for `media_type` instead.
+
+For example:
 
 ```python
 from pathlib import Path
@@ -234,7 +235,7 @@ def stream_time() -> Stream:
 
 The Stream class receives a single required kwarg - `iterator`, which should be either a sync or an async iterator.
 
-## Customizing Re Response Objects
+## Customizing Response Objects
 
 You can also return an instance of any Starlette response class or a subclass of it directly from a route handler. You
 should do this only if you have a use case for these specific response types and otherwise
@@ -341,4 +342,9 @@ def my_route_handler() -> Response:
   return Response(...)
 ```
 
-**Important Note**: If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+!!! important
+    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+
+## Response Headers
+
+WIP

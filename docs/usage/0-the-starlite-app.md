@@ -6,9 +6,7 @@ code will be placed in a file called `main.py` at the project's source folder ro
 Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
 or [route_handlers](2-route-handlers.md):
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite, get
 
 
@@ -26,19 +24,20 @@ full details.
 
 You can additionally pass the following kwargs to the Starlite constructor:
 
-* `debug`: a boolean flag toggling debug mode on and off, if True 404 errors will be rendered as HTML with a stack
-  trace. This option should *not* be used in production. Default: `False`.
-* `on_startup`: a list of sync and/or async callables that are called during the application startup,
-  see [life-cycle](#lifecycle).
-* `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown,
-  see [life-cycle](#lifecycle).
-* `middleware`: a list of starlette `Middleware` instances or classes extending `BaseHTTPMiddleware`.
-  See [middleware](8-middleware.md).
-* `exception_handlers`: a dictionary mapping exceptions or exception codes to callables.
-  See [exception-handlers](7-exceptions.md).
-* `dependencies`: a dictionary mapping string keys to dependencies.
-  See [dependency-injection](6-dependency-injection.md).
-* `response_headers`: A dictionary of `ResponseHeader` instances.
+* `allowed_hosts`: A list of allowed hosts. If set this enables the AllowedHostsMiddleware. See [middleware](#middleware).
+* `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the CORS middleware. See [middleware](#middleware).
+* `debug`: a boolean flag toggling debug mode on and off, if True 404 errors will be rendered as HTML with a stack trace. This option should *not* be used in production. Default to `False`.
+* `dependencies`: a dictionary mapping string keys to dependencies. See [dependency-injection](6-dependency-injection.md).
+* `exception_handlers`: a dictionary mapping exceptions or exception codes to callables. See [exception-handlers](#exception-handling).
+* `guards`: A list of callables. See:
+* `middleware`: a list of classes adhering to Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware` class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](#middleware).
+* `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown. See [life-cycle](#lifecycle).
+* `on_startup`: a list of sync and/or async callables that are called during the application startup. See [life-cycle](#lifecycle).
+* `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config. See [open-api](8-openapi.md).
+* `redirect_slashes`: A boolean flag dictating whether to redirect urls ending with a trailing slash to urls without a trailing slash if no match is found. Defaults to `True`.
+* `response_class`: A custom response class to be used as the app default. See [using-custom-responses](5-responses.md#using-custom-responses).
+* `response_headers`: A dictionary of `ResponseHeader` instances. See: [response-headers](5-responses.md#response-headers).
+
 
 ## Lifecycle
 
@@ -52,9 +51,7 @@ lets assume we create establish a connection to a Postgres DB using the async en
 from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html). We might thus create two functions,
 one to get or create the connection, and another to close it:
 
-```python
-# my_app/postgres.py
-
+```python title="my_app/postgres.py"
 from os import environ
 from typing import cast
 
@@ -82,9 +79,7 @@ async def close_postgres_connection():
 
 We now simply need to pass these to the Starlite init method to ensure these are called correctly:
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite
 
 from my_app.postgres import get_postgres_connection, close_postgres_connection
@@ -98,9 +93,7 @@ Another thing most applications will need to set up as part of startup is loggin
 does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
 can use like so:
 
-```python
-# my_app/main.py
-
+```python title="my_app/main.py"
 from starlite import Starlite, LoggingConfig
 
 my_app_logging_config = LoggingConfig(
@@ -123,3 +116,11 @@ console handler, which will emit logging messages to _sys.stderr_.
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
 setup up logging - then the on_startup hook is a good place to do so.
+
+## Exception Handling
+
+WIP
+
+## Middleware
+
+WIP

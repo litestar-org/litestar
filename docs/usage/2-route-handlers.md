@@ -28,9 +28,10 @@ def my_endpoint() -> None:
 
 ```
 
-⚠️ **Important**: A function decorated by `route` or any of the other decorators discussed below **must** have an
-annotated return value, even if the return value is `None` as in the above example. This limitation is enforced to
-ensure consistent schema generation, as well as stronger typing.
+!!! important
+    A function decorated by `route` or any of the other decorators discussed below **must** have an
+    annotated return value, even if the return value is `None` as in the above example. This limitation is enforced to
+    ensure consistent schema generation, as well as stronger typing.
 
 The `route` decorator accepts the following required kwargs -
 
@@ -147,16 +148,15 @@ For example:
 
 ```python
 from typing import Any, Dict
-from starlette.requests import Request
-from starlite import get
+from starlite import get, Request
 
 
 @get(path="/")
 def my_request_handler(
-        request: Request,
-        headers: Dict[str, Any],
-        query: Dict[str, Any],
-        cookies: Dict[str, Any]
+    request: Request,
+    headers: Dict[str, Any],
+    query: Dict[str, Any],
+    cookies: Dict[str, Any]
 ) -> None:
   ...
 ```

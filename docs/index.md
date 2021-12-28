@@ -1,4 +1,4 @@
-<img alt="Starlite logo" src="./starlite-logo.svg" width=100%, height="auto">
+<img alt="Starlite logo" src="./images/starlite-logo.svg" width=100%, height="auto">
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
@@ -158,4 +158,4 @@ has a different design, different project goals and a completely different codeb
 
 Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.md).
+see [the contribution guide](./contributing.md).

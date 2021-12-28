@@ -5,8 +5,7 @@ components that make this simple to achieve - `Router` and `Controller`.
 
 ## Controllers
 
-```python
-# my_app/orders/controllers/user_order_controller.py
+```python title="my_app/orders/controllers/user_order_controller.py"
 from pydantic import UUID4
 from starlite.controller import Controller
 from starlite.handlers import get, post, patch, delete
@@ -52,8 +51,7 @@ Aside from the `path` class variable, which **must** be set, you can also set th
 
 ## Routers
 
-```python
-# my_app/order/router.py
+```python title="my_app/order/router.py"
 from starlite import Router
 
 from my_app.order.controllers import UserOrderController, PartnerOrderController
@@ -80,7 +78,7 @@ Aside from `path` and `route_handlers` which are required kwargs, you can also p
 At the root of every Starlite application there is an instance of Starlite, on which the root level controllers, routers
 and/or router-handlers are registered, for example:
 
-```python
+```python title="my_app/main.py"
 from starlite import get, Starlite
 
 from users import UserController
@@ -102,8 +100,7 @@ on `/users`.
 To handle more complex path schemas you should use routers, which can register Controllers, individual functions but
 also other routers:
 
-```python
-# my_app/order/router.py
+```python title="my_app/order/router.py"
 from starlite import Router
 
 from my_app.order.controllers import UserOrderController, PartnerOrderController
@@ -121,8 +118,7 @@ You can nest routers as you see fit - but be aware that once a router has been r
 Finally, you should note that you can register a controller on different routers, the same way you can register
 individual functions:
 
-```python
-# my_app/users/router.py
+```python title="my_app/users/router.py"
 from starlite import Router
 
 from my_app.user.controllers import UserController

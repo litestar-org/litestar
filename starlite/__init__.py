@@ -10,6 +10,7 @@ from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .provide import Provide
+from .request import Request
 from .response import Response
 from .routing import Route, Router
 from .testing import create_test_client, create_test_request
@@ -40,6 +41,7 @@ __all__ = [
     "Provide",
     "put",
     "Redirect",
+    "Request",
     "RequestEncodingType",
     "Response",
     "Route",
