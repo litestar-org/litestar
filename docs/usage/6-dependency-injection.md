@@ -62,18 +62,18 @@ app = Starlite(
 In the above example, the route handler function `my_route_handler` has four different dependencies injected into it as
 kwargs.
 
-## DI Pre-requisites and Scope
+## Pre-requisites and Scope
 
 The pre-requisites for dependency injection are these:
 
-1. dependencies must be callables (sync or async functions or methods).
+1. dependencies must be callables (sync or async).
 2. dependencies can receive kwargs and a `self` arg but not other args.
 3. the kwarg name and the dependency key must be identical.
 4. the dependency must be declared using the `Provide` class.
 5. the dependency must be in the _scope_ of the handler function.
 
 What is _scope_ in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
-above example, the `local_dependency` can only be accessed within the specific router handler for which it was declared;
+above example, the `local_dependency` can only be accessed within the specific route handler on which it was declared;
 The `controller_dependency` is available only for route handlers on that specific controller; And the router
 dependencies are available only to the route handlers registered on that particular router. Only the `app_dependencies`
 are available to all route handlers.
@@ -96,18 +96,17 @@ from pydantic import UUID4
 from my_app.models import User
 
 async def authenticate_user(
-    user_id: UUID4, # path parameter
+    user_id: UUID4, # query or path parameter
     bearer_token: Parameter(header="Authorization"),  # header parameter
     raises=[NotAuthorizedException]
 ) -> User:
     ...
 ```
 
-As you can see above, the authenticate_user method is in effect expecting a path parameter called `user_id` and a header
-parameter called `bearer_token` to be injected to it from the request. This means that whatever function or method is
-going to use this must declare this path parameter in its path.
+As you can see above, the `authenticate_use`r method is expecting a query or path parameter called `user_id` and a header
+parameter called `bearer_token` to be injected to it from the request.
 
-Thus, our `UserController` has a method that does exactly that:
+Although `user_id` can be either a query parameter or a path parameter, in our `UserController` its declared as a path_parameter:
 
 ```python title="my_app/user/controller.py"
 from starlite import Controller, get
@@ -128,6 +127,7 @@ level:
 
 ```python title="my_app/main.py"
 from starlite import Starlite, Provide
+
 
 from my_app.dependencies import authenticate_user
 from my_app.user import UserController
@@ -163,14 +163,17 @@ class MyController(Controller):
 ```
 
 As you can see in the above - the lower scoped route handler function declares a dependency with the same key as the one
-declared on the higher scoped controller. The lowest scoped dependency therefore overrides the higher scoped one. This
+declared on the higher scoped controller. The lower scoped dependency therefore overrides the higher scoped one. This
 logic applies on all layers.
 
 ## The Provide Class
 
-Provide is a simple wrapper around the callable. You can pass to it a single kwarg - `use_cache`. By default `Provide`
-will not cache the return value of the dependency, that is - it will execute it on every call. If `use_cache` is used it
-will cache the return value on the first execution and will not call it again - there is no sophisticated comparison on
-kwargs or other elements happening, so you should be careful when you choose to use this option. Whats the use case for
-this? If you have a dependency that should either not be called multiple times, or which has a constant return value
-then this is useful.
+`Provide` is a simple wrapper that takes a callable as a required arg, and an optional kwarg - `use_cache`.
+
+By default `Provide` will not cache the return value of the dependency and it will be executed on every call to the route handler that uses it. If `use_cache` is `True`, it
+will cache the return value on the first execution and will not call it again.
+
+!!! important
+    The caching done inside `Provide` is very simple - it stores the return value and returns it.
+    There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
+    you choose to use this option.

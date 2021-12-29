@@ -27,10 +27,6 @@ repos:
     rev: v1.12.0
     hooks:
       - id: blacken-docs
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v2.5.1"
-    hooks:
-      - id: prettier
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.1
     hooks:

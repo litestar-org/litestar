@@ -1,12 +1,11 @@
 # Responses
 
 When you return a value from a route handler function, Starlite takes the value and passes it to the constructor of the
-Starlite `Response` class (_starlite.response.Response_), as the response's `content` kwarg. It also sets the
+Starlite `Response` class (`starlite.response.Response`), as the response's `content` kwarg. It also sets the
 response's `status_code` and `media_type` kwargs based on either what was defined in the route handler decorator or
 default values.
 
-For example, lets assume we have a model named `Resource` which we persist using some orm abstracted into a repository
-pattern:
+For example, lets assume we have a model named `Resource` which we persist using some orm abstracted into a repository:
 
 ```python title="my_api/models/resource.py"
 from pydantic import BaseModel
@@ -17,8 +16,8 @@ class Resource(BaseModel):
     name: str
 ```
 
-We have a route handler that takes a `resource_id` kwarg, passed as a path parameter, which retrieves the persisted
-instance. After which the value is returned from the route handler function:
+We have a route handler that takes a `resource_id` kwarg, passed as a path parameter, which is then used to retrieve the persisted
+resource from the DB:
 
 ```python
 from starlite import get
@@ -29,12 +28,10 @@ from my_api.db import ResourceRepository
 
 @get(path="/resources/{resource_id:int}")
 async def retrieve_resource(resource_id: int) -> Resource:
-    resource = await ResourceRepository.find(id=resource_id)
-    return resource
+    return await ResourceRepository.find(id=resource_id)
 ```
 
-When the `retrieve_resource` handler is called and returns, Starlite will use the return value to create a `Response`
-with a `status_code` of `HTTP_200_OK`, which is the default for GET, and a `media_type` of `MediaType.JSON`, which is
+Once the `retrieve_resource` handler returns, Starlite will use the return value to create a `Response` instance. The `status_code` of the response will be `HTTP_200_OK`, which is the default for GET, and a `media_type` of `MediaType.JSON`, which is
 the default media type. As a result the return value, which is a pydantic model, will be serialized into JSON, and the
 response's _Content-Type_ header will be set to "application/json".
 
@@ -70,21 +67,29 @@ passed or an exception will be raised.
 Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
 data. This though might not be the case in your implementation - so take care of setting it as you see fit.
 
+!!! tip
+    While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
+    its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
+    exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus` enum from the standard library, which also offers extra functionality. For this see [the official docs](https://docs.python.org/3/library/http.html#http.HTTPStatus).
+
 ## Media Type
 
-As mentioned above, the default media type is `MediaType.JSON`. `MediaType` here is a Starlite enum which is used for
-convenience - you can pass a string value as well but should ensure that it is a legitimate value according to the
-receiver / OpenAPI specs. This enum has 3 members, each correlating with a specific `Content-Type` header:
+As previously mentioned, the default media type is `MediaType.JSON`, which translates into a response with
+the "Content-Type" header of `application/json`.
 
-- MediaType.JSON: application/json
-- MediaType.TEXT: text/plain
-- MediaType.HTML: text/html
+`MediaType` here is a Starlite enum (`starlite.enums.MediaType`) which is used for convenience - you can pass a
+string value as well but should ensure that it is a legitimate value according to the receiver / OpenAPI specs.
+This enum has 3 members, each correlating with a specific `Content-Type` header:
 
-The return value of the handler should correlate with the correct _media_type_ (see below):
+- MediaType.JSON: `application/json`
+- MediaType.TEXT: `text/plain`
+- MediaType.HTML: `text/html`
+
+The return value of the handler should correlate with the `media_type` of the function (see below).
 
 ### Text Responses
 
-For `MediaType.TEXT`, route handlers should return a value of type **string** or **bytes**:
+For `MediaType.TEXT`, route handlers should return a **string** or **bytes** value:
 
 ```python
 from starlite import get, MediaType
@@ -97,7 +102,7 @@ def health_check() -> str:
 
 ### HTML Responses
 
-For `MediaType.HTML`, route handlers should return a value of type **string** or **bytes** that contains HTML:
+For `MediaType.HTML`, route handlers should return a **string** or **bytes** value that contains HTML:
 
 ```python
 from starlite import get, MediaType
@@ -116,12 +121,13 @@ def health_check() -> str:
     """
 ```
 
-Note: It's a good idea to use a templating engine for more complex HTML responses and to write the template itself in a
-separate file rather than a string.
+!!! tip
+    It's a good idea to use a templating engine for more complex HTML responses and to write the template itself in a
+    separate file rather than a string.
 
 ### JSON Responses
 
-As previously mentioned, the default _media_type_ is `MediaType.JSON`, which supports the following values:
+As previously mentioned, the default `media_type` is `MediaType.JSON`.  which supports the following values:
 
 - dictionaries
 - dataclasses from the standard library
@@ -149,7 +155,9 @@ special wrapper classes.
 ### Redirect Responses
 
 Redirect responses are [special HTTP responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections) with a
-status code in the 30x range. In Starlite, a redirect response looks like this:
+status code in the 30x range.
+
+In Starlite, a redirect response looks like this:
 
 ```python
 from starlette.status import HTTP_307_TEMPORARY_REDIRECT
@@ -195,10 +203,10 @@ The File class expects two kwargs:
   attachment.
 
 !!! important
-When a route handler's return value is annotated with `File`, the default `media_type` for the
-route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-the value for `media_type` instead.
+    When a route handler's return value is annotated with `File`, the default `media_type` for the
+    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+    the value for `media_type` instead.
 
 For example:
 
@@ -238,11 +246,6 @@ def stream_time() -> Stream:
 ```
 
 The Stream class receives a single required kwarg - `iterator`, which should be either a sync or an async iterator.
-
-## Customizing Response Objects
-
-You can also return an instance of any Starlette response class or a subclass of it directly from a route handler. You
-should do this only if you have a use case for these specific response types and otherwise
 
 ## Using Custom Responses
 
@@ -292,8 +295,8 @@ def get_document() -> Document:
     ...
 ```
 
-You can specify the response class to use at all levels of your application. On specific route handlers, as above, on a
-Controller, on Router or even on the app instance itself:
+You can specify the response class to use at all levels of your application. On specific route handlers, on a
+ controller, a router even on the app instance itself:
 
 ```python
 from starlite import Controller, Starlite, Router
@@ -316,7 +319,7 @@ my_app = Starlite(route_handlers=[...], response_class=DocumentResponse)
 
 When you specify a response_class in multiple places, the closest layer to the response handler will take precedence.
 That is, the `response_class` specified on the route handler takes precedence over the one specified on the controller
-or router, which in turn take precedence over the one specified on the app level. You can therefore easily override
+or router, which will in turn take precedence over the one specified on the app level. You can therefore easily override
 response classes as needed.
 
 ## Returning Responses Directly

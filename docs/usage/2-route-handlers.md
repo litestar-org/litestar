@@ -27,15 +27,15 @@ def my_endpoint() -> None:
 ```
 
 !!! important
-A function decorated by `route` or any of the other decorators discussed below **must** have an
-annotated return value, even if the return value is `None` as in the above example. This limitation is enforced to
-ensure consistent schema generation, as well as stronger typing.
+    A function decorated by `route` or any of the other route handler decorator **must** have an
+    annotated return value, even if the return value is `None` as in the above example. This limitation is enforced to
+    ensure consistent schema generation, as well as stronger typing.
 
 The `route` decorator accepts the following required kwargs -
 
 - `path` (**required**) - a path string, with or without [path parameters](#path-parameters).
 - `http_method` (**required**) - a member of the enum `starlite.enums.HttpMethod` or a list of members,
-  e.g. `HttpMethod.GET` or `[HttpMethod.Patch, HttpMethod.Put]`.
+  e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
 
 Additionally, you can pass the following optional kwargs:
 
@@ -44,10 +44,10 @@ Additionally, you can pass the following optional kwargs:
   in which case you must specify a value or an exception will be raised.
 - `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
   response. Defaults to `MediaType.JSON`. See [media-type](5-responses.md#media-type).
-- `response_class`: The response class to use. The value must be a subclass of `starlite.Response`.
-  See [using custom responses](5-responses.md#using-custom-responses).
+- `response_class`: A custom response class to be used as the app default. See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
-- `dependencies`: A dictionary of `Provide` instances. See [dependency-injection](6-dependency-injection.md)
+  See [response-headers](5-responses.md#response-headers).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.
 - `tags`: a list of openapi-pydantic `Tag` models, which correlate to
@@ -74,7 +74,7 @@ verb, which correlates with their name:
 - `post`
 - `put`
 
-These are used exactly like `route` with the sole exception that you cannot configure the `http_method`:
+These are used exactly like `route` with the sole exception that you cannot configure the `http_method` kwarg:
 
 ```python
 from typing import List
@@ -135,18 +135,18 @@ The following sources can be accessed using annotated function kwargs:
 2. [the request body](4-request-body.md)
 3. [dependencies](6-dependency-injection.md)
 
-Additionally, you can specify the following kwargs:
+Additionally, you can specify the following special kwargs:
 
-- `request`: injects the request instance
-- `headers`: injects the request `headers` as a parsed dictionary
-- `query`: injects the request `query_params` as a parsed dictionary
-- `cookies`: injects the request `cookies` as a parsed dictionary
+- `request`: injects the request instance.
+- `headers`: injects the request `headers` as a parsed dictionary.
+- `query`: injects the request `query_params` as a parsed dictionary.
+- `cookies`: injects the request `cookies` as a parsed dictionary.
 
 For example:
 
 ```python
 from typing import Any, Dict
-from starlite import get, Request
+from starlite import Request, get
 
 
 @get(path="/")

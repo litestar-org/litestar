@@ -43,8 +43,9 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has
 the path `/user/{order_id:uuid}"`.
 
-!!! note Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
-then the controller path will be set as their path.
+!!! note
+    Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
+    then the controller path will be set as their path.
 
 Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
 
@@ -120,8 +121,9 @@ base_router = Router(path="/base", route_handlers=[order_router])
 Once `order_router` is registered on `base_router`, the controllers registered on it will be respectively available
 on: "/base/orders/user" and "/base/order/partner" respectively.
 
-!!! important You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
-re-registered or an exception will be raised.
+!!! important
+    You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
+    re-registered or an exception will be raised.
 
 ### Registering Controllers Multiple Times
 
@@ -162,4 +164,6 @@ partner_router = Router(path="/partner", route_handlers=[my_route_handler])
 consumer_router = Router(path="/consumer", route_handlers=[my_route_handler])
 ```
 
-This is possible because the route handler is copied when registered. Thus, each router has its own unique instance of the route handler rather than the same one. Path behaviour is identical to controllers, namely, the route handler function will be accessible in the following paths: "/internal/handler", "/partner/handler" and "/consumer/handler".
+This is possible because the route handler is copied when registered. Thus, each router has its own unique instance of
+the route handler rather than the same one. Path behaviour is identical to controllers, namely, the route handler
+function will be accessible in the following paths: "/internal/handler", "/partner/handler" and "/consumer/handler".
