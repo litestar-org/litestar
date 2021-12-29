@@ -41,6 +41,7 @@ class RouteHandler(BaseModel):
     response_class: Optional[Type[Response]] = None
     response_headers: Optional[Dict[str, ResponseHeader]] = None
     status_code: Optional[int] = None
+    permissions: Optional[List[str]] = None
 
     fn: Optional[AnyCallable] = None
     owner: Optional[Union[Controller, "Router"]] = None
@@ -210,6 +211,10 @@ route = RouteHandler
 
 
 class get(RouteHandler):
+    class Config:
+        arbitrary_types_allowed = True
+        extra = Extra.allow
+
     http_method: Literal[HttpMethod.GET] = Field(default=HttpMethod.GET, const=True)
 
 

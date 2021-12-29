@@ -41,7 +41,7 @@ typing-extensions = "*"
 python-multipart = "*"
 
 [tool.poetry.dev-dependencies]
-hypothesis = {extras = ["cli"], version = "*"}
+hypothesis = { extras = ["cli"], version = "*"}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -62,7 +62,7 @@ profile = "black"
 multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
-disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "invalid-name", "duplicate-code"]
+disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "invalid-name", "duplicate-code", "super-init-not-called"]
 enable = "useless-suppression"
 
 [tool.pylint.REPORTS]

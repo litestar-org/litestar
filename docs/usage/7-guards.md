@@ -1,3 +1,0 @@
-# Guards
-
-WIP

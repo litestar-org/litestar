@@ -1,12 +1,20 @@
+from typing import List
+
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
-from starlite import create_test_client, get
+from starlite import RouteHandler, create_test_client, get
 from starlite.exceptions import PermissionDeniedException
 from starlite.request import Request
 
 
-async def local_guard(request: Request) -> None:
-    if not request.headers.get("super-secret"):
+class User:
+    name: str
+    id: str
+    permissions: List[str]
+
+
+async def local_guard(request: Request[User], route_handler: RouteHandler) -> None:
+    if not any(permission in route_handler.permissions for permission in request.user.permissions):
         raise PermissionDeniedException("local")
 
 

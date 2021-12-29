@@ -188,7 +188,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     params = await get_http_handler_parameters(route_handler=route_handler, request=request)
 
     for guard in route_handler.resolve_guards():
-        result = guard(request)
+        result = guard(request, route_handler)
         if isawaitable(result):
             await result
 

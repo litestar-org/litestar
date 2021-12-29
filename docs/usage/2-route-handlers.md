@@ -62,6 +62,7 @@ Additionally, you can pass the following optional kwargs:
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
   automatically for the schema if any validation is involved.
+- `permissions`: A list of permission names. See [guards](9-guards.md).
 
 ## Semantic Handler Decorators
 

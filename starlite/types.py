@@ -31,20 +31,22 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
+    from starlite.handlers import RouteHandler
     from starlite.request import Request
 else:
     Request = Any
+    RouteHandler = Any
 
 ExceptionHandler = Callable[[Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]]
-Guard = Union[Callable[[Request], Awaitable[None]], Callable[[Request], None]]
+Guard = Union[Callable[[Request, RouteHandler], Awaitable[None]], Callable[[Request, RouteHandler], None]]
 
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: ASGIApp):  # pragma: no cover  # pylint: disable=super-init-not-called
+    def __init__(self, app: ASGIApp):  # pragma: no cover
         ...
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:  # pragma: no cover
         ...
 
 
