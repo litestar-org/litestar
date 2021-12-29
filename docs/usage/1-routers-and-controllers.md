@@ -5,6 +5,11 @@ components that make this simple to achieve - `Router` and `Controller`.
 
 ## Controllers
 
+Controllers are subclasses of the Starlite `Controller` class that are used to organize endpoints under a specific
+sub-path. You can place as many [route handler](2-route-handlers.md) methods on a controller, as long as the combination
+of path+http method is unique. The distinct advantage of using controllers is that they allow both code sharing using
+OOP techniques and make the code better organized by promoting concern based code splitting.
+
 ```python title="my_app/orders/controllers/user_order_controller.py"
 from pydantic import UUID4
 from starlite.controller import Controller
@@ -34,20 +39,21 @@ class UserOrderController(Controller):
         ...
 ```
 
-Controllers are subclasses of the Starlite `Controller` class that are used to logically organize endpoints. You can
-place as many [route handler](2-route-handlers.md) methods on a controller, as long as the combination of path+http
-method is unique.
+The `path` that is defined on the Controller is appended before the path that is defined for the route handlers declared
+on it. Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has
+the path `/user/{order_id:uuid}"`.
 
-The `path` that is defined on the Controller is appended before whatever path is defined for the route handlers on it.
-Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has the
-path `/user/{order_id:uuid}"`.
+!!! note Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
+then the controller path will be set as their path.
 
 Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
 
-* `dependencies`: a list of `Provide` classes that will be available as injectable dependencies for all methods defined
-  on the controller. See [dependency-injection](6-dependency-injection.md) for more details.
-* `response_headers`: a dictionary of `ResponseHeader` instances that will be set for all methods defined on the
-  controller. See [response headers](5-responses.md).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
+- `guards`: A list of callables. See [guards](7-guards.md).
+- `response_class`: A custom response class to be used as the app default.
+  See [using-custom-responses](5-responses.md#using-custom-responses).
+- `response_headers`: A dictionary of `ResponseHeader` instances.
+  See [response-headers](5-responses.md#response-headers).
 
 ## Routers
 
@@ -67,11 +73,12 @@ Assuming that the `UserOrderController` defines a _path_ of "/user" and `Partner
 
 Aside from `path` and `route_handlers` which are required kwargs, you can also pass the following kwargs to Router:
 
-* `dependencies`: a list of `Provide` classes that will be available as injectable dependencies for all methods defined
-  on the controller. See [dependency-injection](6-dependency-injection.md) for more details.
-* `response_headers`: a dictionary of `ResponseHeader` instances that will be set for all methods defined on the
-  controller. See [response headers](5-responses.md).
-* `redirect_slashes`: enables or disables optional trailing slash, defaults to `True`.
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
+- `guards`: A list of callables. See [guards](7-guards.md).
+- `response_class`: A custom response class to be used as the app default.
+  See [using-custom-responses](5-responses.md#using-custom-responses).
+- `response_headers`: A dictionary of `ResponseHeader` instances.
+  See [response-headers](5-responses.md#response-headers).
 
 ## Registering Routes
 
@@ -94,8 +101,8 @@ app = Starlite(route_handlers=[health_check, UserController, order_router])
 ```
 
 The root level components registered on the app have whatever path is defined on them without anything appended to it.
-Thus, the `health_check` function above is available on "/" and the methods of `UserController` are available
-on `/users`.
+Thus, the `health_check` function above is available on "/" and the methods of `UserController` are available on "
+/users".
 
 To handle more complex path schemas you should use routers, which can register Controllers, individual functions but
 also other routers:
@@ -107,16 +114,18 @@ from my_app.order.controllers import UserOrderController, PartnerOrderController
 
 order_router = Router(path="/orders", route_handlers=[UserOrderController, PartnerOrderController])
 
-other_router = Router(path="/base", route_handlers=[order_router])
+base_router = Router(path="/base", route_handlers=[order_router])
 ```
 
-Once `order_router` is registered on `other_router`, the controllers registered on it will be respectively available
-on: "/base/orders/user" and "/base/order/partner".
+Once `order_router` is registered on `base_router`, the controllers registered on it will be respectively available
+on: "/base/orders/user" and "/base/order/partner" respectively.
 
-You can nest routers as you see fit - but be aware that once a router has been registered it cannot be re-registered or an exception will be raised.
+!!! important You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
+re-registered or an exception will be raised.
 
-Finally, you should note that you can register a controller on different routers, the same way you can register
-individual functions:
+### Registering Controllers Multiple Times
+
+Unlike routers, which can only be registered once, the same controller can be registered on different routers:
 
 ```python title="my_app/users/router.py"
 from starlite import Router
@@ -128,6 +137,29 @@ partner_router = Router(path="/partner", route_handlers=[UserController])
 consumer_router = Router(path="/consumer", route_handlers=[UserController])
 ```
 
-In the above pattern the same `UserController` class has been registered on three different routers. Each router
-instance will be available on a different sub-path, e.g. "/internal/users", "/partner/users" and "/consumer/users". This
-is not a problem because the dependencies for each controller instance are isolated.
+In the above, the same `UserController` class has been registered on three different routers. This is possible because
+what is passed to the router is not a class instance but rather the class itself. The router creates its own instance of
+the controller, which ensures encapsulation.
+
+Therefore , in the above example, three different instance of `UserController` will be created, each mounted on a
+different sub-path, e.g. "/internal/users", "/partner/users"
+and "/consumer/users".
+
+### Registering Standalone Route Handlers Multiple Times
+
+You can also register standalone route handler handlers multiple times:
+
+```python title="my_app/users/router.py"
+from starlite import Router, get
+
+
+@get("/handler")
+def my_route_handler() -> None:
+  ...
+
+internal_router = Router(path="/internal", route_handlers=[my_route_handler])
+partner_router = Router(path="/partner", route_handlers=[my_route_handler])
+consumer_router = Router(path="/consumer", route_handlers=[my_route_handler])
+```
+
+This is possible because the route handler is copied when registered. Thus, each router has its own unique instance of the route handler rather than the same one. Path behaviour is identical to controllers, namely, the route handler function will be accessible in the following paths: "/internal/handler", "/partner/handler" and "/consumer/handler".

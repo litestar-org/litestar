@@ -139,7 +139,7 @@ has a different design, different project goals and a completely different codeb
 3. Finally, Python OOP is extremely powerful and versatile. While still allowing for function based endpoints, Starlite
    seeks to build on this by placing class based Controllers at its core.
 
-### Features and roadmap:
+### Features and roadmap
 
 - [x] sync and async API endpoints
 - [x] fast json serialization using [orjson](https://github.com/ijl/orjson)

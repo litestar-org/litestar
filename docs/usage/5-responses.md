@@ -60,9 +60,9 @@ Setting the `status_code` kwarg is optional for _delete_, _get_, _patch_, _post_
 the _route_ decorators when only setting a single `http_method`. If not set by the user, the following defaults will be
 used:
 
-* POST: 201 (Created)
-* DELETE: 204 (No Content)
-* GET, PATCH, PUT: 200 (Ok)
+- POST: 201 (Created)
+- DELETE: 204 (No Content)
+- GET, PATCH, PUT: 200 (Ok)
 
 Please note that when designating a function as a handler for multiple http methods, a `status_code` kwarg must be
 passed or an exception will be raised.
@@ -76,9 +76,9 @@ As mentioned above, the default media type is `MediaType.JSON`. `MediaType` here
 convenience - you can pass a string value as well but should ensure that it is a legitimate value according to the
 receiver / OpenAPI specs. This enum has 3 members, each correlating with a specific `Content-Type` header:
 
-* MediaType.JSON: application/json
-* MediaType.TEXT: text/plain
-* MediaType.HTML: text/html
+- MediaType.JSON: application/json
+- MediaType.TEXT: text/plain
+- MediaType.HTML: text/html
 
 The return value of the handler should correlate with the correct _media_type_ (see below):
 
@@ -123,20 +123,20 @@ separate file rather than a string.
 
 As previously mentioned, the default _media_type_ is `MediaType.JSON`, which supports the following values:
 
-* dictionaries
-* dataclasses from the standard library
-* pydantic dataclasses
-* pydantic models
-* models from libraries that extend pydantic models
-* numpy ndarray
-* lists containing any of the above elements
+- dictionaries
+- dataclasses from the standard library
+- pydantic dataclasses
+- pydantic models
+- models from libraries that extend pydantic models
+- numpy ndarray
+- lists containing any of the above elements
 
 Since Starlite uses the excellent (and super-fast!) [orjson](https://github.com/ijl/orjson#numpy) library to handle
 JSON (also in requests), you can use the following values as part of your responses without issue:
 
-* all UUIDs
-* datetime classes
-* numpy primitives and objects (see [orjson docs](https://github.com/ijl/orjson#numpy))
+- all UUIDs
+- datetime classes
+- numpy primitives and objects (see [orjson docs](https://github.com/ijl/orjson#numpy))
 
 If you need to return other values and would like to extend serialization you can do
 this [using Custom Responses](#using-custom-responses).
@@ -189,16 +189,16 @@ def handle_file_download() -> File:
 
 The File class expects two kwargs:
 
-* `path`: path of the file to download.
-* `filename`: the filename to set in the
+- `path`: path of the file to download.
+- `filename`: the filename to set in the
   response [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
   attachment.
 
 !!! important
-    When a route handler's return value is annotated with `File`, the default `media_type` for the
-    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-    the value for `media_type` instead.
+When a route handler's return value is annotated with `File`, the default `media_type` for the
+route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+the value for `media_type` instead.
 
 For example:
 
@@ -345,7 +345,7 @@ def my_route_handler() -> Response:
 ```
 
 !!! important
-    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 

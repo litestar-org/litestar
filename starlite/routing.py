@@ -152,6 +152,13 @@ class Router:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
+            if not value.owner:
+                value.owner = self
+        else:
+            # the route handler is copied to ensure each time the route handler is registerd,
+            # we get an instance with a unique owner
+            value = value.copy()
+            value.owner = self
         return cast(Union[Controller, RouteHandler, "Router"], value)
 
     def register(self, value: Union[Type[Controller], RouteHandler, "Router", AnyCallable]) -> None:

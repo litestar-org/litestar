@@ -24,32 +24,40 @@ full details.
 
 You can additionally pass the following kwargs to the Starlite constructor:
 
-* `allowed_hosts`: A list of allowed hosts. If set this enables the AllowedHostsMiddleware. See [middleware](#middleware).
-* `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the CORS middleware. See [middleware](#middleware).
-* `debug`: a boolean flag toggling debug mode on and off, if True 404 errors will be rendered as HTML with a stack trace. This option should *not* be used in production. Default to `False`.
-* `dependencies`: a dictionary mapping string keys to dependencies. See [dependency-injection](6-dependency-injection.md).
-* `exception_handlers`: a dictionary mapping exceptions or exception codes to callables. See [exception-handlers](#exception-handling).
-* `guards`: A list of callables. See:
-* `middleware`: a list of classes adhering to Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware` class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](#middleware).
-* `on_shutdown`: a list of sync and/or async callables that are called during the application shutdown. See [life-cycle](#lifecycle).
-* `on_startup`: a list of sync and/or async callables that are called during the application startup. See [life-cycle](#lifecycle).
-* `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config. See [open-api](8-openapi.md).
-* `redirect_slashes`: A boolean flag dictating whether to redirect urls ending with a trailing slash to urls without a trailing slash if no match is found. Defaults to `True`.
-* `response_class`: A custom response class to be used as the app default. See [using-custom-responses](5-responses.md#using-custom-responses).
-* `response_headers`: A dictionary of `ResponseHeader` instances. See: [response-headers](5-responses.md#response-headers).
-
+- `allowed_hosts`: A list of allowed hosts. If set this enables the `AllowedHostsMiddleware`.
+  See [middleware](#middleware).
+- `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the `CORSMiddleware`.
+  See [middleware](#middleware).
+- `debug`: A boolean flag toggling debug mode on and off, if True, 404 errors will be rendered as HTML with a stack
+  trace. This option should _not_ be used in production. Default to `False`.
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
+- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
+  See [exception-handlers](#exception-handling).
+- `guards`: A list of callables. See [guards](7-guards.md).
+- `middleware`: A list of classes adhering to the Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware`
+  class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](#middleware).
+- `on_shutdown`: A list of callables that are called during the application shutdown. See [life-cycle](#lifecycle).
+- `on_startup`: A list of callables that are called during the application startup. See [life-cycle](#lifecycle).
+- `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
+  See [open-api](8-openapi.md).
+- `redirect_slashes`: A boolean flag dictating whether to redirect urls ending with a trailing slash to urls without a
+  trailing slash if no match is found. Defaults to `True`.
+- `response_class`: A custom response class to be used as the app default.
+  See [using-custom-responses](5-responses.md#using-custom-responses).
+- `response_headers`: A dictionary of `ResponseHeader` instances.
+  See [response-headers](5-responses.md#response-headers).
 
 ## Lifecycle
 
 Starlette, on top of which StatLite is built, supports two kinds of application lifecycle management - `on_statup`
 / `on_shutdown` hooks, which accept a sequence of callables, and `lifespan`, which accepts an `AsyncContextManager`. To
-simplify matters, Starlite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a __list__ of
-callables - sync and/or async - which will be called respectively during the application startup and shutdown.
+simplify matters, Starlite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a **list** of
+callables - sync and/or async - which will be called during the application startup or shutdown.
 
-A classic example of this would be establishing a connection to a DB on startup and closing it on shutdown. For example,
-lets assume we create establish a connection to a Postgres DB using the async engine
-from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html). We might thus create two functions,
-one to get or create the connection, and another to close it:
+A classic use case for this is database connectivity. Often you will want to establish the connection once - on
+application startup, and then close the connection on shutdown. For example, lets assume we create a connection to a
+Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html), and
+we therefore opt to create two functions, one to get or create the connection, and another to close it:
 
 ```python title="my_app/postgres.py"
 from os import environ
@@ -89,9 +97,8 @@ app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres
 
 ## Logging
 
-Another thing most applications will need to set up as part of startup is logging. Although Starlite
-does not configure logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you
-can use like so:
+Another thing most applications will need to set up as part of startup is logging. Although Starlite does not configure
+logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you can use like so:
 
 ```python title="my_app/main.py"
 from starlite import Starlite, LoggingConfig
@@ -109,13 +116,15 @@ app = Starlite(on_startup=[my_app_logging_config.configure])
 ```
 
 `LoggingConfig` is merely a convenience wrapper around the standard library's _DictConfig_ options, which can be rather
-confusing. In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of
-INFO severity or above will be logged by it. We also defined it, so it will log using the `LoggingConfig` default
-console handler, which will emit logging messages to _sys.stderr_.
+confusing.
+
+In the above we defined a logger for the "my*app" namespace with a level of "INFO", i.e. only messages of INFO severity
+or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to *
+sys.stderr\_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
-setup up logging - then the on_startup hook is a good place to do so.
+setup up logging - then the on_startup hook is a good place to do this.
 
 ## Exception Handling
 

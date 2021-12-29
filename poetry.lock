@@ -153,7 +153,7 @@ python-versions = "*"
 
 [[package]]
 name = "faker"
-version = "11.0.0"
+version = "11.1.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -839,8 +839,8 @@ exrex = [
     {file = "exrex-0.10.5.tar.gz", hash = "sha256:3fb8b18fd9832eaff8b13dc042a4f63b13c5d684ee069f70a23ddfc6bcb708f3"},
 ]
 faker = [
-    {file = "Faker-11.0.0-py3-none-any.whl", hash = "sha256:8a90e8b015d9e2f5556293d817c3711481ca288b28b94f55ad6327cdc2cfdaad"},
-    {file = "Faker-11.0.0.tar.gz", hash = "sha256:5bb6a3decfa08fa7d86691d3b6d48482d5fcfb4ccf24990c7ddced74c77c9b4b"},
+    {file = "Faker-11.1.0-py3-none-any.whl", hash = "sha256:ee29deb5174a8bd2e3a1be2f43d9505201d267d383a97ebc67715d12bb386e47"},
+    {file = "Faker-11.1.0.tar.gz", hash = "sha256:89c359e153f6a27820ff1d491e851018064dd65731f7894e226f93e2aa980655"},
 ]
 ghp-import = [
     {file = "ghp-import-2.0.2.tar.gz", hash = "sha256:947b3771f11be850c852c64b561c600fdddf794bab363060854c1ee7ad05e071"},
