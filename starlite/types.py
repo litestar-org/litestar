@@ -30,7 +30,7 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import RouteHandler
     from starlite.request import Request
 else:

@@ -15,7 +15,7 @@ def app_guard(request: Request, _: RouteHandler) -> None:
         raise PermissionDeniedException("app")
 
 
-@get(path="/secret", guards=[local_guard], opt={})
+@get(path="/secret", guards=[local_guard])
 def my_router_handler() -> None:
     ...
 

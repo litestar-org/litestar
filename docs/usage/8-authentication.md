@@ -146,8 +146,7 @@ app = Starlite(request_handlers=[...], middleware=[JWTAuthenticationMiddleware])
 These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
 and `Request.auth` respectively.
 
-Building on the previous example, we would be able to access these in a route handler function or a dependency to be
-injected in the following way:
+Building on the previous example, we would be able to access these in a route handler function or a dependency in the following way:
 
 ```python
 from starlite import Request

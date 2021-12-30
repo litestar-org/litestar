@@ -57,6 +57,7 @@ Additionally, you can pass the following optional kwargs:
 - `response_description`: Text used for the route's response schema _description_ section.
 - `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` of the wrapped
   function.
+- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
 - `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
   to `False`.
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
