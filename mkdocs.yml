@@ -29,6 +29,23 @@ theme:
     - search.share
   plugins:
     - search
+nav:
+  - Overview: index.md
+  - Usage:
+      - usage/0-the-starlite-app.md
+      - usage/1-routers-and-controllers.md
+      - usage/2-route-handlers.md
+      - usage/3-parameters.md
+      - usage/4-request-body.md
+      - usage/5-responses.md
+      - usage/6-dependency-injection.md
+      - usage/7-middleware.md
+      - usage/8-authentication.md
+      - usage/9-guards.md
+      - usage/10-openapi.md
+      - usage/11-testing.md
+  - contributing.md
+  - license.md
 extra:
   social:
     - icon: fontawesome/brands/discord
