@@ -8,6 +8,7 @@ from starlite.enums import MediaType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
 from starlite.request import Request
 from starlite.response import Response
+from starlite.types import MiddlewareProtocol
 
 
 class AuthenticationResult(BaseModel):
@@ -18,7 +19,7 @@ class AuthenticationResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class AbstractAuthenticationMiddleware(ABC):
+class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     def __init__(self, app: ASGIApp):
         self.app = app
 

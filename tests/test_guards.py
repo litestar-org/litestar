@@ -1,16 +1,16 @@
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
-from starlite import create_test_client, get
+from starlite import RouteHandler, create_test_client, get
 from starlite.exceptions import PermissionDeniedException
 from starlite.request import Request
 
 
-async def local_guard(request: Request) -> None:
-    if not request.headers.get("super-secret"):
+async def local_guard(_: Request, route_handler: RouteHandler) -> None:
+    if not route_handler.opt or not route_handler.opt.get("allow_all"):
         raise PermissionDeniedException("local")
 
 
-def app_guard(request: Request) -> None:
+def app_guard(request: Request, _: RouteHandler) -> None:
     if not request.headers.get("Authorization"):
         raise PermissionDeniedException("app")
 
@@ -30,5 +30,6 @@ def test_guards():
     response = client.get("/secret", headers={"Authorization": "yes"})
     assert response.status_code == HTTP_403_FORBIDDEN
     assert response.json().get("detail") == "local"
-    response = client.get("/secret", headers={"Authorization": "yes", "super-secret": "42"})
+    my_router_handler.opt["allow_all"] = True
+    response = client.get("/secret", headers={"Authorization": "yes"})
     assert response.status_code == HTTP_200_OK

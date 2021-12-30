@@ -33,13 +33,13 @@ You can additionally pass the following kwargs to the Starlite constructor:
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
   See [exception-handlers](#exception-handling).
-- `guards`: A list of callables. See [guards](7-guards.md).
+- `guards`: A list of callables. See [guards](9-guards.md).
 - `middleware`: A list of classes adhering to the Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware`
   class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](#middleware).
 - `on_shutdown`: A list of callables that are called during the application shutdown. See [life-cycle](#lifecycle).
 - `on_startup`: A list of callables that are called during the application startup. See [life-cycle](#lifecycle).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
-  See [open-api](8-openapi.md).
+  See [open-api](10-openapi.md).
 - `redirect_slashes`: A boolean flag dictating whether to redirect urls ending with a trailing slash to urls without a
   trailing slash if no match is found. Defaults to `True`.
 - `response_class`: A custom response class to be used as the app default.

@@ -50,7 +50,7 @@ the path `/user/{order_id:uuid}"`.
 Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
 
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
-- `guards`: A list of callables. See [guards](7-guards.md).
+- `guards`: A list of callables. See [guards](9-guards.md).
 - `response_class`: A custom response class to be used as the app default.
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
@@ -75,7 +75,7 @@ Assuming that the `UserOrderController` defines a _path_ of "/user" and `Partner
 Aside from `path` and `route_handlers` which are required kwargs, you can also pass the following kwargs to Router:
 
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
-- `guards`: A list of callables. See [guards](7-guards.md).
+- `guards`: A list of callables. See [guards](9-guards.md).
 - `response_class`: A custom response class to be used as the app default.
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.

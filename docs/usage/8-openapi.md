@@ -1,3 +1,0 @@
-# OpenAPI
-
-WIP
