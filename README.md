@@ -2,7 +2,6 @@
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
-![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
@@ -12,12 +11,14 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 
+<iframe src="https://discord.com/widget?id=919193495116337154&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+
 # Starlite
 
 Starlite is a light, opinionated and flexible ASGI API framework built on top
 of [pydantic](https://github.com/samuelcolvin/pydantic) and [Starlette](https://github.com/encode/starlette).
 
-Check out the [Starlite documentation](https://goldziher.github.io/starlite/).
+Check out the [Starlite documentation](https://goldziher.github.io/starlite/) and [join our discord server](https://discord.gg/X3FJqy8d2j).
 
 ## Installation
 
