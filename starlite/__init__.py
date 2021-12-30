@@ -2,7 +2,7 @@
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
-from .enums import HttpMethod, MediaType, RequestEncodingType
+from .enums import HttpMethod, MediaType, OpenAPIMediaType, RequestEncodingType
 from .exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
@@ -37,9 +37,11 @@ __all__ = [
     "InternalServerException",
     "LoggingConfig",
     "MediaType",
+    "MiddlewareProtocol",
     "NotAuthorizedException",
     "OpenAPIConfig",
     "OpenAPIController",
+    "OpenAPIMediaType",
     "Parameter",
     "Partial",
     "PermissionDeniedException",
@@ -63,5 +65,4 @@ __all__ = [
     "post",
     "put",
     "route",
-    "MiddlewareProtocol",
 ]

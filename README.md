@@ -152,7 +152,6 @@ has a different design, different project goals and a completely different codeb
 - [x] extended testing support
 - [x] built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
 - [x] route guards
-- [ ] detailed documentation
 - [ ] schemathesis integration
 
 ### Contributing

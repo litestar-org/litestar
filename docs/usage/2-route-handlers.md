@@ -48,6 +48,9 @@ Additionally, you can pass the following optional kwargs:
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
+- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
+
+And the following kwargs, which affect [OpenAPI schema generation](10-openapi.md#route-handler-configuration)
 - `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.
 - `tags`: a list of openapi-pydantic `Tag` models, which correlate to
@@ -57,13 +60,11 @@ Additionally, you can pass the following optional kwargs:
 - `response_description`: Text used for the route's response schema _description_ section.
 - `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` of the wrapped
   function.
-- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
 - `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
   to `False`.
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
   automatically for the schema if any validation is involved.
-- `permissions`: A list of permission names. See [guards](9-guards.md).
 
 ## Semantic Handler Decorators
 

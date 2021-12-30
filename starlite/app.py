@@ -29,8 +29,6 @@ from starlite.response import Response
 from starlite.routing import Router
 from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol, ResponseHeader
 
-DEFAULT_OPENAPI_CONFIG = OpenAPIConfig()
-
 
 class Starlite(Router):
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -46,7 +44,7 @@ class Starlite(Router):
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
-        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
+        openapi_config: Optional[OpenAPIConfig] = None,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,

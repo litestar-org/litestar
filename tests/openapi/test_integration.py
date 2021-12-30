@@ -21,7 +21,8 @@ class OpenAPIControllerWithYaml(OpenAPIController):
 
 def test_openapi_yaml():
     with create_test_client(
-        [PersonController, PetController, OpenAPIControllerWithYaml], openapi_config=OpenAPIConfig()
+        [PersonController, PetController, OpenAPIControllerWithYaml],
+        openapi_config=OpenAPIConfig(title="starlite", version="1"),
     ) as client:
         app = cast(Starlite, client.app)
         assert app.openapi_schema
@@ -38,7 +39,7 @@ def test_openapi_yaml():
 def test_openapi_json():
     with create_test_client(
         [PersonController, PetController, OpenAPIController],
-        openapi_config=OpenAPIConfig(),
+        openapi_config=OpenAPIConfig(title="starlite", version="1"),
     ) as client:
         app = cast(Starlite, client.app)
         assert app.openapi_schema

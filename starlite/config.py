@@ -30,8 +30,8 @@ class OpenAPIConfig(BaseModel):
 
     create_examples: bool = False
 
-    title: str = "StarLite API"
-    version: str = "1.0.0"
+    title: str
+    version: str
     contact: Optional[Contact] = None
     description: Optional[str] = None
     external_docs: Optional[ExternalDocumentation] = None
