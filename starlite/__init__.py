@@ -22,7 +22,7 @@ from .request import Request
 from .response import Response
 from .routing import Route, Router
 from .testing import TestClient, create_test_client, create_test_request
-from .types import File, MiddlewareProtocol, Partial, Redirect, Stream
+from .types import File, MiddlewareProtocol, Partial, Redirect, ResponseHeader, Stream
 
 __all__ = [
     "AbstractAuthenticationMiddleware",
@@ -50,6 +50,7 @@ __all__ = [
     "Request",
     "RequestEncodingType",
     "Response",
+    "ResponseHeader",
     "Route",
     "RouteHandler",
     "Router",

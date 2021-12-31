@@ -348,8 +348,25 @@ def my_route_handler() -> Response:
 ```
 
 !!! important
-If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 
-WIP
+To add headers to a response use the `ResponseHeader` model:
+
+```python
+from starlite import ResponseHeader, get
+
+
+@get(
+    path="/",
+    response_headers={
+        "my-header": ResponseHeader(value="secret", description="super secret header")
+    },
+)
+def my_route_handler() -> None:
+    ...
+```
+
+You can declare response headers on all layers of the app - individual route handlers, controllers, routers and the app
+itself. This works like [dependencies](6-dependency-injection.md) - that is, lower levels override higher levels.
