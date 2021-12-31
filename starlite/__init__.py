@@ -21,7 +21,7 @@ from .provide import Provide
 from .request import Request
 from .response import Response
 from .routing import Route, Router
-from .testing import create_test_client, create_test_request
+from .testing import TestClient, create_test_client, create_test_request
 from .types import File, MiddlewareProtocol, Partial, Redirect, Stream
 
 __all__ = [
@@ -57,6 +57,7 @@ __all__ = [
     "StarLiteException",
     "Starlite",
     "Stream",
+    "TestClient",
     "create_test_client",
     "create_test_request",
     "delete",
