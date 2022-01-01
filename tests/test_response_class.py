@@ -3,6 +3,7 @@ from typing import Optional
 import pytest
 
 from starlite import Controller, HttpMethod, Response, Router, Starlite, get
+from starlite.handlers import _empty
 
 router_response = type("router_response", (Response,), {})
 controller_response = type("controller_response", (Response,), {})
@@ -27,6 +28,7 @@ class MyController(Controller):
     [[0, local_response], [1, controller_response], [2, router_response], [3, app_response], [None, Response]],
 )
 def test_response_class(layer: Optional[int], expected: Response):
+    MyController.test_method.resolved_response_class = _empty
     router = Router(path="/users", route_handlers=[MyController])
     app = Starlite(route_handlers=[router])
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET]
@@ -42,3 +44,6 @@ def test_response_class(layer: Optional[int], expected: Response):
         assert component.response_class is expected
     response_class = route_handler.resolve_response_class()
     assert response_class is expected
+    if component:
+        component.response_class = None
+        assert component.response_class is None

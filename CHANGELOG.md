@@ -8,3 +8,4 @@
 
 [0.1.2]
 - fixed _requests_ not being included in project dependencies
+- updated pydantic to v1.9.0
