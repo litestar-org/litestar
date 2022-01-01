@@ -24,19 +24,18 @@ Check out the [Starlite documentation 📚](https://goldziher.github.io/starlite
 
 ## Core Features
 
-* 👉 OpenAPI 3.1 schema generation
-* 👉 built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
-* 👉 class based controllers
-* 👉 decorators based configuration
-* 👉 extended testing support
-* 👉 extensive typing support including inference, validation and parsing
-* 👉 full async (ASGI) support
-* 👉 layered dependency injection
-* 👉 route guards based authorization
-* 👉 simple middleware and authentication
-* 👉 support for pydantic models and pydantic dataclasses
-* 👉 support for standard library dataclasses
-* 👉 ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
+* 👉 Class based controllers
+* 👉 Decorators based configuration
+* 👉 Extended testing support
+* 👉 Extensive typing support including inference, validation and parsing
+* 👉 Full async (ASGI) support
+* 👉 Layered dependency injection
+* 👉 OpenAPI 3.1 schema generation with [Redoc](https://github.com/Redocly/redoc) UI
+* 👉 Route guards based authorization
+* 👉 Simple middleware and authentication
+* 👉 Support for pydantic models and pydantic dataclasses
+* 👉 Support for standard library dataclasses
+* 👉 Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Installation
 
