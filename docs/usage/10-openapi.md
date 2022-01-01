@@ -46,7 +46,7 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 
 ### Route Handler Configuration
 
-By default an [operation](https://spec.openapis.org/oas/latest.html#operation-object) schema is generated for all route
+By default, an [operation](https://spec.openapis.org/oas/latest.html#operation-object) schema is generated for all route
 handlers. You can omit a route handler from the schema by setting `include_in_schema` to `False`:
 
 ```python
@@ -65,17 +65,17 @@ You can also affect the schema by enriching and/or modifying it using the follow
 - `summary`: Text used for the route's schema _summary_ section.
 - `description`: Text used for the route's schema _description_ section.
 - `response_description`: Text used for the route's response schema _description_ section.
-- `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` of the wrapped
-  function.
+- `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` attribute of the
+  wrapped function.
 - `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
   to `False`.
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
-  automatically for the schema if any validation is involved.
+  automatically for the schema if any validation is involved (e.g. there are parameters specified in the method/function).
 
 ## Accessing the Schema
 
-Once you enable OpenAPI schema generation by passing a config object to the Starlite constructor, the generated schem
+Once you enable OpenAPI schema generation by passing a config object to the Starlite constructor, the generated schema
 will become accessible in any route handler:
 
 ```python
@@ -91,12 +91,12 @@ def my_route_handler(request: Request) -> None:
 The schema in the above is an instance of the `OpenAPI` pydantic model, and you can interact with it as you would with
 any other pydantic model
 
-### OpenAPI Controller
+### The OpenAPI Controller
 
-Starlite includes a pre-configured router called `OpenAPIController` which offers two endpoints:
+Starlite includes a pre-configured controller called `OpenAPIController` which exposes two endpoints:
 
-1. a schema download endpoint
-2. an HTML endpoint that serves a Redoc UI for the schema
+1. a schema download endpoint with the default path - `/schema`
+2. an HTML endpoint that serves a Redoc UI for the schema with the default path - `/schema/redoc`
 
 To enable this controller simply add it to the app route handlers or a router, e.g.:
 
@@ -108,7 +108,7 @@ app = Starlite(route_handlers=[OpenAPIController])
 
 The defaults for this controller are:
 
-1. path = "/schema"
+1. path = `/schema`
 2. schema is sent using the `application/vnd.oai.openapi+json` Content-Type header
 3. there is no styling of Redoc and no favicon for it
 

@@ -1,13 +1,13 @@
 # Authentication
 
 Starlite is agnostic as to what kind of authentication mechanism(s) an app should use - you can use cookies, JWT tokens,
-OpenID connect and so on and so forth depending on your use-case. It also does not implement any of these mechanisms for
-you. What it does is offer an opinion as to where authentication should occur, namely - as part of your middleware
-stack. This is in accordance with Starlette and many other frameworks (e.g. Django, NestJS etc.).
+OpenID connect depending on your use-case. It also does not implement any of these mechanisms for you. What it does is
+offer an opinion as to where authentication should occur, namely - as part of your middleware stack. This is in
+accordance with Starlette and many other frameworks (e.g. Django, NestJS etc.).
 
-## AbstractAuthenticationMiddleware
+## Authentication Middleware
 
-Starlite exports a class called `AbstractAuthenticationMiddleware`, which as its name implies is an Abstract Base
+Starlite exports a class called `AbstractAuthenticationMiddleware`, which, as its name implies, is an Abstract Base
 Class (ABC) that implements the [middleware protocol](7-middleware.md#the-middleware-protocol). To add authentication to
 your app simply subclass `AbstractAuthenticationMiddleware` and implement the method `authenticate_request`, which has
 the following signature:
@@ -20,10 +20,10 @@ async def authenticate_request(request: Request) -> AuthenticationResult:
     ...
 ```
 
-### Example: JWTAuthenticationMiddleware
+### Example: Create a JWT Authentication Middleware
 
-For example, lets say we wanted to implement a JWT token based authentication. We created two pydantic models, one for
-the user which we persist into some sort of DB, and another for the token data:
+For example, lets say we wanted to implement a JWT token based authentication. We start off by creating two pydantic
+models, one for the user which we persist into some sort of DB, and another for the token data:
 
 ```python title="my_app/models.py"
 from datetime import datetime
@@ -42,10 +42,11 @@ class Token(BaseModel):
     sub: UUID4
 ```
 
-!!! note In the real world `User` would be a database model and would be persisted using a 3rd party library. The
-current example just assumes this is happening magically.
+!!! note
+    In the real world `User` would be a database model and would be persisted using a 3rd party library. The
+    current example just assumes this is happening.
 
-We will now need some utility methods to encode and decode tokens. We will use
+We will also need some utility methods to encode and decode tokens. To this end we will use
 the [python-jose](https://github.com/mpdavis/python-jose) library, which is an excellent choice.
 
 ```python title="my_app/utils/jwt.py"
@@ -125,7 +126,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         return AuthenticationResult(user=user, auth=token)
 ```
 
-Finally, we need to pass it to the Starlite constructor:
+Finally, we need to pass our middleware to the Starlite constructor:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
@@ -136,9 +137,12 @@ from my_app.middleware.auth import JWTAuthenticationMiddleware
 app = Starlite(request_handlers=[...], middleware=[JWTAuthenticationMiddleware])
 ```
 
+That's it. The `JWTAuthenticationMiddleware` will now run for every request.
+
 ### Authentication Result
 
-`AuthenticationResult`, which is the return value of `authenticate_request` is a pydantic model that has two attributes:
+The method `authenticate_request` specified by `AbstractAuthenticationMiddleware` expects the return value to be an
+instance of `AuthenticationResult`. This is a pydantic model that has two attributes:
 
 1. `user`: a non-optional value representing a user. It's typed as `Any` so it receives any value, including `None`.
 2. `auth`: an optional value representing the authentication scheme. Defaults to `None`.
@@ -146,7 +150,8 @@ app = Starlite(request_handlers=[...], middleware=[JWTAuthenticationMiddleware])
 These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
 and `Request.auth` respectively.
 
-Building on the previous example, we would be able to access these in a route handler function or a dependency in the following way:
+Building on the previous example, we would be able to access these in a route handler function or a dependency in the
+following way:
 
 ```python
 from starlite import Request

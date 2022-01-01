@@ -1,6 +1,6 @@
 # Testing
 
-Testing is a first class citizen in Starlite, which offers several powerful abstractions out of the box.
+Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
 ## Test Client
 
@@ -38,7 +38,7 @@ def test_health_check():
     assert response.text == "healthy"
 ```
 
-Since we would probably need to use the client in multiple places, its probably better to make it into a pytest fixture:
+Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
 
 ```python title="tests/conftest.py"
 import pytest
@@ -70,9 +70,9 @@ def test_health_check(test_client: TestClient):
 
 Starlite also offers a helper function called `create_test_client` which first creates an instance of Starlite and then
 a test client using it. There are multiple use cases for this helper - when you need to check generic logic that is
-decouples from a specific Starlite app, or when you need to test endpoints in relative isolation.
+decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
 
-You can to this helper all the kwargs accepted by the [starlite constructor](0-the-starlite-app.md), with
+You can pass to this helper all the kwargs accepted by the [starlite constructor](0-the-starlite-app.md), with
 the `route_handlers` kwarg being **required**. Yet unlike the Starlite app, which expects `route_handlers` to be a list,
 here you can also pass individual values.
 
@@ -111,9 +111,10 @@ def test_health_check():
 ## Create a Test Request
 
 Another helper is `create_test_request`, which creates an instance of `starlite.request.Request`. The use case for this
-helper is when you need to test logic - such as dependencies - that expects to receive a request object.
+helper is when you need to test logic that expects to receive a request object.
 
-For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples from the [guards](9-guards.md) documentation:
+For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples
+from the [guards](9-guards.md) documentation:
 
 ```python title="my_app/guards.py"
 from starlite import Request, RouteHandler, NotAuthorizedException

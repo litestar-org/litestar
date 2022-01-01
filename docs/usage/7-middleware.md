@@ -1,10 +1,10 @@
 # Middleware
 
-Middlewares are mini ASGI apps that receive the raw request object validate or transform it in some manner. The use for
-middleware is when you need to operate on all incoming requests on the app level.
+Middlewares are mini ASGI apps that receive the raw request object and validate or transform it in some manner.
+Middlewares are useful when you need to operate on all incoming requests on the app level.
 
 Starlite builds on top of the [Starlette middleware architecture](https://www.starlette.io/middleware/) and is 100%
-compatible with it - and the 3rd party middleware created for it as well.
+compatible with it - and any 3rd party middlewares created for it.
 
 ## The Middleware Protocol
 
@@ -35,23 +35,23 @@ class MyRequestLoggingMiddleware(MiddlewareProtocol):
 
 What's happening above?
 
-The `__init__` receives and sets "app" - app is not Starlite, but rather the next middleware in the stack, which is also
-an ASGI app.
+The `__init__` method receives and sets "app" - app is not an instance of Starlite, but rather the next middleware in
+the stack, which is also an ASGI app.
 
-The `__call__` method makes this class into a `callable`, i.e. once instantiated this class acts like a function.
+The `__call__` method makes this class into a `callable`, i.e. once instantiated this class acts like a function, that
+has the signature of an ASGI app: The three parameters, `scope, receive, send` are specified
+by [the ASGI specification](https://asgi.readthedocs.io/en/latest/index.html), and their values originate with the ASGI
+server (e.g. _uvicorn_) used to run Starlite.
 
-The three parameters, `scope, receive, send` are specified
-by [the ASGI specification](https://asgi.readthedocs.io/en/latest/index.html).
+It's important to note here two things:
 
-Whats important to note here are two things:
-
-1. Although scope is used to create an instance of request by passing it to the Request constructor, which makes it
-   simpler to access because it does some parsing for you already, the actual source of truth is Scope - not the
+1. Although `scope` is used to create an instance of request by passing it to the `Request` constructor, which makes it
+   simpler to access because it does some parsing for you already, the actual source of truth remains `scope` - not the
    request. If you need to modify the data of the request you must modify the scope dictionary, not any ephemeral
    request objects created as in the above.
-2. Once the middleware finishes doing whatever its doing, it should pass scope, receive and send to self.app - this is
-   equivalent in other middleware architectures to calling `next`, which is what happens in the last line of the
-   example.
+2. Once the middleware finishes doing whatever its doing, it should pass `scope`, `receive` and `send` to
+   either `self.app` or an instance of `Response` - this is equivalent in other middleware architectures to
+   calling `next`, which is what happens in the last line of the example.
 
 ## Built-in Middlewares
 
@@ -61,7 +61,7 @@ Starlite offers a simple way to use two of them:
 ### CORS
 
 CORS ([Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) is a common security
-mechanism - that is often implemented using middleware. To enable CORS in a starlite application simple pass an instance
+mechanism - that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
 of `starlite.config.CORSConfig` to the Starlite constructor:
 
 ```python
@@ -92,8 +92,8 @@ You can read more about this middleware in the [starlette docs](https://www.star
 ### Trusted Hosts
 
 Another common security mechanism is to require that each incoming request has a "HOST" header, and then to restrict
-hosts to a specific set of domains. To enable this middleware simple pass a list of trusted hosts to the Starlite
-constructor:
+hosts to a specific set of domains - whats called "allowed hosts". To enable this middleware simply pass a list of
+trusted hosts to the Starlite constructor:
 
 ```python
 from starlite import Starlite
