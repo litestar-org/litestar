@@ -20,7 +20,23 @@
 Starlite is a light, opinionated and flexible ASGI API framework built on top
 of [pydantic](https://github.com/samuelcolvin/pydantic) and [Starlette](https://github.com/encode/starlette).
 
-Check out the [Starlite documentation](https://goldziher.github.io/starlite/).
+Check out the [Starlite documentation 📚](https://goldziher.github.io/starlite/)
+
+## Core Features
+
+* 👉 OpenAPI 3.1 schema generation
+* 👉 built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
+* 👉 class based controllers
+* 👉 decorators based configuration
+* 👉 extended testing support
+* 👉 extensive typing support including inference, validation and parsing
+* 👉 full async (ASGI) support
+* 👉 layered dependency injection
+* 👉 route guards based authorization
+* 👉 simple middleware and authentication
+* 👉 support for pydantic models and pydantic dataclasses
+* 👉 support for standard library dataclasses
+* 👉 ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Installation
 
@@ -126,37 +142,6 @@ To run you application, use an ASGI server such as [uvicorn](https://www.uvicorn
 ```shell
 uvicorn my_app.main:app --reload
 ```
-
-## Project and Roadmap
-
-This project builds on top the Starlette ASGI toolkit and pydantic modelling to create a higher-order opinionated
-framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
-this regard (and some others) was a source of inspiration for this framework. Nonetheless, Starlite is not FastAPI - it
-has a different design, different project goals and a completely different codebase.
-
-1. The goal of this project is to become a community driven project. That is, not to have a single "owner" but rather a
-   core team of maintainers that leads the project, as well as community contributors.
-2. Starlite draws inspiration from NestJS - a contemporary TypeScript framework - which places opinions and patterns at
-   its core. As such, the design of the API breaks from the Starlette design and instead offers an opinionated
-   alternative.
-3. Finally, Python OOP is extremely powerful and versatile. While still allowing for function based endpoints, Starlite
-   seeks to build on this by placing class based Controllers at its core.
-
-### Features and roadmap
-
-- [x] sync and async API endpoints
-- [x] fast json serialization using [orjson](https://github.com/ijl/orjson)
-- [x] class based controllers
-- [x] decorators based configuration
-- [x] rigorous typing and type inference
-- [x] layered dependency injection
-- [x] automatic OpenAPI schema generation
-- [x] support for pydantic models and pydantic dataclasses
-- [x] support for vanilla python dataclasses
-- [x] extended testing support
-- [x] built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
-- [x] route guards
-- [ ] schemathesis integration
 
 ### Contributing
 

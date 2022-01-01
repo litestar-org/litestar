@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "0.1.1"
+version = "0.1.2"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <Naaman.Hirschfeld@sprylab.com>"]
 license = "MIT"
@@ -36,19 +36,19 @@ openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
+python-multipart = "*"
 pyyaml = "*"
+requests = "*"
 starlette = "*"
 typing-extensions = "*"
-python-multipart = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*"}
+mkdocs-material = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-requests = "*"
 uvicorn = "*"
-mkdocs-material = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
