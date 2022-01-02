@@ -108,11 +108,11 @@ from my_app.models import Wallet
 
 class WalletController(Controller):
     path = "/wallet"
-    
+
     @post()
     async def create_wallet(self, data: Wallet) -> Wallet:
         ...
-    
+
     @get(path="/{wallet_id:uuid}")
     async def retrieve_wallet(self, wallet: Wallet) -> Wallet:
         ...
@@ -126,7 +126,7 @@ class WalletController(Controller):
         ...
 ```
 
-We need to inject the wallet instance into the `retrieve_wallet`, `update_wallet` and `delete_wallet` routes. To do 
+We need to inject the wallet instance into the `retrieve_wallet`, `update_wallet` and `delete_wallet` routes. To do
 this we will create a dependency that takes a `wallet_id` kwarg and then retrieves the instance from the DB:
 
 ```python title="my_app/dependencies.py"
@@ -151,11 +151,11 @@ from my_app.dependencies import get_wallet_by_id
 class WalletController(Controller):
     path = "/wallet"
     dependencies = { "wallet": Provide(get_wallet_by_id) }
-    
+
     # ...
 ```
 
-This is it - since the controller methods declared the correct path parameter, this value will be passed into 
+This is it - since the controller methods declared the correct path parameter, this value will be passed into
 the `get_wallet_by_id`.
 
 ## Overriding Dependencies
@@ -190,8 +190,8 @@ logic applies on all layers.
 
 `Provide` is a simple wrapper that takes a callable as a required arg, and an optional kwarg - `use_cache`.
 
-By default `Provide` will not cache the return value of the dependency, and it will be executed on every call to 
-the route handler that uses it. If `use_cache` is `True`, it will cache the return value on the first execution and 
+By default `Provide` will not cache the return value of the dependency, and it will be executed on every call to
+the route handler that uses it. If `use_cache` is `True`, it will cache the return value on the first execution and
 will not call it again.
 
 !!! important
