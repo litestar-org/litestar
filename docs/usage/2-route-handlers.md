@@ -82,7 +82,7 @@ These are used exactly like `route` with the sole exception that you cannot conf
 ```python
 from typing import List
 
-from starlite import delete, get, patch, post, put
+from starlite import Partial, delete, get, patch, post, put
 
 from my_app.models import Resource
 
@@ -93,7 +93,7 @@ def list_resources() -> List[Resource]:
 
 
 @post(path="/resources")
-def create_resource() -> Resource:
+def create_resource(data: Resource) -> Resource:
     ...
 
 
@@ -103,12 +103,12 @@ def retrieve_resource(pk: int) -> Resource:
 
 
 @put(path="/resources/{pk:int}")
-def update_resource(pk: int) -> Resource:
+def update_resource(data: Resource, pk: int) -> Resource:
     ...
 
 
 @patch(path="/resources/{pk:int}")
-def partially_update_resource(pk: int) -> Resource:
+def partially_update_resource(data: Partial[Resource], pk: int) -> Resource:
     ...
 
 

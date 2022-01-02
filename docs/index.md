@@ -68,10 +68,10 @@ class User:
 Define a Controller for your data model:
 
 ```python title="my_app/controllers/user.py"
+from typing import List
+
 from pydantic import UUID4
-from starlite.controller import Controller
-from starlite.handlers import get, post, put, patch, delete
-from starlite.types import Partial
+from starlite import Controller, Partial, get, post, put, patch, delete
 
 from my_app.models import User
 
@@ -80,15 +80,15 @@ class UserController(Controller):
     path = "/users"
 
     @post()
-    async def create(self, data: User) -> User:
+    async def create_user(self, data: User) -> User:
         ...
 
     @get()
-    async def get_users(self) -> list[User]:
+    async def list_users(self) -> List[User]:
         ...
 
     @patch(path="/{user_id:uuid}")
-    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+    async def partially_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
@@ -96,13 +96,12 @@ class UserController(Controller):
         ...
 
     @get(path="/{user_id:uuid}")
-    async def get_user_by_id(self, user_id: UUID4) -> User:
+    async def get_user(self, user_id: UUID4) -> User:
         ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user_by_id(self, user_id: UUID4) -> User:
+    async def delete_user(self, user_id: UUID4) -> User:
         ...
-
 ```
 
 Import your controller into your application's entry-point and pass it to Starlite when instantiating your app:

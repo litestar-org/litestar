@@ -87,56 +87,76 @@ injected into them.
 In fact, you can inject the same data that you
 can [inject into route handlers](2-route-handlers.md#handler-function-kwargs) except other dependencies.
 
-For example, lets say we have a dependency to authenticate the user:
+Let's say we have a model called `Wallet`, which we'll assume we persist in a DB:
+
+```python title="my_app/models.py"
+from pydantic import BaseModel, UUID4
+
+class Wallet(BaseModel):
+    id: UUID4
+    currency: str
+    value: float
+```
+
+We have a `WalletController` class with basic CRUD route handlers:
+
+```python title="my_app/wallet/controller.py"
+from starlite import Controller, Partial, delete, get, patch, post
+
+from my_app.models import Wallet
+
+
+class WalletController(Controller):
+    path = "/wallet"
+    
+    @post()
+    async def create_wallet(self, data: Wallet) -> Wallet:
+        ...
+    
+    @get(path="/{wallet_id:uuid}")
+    async def retrieve_wallet(self, wallet: Wallet) -> Wallet:
+        ...
+
+    @patch(path="/{wallet_id:uuid}")
+    async def update_wallet(self, data: Partial[Wallet], wallet: Wallet) -> Wallet:
+        ...
+
+    @delete(path="/{wallet_id:uuid}")
+    async def delete_wallet(self, wallet: Wallet) -> None:
+        ...
+```
+
+We need to inject the wallet instance into the `retrieve_wallet`, `update_wallet` and `delete_wallet` routes. To do 
+this we will create a dependency that takes a `wallet_id` kwarg and then retrieves the instance from the DB:
 
 ```python title="my_app/dependencies.py"
-from starlite import NotAuthorizedException, Parameter
 from pydantic import UUID4
 
-from my_app.models import User
+from my_app.models import Wallet
 
-async def authenticate_user(
-    user_id: UUID4, # query or path parameter
-    bearer_token: Parameter(header="Authorization"),  # header parameter
-    raises=[NotAuthorizedException]
-) -> User:
+
+async def get_wallet_by_id(waller_id: UUID4) -> Wallet:
     ...
 ```
 
-As you can see above, the `authenticate_use`r method is expecting a query or path parameter called `user_id` and a header
-parameter called `bearer_token` to be injected to it from the request.
-
-Although `user_id` can be either a query parameter or a path parameter, in our `UserController` its declared as a path_parameter:
-
-```python title="my_app/user/controller.py"
-from starlite import Controller, get
-
-from my_app.models import User
+We will now set it on the controller with the correct keyword:
 
 
-class UserController(Controller):
-    path = "/user"
+```python title="my_app/wallet/controller.py"
+from starlite import Controller, Provide
 
-    @get("/{user_id:uuid}")
-    def retrieve_user(self, user: User) -> User
-        return user
+from my_app.dependencies import get_wallet_by_id
+
+
+class WalletController(Controller):
+    path = "/wallet"
+    dependencies = { "wallet": Provide(get_wallet_by_id) }
+    
+    # ...
 ```
 
-Because we want user to be accessible in multiple controllers throughout the app, we decided to register it on the app
-level:
-
-```python title="my_app/main.py"
-from starlite import Starlite, Provide
-
-
-from my_app.dependencies import authenticate_user
-from my_app.user import UserController
-
-app = Starlite(route_handlers=[UserController], dependencies={"user": Provide(authenticate_user)})
-```
-
-If we just wanted user to be accessible for the methods of the `UserController` or even just the `retrieve_user` method
-we could have instead registered it on a lower scope.
+This is it - since the controller methods declared the correct path parameter, this value will be passed into 
+the `get_wallet_by_id`.
 
 ## Overriding Dependencies
 
@@ -170,8 +190,9 @@ logic applies on all layers.
 
 `Provide` is a simple wrapper that takes a callable as a required arg, and an optional kwarg - `use_cache`.
 
-By default `Provide` will not cache the return value of the dependency and it will be executed on every call to the route handler that uses it. If `use_cache` is `True`, it
-will cache the return value on the first execution and will not call it again.
+By default `Provide` will not cache the return value of the dependency, and it will be executed on every call to 
+the route handler that uses it. If `use_cache` is `True`, it will cache the return value on the first execution and 
+will not call it again.
 
 !!! important
     The caching done inside `Provide` is very simple - it stores the return value and returns it.
