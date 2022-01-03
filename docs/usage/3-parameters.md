@@ -43,9 +43,9 @@ timestamp in milliseconds without any decimals. The parameter in the function de
 into a datetime. Thus, when the function is called it will be called with a datetime typed parameter.
 
 !!! note
-  You only need to define the parameter in the function declaration if it's actually used inside the
-  function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
-  It will still be validated and added to the openapi schema correctly.
+    You only need to define the parameter in the function declaration if it's actually used inside the
+    function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
+    It will still be validated and added to the openapi schema correctly.
 
 ### Extra Validation and Documentation for Path Params
 
@@ -103,7 +103,7 @@ def get_orders(
 The above is a rather classic example of a paginated "GET" request:
 
 1. _page_ is a required query parameter of type `int`. It has no default value and as such has to be provided or a ValidationException will be raised.
-2. _page_size_ is a required query parameter of type ìnt` as well, but it has a default value - so it can be omitted in
+2. _page_size_ is a required query parameter of type `int` as well, but it has a default value - so it can be omitted in
    the request.
 3. _brands_ is an optional list of strings with a default `None` value.
 4. _from_date_ and _to_date_ are optional date-time values that have a default `None` value.
