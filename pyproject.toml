@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "0.1.2"
+version = "0.1.3"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <Naaman.Hirschfeld@sprylab.com>"]
 license = "MIT"
@@ -43,7 +43,7 @@ starlette = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
-hypothesis = { extras = ["cli"], version = "*"}
+hypothesis = { extras = ["cli"], version = "*" }
 mkdocs-material = "*"
 pytest = "*"
 pytest-asyncio = "*"
