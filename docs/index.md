@@ -92,7 +92,7 @@ class UserController(Controller):
         ...
 
     @put(path="/{user_id:uuid}")
-    async def update_user(self, user_id: UUID4, data: list[User]) -> list[User]:
+    async def update_user(self, user_id: UUID4, data: User) -> User:
         ...
 
     @get(path="/{user_id:uuid}")
