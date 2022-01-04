@@ -93,7 +93,7 @@ from users import UserController
 from orders import order_router
 
 
-@get("/")
+@get(path="/")
 def health_check() -> str:
     return "healthy"
 
@@ -155,7 +155,7 @@ You can also register standalone route handler handlers multiple times:
 from starlite import Router, get
 
 
-@get("/handler")
+@get(path="/handler")
 def my_route_handler() -> None:
   ...
 

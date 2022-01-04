@@ -140,7 +140,7 @@ from starlite import get
 from my_app.guards import secret_token_guard
 
 
-@get("/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
+@get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
 def secret_endpoint() -> None:
     ...
 ```

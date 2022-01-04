@@ -10,7 +10,7 @@ or [route_handlers](2-route-handlers.md):
 from starlite import Starlite, get
 
 
-@get("/")
+@get(path="/")
 def health_check() -> str:
     return "healthy"
 
