@@ -326,20 +326,23 @@ def test_request_body_multi_part(t_type: Type[Any]):
 def test_request_body_multi_part_mixed_field_content_types() -> None:
     class MultiPartFormWithMixedFields(BaseModel):
         # TODO: define an API for declaring the fields
-        file: UploadFile
+        image: UploadFile
         tags: List[str]
 
     @post(path="/")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert await data.file.read() == b"file data"
+        assert await data.file.read() == b"data"
         assert data.tags == ["1", "2"]
 
     with create_test_client(test_method) as client:
         response = client.post(
             "/",
             files=[
-                ("file", ("somefile.txt", b"file data")),
-                ("tags", (None, b"tags=1&tags=2", "application/x-www-form-urlencoded")),
+                ("image", ("image.png", b"data")),
+            ],
+            data=[
+                ("tags", "1"),
+                ("tags", "2"),
             ],
         )
         assert response.status_code == HTTP_201_CREATED
