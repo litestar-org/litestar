@@ -3,6 +3,7 @@ from inspect import isclass
 from typing import Any, Dict, List, Optional, Union, cast
 
 from pydantic import validate_arguments
+from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from starlette.routing import Route as StarletteRoute
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -35,15 +36,19 @@ class Route(StarletteRoute):
         self.route_handler_map = self.parse_route_handlers(
             route_handlers=route_handlers if isinstance(route_handlers, list) else [route_handlers], path=path
         )
-        # we are passing a dud lambda function as the endpoint kwarg here because we are setting self.app ourselves
-        super().__init__(path=path, methods=[method.upper() for method in self.route_handler_map], endpoint=lambda x: x)
+        super().__init__(
+            endpoint=cast(Any, Undefined),
+            include_in_schema=any(route_handler.include_in_schema for route_handler in self.route_handler_map.values()),
+            methods=[method.value for method in self.route_handler_map],
+            path=path,
+        )
         self.app = self.create_endpoint_handler(self.route_handler_map)
         self.path_parameters: List[str] = param_match_regex.findall(self.path)
         for parameter in self.path_parameters:
             if ":" not in parameter or not parameter.split(":")[1]:
                 raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
 
-    @staticmethod  #
+    @staticmethod
     def parse_route_handlers(route_handlers: List[RouteHandler], path: str) -> Dict[HttpMethod, RouteHandler]:
         """
         Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
@@ -76,7 +81,6 @@ class Route(StarletteRoute):
         return endpoint_handler
 
 
-# noinspection PyMethodOverriding
 class Router:
     def __init__(
         self,
