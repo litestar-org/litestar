@@ -326,7 +326,7 @@ def test_request_body_multi_part(t_type: Type[Any]):
 def test_request_body_multi_part_mixed_field_content_types() -> None:
     class MultiPartFormWithMixedFields(BaseModel):
         # TODO: define an API for declaring the fields
-        file: UploadFile
+        image: UploadFile
         tags: List[str]
 
     @post(path="/")
@@ -338,8 +338,11 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         response = client.post(
             "/",
             files=[
-                ("file", ("somefile.txt", b"file data")),
-                ("tags", (None, b"tags=1&tags=2", "application/x-www-form-urlencoded")),
+                ("image", ("image.png", b"data")),
+            ],
+            data=[
+                ("tags", "1"),
+                ("tags", "2"),
             ],
         )
         assert response.status_code == HTTP_201_CREATED
