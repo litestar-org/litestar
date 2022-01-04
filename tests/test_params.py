@@ -331,7 +331,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
 
     @post(path="/")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert await data.file.read() == b"file data"
+        assert await data.file.read() == b"data"
         assert data.tags == ["1", "2"]
 
     with create_test_client(test_method) as client:
