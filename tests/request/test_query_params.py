@@ -11,5 +11,5 @@ def test_parse_query_params():
         "polluting": False,
     }
     request = create_test_request(query=query)
-    result = parse_query_params(request=request)
+    result = parse_query_params(connection=request)
     assert result == query

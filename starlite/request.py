@@ -7,10 +7,12 @@ from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from pydantic.typing import AnyCallable
 from starlette.datastructures import UploadFile
+from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
+from starlette.websockets import WebSocket as StarletteWebSocket
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, RequestEncodingType
@@ -41,15 +43,31 @@ class Request(StarletteRequest, Generic[User, Auth]):
         return cast(Auth, self.scope["auth"])
 
 
-def parse_query_params(request: Request) -> Dict[str, Any]:
-    """
-    Parses and normalize a given request's query parameters into a regular dictionary
+class WebSocket(StarletteWebSocket, Generic[User, Auth]):
+    @property
+    def app(self) -> "Starlite":
+        return cast("Starlite", self.scope["app"])
 
-    supports list query params
+    @property
+    def user(self) -> User:
+        assert "user" in self.scope, "user is not defined in scope, you should install an AuthMiddleware to set it"
+        return cast(User, self.scope["user"])
+
+    @property
+    def auth(self) -> Auth:
+        assert "auth" in self.scope, "auth is not defined in scope, you should install an AuthMiddleware to set it"
+        return cast(Auth, self.scope["auth"])
+
+
+def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
+    """
+    Parses and normalize a given connection's query parameters into a regular dictionary
+
+    Extends the Starlette query params handling by supporting lists
     """
     params: Dict[str, Union[str, List[str]]] = {}
     try:
-        for key, value in request.query_params.multi_items():
+        for key, value in connection.query_params.multi_items():
             if value in ["True", "true"]:
                 value = True  # type: ignore
             elif value in ["False", "false"]:
@@ -86,16 +104,16 @@ async def get_request_data(request: Request, field: ModelField) -> Any:
     return as_dict
 
 
-def get_request_parameters(
-    request: Request,
+def get_connection_parameters(
+    connection: HTTPConnection,
     field_name: str,
     field: ModelField,
     query_params: Dict[str, Any],
     header_params: Dict[str, Any],
 ) -> Any:
     """Extract path, query, header and cookie parameters correlating to field_names from the request"""
-    if field_name in request.path_params:
-        return request.path_params[field_name]
+    if field_name in connection.path_params:
+        return connection.path_params[field_name]
     if field_name in query_params:
         return query_params[field_name]
 
@@ -111,7 +129,7 @@ def get_request_parameters(
         source = header_params
     if extra.get("cookie"):
         parameter_name = extra["cookie"]
-        source = request.cookies
+        source = connection.cookies
     if parameter_name and source:
         parameter_is_required = extra["required"]
         try:
@@ -122,27 +140,35 @@ def get_request_parameters(
     return None
 
 
-async def get_model_kwargs_from_request(request: Request, fields: Dict[str, ModelField]) -> Dict[str, Any]:
+async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: Dict[str, ModelField]) -> Dict[str, Any]:
     """
     Given a function's signature Model fields, populate its kwargs from the Request object
     """
     kwargs: Dict[str, Any] = {}
-    query_params = parse_query_params(request=request)
-    header_params = dict(request.headers.items())
+    query_params = parse_query_params(connection=connection)
+    header_params = dict(connection.headers.items())
     for field_name, field in fields.items():
-        if field_name == "request":
-            kwargs["request"] = request
-        elif field_name == "headers":
+        if field_name == "headers":
             kwargs["headers"] = header_params
         elif field_name == "cookies":
-            kwargs["cookies"] = request.cookies
+            kwargs["cookies"] = connection.cookies
         elif field_name == "query":
             kwargs["query"] = query_params
+        elif field_name == "request":
+            if not isinstance(connection, Request):
+                ImproperlyConfiguredException("The request kwarg is not supported with websockets")
+            kwargs["request"] = connection
+        elif field_name == "websocket":
+            if not isinstance(connection, WebSocket):
+                raise ImproperlyConfiguredException("The data kwarg is not supported with websockets")
+            kwargs["websocket"] = connection
         elif field_name == "data":
-            kwargs["data"] = await get_request_data(request=request, field=field)
+            if not isinstance(connection, Request):
+                raise ImproperlyConfiguredException("The data kwarg is not supported with websockets")
+            kwargs["data"] = await get_request_data(request=connection, field=field)
         else:
-            kwargs[field_name] = get_request_parameters(
-                request=request,
+            kwargs[field_name] = get_connection_parameters(
+                connection=connection,
                 field_name=field_name,
                 field=field,
                 query_params=query_params,
@@ -151,7 +177,7 @@ async def get_model_kwargs_from_request(request: Request, fields: Dict[str, Mode
     return kwargs
 
 
-async def get_http_handler_parameters(route_handler: "RouteHandler", request: Request) -> Dict[str, Any]:
+async def get_http_handler_parameters(route_handler: "RouteHandler", connection: HTTPConnection) -> Dict[str, Any]:
     """
     Parse a given http handler function and return values matching function parameter keys
     """
@@ -161,22 +187,22 @@ async def get_http_handler_parameters(route_handler: "RouteHandler", request: Re
         # dependency injection
         dependencies: Dict[str, Any] = {}
         for key, provider in route_handler.resolve_dependencies().items():
-            provider_kwargs = await get_model_kwargs_from_request(
-                request=request, fields=provider.signature_model.__fields__
+            provider_kwargs = await get_model_kwargs_from_connection(
+                connection=connection, fields=provider.signature_model.__fields__
             )
             value = provider(**provider.signature_model(**provider_kwargs).dict())
             if isawaitable(value):
                 value = await value
             dependencies[key] = value
-        model_kwargs = await get_model_kwargs_from_request(
-            request=request, fields={k: v for k, v in model.__fields__.items() if k not in dependencies}
+        model_kwargs = await get_model_kwargs_from_connection(
+            connection=connection, fields={k: v for k, v in model.__fields__.items() if k not in dependencies}
         )
         # we return the model's attributes as a dict in order to preserve any nested models
         fields = list(model.__fields__.keys())
         return {key: model(**model_kwargs, **dependencies).__getattribute__(key) for key in fields}
     except ValidationError as e:
         raise ValidationException(
-            detail=f"Validation failed for {request.method} {request.url}:\n\n{display_errors(e.errors())}"
+            detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
         ) from e
 
 
@@ -185,7 +211,7 @@ async def handle_request(route_handler: "RouteHandler", request: Request) -> Sta
     Handles a given request by both calling the passed in function,
     and parsing the RouteHandler stored as an attribute on it.
     """
-    params = await get_http_handler_parameters(route_handler=route_handler, request=request)
+    params = await get_http_handler_parameters(route_handler=route_handler, connection=request)
 
     for guard in route_handler.resolve_guards():
         result = guard(request, route_handler.copy())
