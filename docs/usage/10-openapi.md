@@ -27,7 +27,7 @@ app = Starlite(
 Aside from `title` and `version`, both of which are **required** kwargs, you can pass the following optional kwargs:
 
 * `create_examples`: Boolean flag dictating whether examples will be auto-generated using
-  the [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library. Defaults to `False`.
+  the [pydantic-factories](https://github.com/starlite-api/pydantic-factories) library. Defaults to `False`.
 * `contact`: An instance of the `Contact` model.
 * `description`: Description text.
 * `external_docs`: An instance of the `ExternalDocumentation` model.

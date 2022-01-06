@@ -5,9 +5,9 @@ description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <Naaman.Hirschfeld@sprylab.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/Goldziher/starlite"
-repository = "https://github.com/Goldziher/starlite"
-documentation = "https://github.com/Goldziher/starlite"
+homepage = "https://github.com/starlite-api/starlite"
+repository = "https://github.com/starlite-api/starlite"
+documentation = "https://starlite-api.github.io/starlite"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi", "framework"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

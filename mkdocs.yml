@@ -1,6 +1,6 @@
 site_name: Starlite
-repo_url: https://github.com/Goldziher/starlite
-repo_name: Goldziher/starlite
+repo_url: https://github.com/starlite-api/starlite
+repo_name: starlite-api/starlite
 theme:
   name: material
   palette:
@@ -51,7 +51,7 @@ extra:
     - icon: fontawesome/brands/discord
       link: https://discord.gg/X3FJqy8d2j
     - icon: fontawesome/brands/github
-      link: https://github.com/Goldziher/starlite
+      link: https://github.com/starlite-api/starlite
 markdown_extensions:
   - admonition
   - pymdownx.highlight:
