@@ -14,14 +14,14 @@ def my_endpoint() -> None:
     ...
 ```
 
-What route does is wrap the given function or class method and replace it with an instance of the class `RouteHandler`.
-In fact, route is merely an alias for `RouteHandler`, thus you could have done this instead:
+What route does is wrap the given function or class method and replace it with an instance of the class `HTTPRouteHandler`.
+In fact, route is merely an alias for `HTTPRouteHandler`, thus you could have done this instead:
 
 ```python
-from starlite import HttpMethod, BaseRouteHandler
+from starlite import HttpMethod, HTTPRouteHandler
 
 
-@BaseRouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
+@HTTPRouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
 ```
