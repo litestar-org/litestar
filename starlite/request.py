@@ -146,7 +146,7 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
             kwargs["query"] = query_params
         elif field_name == "request":
             if not isinstance(connection, Request):
-                ImproperlyConfiguredException("The request kwarg is not supported with websockets")
+                raise ImproperlyConfiguredException("The request kwarg is not supported with websockets")
             kwargs["request"] = connection
         elif field_name == "websocket":
             if not isinstance(connection, WebSocket):
