@@ -1,27 +1,17 @@
-from enum import Enum
-from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
 from orjson import loads
-from pydantic.error_wrappers import ValidationError, display_errors
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
-from pydantic.typing import AnyCallable
 from starlette.datastructures import UploadFile
 from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
-from starlette.responses import FileResponse, RedirectResponse
-from starlette.responses import Response as StarletteResponse
-from starlette.responses import StreamingResponse
 from starlette.websockets import WebSocket as StarletteWebSocket
 
-from starlite.controller import Controller
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.types import File, Redirect, Stream
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
-    from starlite.handlers import RouteHandler
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
@@ -175,77 +165,3 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
                 header_params=header_params,
             )
     return kwargs
-
-
-async def get_http_handler_parameters(route_handler: "RouteHandler", connection: HTTPConnection) -> Dict[str, Any]:
-    """
-    Parse a given http handler function and return values matching function parameter keys
-    """
-    model = route_handler.signature_model
-    assert model, "route handler has no signature model"
-    try:
-        # dependency injection
-        dependencies: Dict[str, Any] = {}
-        for key, provider in route_handler.resolve_dependencies().items():
-            provider_kwargs = await get_model_kwargs_from_connection(
-                connection=connection, fields=provider.signature_model.__fields__
-            )
-            value = provider(**provider.signature_model(**provider_kwargs).dict())
-            if isawaitable(value):
-                value = await value
-            dependencies[key] = value
-        model_kwargs = await get_model_kwargs_from_connection(
-            connection=connection, fields={k: v for k, v in model.__fields__.items() if k not in dependencies}
-        )
-        # we return the model's attributes as a dict in order to preserve any nested models
-        fields = list(model.__fields__.keys())
-        return {key: model(**model_kwargs, **dependencies).__getattribute__(key) for key in fields}
-    except ValidationError as e:
-        raise ValidationException(
-            detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
-        ) from e
-
-
-async def handle_request(route_handler: "RouteHandler", request: Request) -> StarletteResponse:
-    """
-    Handles a given request by both calling the passed in function,
-    and parsing the RouteHandler stored as an attribute on it.
-    """
-    params = await get_http_handler_parameters(route_handler=route_handler, connection=request)
-
-    for guard in route_handler.resolve_guards():
-        result = guard(request, route_handler.copy())
-        if isawaitable(result):
-            await result
-
-    endpoint = cast(AnyCallable, route_handler.fn)
-
-    if isinstance(route_handler.owner, Controller):
-        data = endpoint(route_handler.owner, **params)
-    else:
-        data = endpoint(**params)
-    if isawaitable(data):
-        data = await data
-    if isinstance(data, StarletteResponse):
-        return data
-
-    status_code = cast(int, route_handler.status_code)
-    headers = {k: v.value for k, v in route_handler.resolve_response_headers().items()}
-    if isinstance(data, Redirect):
-        return RedirectResponse(headers=headers, status_code=status_code, url=data.path)
-
-    media_type = (
-        route_handler.media_type.value if isinstance(route_handler.media_type, Enum) else route_handler.media_type
-    )
-    if isinstance(data, File):
-        return FileResponse(media_type=media_type, headers=headers, **data.dict())
-    if isinstance(data, Stream):
-        return StreamingResponse(content=data.iterator, status_code=status_code, media_type=media_type, headers=headers)
-
-    response_class = route_handler.resolve_response_class()
-    return response_class(
-        headers=headers,
-        status_code=status_code,
-        content=data,
-        media_type=media_type,
-    )

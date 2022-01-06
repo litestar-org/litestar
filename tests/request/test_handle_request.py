@@ -1,7 +1,7 @@
 from asyncio import sleep
 from json import loads
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -17,7 +17,6 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK
 
 from starlite import File, HttpMethod, MediaType, Redirect, Response, get, route
-from starlite.request import handle_request
 from starlite.testing import create_test_request
 from starlite.types import Stream
 from tests import Person, PersonFactory
@@ -34,7 +33,7 @@ async def test_handle_request_async_await():
     person_instance = PersonFactory.build()
     request = create_test_request(content=person_instance, http_method=HttpMethod.POST)
 
-    response = await handle_request(route_handler=cast(Any, test_function), request=request)
+    response = await test_function.handle_request(request=request)
     assert loads(response.body) == person_instance.dict()
 
 
@@ -58,17 +57,17 @@ async def test_handle_request_when_handler_returns_starlette_responses(response)
         return response
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    assert await handle_request(route_handler=cast(Any, test_function), request=request) == response
+    assert await test_function.handle_request(request=request) == response
 
 
 @pytest.mark.asyncio
 async def test_handle_request_redirect_response():
     @get(http_method=[HttpMethod.GET], path="/test")
-    def test_handler() -> None:
+    def test_function() -> None:
         return Redirect(path="/somewhere-else")
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    response = await handle_request(route_handler=cast(Any, test_handler), request=request)
+    response = await test_function.handle_request(request=request)
     assert isinstance(response, RedirectResponse)
     assert response.headers["location"] == "/somewhere-else"
 
@@ -83,7 +82,7 @@ async def test_handle_request_file_response():
         return File(path=current_file_path, filename=filename)
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    response = await handle_request(route_handler=cast(Any, test_function), request=request)
+    response = await test_function.handle_request(request=request)
     assert isinstance(response, FileResponse)
     assert response.stat_result
 
@@ -114,7 +113,7 @@ async def test_handle_request_streaming_response(iterator: Any, should_raise: bo
             return Stream(iterator=iterator)
 
         request = create_test_request(content=None, http_method=HttpMethod.GET)
-        response = await handle_request(route_handler=cast(Any, test_function), request=request)
+        response = await test_function.handle_request(request=request)
         assert isinstance(response, StreamingResponse)
     else:
         with pytest.raises(ValidationError):

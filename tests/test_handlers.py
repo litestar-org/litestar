@@ -23,7 +23,7 @@ from starlite import (
     route,
 )
 from starlite.exceptions import ValidationException
-from starlite.handlers import RouteHandler
+from starlite.handlers import HTTPRouteHandler
 from starlite.response import Response
 
 
@@ -51,15 +51,15 @@ def test_route_handler_param_handling(
 ):
     if isinstance(http_method, list) and len(http_method) == 0:
         with pytest.raises(ValidationError):
-            RouteHandler(http_method=http_method)
+            HTTPRouteHandler(http_method=http_method)
     elif not status_code and isinstance(http_method, list) and len(http_method) > 1:
         with pytest.raises(ValidationError):
-            RouteHandler(
+            HTTPRouteHandler(
                 http_method=http_method,
                 status_code=status_code,
             )
     else:
-        decorator = RouteHandler(
+        decorator = HTTPRouteHandler(
             http_method=http_method,
             media_type=media_type,
             include_in_schema=include_in_schema,
@@ -105,7 +105,7 @@ def test_route_handler_param_handling(
     ],
 )
 def test_route_handler_default_status_code(http_method, expected_status_code):
-    route_handler = RouteHandler(http_method=http_method)
+    route_handler = HTTPRouteHandler(http_method=http_method)
     assert route_handler.status_code == expected_status_code
 
 
@@ -117,14 +117,14 @@ def test_route_handler_validation_http_method():
     # raises for invalid values
     for value in [None, "", 123, "deleze"]:
         with pytest.raises(ValidationError):
-            RouteHandler(http_method=value)
+            HTTPRouteHandler(http_method=value)
 
     # doesn't raise when status_code is provided for multiple http_methods
     assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
 
     # raises otherwise
     with pytest.raises(ValidationError):
-        RouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
+        HTTPRouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
 
     # also when passing an empty list
     with pytest.raises(ValidationError):
@@ -140,11 +140,11 @@ def test_route_handler_validation_response_class():
     class SpecialResponse(Response):
         pass
 
-    assert RouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
+    assert HTTPRouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
 
     # raises otherwise
     with pytest.raises(ValidationError):
-        RouteHandler(http_method=HttpMethod.GET, response_class=dict())
+        HTTPRouteHandler(http_method=HttpMethod.GET, response_class=dict())
 
 
 @pytest.mark.parametrize(

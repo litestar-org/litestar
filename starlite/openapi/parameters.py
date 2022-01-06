@@ -5,7 +5,7 @@ from openapi_schema_pydantic import Parameter, Schema
 from pydantic.fields import ModelField
 from typing_extensions import Type
 
-from starlite.handlers import RouteHandler
+from starlite.handlers import BaseRouteHandler
 from starlite.openapi.schema import create_schema
 
 
@@ -25,7 +25,7 @@ def create_path_parameter_schema(path_parameter: str, field: ModelField, generat
 
 
 def create_parameters(
-    route_handler: RouteHandler,
+    route_handler: BaseRouteHandler,
     handler_fields: Dict[str, ModelField],
     path_parameters: List[str],
     generate_examples: bool,

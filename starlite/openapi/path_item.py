@@ -10,10 +10,10 @@ from starlite.openapi.responses import create_responses
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.routing import Route
+    from starlite.routing import HTTPRoute
 
 
-def create_path_item(route: "Route", create_examples: bool) -> PathItem:
+def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
     """
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """

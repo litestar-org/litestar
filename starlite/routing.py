@@ -1,59 +1,142 @@
 import re
+from abc import ABC
 from inspect import isclass
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
-from starlette.routing import Route as StarletteRoute
-from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import Type
+from starlette.datastructures import URLPath
+from starlette.routing import BaseRoute as StarletteBaseRoute
+from starlette.routing import (
+    Match,
+    NoMatchFound,
+    compile_path,
+    get_name,
+    replace_params,
+)
+from starlette.types import Receive, Scope, Send
+from typing_extensions import Literal, Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import RouteHandler
+from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from starlite.provide import Provide
-from starlite.request import Request, handle_request
+from starlite.request import Request, WebSocket
 from starlite.response import Response
-from starlite.types import Guard, ResponseHeader
-from starlite.utils.sequence import find_index, unique
-from starlite.utils.url import join_paths, normalize_path
+from starlite.types import ControllerRouterHandler, Guard, Method, ResponseHeader
+from starlite.utils import find_index, join_paths, normalize_path, unique
 
 param_match_regex = re.compile(r"{(.*?)}")
 
 
-class Route(StarletteRoute):
-    route_handler_map: Dict[HttpMethod, RouteHandler]
+class BaseRoute(ABC, StarletteBaseRoute):
+    __slots__ = (
+        "app",
+        "handler_names",
+        "methods",
+        "param_convertors",
+        "path",
+        "path_format",
+        "path_parameters",
+        "path_regex",
+        "route_type",
+    )
+
+    @validate_arguments()
+    def __init__(
+        self,
+        *,
+        handler_names: List[str],
+        path: str,
+        route_type: Union[Literal["http"], Literal["websocket"]],
+        methods: Optional[List[Method]] = None,
+    ):
+        assert path.startswith("/"), "Routed paths must start with '/'"
+        self.handler_names = handler_names
+        self.path = path
+        self.route_type = route_type
+        self.path_regex, self.path_format, self.param_convertors = compile_path(path)
+        self.path_parameters: List[str] = param_match_regex.findall(self.path)
+
+        self.methods = methods or []
+        if "GET" in self.methods:
+            self.methods.append("HEAD")
+        for parameter in self.path_parameters:
+            if ":" not in parameter or not parameter.split(":")[1]:
+                raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
+
+    @property
+    def is_http_route(self) -> bool:
+        """Determines whether the given route is an http or websocket route"""
+        return self.route_type == "http"
+
+    def matches(self, scope: Scope) -> Tuple[Match, Scope]:
+        """
+        Try to match a given scope's path to self.path
+        """
+        if scope["type"] == self.route_type:
+            match = self.path_regex.match(scope["path"])
+            if match:
+                matched_params = match.groupdict()
+                for key, value in matched_params.items():
+                    matched_params[key] = self.param_convertors[key].convert(value)
+                path_params = dict(scope.get("path_params", {}))
+                path_params.update(matched_params)
+                child_scope = {"endpoint": self, "path_params": path_params}
+                if self.is_http_route and scope["method"] not in self.methods:
+                    return Match.PARTIAL, child_scope
+                return Match.FULL, child_scope
+        return Match.NONE, {}
+
+    def url_path_for(self, name: str, **path_params: str) -> URLPath:
+        seen_params = set(path_params.keys())
+        expected_params = set(self.param_convertors.keys())
+
+        if name not in self.handler_names or seen_params != expected_params:
+            raise NoMatchFound()
+
+        path, remaining_params = replace_params(self.path_format, self.param_convertors, path_params)
+        assert not remaining_params
+        return URLPath(path=path, protocol=self.route_type)
+
+
+class HTTPRoute(BaseRoute):
+    __slots__ = (
+        "app",
+        "handler_names",
+        "methods",
+        "param_convertors",
+        "path",
+        "path_format",
+        "path_parameters",
+        "path_regex",
+        "route_handler_map",
+        "route_type",
+    )
 
     @validate_arguments()
     def __init__(
         self,
         *,
         path: str,
-        route_handlers: Union[RouteHandler, List[RouteHandler]],
+        route_handlers: Union[HTTPRouteHandler, List[HTTPRouteHandler]],
     ):
-        self.route_handler_map = self.parse_route_handlers(
-            route_handlers=route_handlers if isinstance(route_handlers, list) else [route_handlers], path=path
-        )
+        route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
+        self.route_handler_map = self.parse_route_handlers(route_handlers=route_handlers, path=path)
         super().__init__(
-            endpoint=cast(Any, Undefined),
-            include_in_schema=any(route_handler.include_in_schema for route_handler in self.route_handler_map.values()),
-            methods=[method.value for method in self.route_handler_map],
+            methods=[method.to_str() for method in self.route_handler_map],
             path=path,
+            route_type="http",
+            handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
         )
-        self.app = self.create_endpoint_handler(self.route_handler_map)
-        self.path_parameters: List[str] = param_match_regex.findall(self.path)
-        for parameter in self.path_parameters:
-            if ":" not in parameter or not parameter.split(":")[1]:
-                raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
 
     @staticmethod
-    def parse_route_handlers(route_handlers: List[RouteHandler], path: str) -> Dict[HttpMethod, RouteHandler]:
+    def parse_route_handlers(route_handlers: List[HTTPRouteHandler], path: str) -> Dict[HttpMethod, HTTPRouteHandler]:
         """
         Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
         """
-        mapped_route_handlers: Dict[HttpMethod, RouteHandler] = {}
+        mapped_route_handlers: Dict[HttpMethod, HTTPRouteHandler] = {}
         for route_handler in route_handlers:
             for http_method in route_handler.http_methods:
                 if mapped_route_handlers.get(http_method):
@@ -63,37 +146,69 @@ class Route(StarletteRoute):
                 mapped_route_handlers[http_method] = route_handler
         return mapped_route_handlers
 
-    @staticmethod
-    def create_endpoint_handler(http_handler_mapping: Dict[HttpMethod, RouteHandler]) -> ASGIApp:
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
-        Create an ASGIApp that routes to the correct route handler based on the scope.
-
-        Using this method, Starlite is able to support different handler functions for the same path.
+        ASGI app that creates a Request from the passed in args, and then awaits a Response
         """
-
-        async def endpoint_handler(scope: Scope, receive: Receive, send: Send) -> None:
-            request: Request[Any, Any] = Request(scope, receive=receive, send=send)
-            request_method = HttpMethod.from_str(request.method)
-            handler = http_handler_mapping[request_method]
-            response = await handle_request(route_handler=handler, request=request)
-            await response(scope, receive, send)
-
-        return endpoint_handler
+        if scope["method"] not in self.methods:
+            raise MethodNotAllowedException()
+        request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
+        request_method = HttpMethod.from_str(request.method)
+        handler = self.route_handler_map[request_method]
+        response = await handler.handle_request(request=request)
+        await response(scope, receive, send)
 
 
-class Router:
+class WebSocketRoute(BaseRoute):
+    __slots__ = (
+        "app",
+        "handler_names",
+        "methods",
+        "param_convertors",
+        "path",
+        "path_format",
+        "path_parameters",
+        "path_regex",
+        "route_handler",
+        "route_type",
+    )
+
+    @validate_arguments()
     def __init__(
         self,
         *,
         path: str,
-        route_handlers: List[Union[Type[Controller], RouteHandler, "Router", AnyCallable]],
+        route_handler: WebsocketRouteHandler,
+    ):
+        self.route_handler = route_handler
+        super().__init__(
+            path=path,
+            route_type="websocket",
+            handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
+        )
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
+        """
+        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=receive, send=send)
+        await self.route_handler.handle_websocket(web_socket=web_socket)
+
+
+class Router:
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        *,
+        path: str,
+        route_handlers: List[ControllerRouterHandler],
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
     ):
         self.owner: Optional["Router"] = None
-        self.routes: List[Route] = []
+        self.routes: List[BaseRoute] = []
         self.path = normalize_path(path)
         self.response_class = response_class
         self.dependencies = dependencies
@@ -103,49 +218,58 @@ class Router:
             self.register(value=route_handler)
 
     @property
-    def route_handler_method_map(self) -> Dict[str, Dict[HttpMethod, RouteHandler]]:
+    def route_handler_method_map(self) -> Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]]:
         """
         Returns dictionary that maps paths (keys) to a list of route handler functions (values)
         """
-        r_map: Dict[str, Dict[HttpMethod, RouteHandler]] = {}
-        for r in self.routes:
-            if not r_map.get(r.path):
-                r_map[r.path] = {}
-            for method, handler in r.route_handler_map.items():
-                r_map[r.path][method] = handler
-        return r_map
+        route_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
+        for route in self.routes:
+            if isinstance(route, HTTPRoute):
+                if not isinstance(route_map.get(route.path), dict):
+                    route_map[route.path] = {}
+                for method, handler in route.route_handler_map.items():
+                    route_map[route.path][method] = handler  # type: ignore
+            else:
+                route_map[route.path] = cast(WebSocketRoute, route).route_handler
+        return route_map
 
     @staticmethod
-    def create_handler_http_method_map(
-        value: Union[Controller, RouteHandler, "Router"],
-    ) -> Dict[str, Dict[HttpMethod, RouteHandler]]:
+    def map_route_handlers(
+        value: Union[Controller, BaseRouteHandler, "Router"],
+    ) -> ItemsView[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]]:
         """
         Maps route handlers to http methods
         """
-        handlers_map: Dict[str, Dict[HttpMethod, RouteHandler]] = {}
-        if isinstance(value, RouteHandler):
-            handlers_map[value.path or ""] = {http_method: value for http_method in value.http_methods}
+        handlers_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
+        if isinstance(value, BaseRouteHandler):
+            if isinstance(value, HTTPRouteHandler):
+                handlers_map[value.path or ""] = {http_method: value for http_method in value.http_methods}
+            elif isinstance(value, WebsocketRouteHandler):
+                handlers_map[value.path or ""] = value
         elif isinstance(value, Router):
             handlers_map = value.route_handler_method_map
         else:
-            # we reassign the variable to give it a clearer meaning
+            # we are dealing with a controller
             for route_handler in value.get_route_handlers():
                 path = join_paths([value.path, route_handler.path]) if route_handler.path else value.path
-                if not handlers_map.get(path):
-                    handlers_map[path] = {}
-                for http_method in route_handler.http_methods:
-                    handlers_map[path][http_method] = route_handler
-        return handlers_map
+                if isinstance(route_handler, HTTPRouteHandler):
+                    if not isinstance(handlers_map.get(path), dict):
+                        handlers_map[path] = {}
+                    for http_method in route_handler.http_methods:
+                        handlers_map[path][http_method] = route_handler  # type: ignore
+                else:
+                    handlers_map[path] = cast(WebsocketRouteHandler, route_handler)
+        return handlers_map.items()
 
     def validate_registration_value(
-        self, value: Union[Type[Controller], RouteHandler, "Router", AnyCallable]
-    ) -> Union[Controller, RouteHandler, "Router"]:
+        self, value: ControllerRouterHandler
+    ) -> Union[Controller, BaseRouteHandler, "Router"]:
         """
         Validates that the value passed to the register method is supported
         """
         if isclass(value) and issubclass(cast(Type[Controller], value), Controller):
             return cast(Type[Controller], value)(owner=self)
-        if not isinstance(value, (Router, RouteHandler)):
+        if not isinstance(value, (Router, BaseRouteHandler)):
             raise ImproperlyConfiguredException(
                 "Unsupported value passed to `Router.register`. "
                 "If you passed in a function or method, "
@@ -163,9 +287,9 @@ class Router:
             # we get an instance with a unique owner
             value = value.copy()
             value.owner = self
-        return cast(Union[Controller, RouteHandler, "Router"], value)
+        return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
-    def register(self, value: Union[Type[Controller], RouteHandler, "Router", AnyCallable]) -> None:
+    def register(self, value: ControllerRouterHandler) -> None:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -175,19 +299,24 @@ class Router:
         validated_value = self.validate_registration_value(value)
         if not validated_value.owner:
             validated_value.owner = self
-        handlers_map = self.create_handler_http_method_map(value=validated_value)
-
-        for route_path, method_map in handlers_map.items():
+        for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
-            route_handlers = unique(method_map.values())
-            if self.route_handler_method_map.get(path):
-                existing_route_index = find_index(
-                    self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
-                )
-                assert existing_route_index != -1, "unable to find_index existing route index"
-                self.routes[existing_route_index] = Route(
-                    path=path,
-                    route_handlers=unique([*list(self.route_handler_method_map[path].values()), *route_handlers]),
-                )
+            if isinstance(handler_or_method_map, WebsocketRouteHandler):
+                self.routes.append(WebSocketRoute(path=path, route_handler=handler_or_method_map))
             else:
-                self.routes.append(Route(path=path, route_handlers=route_handlers))
+                route_handlers = unique(handler_or_method_map.values())
+                if self.route_handler_method_map.get(path):
+                    existing_route_index = find_index(
+                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
+                    )
+                    assert existing_route_index != -1, "unable to find_index existing route index"
+                    if isinstance(self.route_handler_method_map[path], dict):
+                        existing_route_handlers = list(cast(dict, self.route_handler_method_map[path]).values())
+                    else:
+                        existing_route_handlers = []
+                    self.routes[existing_route_index] = HTTPRoute(
+                        path=path,
+                        route_handlers=unique([*existing_route_handlers, *route_handlers]),
+                    )
+                else:
+                    self.routes.append(HTTPRoute(path=path, route_handlers=route_handlers))

@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
-from pydantic.typing import AnyCallable, NoArgAnyCallable
+from pydantic.typing import NoArgAnyCallable
 from starlette.datastructures import State
 from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -18,16 +18,20 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.config import CORSConfig, OpenAPIConfig
-from starlite.controller import Controller
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import RouteHandler
 from starlite.openapi.path_item import create_path_item
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import Router
-from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol, ResponseHeader
+from starlite.routing import HTTPRoute, Router
+from starlite.types import (
+    ControllerRouterHandler,
+    ExceptionHandler,
+    Guard,
+    MiddlewareProtocol,
+    ResponseHeader,
+)
 
 
 class Starlite(Router):
@@ -48,7 +52,7 @@ class Starlite(Router):
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        route_handlers: List[Union[Type[Controller], RouteHandler, Router, AnyCallable]],
+        route_handlers: List[ControllerRouterHandler],
     ):
         self.debug = debug
         self.state = State()
@@ -134,7 +138,11 @@ class Starlite(Router):
         openapi_schema = openapi_config.to_openapi_schema()
         openapi_schema.paths = {}
         for route in self.routes:
-            if route.include_in_schema and (route.path_format or "/") not in openapi_schema.paths:
+            if (
+                isinstance(route, HTTPRoute)
+                and any(route_handler.include_in_schema for route_handler in route.route_handler_map.values())
+                and (route.path_format or "/") not in openapi_schema.paths
+            ):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(
                     route=route, create_examples=openapi_config.create_examples
                 )

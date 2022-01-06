@@ -15,7 +15,7 @@ from starlite import Controller, Provide, Router
 from starlite.app import Starlite
 from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import HttpMethod, RequestEncodingType
-from starlite.handlers import RouteHandler
+from starlite.handlers import BaseRouteHandler
 from starlite.request import Request
 from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol
 
@@ -58,8 +58,8 @@ class TestClient(StarletteTestClient):
 
 def create_test_client(
     route_handlers: Union[
-        Union[Type[Controller], RouteHandler, Router, AnyCallable],
-        List[Union[Type[Controller], RouteHandler, Router, AnyCallable]],
+        Union[Type[Controller], BaseRouteHandler, Router, AnyCallable],
+        List[Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]],
     ],
     allowed_hosts: Optional[List[str]] = None,
     backend: str = "asyncio",

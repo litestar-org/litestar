@@ -16,10 +16,12 @@ from typing import (
 
 from openapi_schema_pydantic import Header
 from pydantic import BaseModel, FilePath, create_model, validator
+from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import AsyncIterator, Protocol, Type, runtime_checkable
+from typing_extensions import AsyncIterator, Literal, Protocol, Type, runtime_checkable
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response
@@ -31,14 +33,24 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.handlers import RouteHandler
+    from starlite.controller import Controller
+    from starlite.handlers import BaseRouteHandler
     from starlite.request import Request
+    from starlite.routing import Router
 else:
     Request = Any
-    RouteHandler = Any
+    BaseRouteHandler = Any
+    Controller = Any
+    Router = Any
 
-ExceptionHandler = Callable[[Request, Union[HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]]
-Guard = Union[Callable[[Request, RouteHandler], Awaitable[None]], Callable[[Request, RouteHandler], None]]
+ExceptionHandler = Callable[
+    [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
+]
+Guard = Union[
+    Callable[[HTTPConnection, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnection, BaseRouteHandler], None]
+]
+Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
+ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 
 
 @runtime_checkable

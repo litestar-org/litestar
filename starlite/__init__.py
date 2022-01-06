@@ -13,7 +13,7 @@ from .exceptions import (
     ServiceUnavailableException,
     StarLiteException,
 )
-from .handlers import RouteHandler, delete, get, patch, post, put, route
+from .handlers import BaseRouteHandler, delete, get, patch, post, put, route
 from .logging import LoggingConfig
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
@@ -21,7 +21,7 @@ from .params import Body, Parameter
 from .provide import Provide
 from .request import Request
 from .response import Response
-from .routing import Route, Router
+from .routing import HTTPRoute, Router
 from .testing import TestClient, create_test_client, create_test_request
 from .types import File, MiddlewareProtocol, Partial, Redirect, ResponseHeader, Stream
 
@@ -60,9 +60,9 @@ __all__ = [
     "RequestEncodingType",
     "Response",
     "ResponseHeader",
-    "Route",
+    "HTTPRoute",
     "route",
-    "RouteHandler",
+    "BaseRouteHandler",
     "Router",
     "ServiceUnavailableException",
     "Starlite",

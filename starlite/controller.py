@@ -8,7 +8,7 @@ from starlite.types import Guard, ResponseHeader
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.handlers import RouteHandler
+    from starlite.handlers import BaseRouteHandler
     from starlite.provide import Provide
     from starlite.routing import Router
 
@@ -34,16 +34,16 @@ class Controller:
         for route_handler in self.get_route_handlers():
             route_handler.owner = self
 
-    def get_route_handlers(self) -> List["RouteHandler"]:
+    def get_route_handlers(self) -> List["BaseRouteHandler"]:
         """
         Returns a list of route handlers defined on the controller
         """
         from starlite.handlers import (  # pylint: disable=import-outside-toplevel
-            RouteHandler,
+            BaseRouteHandler,
         )
 
         return [
             getattr(self, f_name)
             for f_name in dir(self)
-            if f_name not in dir(Controller) and isinstance(getattr(self, f_name), RouteHandler)
+            if f_name not in dir(Controller) and isinstance(getattr(self, f_name), BaseRouteHandler)
         ]

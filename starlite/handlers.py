@@ -1,8 +1,14 @@
-from inspect import Signature, isclass
+from enum import Enum
+from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
-from pydantic import BaseModel, Extra, Field, validator
+from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from pydantic.error_wrappers import display_errors
 from pydantic.typing import AnyCallable
+from starlette.requests import HTTPConnection
+from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import Response as StarletteResponse
+from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from typing_extensions import Literal
 
@@ -15,8 +21,9 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.provide import Provide
+from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
 from starlite.response import Response
-from starlite.types import File, Guard, Redirect, ResponseHeader
+from starlite.types import File, Guard, Redirect, ResponseHeader, Stream
 from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -27,49 +34,21 @@ class _empty:
     """Placeholder"""
 
 
-class RouteHandler(BaseModel):
+class BaseRouteHandler(BaseModel):
     class Config:
         arbitrary_types_allowed = True
         extra = Extra.allow
 
     dependencies: Optional[Dict[str, Provide]] = None
     guards: Optional[List[Guard]] = None
-    http_method: Union[HttpMethod, List[HttpMethod]]
-    include_in_schema: bool = True
-    media_type: Union[MediaType, str] = MediaType.JSON
     path: Optional[str] = None
-    response_class: Optional[Type[Response]] = None
-    response_headers: Optional[Dict[str, ResponseHeader]] = None
-    status_code: Optional[int] = None
     opt: Dict[str, Any] = {}
 
     fn: Optional[AnyCallable] = None
     owner: Optional[Union[Controller, "Router"]] = None
     resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
-    resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
-    resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
     resolved_guards: Union[List[Guard], Type[_empty]] = _empty
     signature_model: Optional[Type[BaseModel]] = None
-
-    # OpenAPI attributes
-    content_encoding: Optional[str] = None
-    content_media_type: Optional[str] = None
-    deprecated: bool = False
-    description: Optional[str] = None
-    operation_id: Optional[str] = None
-    raises: Optional[List[Type[HTTPException]]] = None
-    response_description: Optional[str] = None
-    summary: Optional[str] = None
-    tags: Optional[List[str]] = None
-
-    def __call__(self, fn: AnyCallable) -> "RouteHandler":
-        """
-        Replaces a function with itself
-        """
-        self.fn = fn
-        self.signature_model = create_function_signature_model(fn)
-        self.validate_handler_function()
-        return self
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
@@ -83,18 +62,6 @@ class RouteHandler(BaseModel):
             # we reverse the list to ensure that the highest level guards are called first
             self.resolved_guards = list(reversed(resolved_guards))
         return cast(List[Guard], self.resolved_guards)
-
-    def resolve_response_class(self) -> Type[Response]:
-        """Return the closest custom Response class in the owner graph or the default Response class"""
-        if self.resolved_response_class is _empty:
-            self.resolved_response_class = Response
-            cur: Any = self
-            while cur is not None:
-                if cur.response_class is not None:
-                    self.resolved_response_class = cast(Type[Response], cur.response_class)
-                    break
-                cur = cur.owner
-        return cast(Type[Response], self.resolved_response_class)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
@@ -113,6 +80,110 @@ class RouteHandler(BaseModel):
                 cur = cur.owner
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)
+
+    @staticmethod
+    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
+        """
+        Validates that a given provider has not been already defined under a different key
+        """
+        for dependency_key, value in dependencies.items():
+            if provider == value:
+                raise ImproperlyConfiguredException(
+                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
+                    f"If you wish to override a provider, it must have the same key."
+                )
+
+    def validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once it's set by inspecting its return annotations
+        """
+        assert self.fn, "cannot call validate_handler_function without first setting self.fn"
+
+    async def authorize_connection(self, connection: HTTPConnection) -> None:
+        """
+        Ensures the connection is authorized by running all the route guards in scope
+        """
+        for guard in self.resolve_guards():
+            result = guard(connection, self.copy())
+            if isawaitable(result):
+                await result
+
+    async def get_parameters_from_connection(self, connection: HTTPConnection) -> Dict[str, Any]:
+        """
+        Parse the signature_model of the route handler return values matching function parameter keys as well as dependencies
+        """
+        assert self.signature_model, "route handler has no signature model"
+        try:
+            # dependency injection
+            dependencies: Dict[str, Any] = {}
+            for key, provider in self.resolve_dependencies().items():
+                provider_kwargs = await get_model_kwargs_from_connection(
+                    connection=connection, fields=provider.signature_model.__fields__
+                )
+                value = provider(**provider.signature_model(**provider_kwargs).dict())
+                if isawaitable(value):
+                    value = await value
+                dependencies[key] = value
+            model_kwargs = await get_model_kwargs_from_connection(
+                connection=connection,
+                fields={k: v for k, v in self.signature_model.__fields__.items() if k not in dependencies},
+            )
+            # we return the model's attributes as a dict in order to preserve any nested models
+            fields = list(self.signature_model.__fields__.keys())
+            return {
+                key: self.signature_model(  # pylint: disable=not-callable
+                    **model_kwargs, **dependencies
+                ).__getattribute__(key)
+                for key in fields
+            }
+        except ValidationError as e:
+            raise ValidationException(
+                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
+            ) from e
+
+
+class HTTPRouteHandler(BaseRouteHandler):
+    http_method: Union[HttpMethod, List[HttpMethod]]
+    media_type: Union[MediaType, str] = MediaType.JSON
+    response_class: Optional[Type[Response]] = None
+    response_headers: Optional[Dict[str, ResponseHeader]] = None
+    status_code: Optional[int] = None
+
+    resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
+    resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
+
+    # OpenAPI related attributes
+    include_in_schema: bool = True
+    content_encoding: Optional[str] = None
+    content_media_type: Optional[str] = None
+    deprecated: bool = False
+    description: Optional[str] = None
+    operation_id: Optional[str] = None
+    raises: Optional[List[Type[HTTPException]]] = None
+    response_description: Optional[str] = None
+    summary: Optional[str] = None
+    tags: Optional[List[str]] = None
+
+    def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
+        """
+        Replaces a function with itself
+        """
+        self.fn = fn
+        self.signature_model = create_function_signature_model(fn)
+        self.validate_handler_function()
+        return self
+
+    def resolve_response_class(self) -> Type[Response]:
+        """Return the closest custom Response class in the owner graph or the default Response class"""
+        if self.resolved_response_class is _empty:
+            self.resolved_response_class = Response
+            cur: Any = self
+            while cur is not None:
+                if cur.response_class is not None:
+                    self.resolved_response_class = cast(Type[Response], cur.response_class)
+                    break
+                cur = cur.owner
+        return cast(Type[Response], self.resolved_response_class)
 
     def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
         """
@@ -187,11 +258,10 @@ class RouteHandler(BaseModel):
 
     def validate_handler_function(self) -> None:
         """
-        Validates the route handler function once its set by inspecting its return annotations
+        Validates the route handler function once it is set by inspecting its return annotations
         """
-        assert self.fn, "cannot call validate_handler_function without first setting self.fn"
-
-        return_annotation = Signature.from_callable(self.fn).return_annotation
+        super().validate_handler_function()
+        return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
         if return_annotation is Signature.empty:
             raise ValidationException(
                 "A return value of a route handler function should be type annotated."
@@ -206,29 +276,97 @@ class RouteHandler(BaseModel):
             if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
                 self.media_type = MediaType.TEXT
 
+    async def handle_request(self, request: Request) -> StarletteResponse:
+        """
+        Handles a given Request in relation to self.
+        """
+        assert self.fn, "cannot call a route handler without a decorated function"
+        await self.authorize_connection(connection=request)
+        params = await self.get_parameters_from_connection(connection=request)
 
-route = RouteHandler
+        if isinstance(self.owner, Controller):
+            data = self.fn(self.owner, **params)
+        else:
+            data = self.fn(**params)
+        if isawaitable(data):
+            data = await data
+        if isinstance(data, StarletteResponse):
+            return data
+
+        status_code = cast(int, self.status_code)
+        headers = {k: v.value for k, v in self.resolve_response_headers().items()}
+        if isinstance(data, Redirect):
+            return RedirectResponse(headers=headers, status_code=status_code, url=data.path)
+
+        media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
+        if isinstance(data, File):
+            return FileResponse(media_type=media_type, headers=headers, **data.dict())
+        if isinstance(data, Stream):
+            return StreamingResponse(
+                content=data.iterator, status_code=status_code, media_type=media_type, headers=headers
+            )
+
+        response_class = self.resolve_response_class()
+        return response_class(
+            headers=headers,
+            status_code=status_code,
+            content=data,
+            media_type=media_type,
+        )
 
 
-class get(RouteHandler):
-    class Config:
-        arbitrary_types_allowed = True
-        extra = Extra.allow
+route = HTTPRouteHandler
 
+
+class get(HTTPRouteHandler):
     http_method: Literal[HttpMethod.GET] = Field(default=HttpMethod.GET, const=True)
 
 
-class post(RouteHandler):
+class post(HTTPRouteHandler):
     http_method: Literal[HttpMethod.POST] = Field(default=HttpMethod.POST, const=True)
 
 
-class put(RouteHandler):
+class put(HTTPRouteHandler):
     http_method: Literal[HttpMethod.PUT] = Field(default=HttpMethod.PUT, const=True)
 
 
-class patch(RouteHandler):
+class patch(HTTPRouteHandler):
     http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH, const=True)
 
 
-class delete(RouteHandler):
+class delete(HTTPRouteHandler):
     http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE, const=True)
+
+
+class WebsocketRouteHandler(BaseRouteHandler):
+    def __call__(self, fn: AnyCallable) -> "WebsocketRouteHandler":
+        """
+        Replaces a function with itself
+        """
+        self.fn = fn
+        self.signature_model = create_function_signature_model(fn)
+        self.validate_handler_function()
+        return self
+
+    def validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once it's set by inspecting its return annotations
+        """
+        super().validate_handler_function()
+        signature_model = cast(BaseModel, self.signature_model)
+        return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
+
+        assert return_annotation is None, "websocket handler functions should not return any values"
+        assert "websocket" in signature_model.__fields__, "websocket handlers must set a 'websocket' kwarg"
+
+    async def handle_websocket(self, web_socket: WebSocket) -> None:
+        """
+        Handles a given Websocket in relation to self.
+        """
+        assert self.fn, "cannot call a route handler without a decorated function"
+        await self.authorize_connection(connection=web_socket)
+        params = await self.get_parameters_from_connection(connection=web_socket)
+        await self.fn(**params)
+
+
+websocket = WebsocketRouteHandler

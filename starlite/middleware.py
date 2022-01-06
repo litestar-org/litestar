@@ -26,6 +26,7 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         try:
             if scope["type"] in ["http", "websocket"]:
+
                 auth_result = await self.authenticate_request(Request(scope))
                 scope["user"] = auth_result.user
                 scope["auth"] = auth_result.auth

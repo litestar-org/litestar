@@ -18,10 +18,10 @@ What route does is wrap the given function or class method and replace it with a
 In fact, route is merely an alias for `RouteHandler`, thus you could have done this instead:
 
 ```python
-from starlite import HttpMethod, RouteHandler
+from starlite import HttpMethod, BaseRouteHandler
 
 
-@RouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
+@BaseRouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
 ```
