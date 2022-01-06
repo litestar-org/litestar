@@ -2,7 +2,13 @@
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
-from .enums import HttpMethod, MediaType, OpenAPIMediaType, RequestEncodingType
+from .enums import (
+    HttpMethod,
+    MediaType,
+    OpenAPIMediaType,
+    RequestEncodingType,
+    ScopeType,
+)
 from .exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
@@ -68,6 +74,7 @@ __all__ = [
     "Response",
     "ResponseHeader",
     "Router",
+    "ScopeType",
     "ServiceUnavailableException",
     "StarLiteException",
     "Starlite",

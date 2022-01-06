@@ -49,3 +49,8 @@ class RequestEncodingType(str, Enum):
     JSON = "application/json"
     MULTI_PART = "multipart/form-data"
     URL_ENCODED = "application/x-www-form-urlencoded"
+
+
+class ScopeType(str, Enum):
+    HTTP = "http"
+    WEBSOCKET = "websocket"

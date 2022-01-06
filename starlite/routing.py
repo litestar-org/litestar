@@ -15,10 +15,10 @@ from starlette.routing import (
     replace_params,
 )
 from starlette.types import Receive, Scope, Send
-from typing_extensions import Literal, Type
+from typing_extensions import Type
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod
+from starlite.enums import HttpMethod, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
 from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from starlite.provide import Provide
@@ -40,7 +40,7 @@ class BaseRoute(ABC, StarletteBaseRoute):
         "path_format",
         "path_parameters",
         "path_regex",
-        "route_type",
+        "scope_type",
     )
 
     @validate_arguments()
@@ -49,13 +49,13 @@ class BaseRoute(ABC, StarletteBaseRoute):
         *,
         handler_names: List[str],
         path: str,
-        route_type: Union[Literal["http"], Literal["websocket"]],
+        scope_type: ScopeType,
         methods: Optional[List[Method]] = None,
     ):
         assert path.startswith("/"), "Routed paths must start with '/'"
         self.handler_names = handler_names
         self.path = path
-        self.route_type = route_type
+        self.scope_type = scope_type
         self.path_regex, self.path_format, self.param_convertors = compile_path(path)
         self.path_parameters: List[str] = param_match_regex.findall(self.path)
 
@@ -69,13 +69,13 @@ class BaseRoute(ABC, StarletteBaseRoute):
     @property
     def is_http_route(self) -> bool:
         """Determines whether the given route is an http or websocket route"""
-        return self.route_type == "http"
+        return self.scope_type == "http"
 
     def matches(self, scope: Scope) -> Tuple[Match, Scope]:
         """
         Try to match a given scope's path to self.path
         """
-        if scope["type"] == self.route_type:
+        if scope["type"] == self.scope_type.value:
             match = self.path_regex.match(scope["path"])
             if match:
                 matched_params = match.groupdict()
@@ -98,7 +98,7 @@ class BaseRoute(ABC, StarletteBaseRoute):
 
         path, remaining_params = replace_params(self.path_format, self.param_convertors, path_params)
         assert not remaining_params
-        return URLPath(path=path, protocol=self.route_type)
+        return URLPath(path=path, protocol=self.scope_type.value)
 
 
 class HTTPRoute(BaseRoute):
@@ -112,7 +112,7 @@ class HTTPRoute(BaseRoute):
         "path_parameters",
         "path_regex",
         "route_handler_map",
-        "route_type",
+        "scope_type",
     )
 
     @validate_arguments()
@@ -127,7 +127,7 @@ class HTTPRoute(BaseRoute):
         super().__init__(
             methods=[method.to_str() for method in self.route_handler_map],
             path=path,
-            route_type="http",
+            scope_type=ScopeType.HTTP,
             handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
         )
 
@@ -170,7 +170,7 @@ class WebSocketRoute(BaseRoute):
         "path_parameters",
         "path_regex",
         "route_handler",
-        "route_type",
+        "scope_type",
     )
 
     @validate_arguments()
@@ -183,7 +183,7 @@ class WebSocketRoute(BaseRoute):
         self.route_handler = route_handler
         super().__init__(
             path=path,
-            route_type="websocket",
+            scope_type=ScopeType.WEBSOCKET,
             handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
         )
 
