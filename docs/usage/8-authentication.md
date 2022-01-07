@@ -107,7 +107,7 @@ API_KEY_HEADER = "X-API-KEY"
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    def authenticate_request(self, request: Request) -> AuthenticationResult:
+    async def authenticate_request(self, request: Request) -> AuthenticationResult:
         """Given a request, parse the request api key stored in the header and retrieve the user"""
         # retrieve the auth header
         auth_header = request.headers.get(API_KEY_HEADER)
