@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, Union
 
-from openapi_schema_pydantic import OpenAPI
+from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
-from pydantic import validate_arguments
+from pydantic import Extra, validate_arguments
 from pydantic.typing import AnyCallable, NoArgAnyCallable
 from starlette.datastructures import State
 from starlette.exceptions import ExceptionMiddleware
@@ -138,4 +138,7 @@ class Starlite(Router):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(
                     route=route, create_examples=openapi_config.create_examples
                 )
+        # we have to monkey patch the "openapi-schema-pydantic" library, because it doesn't allow extra which causes
+        # failures with third party libs such as ormar.
+        Schema.extra = Extra.ignore
         return construct_open_api_with_schema_class(openapi_schema)

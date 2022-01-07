@@ -19,3 +19,7 @@
 [0.1.4]
 - fix: update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic
 - fix: include_in_schema for routes always being true
+
+
+[0.1.5]
+- fix: monkey patch "openapi-schema-pydantic" to change Schema.extra to Extra.ignore
