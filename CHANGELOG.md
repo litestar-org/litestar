@@ -23,3 +23,7 @@
 
 [0.1.5]
 - fix: monkey patch "openapi-schema-pydantic" to change Schema.extra to Extra.ignore
+
+
+[0.1.6]
+- fix: monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore

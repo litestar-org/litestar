@@ -140,5 +140,5 @@ class Starlite(Router):
                 )
         # we have to monkey patch the "openapi-schema-pydantic" library, because it doesn't allow extra which causes
         # failures with third party libs such as ormar.
-        Schema.extra = Extra.ignore
+        Schema.Config.extra = Extra.ignore
         return construct_open_api_with_schema_class(openapi_schema)
