@@ -357,7 +357,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
 
         assert return_annotation is None, "websocket handler functions should not return any values"
-        assert "websocket" in signature_model.__fields__, "websocket handlers must set a 'websocket' kwarg"
+        assert "socket" in signature_model.__fields__, "websocket handlers must set a 'socket' kwarg"
 
     async def handle_websocket(self, web_socket: WebSocket) -> None:
         """

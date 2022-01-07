@@ -36,15 +36,16 @@ from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .provide import Provide
-from .request import Request
+from .request import Request, WebSocket
 from .response import Response
-from .routing import HTTPRoute, Router
+from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request
 from .types import File, MiddlewareProtocol, Partial, Redirect, ResponseHeader, Stream
 
 __all__ = [
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
+    "BaseRoute",
     "BaseRouteHandler",
     "Body",
     "CORSConfig",
@@ -80,6 +81,8 @@ __all__ = [
     "Starlite",
     "Stream",
     "TestClient",
+    "WebSocket",
+    "WebSocketRoute",
     "WebsocketRouteHandler",
     "create_test_client",
     "create_test_request",

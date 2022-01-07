@@ -49,6 +49,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
+anyio = "^3.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
