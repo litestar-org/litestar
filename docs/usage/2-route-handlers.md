@@ -16,7 +16,7 @@ def my_endpoint() -> None:
     ...
 ```
 
-What route does is wrap the given function or class method and replace it with an instance of the
+What `route` does is wrap the given function or class method and replace it with an instance of the
 class `HTTPRouteHandler`. In fact, route is merely an alias for `HTTPRouteHandler`, thus you could have done this
 instead:
 
@@ -29,9 +29,10 @@ def my_endpoint() -> None:
     ...
 ```
 
-!!! important A function decorated by `route` or any of the other route handler decorator **must** have an annotated
-return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
-consistent schema generation, as well as stronger typing.
+!!! important
+    A function decorated by `route` or any of the other route handler decorator **must** have an annotated
+    return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
+    consistent schema generation, as well as stronger typing.
 
 The `route` decorator accepts the following required kwargs -
 
