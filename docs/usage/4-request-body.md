@@ -1,7 +1,7 @@
 # Request Body
 
-For all http requests, except GET requests, you can access the request body by specifying the `data` kwarg in your handler
-function or method:
+For all http requests, except GET requests, you can access the request body by specifying the `data` kwarg in your
+handler function or method:
 
 ```python
 from starlite import post
@@ -34,7 +34,8 @@ async def create_user(
     ...
 ```
 
-The `Body` function is very similar to the [Parameter function](#the-parameter-function), and it receives the following kwargs:
+The `Body` function is very similar to the [Parameter function](#the-parameter-function), and it receives the following
+kwargs:
 
 - `media_type`: An instance of the `starlite.enums.RequestEncodingType` enum. Defaults to `RequestEncodingType.JSON`.
 - `examples`: A list of `Example` models.
@@ -67,10 +68,10 @@ The `Body` function is very similar to the [Parameter function](#the-parameter-f
 - `regex`: A string representing a regex against which the given string will be matched. Equivalent to `pattern` in the
   OpenAPI specification.
 
-## Form Data (URL Encoded)
+## URL Encoded Form Data
 
-To access _url encoded_ form data, i.e. data sent with an `application/x-www-form-urlencoded` Content-Type header, you need to
-use `Body` and specify `RequestEncodingType.URL_ENCODED` as the `media_type` kwarg:
+To access _url encoded_ form data, i.e. data sent with an `application/x-www-form-urlencoded` Content-Type header, you
+need to use `Body` and specify `RequestEncodingType.URL_ENCODED` as the `media_type` kwarg:
 
 ```python
 from starlite import Body, post, RequestEncodingType
@@ -89,14 +90,34 @@ The above ensures that Starlite will inject data using the request.form() method
 causes the generated OpenAPI schema to use the correct media type.
 
 !!! important
-    url encoded data is inherently less versatile than JSON data - for example, it cannot handle complex dictionaries and deeply nested data. It should only be used for simple data structures, e.g. frontend forms.
+    url encoded data is inherently less versatile than JSON data - for example, it cannot handle complex
+    dictionaries and deeply nested data. It should only be used for simple data structures, e.g. frontend forms.
 
-## File Uploads (Multi Part)
+## MultiPart Form Data
 
-Files can be uploaded using a request with a `multipart/form-data` Content-Type header. Starlette parses
-multipart using the [python-multipart](https://github.com/andrew-d/python-multipart) and transforms the results into an
-instance of [starlette.datastructures.UploadFile](https://www.starlette.io/requests/#request-files). Therefore, you
-need to type your file uploads accordingly.
+Multipart formdata supports complex formdata including file uploads.
+
+You can access data uploaded using a request with a `multipart/form-data` Content-Type header by specifying it in
+the `Body` function:
+
+```python
+from starlite import Body, post, RequestEncodingType
+
+from my_app.models import User
+
+
+@post(path="/user")
+async def create_user(
+    data: User = Body(media_type=RequestEncodingType.MULTI_PART),
+) -> User:
+    ...
+```
+
+### Accessing Files
+
+In case of files uploaded, Starlette transforms the results into an instance
+of [starlette.datastructures.UploadFile](https://www.starlette.io/requests/#request-files), which offer a convenient
+interface for working with files. Therefore, you need to type your file uploads accordingly.
 
 To access a single file simply type `data` as `UploadFile`:
 
@@ -140,8 +161,7 @@ async def handle_file_upload(
     ...
 ```
 
-If you do not care about parsing and validation and only want to access the form data as a dictionary, you can do
-this:
+If you do not care about parsing and validation and only want to access the form data as a dictionary, you can do this:
 
 ```python
 from starlette.datastructures import UploadFile
