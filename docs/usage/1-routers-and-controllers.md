@@ -167,3 +167,19 @@ consumer_router = Router(path="/consumer", route_handlers=[my_route_handler])
 This is possible because the route handler is copied when registered. Thus, each router has its own unique instance of
 the route handler rather than the same one. Path behaviour is identical to controllers, namely, the route handler
 function will be accessible in the following paths: "/internal/handler", "/partner/handler" and "/consumer/handler".
+
+## Relation to Starlette Routing
+
+Although Starlite uses the Starlette `BaseRoute` class as a basis, Starlite does not extend or use the Starlette routing
+system as is. That is to say, the Starlite `HTTPRoute`, `WebSocketRoute` and `Router` classes do not extend their
+Starlette equivalents, but are rather independent implementations.
+
+Its important to note the following:
+
+1. Starlite Routers have a smaller api surface and do not expose decorators.
+2. Starlite Routers and Routes are not standalone ASGI apps and always depend upon a Starlite app instance.
+3. Starlite enforces a simple routing structure and doesn't support multiple-hosts and complex mounts.
+
+The reason for this decision is to enforce a **simple** routing pattern. It's true that this eliminates certain
+possibilities, for example - you cannot re-use paths based on different "Host" headers, as you can in Starlette, but
+this is intentional and is meant to enforce best practices.

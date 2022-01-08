@@ -27,3 +27,8 @@
 
 [0.1.6]
 - fix: monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore
+
+
+[0.2.0]
+- add support for websockets
+- update multipart data handling to support mixed fields

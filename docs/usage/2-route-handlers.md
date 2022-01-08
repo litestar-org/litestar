@@ -3,6 +3,8 @@
 Route handlers are the core of Starlite. They are constructed by decorating a function or method with one of the handler
 decorators exported from Starlite.
 
+## HTTP Route Handlers
+
 The base decorator is called `route`:
 
 ```python
@@ -14,8 +16,9 @@ def my_endpoint() -> None:
     ...
 ```
 
-What route does is wrap the given function or class method and replace it with an instance of the class `HTTPRouteHandler`.
-In fact, route is merely an alias for `HTTPRouteHandler`, thus you could have done this instead:
+What `route` does is wrap the given function or class method and replace it with an instance of the
+class `HTTPRouteHandler`. In fact, route is merely an alias for `HTTPRouteHandler`, thus you could have done this
+instead:
 
 ```python
 from starlite import HttpMethod, HTTPRouteHandler
@@ -27,9 +30,9 @@ def my_endpoint() -> None:
 ```
 
 !!! important
-    A function decorated by `route` or any of the other route handler decorator **must** have an
-    annotated return value, even if the return value is `None` as in the above example. This limitation is enforced to
-    ensure consistent schema generation, as well as stronger typing.
+    A function decorated by `route` or any of the other route handler decorator **must** have an annotated
+    return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
+    consistent schema generation, as well as stronger typing.
 
 The `route` decorator accepts the following required kwargs -
 
@@ -44,13 +47,15 @@ Additionally, you can pass the following optional kwargs:
   in which case you must specify a value or an exception will be raised.
 - `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
   response. Defaults to `MediaType.JSON`. See [media-type](5-responses.md#media-type).
-- `response_class`: A custom response class to be used as the app default. See [using-custom-responses](5-responses.md#using-custom-responses).
+- `response_class`: A custom response class to be used as the app default.
+  See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
 
 And the following kwargs, which affect [OpenAPI schema generation](10-openapi.md#route-handler-configuration)
+
 - `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.
 - `tags`: a list of openapi-pydantic `Tag` models, which correlate to
@@ -66,7 +71,7 @@ And the following kwargs, which affect [OpenAPI schema generation](10-openapi.md
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
   automatically for the schema if any validation is involved.
 
-## Semantic Handler Decorators
+### Semantic Handler Decorators
 
 Starlite also includes "semantic" decorators, that is, decorators the pre-set the `http_method` kwarg to a specific HTTP
 verb, which correlates with their name:
@@ -126,6 +131,49 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
+
+## Websocket Route Handlers (v0.2.0+)
+
+Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
+
+```python
+from starlite import WebSocket, websocket
+
+
+@websocket(path="/socket")
+async def my_websocket_handler(socket: WebSocket) -> None:
+    await socket.accept()
+    await socket.send_json({...})
+    await socket.close()
+```
+
+The `websocket` decorator is also an aliased class, in this case - of the `WebsocketRouteHandler`. Thus. you can write
+the above like so:
+
+```python
+from starlite import WebSocket, WebsocketRouteHandler
+
+
+@WebsocketRouteHandler(path="/socket")
+async def my_websocket_handler(socket: WebSocket) -> None:
+    await socket.accept()
+    await socket.send_json({...})
+    await socket.close()
+```
+
+In difference to HTTP routes handlers, websocket handlers have the following requirements:
+
+1. they **must** declare a `socket` kwarg. If this is missing an exception will be raised.
+2. they **must** have a return annotation of `None`. Any other annotation, or lack thereof, will raise an exception.
+
+Additionally, they should be async because the socket interface is async - but this is not enforced. You will not be
+able to do anything meaningful without this and python will raise errors as required.
+
+In all other regards websocket handlers function exactly like other route handlers.
+
+!!! note
+    OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
+    handlers, and you cannot configure any schema related parameters for these.
 
 ## Handler Function Kwargs
 
