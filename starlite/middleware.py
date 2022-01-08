@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Union
 
 from pydantic import BaseModel
+from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.enums import MediaType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
-from starlite.request import Request
 from starlite.response import Response
 from starlite.types import MiddlewareProtocol
 
@@ -26,7 +26,8 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         try:
             if scope["type"] in ["http", "websocket"]:
-                auth_result = await self.authenticate_request(Request(scope))
+
+                auth_result = await self.authenticate_request(HTTPConnection(scope))
                 scope["user"] = auth_result.user
                 scope["auth"] = auth_result.auth
             await self.app(scope, receive, send)
@@ -47,7 +48,7 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
         )
 
     @abstractmethod
-    async def authenticate_request(self, request: Request) -> AuthenticationResult:  # pragma: no cover
+    async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
         """
         Given a request, return an instance of AuthenticationResult
         containing a user and any relevant auth context, e.g. a JWT token.

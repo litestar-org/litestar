@@ -7,6 +7,7 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
+    HTTP_405_METHOD_NOT_ALLOWED,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
@@ -47,16 +48,20 @@ class ValidationException(HTTPException, ValueError):
     status_code = HTTP_400_BAD_REQUEST
 
 
-class NotFoundException(HTTPException, ValueError):
-    status_code = HTTP_404_NOT_FOUND
-
-
 class NotAuthorizedException(HTTPException):
     status_code = HTTP_401_UNAUTHORIZED
 
 
 class PermissionDeniedException(HTTPException):
     status_code = HTTP_403_FORBIDDEN
+
+
+class NotFoundException(HTTPException, ValueError):
+    status_code = HTTP_404_NOT_FOUND
+
+
+class MethodNotAllowedException(HTTPException):
+    status_code = HTTP_405_METHOD_NOT_ALLOWED
 
 
 class InternalServerException(HTTPException):

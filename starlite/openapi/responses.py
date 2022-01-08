@@ -10,7 +10,7 @@ from starlette.routing import get_name
 
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
-from starlite.handlers import RouteHandler
+from starlite.handlers import HTTPRouteHandler
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
@@ -19,7 +19,7 @@ from starlite.utils.model import create_parsed_model_field
 
 
 def create_success_response(
-    route_handler: RouteHandler,
+    route_handler: HTTPRouteHandler,
     generate_examples: bool,
 ) -> Response:
     """
@@ -137,7 +137,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 
 
 def create_responses(
-    route_handler: RouteHandler,
+    route_handler: HTTPRouteHandler,
     raises_validation_error: bool,
     generate_examples: bool,
 ) -> Optional[Responses]:

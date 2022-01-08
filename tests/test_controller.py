@@ -21,8 +21,9 @@ from starlite import (
     patch,
     post,
     put,
+    websocket,
 )
-from starlite.request import Request
+from starlite.request import Request, WebSocket
 from tests import Person, PersonFactory
 
 
@@ -250,3 +251,27 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, json=[p.dict() for p in people])
         assert response.status_code == expected_status_code
+
+
+def test_controller_with_websocket_handler():
+    test_path = "/person"
+
+    class MyController(Controller):
+        path = test_path
+
+        @get()
+        def get_person(self) -> Person:
+            ...
+
+        @websocket(path="/socket")
+        async def ws(self, socket: WebSocket) -> None:
+            await socket.accept()
+            await socket.send_json({"data": "123"})
+            await socket.close()
+
+    client = create_test_client(route_handlers=MyController)
+
+    with client.websocket_connect(test_path + "/socket") as ws:
+        ws.send_json({"data": "123"})
+        data = ws.receive_json()
+        assert data

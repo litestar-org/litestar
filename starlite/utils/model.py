@@ -25,7 +25,8 @@ def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
             if key == "return":
                 continue
             parameter = signature.parameters[key]
-            if key == "request":
+            if key in ["request", "socket"]:
+                # pydantic has issues with none-pydantic classes that receive generics
                 field_definitions[key] = (Any, ...)
             elif ModelFactory.is_constrained_field(parameter.default):
                 field_definitions[key] = (parameter.default, ...)

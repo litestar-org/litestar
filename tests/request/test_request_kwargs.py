@@ -5,7 +5,7 @@ from pydantic import BaseConfig
 from pydantic.fields import FieldInfo, ModelField
 
 from starlite import HttpMethod, RequestEncodingType, create_test_request
-from starlite.request import Request, get_model_kwargs_from_request, get_request_data
+from starlite.request import Request, get_model_kwargs_from_connection, get_request_data
 from tests import Person, PersonFactory
 
 
@@ -22,7 +22,7 @@ def create_model_field(
 
 
 @pytest.mark.asyncio
-async def test_get_model_kwargs_from_request():
+async def test_get_model_kwargs_from_connection():
     person_instance = PersonFactory.build()
     fields = {
         **Person.__fields__,
@@ -39,7 +39,7 @@ async def test_get_model_kwargs_from_request():
         cookie="abcdefg",
         http_method=HttpMethod.POST,
     )
-    result = await get_model_kwargs_from_request(request=request, fields=fields)
+    result = await get_model_kwargs_from_connection(connection=request, fields=fields)
     assert result["data"]
     assert result["headers"]
     assert result["request"]

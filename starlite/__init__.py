@@ -2,7 +2,13 @@
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
-from .enums import HttpMethod, MediaType, OpenAPIMediaType, RequestEncodingType
+from .enums import (
+    HttpMethod,
+    MediaType,
+    OpenAPIMediaType,
+    RequestEncodingType,
+    ScopeType,
+)
 from .exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
@@ -13,30 +19,41 @@ from .exceptions import (
     ServiceUnavailableException,
     StarLiteException,
 )
-from .handlers import RouteHandler, delete, get, patch, post, put, route
+from .handlers import (
+    BaseRouteHandler,
+    HTTPRouteHandler,
+    WebsocketRouteHandler,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+    route,
+    websocket,
+)
 from .logging import LoggingConfig
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .provide import Provide
-from .request import Request
+from .request import Request, WebSocket
 from .response import Response
-from .routing import Route, Router
+from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request
 from .types import File, MiddlewareProtocol, Partial, Redirect, ResponseHeader, Stream
 
 __all__ = [
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
+    "BaseRoute",
+    "BaseRouteHandler",
     "Body",
-    "Controller",
     "CORSConfig",
-    "create_test_client",
-    "create_test_request",
-    "delete",
+    "Controller",
     "File",
-    "get",
     "HTTPException",
+    "HTTPRoute",
+    "HTTPRouteHandler",
     "HttpMethod",
     "ImproperlyConfiguredException",
     "InternalServerException",
@@ -50,23 +67,30 @@ __all__ = [
     "OpenAPIMediaType",
     "Parameter",
     "Partial",
-    "patch",
     "PermissionDeniedException",
-    "post",
     "Provide",
-    "put",
     "Redirect",
     "Request",
     "RequestEncodingType",
     "Response",
     "ResponseHeader",
-    "Route",
-    "route",
-    "RouteHandler",
     "Router",
+    "ScopeType",
     "ServiceUnavailableException",
-    "Starlite",
     "StarLiteException",
+    "Starlite",
     "Stream",
     "TestClient",
+    "WebSocket",
+    "WebSocketRoute",
+    "WebsocketRouteHandler",
+    "create_test_client",
+    "create_test_request",
+    "delete",
+    "get",
+    "patch",
+    "post",
+    "put",
+    "route",
+    "websocket",
 ]

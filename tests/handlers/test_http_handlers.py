@@ -1,8 +1,22 @@
+from asyncio import sleep
+from json import loads
+from pathlib import Path
+from typing import Any
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.main import BaseModel
+from starlette.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+)
+from starlette.responses import Response as StarletteResponse
+from starlette.responses import StreamingResponse
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -15,6 +29,8 @@ from starlite import (
     HttpMethod,
     MediaType,
     Redirect,
+    Response,
+    WebSocket,
     delete,
     get,
     patch,
@@ -22,9 +38,11 @@ from starlite import (
     put,
     route,
 )
-from starlite.exceptions import ValidationException
-from starlite.handlers import RouteHandler
-from starlite.response import Response
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.handlers import HTTPRouteHandler
+from starlite.testing import create_test_request
+from starlite.types import Stream
+from tests import Person, PersonFactory
 
 
 def dummy_method() -> None:
@@ -51,15 +69,15 @@ def test_route_handler_param_handling(
 ):
     if isinstance(http_method, list) and len(http_method) == 0:
         with pytest.raises(ValidationError):
-            RouteHandler(http_method=http_method)
+            HTTPRouteHandler(http_method=http_method)
     elif not status_code and isinstance(http_method, list) and len(http_method) > 1:
         with pytest.raises(ValidationError):
-            RouteHandler(
+            HTTPRouteHandler(
                 http_method=http_method,
                 status_code=status_code,
             )
     else:
-        decorator = RouteHandler(
+        decorator = HTTPRouteHandler(
             http_method=http_method,
             media_type=media_type,
             include_in_schema=include_in_schema,
@@ -105,7 +123,7 @@ def test_route_handler_param_handling(
     ],
 )
 def test_route_handler_default_status_code(http_method, expected_status_code):
-    route_handler = RouteHandler(http_method=http_method)
+    route_handler = HTTPRouteHandler(http_method=http_method)
     assert route_handler.status_code == expected_status_code
 
 
@@ -117,14 +135,14 @@ def test_route_handler_validation_http_method():
     # raises for invalid values
     for value in [None, "", 123, "deleze"]:
         with pytest.raises(ValidationError):
-            RouteHandler(http_method=value)
+            HTTPRouteHandler(http_method=value)
 
     # doesn't raise when status_code is provided for multiple http_methods
     assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
 
     # raises otherwise
     with pytest.raises(ValidationError):
-        RouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
+        HTTPRouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
 
     # also when passing an empty list
     with pytest.raises(ValidationError):
@@ -140,11 +158,11 @@ def test_route_handler_validation_response_class():
     class SpecialResponse(Response):
         pass
 
-    assert RouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
+    assert HTTPRouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
 
     # raises otherwise
     with pytest.raises(ValidationError):
-        RouteHandler(http_method=HttpMethod.GET, response_class=dict())
+        HTTPRouteHandler(http_method=HttpMethod.GET, response_class=dict())
 
 
 @pytest.mark.parametrize(
@@ -188,3 +206,113 @@ def test_route_handler_function_validation():
         pass
 
     assert file_method.media_type == MediaType.TEXT
+
+
+@pytest.mark.asyncio
+async def test_handle_request_async_await():
+    @route(http_method=HttpMethod.POST, path="/person")
+    async def test_function(data: Person) -> None:
+        assert isinstance(data, Person)
+        await sleep(0.1)
+        return data
+
+    person_instance = PersonFactory.build()
+    request = create_test_request(content=person_instance, http_method=HttpMethod.POST)
+
+    response = await test_function.handle_request(request=request)
+    assert loads(response.body) == person_instance.dict()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "response",
+    [
+        Response(status_code=HTTP_200_OK, content=b"abc", media_type=MediaType.TEXT),
+        StarletteResponse(status_code=HTTP_200_OK, content=b"abc"),
+        PlainTextResponse(content="abc"),
+        HTMLResponse(content="<div><span/></div"),
+        JSONResponse(status_code=HTTP_200_OK, content={}),
+        RedirectResponse(url="/person"),
+        StreamingResponse(status_code=HTTP_200_OK, content=b"abc"),
+        FileResponse("./test_http_handlers.py"),
+    ],
+)
+async def test_handle_request_when_handler_returns_starlette_responses(response):
+    @get(path="/test")
+    def test_function() -> StarletteResponse:
+        return response
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    assert await test_function.handle_request(request=request) == response
+
+
+@pytest.mark.asyncio
+async def test_handle_request_redirect_response():
+    @get(http_method=[HttpMethod.GET], path="/test")
+    def test_function() -> None:
+        return Redirect(path="/somewhere-else")
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    response = await test_function.handle_request(request=request)
+    assert isinstance(response, RedirectResponse)
+    assert response.headers["location"] == "/somewhere-else"
+
+
+@pytest.mark.asyncio
+async def test_handle_request_file_response():
+    current_file_path = Path(__file__).resolve()
+    filename = Path(__file__).name
+
+    @get(path="/test")
+    def test_function() -> File:
+        return File(path=current_file_path, filename=filename)
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+    response = await test_function.handle_request(request=request)
+    assert isinstance(response, FileResponse)
+    assert response.stat_result
+
+
+def my_iterator():
+    count = 0
+    while True:
+        count += 1
+        yield count
+
+
+async def my_async_iterator():
+    count = 0
+    while True:
+        count += 1
+        yield count
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "iterator, should_raise", [[my_iterator(), False], [my_async_iterator(), False], [{"key": 1}, True]]
+)
+async def test_handle_request_streaming_response(iterator: Any, should_raise: bool):
+    if not should_raise:
+
+        @get(path="/test")
+        def test_function() -> Stream:
+            return Stream(iterator=iterator)
+
+        request = create_test_request(content=None, http_method=HttpMethod.GET)
+        response = await test_function.handle_request(request=request)
+        assert isinstance(response, StreamingResponse)
+    else:
+        with pytest.raises(ValidationError):
+            Stream(iterator=iterator)
+
+
+@pytest.mark.asyncio
+async def test_handle_request_validation():
+    @get(path="/test")
+    def test_function(socket: WebSocket) -> None:
+        pass
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await test_function.handle_request(request=request)
