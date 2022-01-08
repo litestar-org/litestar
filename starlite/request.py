@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
 from orjson import loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
-from starlette.datastructures import UploadFile
+from starlette.datastructures import FormData, UploadFile
 from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
 from starlette.websockets import WebSocket as StarletteWebSocket
@@ -75,6 +75,25 @@ def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
         return params
 
 
+def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
+    """Transforms the multidict into a regular dict parse the values to fit the field"""
+    values_dict: Dict[str, Any] = {}
+    for key, value in form_data.multi_items():
+        if values_dict.get(key):
+            if isinstance(values_dict[key], list):
+                values_dict[key].append(value)
+            else:
+                values_dict[key] = [values_dict[key], value]
+        else:
+            values_dict[key] = value
+    if media_type == RequestEncodingType.MULTI_PART:
+        if field.shape is SHAPE_LIST:
+            return list(values_dict.values())
+        if field.shape is SHAPE_SINGLETON and field.type_ is UploadFile and values_dict:
+            return list(values_dict.values())[0]
+    return values_dict
+
+
 async def get_request_data(request: Request, field: ModelField) -> Any:
     """Given a request, parse its data - either as json or form data and return it"""
     if request.method.lower() == HttpMethod.GET:
@@ -85,13 +104,7 @@ async def get_request_data(request: Request, field: ModelField) -> Any:
         json_data = request._json = loads(body)
         return json_data
     form_data = await request.form()
-    as_dict = dict(form_data.multi_items())
-    if media_type == RequestEncodingType.MULTI_PART:
-        if field.shape is SHAPE_LIST:
-            return list(as_dict.values())
-        if field.shape is SHAPE_SINGLETON and field.type_ is UploadFile and as_dict:
-            return list(as_dict.values())[0]
-    return as_dict
+    return handle_multipart(media_type=media_type, form_data=form_data, field=field)
 
 
 def get_connection_parameters(

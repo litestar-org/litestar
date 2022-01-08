@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from uuid import uuid1, uuid4
 
 import pytest
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseConfig, BaseModel
 from pydantic.fields import FieldInfo
 from starlette.datastructures import UploadFile
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -322,16 +322,17 @@ def test_request_body_multi_part(t_type: Type[Any]):
         assert response.status_code == HTTP_201_CREATED
 
 
-@pytest.mark.xfail
 def test_request_body_multi_part_mixed_field_content_types() -> None:
     class MultiPartFormWithMixedFields(BaseModel):
-        # TODO: define an API for declaring the fields
+        class Config(BaseConfig):
+            arbitrary_types_allowed = True
+
         image: UploadFile
         tags: List[str]
 
     @post(path="/")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert await data.file.read() == b"data"
+        assert await data.image.read() == b"data"
         assert data.tags == ["1", "2"]
 
     with create_test_client(test_method) as client:
