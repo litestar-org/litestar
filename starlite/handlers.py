@@ -244,18 +244,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.http_method if isinstance(self.http_method, list) else [self.http_method]
 
-    @staticmethod
-    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
-        """
-        Validates that a given provider has not been already defined under a different key
-        """
-        for dependency_key, value in dependencies.items():
-            if provider == value:
-                raise ImproperlyConfiguredException(
-                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
-                    f"If you wish to override a provider, it must have the same key."
-                )
-
     def validate_handler_function(self) -> None:
         """
         Validates the route handler function once it is set by inspecting its return annotations

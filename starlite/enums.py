@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.types import Method
 else:
     Method = Any
