@@ -77,7 +77,11 @@ def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
-    """Transforms the multidict into a regular dict, try to load json on all non-file values. Supports lists."""
+    """
+    Transforms the multidict into a regular dict, try to load json on all non-file values.
+
+    Supports lists.
+    """
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
         if not isinstance(value, UploadFile):
