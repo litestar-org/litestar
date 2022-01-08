@@ -4,11 +4,13 @@ from starlite import (
     Controller,
     HttpMethod,
     ImproperlyConfiguredException,
+    WebSocket,
     get,
     patch,
     post,
 )
 from starlite import route as route_decorator
+from starlite import websocket
 from starlite.routing import Router
 
 
@@ -27,15 +29,19 @@ class MyController(Controller):
     def get_by_id_method(self) -> None:
         pass
 
+    @websocket(path="/socket")
+    def ws(self, socket: WebSocket) -> None:
+        pass
+
 
 def test_register_with_controller_class():
     router = Router(path="/base", route_handlers=[MyController])
-    assert len(router.routes) == 2
+    assert len(router.routes) == 3
     for route in router.routes:
         if len(route.methods) == 2:
             assert sorted(route.methods) == sorted(["GET", "HEAD"])
             assert route.path == "/base/test/{id:int}"
-        else:
+        elif len(route.methods) == 3:
             assert sorted(route.methods) == sorted(["GET", "POST", "HEAD"])
             assert route.path == "/base/test"
 
@@ -44,12 +50,12 @@ def test_register_with_router_instance():
     top_level_router = Router(path="/top-level", route_handlers=[MyController])
     base_router = Router(path="/base", route_handlers=[top_level_router])
 
-    assert len(base_router.routes) == 2
+    assert len(base_router.routes) == 3
     for route in base_router.routes:
         if len(route.methods) == 2:
             assert sorted(route.methods) == sorted(["GET", "HEAD"])
             assert route.path == "/base/top-level/test/{id:int}"
-        else:
+        elif len(route.methods) == 3:
             assert sorted(route.methods) == sorted(["GET", "POST", "HEAD"])
             assert route.path == "/base/top-level/test"
 

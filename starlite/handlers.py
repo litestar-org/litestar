@@ -356,7 +356,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         signature_model = cast(BaseModel, self.signature_model)
         return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
 
-        assert return_annotation is None, "websocket handler functions should not return any values"
+        assert return_annotation is None, "websocket handler functions should return 'None' values"
         assert "socket" in signature_model.__fields__, "websocket handlers must set a 'socket' kwarg"
 
     async def handle_websocket(self, web_socket: WebSocket) -> None:
@@ -366,7 +366,10 @@ class WebsocketRouteHandler(BaseRouteHandler):
         assert self.fn, "cannot call a route handler without a decorated function"
         await self.authorize_connection(connection=web_socket)
         params = await self.get_parameters_from_connection(connection=web_socket)
-        await self.fn(**params)
+        if isinstance(self.owner, Controller):
+            await self.fn(self.owner, **params)
+        else:
+            await self.fn(**params)
 
 
 websocket = WebsocketRouteHandler

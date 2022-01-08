@@ -304,19 +304,17 @@ class Router:
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
                 self.routes.append(WebSocketRoute(path=path, route_handler=handler_or_method_map))
             else:
-                route_handlers = unique(handler_or_method_map.values())
+                route_handlers = list(handler_or_method_map.values())
                 if self.route_handler_method_map.get(path):
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
                     )
                     assert existing_route_index != -1, "unable to find_index existing route index"
                     if isinstance(self.route_handler_method_map[path], dict):
-                        existing_route_handlers = list(cast(dict, self.route_handler_method_map[path]).values())
-                    else:
-                        existing_route_handlers = []
+                        route_handlers.extend(list(cast(dict, self.route_handler_method_map[path]).values()))
                     self.routes[existing_route_index] = HTTPRoute(
                         path=path,
-                        route_handlers=unique([*existing_route_handlers, *route_handlers]),
+                        route_handlers=unique(route_handlers),
                     )
                 else:
-                    self.routes.append(HTTPRoute(path=path, route_handlers=route_handlers))
+                    self.routes.append(HTTPRoute(path=path, route_handlers=unique(route_handlers)))

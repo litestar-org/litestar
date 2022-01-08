@@ -15,6 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Controller:
     __slots__ = ("dependencies", "owner", "path", "response_headers", "response_class")
+
     dependencies: Optional[Dict[str, "Provide"]]
     owner: "Router"
     path: str
@@ -25,6 +26,7 @@ class Controller:
     def __init__(self, owner: "Router"):
         if not hasattr(self, "path") or not self.path:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
+
         for key in ["dependencies", "response_headers", "response_class", "guards"]:
             if not hasattr(self, key):
                 setattr(self, key, None)
