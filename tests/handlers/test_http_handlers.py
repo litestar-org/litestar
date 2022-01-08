@@ -30,6 +30,7 @@ from starlite import (
     MediaType,
     Redirect,
     Response,
+    WebSocket,
     delete,
     get,
     patch,
@@ -37,7 +38,7 @@ from starlite import (
     put,
     route,
 )
-from starlite.exceptions import ValidationException
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.testing import create_test_request
 from starlite.types import Stream
@@ -303,3 +304,15 @@ async def test_handle_request_streaming_response(iterator: Any, should_raise: bo
     else:
         with pytest.raises(ValidationError):
             Stream(iterator=iterator)
+
+
+@pytest.mark.asyncio
+async def test_handle_request_validation():
+    @get(path="/test")
+    def test_function(socket: WebSocket) -> None:
+        pass
+
+    request = create_test_request(content=None, http_method=HttpMethod.GET)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await test_function.handle_request(request=request)

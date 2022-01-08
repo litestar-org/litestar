@@ -27,9 +27,9 @@ class MyRequestLoggingMiddleware(MiddlewareProtocol):
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] in ["http", "websocket"]:
+        if scope["type"] == "http":
             request = Request(scope)
-            logger.log("%s - %s", request.method, request.url)
+            logger.info("%s - %s" % request.method, request.url)
         await self.app(scope, receive, send)
 ```
 
