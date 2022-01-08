@@ -131,7 +131,7 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
 
-## Websocket Route Handlers
+## Websocket Route Handlers (v0.2.0+)
 
 Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
 
