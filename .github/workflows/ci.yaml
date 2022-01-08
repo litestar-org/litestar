@@ -77,7 +77,7 @@ jobs:
       - name: Test
         run: poetry run pytest --cov=. --cov-report=xml
       - name: SonarCloud Scan
-        if: github.repository_owner == 'starlite-api'  # do not run workflow on PRs from forks
+        if: github.repository_owner == 'starlite-api'  # do not run workflow on PRs from forks  test pr
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
