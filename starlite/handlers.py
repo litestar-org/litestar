@@ -1,3 +1,4 @@
+from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
@@ -256,13 +257,14 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "If your function doesn't return a value or returns None, annotate it as returning None."
             )
         if isclass(return_annotation):
-            if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
-                raise ValidationException(
-                    f"Redirect responses should have one of "
-                    f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
-                )
-            if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
-                self.media_type = MediaType.TEXT
+            with suppress(TypeError):
+                if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
+                    raise ValidationException(
+                        f"Redirect responses should have one of "
+                        f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+                    )
+                if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+                    self.media_type = MediaType.TEXT
 
     async def handle_request(self, request: Request) -> StarletteResponse:
         """

@@ -32,3 +32,7 @@
 [0.2.0]
 - add support for websockets
 - update multipart data handling to support mixed fields
+
+
+[0.2.1]
+- fix regression in handler validation
