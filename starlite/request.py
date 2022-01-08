@@ -1,6 +1,7 @@
+from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
-from orjson import loads
+from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from starlette.datastructures import FormData, UploadFile
 from starlette.requests import HTTPConnection
@@ -76,9 +77,12 @@ def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
-    """Transforms the multidict into a regular dict parse the values to fit the field"""
+    """Transforms the multidict into a regular dict, try to load json on all non-file values. Supports lists."""
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
+        if not isinstance(value, UploadFile):
+            with suppress(JSONDecodeError):
+                value = loads(value)
         if values_dict.get(key):
             if isinstance(values_dict[key], list):
                 values_dict[key].append(value)

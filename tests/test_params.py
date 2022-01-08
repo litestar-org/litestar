@@ -20,6 +20,7 @@ from starlite import (
     get,
     post,
 )
+from tests import Person, PersonFactory
 
 
 @pytest.mark.parametrize(
@@ -323,17 +324,21 @@ def test_request_body_multi_part(t_type: Type[Any]):
 
 
 def test_request_body_multi_part_mixed_field_content_types() -> None:
+    person = PersonFactory.build()
+
     class MultiPartFormWithMixedFields(BaseModel):
         class Config(BaseConfig):
             arbitrary_types_allowed = True
 
         image: UploadFile
         tags: List[str]
+        profile: Person
 
     @post(path="/")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         assert await data.image.read() == b"data"
-        assert data.tags == ["1", "2"]
+        assert data.tags == ["1", "2", "3"]
+        assert data.profile == person
 
     with create_test_client(test_method) as client:
         response = client.post(
@@ -341,9 +346,6 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
             files=[
                 ("image", ("image.png", b"data")),
             ],
-            data=[
-                ("tags", "1"),
-                ("tags", "2"),
-            ],
+            data=[("tags", "1"), ("tags", "2"), ("tags", "3"), ("profile", person.json())],
         )
         assert response.status_code == HTTP_201_CREATED
