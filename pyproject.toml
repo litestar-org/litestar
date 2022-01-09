@@ -2,7 +2,8 @@
 name = "starlite"
 version = "0.2.1"
 description = "Light-weight and flexible ASGI API Framework"
-authors = ["Na'aman Hirschfeld <Naaman.Hirschfeld@sprylab.com>"]
+authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/starlite-api/starlite"
