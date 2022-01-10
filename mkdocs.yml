@@ -44,6 +44,7 @@ nav:
       - usage/9-guards.md
       - usage/10-openapi.md
       - usage/11-testing.md
+  - migration.md
   - contributing.md
   - license.md
 extra:

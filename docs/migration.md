@@ -24,7 +24,8 @@ versions of these. You will need to use the Starlite `Router` classes instead of
 frameworks. There are some differences between the Starlite class and those from the other frameworks -
 
 1. The Starlite version is not an ASGI app, the only ASGI app is the Starlite app and any middlewares you pass to it.
-2. The Starlite version does not include decorators, instead you have to use [route handlers](usage/2-route-handlers.md).
+2. The Starlite version does not include decorators, instead you have to use [route handlers](usage/2-route-handlers.md)
+   .
 3. The Starlite version does not support lifecycle hooks, instead you have to handle all of your lifecycle management in
    the app layer.
 
@@ -46,3 +47,14 @@ default function argument value wrapped in an instance of the `Depend` class.
 
 In Starlite you declare dependencies always using a dictionary with a string key, and a value wrapped in an instance of
 the `Provide` class.
+
+## Authentication
+
+FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
+preferred way of handling this
+is [extending the Starlite AbstractAuthenticationMiddleware class](usage/8-authentication.md).
+
+## Third Party Packages
+
+Third party packages create for Starlette and FastAPI should by and large be compatible with Starlite. The only
+exceptions are for packages that use the FastAPI dependency injection system as a basis - these will not work as such.

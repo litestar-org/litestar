@@ -120,7 +120,7 @@ To run you application, use an ASGI server such as [uvicorn](https://www.uvicorn
 uvicorn my_app.main:app --reload
 ```
 
-## Project and Roadmap
+## The Starlite Project
 
 This project builds on top the Starlette ASGI toolkit and pydantic modelling to create a higher-order opinionated
 framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
@@ -134,19 +134,3 @@ has a different design, different project goals and a completely different codeb
    alternative.
 3. Finally, Python OOP is extremely powerful and versatile. While still allowing for function based endpoints, Starlite
    seeks to build on this by placing class based Controllers at its core.
-
-### Features and roadmap
-
-- [x] sync and async API endpoints
-- [x] fast json serialization using [orjson](https://github.com/ijl/orjson)
-- [x] class based controllers
-- [x] decorators based configuration
-- [x] rigorous typing and type inference
-- [x] layered dependency injection
-- [x] automatic OpenAPI schema generation
-- [x] support for pydantic models and pydantic dataclasses
-- [x] support for vanilla python dataclasses
-- [x] extended testing support
-- [x] built-in [Redoc](https://github.com/Redocly/redoc) based OpenAPI UI
-- [x] route guards
-- [ ] schemathesis integration

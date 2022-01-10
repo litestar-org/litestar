@@ -135,7 +135,7 @@ from my_app.controllers.user import UserController
 app = Starlite(route_handlers=[UserController])
 ```
 
-To run you application, use an ASGI server such as [uvicorn](https://www.uvicorn.org/):
+To run your application, use an ASGI server such as [uvicorn](https://www.uvicorn.org/):
 
 ```shell
 uvicorn my_app.main:app --reload
