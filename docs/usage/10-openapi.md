@@ -113,6 +113,9 @@ Starlite includes a pre-configured controller called `OpenAPIController` which e
    the `application/vnd.oai.openapi+json` Content-Type.
 3. `/schema/redoc`, which serves a [Redoc](https://github.com/Redocly/redoc) UI static website for the OpenAPI docs.
 
+!!! important
+    prior to version 0.3.0 there was only a single download endpoint by default and its path was `/schema`
+
 If you would like to modify the endpoints, add new endpoints, change the styling of redoc etc., you can subclass the
 `OpenAPIController` and then pass your subclass to the `OpenAPIConfig`.
 
