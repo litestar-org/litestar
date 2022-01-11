@@ -3,6 +3,7 @@ from orjson.orjson import OPT_INDENT_2, dumps
 
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 from starlite.request import Request
 
@@ -17,11 +18,17 @@ class OpenAPIController(Controller):
     @staticmethod
     def schema_from_request(request: Request) -> OpenAPI:
         """Returns the openapi schema"""
-        assert request.app.openapi_schema, "Starlite has not been instantiated with OpenAPIConfig"
+        if not request.app.openapi_schema:  # pragma: no cover
+            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         return request.app.openapi_schema
 
-    @get(media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
-    def retrieve_schema(self, request: Request) -> OpenAPI:
+    @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
+    def retrieve_schema_yaml(self, request: Request) -> OpenAPI:
+        """Returns the openapi schema"""
+        return self.schema_from_request(request)
+
+    @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
+    def retrieve_schema_json(self, request: Request) -> OpenAPI:
         """Returns the openapi schema"""
         return self.schema_from_request(request)
 
