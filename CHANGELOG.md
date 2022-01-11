@@ -36,3 +36,11 @@
 
 [0.2.1]
 - fix regression in handler validation
+
+
+[0.3.0]
+- updated openapi configuration:
+1. OpenAPI schema generation is now enabled by default
+2. The `OpenAPIController` is now part of the `OpenAPIConfig`
+3. The default schema download path changed from `/schema` to `/schema/openapi.json`
+4. Added a `/schema/openapi.yaml` route to the `OpenAPIController`

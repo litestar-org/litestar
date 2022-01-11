@@ -124,12 +124,10 @@ def test_dependency_validation():
     def test_function(first: int, second: str, third: int) -> None:
         pass
 
-    app = Starlite(
-        route_handlers=[test_function],
-        dependencies={
-            "third": Provide(local_method_first_dependency),
-        },
-    )
-
     with pytest.raises(ImproperlyConfiguredException):
-        list(app.routes[0].route_handler_map.values())[0].resolve_dependencies()
+        Starlite(
+            route_handlers=[test_function],
+            dependencies={
+                "third": Provide(local_method_first_dependency),
+            },
+        )

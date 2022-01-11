@@ -33,6 +33,8 @@ from starlite.types import (
     ResponseHeader,
 )
 
+DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
+
 
 class Starlite(Router):
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -48,7 +50,7 @@ class Starlite(Router):
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
         on_shutdown: Optional[List[NoArgAnyCallable]] = None,
         on_startup: Optional[List[NoArgAnyCallable]] = None,
-        openapi_config: Optional[OpenAPIConfig] = None,
+        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -79,12 +81,18 @@ class Starlite(Router):
         )
         if openapi_config:
             self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
+            self.register(openapi_config.openapi_controller)
         else:
             self.openapi_schema = None
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
         await self.middleware_stack(scope, receive, send)
+
+    def register(self, value: ControllerRouterHandler) -> None:
+        super().register(value=value)
+        if hasattr(self, "asgi_router"):
+            self.asgi_router.routes = self.routes  # type: ignore
 
     def build_middleware_stack(
         self,

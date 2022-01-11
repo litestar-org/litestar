@@ -2,7 +2,7 @@
 
 Starlite has first class OpenAPI support offering the following features:
 
-1. extensive OpenAPI spec generation
+1. extensive OpenAPI 3.1.0 spec generation
 2. integrated [Redoc](https://github.com/Redocly/redoc) UI
 
 ## Spec Generation
@@ -13,10 +13,10 @@ specs version [3.1.0 - the latest version of the specification](https://spec.ope
 
 ### App Level Configuration
 
-To enable OpenAPI schema generation you need to pass an instance of `OpenAPIConfig` to the Starlite constructor using
-the `openapi_config` kwarg:
+OpenAPI schema generation is enabled by default. To configure it you can pass an instance
+of `starlite.config.OpenAPIConfig` to the Starlite constructor using the `openapi_config` kwarg:
 
-```python
+```python title="my_app/main.py"
 from starlite import Starlite, OpenAPIConfig
 
 app = Starlite(
@@ -26,23 +26,38 @@ app = Starlite(
 
 Aside from `title` and `version`, both of which are **required** kwargs, you can pass the following optional kwargs:
 
-* `create_examples`: Boolean flag dictating whether examples will be auto-generated using
+- `create_examples`: Boolean flag dictating whether examples will be auto-generated using
   the [pydantic-factories](https://github.com/starlite-api/pydantic-factories) library. Defaults to `False`.
-* `contact`: An instance of the `Contact` model.
-* `description`: Description text.
-* `external_docs`: An instance of the `ExternalDocumentation` model.
-* `license`: An instance of the `License` model.
-* `security`: An instance of the `SecurityRequirement` model.
-* `servers`: A list of `Server` model instances. defaults to `[Server("/")]`
-* `summary`: Summary text.
-* `tags`: A list of `Tag` model instances.
-* `terms_of_service`: A url to a page containing the terms of service.
-* `webhooks`: A string keyed dictionary of `PathItem` model instances.
+- `openapi_controller`: The controller class to use for the openapi to generate the openapi related routes. Must be a
+  subclass of [the openapi controller class](#the-openapi-controller).
+- `contact`: An instance of the `Contact` model.
+- `description`: Description text.
+- `external_docs`: An instance of the `ExternalDocumentation` model.
+- `license`: An instance of the `License` model.
+- `security`: An instance of the `SecurityRequirement` model.
+- `servers`: A list of `Server` model instances. defaults to `[Server("/")]`
+- `summary`: Summary text.
+- `tags`: A list of `Tag` model instances.
+- `terms_of_service`: A url to a page containing the terms of service.
+- `webhooks`: A string keyed dictionary of `PathItem` model instances.
 
 !!! note
-    All models listed above are exported
-    from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
+    All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
     rather than Starlite.
+
+#### Disable Schema Generation
+
+If you wish to disable schema generation and not include the schema endpoints in your API, simply pass `None` as the
+value for `openapi_config`:
+
+```python title="my_app/main.py"
+from starlite import Starlite, OpenAPIConfig
+
+app = Starlite(
+    route_handlers=[...], openapi_config=None
+)
+```
+
 
 ### Route Handler Configuration
 
@@ -71,12 +86,12 @@ You can also affect the schema by enriching and/or modifying it using the follow
   to `False`.
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
-  automatically for the schema if any validation is involved (e.g. there are parameters specified in the method/function).
+  automatically for the schema if any validation is involved (e.g. there are parameters specified in the
+  method/function).
 
-## Accessing the Schema
+## Accessing the OpenAPI Schema
 
-Once you enable OpenAPI schema generation by passing a config object to the Starlite constructor, the generated schema
-will become accessible in any route handler:
+The generated schema is an instance of the `OpenAPI` pydantic model, and you can access it in any route handler like so:
 
 ```python
 from starlite import Request, get
@@ -88,59 +103,41 @@ def my_route_handler(request: Request) -> None:
     ...
 ```
 
-The schema in the above is an instance of the `OpenAPI` pydantic model, and you can interact with it as you would with
-any other pydantic model
-
 ### The OpenAPI Controller
 
-Starlite includes a pre-configured controller called `OpenAPIController` which exposes two endpoints:
+Starlite includes a pre-configured controller called `OpenAPIController` which exposes three endpoints:
 
-1. a schema download endpoint with the default path - `/schema`
-2. an HTML endpoint that serves a Redoc UI for the schema with the default path - `/schema/redoc`
+1. `/schema/openapi.yaml`, allowing for download of the OpenAPI schema as YAML, using the `application/vnd.oai.openapi`
+   Content-Type.
+2. `/schema/openapi.json`, allowing for download of the OpenAPI schema as JSON, using
+   the `application/vnd.oai.openapi+json` Content-Type.
+3. `/schema/redoc`, which serves a [Redoc](https://github.com/Redocly/redoc) UI static website for the OpenAPI docs.
 
-To enable this controller simply add it to the app route handlers or a router, e.g.:
+!!! important
+    prior to version 0.3.0 there was only a single download endpoint by default and its path was `/schema`
 
-```python
-from starlite import OpenAPIController, Starlite
+If you would like to modify the endpoints, add new endpoints, change the styling of redoc etc., you can subclass the
+`OpenAPIController` and then pass your subclass to the `OpenAPIConfig`.
 
-app = Starlite(route_handlers=[OpenAPIController])
-```
-
-The defaults for this controller are:
-
-1. path = `/schema`
-2. schema is sent using the `application/vnd.oai.openapi+json` Content-Type header
-3. there is no styling of Redoc and no favicon for it
-
-For example, lets say we wanted to serve the schema using the `application/vnd.oai.openapi` Content-Type, which is the
-convention for YAML, rather than using JSON. In this case we would do this:
+For example, lets say we wanted to change the base path from "/schema" to "/api-docs":
 
 ```python title="my_app/openapi.py"
-from openapi_schema_pydantic import OpenAPI
-from starlite import OpenAPIController, OpenAPIMediaType, Request, get
+from starlite import OpenAPIController
 
 
 class MyOpenAPIController(OpenAPIController):
-    @get(media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
-    def retrieve_schema(self, request: Request) -> OpenAPI:
-        """Returns the openapi schema"""
-        return self.schema_from_request(request)
+    path = "/api-docs"
 ```
 
-And then we would use this controller our app instead:
+We would then use the subclassed controller like so:
 
 ```python
-from starlite import Starlite
+from starlite import Starlite, OpenAPIConfig
 
 from my_app.openapi import MyOpenAPIController
 
-app = Starlite(route_handlers=[MyOpenAPIController])
+app = Starlite(
+    route_handlers=[...],
+    openapi_config=OpenAPIConfig(openapI_controller=MyOpenAPIController),
+)
 ```
-
-### Redoc
-
-As mentioned previously the Starlite `OpenAPIController` comes with a Redoc UI endpoint. Once you enable the controller
-you can access the endpoint at `/schema/redoc` - by default. You can of course modify this path as you see fit.
-
-Redoc is served using a basic HTML template with no additional styling and no favicon. If you want to change this, you
-can easily do so by subclassing the controller and modifying the template.

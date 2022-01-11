@@ -13,6 +13,9 @@ from openapi_schema_pydantic import (
     Tag,
 )
 from pydantic import AnyUrl, BaseModel
+from typing_extensions import Type
+
+from starlite.openapi.controller import OpenAPIController
 
 
 class CORSConfig(BaseModel):
@@ -29,6 +32,7 @@ class OpenAPIConfig(BaseModel):
     """Class containing Settings and Schema Properties"""
 
     create_examples: bool = False
+    openapi_controller: Type[OpenAPIController] = OpenAPIController
 
     title: str
     version: str
