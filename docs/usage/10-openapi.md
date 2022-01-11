@@ -16,7 +16,7 @@ specs version [3.1.0 - the latest version of the specification](https://spec.ope
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance
 of `starlite.config.OpenAPIConfig` to the Starlite constructor using the `openapi_config` kwarg:
 
-```python
+```python title="my_app/main.py"
 from starlite import Starlite, OpenAPIConfig
 
 app = Starlite(
@@ -44,6 +44,20 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 !!! note
     All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
     rather than Starlite.
+
+#### Disable Schema Generation
+
+If you wish to disable schema generation and not include the schema endpoints in your API, simply pass `None` as the
+value for `openapi_config`:
+
+```python title="my_app/main.py"
+from starlite import Starlite, OpenAPIConfig
+
+app = Starlite(
+    route_handlers=[...], openapi_config=None
+)
+```
+
 
 ### Route Handler Configuration
 
