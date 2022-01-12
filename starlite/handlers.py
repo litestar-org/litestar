@@ -79,7 +79,8 @@ class BaseRouteHandler(BaseModel):
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
         """
-        assert self.signature_model, "resolve_dependencies cannot be called before a signature model has been generated"
+        if not self.signature_model:
+            raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is _empty:
             field_names = list(self.signature_model.__fields__.keys())
             dependencies: Dict[str, Provide] = {}
@@ -109,7 +110,8 @@ class BaseRouteHandler(BaseModel):
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        assert self.fn, "cannot call validate_handler_function without first setting self.fn"
+        if not self.fn:
+            raise AttributeError("cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
         """
@@ -296,7 +298,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         Handles a given Request in relation to self.
         """
-        assert self.fn, "cannot call a route handler without a decorated function"
+        if not self.fn:
+            raise AttributeError("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=request)
         params = await self.get_parameters_from_connection(connection=request)
 
@@ -375,14 +378,18 @@ class WebsocketRouteHandler(BaseRouteHandler):
         super().validate_handler_function()
         signature = Signature.from_callable(cast(AnyCallable, self.fn))
 
-        assert signature.return_annotation is None, "websocket handler functions should return 'None' values"
-        assert "socket" in signature.parameters, "websocket handlers must set a 'socket' kwarg"
+
+        if signature.return_annotation is not None:
+            raise ImproperlyConfiguredException("websocket handler functions should return 'None'")
+        if "socket" not in signature.parameters:
+            raise ImproperlyConfiguredException("websocket handlers must set a 'socket' kwarg")
 
     async def handle_websocket(self, web_socket: WebSocket) -> None:
         """
         Handles a given Websocket in relation to self.
         """
-        assert self.fn, "cannot call a route handler without a decorated function"
+        if not self.fn:
+            raise AttributeError("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=web_socket)
         params = await self.get_parameters_from_connection(connection=web_socket)
         if isinstance(self.owner, Controller):
