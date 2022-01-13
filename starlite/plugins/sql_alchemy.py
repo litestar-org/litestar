@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
 from inspect import isclass
-from typing import Any, Callable, Dict, List, Tuple, Union, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, constr, create_model
 from sqlalchemy.sql.type_api import TypeEngine
@@ -128,7 +128,13 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                 raise ImproperlyConfiguredException("Unsupported Column type, please extend the provider table.") from e
         return type(column_type)
 
-    def handle_relationships(self, mapper: Mapper, field_definitions: Dict[str, Tuple[Any, Any]], regenerate_models: bool = False, is_child: bool = False) -> None:
+    def handle_relationships(
+        self,
+        mapper: Mapper,
+        field_definitions: Dict[str, Tuple[Any, Any]],
+        regenerate_models: bool = False,
+        is_child: bool = False,
+    ) -> None:
         model = self.model_map[mapper.entity]
         self_refs: List[Tuple[str, RelationshipProperty]] = []
         regular_refs: List[Tuple[str, RelationshipProperty]] = []
@@ -148,12 +154,25 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                 model_class=relationship_property.mapper.entity, regenerate_models=not is_child, is_child=True
             )
             if relationship_property.uselist:
-                field_definitions[name] = (List[relation_type], ...)
+                field_definitions[name] = (List[self.model_map[relationship_property.mapper.entity]], ...)
             else:
-                field_definitions[name] = (relation_type, ...)
+                field_definitions[name] = (self.model_map[relationship_property.mapper.entity], ...)
             self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)
+            if relationship_property.back_populates:
+                relation_field_definition = {k: (v.outer_type_, ...) for k, v in relation_type.__fields__.items()}
+                relation_field_definition[relationship_property.back_populates] = (self.model_map[mapper.entity], ...)
+                self.model_map[relationship_property.mapper.entity] = create_model(
+                    relation_type.__name__, **relation_field_definition
+                )
+                if relationship_property.uselist:
+                    field_definitions[name] = (List[self.model_map[relationship_property.mapper.entity]], ...)
+                else:
+                    field_definitions[name] = (self.model_map[relationship_property.mapper.entity], ...)
+                self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)
         if regular_refs and not is_child and not regenerate_models:
-            self.to_pydantic_model_class(model_class=mapper.entity, field_definitions=field_definitions, regenerate_models=True)
+            self.to_pydantic_model_class(
+                model_class=mapper.entity, field_definitions=field_definitions, regenerate_models=True
+            )
 
     def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> Type[BaseModel]:
         """
@@ -181,5 +200,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                     for name, relationship_property in mapper.relationships.items():
                         field_definitions[name] = (self.model_map.get(relationship_property.mapper.entity, Any), ...)
                     self.model_map[mapper.entity] = create_model(model_class.__name__, **field_definitions)
-                self.handle_relationships(mapper=mapper, field_definitions=field_definitions, regenerate_models=regenerate_models, **kwargs)
+                self.handle_relationships(
+                    mapper=mapper, field_definitions=field_definitions, regenerate_models=regenerate_models, **kwargs
+                )
         return self.model_map[mapper.entity]
