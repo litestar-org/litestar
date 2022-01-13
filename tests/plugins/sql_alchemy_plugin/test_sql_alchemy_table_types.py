@@ -48,6 +48,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import registry
 
+from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
 Base = declarative_base()
@@ -105,51 +106,19 @@ imperative_model = Table(
     "imperative",
     mapper_registry.metadata,
     Column("id", Integer, primary_key=True),
-    Column("ARRAY_column", ARRAY(String, dimensions=2)),
-    Column("BIGINT_column", BIGINT),
-    Column("BINARY_column", BINARY),
-    Column("BLOB_column", BLOB),
-    Column("BOOLEAN_column", BOOLEAN),
-    Column("BigInteger_column", BigInteger),
-    Column("Boolean_column", Boolean),
-    Column("CHAR_column", CHAR(length=3)),
-    Column("CLOB_column", CLOB),
-    Column("DATE_column", DATE),
-    Column("DATETIME_column", DATETIME),
-    Column("DECIMAL_column", DECIMAL),
-    Column("Date_column", Date),
-    Column("DateTime_column", DateTime),
-    Column("Enum_column", Enum),
-    Column("FLOAT_column", FLOAT(asdecimal=True)),
-    Column("Float_column", Float),
-    Column("INT_column", INT),
-    Column("INTEGER_column", INTEGER),
-    Column("Integer_column", Integer),
-    Column("Interval_column", Interval),
-    Column("JSON_column", JSON),
-    Column("LargeBinary_column", LargeBinary),
-    Column("NCHAR_column", NCHAR),
-    Column("NUMERIC_column", NUMERIC),
-    Column("NVARCHAR_column", NVARCHAR),
-    Column("Numeric_column", Numeric),
-    Column("REAL_column", REAL),
-    Column("SMALLINT_column", SMALLINT),
-    Column("SmallInteger_column", SmallInteger),
-    Column("String_column", String),
-    Column("TEXT_column", TEXT),
-    Column("TIME_column", TIME),
-    Column("TIMESTAMP_column", TIMESTAMP),
-    Column("Text_column", Text),
-    Column("Time_column", Time),
-    Column("TupleType_column", TupleType(str, int, bool)),
-    Column("Unicode_column", Unicode),
-    Column("UnicodeText_column", UnicodeText),
-    Column("VARBINARY_column", VARBINARY),
-    Column("VARCHAR_column", VARCHAR),
 )
 
 
-@pytest.mark.parametrize("model", [imperative_model, DeclarativeModel])
-def test_sql_alchemy_plugin(model):
-    result = SQLAlchemyPlugin().to_pydantic_model_class(model=model)
+def test_sql_alchemy_plugin():
+    plugin = SQLAlchemyPlugin()
+    result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
+
+
+def test_exception_handling():
+    plugin = SQLAlchemyPlugin()
+    with pytest.raises(ImproperlyConfiguredException):
+        plugin.to_pydantic_model_class(model_class=imperative_model)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        plugin.to_pydantic_model_class(model_class=declarative_base)

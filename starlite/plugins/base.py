@@ -1,15 +1,17 @@
-from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from pydantic import BaseModel
-from typing_extensions import Type
+from typing_extensions import Protocol, Type
+
+if TYPE_CHECKING:
+    from starlite.app import Starlite
+
+T = TypeVar("T")
 
 
-class AbstractBasePlugin(ABC):
-    @abstractmethod
-    def to_pydantic_model_class(self, model: Any) -> Type[BaseModel]:  # pragma: no cover
-        raise NotImplementedError()
+class PluginProtocol(Protocol[T]):
+    def __init__(self, app: "Starlite"):
+        ...
 
-    @abstractmethod
-    def from_pydantic_model_class(self, pydantic_model: Type[BaseModel]) -> Any:  # pragma: no cover
-        raise NotImplementedError()
+    def to_pydantic_model_class(self, model_class: Type[T], **kwargs: Any) -> Type[BaseModel]:  # pragma: no cover
+        ...

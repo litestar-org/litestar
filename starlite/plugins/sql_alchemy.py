@@ -2,10 +2,9 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
 from inspect import isclass
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union, Optional
 
 from pydantic import BaseModel, constr, create_model
-from sqlalchemy.exc import NoInspectionAvailable
 from sqlalchemy.sql.type_api import TypeEngine
 from typing_extensions import Type
 
@@ -13,19 +12,19 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.plugins.base import AbstractBasePlugin
+from starlite.plugins.base import PluginProtocol
 
 try:
     from sqlalchemy import Table, inspect
     from sqlalchemy import types as sqlalchemy_type
-    from sqlalchemy.orm import Mapper
+    from sqlalchemy.orm import DeclarativeMeta, Mapper, RelationshipProperty
 except ImportError as exc:  # pragma: no cover
     raise MissingDependencyException("sqlalchemy is not installed") from exc
 
 
-class SQLAlchemyPlugin(AbstractBasePlugin):
+class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def __init__(self) -> None:
-        self.model_map: Dict[str, Type[BaseModel]] = {}
+        self.model_map: Dict[Any, Type[BaseModel]] = {}
 
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> Type:
@@ -129,28 +128,58 @@ class SQLAlchemyPlugin(AbstractBasePlugin):
                 raise ImproperlyConfiguredException("Unsupported Column type, please extend the provider table.") from e
         return type(column_type)
 
-    def to_pydantic_model_class(self, model: Any) -> Type[BaseModel]:
-        """
-        Generates a pydantic model for a given sql alchemy Table.
+    def handle_relationships(self, mapper: Mapper, field_definitions: Dict[str, Tuple[Any, Any]], regenerate_models: bool = False, is_child: bool = False) -> None:
+        model = self.model_map[mapper.entity]
+        self_refs: List[Tuple[str, RelationshipProperty]] = []
+        regular_refs: List[Tuple[str, RelationshipProperty]] = []
+        for name, relationship_property in mapper.relationships.items():
+            if relationship_property.entity.entity is mapper.entity:
+                self_refs.append((name, relationship_property))
+            else:
+                regular_refs.append((name, relationship_property))
+        for name, relationship_property in self_refs:
+            if relationship_property.uselist:
+                field_definitions[name] = (List[self.model_map[mapper.entity]], ...)
+            else:
+                field_definitions[name] = (self.model_map[mapper.entity], ...)
+        self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)
+        for name, relationship_property in regular_refs:
+            relation_type = self.to_pydantic_model_class(
+                model_class=relationship_property.mapper.entity, regenerate_models=not is_child, is_child=True
+            )
+            if relationship_property.uselist:
+                field_definitions[name] = (List[relation_type], ...)
+            else:
+                field_definitions[name] = (relation_type, ...)
+            self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)
+        if regular_refs and not is_child and not regenerate_models:
+            self.to_pydantic_model_class(model_class=mapper.entity, field_definitions=field_definitions, regenerate_models=True)
 
-        Supports both declarative and imperative Table declarations.
+    def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> Type[BaseModel]:
         """
-        field_definitions = {}
-        mapper: Mapper = inspect(model, raiseerr=True)
-        model_name = model.__qualname__ if hasattr(model, "__qualname__") else str(mapper.fullname)
-        if model_name not in self.model_map:
-            try:
-                for name, column in mapper.columns.items():
-                    if column.default is not None:
-                        field_definitions[str(name)] = (self.get_pydantic_type(column.type), column.default)
-                    elif column.nullable:
-                        field_definitions[str(name)] = (self.get_pydantic_type(column.type), None)
-                    else:
-                        field_definitions[str(name)] = (self.get_pydantic_type(column.type), ...)
-                self.model_map[model_name] = create_model(model_name, **field_definitions)
-            except NoInspectionAvailable as e:
-                raise ImproperlyConfiguredException("Model is not an SQLAlchemy Table") from e
-        return self.model_map[model_name]
-
-    def from_pydantic_model_class(self, pydantic_model: Type[BaseModel]) -> Type[Table]:
-        pass
+        Generates a pydantic model for a given SQLAlchemy declarative table and any nested relations.
+        """
+        if not isclass(model_class) or not isinstance(model_class, DeclarativeMeta):
+            raise ImproperlyConfiguredException(
+                "Unsupported 'model_class' kwarg: "
+                "only classes inheriting from SQLAlchemy 'DeclarativeMeta' are supported"
+            )
+        mapper: Mapper = inspect(model_class)
+        regenerate_models = kwargs.pop("regenerate_models", False)
+        if regenerate_models or mapper.entity not in self.model_map:
+            field_definitions = kwargs.pop("field_definitions", {})
+            for name, column in mapper.columns.items():
+                if column.default is not None:
+                    field_definitions[name] = (self.get_pydantic_type(column.type), column.default)
+                elif column.nullable:
+                    field_definitions[name] = (self.get_pydantic_type(column.type), None)
+                else:
+                    field_definitions[name] = (self.get_pydantic_type(column.type), ...)
+            # we first generate a pydantic model with relationship values set to Any, so we have a reference we can pass
+            if mapper.relationships:
+                if mapper.entity not in self.model_map:
+                    for name, relationship_property in mapper.relationships.items():
+                        field_definitions[name] = (self.model_map.get(relationship_property.mapper.entity, Any), ...)
+                    self.model_map[mapper.entity] = create_model(model_class.__name__, **field_definitions)
+                self.handle_relationships(mapper=mapper, field_definitions=field_definitions, regenerate_models=regenerate_models, **kwargs)
+        return self.model_map[mapper.entity]
