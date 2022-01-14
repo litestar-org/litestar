@@ -30,8 +30,6 @@ friendship_table = Table(
 
 
 class Pet(Base):
-    __tablename__ = "pet"
-
     id = Column(Integer, primary_key=True)
     species = Column(Enum(Species))
     name = Column(String)
@@ -41,8 +39,6 @@ class Pet(Base):
 
 
 class User(Base):
-    __tablename__ = "user"
-
     id = Column(Integer, primary_key=True)
     name = Column(String)
     pets = relationship(
@@ -60,3 +56,8 @@ class User(Base):
 def test_relationship():
     result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)
     assert issubclass(result, BaseModel)
+
+def test_table_name():
+    pet_table = Pet
+    user_table = User
+    assert pet_table.__tablename__ == "pet" and user_table.__tablename__ == "user"
