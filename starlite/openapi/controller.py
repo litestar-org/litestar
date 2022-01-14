@@ -1,5 +1,5 @@
 from openapi_schema_pydantic import OpenAPI
-from orjson.orjson import OPT_INDENT_2, dumps
+from orjson import OPT_INDENT_2, dumps
 
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
