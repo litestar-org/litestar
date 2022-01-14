@@ -125,7 +125,7 @@ sys.stderr\_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
-setup up logging - then the on_startup hook is a good place to do this.
+set up logging - then the on_startup hook is a good place to do this.
 
 ## Exceptions
 
