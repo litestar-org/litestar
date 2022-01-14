@@ -1,12 +1,21 @@
+from typing import Any
 from pydantic import BaseModel
 from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import relationship
 
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Species
 
-Base = declarative_base()
+
+@as_declarative()
+class Base:
+    id: Any
+    __name__: str
+    # Generate the table name from the class name
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
 
 association_table = Table(
     "association", Base.metadata, Column("pet_id", ForeignKey("pet.id")), Column("user_id", ForeignKey("user.id"))
@@ -21,8 +30,6 @@ friendship_table = Table(
 
 
 class Pet(Base):
-    __tablename__ = "pet"
-
     id = Column(Integer, primary_key=True)
     species = Column(Enum(Species))
     name = Column(String)
@@ -32,8 +39,6 @@ class Pet(Base):
 
 
 class User(Base):
-    __tablename__ = "user"
-
     id = Column(Integer, primary_key=True)
     name = Column(String)
     pets = relationship(
@@ -51,3 +56,8 @@ class User(Base):
 def test_relationship():
     result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)
     assert issubclass(result, BaseModel)
+
+def test_table_name():
+    pet_table = Pet
+    user_table = User
+    assert pet_table.__tablename__ == "pet" and user_table.__tablename__ == "user"
