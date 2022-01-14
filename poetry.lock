@@ -353,6 +353,24 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "mypy"
+version = "0.931"
+description = "Optional static typing for Python"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+mypy-extensions = ">=0.4.3"
+tomli = ">=1.1.0"
+typed-ast = {version = ">=1.4.0,<2", markers = "python_version < \"3.8\""}
+typing-extensions = ">=3.10"
+
+[package.extras]
+dmypy = ["psutil (>=4.0)"]
+python2 = ["typed-ast (>=1.4.0,<2)"]
+
+[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -516,17 +534,17 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 
 [[package]]
 name = "pytest-asyncio"
-version = "0.16.0"
-description = "Pytest support for asyncio."
+version = "0.17.0"
+description = "Pytest support for asyncio"
 category = "dev"
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 pytest = ">=5.4.0"
 
 [package.extras]
-testing = ["coverage", "hypothesis (>=5.7.1)"]
+testing = ["coverage (==6.2)", "hypothesis (>=5.7.1)", "flaky (>=3.5.0)"]
 
 [[package]]
 name = "pytest-cov"
@@ -654,6 +672,8 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
 [package.dependencies]
 greenlet = {version = "!=0.4.17", markers = "python_version >= \"3\" and (platform_machine == \"aarch64\" or platform_machine == \"ppc64le\" or platform_machine == \"x86_64\" or platform_machine == \"amd64\" or platform_machine == \"AMD64\" or platform_machine == \"win32\" or platform_machine == \"WIN32\")"}
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
+mypy = {version = ">=0.910", optional = true, markers = "python_version >= \"3\" and extra == \"mypy\""}
+sqlalchemy2-stubs = {version = "*", optional = true, markers = "extra == \"mypy\""}
 
 [package.extras]
 aiomysql = ["greenlet (!=0.4.17)", "aiomysql"]
@@ -675,6 +695,17 @@ postgresql_psycopg2binary = ["psycopg2-binary"]
 postgresql_psycopg2cffi = ["psycopg2cffi"]
 pymysql = ["pymysql (<1)", "pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
+
+[[package]]
+name = "sqlalchemy2-stubs"
+version = "0.0.2a19"
+description = "Typing Stubs for SQLAlchemy 1.4"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "starlette"
@@ -746,7 +777,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.16.0"
+version = "0.17.0"
 description = "The lightning-fast ASGI server."
 category = "dev"
 optional = false
@@ -759,7 +790,7 @@ h11 = ">=0.8"
 typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.extras]
-standard = ["httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.6)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "websockets (>=9.1)", "websockets (>=10.0)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "colorama (>=0.4)"]
+standard = ["websockets (>=10.0)", "httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.6)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "colorama (>=0.4)"]
 
 [[package]]
 name = "watchdog"
@@ -787,7 +818,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "fd84a1db7d06b18513ef885654114313f636d221c558503d4459958be9bb739e"
+content-hash = "69062dee59aefc885f6dc422063acac22de54a723df03cd6d7a9bf7459140a38"
 
 [metadata.files]
 anyio = [
@@ -1062,6 +1093,28 @@ mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
 ]
+mypy = [
+    {file = "mypy-0.931-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3c5b42d0815e15518b1f0990cff7a705805961613e701db60387e6fb663fe78a"},
+    {file = "mypy-0.931-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:c89702cac5b302f0c5d33b172d2b55b5df2bede3344a2fbed99ff96bddb2cf00"},
+    {file = "mypy-0.931-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:300717a07ad09525401a508ef5d105e6b56646f7942eb92715a1c8d610149714"},
+    {file = "mypy-0.931-cp310-cp310-win_amd64.whl", hash = "sha256:7b3f6f557ba4afc7f2ce6d3215d5db279bcf120b3cfd0add20a5d4f4abdae5bc"},
+    {file = "mypy-0.931-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:1bf752559797c897cdd2c65f7b60c2b6969ffe458417b8d947b8340cc9cec08d"},
+    {file = "mypy-0.931-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:4365c60266b95a3f216a3047f1d8e3f895da6c7402e9e1ddfab96393122cc58d"},
+    {file = "mypy-0.931-cp36-cp36m-win_amd64.whl", hash = "sha256:1b65714dc296a7991000b6ee59a35b3f550e0073411ac9d3202f6516621ba66c"},
+    {file = "mypy-0.931-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e839191b8da5b4e5d805f940537efcaa13ea5dd98418f06dc585d2891d228cf0"},
+    {file = "mypy-0.931-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:50c7346a46dc76a4ed88f3277d4959de8a2bd0a0fa47fa87a4cde36fe247ac05"},
+    {file = "mypy-0.931-cp37-cp37m-win_amd64.whl", hash = "sha256:d8f1ff62f7a879c9fe5917b3f9eb93a79b78aad47b533911b853a757223f72e7"},
+    {file = "mypy-0.931-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f9fe20d0872b26c4bba1c1be02c5340de1019530302cf2dcc85c7f9fc3252ae0"},
+    {file = "mypy-0.931-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1b06268df7eb53a8feea99cbfff77a6e2b205e70bf31743e786678ef87ee8069"},
+    {file = "mypy-0.931-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:8c11003aaeaf7cc2d0f1bc101c1cc9454ec4cc9cb825aef3cafff8a5fdf4c799"},
+    {file = "mypy-0.931-cp38-cp38-win_amd64.whl", hash = "sha256:d9d2b84b2007cea426e327d2483238f040c49405a6bf4074f605f0156c91a47a"},
+    {file = "mypy-0.931-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:ff3bf387c14c805ab1388185dd22d6b210824e164d4bb324b195ff34e322d166"},
+    {file = "mypy-0.931-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:5b56154f8c09427bae082b32275a21f500b24d93c88d69a5e82f3978018a0266"},
+    {file = "mypy-0.931-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:8ca7f8c4b1584d63c9a0f827c37ba7a47226c19a23a753d52e5b5eddb201afcd"},
+    {file = "mypy-0.931-cp39-cp39-win_amd64.whl", hash = "sha256:74f7eccbfd436abe9c352ad9fb65872cc0f1f0a868e9d9c44db0893440f0c697"},
+    {file = "mypy-0.931-py3-none-any.whl", hash = "sha256:1171f2e0859cfff2d366da2c7092b06130f232c636a3f7301e3feb8b41f6377d"},
+    {file = "mypy-0.931.tar.gz", hash = "sha256:0038b21890867793581e4cb0d810829f5fd4441aa75796b53033af3aa30430ce"},
+]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
@@ -1174,8 +1227,8 @@ pytest = [
     {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
 ]
 pytest-asyncio = [
-    {file = "pytest-asyncio-0.16.0.tar.gz", hash = "sha256:7496c5977ce88c34379df64a66459fe395cd05543f0a2f837016e7144391fcfb"},
-    {file = "pytest_asyncio-0.16.0-py3-none-any.whl", hash = "sha256:5f2a21273c47b331ae6aa5b36087047b4899e40f03f18397c0e65fa5cca54e9b"},
+    {file = "pytest-asyncio-0.17.0.tar.gz", hash = "sha256:c98e0e04ae5910bbcc219f52bdf871bd1d392f624ef77c49c236613c0b6d8ee1"},
+    {file = "pytest_asyncio-0.17.0-py3-none-any.whl", hash = "sha256:b41c3ff0ec5b5b144459aa1c53a866f67278177f6d4f3ef6874bd864fc82834d"},
 ]
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
@@ -1285,6 +1338,10 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.29-cp39-cp39-win_amd64.whl", hash = "sha256:08cfd35eecaba79be930c9bfd2e1f0c67a7e1314355d83a378f9a512b1cf7587"},
     {file = "SQLAlchemy-1.4.29.tar.gz", hash = "sha256:fa2bad14e1474ba649cfc969c1d2ec915dd3e79677f346bbfe08e93ef9020b39"},
 ]
+sqlalchemy2-stubs = [
+    {file = "sqlalchemy2-stubs-0.0.2a19.tar.gz", hash = "sha256:2117c48ce5acfe33bf9c9bfce2a981632d931949e68fa313aa5c2a3bc980ca7a"},
+    {file = "sqlalchemy2_stubs-0.0.2a19-py3-none-any.whl", hash = "sha256:aac7dca77a2c49e5f0934976421d5e25ae4dc5e27db48c01e055f81caa1e3ead"},
+]
 starlette = [
     {file = "starlette-0.17.1-py3-none-any.whl", hash = "sha256:26a18cbda5e6b651c964c12c88b36d9898481cd428ed6e063f5f29c418f73050"},
     {file = "starlette-0.17.1.tar.gz", hash = "sha256:57eab3cc975a28af62f6faec94d355a410634940f10b30d68d31cb5ec1b44ae8"},
@@ -1331,8 +1388,8 @@ urllib3 = [
     {file = "urllib3-1.26.8.tar.gz", hash = "sha256:0e7c33d9a63e7ddfcb86780aac87befc2fbddf46c58dbb487e0855f7ceec283c"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.16.0-py3-none-any.whl", hash = "sha256:d8c839231f270adaa6d338d525e2652a0b4a5f4c2430b5c4ef6ae4d11776b0d2"},
-    {file = "uvicorn-0.16.0.tar.gz", hash = "sha256:eacb66afa65e0648fcbce5e746b135d09722231ffffc61883d4fac2b62fbea8d"},
+    {file = "uvicorn-0.17.0-py3-none-any.whl", hash = "sha256:0b89c91bb8fe84c4bded9996af13c4b8c0de799d29bffeaa0c8ad298f2be0934"},
+    {file = "uvicorn-0.17.0.tar.gz", hash = "sha256:192c2422b056a3beb512c6c260bf77a7a884204a4ae41856719c1913ead63bbb"},
 ]
 watchdog = [
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9693f35162dc6208d10b10ddf0458cc09ad70c30ba689d9206e02cd836ce28a3"},

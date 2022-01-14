@@ -59,9 +59,10 @@ repos:
             pydantic_factories,
             pyyaml,
             starlette,
+            sqlalchemy
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.930"
+    rev: "v0.931"
     hooks:
       - id: mypy
         exclude: "test_*"
@@ -74,4 +75,5 @@ repos:
             pydantic,
             pydantic_factories,
             starlette,
+            sqlalchemy
           ]

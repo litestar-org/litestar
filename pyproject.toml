@@ -50,7 +50,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
-SQLAlchemy = "*"
+sqlalchemy = {extras = ["mypy"], version = "*"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
