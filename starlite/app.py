@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
@@ -21,10 +21,11 @@ from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
 from starlite.openapi.path_item import create_path_item
+from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import HTTPRoute, Router
+from starlite.routing import HTTPRoute, Router, WebSocketRoute
 from starlite.types import (
     ControllerRouterHandler,
     ExceptionHandler,
@@ -32,6 +33,7 @@ from starlite.types import (
     MiddlewareProtocol,
     ResponseHeader,
 )
+from starlite.utils import create_function_signature_model
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
@@ -41,6 +43,7 @@ class Starlite(Router):
     def __init__(
         self,
         *,
+        route_handlers: List[ControllerRouterHandler],
         allowed_hosts: Optional[List[str]] = None,
         cors_config: Optional[CORSConfig] = None,
         debug: bool = False,
@@ -54,10 +57,11 @@ class Starlite(Router):
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        route_handlers: List[ControllerRouterHandler],
+        plugins: Optional[List[PluginProtocol]] = None
     ):
         self.debug = debug
         self.state = State()
+        self.plugins = plugins or []
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -79,6 +83,7 @@ class Starlite(Router):
         self.middleware_stack: ASGIApp = self.build_middleware_stack(
             user_middleware=middleware or [], cors_config=cors_config, allowed_hosts=allowed_hosts
         )
+        self.create_signature_models()
         if openapi_config:
             self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
             self.register(openapi_config.openapi_controller)
@@ -92,7 +97,29 @@ class Starlite(Router):
     def register(self, value: ControllerRouterHandler) -> None:
         super().register(value=value)
         if hasattr(self, "asgi_router"):
+            # this occurs only mid-way through the init and applies to the openapi endpoint
             self.asgi_router.routes = self.routes  # type: ignore
+            self.create_signature_models()
+
+    def create_signature_models(self) -> None:
+        """
+        Creates function signature models for all route handler functions and provider dependencies
+        """
+        for route in self.routes:
+            if isinstance(route, HTTPRoute):
+                route_handlers = list(route.route_handler_map.values())
+            else:
+                route_handlers = [cast(WebSocketRoute, route).route_handler]
+            for route_handler in route_handlers:
+                if not route_handler.signature_model:
+                    route_handler.signature_model = create_function_signature_model(
+                        fn=route_handler.fn, plugins=self.plugins
+                    )
+                for provider in list(route_handler.resolve_dependencies().values()):
+                    if not provider.signature_model:
+                        provider.signature_model = create_function_signature_model(
+                            fn=provider.dependency, plugins=self.plugins
+                        )
 
     def build_middleware_stack(
         self,

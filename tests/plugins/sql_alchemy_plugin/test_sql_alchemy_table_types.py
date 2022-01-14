@@ -150,13 +150,13 @@ imperative_model = Table(
 )
 
 
-def test_sql_alchemy_plugin():
+def test_sql_alchemy_plugin_model_class_parsing():
     plugin = SQLAlchemyPlugin()
     result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
 
 
-def test_exception_handling():
+def test_sql_alchemy_plugin_validatio():
     plugin = SQLAlchemyPlugin()
     with pytest.raises(ImproperlyConfiguredException):
         plugin.to_pydantic_model_class(model_class=imperative_model)

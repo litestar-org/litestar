@@ -4,7 +4,7 @@ from typing import Optional
 import pytest
 from starlette.status import HTTP_204_NO_CONTENT
 
-from starlite import ImproperlyConfiguredException, Provide, get
+from starlite import ImproperlyConfiguredException, get
 from starlite.utils.model import create_function_signature_model
 
 
@@ -13,7 +13,7 @@ def test_create_function_signature_model_parameter_parsing():
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = create_function_signature_model(my_fn.fn)
+    model = create_function_signature_model(my_fn.fn, [])
     fields = model.__fields__
     assert fields.get("a").type_ == int
     assert fields.get("a").required
@@ -34,9 +34,9 @@ def test_create_function_signature_model_ignore_return_annotation():
     async def health_check() -> None:
         return
 
-    assert create_function_signature_model(health_check.fn)().dict() == {}
+    assert create_function_signature_model(health_check.fn, [])().dict() == {}
 
 
 def test_create_function_signature_model_validation():
     with pytest.raises(ImproperlyConfiguredException):
-        Provide(lru_cache(maxsize=0)(lambda x: x))
+        create_function_signature_model(lru_cache(maxsize=0)(lambda x: x), [])

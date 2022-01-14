@@ -27,6 +27,13 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         self.model_map: Dict[Any, Type[BaseModel]] = {}
 
     @staticmethod
+    def is_plugin_supported_type(value: Any) -> bool:
+        """
+        This plugin supports only SQLAlchemy declarative models
+        """
+        return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
+
+    @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> Type:
         """
         Handles the SQLAlchemy String types, including Blob and Binaric types
@@ -231,3 +238,17 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             else:
                 self.model_map[mapper.entity] = create_model(model_class.__name__, **field_definitions)
         return self.model_map[mapper.entity]
+
+    def from_pydantic_model_instance(self, model_class: DeclarativeMeta, pydantic_model_instance: BaseModel) -> Any:
+        """
+        Create an instance of a given model_class using the values stored in the given pydantic_model_instance
+        """
+        return model_class(**pydantic_model_instance.dict())
+
+    def to_dict(self, model_instance: Any) -> Dict[str, Any]:
+        model_class = model_instance.__class__
+        pydantic_model = self.model_map.get(model_class) or self.to_pydantic_model_class(model_class=model_class)
+        kwargs: Dict[str, Any] = {}
+        for field in pydantic_model.__fields__:
+            kwargs[field] = getattr(model_instance, field)
+        return pydantic_model(**kwargs).dict()

@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING, cast
 
 from openapi_schema_pydantic import Operation, PathItem
-from pydantic.typing import AnyCallable
+from pydantic import BaseModel
 from starlette.routing import get_name
 
 from starlite.openapi.parameters import create_parameters
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
-from starlite.utils.model import create_function_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import HTTPRoute
@@ -20,8 +19,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
     path_item = PathItem()
     for http_method, route_handler in route.route_handler_map.items():
         if route_handler.include_in_schema:
-            route_handler_fn = cast(AnyCallable, route_handler.fn)
-            handler_fields = create_function_signature_model(fn=route_handler_fn).__fields__
+            handler_fields = cast(BaseModel, route_handler.signature_model).__fields__
             parameters = (
                 create_parameters(
                     route_handler=route_handler,
@@ -32,7 +30,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = get_name(route_handler_fn)
+            handler_name = get_name(route_handler.fn)
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(field=handler_fields["data"], generate_examples=create_examples)

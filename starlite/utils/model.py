@@ -1,5 +1,5 @@
 from inspect import Signature, getfullargspec, isclass
-from typing import Any, Dict, Tuple, Type, cast
+from typing import Any, Dict, List, Type, cast, get_args
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import ModelField
@@ -8,9 +8,10 @@ from pydantic_factories import ModelFactory
 from pydantic_factories.utils import create_model_from_dataclass
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 
 
-def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
+def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[BaseModel]:
     """
     Creates a pydantic model for the signature of a given function
     """
@@ -20,7 +21,12 @@ def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
 
     try:
         signature = Signature.from_callable(fn)
-        field_definitions: Dict[str, Tuple[Any, Any]] = {}
+        field_definitions: Dict[str, Any] = {
+            # return type annotation
+            "_return_annotation": (signature.return_annotation, None),
+            # mapping for plugin values
+            "_field_plugin_mappings": {},
+        }
         for key, value in getfullargspec(fn).annotations.items():
             if key == "return":
                 continue
@@ -28,15 +34,27 @@ def create_function_signature_model(fn: AnyCallable) -> Type[BaseModel]:
             if key in ["request", "socket"]:
                 # pydantic has issues with none-pydantic classes that receive generics
                 field_definitions[key] = (Any, ...)
-            elif ModelFactory.is_constrained_field(parameter.default):
+                continue
+            if ModelFactory.is_constrained_field(parameter.default):
                 field_definitions[key] = (parameter.default, ...)
-            elif parameter.default is not signature.empty:
+                continue
+            plugin = get_plugin_for_value(value=value, plugins=plugins)
+            if plugin:
+                type_args = get_args(value)
+                type_value = type_args[0] if type_args else value
+                field_definitions["_field_plugin_mappings"][key] = PluginMapping(plugin=plugin, model_class=type_value)
+                pydantic_model = plugin.to_pydantic_model_class(model_class=type_value)
+                if type_args:
+                    value = List[pydantic_model]
+                else:
+                    value = pydantic_model
+            if parameter.default is not signature.empty:
                 field_definitions[key] = (value, parameter.default)
             elif not repr(parameter.annotation).startswith("typing.Optional"):
                 field_definitions[key] = (value, ...)
             else:
                 field_definitions[key] = (value, None)
-        name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "SignatureModel"
+        name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "_signature_model"
         return create_model(name, __config__=Config, **field_definitions)  # type: ignore
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
