@@ -1,12 +1,21 @@
+from typing import Any
 from pydantic import BaseModel
 from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import relationship
 
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Species
 
-Base = declarative_base()
+
+@as_declarative()
+class Base:
+    id: Any
+    __name__: str
+    # Generate the table name from the class name
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
 
 association_table = Table(
     "association", Base.metadata, Column("pet_id", ForeignKey("pet.id")), Column("user_id", ForeignKey("user.id"))
