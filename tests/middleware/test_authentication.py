@@ -1,7 +1,11 @@
 import pytest
 from pydantic import BaseModel
 from starlette.requests import HTTPConnection
-from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_403_FORBIDDEN,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from starlette.websockets import WebSocketDisconnect
 
 from starlite import Starlite, create_test_client, get, websocket
@@ -48,6 +52,36 @@ def test_authentication_middleware_http_routes():
     state[token] = AuthenticationResult(user=user, auth=auth)
     success_response = client.get("/", headers={"Authorization": token})
     assert success_response.status_code == HTTP_200_OK
+
+
+def test_authentication_middleware_not_installed_raises_for_user_scope():
+    @get(path="/")
+    def http_route_handler_user_scope(request: Request[Auth]) -> None:
+        assert request.user
+        return None
+
+    client = create_test_client(route_handlers=[http_route_handler_user_scope])
+    error_response = client.get("/", headers={"Authorization": "eee"})
+    assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert (
+        error_response.json()["detail"]
+        == "user is not defined in scope, you should install an AuthMiddleware to set it"
+    )
+
+
+def test_authentication_middleware_not_installed_raises_for_auth_scope():
+    @get(path="/")
+    def http_route_handler_auth_scope(request: Request[Auth]) -> None:
+        assert request.auth
+        return None
+
+    client = create_test_client(route_handlers=[http_route_handler_auth_scope])
+    error_response = client.get("/", headers={"Authorization": "eee"})
+    assert error_response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert (
+        error_response.json()["detail"]
+        == "auth is not defined in scope, you should install an AuthMiddleware to set it"
+    )
 
 
 @websocket(path="/")
