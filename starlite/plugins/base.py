@@ -1,13 +1,13 @@
-from typing import Any, Dict, List, NamedTuple, Optional, TypeVar, get_args
+from typing import Any, Dict, List, NamedTuple, Optional, TypeVar
 
 from pydantic import BaseModel
-from typing_extensions import Protocol, Type, runtime_checkable
+from typing_extensions import Protocol, Type, get_args, runtime_checkable
 
 T = TypeVar("T")
 
 
 @runtime_checkable
-class PluginProtocol(Protocol[T]):
+class PluginProtocol(Protocol[T]):  # pragma: no cover
     def to_pydantic_model_class(self, model_class: Type[T], **kwargs: Any) -> Type[BaseModel]:  # pragma: no cover
         """
         Given a model_class T, convert it to a pydantic model class

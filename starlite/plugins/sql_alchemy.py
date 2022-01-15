@@ -2,9 +2,11 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
 from inspect import isclass
+from ipaddress import IPv4Network, IPv6Network
 from typing import Any, Callable, Dict, List, Tuple, Union
+from uuid import UUID
 
-from pydantic import BaseModel, constr, create_model
+from pydantic import BaseModel, Json, conint, constr, create_model
 from typing_extensions import Type
 
 from starlite.exceptions import (
@@ -16,6 +18,15 @@ from starlite.plugins.base import PluginProtocol
 try:
     from sqlalchemy import Table, inspect
     from sqlalchemy import types as sqlalchemy_type
+    from sqlalchemy.dialects import (
+        firebird,
+        mssql,
+        mysql,
+        oracle,
+        postgresql,
+        sqlite,
+        sybase,
+    )
     from sqlalchemy.orm import DeclarativeMeta, Mapper, RelationshipProperty
     from sqlalchemy.sql.type_api import TypeEngine
 except ImportError as exc:  # pragma: no cover
@@ -119,6 +130,105 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             sqlalchemy_type.UnicodeText: self.handle_string_type,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
             sqlalchemy_type.VARCHAR: self.handle_string_type,
+            # firebird
+            firebird.CHAR: self.handle_string_type,
+            firebird.VARCHAR: self.handle_string_type,
+            # mssql
+            mssql.BIT: lambda x: bool,
+            mssql.DATETIME2: lambda x: datetime,
+            mssql.DATETIMEOFFSET: lambda x: datetime,
+            mssql.IMAGE: self.handle_string_type,
+            mssql.MONEY: lambda x: Decimal,
+            mssql.NTEXT: self.handle_string_type,
+            mssql.REAL: self.handle_numeric_type,
+            mssql.SMALLDATETIME: lambda x: datetime,
+            mssql.SMALLMONEY: lambda x: Decimal,
+            mssql.SQL_VARIANT: lambda x: str,
+            mssql.TIME: lambda x: time,
+            mssql.TINYINT: lambda x: int,
+            mssql.UNIQUEIDENTIFIER: lambda x: str,
+            mssql.VARBINARY: self.handle_string_type,
+            mssql.XML: self.handle_string_type,
+            # mysql
+            mysql.BIGINT: lambda x: int,
+            mysql.BIT: lambda x: bool,
+            mysql.CHAR: self.handle_string_type,
+            mysql.DATETIME: lambda x: datetime,
+            mysql.DECIMAL: self.handle_numeric_type,
+            mysql.DOUBLE: self.handle_numeric_type,
+            mysql.ENUM: lambda x: Enum,
+            mysql.FLOAT: self.handle_numeric_type,
+            mysql.INTEGER: lambda x: int,
+            mysql.JSON: lambda x: Json,
+            mysql.LONGBLOB: self.handle_string_type,
+            mysql.LONGTEXT: self.handle_string_type,
+            mysql.MEDIUMBLOB: self.handle_string_type,
+            mysql.MEDIUMINT: lambda x: int,
+            mysql.MEDIUMTEXT: self.handle_string_type,
+            mysql.NCHAR: self.handle_string_type,
+            mysql.NUMERIC: self.handle_numeric_type,
+            mysql.NVARCHAR: self.handle_string_type,
+            mysql.REAL: self.handle_numeric_type,
+            mysql.SET: lambda x: set,
+            mysql.SMALLINT: lambda x: int,
+            mysql.TEXT: self.handle_string_type,
+            mysql.TIME: lambda x: time,
+            mysql.TIMESTAMP: lambda x: datetime,
+            mysql.TINYBLOB: self.handle_string_type,
+            mysql.TINYINT: lambda x: int,
+            mysql.TINYTEXT: self.handle_string_type,
+            mysql.VARCHAR: self.handle_string_type,
+            mysql.YEAR: lambda x: conint(ge=1901, le=2155),
+            # oracle
+            oracle.BFILE: self.handle_string_type,
+            oracle.BINARY_DOUBLE: self.handle_numeric_type,
+            oracle.BINARY_FLOAT: self.handle_numeric_type,
+            oracle.DATE: lambda x: datetime,  # supports time
+            oracle.DOUBLE_PRECISION: self.handle_numeric_type,
+            oracle.INTERVAL: lambda x: timedelta,
+            oracle.LONG: self.handle_string_type,
+            oracle.NCLOB: self.handle_string_type,
+            oracle.NUMBER: self.handle_numeric_type,
+            oracle.RAW: self.handle_string_type,
+            oracle.VARCHAR2: self.handle_string_type,
+            oracle.VARCHAR: self.handle_string_type,
+            # postgresql
+            postgresql.ARRAY: self.handle_list_type,
+            postgresql.BIT: lambda x: bool,
+            postgresql.BYTEA: self.handle_string_type,
+            postgresql.CIDR: lambda x: Union[IPv4Network, IPv6Network],
+            postgresql.DATERANGE: lambda x: Tuple[date, date],
+            postgresql.DOUBLE_PRECISION: self.handle_numeric_type,
+            postgresql.ENUM: lambda x: Enum,
+            postgresql.HSTORE: lambda x: Dict[str, str],
+            postgresql.INET: lambda x: Union[IPv4Network, IPv6Network],
+            postgresql.INT4RANGE: lambda x: Tuple[int, int],
+            postgresql.INT8RANGE: lambda x: Tuple[int, int],
+            postgresql.INTERVAL: lambda x: timedelta,
+            postgresql.JSON: lambda x: Json,
+            postgresql.JSONB: lambda x: Json,
+            postgresql.MACADDR: lambda x: constr(regex=r"^([A-F0-9]{2}:){5}[A-F0-9]{2}$"),
+            postgresql.MONEY: lambda x: Decimal,
+            postgresql.NUMRANGE: lambda x: Tuple[Union[int, float], Union[int, float]],
+            postgresql.TIME: lambda x: time,
+            postgresql.TIMESTAMP: lambda x: datetime,
+            postgresql.TSRANGE: lambda x: Tuple[datetime, datetime],
+            postgresql.TSTZRANGE: lambda x: Tuple[datetime, datetime],
+            postgresql.UUID: lambda x: UUID,
+            # sqlite
+            sqlite.DATE: lambda x: date,
+            sqlite.DATETIME: lambda x: datetime,
+            sqlite.JSON: lambda x: Json,
+            sqlite.TIME: lambda x: time,
+            # sybase
+            sybase.BIT: lambda x: bool,
+            sybase.IMAGE: self.handle_string_type,
+            sybase.MONEY: lambda x: Decimal,
+            sybase.SMALLMONEY: lambda x: Decimal,
+            sybase.TINYINT: lambda x: int,
+            sybase.UNICHAR: self.handle_string_type,
+            sybase.UNITEXT: self.handle_string_type,
+            sybase.UNIVARCHAR: self.handle_string_type,
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:

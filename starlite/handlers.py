@@ -42,7 +42,7 @@ def get_signature_model(value: Any) -> Type[SignatureModel]:
     """
     try:
         return cast(Type[SignatureModel], getattr(value, "signature_model"))
-    except AttributeError as e:
+    except AttributeError as e:  # pragma: no cover
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 

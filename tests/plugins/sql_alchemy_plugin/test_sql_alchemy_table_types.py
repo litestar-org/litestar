@@ -45,11 +45,22 @@ from sqlalchemy import (
     Unicode,
     UnicodeText,
 )
+from sqlalchemy.dialects import (
+    firebird,
+    mssql,
+    mysql,
+    oracle,
+    postgresql,
+    sqlite,
+    sybase,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import registry
 
 from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+
+plugin = SQLAlchemyPlugin()
 
 Base = declarative_base()
 mapper_registry = registry()
@@ -100,64 +111,120 @@ class DeclarativeModel(Base):
     UnicodeText_column = Column(UnicodeText)
     VARBINARY_column = Column(VARBINARY)
     VARCHAR_column = Column(VARCHAR)
+    # firebird
+    firebird_CHAR_column = Column(firebird.CHAR)
+    firebird_VARCHAR_column = Column(firebird.VARCHAR)
+    # mssql
+    mssql_BIT_column = Column(mssql.BIT)
+    mssql_DATETIME2_column = Column(mssql.DATETIME2)
+    mssql_DATETIMEOFFSET_column = Column(mssql.DATETIMEOFFSET)
+    mssql_IMAGE_column = Column(mssql.IMAGE)
+    mssql_MONEY_column = Column(mssql.MONEY)
+    mssql_NTEXT_column = Column(mssql.NTEXT)
+    mssql_REAL_column = Column(mssql.REAL)
+    mssql_SMALLDATETIME_column = Column(mssql.SMALLDATETIME)
+    mssql_SMALLMONEY_column = Column(mssql.SMALLMONEY)
+    mssql_SQL_VARIANT_column = Column(mssql.SQL_VARIANT)
+    mssql_TIME_column = Column(mssql.TIME)
+    mssql_TINYINT_column = Column(mssql.TINYINT)
+    mssql_UNIQUEIDENTIFIER_column = Column(mssql.UNIQUEIDENTIFIER)
+    mssql_VARBINARY_column = Column(mssql.VARBINARY)
+    mssql_XML_column = Column(mssql.XML)
+    # mysql
+    mysql_BIGINT_column = Column(mysql.BIGINT)
+    mysql_BIT_column = Column(mysql.BIT)
+    mysql_CHAR_column = Column(mysql.CHAR)
+    mysql_DATETIME_column = Column(mysql.DATETIME)
+    mysql_DECIMAL_column = Column(mysql.DECIMAL)
+    mysql_DOUBLE_column = Column(mysql.DOUBLE)
+    mysql_ENUM_column = Column(mysql.ENUM)
+    mysql_FLOAT_column = Column(mysql.FLOAT)
+    mysql_INTEGER_column = Column(mysql.INTEGER)
+    mysql_JSON_column = Column(mysql.JSON)
+    mysql_LONGBLOB_column = Column(mysql.LONGBLOB)
+    mysql_LONGTEXT_column = Column(mysql.LONGTEXT)
+    mysql_MEDIUMBLOB_column = Column(mysql.MEDIUMBLOB)
+    mysql_MEDIUMINT_column = Column(mysql.MEDIUMINT)
+    mysql_MEDIUMTEXT_column = Column(mysql.MEDIUMTEXT)
+    mysql_NCHAR_column = Column(mysql.NCHAR)
+    mysql_NUMERIC_column = Column(mysql.NUMERIC)
+    mysql_NVARCHAR_column = Column(mysql.NVARCHAR)
+    mysql_REAL_column = Column(mysql.REAL)
+    mysql_SET_column = Column(mysql.SET)
+    mysql_SMALLINT_column = Column(mysql.SMALLINT)
+    mysql_TEXT_column = Column(mysql.TEXT)
+    mysql_TIME_column = Column(mysql.TIME)
+    mysql_TIMESTAMP_column = Column(mysql.TIMESTAMP)
+    mysql_TINYBLOB_column = Column(mysql.TINYBLOB)
+    mysql_TINYINT_column = Column(mysql.TINYINT)
+    mysql_TINYTEXT_column = Column(mysql.TINYTEXT)
+    mysql_VARCHAR_column = Column(mysql.VARCHAR)
+    mysql_YEAR_column = Column(mysql.YEAR)
+    # oracle
+    oracle_BFILE_column = Column(oracle.BFILE)
+    oracle_BINARY_DOUBLE_column = Column(oracle.BINARY_DOUBLE)
+    oracle_BINARY_FLOAT_column = Column(oracle.BINARY_FLOAT)
+    oracle_DATE_column = Column(oracle.DATE)
+    oracle_DOUBLE_PRECISION_column = Column(oracle.DOUBLE_PRECISION)
+    oracle_INTERVAL_column = Column(oracle.INTERVAL)
+    oracle_LONG_column = Column(oracle.LONG)
+    oracle_NCLOB_column = Column(oracle.NCLOB)
+    oracle_NUMBER_column = Column(oracle.NUMBER)
+    oracle_RAW_column = Column(oracle.RAW)
+    oracle_VARCHAR2_column = Column(oracle.VARCHAR2)
+    oracle_VARCHAR_column = Column(oracle.VARCHAR)
+    # postgresql
+    postgresql_ARRAY_column = Column(postgresql.ARRAY(String, dimensions=2))
+    postgresql_BIT_column = Column(postgresql.BIT)
+    postgresql_BYTEA_column = Column(postgresql.BYTEA)
+    postgresql_CIDR_column = Column(postgresql.CIDR)
+    postgresql_DATERANGE_column = Column(postgresql.DATERANGE)
+    postgresql_DOUBLE_PRECISION_column = Column(postgresql.DOUBLE_PRECISION)
+    postgresql_ENUM_column = Column(postgresql.ENUM)
+    postgresql_HSTORE_column = Column(postgresql.HSTORE)
+    postgresql_INET_column = Column(postgresql.INET)
+    postgresql_INT4RANGE_column = Column(postgresql.INT4RANGE)
+    postgresql_INT8RANGE_column = Column(postgresql.INT8RANGE)
+    postgresql_INTERVAL_column = Column(postgresql.INTERVAL)
+    postgresql_JSON_column = Column(postgresql.JSON)
+    postgresql_JSONB_column = Column(postgresql.JSONB)
+    postgresql_MACADDR_column = Column(postgresql.MACADDR)
+    postgresql_MONEY_column = Column(postgresql.MONEY)
+    postgresql_NUMRANGE_column = Column(postgresql.NUMRANGE)
+    postgresql_TIME_column = Column(postgresql.TIME)
+    postgresql_TIMESTAMP_column = Column(postgresql.TIMESTAMP)
+    postgresql_TSRANGE_column = Column(postgresql.TSRANGE)
+    postgresql_TSTZRANGE_column = Column(postgresql.TSTZRANGE)
+    postgresql_UUID_column = Column(postgresql.UUID)
+    # sqlite
+    sqlite_DATE_column = Column(sqlite.DATE)
+    sqlite_DATETIME_column = Column(sqlite.DATETIME)
+    sqlite_JSON_column = Column(sqlite.JSON)
+    sqlite_TIME_column = Column(sqlite.TIME)
+    # sybase
+    sybase_BIT_column = Column(sybase.BIT)
+    sybase_IMAGE_column = Column(sybase.IMAGE)
+    sybase_MONEY_column = Column(sybase.MONEY)
+    sybase_SMALLMONEY_column = Column(sybase.SMALLMONEY)
+    sybase_TINYINT_column = Column(sybase.TINYINT)
+    sybase_UNICHAR_column = Column(sybase.UNICHAR)
+    sybase_UNITEXT_column = Column(sybase.UNITEXT)
+    sybase_UNIVARCHAR_column = Column(sybase.UNIVARCHAR)
 
 
 imperative_model = Table(
     "imperative",
     mapper_registry.metadata,
     Column("id", Integer, primary_key=True),
-    Column("ARRAY_column", ARRAY(String, dimensions=2)),
-    Column("BIGINT_column", BIGINT),
-    Column("BINARY_column", BINARY),
-    Column("BLOB_column", BLOB),
-    Column("BOOLEAN_column", BOOLEAN),
-    Column("BigInteger_column", BigInteger),
-    Column("Boolean_column", Boolean),
-    Column("CHAR_column", CHAR(length=3)),
-    Column("CLOB_column", CLOB),
-    Column("DATE_column", DATE),
-    Column("DATETIME_column", DATETIME),
-    Column("DECIMAL_column", DECIMAL),
-    Column("Date_column", Date),
-    Column("DateTime_column", DateTime),
-    Column("Enum_column", Enum),
-    Column("FLOAT_column", FLOAT(asdecimal=True)),
-    Column("Float_column", Float),
-    Column("INT_column", INT),
-    Column("INTEGER_column", INTEGER),
-    Column("Integer_column", Integer),
-    Column("Interval_column", Interval),
-    Column("JSON_column", JSON),
-    Column("LargeBinary_column", LargeBinary),
-    Column("NCHAR_column", NCHAR),
-    Column("NUMERIC_column", NUMERIC),
-    Column("NVARCHAR_column", NVARCHAR),
-    Column("Numeric_column", Numeric),
-    Column("REAL_column", REAL),
-    Column("SMALLINT_column", SMALLINT),
-    Column("SmallInteger_column", SmallInteger),
-    Column("String_column", String),
-    Column("TEXT_column", TEXT),
-    Column("TIME_column", TIME),
-    Column("TIMESTAMP_column", TIMESTAMP),
-    Column("Text_column", Text),
-    Column("Time_column", Time),
-    Column("TupleType_column", TupleType(str, int, bool)),
-    Column("Unicode_column", Unicode),
-    Column("UnicodeText_column", UnicodeText),
-    Column("VARBINARY_column", VARBINARY),
-    Column("VARCHAR_column", VARCHAR),
 )
 
 
 def test_sql_alchemy_plugin_model_class_parsing():
-    plugin = SQLAlchemyPlugin()
     result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
 
 
 def test_sql_alchemy_plugin_validatio():
-    plugin = SQLAlchemyPlugin()
     with pytest.raises(ImproperlyConfiguredException):
         plugin.to_pydantic_model_class(model_class=imperative_model)
 
