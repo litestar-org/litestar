@@ -13,6 +13,7 @@ from .exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
     InternalServerException,
+    MissingDependencyException,
     NotAuthorizedException,
     NotFoundException,
     PermissionDeniedException,
@@ -35,6 +36,7 @@ from .logging import LoggingConfig
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
+from .plugins import PluginProtocol, SQLAlchemyPlugin
 from .provide import Provide
 from .request import Request, WebSocket
 from .response import Response
@@ -60,6 +62,7 @@ __all__ = [
     "LoggingConfig",
     "MediaType",
     "MiddlewareProtocol",
+    "MissingDependencyException",
     "NotAuthorizedException",
     "NotFoundException",
     "OpenAPIConfig",
@@ -68,6 +71,7 @@ __all__ = [
     "Parameter",
     "Partial",
     "PermissionDeniedException",
+    "PluginProtocol",
     "Provide",
     "Redirect",
     "Request",
@@ -75,6 +79,7 @@ __all__ = [
     "Response",
     "ResponseHeader",
     "Router",
+    "SQLAlchemyPlugin",
     "ScopeType",
     "ServiceUnavailableException",
     "StarLiteException",

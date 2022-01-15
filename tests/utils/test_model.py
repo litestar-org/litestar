@@ -5,7 +5,7 @@ import pytest
 from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite import ImproperlyConfiguredException, get
-from starlite.utils.model import create_function_signature_model
+from starlite.utils import create_function_signature_model
 
 
 def test_create_function_signature_model_parameter_parsing():
