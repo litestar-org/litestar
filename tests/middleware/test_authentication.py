@@ -56,9 +56,8 @@ def test_authentication_middleware_http_routes():
 
 def test_authentication_middleware_not_installed_raises_for_user_scope():
     @get(path="/")
-    def http_route_handler_user_scope(request: Request[Auth]) -> None:
+    def http_route_handler_user_scope(request: Request[User, None]) -> None:
         assert request.user
-        return None
 
     client = create_test_client(route_handlers=[http_route_handler_user_scope])
     error_response = client.get("/", headers={"Authorization": "eee"})
@@ -71,9 +70,8 @@ def test_authentication_middleware_not_installed_raises_for_user_scope():
 
 def test_authentication_middleware_not_installed_raises_for_auth_scope():
     @get(path="/")
-    def http_route_handler_auth_scope(request: Request[Auth]) -> None:
+    def http_route_handler_auth_scope(request: Request[None, Auth]) -> None:
         assert request.auth
-        return None
 
     client = create_test_client(route_handlers=[http_route_handler_auth_scope])
     error_response = client.get("/", headers={"Authorization": "eee"})

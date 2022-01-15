@@ -185,7 +185,8 @@ def test_route_handler_sub_classes(sub, http_method, expected_status_code):
         sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)
 
 
-def test_route_handler_function_validation():
+@pytest.mark.asyncio
+async def test_route_handler_function_validation():
     with pytest.raises(ValidationException):
 
         @get(path="/")
@@ -207,6 +208,12 @@ def test_route_handler_function_validation():
         pass
 
     assert file_method.media_type == MediaType.TEXT
+
+    route_with_no_fn = HTTPRouteHandler(http_method=HttpMethod.GET)
+    request = create_test_request(http_method=HttpMethod.GET)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await route_with_no_fn.handle_request(request=request)
 
 
 @pytest.mark.asyncio

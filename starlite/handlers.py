@@ -111,7 +111,7 @@ class BaseRouteHandler(BaseModel):
         Validates the route handler function once it's set by inspecting its return annotations
         """
         if not self.fn:
-            raise AttributeError("cannot call validate_handler_function without first setting self.fn")
+            raise ImproperlyConfiguredException("cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
         """
@@ -299,7 +299,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Handles a given Request in relation to self.
         """
         if not self.fn:
-            raise AttributeError("cannot call a route handler without a decorated function")
+            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=request)
         params = await self.get_parameters_from_connection(connection=request)
 
@@ -389,7 +389,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         Handles a given Websocket in relation to self.
         """
         if not self.fn:
-            raise AttributeError("cannot call a route handler without a decorated function")
+            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=web_socket)
         params = await self.get_parameters_from_connection(connection=web_socket)
         if isinstance(self.owner, Controller):

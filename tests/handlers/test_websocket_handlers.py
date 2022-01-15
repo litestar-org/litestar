@@ -24,6 +24,12 @@ def test_websocket_handler_validation():
     with pytest.raises(ImproperlyConfiguredException):
         websocket(path="/")(fn_with_return_annotation)
 
+    websocket_handler = websocket(path="/")
+    client = create_test_client(route_handlers=websocket_handler)
+
+    with pytest.raises(ImproperlyConfiguredException), client.websocket_connect("/") as ws:
+        ws.receive_json()
+
 
 def test_handle_websocket():
     @websocket(path="/")
