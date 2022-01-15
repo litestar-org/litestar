@@ -1,4 +1,5 @@
 import pytest
+import sqlalchemy
 from pydantic import BaseModel
 from sqlalchemy import (
     ARRAY,
@@ -54,20 +55,19 @@ from sqlalchemy.dialects import (
     sqlite,
     sybase,
 )
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import registry
 from sqlalchemy.sql.functions import now
 
 from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from tests.plugins.sql_alchemy_plugin import SQLAlchemyBase
 
 plugin = SQLAlchemyPlugin()
 
-Base = declarative_base()
 mapper_registry = registry()
 
 
-class DeclarativeModel(Base):
+class DeclarativeModel(SQLAlchemyBase):
     __tablename__ = "declarative"
 
     id = Column(Integer, primary_key=True)
@@ -225,9 +225,26 @@ def test_sql_alchemy_plugin_model_class_parsing():
     assert issubclass(result, BaseModel)
 
 
-def test_sql_alchemy_plugin_validatio():
+def test_sql_alchemy_plugin_validation():
     with pytest.raises(ImproperlyConfiguredException):
         plugin.to_pydantic_model_class(model_class=imperative_model)
 
+    class MyClass(BaseModel):
+        id: int
+
     with pytest.raises(ImproperlyConfiguredException):
-        plugin.to_pydantic_model_class(model_class=declarative_base)
+        plugin.to_pydantic_model_class(model_class=MyClass)
+
+
+def test_provider_validation():
+    class MyStrColumn(sqlalchemy.String):
+        pass
+
+    class ModelWithCustomColumn(SQLAlchemyBase):
+        __tablename__ = "custom"
+
+        id = Column(Integer, primary_key=True)
+        custom_column = Column(MyStrColumn)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        plugin.to_pydantic_model_class(model_class=ModelWithCustomColumn)

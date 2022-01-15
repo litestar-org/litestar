@@ -27,8 +27,12 @@ class Pet(SQLAlchemyBase):
     species = Column(Enum(Species))
     name = Column(String)
     age = Column(Float)
-    onwer_id = Column(Integer, ForeignKey("user.id"))
+    owner_id = Column(Integer, ForeignKey("user.id"))
     owner = relationship("User", back_populates="pets")
+
+
+class Firm(SQLAlchemyBase):
+    id = Column(Integer, primary_key=True)
 
 
 class User(SQLAlchemyBase):
@@ -44,6 +48,8 @@ class User(SQLAlchemyBase):
         primaryjoin=id == friendship_table.c.friend_a_id,
         secondaryjoin=id == friendship_table.c.friend_b_id,
     )
+    firm_id = Column(Integer, ForeignKey("firm.id"))
+    firm = relationship("Firm")
 
 
 def test_relationship():
@@ -58,6 +64,9 @@ def test_relationship():
     assert get_args(pets.outer_type_)  # we assert this is a List[]
     assert issubclass(pets.type_, BaseModel)
     assert pets.type_.__fields__["owner"].type_ is result
+    firm = fields["firm"]
+    assert not get_args(firm.outer_type_)
+    assert issubclass(firm.type_, BaseModel)
 
 
 def test_table_name():
