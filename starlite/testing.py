@@ -119,7 +119,7 @@ def create_test_request(
 
     class App:
         state = State()
-        plugins = []
+        plugins: List[Any] = []
 
     scope = dict(
         type="http",

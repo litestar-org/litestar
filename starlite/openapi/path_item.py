@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, cast
 
 from openapi_schema_pydantic import Operation, PathItem
 from pydantic import BaseModel
+from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
 from starlite.openapi.parameters import create_parameters
@@ -30,7 +31,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = get_name(route_handler.fn)
+            handler_name = get_name(cast(AnyCallable, route_handler.fn))
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(field=handler_fields["data"], generate_examples=create_examples)

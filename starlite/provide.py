@@ -1,9 +1,12 @@
 from functools import partial
 from inspect import ismethod
-from typing import Any
+from typing import Any, Optional
 
 from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
+from typing_extensions import Type
+
+from starlite.utils import SignatureModel
 
 
 class Provide:
@@ -13,7 +16,7 @@ class Provide:
         self.dependency = dependency
         self.use_cache = use_cache
         self.value = Undefined
-        self.signature_model = None
+        self.signature_model: Optional[Type[SignatureModel]] = None
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved
             self.dependency = partial(dependency, dependency.__self__)

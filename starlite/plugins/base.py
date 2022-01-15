@@ -3,7 +3,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, TypeVar, get_args
 from pydantic import BaseModel
 from typing_extensions import Protocol, Type, runtime_checkable
 
-T = TypeVar("T", contravariant=True)
+T = TypeVar("T")
 
 
 @runtime_checkable

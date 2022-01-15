@@ -6,27 +6,29 @@ from pydantic.fields import ModelField
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import create_model_from_dataclass
+from typing_extensions import ClassVar
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 
 
-def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[BaseModel]:
-    """
-    Creates a pydantic model for the signature of a given function
-    """
-
+class SignatureModel(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
+    field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
+    return_annotation: ClassVar[Any]
+
+
+def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
+    """
+    Creates a subclass of SignatureModel for the signature of a given function
+    """
+
     try:
         signature = Signature.from_callable(fn)
-        field_definitions: Dict[str, Any] = {
-            # return type annotation
-            "_return_annotation": (signature.return_annotation, None),
-            # mapping for plugin values
-            "_field_plugin_mappings": {},
-        }
+        field_plugin_mappings: Dict[str, PluginMapping] = {}
+        field_definitions: Dict[str, Any] = {}
         for key, value in getfullargspec(fn).annotations.items():
             if key == "return":
                 continue
@@ -42,10 +44,10 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
             if plugin:
                 type_args = get_args(value)
                 type_value = type_args[0] if type_args else value
-                field_definitions["_field_plugin_mappings"][key] = PluginMapping(plugin=plugin, model_class=type_value)
+                field_plugin_mappings[key] = PluginMapping(plugin=plugin, model_class=type_value)
                 pydantic_model = plugin.to_pydantic_model_class(model_class=type_value)
                 if type_args:
-                    value = List[pydantic_model]
+                    value = List[pydantic_model]  # type: ignore
                 else:
                     value = pydantic_model
             if parameter.default is not signature.empty:
@@ -55,7 +57,10 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
             else:
                 field_definitions[key] = (value, None)
         name = (fn.__name__ if hasattr(fn, "__name__") else "anonymous") + "_signature_model"
-        return create_model(name, __config__=Config, **field_definitions)  # type: ignore
+        model: Type[SignatureModel] = create_model(name, __base__=SignatureModel, **field_definitions)
+        model.return_annotation = signature.return_annotation
+        model.field_plugin_mappings = field_plugin_mappings
+        return model
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
 
