@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
+from typing_extensions import get_args
 
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Species
@@ -48,6 +49,13 @@ class User(SQLAlchemyBase):
 def test_relationship():
     result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)
     assert issubclass(result, BaseModel)
+    fields = result.__fields__
+    friends = fields["friends"]
+    assert get_args(friends.outer_type_)  # we assert this is a List[]
+    # assert friends.type_ is result
+    pets = fields["pets"]
+    assert get_args(pets.outer_type_)  # we assert this is a List[]
+    assert issubclass(pets.type_, BaseModel)
 
 
 def test_table_name():

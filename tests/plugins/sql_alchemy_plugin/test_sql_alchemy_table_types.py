@@ -56,6 +56,7 @@ from sqlalchemy.dialects import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import registry
+from sqlalchemy.sql.functions import now
 
 from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
@@ -80,10 +81,10 @@ class DeclarativeModel(Base):
     CHAR_column = Column(CHAR(length=3))
     CLOB_column = Column(CLOB)
     DATE_column = Column(DATE)
-    DATETIME_column = Column(DATETIME)
+    DATETIME_column = Column(DATETIME, default=now())
     DECIMAL_column = Column(DECIMAL)
     Date_column = Column(Date)
-    DateTime_column = Column(DateTime)
+    DateTime_column = Column(DateTime, default=now)
     Enum_column = Column(Enum)
     FLOAT_column = Column(FLOAT(asdecimal=True))
     Float_column = Column(Float)

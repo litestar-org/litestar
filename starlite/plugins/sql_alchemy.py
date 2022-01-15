@@ -329,7 +329,10 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             field_definitions = kwargs.pop("field_definitions", {})
             for name, column in mapper.columns.items():
                 if column.default is not None:
-                    field_definitions[name] = (self.get_pydantic_type(column.type), column.default)
+                    field_definitions[name] = (
+                        self.get_pydantic_type(column.type),
+                        column.default if not callable(column.default) else column.default(),
+                    )
                 elif column.nullable:
                     field_definitions[name] = (self.get_pydantic_type(column.type), None)
                 else:

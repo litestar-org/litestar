@@ -1,12 +1,12 @@
 from inspect import Signature, getfullargspec, isclass
-from typing import Any, Dict, List, Type, cast, get_args
+from typing import Any, Dict, List, Type, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import ModelField
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import create_model_from_dataclass
-from typing_extensions import ClassVar
+from typing_extensions import ClassVar, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
