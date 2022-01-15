@@ -135,7 +135,7 @@ from pydantic import UUID4
 from my_app.models import Wallet
 
 
-async def get_wallet_by_id(waller_id: UUID4) -> Wallet:
+async def get_wallet_by_id(wallet_id: UUID4) -> Wallet:
     ...
 ```
 
