@@ -287,7 +287,7 @@ class Router:
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
-    def register(self, value: ControllerRouterHandler) -> None:
+    def register(self, value: ControllerRouterHandler) -> List[Union[HTTPRouteHandler, WebsocketRouteHandler]]:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -295,12 +295,15 @@ class Router:
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         validated_value = self.validate_registration_value(value)
+        handlers: List[Union[HTTPRouteHandler, WebsocketRouteHandler]] = []
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
+                handlers.append(handler_or_method_map)
                 self.routes.append(WebSocketRoute(path=path, route_handler=handler_or_method_map))
             else:
                 route_handlers = list(handler_or_method_map.values())
+                handlers.extend(route_handlers)
                 if self.route_handler_method_map.get(path):
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
@@ -314,3 +317,4 @@ class Router:
                     )
                 else:
                     self.routes.append(HTTPRoute(path=path, route_handlers=unique(route_handlers)))
+        return unique(handlers)

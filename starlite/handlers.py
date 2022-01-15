@@ -21,11 +21,12 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     ValidationException,
 )
+from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
 from starlite.response import Response
 from starlite.types import File, Guard, Redirect, ResponseHeader, Stream
-from starlite.utils.model import create_function_signature_model
+from starlite.utils import SignatureModel
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -33,6 +34,16 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class _empty:
     """Placeholder"""
+
+
+def get_signature_model(value: Any) -> Type[SignatureModel]:
+    """
+    Helper function to retrieve and validate the signature model from a provider or handler
+    """
+    try:
+        return cast(Type[SignatureModel], getattr(value, "signature_model"))
+    except AttributeError as e:  # pragma: no cover
+        raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
 class BaseRouteHandler(BaseModel):
@@ -49,7 +60,7 @@ class BaseRouteHandler(BaseModel):
     owner: Optional[Union[Controller, "Router"]] = None
     resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
     resolved_guards: Union[List[Guard], Type[_empty]] = _empty
-    signature_model: Optional[Type[BaseModel]] = None
+    signature_model: Optional[Type[SignatureModel]] = None
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
@@ -113,30 +124,46 @@ class BaseRouteHandler(BaseModel):
         """
         Parse the signature_model of the route handler return values matching function parameter keys as well as dependencies
         """
-        assert self.signature_model, "route handler has no signature model"
+        signature_model = get_signature_model(self)
         try:
             # dependency injection
             dependencies: Dict[str, Any] = {}
             for key, provider in self.resolve_dependencies().items():
+                provider_signature_model = get_signature_model(provider)
                 provider_kwargs = await get_model_kwargs_from_connection(
-                    connection=connection, fields=provider.signature_model.__fields__
+                    connection=connection, fields=provider_signature_model.__fields__
                 )
-                value = provider(**provider.signature_model(**provider_kwargs).dict())
+                value = provider(**provider_signature_model(**provider_kwargs).dict())
                 if isawaitable(value):
                     value = await value
                 dependencies[key] = value
             model_kwargs = await get_model_kwargs_from_connection(
                 connection=connection,
-                fields={k: v for k, v in self.signature_model.__fields__.items() if k not in dependencies},
+                fields={k: v for k, v in signature_model.__fields__.items() if k not in dependencies},
             )
             # we return the model's attributes as a dict in order to preserve any nested models
-            fields = list(self.signature_model.__fields__.keys())
-            return {
-                key: self.signature_model(  # pylint: disable=not-callable
-                    **model_kwargs, **dependencies
-                ).__getattribute__(key)
-                for key in fields
-            }
+            fields = list(signature_model.__fields__.keys())
+
+            output: Dict[str, Any] = {}
+            modelled_signature = signature_model(**model_kwargs, **dependencies)
+            for key in fields:
+                value = modelled_signature.__getattribute__(key)
+                plugin_mapping: Optional[PluginMapping] = signature_model.field_plugin_mappings.get(key)
+                if plugin_mapping:
+                    if isinstance(value, (list, tuple)):
+                        output[key] = [
+                            plugin_mapping.plugin.from_pydantic_model_instance(
+                                plugin_mapping.model_class, pydantic_model_instance=v
+                            )
+                            for v in value
+                        ]
+                    else:
+                        output[key] = plugin_mapping.plugin.from_pydantic_model_instance(
+                            plugin_mapping.model_class, pydantic_model_instance=value
+                        )
+                else:
+                    output[key] = value
+            return output
         except ValidationError as e:
             raise ValidationException(
                 detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
@@ -170,7 +197,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         Replaces a function with itself
         """
         self.fn = fn
-        self.signature_model = create_function_signature_model(fn)
         self.validate_handler_function()
         return self
 
@@ -295,7 +321,12 @@ class HTTPRouteHandler(BaseRouteHandler):
             return StreamingResponse(
                 content=data.iterator, status_code=status_code, media_type=media_type, headers=headers
             )
-
+        plugin = get_plugin_for_value(data, request.app.plugins)
+        if plugin:
+            if isinstance(data, (list, tuple)):
+                data = [plugin.to_dict(datum) for datum in data]
+            else:
+                data = plugin.to_dict(data)
         response_class = self.resolve_response_class()
         return response_class(
             headers=headers,
@@ -334,7 +365,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
         Replaces a function with itself
         """
         self.fn = fn
-        self.signature_model = create_function_signature_model(fn)
         self.validate_handler_function()
         return self
 
@@ -343,11 +373,10 @@ class WebsocketRouteHandler(BaseRouteHandler):
         Validates the route handler function once it's set by inspecting its return annotations
         """
         super().validate_handler_function()
-        signature_model = cast(BaseModel, self.signature_model)
-        return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
+        signature = Signature.from_callable(cast(AnyCallable, self.fn))
 
-        assert return_annotation is None, "websocket handler functions should return 'None' values"
-        assert "socket" in signature_model.__fields__, "websocket handlers must set a 'socket' kwarg"
+        assert signature.return_annotation is None, "websocket handler functions should return 'None' values"
+        assert "socket" in signature.parameters, "websocket handlers must set a 'socket' kwarg"
 
     async def handle_websocket(self, web_socket: WebSocket) -> None:
         """

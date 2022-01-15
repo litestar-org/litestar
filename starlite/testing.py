@@ -16,6 +16,7 @@ from starlite.app import Starlite
 from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import BaseRouteHandler
+from starlite.plugins.base import PluginProtocol
 from starlite.request import Request
 from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol
 
@@ -75,22 +76,23 @@ def create_test_client(
     openapi_config: Optional[OpenAPIConfig] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
+    plugins: Optional[List[PluginProtocol]] = None,
 ) -> TestClient:
     """Create a TestClient"""
-    app = Starlite(
-        allowed_hosts=allowed_hosts,
-        cors_config=cors_config,
-        dependencies=dependencies,
-        exception_handlers=exception_handlers,
-        guards=guards,
-        middleware=middleware,
-        on_shutdown=on_shutdown,
-        on_startup=on_startup,
-        openapi_config=openapi_config,
-        route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
-    )
     return TestClient(
-        app=app,
+        app=Starlite(
+            allowed_hosts=allowed_hosts,
+            cors_config=cors_config,
+            dependencies=dependencies,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            middleware=middleware,
+            on_shutdown=on_shutdown,
+            on_startup=on_startup,
+            openapi_config=openapi_config,
+            route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+            plugins=plugins,
+        ),
         base_url=base_url,
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
@@ -117,6 +119,7 @@ def create_test_request(
 
     class App:
         state = State()
+        plugins: List[Any] = []
 
     scope = dict(
         type="http",

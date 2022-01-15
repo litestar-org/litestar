@@ -1,9 +1,9 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
-from pydantic.typing import NoArgAnyCallable
+from pydantic.typing import AnyCallable, NoArgAnyCallable
 from starlette.datastructures import State
 from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -20,7 +20,9 @@ from typing_extensions import Type
 from starlite.config import CORSConfig, OpenAPIConfig
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
+from starlite.handlers import BaseRouteHandler
 from starlite.openapi.path_item import create_path_item
+from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
@@ -32,6 +34,7 @@ from starlite.types import (
     MiddlewareProtocol,
     ResponseHeader,
 )
+from starlite.utils import create_function_signature_model
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
@@ -41,6 +44,7 @@ class Starlite(Router):
     def __init__(
         self,
         *,
+        route_handlers: List[ControllerRouterHandler],
         allowed_hosts: Optional[List[str]] = None,
         cors_config: Optional[CORSConfig] = None,
         debug: bool = False,
@@ -54,10 +58,11 @@ class Starlite(Router):
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        route_handlers: List[ControllerRouterHandler],
+        plugins: Optional[List[PluginProtocol]] = None
     ):
         self.debug = debug
         self.state = State()
+        self.plugins = plugins or []
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -89,10 +94,29 @@ class Starlite(Router):
         scope["app"] = self
         await self.middleware_stack(scope, receive, send)
 
-    def register(self, value: ControllerRouterHandler) -> None:
-        super().register(value=value)
+    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
+        """
+        Register a Controller, Route instance or RouteHandler on the app.
+
+        Calls Router.register() and then creates a signature model for all handlers.
+        """
+        handlers = super().register(value=value)
+        for route_handler in handlers:
+            self.create_handler_signature_model(route_handler=route_handler)
         if hasattr(self, "asgi_router"):
             self.asgi_router.routes = self.routes  # type: ignore
+
+    def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
+        """
+        Creates function signature models for all route handler functions and provider dependencies
+        """
+        if not route_handler.signature_model:
+            route_handler.signature_model = create_function_signature_model(
+                fn=cast(AnyCallable, route_handler.fn), plugins=self.plugins
+            )
+        for provider in list(route_handler.resolve_dependencies().values()):
+            if not provider.signature_model:
+                provider.signature_model = create_function_signature_model(fn=provider.dependency, plugins=self.plugins)
 
     def build_middleware_stack(
         self,

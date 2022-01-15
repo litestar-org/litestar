@@ -15,7 +15,7 @@ def test_create_parameters():
     route_handler = PersonController.get_persons
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn)).__fields__,
+        handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,
     )

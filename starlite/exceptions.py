@@ -24,6 +24,10 @@ class StarLiteException(Exception):
         return self.__class__.__name__
 
 
+class MissingDependencyException(ImportError, StarLiteException):
+    pass
+
+
 class HTTPException(StarLiteException, StarletteHTTPException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
     extra: Optional[Dict[str, Any]] = None
