@@ -27,7 +27,7 @@ try:
         sqlite,
         sybase,
     )
-    from sqlalchemy.orm import DeclarativeMeta, Mapper, RelationshipProperty
+    from sqlalchemy.orm import DeclarativeMeta, Mapper
     from sqlalchemy.sql.type_api import TypeEngine
 except ImportError as exc:  # pragma: no cover
     raise MissingDependencyException("sqlalchemy is not installed") from exc
@@ -35,7 +35,8 @@ except ImportError as exc:  # pragma: no cover
 
 class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
     def __init__(self) -> None:
-        self.model_map: Dict[Any, Type[BaseModel]] = {}
+        # a map object that maps SQLAlchemy entity qualnames to pydantic BaseModel subclasses
+        self.model_namespace_map: Dict[str, Type[BaseModel]] = {}
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -245,70 +246,6 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
                 raise ImproperlyConfiguredException("Unsupported Column type, please extend the provider table.") from e
         return type(column_type)
 
-    def create_relationship(self, relationship_property: RelationshipProperty, regenerate_models: bool) -> Any:
-        """Creates a pydantic model for a related entity"""
-        relation_type: Any = self.model_map.get(relationship_property.mapper.entity) or self.to_pydantic_model_class(
-            model_class=relationship_property.mapper.entity, regenerate_models=regenerate_models, is_child=True
-        )
-        if relationship_property.uselist:
-            return List[relation_type]
-        return relation_type
-
-    def handle_relationships(
-        self,
-        mapper: Mapper,
-        field_definitions: Dict[str, Tuple[Any, Any]],
-        regenerate_models: bool = False,
-        is_child: bool = False,
-    ) -> None:
-        """
-        Handles entity relationships, e.g. One-to-Many, Many-to-Many.
-
-        This requires recursion and repetition, o the code here is unavoidably difficult to parse.
-        """
-        model = self.model_map[mapper.entity]
-        self_refs: List[Tuple[str, RelationshipProperty]] = []
-        regular_refs: List[Tuple[str, RelationshipProperty]] = []
-        # The loop below separates regular relationship references and self references.
-        # Self references are when a model has a relationship to itself. For example, a User has an attribute "friends",
-        # which refers to several other Users and vice-versa.
-        for name, relationship_property in mapper.relationships.items():
-            if relationship_property.entity.entity is mapper.entity:
-                self_refs.append((name, relationship_property))
-            else:
-                regular_refs.append((name, relationship_property))
-        for name, relationship_property in self_refs:
-            self_model: Any = self.model_map[mapper.entity]
-            if relationship_property.uselist:
-                field_definitions[name] = (List[self_model], ...)
-            else:
-                field_definitions[name] = (self_model, ...)
-        self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)  # type: ignore
-        for name, relationship_property in regular_refs:
-            field_definitions[name] = (
-                self.create_relationship(relationship_property=relationship_property, regenerate_models=not is_child),
-                ...,
-            )
-            self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)  # type: ignore
-            if relationship_property.back_populates:
-                # we have to update the created relation from the top-level, i.e. from the side of the parent, after it
-                # has already been created. Otherwise we will have old refernces to a different version of the parent model
-                relation_model = self.model_map[relationship_property.mapper.entity]
-                relation_field_definition = {k: (v.outer_type_, ...) for k, v in relation_model.__fields__.items()}
-                relation_field_definition[relationship_property.back_populates] = (self.model_map[mapper.entity], ...)
-                self.model_map[relationship_property.mapper.entity] = create_model(  # type: ignore
-                    relation_model.__name__, **relation_field_definition
-                )
-                field_definitions[name] = (
-                    self.create_relationship(relationship_property=relationship_property, regenerate_models=True),
-                    ...,
-                )
-                self.model_map[mapper.entity] = create_model(model.__name__, **field_definitions)  # type: ignore
-        if regular_refs and not is_child and not regenerate_models:
-            self.to_pydantic_model_class(
-                model_class=mapper.entity, field_definitions=field_definitions, regenerate_models=True
-            )
-
     def parse_model(self, model_class: DeclarativeMeta) -> Mapper:
         """
         Validates that the passed in model_class is an SQLAlchemy declarative model, and returns a Mapper of it
@@ -323,10 +260,11 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         """
         Generates a pydantic model for a given SQLAlchemy declarative table and any nested relations.
         """
+
         mapper = self.parse_model(model_class=model_class)
-        regenerate_models = kwargs.pop("regenerate_models", False)
-        if mapper.entity not in self.model_map or regenerate_models:
-            field_definitions = kwargs.pop("field_definitions", {})
+        model_name = mapper.class_.__qualname__
+        if model_name not in self.model_namespace_map:
+            field_definitions: Dict[str, Any] = {}
             for name, column in mapper.columns.items():
                 if column.default is not None:
                     field_definitions[name] = (
@@ -337,20 +275,27 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
                     field_definitions[name] = (self.get_pydantic_type(column.type), None)
                 else:
                     field_definitions[name] = (self.get_pydantic_type(column.type), ...)
+            related_entity_classes: List[DeclarativeMeta] = []
             if mapper.relationships:
-                if mapper.entity not in self.model_map:
-                    for name, relationship_property in mapper.relationships.items():
-                        field_definitions[name] = (self.model_map.get(relationship_property.mapper.entity, Any), ...)
-                    # we generate a pydantic model with relationship values set to
-                    # either already created entities or Any.
-                    # We need to do this here, because we need the reference.
-                    self.model_map[mapper.entity] = create_model(model_class.__name__, **field_definitions)
-                self.handle_relationships(
-                    mapper=mapper, field_definitions=field_definitions, regenerate_models=regenerate_models, **kwargs
-                )
-            else:
-                self.model_map[mapper.entity] = create_model(model_class.__name__, **field_definitions)
-        return self.model_map[mapper.entity]
+                # list of refernces to other entities, not the self entity
+                # to avoid duplication of pydantic models, we are using forward refs
+                # see: https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+                for name, relationship_property in mapper.relationships.items():
+                    related_entity_class = relationship_property.mapper.class_
+                    related_model_name = related_entity_class.__qualname__
+                    if relationship_property.uselist:
+                        field_definitions[name] = (List[related_model_name], ...)  # type: ignore
+                    else:
+                        field_definitions[name] = (related_model_name, ...)
+                    # if the names are not identical, these are different SQLAlchemy entities
+                    if related_model_name != model_name and related_model_name not in self.model_namespace_map:
+                        related_entity_classes.append(related_entity_class)
+            self.model_namespace_map[model_name] = create_model(model_name, **field_definitions)
+            for related_entity_class in related_entity_classes:
+                self.to_pydantic_model_class(model_class=related_entity_class)
+        model = self.model_namespace_map[model_name]
+        model.update_forward_refs(**self.model_namespace_map)
+        return model
 
     def from_pydantic_model_instance(self, model_class: DeclarativeMeta, pydantic_model_instance: BaseModel) -> Any:
         """
@@ -359,8 +304,13 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: Any) -> Dict[str, Any]:
+        """
+        Given a model instance, convert it to a dict of values that can be serialized
+        """
         model_class = model_instance.__class__
-        pydantic_model = self.model_map.get(model_class) or self.to_pydantic_model_class(model_class=model_class)
+        pydantic_model = self.model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
+            model_class=model_class
+        )
         kwargs: Dict[str, Any] = {}
         for field in pydantic_model.__fields__:
             kwargs[field] = getattr(model_instance, field)
