@@ -2,6 +2,7 @@
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
+from .dto import DTOFactory
 from .enums import (
     HttpMethod,
     MediaType,
@@ -52,6 +53,7 @@ __all__ = [
     "Body",
     "CORSConfig",
     "Controller",
+    "DTOFactory",
     "File",
     "HTTPException",
     "HTTPRoute",

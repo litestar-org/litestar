@@ -4,19 +4,11 @@ from pydantic_factories.value_generators.primitives import (
     create_random_float,
     create_random_string,
 )
-from sqlalchemy import Column, Float, Integer, String
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from starlite import create_test_client, get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from tests.plugins.sql_alchemy_plugin import SQLAlchemyBase
-
-
-class Company(SQLAlchemyBase):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
-
+from tests.plugins.sql_alchemy_plugin import Company
 
 companies = [
     Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))
