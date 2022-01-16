@@ -42,8 +42,10 @@ nav:
       - usage/7-middleware.md
       - usage/8-authentication.md
       - usage/9-guards.md
-      - usage/10-openapi.md
-      - usage/11-testing.md
+      - usage/10-plugins.md
+      - usage/11-data-transfer-objects.md
+      - usage/12-openapi.md
+      - usage/13-testing.md
   - migration.md
   - contributing.md
   - license.md
