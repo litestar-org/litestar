@@ -35,6 +35,8 @@ Check out the [Starlite documentation 📚](https://starlite-api.github.io/starl
 * 👉 Simple middleware and authentication
 * 👉 Support for pydantic models and pydantic dataclasses
 * 👉 Support for standard library dataclasses
+* 👉 Support for SQLAlchemy declarative classes
+* 👉 Plugin system to allow extending supported classes
 * 👉 Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Installation
