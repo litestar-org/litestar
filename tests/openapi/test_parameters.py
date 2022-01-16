@@ -1,10 +1,17 @@
 from typing import Callable, cast
 
+import pytest
+
 from starlite import Starlite
 from starlite.openapi.enums import OpenAPIType
-from starlite.openapi.parameters import create_parameters
+from starlite.openapi.parameters import create_parameters, create_path_parameter_schema
 from starlite.utils import create_function_signature_model, find_index
 from tests.openapi.utils import PersonController
+
+
+def test_create_path_parameters_schema_raise_for_invalid_type():
+    with pytest.raises(TypeError):
+        create_path_parameter_schema(path_parameter="string_int_id:strint", field=None, generate_examples=False)
 
 
 def test_create_parameters():
