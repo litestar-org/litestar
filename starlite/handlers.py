@@ -378,7 +378,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
         super().validate_handler_function()
         signature = Signature.from_callable(cast(AnyCallable, self.fn))
 
-
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("websocket handler functions should return 'None'")
         if "socket" not in signature.parameters:
