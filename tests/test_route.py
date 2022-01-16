@@ -2,7 +2,7 @@ import pytest
 from starlette.routing import Match, NoMatchFound
 
 from starlite import get, post
-from starlite.exceptions import MethodNotAllowedException
+from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
 from starlite.routing import HTTPRoute
 
 
@@ -38,3 +38,8 @@ def test_match_partial():
     route = HTTPRoute(path="/", route_handlers=[my_get_handler, my_post_handler])
     match, _ = route.matches(scope={"path": "/", "method": "DELETE", "type": "http"})
     assert match == Match.PARTIAL
+
+
+def test_http_route_raises_for_no_leading_slash():
+    with pytest.raises(ImproperlyConfiguredException):
+        assert HTTPRoute(path="first", route_handlers=[])

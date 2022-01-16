@@ -52,7 +52,8 @@ class BaseRoute(ABC, StarletteBaseRoute):
         scope_type: ScopeType,
         methods: Optional[List[Method]] = None,
     ):
-        assert path.startswith("/"), "Routed paths must start with '/'"
+        if not path.startswith("/"):
+            raise ImproperlyConfiguredException("Routed paths must start with '/'")
         self.handler_names = handler_names
         self.path = path
         self.scope_type = scope_type

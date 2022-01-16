@@ -15,14 +15,19 @@ def test_websocket_handler_validation():
     def fn_without_socket_arg(websocket: WebSocket) -> None:
         pass
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ImproperlyConfiguredException):
         websocket(path="/")(fn_without_socket_arg)
 
     def fn_with_return_annotation(socket: WebSocket) -> dict:
         return dict()
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(ImproperlyConfiguredException):
         websocket(path="/")(fn_with_return_annotation)
+
+    websocket_handler_with_no_fn = websocket(path="/")
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_test_client(route_handlers=websocket_handler_with_no_fn)
 
 
 def test_handle_websocket():

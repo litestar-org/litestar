@@ -18,7 +18,8 @@ def create_path_parameter_schema(path_parameter: str, field: ModelField, generat
         "uuid": UUID,
     }
     parameter_type = path_parameter.split(":")[1]
-    assert parameter_type in param_type_map, f"Unsupported path param type {parameter_type}"
+    if parameter_type not in param_type_map:
+        raise TypeError(f"Unsupported path param type {parameter_type}")
     field.sub_fields = None
     field.outer_type_ = param_type_map[parameter_type]
     return create_schema(field=field, generate_examples=generate_examples)
