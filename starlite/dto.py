@@ -20,7 +20,7 @@ class DTOFactory:
         source: Any,
         exclude: Optional[List[str]] = None,
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
-    ) -> Type[BaseModel]:
+    ) -> Any:
         """
         Given a supported model class - either pydantic, dataclass or a class supported via plugins,
         create a DTO pydantic model class.
