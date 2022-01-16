@@ -24,13 +24,13 @@ Using your package manager of choice:
 pip install starlite
 ```
 
-OR
+or
 
 ```shell
 poetry add starlite
 ```
 
-OR
+or
 
 ```shell
 pipenv install starlite
@@ -38,7 +38,8 @@ pipenv install starlite
 
 ## Minimal Example
 
-Define your data model using pydantic or any library based on it (see for example ormar, beanie, SQLModel etc.):
+Define your data model using pydantic, or any library based on it (e.g., [ormar](https://github.com/collerek/ormar), 
+[beanie](https://github.com/roman-right/beanie), or [SQLModel](https://github.com/tiangolo/sqlmodel)):
 
 ```python title="my_app/models/user.py"
 from pydantic import BaseModel, UUID4
@@ -50,13 +51,13 @@ class User(BaseModel):
     id: UUID4
 ```
 
-You can alternatively use a dataclass, either the standard library one or the one from pydantic:
+Alternatively, use a dataclass:
 
 ```python title="my_app/models/user.py"
 from uuid import UUID
 
-# from pydantic.dataclasses import dataclass
 from dataclasses import dataclass
+
 
 @dataclass
 class User:
@@ -65,15 +66,13 @@ class User:
     id: UUID
 ```
 
-Define a Controller for your data model:
+Then define a Controller for your data model:
 
 ```python title="my_app/controllers/user.py"
-from typing import List
-
-from pydantic import UUID4
-from starlite import Controller, Partial, get, post, put, patch, delete
-
 from my_app.models import User
+from pydantic import UUID4
+
+from starlite import Controller, Partial, get, post, put, patch, delete
 
 
 class UserController(Controller):
@@ -84,7 +83,7 @@ class UserController(Controller):
         ...
 
     @get()
-    async def list_users(self) -> List[User]:
+    async def list_users(self) -> list[User]:
         ...
 
     @patch(path="/{user_id:uuid}")
@@ -104,12 +103,13 @@ class UserController(Controller):
         ...
 ```
 
-Import your controller into your application's entry-point and pass it to Starlite when instantiating your app:
+And finally, import your controller into your application's entry-point 
+and pass it to Starlite when instantiating your app:
 
 ```python title="my_app/main.py"
-from starlite import Starlite
-
 from my_app.controllers.user import UserController
+
+from starlite import Starlite
 
 app = Starlite(route_handlers=[UserController])
 ```
@@ -122,13 +122,17 @@ uvicorn my_app.main:app --reload
 
 ## The Starlite Project
 
-This project builds on top the Starlette ASGI toolkit and pydantic modelling to create a higher-order opinionated
-framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
-this regard (and some others) was a source of inspiration for this framework. Nonetheless, Starlite is not FastAPI - it
-has a different design, different project goals and a completely different codebase.
+This project builds on top the [Starlette](https://github.com/encode/starlette) ASGI toolkit 
+and [pydantic](https://github.com/samuelcolvin/pydantic) to create a higher-order, opinionated 
+framework. The idea to use these two libraries as a basis is not new - it was first done in 
+[FastAPI](https://github.com/tiangolo/fastapi), which in this regard (and some others) was a source 
+of inspiration for this framework. However, Starlite is not FastAPI - it has a different design, different 
+project goals and a completely different codebase.
 
-1. The goal of this project is to become a community driven project. That is, not to have a single "owner" but rather a
-   core team of maintainers that leads the project, as well as community contributors.
+Some differentiating factors are:
+
+1. The goal of this project is to become a community driven project. That is, to not have a single "owner", 
+   but a team of maintainers, in addition to community contributors.
 2. Starlite draws inspiration from NestJS - a contemporary TypeScript framework - which places opinions and patterns at
    its core. As such, the design of the API breaks from the Starlette design and instead offers an opinionated
    alternative.
