@@ -1,6 +1,5 @@
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum
 from inspect import isclass
 from ipaddress import IPv4Network, IPv6Network
 from typing import Any, Callable, Dict, List, Tuple, Union
@@ -82,6 +81,12 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         types = [self.get_pydantic_type(column_type=t) for t in column_type.types]
         return Tuple[tuple(types)]
 
+    def handle_enum(self, column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
+        """
+        Handles the SQLAlchemy Enum types
+        """
+        return column_type.enum_class
+
     @property
     def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
         """
@@ -104,7 +109,7 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             sqlalchemy_type.DECIMAL: self.handle_numeric_type,
             sqlalchemy_type.Date: lambda x: date,
             sqlalchemy_type.DateTime: lambda x: datetime,
-            sqlalchemy_type.Enum: lambda x: Enum,
+            sqlalchemy_type.Enum: self.handle_enum,
             sqlalchemy_type.FLOAT: self.handle_numeric_type,
             sqlalchemy_type.Float: self.handle_numeric_type,
             sqlalchemy_type.INT: lambda x: int,
@@ -157,7 +162,7 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             mysql.DATETIME: lambda x: datetime,
             mysql.DECIMAL: self.handle_numeric_type,
             mysql.DOUBLE: self.handle_numeric_type,
-            mysql.ENUM: lambda x: Enum,
+            mysql.ENUM: self.handle_enum,
             mysql.FLOAT: self.handle_numeric_type,
             mysql.INTEGER: lambda x: int,
             mysql.JSON: lambda x: Json,
@@ -200,7 +205,7 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             postgresql.CIDR: lambda x: Union[IPv4Network, IPv6Network],
             postgresql.DATERANGE: lambda x: Tuple[date, date],
             postgresql.DOUBLE_PRECISION: self.handle_numeric_type,
-            postgresql.ENUM: lambda x: Enum,
+            postgresql.ENUM: self.handle_enum,
             postgresql.HSTORE: lambda x: Dict[str, str],
             postgresql.INET: lambda x: Union[IPv4Network, IPv6Network],
             postgresql.INT4RANGE: lambda x: Tuple[int, int],

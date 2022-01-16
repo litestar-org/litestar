@@ -60,6 +60,7 @@ from sqlalchemy.sql.functions import now
 
 from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from tests import Species
 from tests.plugins.sql_alchemy_plugin import SQLAlchemyBase
 
 plugin = SQLAlchemyPlugin()
@@ -85,7 +86,7 @@ class DeclarativeModel(SQLAlchemyBase):
     DECIMAL_column = Column(DECIMAL)
     Date_column = Column(Date)
     DateTime_column = Column(DateTime, default=now)
-    Enum_column = Column(Enum)
+    Enum_column = Column(Enum(Species))
     FLOAT_column = Column(FLOAT(asdecimal=True))
     Float_column = Column(Float)
     INT_column = Column(INT)
@@ -138,7 +139,7 @@ class DeclarativeModel(SQLAlchemyBase):
     mysql_DATETIME_column = Column(mysql.DATETIME)
     mysql_DECIMAL_column = Column(mysql.DECIMAL)
     mysql_DOUBLE_column = Column(mysql.DOUBLE)
-    mysql_ENUM_column = Column(mysql.ENUM)
+    mysql_ENUM_column = Column(mysql.ENUM(Species))
     mysql_FLOAT_column = Column(mysql.FLOAT)
     mysql_INTEGER_column = Column(mysql.INTEGER)
     mysql_JSON_column = Column(mysql.JSON)
@@ -181,7 +182,7 @@ class DeclarativeModel(SQLAlchemyBase):
     postgresql_CIDR_column = Column(postgresql.CIDR)
     postgresql_DATERANGE_column = Column(postgresql.DATERANGE)
     postgresql_DOUBLE_PRECISION_column = Column(postgresql.DOUBLE_PRECISION)
-    postgresql_ENUM_column = Column(postgresql.ENUM)
+    postgresql_ENUM_column = Column(postgresql.ENUM(Species))
     postgresql_HSTORE_column = Column(postgresql.HSTORE)
     postgresql_INET_column = Column(postgresql.INET)
     postgresql_INT4RANGE_column = Column(postgresql.INT4RANGE)
