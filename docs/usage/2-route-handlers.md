@@ -54,7 +54,7 @@ Additionally, you can pass the following optional kwargs:
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
 
-And the following kwargs, which affect [OpenAPI schema generation](10-openapi.md#route-handler-configuration)
+And the following kwargs, which affect [OpenAPI schema generation](11-openapi.md#route-handler-configuration)
 
 - `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.

@@ -10,7 +10,7 @@ T = TypeVar("T")
 class PluginProtocol(Protocol[T]):  # pragma: no cover
     def to_pydantic_model_class(self, model_class: Type[T], **kwargs: Any) -> Type[BaseModel]:  # pragma: no cover
         """
-        Given a model_class T, convert it to a pydantic model class
+        Given a model_class T, convert it to a subclass of the pydantic BaseModel
         """
         ...
 
@@ -23,13 +23,16 @@ class PluginProtocol(Protocol[T]):  # pragma: no cover
 
     def from_pydantic_model_instance(self, model_class: Type[T], pydantic_model_instance: BaseModel) -> T:
         """
-        Given a dict of parsed values, create an instance of the plugin's model class
+        Given an instance of a pydantic model created using a plugin's 'to_pydantic_model_class',
+        return an instance of the class from which that pydantic model has been created.
+
+        This class is passed in as the 'model_class' kwarg.
         """
         ...
 
     def to_dict(self, model_instance: T) -> Dict[str, Any]:
         """
-        Given an instance of the model, return a dictionary of values that can be serialized
+        Given an instance of a model supported by the plugin, return a dictionary of serilizable values.
         """
         ...
 
