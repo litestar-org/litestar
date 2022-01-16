@@ -39,7 +39,7 @@ You can additionally pass the following kwargs to the Starlite constructor:
 - `on_shutdown`: A list of callables that are called during the application shutdown. See [life-cycle](#lifecycle).
 - `on_startup`: A list of callables that are called during the application startup. See [life-cycle](#lifecycle).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
-  See [open-api](11-openapi.md).
+  See [open-api](12-openapi.md).
 - `redirect_slashes`: A boolean flag dictating whether to redirect urls ending with a trailing slash to urls without a
   trailing slash if no match is found. Defaults to `True`.
 - `response_class`: A custom response class to be used as the app default.
