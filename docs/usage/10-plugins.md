@@ -16,7 +16,8 @@ planned / discussed - see the pinned issues in github for the current state of t
 To use the `SQLAlchemyPlugin` simply import it and pass it to the `Starlite` constructor:
 
 ```python title="my_app/main.py"
-from starlite import Starlite, SQLAlchemyPlugin
+from starlite import Starlite
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
 app = Starlite(route_handlers=[...], plugins=[SQLAlchemyPlugin()])
 ```

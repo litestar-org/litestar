@@ -37,7 +37,7 @@ from .logging import LoggingConfig
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
-from .plugins import PluginProtocol, SQLAlchemyPlugin
+from .plugins import PluginProtocol
 from .provide import Provide
 from .request import Request, WebSocket
 from .response import Response
@@ -81,7 +81,6 @@ __all__ = [
     "Response",
     "ResponseHeader",
     "Router",
-    "SQLAlchemyPlugin",
     "ScopeType",
     "ServiceUnavailableException",
     "StarLiteException",

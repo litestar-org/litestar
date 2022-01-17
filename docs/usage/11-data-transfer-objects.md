@@ -73,7 +73,9 @@ support SQL Alchemy declarative classes:
 ```python
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import declarative_base
-from starlite import DTOFactory, SQLAlchemyPlugin
+from starlite import DTOFactory
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+
 
 SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 

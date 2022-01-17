@@ -8,11 +8,11 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from starlite import (
     DTOFactory,
     ImproperlyConfiguredException,
-    SQLAlchemyPlugin,
     create_test_client,
     get,
     post,
 )
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Person
 from tests import Pet as PydanticPet
 from tests import Species, VanillaDataClassPerson

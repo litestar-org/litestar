@@ -51,3 +51,7 @@
 - added plugin support
 - added `SQLAlchemyPlugin`
 - added `DTOFactory`
+
+
+[0.4.1]
+- fixed sql_alchemy requirement not being isolated to the plugin only
