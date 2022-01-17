@@ -43,9 +43,10 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has
 the path `/user/{order_id:uuid}"`.
 
-!!! note
-    Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
+!!! notes
+    - Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
     then the controller path will be set as their path.
+    - `path` can be set as empty (`path = ""`) in order to add route handlers to the application without prefix.
 
 Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
 
