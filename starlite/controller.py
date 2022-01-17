@@ -34,7 +34,7 @@ class Controller:
 
         if self.path == "":
             warnings.warn(
-                "Empty controller's path. Routes will be added to the application without prefix.",
+                "Empty controller path. Routes will be added to the application without prefix.",
                 UserWarning,
             )
         else:
