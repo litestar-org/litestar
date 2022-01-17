@@ -49,9 +49,7 @@ class Controller:
             "response_class",
             "guards",
             "before_request",
-            "before_websocket",
             "after_request",
-            "after_websocket",
         ]:
             if not hasattr(self, key):
                 setattr(self, key, None)

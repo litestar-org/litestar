@@ -111,16 +111,9 @@ class BaseRoute(ABC, StarletteBaseRoute):
 
 class HTTPRoute(BaseRoute):
     __slots__ = (
-        "app",
-        "handler_names",
-        "methods",
-        "param_convertors",
-        "path",
-        "path_format",
-        "path_parameters",
-        "path_regex",
         "route_handler_map",
-        "scope_type",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments()
@@ -169,16 +162,9 @@ class HTTPRoute(BaseRoute):
 
 class WebSocketRoute(BaseRoute):
     __slots__ = (
-        "app",
-        "handler_names",
-        "methods",
-        "param_convertors",
-        "path",
-        "path_format",
-        "path_parameters",
-        "path_regex",
         "route_handler",
-        "scope_type",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments()

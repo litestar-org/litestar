@@ -43,22 +43,15 @@ DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
 class Starlite(Router):
     __slots__ = (
-        "after_request",
         "asgi_router",
-        "before_request",
         "debug",
-        "dependencies",
         "exception_handlers",
-        "guards",
         "middleware_stack",
         "openapi_schema",
-        "owner",
-        "path",
         "plugins",
-        "response_class",
-        "response_headers",
-        "routes",
         "state",
+        # the rest of __slots__ are defined in Router and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})

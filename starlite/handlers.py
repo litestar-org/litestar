@@ -1,6 +1,6 @@
 from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass
+from inspect import Signature, isawaitable, isclass, ismethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -277,6 +277,9 @@ class HTTPRouteHandler(BaseRouteHandler):
                     break
             if self.resolved_before_request is _empty:
                 self.resolved_before_request = None
+            elif ismethod(self.resolved_before_request):
+                # python automatically binds class variables, which we do not want in this case.
+                self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
 
     def resolve_after_request(self) -> Optional[AFTER_REQUEST_HANDLER]:
@@ -293,6 +296,9 @@ class HTTPRouteHandler(BaseRouteHandler):
                     break
             if self.resolved_after_request is _empty:
                 self.resolved_after_request = None
+            elif ismethod(self.resolved_after_request):
+                # python automatically binds class variables, which we do not want in this case.
+                self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AFTER_REQUEST_HANDLER], self.resolved_after_request)
 
     @validator("http_method", always=True, pre=True)
@@ -376,6 +382,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         # run the before_request hook handler
         if before_request_handler:
             data = before_request_handler(request)
+            if isawaitable(data):
+                data = await data
 
         # if data has not been returned by the before request handler, we proceed with the request
         if data is None:
@@ -384,9 +392,8 @@ class HTTPRouteHandler(BaseRouteHandler):
                 data = self.fn(self.owner, **params)
             else:
                 data = self.fn(**params)
-
-        if isawaitable(data):
-            data = await data
+            if isawaitable(data):
+                data = await data
 
         return await self.to_response(request=request, data=data)
 
@@ -478,7 +485,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         """
         Handles a given Websocket in relation to self.
         """
-        if not self.fn:
+        if not self.fn:  # pragma: no cover
             raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=web_socket)
         params = await self.get_parameters_from_connection(connection=web_socket)
