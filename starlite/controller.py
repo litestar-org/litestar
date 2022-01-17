@@ -1,3 +1,4 @@
+import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from typing_extensions import Type
@@ -24,14 +25,21 @@ class Controller:
     guards: Optional[List[Guard]]
 
     def __init__(self, owner: "Router"):
-        if not hasattr(self, "path") or not self.path:
+        if not hasattr(self, "path") or self.path is None:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
 
         for key in ["dependencies", "response_headers", "response_class", "guards"]:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
-        self.path = normalize_path(self.path)
+        if self.path == "":
+            warnings.warn(
+                "Empty controller's path. Routes will be added to the application without prefix.",
+                UserWarning,
+            )
+        else:
+            self.path = normalize_path(self.path)
+
         self.owner = owner
         for route_handler in self.get_route_handlers():
             route_handler.owner = self
