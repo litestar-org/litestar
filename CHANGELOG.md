@@ -59,3 +59,7 @@
 
 [0.4.2]
 - fixed Parameter default not being respected
+
+
+[0.4.3]
+- fixed dto factory handling of forward refs
