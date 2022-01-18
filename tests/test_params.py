@@ -351,7 +351,6 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-@pytest.mark.xfail
 def test_params_default():
     test_path = "/test"
 
