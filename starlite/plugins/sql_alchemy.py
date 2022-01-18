@@ -274,10 +274,10 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
             for name, column in mapper.columns.items():
                 if column.default and type(column.default.arg) in ModelFactory.get_provider_map():
                     field_definitions[name] = (self.get_pydantic_type(column.type), column.default.arg)
-                elif column.nullable:
-                    field_definitions[name] = (self.get_pydantic_type(column.type), None)
-                else:
+                elif not column.nullable:
                     field_definitions[name] = (self.get_pydantic_type(column.type), ...)
+                else:
+                    field_definitions[name] = (self.get_pydantic_type(column.type), None)
             related_entity_classes: List[DeclarativeMeta] = []
             if mapper.relationships:
                 # list of refernces to other entities, not the self entity
