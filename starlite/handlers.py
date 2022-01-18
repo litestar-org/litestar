@@ -1,7 +1,17 @@
 from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from inspect import Signature, isawaitable, isclass, ismethod
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+)
 
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
 from pydantic.error_wrappers import display_errors
@@ -25,7 +35,15 @@ from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
 from starlite.response import Response
-from starlite.types import File, Guard, Redirect, ResponseHeader, Stream
+from starlite.types import (
+    AFTER_REQUEST_HANDLER,
+    BEFORE_REQUEST_HANDLER,
+    File,
+    Guard,
+    Redirect,
+    ResponseHeader,
+    Stream,
+)
 from starlite.utils import SignatureModel
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -62,15 +80,25 @@ class BaseRouteHandler(BaseModel):
     resolved_guards: Union[List[Guard], Type[_empty]] = _empty
     signature_model: Optional[Type[SignatureModel]] = None
 
+    def ownership_layers(self) -> Generator[Union["BaseRouteHandler", Controller, "Router"], None, None]:
+        """
+        Returns all the handler and then all owners up to the app level
+
+        handler -> ... -> App
+        """
+        cur: Any = self
+        while cur:
+            value = cur
+            cur = cur.owner
+            yield value
+
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
         if self.resolved_guards is _empty:
             resolved_guards: List[Guard] = []
-            cur: Any = self
-            while cur is not None:
-                if cur.guards:
-                    resolved_guards.extend(cur.guards)
-                cur = cur.owner
+            for layer in self.ownership_layers():
+                if layer.guards:
+                    resolved_guards.extend(layer.guards)
             # we reverse the list to ensure that the highest level guards are called first
             self.resolved_guards = list(reversed(resolved_guards))
         return cast(List[Guard], self.resolved_guards)
@@ -84,13 +112,11 @@ class BaseRouteHandler(BaseModel):
         if self.resolved_dependencies is _empty:
             field_names = list(self.signature_model.__fields__.keys())
             dependencies: Dict[str, Provide] = {}
-            cur: Any = self
-            while cur is not None:
-                for key, value in (cur.dependencies or {}).items():
+            for layer in self.ownership_layers():
+                for key, value in (layer.dependencies or {}).items():
                     self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
                     if key in field_names and key not in dependencies:
                         dependencies[key] = value
-                cur = cur.owner
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)
 
@@ -181,13 +207,17 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
     resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
-
+    # connection-lifecycle hook handlers
+    after_request: Optional[AFTER_REQUEST_HANDLER] = None
+    before_request: Optional[BEFORE_REQUEST_HANDLER] = None
+    resolved_after_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
+    resolved_before_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
     # OpenAPI related attributes
-    include_in_schema: bool = True
     content_encoding: Optional[str] = None
     content_media_type: Optional[str] = None
     deprecated: bool = False
     description: Optional[str] = None
+    include_in_schema: bool = True
     operation_id: Optional[str] = None
     raises: Optional[List[Type[HTTPException]]] = None
     response_description: Optional[str] = None
@@ -202,16 +232,22 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.validate_handler_function()
         return self
 
+    def ownership_layers(self) -> Generator[Union["HTTPRouteHandler", Controller, "Router"], None, None]:
+        """
+        Returns all the handler and then all owners up to the app level
+
+        handler -> ... -> App
+        """
+        return cast(Generator[Union["HTTPRouteHandler", Controller, "Router"], None, None], super().ownership_layers())
+
     def resolve_response_class(self) -> Type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class"""
         if self.resolved_response_class is _empty:
             self.resolved_response_class = Response
-            cur: Any = self
-            while cur is not None:
-                if cur.response_class is not None:
-                    self.resolved_response_class = cast(Type[Response], cur.response_class)
+            for layer in self.ownership_layers():
+                if layer.response_class is not None:
+                    self.resolved_response_class = layer.response_class
                     break
-                cur = cur.owner
         return cast(Type[Response], self.resolved_response_class)
 
     def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
@@ -220,20 +256,58 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self.resolved_headers is _empty:
             headers: Dict[str, ResponseHeader] = {}
-            cur: Any = self
-            while cur is not None:
-                for key, value in (cur.response_headers or {}).items():
+            for layer in self.ownership_layers():
+                for key, value in (layer.response_headers or {}).items():
                     if key not in headers:
                         headers[key] = value
-                cur = cur.owner
             self.resolved_headers = headers
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
+
+    def resolve_before_request(self) -> Optional[BEFORE_REQUEST_HANDLER]:
+        """
+        Resolves the before_handler handler by starting from the handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This mehtod is memoized so the computation occurs only once
+        """
+        if self.resolved_before_request is _empty:
+            for layer in self.ownership_layers():
+                if layer.before_request:
+                    self.resolved_before_request = layer.before_request
+                    break
+            if self.resolved_before_request is _empty:
+                self.resolved_before_request = None
+            elif ismethod(self.resolved_before_request):
+                # python automatically binds class variables, which we do not want in this case.
+                self.resolved_before_request = self.resolved_before_request.__func__
+        return self.resolved_before_request
+
+    def resolve_after_request(self) -> Optional[AFTER_REQUEST_HANDLER]:
+        """
+        Resolves the after_request handler by starting from the handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This mehtod is memoized so the computation occurs only once
+        """
+        if self.resolved_after_request is _empty:
+            for layer in self.ownership_layers():
+                if layer.after_request:
+                    self.resolved_after_request = layer.after_request  # type: ignore
+                    break
+            if self.resolved_after_request is _empty:
+                self.resolved_after_request = None
+            elif ismethod(self.resolved_after_request):
+                # python automatically binds class variables, which we do not want in this case.
+                self.resolved_after_request = self.resolved_after_request.__func__
+        return cast(Optional[AFTER_REQUEST_HANDLER], self.resolved_after_request)
 
     @validator("http_method", always=True, pre=True)
     def validate_http_method(  # pylint: disable=no-self-argument,no-self-use
         cls, value: Union[HttpMethod, List[HttpMethod]]
     ) -> Union[HttpMethod, List[HttpMethod]]:
-        """Validates that a given value is an HttpMethod enum member or list thereof"""
+        """
+        Validates that a given value is an HttpMethod enum member or list thereof
+        """
         if not value:
             raise ValueError("An http_method parameter is required")
         if isinstance(value, list):
@@ -299,44 +373,68 @@ class HTTPRouteHandler(BaseRouteHandler):
         Handles a given Request in relation to self.
         """
         if not self.fn:
-            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
+            raise ImproperlyConfiguredException("cannot call 'handle' without a decorated function")
+
         await self.authorize_connection(connection=request)
-        params = await self.get_parameters_from_connection(connection=request)
 
-        if isinstance(self.owner, Controller):
-            data = self.fn(self.owner, **params)
-        else:
-            data = self.fn(**params)
-        if isawaitable(data):
-            data = await data
-        if isinstance(data, StarletteResponse):
-            return data
+        before_request_handler = self.resolve_before_request()
+        data = None
+        # run the before_request hook handler
+        if before_request_handler:
+            data = before_request_handler(request)
+            if isawaitable(data):
+                data = await data
 
+        # if data has not been returned by the before request handler, we proceed with the request
+        if data is None:
+            params = await self.get_parameters_from_connection(connection=request)
+            if isinstance(self.owner, Controller):
+                data = self.fn(self.owner, **params)
+            else:
+                data = self.fn(**params)
+            if isawaitable(data):
+                data = await data
+
+        return await self.to_response(request=request, data=data)
+
+    async def to_response(self, request: Request, data: Any) -> StarletteResponse:
+        """
+        Given a data kwarg, determine its type and return the appropriate response
+        """
+        after_request = self.resolve_after_request()
         status_code = cast(int, self.status_code)
-        headers = {k: v.value for k, v in self.resolve_response_headers().items()}
-        if isinstance(data, Redirect):
-            return RedirectResponse(headers=headers, status_code=status_code, url=data.path)
-
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
-        if isinstance(data, File):
-            return FileResponse(media_type=media_type, headers=headers, **data.dict())
-        if isinstance(data, Stream):
-            return StreamingResponse(
+        headers = {k: v.value for k, v in self.resolve_response_headers().items()}
+        if isinstance(data, StarletteResponse):
+            response = data
+        elif isinstance(data, Redirect):
+            response = RedirectResponse(headers=headers, status_code=status_code, url=data.path)
+        elif isinstance(data, File):
+            response = FileResponse(media_type=media_type, headers=headers, **data.dict())
+        elif isinstance(data, Stream):
+            response = StreamingResponse(
                 content=data.iterator, status_code=status_code, media_type=media_type, headers=headers
             )
-        plugin = get_plugin_for_value(data, request.app.plugins)
-        if plugin:
-            if isinstance(data, (list, tuple)):
-                data = [plugin.to_dict(datum) for datum in data]
-            else:
-                data = plugin.to_dict(data)
-        response_class = self.resolve_response_class()
-        return response_class(
-            headers=headers,
-            status_code=status_code,
-            content=data,
-            media_type=media_type,
-        )
+        else:
+            plugin = get_plugin_for_value(data, request.app.plugins)
+            if plugin:
+                if isinstance(data, (list, tuple)):
+                    data = [plugin.to_dict(datum) for datum in data]
+                else:
+                    data = plugin.to_dict(data)
+            response_class = self.resolve_response_class()
+            response = response_class(
+                headers=headers,
+                status_code=status_code,
+                content=data,
+                media_type=media_type,
+            )
+        # run the after_request hook handler
+        if after_request:
+            response = after_request(response)  # type: ignore
+            if isawaitable(response):
+                response = await response
+        return response
 
 
 route = HTTPRouteHandler
@@ -387,7 +485,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         """
         Handles a given Websocket in relation to self.
         """
-        if not self.fn:
+        if not self.fn:  # pragma: no cover
             raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
         await self.authorize_connection(connection=web_socket)
         params = await self.get_parameters_from_connection(connection=web_socket)

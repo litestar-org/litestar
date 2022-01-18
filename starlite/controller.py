@@ -5,7 +5,12 @@ from typing_extensions import Type
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
-from starlite.types import Guard, ResponseHeader
+from starlite.types import (
+    AFTER_REQUEST_HANDLER,
+    BEFORE_REQUEST_HANDLER,
+    Guard,
+    ResponseHeader,
+)
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -15,7 +20,16 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Controller:
-    __slots__ = ("dependencies", "owner", "path", "response_headers", "response_class")
+    __slots__ = (
+        "dependencies",
+        "owner",
+        "path",
+        "response_headers",
+        "response_class",
+        "guards",
+        "before_request",
+        "after_request",
+    )
 
     dependencies: Optional[Dict[str, "Provide"]]
     owner: "Router"
@@ -23,12 +37,22 @@ class Controller:
     response_headers: Optional[Dict[str, ResponseHeader]]
     response_class: Optional[Type[Response]]
     guards: Optional[List[Guard]]
+    # connection-lifecycle hook handlers
+    before_request: Optional[BEFORE_REQUEST_HANDLER]
+    after_request: Optional[AFTER_REQUEST_HANDLER]
 
     def __init__(self, owner: "Router"):
         if not hasattr(self, "path") or self.path is None:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
 
-        for key in ["dependencies", "response_headers", "response_class", "guards"]:
+        for key in [
+            "dependencies",
+            "response_headers",
+            "response_class",
+            "guards",
+            "before_request",
+            "after_request",
+        ]:
             if not hasattr(self, key):
                 setattr(self, key, None)
 

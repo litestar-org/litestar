@@ -2,6 +2,7 @@ from inspect import Signature, getfullargspec
 from typing import Any, ClassVar, Dict, List, Type
 
 from pydantic import BaseConfig, BaseModel, create_model
+from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
@@ -35,8 +36,9 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
                 # pydantic has issues with none-pydantic classes that receive generics
                 field_definitions[key] = (Any, ...)
                 continue
-            if ModelFactory.is_constrained_field(parameter.default):
-                field_definitions[key] = (parameter.default, ...)
+            default = parameter.default
+            if ModelFactory.is_constrained_field(default):
+                field_definitions[key] = (default, ...)
                 continue
             plugin = get_plugin_for_value(value=value, plugins=plugins)
             if plugin:
@@ -48,8 +50,8 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
                     value = List[pydantic_model]  # type: ignore
                 else:
                     value = pydantic_model
-            if parameter.default is not signature.empty:
-                field_definitions[key] = (value, parameter.default)
+            if default not in [signature.empty, Undefined]:
+                field_definitions[key] = (value, default)
             elif not repr(parameter.annotation).startswith("typing.Optional"):
                 field_definitions[key] = (value, ...)
             else:

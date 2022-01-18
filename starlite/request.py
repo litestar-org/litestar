@@ -2,7 +2,7 @@ from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
 
 from orjson import JSONDecodeError, loads
-from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
+from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField, Undefined
 from starlette.datastructures import FormData, UploadFile
 from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
@@ -18,7 +18,7 @@ User = TypeVar("User")
 Auth = TypeVar("Auth")
 
 
-class Request(StarletteRequest, Generic[User, Auth]):
+class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
     @property
     def app(self) -> "Starlite":
         return cast("Starlite", self.scope["app"])
@@ -40,7 +40,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
         return cast(Auth, self.scope["auth"])
 
 
-class WebSocket(StarletteWebSocket, Generic[User, Auth]):
+class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
     @property
     def app(self) -> "Starlite":
         return cast("Starlite", self.scope["app"])
@@ -143,7 +143,7 @@ def get_connection_parameters(
     extra = field.field_info.extra
     parameter_name = None
     source = None
-
+    default = field.default if field.default is not Undefined else None
     if extra.get("query"):
         parameter_name = extra["query"]
         source = query_params
@@ -158,9 +158,9 @@ def get_connection_parameters(
         try:
             return source[parameter_name]
         except KeyError as e:
-            if parameter_is_required:
+            if parameter_is_required and not default:
                 raise ValidationException(f"Missing required parameter {parameter_name}") from e
-    return None
+    return default
 
 
 async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: Dict[str, ModelField]) -> Dict[str, Any]:

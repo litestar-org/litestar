@@ -55,3 +55,7 @@
 
 [0.4.1]
 - fixed sql_alchemy requirement not being isolated to the plugin only
+
+
+[0.4.2]
+- fixed Parameter default not being respected
