@@ -17,7 +17,7 @@ from starlite.routing import Router
 class MyController(Controller):
     path = "/test"
 
-    @post(name="first", include_in_schema=False)
+    @post(include_in_schema=False)
     def post_method(self) -> None:
         pass
 

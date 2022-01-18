@@ -1,4 +1,5 @@
 from contextlib import suppress
+from copy import copy
 from enum import Enum
 from inspect import Signature, isawaitable, isclass, ismethod
 from typing import (
@@ -13,7 +14,7 @@ from typing import (
     cast,
 )
 
-from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from pydantic import ValidationError, validate_arguments
 from pydantic.error_wrappers import display_errors
 from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
@@ -21,7 +22,6 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from typing_extensions import Literal
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
@@ -40,6 +40,7 @@ from starlite.types import (
     BEFORE_REQUEST_HANDLER,
     File,
     Guard,
+    Method,
     Redirect,
     ResponseHeader,
     Stream,
@@ -64,21 +65,36 @@ def get_signature_model(value: Any) -> Type[SignatureModel]:
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
-class BaseRouteHandler(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        extra = Extra.allow
+class BaseRouteHandler:
+    __slots__ = (
+        "path",
+        "dependencies",
+        "guards",
+        "opt",
+        "fn",
+        "owner",
+        "resolved_dependencies",
+        "resolved_guards",
+        "signature_model",
+    )
 
-    dependencies: Optional[Dict[str, Provide]] = None
-    guards: Optional[List[Guard]] = None
-    path: Optional[str] = None
-    opt: Dict[str, Any] = {}
-
-    fn: Optional[AnyCallable] = None
-    owner: Optional[Union[Controller, "Router"]] = None
-    resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
-    resolved_guards: Union[List[Guard], Type[_empty]] = _empty
-    signature_model: Optional[Type[SignatureModel]] = None
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+    ):
+        self.path = path
+        self.dependencies = dependencies
+        self.guards = guards
+        self.opt: Dict[str, Any] = opt or {}
+        self.fn: Optional[AnyCallable] = None
+        self.owner: Optional[Union[Controller, "Router"]] = None
+        self.resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
+        self.resolved_guards: Union[List[Guard], Type[_empty]] = _empty
+        self.signature_model: Optional[Type[SignatureModel]] = None
 
     def ownership_layers(self) -> Generator[Union["BaseRouteHandler", Controller, "Router"], None, None]:
         """
@@ -144,7 +160,7 @@ class BaseRouteHandler(BaseModel):
         Ensures the connection is authorized by running all the route guards in scope
         """
         for guard in self.resolve_guards():
-            result = guard(connection, self.copy())
+            result = guard(connection, copy(self))
             if isawaitable(result):
                 await result
 
@@ -199,30 +215,98 @@ class BaseRouteHandler(BaseModel):
 
 
 class HTTPRouteHandler(BaseRouteHandler):
-    http_method: Union[HttpMethod, List[HttpMethod]]
-    media_type: Union[MediaType, str] = MediaType.JSON
-    response_class: Optional[Type[Response]] = None
-    response_headers: Optional[Dict[str, ResponseHeader]] = None
-    status_code: Optional[int] = None
+    __slots__ = (
+        "http_method",
+        "status_code",
+        "after_request",
+        "before_request",
+        "media_type",
+        "response_class",
+        "response_headers",
+        "content_encoding",
+        "content_media_type",
+        "deprecated",
+        "description",
+        "include_in_schema",
+        "operation_id",
+        "raises",
+        "response_description",
+        "summary",
+        "tags",
+        "resolved_headers",
+        "resolved_response_class",
+        "resolved_after_request",
+        "resolved_before_request",
+    )
 
-    resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
-    resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
-    # connection-lifecycle hook handlers
-    after_request: Optional[AFTER_REQUEST_HANDLER] = None
-    before_request: Optional[BEFORE_REQUEST_HANDLER] = None
-    resolved_after_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
-    resolved_before_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
-    # OpenAPI related attributes
-    content_encoding: Optional[str] = None
-    content_media_type: Optional[str] = None
-    deprecated: bool = False
-    description: Optional[str] = None
-    include_in_schema: bool = True
-    operation_id: Optional[str] = None
-    raises: Optional[List[Type[HTTPException]]] = None
-    response_description: Optional[str] = None
-    summary: Optional[str] = None
-    tags: Optional[List[str]] = None
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        # OpenAPI related attributes
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        if not http_method:
+            raise ImproperlyConfiguredException("An http_method kwarg is required")
+        if isinstance(http_method, list):
+            self.http_method = [HttpMethod.from_str(v) for v in http_method]
+            if len(http_method) == 1:
+                self.http_method = http_method[0]
+        else:
+            self.http_method = HttpMethod.from_str(http_method)
+        if status_code:
+            self.status_code = status_code
+        elif isinstance(self.http_method, list):
+            raise ImproperlyConfiguredException(
+                "When defining multiple methods for a given path, a status_code is required"
+            )
+        elif self.http_method == HttpMethod.POST:
+            self.status_code = HTTP_201_CREATED
+        elif self.http_method == HttpMethod.DELETE:
+            self.status_code = HTTP_204_NO_CONTENT
+        else:
+            self.status_code = HTTP_200_OK
+        super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt)
+        self.after_request = after_request
+        self.before_request = before_request
+        self.media_type = media_type
+        self.response_class = response_class
+        self.response_headers = response_headers
+        # OpenAPI related attributes
+        self.content_encoding = content_encoding
+        self.content_media_type = content_media_type
+        self.deprecated = deprecated
+        self.description = description
+        self.include_in_schema = include_in_schema
+        self.operation_id = operation_id
+        self.raises = raises
+        self.response_description = response_description
+        self.summary = summary
+        self.tags = tags
+        # memoized attributes, defaulted to _empty
+        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
+        self.resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
+        self.resolved_after_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
+        self.resolved_before_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -300,45 +384,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AFTER_REQUEST_HANDLER], self.resolved_after_request)
-
-    @validator("http_method", always=True, pre=True)
-    def validate_http_method(  # pylint: disable=no-self-argument,no-self-use
-        cls, value: Union[HttpMethod, List[HttpMethod]]
-    ) -> Union[HttpMethod, List[HttpMethod]]:
-        """
-        Validates that a given value is an HttpMethod enum member or list thereof
-        """
-        if not value:
-            raise ValueError("An http_method parameter is required")
-        if isinstance(value, list):
-            value = [HttpMethod.from_str(v) for v in value]
-            if len(value) == 1:
-                value = value[0]
-        else:
-            value = HttpMethod.from_str(value)
-        return value
-
-    @validator("status_code", always=True)
-    def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
-        cls, value: Optional[int], values: Dict[str, Any]
-    ) -> int:
-        """
-        Validates that status code is set for lists of 2 or more HttpMethods,
-        and sets default for other cases where the status_code is not set.
-        """
-        if value:
-            return value
-
-        http_method = values.get("http_method")
-        if not http_method:
-            raise ValueError("http_method is not set")
-        if isinstance(http_method, list):
-            raise ValueError("When defining multiple methods for a given path, a status_code is required")
-        if http_method == HttpMethod.POST:
-            return HTTP_201_CREATED
-        if http_method == HttpMethod.DELETE:
-            return HTTP_204_NO_CONTENT
-        return HTTP_200_OK
 
     @property
     def http_methods(self) -> List[HttpMethod]:
@@ -441,23 +486,253 @@ route = HTTPRouteHandler
 
 
 class get(HTTPRouteHandler):
-    http_method: Literal[HttpMethod.GET] = Field(default=HttpMethod.GET, const=True)
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            http_method=HttpMethod.GET,
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            after_request=after_request,
+            before_request=before_request,
+            media_type=media_type,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            content_encoding=content_encoding,
+            content_media_type=content_media_type,
+            deprecated=deprecated,
+            description=description,
+            include_in_schema=include_in_schema,
+            operation_id=operation_id,
+            raises=raises,
+            response_description=response_description,
+            summary=summary,
+            tags=tags,
+        )
 
 
 class post(HTTPRouteHandler):
-    http_method: Literal[HttpMethod.POST] = Field(default=HttpMethod.POST, const=True)
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            http_method=HttpMethod.POST,
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            after_request=after_request,
+            before_request=before_request,
+            media_type=media_type,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            content_encoding=content_encoding,
+            content_media_type=content_media_type,
+            deprecated=deprecated,
+            description=description,
+            include_in_schema=include_in_schema,
+            operation_id=operation_id,
+            raises=raises,
+            response_description=response_description,
+            summary=summary,
+            tags=tags,
+        )
 
 
 class put(HTTPRouteHandler):
-    http_method: Literal[HttpMethod.PUT] = Field(default=HttpMethod.PUT, const=True)
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            http_method=HttpMethod.PUT,
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            after_request=after_request,
+            before_request=before_request,
+            media_type=media_type,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            content_encoding=content_encoding,
+            content_media_type=content_media_type,
+            deprecated=deprecated,
+            description=description,
+            include_in_schema=include_in_schema,
+            operation_id=operation_id,
+            raises=raises,
+            response_description=response_description,
+            summary=summary,
+            tags=tags,
+        )
 
 
 class patch(HTTPRouteHandler):
-    http_method: Literal[HttpMethod.PATCH] = Field(default=HttpMethod.PATCH, const=True)
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            http_method=HttpMethod.PATCH,
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            after_request=after_request,
+            before_request=before_request,
+            media_type=media_type,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            content_encoding=content_encoding,
+            content_media_type=content_media_type,
+            deprecated=deprecated,
+            description=description,
+            include_in_schema=include_in_schema,
+            operation_id=operation_id,
+            raises=raises,
+            response_description=response_description,
+            summary=summary,
+            tags=tags,
+        )
 
 
 class delete(HTTPRouteHandler):
-    http_method: Literal[HttpMethod.DELETE] = Field(default=HttpMethod.DELETE, const=True)
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Optional[str] = None,
+        dependencies: Optional[Dict[str, Provide]] = None,
+        guards: Optional[List[Guard]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        media_type: Union[MediaType, str] = MediaType.JSON,
+        response_class: Optional[Type[Response]] = None,
+        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        status_code: Optional[int] = None,
+        content_encoding: Optional[str] = None,
+        content_media_type: Optional[str] = None,
+        deprecated: bool = False,
+        description: Optional[str] = None,
+        include_in_schema: bool = True,
+        operation_id: Optional[str] = None,
+        raises: Optional[List[Type[HTTPException]]] = None,
+        response_description: Optional[str] = None,
+        summary: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            http_method=HttpMethod.DELETE,
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            after_request=after_request,
+            before_request=before_request,
+            media_type=media_type,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            content_encoding=content_encoding,
+            content_media_type=content_media_type,
+            deprecated=deprecated,
+            description=description,
+            include_in_schema=include_in_schema,
+            operation_id=operation_id,
+            raises=raises,
+            response_description=response_description,
+            summary=summary,
+            tags=tags,
+        )
 
 
 class WebsocketRouteHandler(BaseRouteHandler):

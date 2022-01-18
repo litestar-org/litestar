@@ -50,7 +50,7 @@ class BaseRoute(ABC, StarletteBaseRoute):
         "scope_type",
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -116,7 +116,7 @@ class HTTPRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -126,7 +126,7 @@ class HTTPRoute(BaseRoute):
         route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
         self.route_handler_map = self.parse_route_handlers(route_handlers=route_handlers, path=path)
         super().__init__(
-            methods=[method.to_str() for method in self.route_handler_map],
+            methods=[cast(Method, method.upper()) for method in self.route_handler_map],
             path=path,
             scope_type=ScopeType.HTTP,
             handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
@@ -167,7 +167,7 @@ class WebSocketRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -291,10 +291,6 @@ class Router:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
-        else:
-            # the route handler is copied to ensure each time the route handler is registerd,
-            # we get an instance with a unique owner
-            value = value.copy()
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
