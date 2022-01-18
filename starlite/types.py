@@ -35,10 +35,11 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
     from starlite.handlers import BaseRouteHandler
-    from starlite.request import Request
+    from starlite.request import Request, WebSocket
     from starlite.routing import Router
 else:
     Request = Any
+    WebSocket = Any
     BaseRouteHandler = Any
     Controller = Any
     Router = Any
@@ -51,6 +52,13 @@ Guard = Union[
 ]
 Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
+
+# connection-lifecycle hook handlers
+BEFORE_REQUEST_HANDLER = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
+AFTER_REQUEST_HANDLER = Union[
+    Callable[[Union[StarletteResponse, Response]], Union[StarletteResponse, Response]],
+    Callable[[Union[StarletteResponse, Response]], Awaitable[Union[StarletteResponse, Response]]],
+]
 
 
 @runtime_checkable

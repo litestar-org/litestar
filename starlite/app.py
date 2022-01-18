@@ -28,6 +28,8 @@ from starlite.request import Request
 from starlite.response import Response
 from starlite.routing import HTTPRoute, Router
 from starlite.types import (
+    AFTER_REQUEST_HANDLER,
+    BEFORE_REQUEST_HANDLER,
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
@@ -40,6 +42,18 @@ DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
 
 class Starlite(Router):
+    __slots__ = (
+        "asgi_router",
+        "debug",
+        "exception_handlers",
+        "middleware_stack",
+        "openapi_schema",
+        "plugins",
+        "state",
+        # the rest of __slots__ are defined in Router and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+    )
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -58,7 +72,10 @@ class Starlite(Router):
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        plugins: Optional[List[PluginProtocol]] = None
+        plugins: Optional[List[PluginProtocol]] = None,
+        # connection-lifecycle hook handlers
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
     ):
         self.debug = debug
         self.state = State()
@@ -70,6 +87,8 @@ class Starlite(Router):
             response_class=response_class,
             response_headers=response_headers,
             route_handlers=route_handlers,
+            before_request=before_request,
+            after_request=after_request,
         )
         self.asgi_router: StarletteRouter = StarletteRouter(
             redirect_slashes=redirect_slashes,

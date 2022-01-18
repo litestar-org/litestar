@@ -18,7 +18,13 @@ from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import BaseRouteHandler
 from starlite.plugins.base import PluginProtocol
 from starlite.request import Request
-from starlite.types import ExceptionHandler, Guard, MiddlewareProtocol
+from starlite.types import (
+    AFTER_REQUEST_HANDLER,
+    BEFORE_REQUEST_HANDLER,
+    ExceptionHandler,
+    Guard,
+    MiddlewareProtocol,
+)
 
 
 class RequestEncoder(RequestEncodingMixin):
@@ -62,10 +68,12 @@ def create_test_client(
         Union[Type[Controller], BaseRouteHandler, Router, AnyCallable],
         List[Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]],
     ],
+    after_request: Optional[AFTER_REQUEST_HANDLER] = None,
     allowed_hosts: Optional[List[str]] = None,
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver",
+    before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
     cors_config: Optional[CORSConfig] = None,
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
@@ -74,14 +82,16 @@ def create_test_client(
     on_shutdown: Optional[List[NoArgAnyCallable]] = None,
     on_startup: Optional[List[NoArgAnyCallable]] = None,
     openapi_config: Optional[OpenAPIConfig] = None,
+    plugins: Optional[List[PluginProtocol]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
-    plugins: Optional[List[PluginProtocol]] = None,
 ) -> TestClient:
     """Create a TestClient"""
     return TestClient(
         app=Starlite(
+            after_request=after_request,
             allowed_hosts=allowed_hosts,
+            before_request=before_request,
             cors_config=cors_config,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
@@ -90,30 +100,30 @@ def create_test_client(
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             openapi_config=openapi_config,
-            route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             plugins=plugins,
+            route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
         ),
+        backend=backend,
+        backend_options=backend_options,
         base_url=base_url,
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
-        backend=backend,
-        backend_options=backend_options,
     )
 
 
 def create_test_request(
     http_method: HttpMethod = HttpMethod.GET,
+    app: Optional[Starlite] = None,
+    content: Optional[Union[Dict[str, Any], BaseModel]] = None,
+    cookie: Optional[str] = None,
+    headers: Optional[Dict[str, str]] = None,
+    path: str = "",
+    port: int = 3000,
+    query: Optional[Dict[str, Union[str, List[str]]]] = None,
+    request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+    root_path: str = "/",
     scheme: str = "http",
     server: str = "test.org",
-    port: int = 3000,
-    root_path: str = "/",
-    path: str = "",
-    query: Optional[Dict[str, Union[str, List[str]]]] = None,
-    headers: Optional[Dict[str, str]] = None,
-    cookie: Optional[str] = None,
-    content: Optional[Union[Dict[str, Any], BaseModel]] = None,
-    request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-    app: Optional[Starlite] = None,
 ) -> Request:
     """Create a starlette request using passed in parameters"""
 

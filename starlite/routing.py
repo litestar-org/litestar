@@ -24,7 +24,14 @@ from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRoute
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket
 from starlite.response import Response
-from starlite.types import ControllerRouterHandler, Guard, Method, ResponseHeader
+from starlite.types import (
+    AFTER_REQUEST_HANDLER,
+    BEFORE_REQUEST_HANDLER,
+    ControllerRouterHandler,
+    Guard,
+    Method,
+    ResponseHeader,
+)
 from starlite.utils import find_index, join_paths, normalize_path, unique
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -104,16 +111,9 @@ class BaseRoute(ABC, StarletteBaseRoute):
 
 class HTTPRoute(BaseRoute):
     __slots__ = (
-        "app",
-        "handler_names",
-        "methods",
-        "param_convertors",
-        "path",
-        "path_format",
-        "path_parameters",
-        "path_regex",
         "route_handler_map",
-        "scope_type",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments()
@@ -162,16 +162,9 @@ class HTTPRoute(BaseRoute):
 
 class WebSocketRoute(BaseRoute):
     __slots__ = (
-        "app",
-        "handler_names",
-        "methods",
-        "param_convertors",
-        "path",
-        "path_format",
-        "path_parameters",
-        "path_regex",
         "route_handler",
-        "scope_type",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments()
@@ -197,6 +190,18 @@ class WebSocketRoute(BaseRoute):
 
 
 class Router:
+    __slots__ = (
+        "after_request",
+        "before_request",
+        "dependencies",
+        "guards",
+        "owner",
+        "path",
+        "response_class",
+        "response_headers",
+        "routes",
+    )
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -207,6 +212,9 @@ class Router:
         guards: Optional[List[Guard]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        # connection-lifecycle hook handlers
+        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
     ):
         self.owner: Optional["Router"] = None
         self.routes: List[BaseRoute] = []
@@ -215,6 +223,8 @@ class Router:
         self.dependencies = dependencies
         self.response_headers = response_headers
         self.guards = guards
+        self.before_request = before_request
+        self.after_request = after_request
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 
