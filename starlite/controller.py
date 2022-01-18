@@ -25,6 +25,7 @@ class Controller:
         "path",
         "response_headers",
         "response_class",
+        "guards",
         "before_request",
         "after_request",
     )
