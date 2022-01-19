@@ -35,7 +35,7 @@ def create_success_response(
     description = (
         route_handler.response_description
         or default_descriptions.get(signature.return_annotation)
-        or HTTPStatus(cast(int, route_handler.status_code)).description
+        or HTTPStatus(route_handler.status_code).description
     )
     if signature.return_annotation not in [signature.empty, None, Redirect, File, Stream]:
         as_parsed_model_field = create_parsed_model_field(signature.return_annotation)

@@ -5,15 +5,7 @@ from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
 
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.datastructures import URLPath
-from starlette.routing import BaseRoute as StarletteBaseRoute
-from starlette.routing import (
-    Match,
-    NoMatchFound,
-    compile_path,
-    get_name,
-    replace_params,
-)
+from starlette.routing import Match, compile_path, get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
@@ -37,7 +29,7 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 param_match_regex = re.compile(r"{(.*?)}")
 
 
-class BaseRoute(ABC, StarletteBaseRoute):
+class BaseRoute(ABC):
     __slots__ = (
         "app",
         "handler_names",
@@ -82,6 +74,8 @@ class BaseRoute(ABC, StarletteBaseRoute):
     def matches(self, scope: Scope) -> Tuple[Match, Scope]:
         """
         Try to match a given scope's path to self.path
+
+        Note: The code in this method is adapted from starlette.routing
         """
         if scope["type"] == self.scope_type.value:
             match = self.path_regex.match(scope["path"])
@@ -96,17 +90,6 @@ class BaseRoute(ABC, StarletteBaseRoute):
                     return Match.PARTIAL, child_scope
                 return Match.FULL, child_scope
         return Match.NONE, {}
-
-    def url_path_for(self, name: str, **path_params: str) -> URLPath:
-        seen_params = set(path_params.keys())
-        expected_params = set(self.param_convertors.keys())
-
-        if name not in self.handler_names or seen_params != expected_params:
-            raise NoMatchFound()
-
-        path, remaining_params = replace_params(self.path_format, self.param_convertors, path_params)
-        assert not remaining_params
-        return URLPath(path=path, protocol=self.scope_type.value)
 
 
 class HTTPRoute(BaseRoute):

@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes, too-many-locals, too-many-arguments
 from contextlib import suppress
 from copy import copy
 from enum import Enum
@@ -243,7 +244,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     def __init__(
         self,
         path: Optional[str] = None,
-        http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,
+        http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -270,9 +271,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         if isinstance(http_method, list):
             self.http_method = [HttpMethod.from_str(v) for v in http_method]
             if len(http_method) == 1:
-                self.http_method = http_method[0]
+                self.http_method = http_method[0]  # type: ignore
         else:
-            self.http_method = HttpMethod.from_str(http_method)
+            self.http_method = HttpMethod.from_str(http_method)  # type: ignore
         if status_code:
             self.status_code = status_code
         elif isinstance(self.http_method, list):
@@ -447,18 +448,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         Given a data kwarg, determine its type and return the appropriate response
         """
         after_request = self.resolve_after_request()
-        status_code = cast(int, self.status_code)
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
         if isinstance(data, StarletteResponse):
             response = data
         elif isinstance(data, Redirect):
-            response = RedirectResponse(headers=headers, status_code=status_code, url=data.path)
+            response = RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
         elif isinstance(data, File):
             response = FileResponse(media_type=media_type, headers=headers, **data.dict())
         elif isinstance(data, Stream):
             response = StreamingResponse(
-                content=data.iterator, status_code=status_code, media_type=media_type, headers=headers
+                content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
             )
         else:
             plugin = get_plugin_for_value(data, request.app.plugins)
@@ -470,7 +470,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             response_class = self.resolve_response_class()
             response = response_class(
                 headers=headers,
-                status_code=status_code,
+                status_code=self.status_code,
                 content=data,
                 media_type=media_type,
             )
