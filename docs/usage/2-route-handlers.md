@@ -196,6 +196,7 @@ The following sources can be accessed using annotated function kwargs:
 
 Additionally, you can specify the following special kwargs:
 
+- `state`: injects a copy of the application `state`.
 - `request`: injects the request instance.
 - `headers`: injects the request `headers` as a parsed dictionary.
 - `query`: injects the request `query_params` as a parsed dictionary.
@@ -205,11 +206,12 @@ For example:
 
 ```python
 from typing import Any, Dict
-from starlite import Request, get
+from starlite import State, Request, get
 
 
 @get(path="/")
 def my_request_handler(
+    state: State,
     request: Request,
     headers: Dict[str, Any],
     query: Dict[str, Any],
@@ -217,3 +219,7 @@ def my_request_handler(
 ) -> None:
     ...
 ```
+
+!!! tip
+    You can define a custom typing for your application state and then use it as a type instead of just using the
+    State class from Starlite

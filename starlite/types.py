@@ -34,6 +34,7 @@ except ImportError:  # pragma: no cover
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
+    from starlite.datastructures import State
     from starlite.handlers import BaseRouteHandler
     from starlite.request import Request, WebSocket
     from starlite.routing import Router
@@ -43,9 +44,16 @@ else:
     BaseRouteHandler = Any
     Controller = Any
     Router = Any
+    State = Any
 
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
+]
+LifeCycleHandler = Union[
+    Callable[[], Any],
+    Callable[[State], Any],
+    Callable[[], Awaitable[Any]],
+    Callable[[State], Awaitable[Any]],
 ]
 Guard = Union[
     Callable[[HTTPConnection, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnection, BaseRouteHandler], None]
@@ -54,8 +62,8 @@ Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATC
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 
 # connection-lifecycle hook handlers
-BEFORE_REQUEST_HANDLER = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
-AFTER_REQUEST_HANDLER = Union[
+BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
+AfterRequestHandler = Union[
     Callable[[Union[StarletteResponse, Response]], Union[StarletteResponse, Response]],
     Callable[[Union[StarletteResponse, Response]], Awaitable[Union[StarletteResponse, Response]]],
 ]
@@ -101,7 +109,7 @@ class File(BaseModel):
     stat_result: Optional[os.stat_result] = None
 
     @validator("stat_result", always=True)
-    def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
+    def validate_status_code(  # pylint: disable=no-self-argument, no-self-use
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath"""

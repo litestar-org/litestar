@@ -37,8 +37,8 @@ from starlite.provide import Provide
 from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
 from starlite.response import Response
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     File,
     Guard,
     Method,
@@ -124,7 +124,7 @@ class BaseRouteHandler:
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
         """
-        if not self.signature_model:
+        if not self.signature_model:  # pragma: no cover
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is _empty:
             field_names = list(self.signature_model.__fields__.keys())
@@ -248,8 +248,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -306,8 +306,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         # memoized attributes, defaulted to _empty
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
         self.resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
-        self.resolved_after_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
-        self.resolved_before_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
+        self.resolved_after_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
+        self.resolved_before_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -348,7 +348,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.resolved_headers = headers
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
-    def resolve_before_request(self) -> Optional[BEFORE_REQUEST_HANDLER]:
+    def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
         """
         Resolves the before_handler handler by starting from the handler and moving up.
 
@@ -367,7 +367,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
 
-    def resolve_after_request(self) -> Optional[AFTER_REQUEST_HANDLER]:
+    def resolve_after_request(self) -> Optional[AfterRequestHandler]:
         """
         Resolves the after_request handler by starting from the handler and moving up.
 
@@ -384,7 +384,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             elif ismethod(self.resolved_after_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
-        return cast(Optional[AFTER_REQUEST_HANDLER], self.resolved_after_request)
+        return cast(Optional[AfterRequestHandler], self.resolved_after_request)
 
     @property
     def http_methods(self) -> List[HttpMethod]:
@@ -493,8 +493,8 @@ class get(HTTPRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -543,8 +543,8 @@ class post(HTTPRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -593,8 +593,8 @@ class put(HTTPRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -643,8 +643,8 @@ class patch(HTTPRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -693,8 +693,8 @@ class delete(HTTPRouteHandler):
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,

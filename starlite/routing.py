@@ -17,8 +17,8 @@ from starlite.provide import Provide
 from starlite.request import Request, WebSocket
 from starlite.response import Response
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     ControllerRouterHandler,
     Guard,
     Method,
@@ -196,8 +196,8 @@ class Router:
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         # connection-lifecycle hook handlers
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
+        after_request: Optional[AfterRequestHandler] = None,
     ):
         self.owner: Optional["Router"] = None
         self.routes: List[BaseRoute] = []

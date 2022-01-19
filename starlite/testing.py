@@ -3,9 +3,8 @@ from urllib.parse import urlencode
 
 from orjson import dumps
 from pydantic import BaseModel
-from pydantic.typing import AnyCallable, NoArgAnyCallable
+from pydantic.typing import AnyCallable
 from requests.models import RequestEncodingMixin
-from starlette.datastructures import State
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
@@ -14,15 +13,17 @@ from typing_extensions import Type
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
 from starlite.config import CORSConfig, OpenAPIConfig
+from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import BaseRouteHandler
 from starlite.plugins.base import PluginProtocol
 from starlite.request import Request
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     ExceptionHandler,
     Guard,
+    LifeCycleHandler,
     MiddlewareProtocol,
 )
 
@@ -68,19 +69,19 @@ def create_test_client(
         Union[Type[Controller], BaseRouteHandler, Router, AnyCallable],
         List[Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]],
     ],
-    after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+    after_request: Optional[AfterRequestHandler] = None,
     allowed_hosts: Optional[List[str]] = None,
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver",
-    before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+    before_request: Optional[BeforeRequestHandler] = None,
     cors_config: Optional[CORSConfig] = None,
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     guards: Optional[List[Guard]] = None,
     middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
-    on_shutdown: Optional[List[NoArgAnyCallable]] = None,
-    on_startup: Optional[List[NoArgAnyCallable]] = None,
+    on_shutdown: Optional[List[LifeCycleHandler]] = None,
+    on_startup: Optional[List[LifeCycleHandler]] = None,
     openapi_config: Optional[OpenAPIConfig] = None,
     plugins: Optional[List[PluginProtocol]] = None,
     raise_server_exceptions: bool = True,

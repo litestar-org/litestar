@@ -171,7 +171,9 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
     query_params = parse_query_params(connection=connection)
     header_params = dict(connection.headers.items())
     for field_name, field in fields.items():
-        if field_name == "headers":
+        if field_name == "state":
+            kwargs["state"] = connection.app.state.copy()
+        elif field_name == "headers":
             kwargs["headers"] = header_params
         elif field_name == "cookies":
             kwargs["cookies"] = connection.cookies

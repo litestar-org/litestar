@@ -1,4 +1,6 @@
 # flake8: noqa
+from starlite.datastructures import State
+
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
 from .controller import Controller
@@ -85,6 +87,7 @@ __all__ = [
     "ServiceUnavailableException",
     "StarLiteException",
     "Starlite",
+    "State",
     "Stream",
     "TestClient",
     "WebSocket",

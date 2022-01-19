@@ -4,7 +4,15 @@ import pytest
 from pydantic import BaseConfig
 from pydantic.fields import FieldInfo, ModelField
 
-from starlite import HttpMethod, RequestEncodingType, create_test_request
+from starlite import (
+    HttpMethod,
+    MediaType,
+    RequestEncodingType,
+    State,
+    create_test_client,
+    create_test_request,
+    get,
+)
 from starlite.request import Request, get_model_kwargs_from_connection, get_request_data
 from tests import Person, PersonFactory
 
@@ -58,3 +66,19 @@ async def test_get_request_data(media_type):
     field = create_model_field(field_name="data", field_info=FieldInfo(media_type=media_type))
     data = await get_request_data(request=request, field=field)
     assert data["key"] == "test"
+
+
+def test_state():
+    @get("/", media_type=MediaType.TEXT)
+    def route_handler(state: State) -> str:
+        assert state
+        state.called = True  # this should not modify the app state
+        return state.msg  # this shows injection worked
+
+    with create_test_client(route_handler) as client:
+        state = client.app.state
+        state.msg = "hello"
+        state.called = False
+        response = client.get("/")
+        assert response.text == "hello"
+        assert not state.called

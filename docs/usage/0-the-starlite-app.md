@@ -51,13 +51,9 @@ You can additionally pass the following kwargs to the Starlite constructor:
 - `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
   `Respose` object and it must return a `Response` object.
 
-## Lifecycle
+## Startup and Shutdown
 
-Starlette, on top of which StatLite is built, supports two kinds of application lifecycle management - `on_statup`
-/ `on_shutdown` hooks, which accept a sequence of callables, and `lifespan`, which accepts an `AsyncContextManager`. To
-simplify matters, Starlite only supports the `on_statup` / `on_shutdown` hooks. To use these you can pass a **list** of
-callables, whats called "event handlers" in Starlette, which will be called during the application startup or shutdown.
-These callables can be either sync or async - methods or functions.
+You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs.
 
 A classic use case for this is database connectivity. Often you will want to establish the connection once - on
 application startup, and then close the connection on shutdown. For example, lets assume we create a connection to a
@@ -65,29 +61,27 @@ Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org
 we therefore opt to create two functions, one to get or create the connection, and another to close it:
 
 ```python title="my_app/postgres.py"
-from os import environ
 from typing import cast
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from starlette.datastructures import State
 
-state = State()
+from app.config import settings
+
+state: dict[str, AsyncEngine] = {}
 
 
 def get_postgres_connection() -> AsyncEngine:
     """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
-    postgres_connection_string = environ.get("POSTGRES_CONNECTION_STRING", "")
-    if not postgres_connection_string:
-        raise ValueError("Missing ENV Variable POSTGRES_CONNECTION_STRING")
     if not state.get("postgres_connection"):
-        state["postgres_connection"] = create_async_engine(postgres_connection_string)
-    return cast(AsyncEngine, state["postgres_connection"])
+        state["postgres_connection"] = create_async_engine(settings.DATABASE_URI, echo=True, pool_pre_ping=True)
+    return cast(AsyncEngine, state.get("postgres_connection"))
 
 
-async def close_postgres_connection():
+async def close_postgres_connection() -> None:
     """Closes the postgres connection stored in the given State object"""
-    if state.get("postgres_connection"):
-        await cast(AsyncEngine, state["postgres_connection"]).dispose()
+    engine = state.get("postgres_connection")
+    if engine:
+        await cast(AsyncEngine, engine).dispose()
 ```
 
 We now simply need to pass these to the Starlite init method to ensure these are called correctly:
@@ -99,6 +93,40 @@ from my_app.postgres import get_postgres_connection, close_postgres_connection
 
 app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres_connection])
 ```
+
+### Using Application State
+
+Callables passed to the `on_startup` / `on_shutdown` hooks can receive either no arguments or a single argument for the
+application state. The application state is an attribute available on the app instance as `app.state` and it is an
+instance of the class `starlite.datastructures.State`, which inherits from the Starlette class of the same name.
+
+Let's rewrite the previous examples to use the application state:
+
+
+```python title="my_app/postgres.py"
+from typing import cast
+
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from starlite.datastructures import State
+
+from app.config import settings
+
+def get_postgres_connection(state: State) -> AsyncEngine:
+    """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
+    if not hasattr(state, "postgres_connection"):
+        state.postgres_connection = create_async_engine(settings.DATABASE_URI, echo=True, pool_pre_ping=True)
+    return cast(AsyncEngine, state.postgres_connection)
+
+
+async def close_postgres_connection(state: State) -> None:
+    """Closes the postgres connection stored in the given State object"""
+    if hasattr(state, "postgres_connection"):
+        await cast(AsyncEngine, state.postgres_connection).dispose()
+```
+
+The advantage of following this pattern is that the application `state` can be injected into dependencies and
+route handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
+
 
 ## Logging
 

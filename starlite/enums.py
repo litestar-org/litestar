@@ -29,10 +29,6 @@ class HttpMethod(str, Enum):
             return cast(HttpMethod, value.lower())
         raise ImproperlyConfiguredException(f"value {value} is not a supported http method")
 
-    def to_str(self) -> "Method":
-        """Returns the string value as an upper cased string: get -> GET"""
-        return cast(Method, self.value.upper())
-
 
 class MediaType(str, Enum):
     JSON = "application/json"

@@ -3,8 +3,7 @@ from typing import Dict, List, Optional, Union, cast
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
-from pydantic.typing import AnyCallable, NoArgAnyCallable
-from starlette.datastructures import State
+from pydantic.typing import AnyCallable
 from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
@@ -12,12 +11,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.routing import Router as StarletteRouter
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
+from starlite.asgi import StarliteASGIRouter
 from starlite.config import CORSConfig, OpenAPIConfig
+from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
 from starlite.handlers import BaseRouteHandler
@@ -28,11 +28,12 @@ from starlite.request import Request
 from starlite.response import Response
 from starlite.routing import HTTPRoute, Router
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
+    LifeCycleHandler,
     MiddlewareProtocol,
     ResponseHeader,
 )
@@ -66,16 +67,16 @@ class Starlite(Router):
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
-        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
-        on_startup: Optional[List[NoArgAnyCallable]] = None,
+        on_shutdown: Optional[List[LifeCycleHandler]] = None,
+        on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         # connection-lifecycle hook handlers
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
+        after_request: Optional[AfterRequestHandler] = None,
     ):
         self.debug = debug
         self.state = State()
@@ -90,11 +91,8 @@ class Starlite(Router):
             before_request=before_request,
             after_request=after_request,
         )
-        self.asgi_router: StarletteRouter = StarletteRouter(
-            redirect_slashes=redirect_slashes,
-            on_shutdown=on_shutdown or [],
-            on_startup=on_startup or [],
-            routes=self.routes,  # type: ignore
+        self.asgi_router = StarliteASGIRouter(
+            redirect_slashes=redirect_slashes, on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self
         )
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
             StarletteHTTPException: self.handle_http_exception,
