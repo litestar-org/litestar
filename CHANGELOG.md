@@ -55,7 +55,7 @@
 
 [0.4.1]
 - fixed sql_alchemy requirement not being isolated to the plugin only
-
+- add support for `before_request` and `after_request` hooks
 
 [0.4.2]
 - fixed Parameter default not being respected
@@ -63,3 +63,9 @@
 
 [0.4.3]
 - fixed dto factory handling of forward refs
+
+
+[0.5.0]
+- updated base path handling in controllers @vincentsarago
+- changed RouteHandlers from being pydantic models to being custom classes, allowing for optimization using `_slots_`
+- changed BaseRoute to not inherit from Starlette, allowing for optimization using `_slots_`
