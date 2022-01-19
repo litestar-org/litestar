@@ -134,19 +134,21 @@ def test_route_handler_validation_http_method():
         assert route(http_method=value)
 
     # raises for invalid values
-    for value in [None, "", 123, "deleze"]:
-        with pytest.raises(ValidationError):
-            HTTPRouteHandler(http_method=value)
+    with pytest.raises(ValidationError):
+        HTTPRouteHandler(http_method="deleze")
+
+    with pytest.raises(ImproperlyConfiguredException):
+        HTTPRouteHandler(http_method=None)
 
     # doesn't raise when status_code is provided for multiple http_methods
     assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
 
     # raises otherwise
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         HTTPRouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
 
     # also when passing an empty list
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         route(http_method=[], status_code=HTTP_200_OK)
 
     # also when passing malformed tokens
@@ -258,7 +260,7 @@ async def test_handle_request_when_handler_returns_starlette_responses(response)
 
 @pytest.mark.asyncio
 async def test_handle_request_redirect_response():
-    @get(http_method=[HttpMethod.GET], path="/test")
+    @get(path="/test")
     def test_function() -> None:
         return Redirect(path="/somewhere-else")
 
