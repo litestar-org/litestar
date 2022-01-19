@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "0.4.2"
+version = "0.4.3"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
@@ -65,7 +65,15 @@ profile = "black"
 multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
-disable = ["fixme", "missing-module-docstring", "missing-class-docstring", "line-too-long", "too-few-public-methods", "invalid-name", "duplicate-code", "super-init-not-called"]
+disable = [
+    "fixme",
+    "invalid-name",
+    "line-too-long",
+    "missing-class-docstring",
+    "missing-module-docstring",
+    "super-init-not-called",
+    "too-few-public-methods",
+]
 enable = "useless-suppression"
 
 [tool.pylint.REPORTS]

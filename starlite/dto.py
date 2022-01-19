@@ -1,13 +1,25 @@
 from dataclasses import is_dataclass
-from typing import Any, Dict, ForwardRef, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from pydantic import BaseModel, create_model
-from pydantic.fields import ModelField, Undefined
+from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from typing_extensions import Type
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
 from starlite.utils import convert_dataclass_to_model
+
+
+def get_field_type(model_field: ModelField) -> Any:
+    """Given a model field instance, return the correct type"""
+    outer_type = model_field.outer_type_
+    inner_type = model_field.type_
+    if "ForwardRef" not in repr(outer_type):
+        return outer_type
+    if model_field.shape == SHAPE_SINGLETON:
+        return inner_type
+    # This might be too simplistic
+    return List[inner_type]  # type: ignore
 
 
 class DTOFactory:
@@ -72,8 +84,7 @@ class DTOFactory:
             fields = model.__fields__
         for field_name, model_field in fields.items():
             if field_name not in exclude:
-                outer_type = model_field.outer_type_
-                field_type = outer_type if not isinstance(outer_type, ForwardRef) else model_field.type_
+                field_type = get_field_type(model_field=model_field)
                 if field_name in field_mapping:
                     mapping = field_mapping[field_name]
                     if isinstance(mapping, tuple):

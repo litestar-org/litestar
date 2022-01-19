@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Tuple, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Json, conint, constr, create_model
+from pydantic_factories import ModelFactory
 from typing_extensions import Type
 
 from starlite.exceptions import (
@@ -271,15 +272,12 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         if model_name not in self.model_namespace_map:
             field_definitions: Dict[str, Any] = {}
             for name, column in mapper.columns.items():
-                if column.default is not None:
-                    field_definitions[name] = (
-                        self.get_pydantic_type(column.type),
-                        column.default if not callable(column.default) else column.default(),
-                    )
-                elif column.nullable:
-                    field_definitions[name] = (self.get_pydantic_type(column.type), None)
-                else:
+                if column.default and type(column.default.arg) in ModelFactory.get_provider_map():
+                    field_definitions[name] = (self.get_pydantic_type(column.type), column.default.arg)
+                elif not column.nullable:
                     field_definitions[name] = (self.get_pydantic_type(column.type), ...)
+                else:
+                    field_definitions[name] = (self.get_pydantic_type(column.type), None)
             related_entity_classes: List[DeclarativeMeta] = []
             if mapper.relationships:
                 # list of refernces to other entities, not the self entity

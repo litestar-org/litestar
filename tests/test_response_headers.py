@@ -34,7 +34,9 @@ first_router = Router(
 second_router = Router(path="/external", response_headers={"external": ResponseHeader(value="nope")}, route_handlers=[])
 
 app = Starlite(
-    response_headers={"first": app_first, "fourth": app_second}, route_handlers=[first_router, second_router]
+    openapi_config=None,
+    response_headers={"first": app_first, "fourth": app_second},
+    route_handlers=[first_router, second_router],
 )
 
 

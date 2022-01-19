@@ -1,5 +1,5 @@
 import pytest
-from starlette.routing import Match, NoMatchFound
+from starlette.routing import Match
 
 from starlite import get, post
 from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
@@ -14,16 +14,6 @@ def my_get_handler() -> None:
 @post(path="/")
 def my_post_handler() -> None:
     pass
-
-
-def test_url_path_for_multiple_handlers():
-    route = HTTPRoute(path="/", route_handlers=[my_get_handler, my_post_handler])
-
-    assert route.url_path_for("my_get_handler")
-    assert route.url_path_for("my_post_handler")
-
-    with pytest.raises(NoMatchFound):
-        route.url_path_for("unknown_handler")
 
 
 @pytest.mark.asyncio

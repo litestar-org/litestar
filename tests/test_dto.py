@@ -8,6 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from starlite import (
     DTOFactory,
     ImproperlyConfiguredException,
+    Starlite,
     create_test_client,
     get,
     post,
@@ -16,7 +17,7 @@ from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Person
 from tests import Pet as PydanticPet
 from tests import Species, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet
+from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
 @pytest.mark.parametrize(
@@ -92,3 +93,26 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
         get_response = client.get("/")
         assert get_response.status_code == HTTP_200_OK
         assert get_response.json() == dto_instance
+
+
+def test_dto_openapi_generation():
+    UserDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+
+    UserCreateDTO = UserDTOFactory(
+        "UserCreate",
+        User,
+        field_mapping={"hashed_password": ("password", str)},
+    )
+
+    UserReadDTO = UserDTOFactory("UserRead", User, exclude=["hashed_password"])
+
+    @get(path="/user")
+    def get_user() -> UserReadDTO:
+        ...
+
+    @post(path="/user")
+    def create_user(data: UserCreateDTO) -> UserReadDTO:
+        ...
+
+    app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
+    assert app.openapi_schema

@@ -45,7 +45,7 @@ class Company(SQLAlchemyBase):
 
 class User(SQLAlchemyBase):
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, default="moishe")
     pets = relationship(
         "Pet",
         back_populates="owner",

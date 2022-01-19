@@ -5,15 +5,7 @@ from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
 
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.datastructures import URLPath
-from starlette.routing import BaseRoute as StarletteBaseRoute
-from starlette.routing import (
-    Match,
-    NoMatchFound,
-    compile_path,
-    get_name,
-    replace_params,
-)
+from starlette.routing import Match, compile_path, get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
@@ -37,7 +29,7 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 param_match_regex = re.compile(r"{(.*?)}")
 
 
-class BaseRoute(ABC, StarletteBaseRoute):
+class BaseRoute(ABC):
     __slots__ = (
         "app",
         "handler_names",
@@ -50,7 +42,7 @@ class BaseRoute(ABC, StarletteBaseRoute):
         "scope_type",
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -82,6 +74,8 @@ class BaseRoute(ABC, StarletteBaseRoute):
     def matches(self, scope: Scope) -> Tuple[Match, Scope]:
         """
         Try to match a given scope's path to self.path
+
+        Note: The code in this method is adapted from starlette.routing
         """
         if scope["type"] == self.scope_type.value:
             match = self.path_regex.match(scope["path"])
@@ -97,17 +91,6 @@ class BaseRoute(ABC, StarletteBaseRoute):
                 return Match.FULL, child_scope
         return Match.NONE, {}
 
-    def url_path_for(self, name: str, **path_params: str) -> URLPath:
-        seen_params = set(path_params.keys())
-        expected_params = set(self.param_convertors.keys())
-
-        if name not in self.handler_names or seen_params != expected_params:
-            raise NoMatchFound()
-
-        path, remaining_params = replace_params(self.path_format, self.param_convertors, path_params)
-        assert not remaining_params
-        return URLPath(path=path, protocol=self.scope_type.value)
-
 
 class HTTPRoute(BaseRoute):
     __slots__ = (
@@ -116,7 +99,7 @@ class HTTPRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -126,7 +109,7 @@ class HTTPRoute(BaseRoute):
         route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
         self.route_handler_map = self.parse_route_handlers(route_handlers=route_handlers, path=path)
         super().__init__(
-            methods=[method.to_str() for method in self.route_handler_map],
+            methods=[cast(Method, method.upper()) for method in self.route_handler_map],
             path=path,
             scope_type=ScopeType.HTTP,
             handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
@@ -167,7 +150,7 @@ class WebSocketRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments()
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -291,10 +274,6 @@ class Router:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
-        else:
-            # the route handler is copied to ensure each time the route handler is registerd,
-            # we get an instance with a unique owner
-            value = value.copy()
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 

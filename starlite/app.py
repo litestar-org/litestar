@@ -94,7 +94,7 @@ class Starlite(Router):
             redirect_slashes=redirect_slashes,
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
-            routes=self.routes,
+            routes=self.routes,  # type: ignore
         )
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
             StarletteHTTPException: self.handle_http_exception,
