@@ -67,12 +67,12 @@ multi_line_output = 3
 [tool.pylint.MESSAGE_CONTROL]
 disable = [
     "fixme",
-    "missing-module-docstring",
-    "missing-class-docstring",
-    "line-too-long",
-    "too-few-public-methods",
     "invalid-name",
+    "line-too-long",
+    "missing-class-docstring",
+    "missing-module-docstring",
     "super-init-not-called",
+    "too-few-public-methods",
 ]
 enable = "useless-suppression"
 
