@@ -41,7 +41,7 @@ class Controller:
     after_request: Optional[AFTER_REQUEST_HANDLER]
 
     def __init__(self, owner: "Router"):
-        if not hasattr(self, "path") or not self.path:
+        if not hasattr(self, "path") or self.path is None:
             raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
 
         for key in [
@@ -55,7 +55,9 @@ class Controller:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
-        self.path = normalize_path(self.path)
+        if self.path:
+            self.path = normalize_path(self.path)
+
         self.owner = owner
         for route_handler in self.get_route_handlers():
             route_handler.owner = self
