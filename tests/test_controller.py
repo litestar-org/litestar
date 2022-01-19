@@ -7,6 +7,7 @@ from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
+    HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
@@ -278,6 +279,35 @@ def test_controller_with_websocket_handler():
 
 
 @pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code, test_path",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK, ""),
+        (post, HttpMethod.POST, HTTP_201_CREATED, ""),
+        (put, HttpMethod.PUT, HTTP_200_OK, ""),
+        (patch, HttpMethod.PATCH, HTTP_200_OK, ""),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT, ""),
+        (get, HttpMethod.GET, HTTP_200_OK, "/"),
+        (post, HttpMethod.POST, HTTP_201_CREATED, "/"),
+        (put, HttpMethod.PUT, HTTP_200_OK, "/"),
+        (patch, HttpMethod.PATCH, HTTP_200_OK, "/"),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT, "/"),
+    ],
+)
+def test_controller_empty_path(decorator, http_method, expected_status_code, test_path):
+    class MyController(Controller):
+        path = test_path
+
+        @decorator(path="/something")
+        def test_method(self) -> Person:
+            return person_instance
+
+    with create_test_client(MyController) as client:
+        response = client.request(http_method, test_path + "/something")
+        assert response.status_code == expected_status_code
+        assert response.json() == person_instance.dict()
+
+
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -287,17 +317,18 @@ def test_controller_with_websocket_handler():
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_controller_empty_path(decorator, http_method, expected_status_code):
-    test_path = ""
-
+def test_controller_empty_path_root_endpoint(decorator, http_method, expected_status_code):
     class MyController(Controller):
-        path = test_path
+        path = ""
 
         @decorator(path="/")
         def test_method(self) -> Person:
             return person_instance
 
-    with pytest.warns(UserWarning), create_test_client(MyController) as client:
+    with create_test_client(MyController) as client:
         response = client.request(http_method, "/")
         assert response.status_code == expected_status_code
         assert response.json() == person_instance.dict()
+
+        response = client.request(http_method, "")
+        assert response.status_code == HTTP_404_NOT_FOUND

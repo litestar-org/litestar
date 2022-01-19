@@ -1,4 +1,3 @@
-import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from typing_extensions import Type
@@ -56,12 +55,7 @@ class Controller:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
-        if self.path == "":
-            warnings.warn(
-                "Empty controller path. Routes will be added to the application without prefix.",
-                UserWarning,
-            )
-        else:
+        if self.path:
             self.path = normalize_path(self.path)
 
         self.owner = owner
