@@ -22,6 +22,7 @@ from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_307_TEMPORARY_REDIRECT,
+    HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
 from starlite import (
@@ -40,7 +41,7 @@ from starlite import (
 )
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
-from starlite.testing import create_test_request
+from starlite.testing import create_test_client, create_test_request
 from starlite.types import Stream
 from starlite.utils import create_function_signature_model
 from tests import Person, PersonFactory
@@ -96,7 +97,12 @@ def test_route_handler_param_handling(
         assert result.include_in_schema == include_in_schema
         assert result.response_class == response_class
         assert result.response_headers == response_headers
-        assert result.path == url
+        if not url:
+            assert result.path == "/"
+        elif not url.startswith("/"):
+            assert result.path == "/" + url
+        else:
+            assert result.path == url
         if status_code:
             assert result.status_code == status_code
         else:
@@ -331,3 +337,13 @@ async def test_handle_request_validation():
     test_function.signature_model = create_function_signature_model(test_function.fn, [])
     with pytest.raises(ImproperlyConfiguredException):
         await test_function.handle_request(request=request)
+
+
+def test_defining_data_for_get_handler_raises_exception():
+    @get("/person")
+    def test_function(self, data: Person) -> None:
+        ...
+
+    with create_test_client(test_function) as client:
+        response = client.get("/person")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

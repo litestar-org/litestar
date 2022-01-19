@@ -11,6 +11,8 @@ def normalize_path(path: str) -> str:
         path = "/" + path
     if path.endswith("/"):
         path = path[: len(path) - 1]
+    while "//" in path:
+        path = path.replace("//", "/")
     return path
 
 

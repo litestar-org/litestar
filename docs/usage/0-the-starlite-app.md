@@ -46,6 +46,10 @@ You can additionally pass the following kwargs to the Starlite constructor:
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
+- `before_request`: a sync or async function to execute before a `Request` is passed to any route handler. If this
+  function returns a value, the request will not reach the route handler, and instead this value will be used.
+- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
+  `Respose` object and it must return a `Response` object.
 
 ## Lifecycle
 

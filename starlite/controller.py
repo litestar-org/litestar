@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 
 from typing_extensions import Type
 
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.types import (
     AFTER_REQUEST_HANDLER,
@@ -41,9 +40,6 @@ class Controller:
     after_request: Optional[AFTER_REQUEST_HANDLER]
 
     def __init__(self, owner: "Router"):
-        if not hasattr(self, "path") or self.path is None:
-            raise ImproperlyConfiguredException("Controller subclasses must set a path attribute")
-
         for key in [
             "dependencies",
             "response_headers",
@@ -55,9 +51,7 @@ class Controller:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
-        if self.path:
-            self.path = normalize_path(self.path)
-
+        self.path = normalize_path(self.path or "/")
         self.owner = owner
         for route_handler in self.get_route_handlers():
             route_handler.owner = self

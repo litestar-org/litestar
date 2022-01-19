@@ -46,7 +46,7 @@ from starlite.types import (
     ResponseHeader,
     Stream,
 )
-from starlite.utils import SignatureModel
+from starlite.utils import SignatureModel, normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -87,7 +87,7 @@ class BaseRouteHandler:
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        self.path = path
+        self.path = normalize_path(path or "/")
         self.dependencies = dependencies
         self.guards = guards
         self.opt: Dict[str, Any] = opt or {}

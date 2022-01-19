@@ -43,12 +43,11 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has
 the path `/user/{order_id:uuid}"`.
 
-!!! notes
-    - Controller methods do not have to declare a path kwarg in the decorator - if no path kwarg is defined for them,
-    then the controller path will be set as their path.
-    - `path` can be set as empty (`path = ""`) in order to add route handlers to the application without prefix.
+!!! note
+    You do not have to declare a `path` variable, yet if the path variable is missing or is an empty string, it
+    will default to the root path of "/".
 
-Aside from the `path` class variable, which **must** be set, you can also set the following optional class variables:
+Aside from the `path` class variable, you can also set the following optional class variables:
 
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `guards`: A list of callables. See [guards](9-guards.md).
@@ -56,6 +55,11 @@ Aside from the `path` class variable, which **must** be set, you can also set th
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
+- `before_request`: a sync or async function to execute before a `Request` is passed to a route handler (method) on the
+  controller. If this function returns a value, the request will not reach the route handler, and instead this value
+  will be used.
+- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
+  `Respose` object and it must return a `Response` object.
 
 ## Routers
 
@@ -81,6 +85,11 @@ Aside from `path` and `route_handlers` which are required kwargs, you can also p
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
+- `before_request`: a sync or async function to execute before a `Request` is passed to a route handler (function or
+  controller method) on the router. If this function returns a value, the request will not reach the route handler,
+  and instead this value will be used.
+- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
+  `Respose` object and it must return a `Response` object.
 
 ## Registering Routes
 
@@ -171,11 +180,11 @@ function will be accessible in the following paths: "/internal/handler", "/partn
 
 ## Relation to Starlette Routing
 
-Although Starlite uses the Starlette `BaseRoute` class as a basis, Starlite does not extend or use the Starlette routing
-system as is. That is to say, the Starlite `HTTPRoute`, `WebSocketRoute` and `Router` classes do not extend their
-Starlette equivalents, but are rather independent implementations.
+Although Starlite uses the Starlette ASGI toolkit, Starlite does not extend or use the Starlette routing system as is.
+That is to say, the Starlite `HTTPRoute`, `WebSocketRoute` and `Router` classes do not extend their Starlette
+equivalents, but are rather independent implementations.
 
-Its important to note the following:
+It's important to note the following:
 
 1. Starlite Routers have a smaller api surface and do not expose decorators.
 2. Starlite Routers and Routes are not standalone ASGI apps and always depend upon a Starlite app instance.

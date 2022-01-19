@@ -36,7 +36,8 @@ def my_endpoint() -> None:
 
 The `route` decorator accepts the following required kwargs -
 
-- `path` (**required**) - a path string, with or without [path parameters](#path-parameters).
+- `path` - a path string, with or without [path parameters](#path-parameters). If you do not declare a path - the
+  default path of "/" will be assumed.
 - `http_method` (**required**) - a member of the enum `starlite.enums.HttpMethod` or a list of members,
   e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
 
@@ -53,6 +54,10 @@ Additionally, you can pass the following optional kwargs:
   See [response-headers](5-responses.md#response-headers).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
+- `before_request`: a sync or async function to execute before a `Request` is passed to the route handler. If this
+  function returns a value, the request will not reach the route handler, and instead this value will be used.
+- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
+  `Respose` object and it must return a `Response` object.
 
 And the following kwargs, which affect [OpenAPI schema generation](12-openapi.md#route-handler-configuration)
 
