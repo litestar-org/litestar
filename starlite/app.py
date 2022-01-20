@@ -28,7 +28,7 @@ from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import HTTPRoute, Router
+from starlite.routing import BaseRoute, HTTPRoute, Router
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -85,6 +85,7 @@ class Starlite(Router):
         self.debug = debug
         self.state = State()
         self.plugins = plugins or []
+        self.routes: List[Union[BaseRoute, Mount]] = []  # type: ignore
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -115,7 +116,7 @@ class Starlite(Router):
                 path = normalize_path(config.path)
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
-                self.asgi_router.routes.append(Mount(path, static_files))
+                self.routes.append(Mount(path, static_files))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
@@ -130,8 +131,6 @@ class Starlite(Router):
         handlers = super().register(value=value)
         for route_handler in handlers:
             self.create_handler_signature_model(route_handler=route_handler)
-        if hasattr(self, "asgi_router"):
-            self.asgi_router.routes = self.routes  # type: ignore
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """
