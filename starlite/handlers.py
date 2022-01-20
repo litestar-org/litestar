@@ -66,7 +66,7 @@ def get_signature_model(value: Any) -> Type[SignatureModel]:
 
 class BaseRouteHandler:
     __slots__ = (
-        "path",
+        "paths",
         "dependencies",
         "guards",
         "opt",
@@ -80,12 +80,14 @@ class BaseRouteHandler:
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        self.path = normalize_path(path or "/")
+        self.paths: List[str] = (
+            [normalize_path(p) for p in path] if path and isinstance(path, list) else [normalize_path(path or "/")]  # type: ignore
+        )
         self.dependencies = dependencies
         self.guards = guards
         self.opt: Dict[str, Any] = opt or {}

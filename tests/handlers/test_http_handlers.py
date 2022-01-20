@@ -98,9 +98,9 @@ def test_route_handler_param_handling(
         assert result.response_class == response_class
         assert result.response_headers == response_headers
         if not url:
-            assert result.path == "/"
+            assert result.path[0] == "/"
         else:
-            assert result.path == normalize_path(url)
+            assert result.path[0] == normalize_path(url)
         if status_code:
             assert result.status_code == status_code
         else:
