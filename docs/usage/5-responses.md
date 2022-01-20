@@ -61,8 +61,8 @@ used:
 - DELETE: 204 (No Content)
 - GET, PATCH, PUT: 200 (Ok)
 
-Please note that when designating a function as a handler for multiple http methods, a `status_code` kwarg must be
-passed or an exception will be raised.
+!!! note
+    When using the `route` decorator with multiple http methods, the default status code is `200`.
 
 Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
 data. This though might not be the case in your implementation - so take care of setting it as you see fit.
@@ -70,7 +70,9 @@ data. This though might not be the case in your implementation - so take care of
 !!! tip
     While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
     its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
-    exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus` enum from the standard library, which also offers extra functionality. For this see [the official docs](https://docs.python.org/3/library/http.html#http.HTTPStatus).
+    exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
+    enum from the standard library, which also offers extra functionality.
+    For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
 
 ## Media Type
 

@@ -11,7 +11,7 @@ The base decorator is called `route`:
 from starlite import HttpMethod, route
 
 
-@route(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
+@route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
 ```
@@ -24,7 +24,7 @@ instead:
 from starlite import HttpMethod, HTTPRouteHandler
 
 
-@HTTPRouteHandler(path="/my-endpoint", http_method=[HttpMethod.GET, HttpMethod.POST])
+@HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
 def my_endpoint() -> None:
     ...
 ```
@@ -34,18 +34,64 @@ def my_endpoint() -> None:
     return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
     consistent schema generation, as well as stronger typing.
 
-The `route` decorator accepts the following required kwargs -
+### Declaring Path(s)
+All route handlers accept an optional path argument. This argument can be declared as a kwarg using the `path` key word:
 
-- `path` - a path string, with or without [path parameters](#path-parameters). If you do not declare a path - the
-  default path of "/" will be assumed.
-- `http_method` (**required**) - a member of the enum `starlite.enums.HttpMethod` or a list of members,
-  e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
+```python
+from starlite import HttpMethod, route
+
+
+@route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
+def my_endpoint() -> None:
+    ...
+```
+
+It can also be passed as an argument without the key-word:
+
+```python
+from starlite import HttpMethod, route
+
+
+@route("/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
+def my_endpoint() -> None:
+    ...
+```
+
+And the value for this argument can be either a string path, as in the above examples, or a list of string paths:
+
+```python
+from starlite import HttpMethod, route
+
+
+@route(
+    ["/some-path", "/some-other-path"], http_method=[HttpMethod.GET, HttpMethod.POST]
+)
+def my_endpoint() -> None:
+    ...
+```
+
+This is particularly useful when you want to have optional [path parameters](3-parameters.md#path-parameters):
+
+```python
+from starlite import HttpMethod, route
+
+
+@route(
+    ["/some-path", "/some-path/{some_id:int}"],
+    http_method=[HttpMethod.GET, HttpMethod.POST],
+)
+def my_endpoint(some_id: int = 1) -> None:
+    ...
+```
+
+### Route Handler Kwargs
+
+The `route` decorator **requires** an `http_method` kwarg, which is a member of the enum `starlite.enums.HttpMethod` or
+a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
 
 Additionally, you can pass the following optional kwargs:
 
-- `status_code`: the status code for a success response. If not
-  specified, [a default value will be used](5-responses.md#status-codes), unless you specify more than one http method,
-  in which case you must specify a value or an exception will be raised.
+- `status_code`: the status code for a success response. If not specified, [a default value will be used](5-responses.md#status-codes).
 - `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
   response. Defaults to `MediaType.JSON`. See [media-type](5-responses.md#media-type).
 - `response_class`: A custom response class to be used as the app default.
