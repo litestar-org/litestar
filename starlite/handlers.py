@@ -276,7 +276,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.http_method = HttpMethod.from_str(http_method)  # type: ignore
         if status_code:
             self.status_code = status_code
-        if isinstance(self.http_method, list):
+        elif isinstance(self.http_method, list):
             self.status_code = HTTP_200_OK
         elif self.http_method == HttpMethod.POST:
             self.status_code = HTTP_201_CREATED

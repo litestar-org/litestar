@@ -57,7 +57,7 @@ def dummy_method() -> None:
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
-    status_code=st.one_of(st.none(), st.integers()),
+    status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     url=st.one_of(st.none(), st.text()),
 )
 def test_route_handler_param_handling(
@@ -72,12 +72,6 @@ def test_route_handler_param_handling(
     if isinstance(http_method, list) and len(http_method) == 0:
         with pytest.raises(ValidationError):
             HTTPRouteHandler(http_method=http_method)
-    elif not status_code and isinstance(http_method, list) and len(http_method) > 1:
-        with pytest.raises(ValidationError):
-            HTTPRouteHandler(
-                http_method=http_method,
-                status_code=status_code,
-            )
     else:
         decorator = HTTPRouteHandler(
             http_method=http_method,
@@ -98,13 +92,15 @@ def test_route_handler_param_handling(
         assert result.response_class == response_class
         assert result.response_headers == response_headers
         if not url:
-            assert result.path[0] == "/"
+            assert result.paths[0] == "/"
         else:
-            assert result.path[0] == normalize_path(url)
+            assert result.paths[0] == normalize_path(url)
         if status_code:
             assert result.status_code == status_code
         else:
-            if http_method == HttpMethod.POST:
+            if isinstance(http_method, list) and len(http_method):
+                assert result.status_code == HTTP_200_OK
+            elif http_method == HttpMethod.POST:
                 assert result.status_code == HTTP_201_CREATED
             elif http_method == HttpMethod.DELETE:
                 assert result.status_code == HTTP_204_NO_CONTENT
@@ -143,13 +139,6 @@ def test_route_handler_validation_http_method():
 
     with pytest.raises(ImproperlyConfiguredException):
         HTTPRouteHandler(http_method=None)
-
-    # doesn't raise when status_code is provided for multiple http_methods
-    assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
-
-    # raises otherwise
-    with pytest.raises(ImproperlyConfiguredException):
-        HTTPRouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
 
     # also when passing an empty list
     with pytest.raises(ImproperlyConfiguredException):
