@@ -153,7 +153,7 @@ class BaseRouteHandler:
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        if not self.fn:
+        if not self.fn:  # pragma: no cover
             raise ImproperlyConfiguredException("cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:

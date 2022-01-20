@@ -52,7 +52,7 @@ def dummy_method() -> None:
 
 
 @given(
-    http_method=st.sampled_from(HttpMethod),
+    http_method=st.one_of(st.sampled_from(HttpMethod), st.lists(st.sampled_from(HttpMethod))),
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
@@ -69,8 +69,8 @@ def test_route_handler_param_handling(
     status_code,
     url,
 ):
-    if isinstance(http_method, list) and len(http_method) == 0:
-        with pytest.raises(ValidationError):
+    if not http_method:
+        with pytest.raises(ImproperlyConfiguredException):
             HTTPRouteHandler(http_method=http_method)
     else:
         decorator = HTTPRouteHandler(
@@ -95,17 +95,18 @@ def test_route_handler_param_handling(
             assert result.paths[0] == "/"
         else:
             assert result.paths[0] == normalize_path(url)
+        if isinstance(http_method, list) and len(http_method) == 1:
+            http_method = http_method[0]
         if status_code:
             assert result.status_code == status_code
+        elif isinstance(http_method, list):
+            assert result.status_code == HTTP_200_OK
+        elif http_method == HttpMethod.POST:
+            assert result.status_code == HTTP_201_CREATED
+        elif http_method == HttpMethod.DELETE:
+            assert result.status_code == HTTP_204_NO_CONTENT
         else:
-            if isinstance(http_method, list) and len(http_method):
-                assert result.status_code == HTTP_200_OK
-            elif http_method == HttpMethod.POST:
-                assert result.status_code == HTTP_201_CREATED
-            elif http_method == HttpMethod.DELETE:
-                assert result.status_code == HTTP_204_NO_CONTENT
-            else:
-                assert result.status_code == HTTP_200_OK
+            assert result.status_code == HTTP_200_OK
 
 
 @pytest.mark.parametrize(
