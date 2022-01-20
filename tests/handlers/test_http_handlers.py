@@ -43,7 +43,7 @@ from starlite import (
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.testing import create_test_client, create_test_request
-from starlite.utils import create_function_signature_model
+from starlite.utils import create_function_signature_model, normalize_path
 from tests import Person, PersonFactory
 
 
@@ -99,10 +99,8 @@ def test_route_handler_param_handling(
         assert result.response_headers == response_headers
         if not url:
             assert result.path == "/"
-        elif not url.startswith("/"):
-            assert result.path == "/" + url
         else:
-            assert result.path == url
+            assert result.path == normalize_path(url)
         if status_code:
             assert result.status_code == status_code
         else:
