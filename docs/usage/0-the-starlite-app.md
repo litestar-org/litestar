@@ -50,11 +50,12 @@ You can additionally pass the following kwargs to the Starlite constructor:
   function returns a value, the request will not reach the route handler, and instead this value will be used.
 - `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
   `Respose` object and it must return a `Response` object.
+- `static_files_config`: an instance or list of `starlite.config.StaticFilesConfig`. See [static files](#static-files).
 
 ## Startup and Shutdown
 
-You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs. These callables
-will be called when the ASGI server (uvicorn, dafne etc.) emits the respective "startup" or "shutdown" event.
+You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs. These callables will
+be called when the ASGI server (uvicorn, dafne etc.) emits the respective "startup" or "shutdown" event.
 
 A classic use case for this is database connectivity. Often you will want to establish the connection once - on
 application startup, and then close the connection on shutdown. For example, lets assume we create a connection to a
@@ -103,7 +104,6 @@ instance of the class `starlite.datastructures.State`, which inherits from the S
 
 Let's rewrite the previous examples to use the application state:
 
-
 ```python title="my_app/postgres.py"
 from typing import cast
 
@@ -125,8 +125,8 @@ async def close_postgres_connection(state: State) -> None:
         await cast(AsyncEngine, state.postgres_connection).dispose()
 ```
 
-The advantage of following this pattern is that the application `state` can be injected into dependencies and
-route handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
+The advantage of following this pattern is that the application `state` can be injected into dependencies and route
+handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
 
 ## Logging
 
@@ -156,8 +156,8 @@ or above will be logged by it, using the `LoggingConfig` default console handler
 sys.stderr\_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
-free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do
-set up logging - then the on_startup hook is a good place to do this.
+free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do set
+up logging - then the on_startup hook is a good place to do this.
 
 ## Exceptions
 
@@ -213,3 +213,33 @@ app = Starlite(
     exception_handlers={HTTPException: plain_text_exception_handler},
 )
 ```
+
+## Static Files
+
+Static files are files served by the app from predefined locations. To configure static file serving, pass either an
+instance of `starlite.config.StaticFilesConfig` or a list thereof to the Starlite constructor using
+the `static_files_config` kwarg.
+
+For example, lets say our Starlite app is going to serve regular files from a "my_app/static" folder and html forms from
+an "my_app/html" folder, and we would like to serve the static files from a "/files" path, and the html from a "/html"
+path:
+
+```python
+from starlite import Starlite, StaticFilesConfig
+
+app = Starlite(
+    route_handlers=[...],
+    static_files_config=[
+        StaticFilesConfig(directories=["static"], path="/files"),
+        StaticFilesConfig(directories=["html"], path="/html", html_mode=True),
+    ],
+)
+```
+
+Matching is done based on filename. For example, lets assume we have a request that is trying to retrieve the path
+`/files/file.txt`. Given the base path `/files`, the directories for this path will be searched for the file. If it is
+found, the file will be sent over, otherwise a 404 response will be sent.
+
+If `html_mode` is enabled and no specific file is requested, the application will fallback to serving `index.html`. If
+no file is found, the application will look for a 404.html file, to render a response, otherwise a regular 404 response
+will be returned.

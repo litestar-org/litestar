@@ -1,5 +1,5 @@
 from inspect import getfullargspec, isawaitable
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Any, List
 
 from starlette.routing import Router as StarletteRouter
 
@@ -22,9 +22,15 @@ class StarliteASGIRouter(StarletteRouter):
         on_startup: List[LifeCycleHandler],
     ):
         self.app = app
-        super().__init__(
-            routes=app.routes, redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown  # type: ignore
-        )
+        super().__init__(redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown)
+
+    def __getattribute__(self, key: str) -> Any:
+        """
+        We override attribute access to return the app routes
+        """
+        if key == "routes":
+            return self.app.routes
+        return super().__getattribute__(key)
 
     async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
         """

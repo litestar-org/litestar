@@ -1,12 +1,7 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
-
-if TYPE_CHECKING:  # pragma: no cover
-    from starlite.types import Method
-else:
-    Method = Any
 
 
 class HttpMethod(str, Enum):

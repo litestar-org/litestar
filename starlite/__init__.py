@@ -2,7 +2,7 @@
 from starlite.datastructures import File, Redirect, State, Stream
 
 from .app import Starlite
-from .config import CORSConfig, OpenAPIConfig
+from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig
 from .controller import Controller
 from .dto import DTOFactory
 from .enums import (
@@ -88,6 +88,7 @@ __all__ = [
     "StarLiteException",
     "Starlite",
     "State",
+    "StaticFilesConfig",
     "Stream",
     "TestClient",
     "WebSocket",
