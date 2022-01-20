@@ -1,5 +1,5 @@
 # flake8: noqa
-from starlite.datastructures import State
+from starlite.datastructures import File, Redirect, State, Stream
 
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig
@@ -45,7 +45,7 @@ from .request import Request, WebSocket
 from .response import Response
 from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request
-from .types import File, MiddlewareProtocol, Partial, Redirect, ResponseHeader, Stream
+from .types import MiddlewareProtocol, Partial, ResponseHeader
 
 __all__ = [
     "AbstractAuthenticationMiddleware",

@@ -31,6 +31,7 @@ from starlite import (
     MediaType,
     Redirect,
     Response,
+    Stream,
     WebSocket,
     delete,
     get,
@@ -42,7 +43,6 @@ from starlite import (
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.testing import create_test_client, create_test_request
-from starlite.types import Stream
 from starlite.utils import create_function_signature_model
 from tests import Person, PersonFactory
 

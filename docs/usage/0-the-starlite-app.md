@@ -53,7 +53,8 @@ You can additionally pass the following kwargs to the Starlite constructor:
 
 ## Startup and Shutdown
 
-You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs.
+You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs. These callables
+will be called when the ASGI server (uvicorn, dafne etc.) emits the respective "startup" or "shutdown" event.
 
 A classic use case for this is database connectivity. Often you will want to establish the connection once - on
 application startup, and then close the connection on shutdown. For example, lets assume we create a connection to a
@@ -126,7 +127,6 @@ async def close_postgres_connection(state: State) -> None:
 
 The advantage of following this pattern is that the application `state` can be injected into dependencies and
 route handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
-
 
 ## Logging
 

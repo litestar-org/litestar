@@ -161,7 +161,8 @@ In Starlite, a redirect response looks like this:
 
 ```python
 from starlette.status import HTTP_307_TEMPORARY_REDIRECT
-from starlite import get, Redirect
+from starlite import get
+from starlite.datastructures import Redirect
 
 
 @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -184,7 +185,8 @@ File responses send a file:
 
 ```python
 from pathlib import Path
-from starlite import get, File
+from starlite import get
+from starlite.datastructures import File
 
 
 @get(path="/file-download")
@@ -212,7 +214,8 @@ For example:
 
 ```python
 from pathlib import Path
-from starlite import get, File
+from starlite import get
+from starlite.datastructures import File
 
 
 @get(path="/file-download", media_type="application/pdf")
@@ -229,7 +232,8 @@ To return a streaming response use the `Stream` class:
 
 ```python
 from asyncio import sleep
-from starlite import get, Stream
+from starlite import get
+from starlite.datastructures import Stream
 from datetime import datetime
 from orjson import dumps
 

@@ -7,7 +7,7 @@ from starlette.status import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 
-from starlite import File, MediaType, Redirect, Starlite, get
+from starlite import File, MediaType, Redirect, Starlite, Stream, get
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -19,7 +19,7 @@ from starlite.openapi.responses import (
     create_responses,
     create_success_response,
 )
-from starlite.types import ResponseHeader, Stream
+from starlite.types import ResponseHeader
 from tests.openapi.utils import PersonController, PetController, PetException
 
 

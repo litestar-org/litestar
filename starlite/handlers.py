@@ -26,6 +26,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
+from starlite.datastructures import File, Redirect, Stream
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -39,12 +40,9 @@ from starlite.response import Response
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
-    File,
     Guard,
     Method,
-    Redirect,
     ResponseHeader,
-    Stream,
 )
 from starlite.utils import SignatureModel, normalize_path
 

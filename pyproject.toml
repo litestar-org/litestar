@@ -73,6 +73,7 @@ disable = [
     "missing-module-docstring",
     "super-init-not-called",
     "too-few-public-methods",
+    "duplicate-code",
 ]
 enable = "useless-suppression"
 
