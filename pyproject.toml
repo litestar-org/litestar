@@ -99,6 +99,5 @@ good-names = "_,i,e,fn"
 [tool.coverage.run]
 omit = ["*/tests/*"]
 
-
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

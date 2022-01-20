@@ -236,23 +236,25 @@ class Router:
         """
         handlers_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
         if isinstance(value, BaseRouteHandler):
-            if isinstance(value, HTTPRouteHandler):
-                handlers_map[value.path or ""] = {http_method: value for http_method in value.http_methods}
-            elif isinstance(value, WebsocketRouteHandler):
-                handlers_map[value.path or ""] = value
+            for path in value.paths:
+                if isinstance(value, HTTPRouteHandler):
+                    handlers_map[path] = {http_method: value for http_method in value.http_methods}
+                elif isinstance(value, WebsocketRouteHandler):
+                    handlers_map[path] = value
         elif isinstance(value, Router):
             handlers_map = value.route_handler_method_map
         else:
             # we are dealing with a controller
             for route_handler in value.get_route_handlers():
-                path = join_paths([value.path, route_handler.path]) if route_handler.path else value.path
-                if isinstance(route_handler, HTTPRouteHandler):
-                    if not isinstance(handlers_map.get(path), dict):
-                        handlers_map[path] = {}
-                    for http_method in route_handler.http_methods:
-                        handlers_map[path][http_method] = route_handler  # type: ignore
-                else:
-                    handlers_map[path] = cast(WebsocketRouteHandler, route_handler)
+                for handler_path in route_handler.paths:
+                    path = join_paths([value.path, handler_path]) if handler_path else value.path
+                    if isinstance(route_handler, HTTPRouteHandler):
+                        if not isinstance(handlers_map.get(path), dict):
+                            handlers_map[path] = {}
+                        for http_method in route_handler.http_methods:
+                            handlers_map[path][http_method] = route_handler  # type: ignore
+                    else:
+                        handlers_map[path] = cast(WebsocketRouteHandler, route_handler)
         return handlers_map.items()
 
     def validate_registration_value(

@@ -12,7 +12,7 @@ from openapi_schema_pydantic import (
     Server,
     Tag,
 )
-from pydantic import AnyUrl, BaseModel
+from pydantic import AnyUrl, BaseModel, DirectoryPath
 from typing_extensions import Type
 
 from starlite.openapi.controller import OpenAPIController
@@ -65,3 +65,9 @@ class OpenAPIConfig(BaseModel):
                 termsOfService=self.terms_of_service,
             ),
         )
+
+
+class StaticFilesConfig(BaseModel):
+    path: str
+    directories: List[DirectoryPath]
+    html_mode: bool = False

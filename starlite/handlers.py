@@ -66,7 +66,7 @@ def get_signature_model(value: Any) -> Type[SignatureModel]:
 
 class BaseRouteHandler:
     __slots__ = (
-        "path",
+        "paths",
         "dependencies",
         "guards",
         "opt",
@@ -80,12 +80,14 @@ class BaseRouteHandler:
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        self.path = normalize_path(path or "/")
+        self.paths: List[str] = (
+            [normalize_path(p) for p in path] if path and isinstance(path, list) else [normalize_path(path or "/")]  # type: ignore
+        )
         self.dependencies = dependencies
         self.guards = guards
         self.opt: Dict[str, Any] = opt or {}
@@ -151,7 +153,7 @@ class BaseRouteHandler:
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        if not self.fn:
+        if not self.fn:  # pragma: no cover
             raise ImproperlyConfiguredException("cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
@@ -241,7 +243,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
@@ -275,9 +277,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if status_code:
             self.status_code = status_code
         elif isinstance(self.http_method, list):
-            raise ImproperlyConfiguredException(
-                "When defining multiple methods for a given path, a status_code is required"
-            )
+            self.status_code = HTTP_200_OK
         elif self.http_method == HttpMethod.POST:
             self.status_code = HTTP_201_CREATED
         elif self.http_method == HttpMethod.DELETE:
@@ -487,7 +487,7 @@ class get(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -537,7 +537,7 @@ class post(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -587,7 +587,7 @@ class put(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -637,7 +637,7 @@ class patch(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -687,7 +687,7 @@ class delete(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
