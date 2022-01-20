@@ -35,7 +35,7 @@ from starlite.exceptions import (
 )
 from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
-from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
+from starlite.request import Request, WebSocket, resolve_signature_kwargs
 from starlite.response import Response
 from starlite.types import (
     AfterRequestHandler,
@@ -45,6 +45,7 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import SignatureModel, normalize_path
+from starlite.utils.signature import get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -52,16 +53,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class _empty:
     """Placeholder"""
-
-
-def get_signature_model(value: Any) -> Type[SignatureModel]:
-    """
-    Helper function to retrieve and validate the signature model from a provider or handler
-    """
-    try:
-        return cast(Type[SignatureModel], getattr(value, "signature_model"))
-    except AttributeError as e:  # pragma: no cover
-        raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
 class BaseRouteHandler:
@@ -171,27 +162,13 @@ class BaseRouteHandler:
         """
         signature_model = get_signature_model(self)
         try:
-            # dependency injection
-            dependencies: Dict[str, Any] = {}
-            for key, provider in self.resolve_dependencies().items():
-                provider_signature_model = get_signature_model(provider)
-                provider_kwargs = await get_model_kwargs_from_connection(
-                    connection=connection, fields=provider_signature_model.__fields__
-                )
-                value = provider(**provider_signature_model(**provider_kwargs).dict())
-                if isawaitable(value):
-                    value = await value
-                dependencies[key] = value
-            model_kwargs = await get_model_kwargs_from_connection(
-                connection=connection,
-                fields={k: v for k, v in signature_model.__fields__.items() if k not in dependencies},
+            resolved_dependencies = self.resolve_dependencies()
+            model_kwargs = await resolve_signature_kwargs(
+                signature_model=signature_model, connection=connection, providers=resolved_dependencies
             )
-            # we return the model's attributes as a dict in order to preserve any nested models
-            fields = list(signature_model.__fields__.keys())
-
             output: Dict[str, Any] = {}
-            modelled_signature = signature_model(**model_kwargs, **dependencies)
-            for key in fields:
+            modelled_signature = signature_model(**model_kwargs)  # pylint: disable=not-callable
+            for key in signature_model.__fields__:
                 value = modelled_signature.__getattribute__(key)
                 plugin_mapping: Optional[PluginMapping] = signature_model.field_plugin_mappings.get(key)
                 if plugin_mapping:

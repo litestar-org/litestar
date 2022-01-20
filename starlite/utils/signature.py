@@ -1,5 +1,5 @@
 from inspect import Signature, getfullargspec
-from typing import Any, ClassVar, Dict, List, Type
+from typing import Any, ClassVar, Dict, List, Type, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import Undefined
@@ -63,3 +63,13 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
         return model
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
+
+
+def get_signature_model(value: Any) -> Type[SignatureModel]:
+    """
+    Helper function to retrieve and validate the signature model from a provider or handler
+    """
+    try:
+        return cast(Type[SignatureModel], getattr(value, "signature_model"))
+    except AttributeError as e:  # pragma: no cover
+        raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
