@@ -209,8 +209,7 @@ async def resolve_signature_kwargs(
     signature_model: Type[SignatureModel], connection: HTTPConnection, providers: Dict[str, "Provide"]
 ) -> Dict[str, Any]:
     """
-    Given a signature model, connection and providers, recursively resolve the signature kwargs into a dictionary of values
-    This function will recurisevly call dependencies as required.
+    Resolve the kwargs of a given signature model, and recursively resolve all dependencies.
     """
     fields = signature_model.__fields__
     dependencies: Dict[str, Any] = {}

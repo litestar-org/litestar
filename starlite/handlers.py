@@ -118,12 +118,11 @@ class BaseRouteHandler:
         if not self.signature_model:  # pragma: no cover
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is _empty:
-            field_names = list(self.signature_model.__fields__.keys())
             dependencies: Dict[str, Provide] = {}
             for layer in self.ownership_layers():
                 for key, value in (layer.dependencies or {}).items():
-                    self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
-                    if key in field_names and key not in dependencies:
+                    if key not in dependencies:
+                        self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
                         dependencies[key] = value
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)

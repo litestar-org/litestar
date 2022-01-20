@@ -7,6 +7,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import (
     Controller,
     ImproperlyConfiguredException,
+    MediaType,
     Provide,
     Starlite,
     create_test_client,
@@ -131,3 +132,32 @@ def test_dependency_validation():
                 "third": Provide(local_method_first_dependency),
             },
         )
+
+
+def test_recursive_dependencies():
+    def top_dependency(query_param: int) -> int:
+        return query_param
+
+    def mid_level_dependency() -> int:
+        return 5
+
+    def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+        return path_param + mid_level + top_level
+
+    class MyController(Controller):
+        path = test_path
+        dependencies = {"mid_level": Provide(mid_level_dependency)}
+
+        @get(
+            path="/{path_param:int}",
+            dependencies={
+                "summed": Provide(local_dependency),
+            },
+            media_type=MediaType.TEXT,
+        )
+        def test_function(self, summed: int) -> str:
+            return str(summed)
+
+    with create_test_client(MyController, dependencies={"top_level": Provide(top_dependency)}) as client:
+        response = client.get(f"{test_path}/5?query_param=5")
+        assert response.text == "15"
