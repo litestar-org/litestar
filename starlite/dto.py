@@ -34,7 +34,20 @@ class DTO(GenericModel, Generic[T]):
     dto_field_mapping: ClassVar[Dict[str, str]]
     dto_source_plugin: ClassVar[Optional[PluginProtocol[T]]] = None  # type: ignore
 
-    def to_source_model(self) -> T:
+    @classmethod
+    def from_model_instance(cls, model_instance: T) -> "DTO[T]":
+        """
+        Given an instance of the source model, create an instance of the given DTO subclass
+        """
+        if cls.dto_source_plugin is not None:
+            values = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+        elif hasattr(model_instance, "asdict"):
+            values = model_instance.asdict()  # type: ignore
+        else:
+            values = cast(BaseModel, model_instance).dict()
+        return cls(**values)
+
+    def to_model_instance(self) -> T:
         """
         Convert the DTO instance into an instance of the original class from which the DTO was created
         """

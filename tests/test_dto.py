@@ -132,7 +132,7 @@ def test_conversion_to_original_class():
 
     dto_instance = CompanyDTOFactory.build()
 
-    company_instance = dto_instance.to_source_model()
+    company_instance = dto_instance.to_model_instance()
 
     assert dto_instance.value
     assert company_instance.worth == dto_instance.value
