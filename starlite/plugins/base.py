@@ -32,7 +32,7 @@ class PluginProtocol(Protocol[T]):  # pragma: no cover
 
     def to_dict(self, model_instance: T) -> Dict[str, Any]:
         """
-        Given an instance of a model supported by the plugin, return a dictionary of serilizable values.
+        Given an instance of a model supported by the plugin, return a dictionary of serializable values.
         """
         ...
 

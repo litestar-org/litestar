@@ -140,4 +140,11 @@ def to_dict(self, model_instance: T) -> Dict[str, Any]:
     Given an instance of a model supported by the plugin, return a dictionary of serializable values.
     """
     ...
+
+
+def from_dict(self, model_class: Type[T], **kwargs: Any) -> T:
+    """
+    Given a class supported by this plugin and a dict of values, create an instance of the class
+    """
+    ...
 ```
