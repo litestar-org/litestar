@@ -1,9 +1,10 @@
 from dataclasses import is_dataclass
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union, cast
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
-from typing_extensions import Type
+from pydantic.generics import GenericModel
+from typing_extensions import ClassVar, Type
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
@@ -22,6 +23,31 @@ def get_field_type(model_field: ModelField) -> Any:
     return List[inner_type]  # type: ignore
 
 
+T = TypeVar("T")
+
+
+class DTO(GenericModel, Generic[T]):
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+
+    dto_source_model: ClassVar[Type[T]]  # type: ignore
+    dto_field_mapping: ClassVar[Dict[str, str]]
+    dto_source_plugin: ClassVar[Optional[PluginProtocol[T]]] = None  # type: ignore
+
+    def to_source_model(self) -> T:
+        """
+        Convert the DTO instance into an instance of the original class from which the DTO was created
+        """
+        values = self.dict()
+        for original_key, dto_key in self.dto_field_mapping.items():
+            value = values.pop(dto_key)
+            values[original_key] = value
+        if self.dto_source_plugin is not None:
+            return self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values)
+        # we are dealing with a pydantic model or dataclass
+        return self.dto_source_model(**values)
+
+
 class DTOFactory:
     def __init__(self, plugins: Optional[List[PluginProtocol]] = None):
         self.plugins = plugins or []
@@ -29,10 +55,11 @@ class DTOFactory:
     def __call__(
         self,
         name: str,
-        source: Any,
+        source: Type[T],
         exclude: Optional[List[str]] = None,
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
-    ) -> Any:
+        field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
+    ) -> Type[DTO[Type[T]]]:
         """
         Given a supported model class - either pydantic, dataclass or a class supported via plugins,
         create a DTO pydantic model class.
@@ -68,7 +95,8 @@ class DTOFactory:
         fields: Dict[str, ModelField]
         exclude = exclude or []
         field_mapping = field_mapping or {}
-        field_definitions: Dict[str, Tuple[Any, Any]] = {}
+        field_definitions = field_definitions or {}
+        plugin = None
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
@@ -97,4 +125,12 @@ class DTOFactory:
                     field_definitions[field_name] = (field_type, ...)
                 else:
                     field_definitions[field_name] = (field_type, None)
-        return cast(Type[BaseModel], create_model(name, **field_definitions))  # type: ignore
+        dto = cast(Type[DTO], create_model(name, __base__=DTO, **field_definitions))  # type: ignore
+        dto.dto_source_model = source
+        dto.dto_source_plugin = plugin
+        dto.dto_field_mapping = {}
+        for key, value in field_mapping.items():
+            if not isinstance(value, str):
+                value = value[0]
+            dto.dto_field_mapping[value] = key
+        return dto

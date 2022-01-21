@@ -36,6 +36,12 @@ class PluginProtocol(Protocol[T]):  # pragma: no cover
         """
         ...
 
+    def from_dict(self, model_class: Type[T], **kwargs: Any) -> T:
+        """
+        Given a class supported by this plugin and a dict of values, create an instance of the class
+        """
+        ...
+
 
 def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[PluginProtocol]:
     """Helper function to returns a plugin to handle a given value, if any plugin supports it"""
