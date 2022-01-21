@@ -39,7 +39,7 @@ class DTO(GenericModel, Generic[T]):
         Convert the DTO instance into an instance of the original class from which the DTO was created
         """
         values = self.dict()
-        for original_key, dto_key in self.dto_field_mapping.items():
+        for dto_key, original_key in self.dto_field_mapping.items():
             value = values.pop(dto_key)
             values[original_key] = value
         if self.dto_source_plugin is not None:
@@ -59,7 +59,7 @@ class DTOFactory:
         exclude: Optional[List[str]] = None,
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
-    ) -> Type[DTO[Type[T]]]:
+    ) -> Type[DTO[T]]:
         """
         Given a supported model class - either pydantic, dataclass or a class supported via plugins,
         create a DTO pydantic model class.

@@ -17,7 +17,7 @@ from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Person
 from tests import Pet as PydanticPet
 from tests import Species, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet, User
+from tests.plugins.sql_alchemy_plugin import Company, Pet, User
 
 
 @pytest.mark.parametrize(
@@ -96,15 +96,15 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
 
 
 def test_dto_openapi_generation():
-    UserDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+    SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
-    UserCreateDTO = UserDTOFactory(
-        "UserCreate",
+    UserCreateDTO = SQLAlchemyDTOFactory(
+        "UserCreateDTO",
         User,
         field_mapping={"hashed_password": ("password", str)},
     )
 
-    UserReadDTO = UserDTOFactory("UserRead", User, exclude=["hashed_password"])
+    UserReadDTO = SQLAlchemyDTOFactory("UserRead", User, exclude=["hashed_password"])
 
     @get(path="/user")
     def get_user() -> UserReadDTO:
@@ -116,3 +116,23 @@ def test_dto_openapi_generation():
 
     app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
     assert app.openapi_schema
+
+
+def test_conversion_to_original_class():
+    SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+
+    CompanyDTO = SQLAlchemyDTOFactory(
+        "CompanyDTO",
+        Company,
+        field_mapping={"worth": "value"},
+    )
+
+    class CompanyDTOFactory(ModelFactory[CompanyDTO]):
+        __model__ = CompanyDTO
+
+    dto_instance = CompanyDTOFactory.build()
+
+    company_instance = dto_instance.to_source_model()
+
+    assert dto_instance.value
+    assert company_instance.worth == dto_instance.value
