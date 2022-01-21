@@ -16,7 +16,7 @@ from starlite.exceptions import (
 from starlite.plugins.base import PluginProtocol
 
 try:
-    from sqlalchemy import Table, inspect
+    from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type
     from sqlalchemy.dialects import (
         firebird,
@@ -33,7 +33,7 @@ except ImportError as exc:  # pragma: no cover
     raise MissingDependencyException("sqlalchemy is not installed") from exc
 
 
-class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
+class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def __init__(self) -> None:
         # a map object that maps SQLAlchemy entity qualnames to pydantic BaseModel subclasses
         self.model_namespace_map: Dict[str, Type[BaseModel]] = {}
@@ -304,7 +304,9 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         model.update_forward_refs(**self.model_namespace_map)
         return model
 
-    def from_pydantic_model_instance(self, model_class: DeclarativeMeta, pydantic_model_instance: BaseModel) -> Any:
+    def from_pydantic_model_instance(
+        self, model_class: Type[DeclarativeMeta], pydantic_model_instance: BaseModel
+    ) -> Any:
         """
         Create an instance of a given model_class using the values stored in the given pydantic_model_instance
         """
@@ -322,3 +324,9 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
         for field in pydantic_model.__fields__:
             kwargs[field] = getattr(model_instance, field)
         return pydantic_model(**kwargs).dict()
+
+    def from_dict(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> DeclarativeMeta:
+        """
+        Given a dictionary of kwargs, return an instance of the given model_class
+        """
+        return model_class(**kwargs)

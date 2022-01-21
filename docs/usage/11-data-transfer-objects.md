@@ -12,9 +12,10 @@ pydantic model.
 
 !!! important
     Although the value generated is a pydantic factory, because it is being generated programmatically, it's
-    currently impossible to extend editor auto-complete for the DTO properties - it will be typed as `Any`.
+    currently impossible to extend editor auto-complete for the DTO properties - it will be typed as `DTO[T]`,
+    with T being a generic argument representing the original model used to create the DTO.
 
-For example, given a pydantic model
+For example, given a pydantic model:
 
 ```python
 from pydantic import BaseModel
@@ -26,11 +27,9 @@ class MyClass(BaseModel):
     second: int
 
 
-MyClassDTOFactory = DTOFactory()
+dto_factory = DTOFactory()
 
-MyClassDTO = MyClassDTOFactory(
-    "MyClassDTO", MyClass, exclude=["first"], field_mapping={"second": ("third", float)}
-)
+MyClassDTO = dto_factory("MyClassDTO", MyClass, exclude=["first"])
 ```
 
 `MyClassDTO` is now equal to this:
@@ -40,10 +39,10 @@ from pydantic import BaseModel
 
 
 class MyClassDTO(BaseModel):
-    third: float
+    second: int
 ```
 
-It can be used as a regular pydantic model, e.g.:
+A DTO is a normal pydantic model class, and you can use it in route handler kwarg and return value typings, e.g.:
 
 ```python
 from pydantic import BaseModel
@@ -90,3 +89,15 @@ class Company(Base):
 
 CompanyDTO = SQLAlchemyDTOFactory("CompanyDTO", Company, exclude=["id"])
 ```
+
+## Remapping Fields
+
+WIP
+
+## Custom Fields
+
+WIP
+
+## Special DTO Methods
+
+WIP

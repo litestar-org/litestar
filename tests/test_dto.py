@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Type, cast
 
 import pytest
 from pydantic import BaseModel
@@ -21,19 +21,24 @@ from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
 @pytest.mark.parametrize(
-    "model, exclude, field_mapping, plugins",
+    "model, exclude, field_mapping, field_definitions, plugins",
     [
-        [Person, ["id"], {"complex": "ultra"}, []],
-        [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
-        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
+        [Person, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
+        [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
+        [Pet, ["age"], {"species": "kind"}, {"special": (str, ...)}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_dto_factory(model: Any, exclude: list, field_mapping: dict, plugins: list):
-    dto = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
+def test_dto_factory(model: Any, exclude: list, field_mapping: dict, field_definitions: dict, plugins: list):
+    dto = DTOFactory(plugins=plugins)(
+        "MyDTO", model, exclude=exclude, field_mapping=field_mapping, field_definitions=field_definitions
+    )
     assert issubclass(dto, BaseModel)
     assert dto.__name__ == "MyDTO"
     assert not any(excluded_key in dto.__fields__ for excluded_key in exclude)
     assert all(remapped_key in dto.__fields__ for remapped_key in field_mapping.values())
+    special = dto.__fields__["special"]
+    assert not special.allow_none
+    assert special.type_ is str
 
 
 def test_dto_factory_type_remap():
@@ -96,15 +101,15 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
 
 
 def test_dto_openapi_generation():
-    UserDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+    SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
-    UserCreateDTO = UserDTOFactory(
-        "UserCreate",
+    UserCreateDTO = SQLAlchemyDTOFactory(
+        "UserCreateDTO",
         User,
         field_mapping={"hashed_password": ("password", str)},
     )
 
-    UserReadDTO = UserDTOFactory("UserRead", User, exclude=["hashed_password"])
+    UserReadDTO = SQLAlchemyDTOFactory("UserRead", User, exclude=["hashed_password"])
 
     @get(path="/user")
     def get_user() -> UserReadDTO:
@@ -116,3 +121,66 @@ def test_dto_openapi_generation():
 
     app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
     assert app.openapi_schema
+
+
+@pytest.mark.parametrize(
+    "model, exclude, field_mapping, plugins",
+    [
+        [Person, [], {"complex": "ultra"}, []],
+        [VanillaDataClassPerson, [], {"complex": "ultra"}, []],
+        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
+    ],
+)
+def test_conversion_to_model_instance(model, exclude, field_mapping, plugins):
+    DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
+
+    class DTOModelFactory(ModelFactory[DTO]):
+        __model__ = DTO
+        __allow_none_optionals__ = False
+
+    dto_instance = DTOModelFactory.build()
+    model_instance = dto_instance.to_model_instance()
+
+    for key in dto_instance.__fields__:
+        if key not in DTO.dto_field_mapping:
+            assert model_instance.__getattribute__(key) == dto_instance.__getattribute__(key)
+        else:
+            original_key = DTO.dto_field_mapping[key]
+            assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
+
+
+@pytest.mark.parametrize(
+    "model, exclude, field_mapping, plugins",
+    [
+        [Person, ["id"], {"complex": "ultra"}, []],
+        [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
+        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
+    ],
+)
+def test_conversion_from_model_instance(model, exclude, field_mapping, plugins):
+    DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
+
+    if issubclass(model, (Person, VanillaDataClassPerson)):
+        model_instance = model(
+            first_name="moishe",
+            last_name="zuchmir",
+            id=1,
+            optional="some-value",
+            complex={"key": [{"key": "value"}]},
+            pets=None,
+        )
+    else:
+        model_instance = cast(Type[Pet], model)(
+            id=1,
+            species=Species.MONKEY,
+            name="Mike",
+            age=3,
+            owner_id=1,
+        )
+    dto_instance = DTO.from_model_instance(model_instance=model_instance)
+    for key in dto_instance.__fields__:
+        if key not in DTO.dto_field_mapping:
+            assert model_instance.__getattribute__(key) == dto_instance.__getattribute__(key)
+        else:
+            original_key = DTO.dto_field_mapping[key]
+            assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
