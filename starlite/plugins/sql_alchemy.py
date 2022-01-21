@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from inspect import isclass
 from ipaddress import IPv4Network, IPv6Network
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Json, conint, constr, create_model
@@ -284,15 +284,19 @@ class SQLAlchemyPlugin(PluginProtocol[Union[DeclarativeMeta, Table]]):
                 # to avoid duplication of pydantic models, we are using forward refs
                 # see: https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
                 for name, relationship_property in mapper.relationships.items():
-                    related_entity_class = relationship_property.mapper.class_
-                    related_model_name = related_entity_class.__qualname__
-                    if relationship_property.uselist:
-                        field_definitions[name] = (List[related_model_name], ...)  # type: ignore
+                    if not relationship_property.back_populates and not relationship_property.backref:
+                        related_entity_class = relationship_property.mapper.class_
+                        related_model_name = related_entity_class.__qualname__
+                        if relationship_property.uselist:
+                            field_definitions[name] = (Optional[List[related_model_name]], None)  # type: ignore
+                        else:
+                            field_definitions[name] = (Optional[related_model_name], None)
+                        # if the names are not identical, these are different SQLAlchemy entities
+                        if related_model_name != model_name and related_model_name not in self.model_namespace_map:
+                            related_entity_classes.append(related_entity_class)
+                    # we are treating back-references as any to avoid infinite recursion
                     else:
-                        field_definitions[name] = (related_model_name, ...)
-                    # if the names are not identical, these are different SQLAlchemy entities
-                    if related_model_name != model_name and related_model_name not in self.model_namespace_map:
-                        related_entity_classes.append(related_entity_class)
+                        field_definitions[name] = (Any, None)
             self.model_namespace_map[model_name] = create_model(model_name, **field_definitions)
             for related_entity_class in related_entity_classes:
                 self.to_pydantic_model_class(model_class=related_entity_class)
