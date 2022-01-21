@@ -70,8 +70,10 @@
 - changed RouteHandlers from being pydantic models to being custom classes, allowing for optimization using `_slots_`
 - changed BaseRoute to not inherit from Starlette, allowing for optimization using `_slots_`
 
+
 [0.6.0]
 - added support for multiple paths per route handler
 - added support for static files
 - updated lifecycle support to allow for application state injection
 - updated route handlers and dependencies to allow for application state injection
+- updated dependency injection to allow for dependency injection into dependencies
