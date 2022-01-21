@@ -326,4 +326,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return pydantic_model(**kwargs).dict()
 
     def from_dict(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> DeclarativeMeta:
+        """
+        Given a dictionary of kwargs, return an instance of the given model_class
+        """
         return model_class(**kwargs)

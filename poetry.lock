@@ -471,7 +471,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "1.2.1"
+version = "1.2.3"
 description = "Mock data generation for pydantic based models"
 category = "main"
 optional = false
@@ -1211,8 +1211,8 @@ pydantic = [
     {file = "pydantic-1.9.0.tar.gz", hash = "sha256:742645059757a56ecd886faf4ed2441b9c0cd406079c2b4bee51bcc3fbcd510a"},
 ]
 pydantic-factories = [
-    {file = "pydantic-factories-1.2.1.tar.gz", hash = "sha256:12eed8a664d1d888f7f2b7fd86a384d22dc83c0706e30f62b022a094cdc18d46"},
-    {file = "pydantic_factories-1.2.1-py3-none-any.whl", hash = "sha256:7d360ce8f333ab302e9e0d3955cf6165e965f48054d59fdc70b2406cbf9b4222"},
+    {file = "pydantic-factories-1.2.3.tar.gz", hash = "sha256:a3a61c3044b498bad67999bafc7f488b37259521616b844cd7e9789697dc1b68"},
+    {file = "pydantic_factories-1.2.3-py3-none-any.whl", hash = "sha256:8fdca27b9f549e4f3647632b35d322fc483d67527f823a3f1960746969d8e67d"},
 ]
 pygments = [
     {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65"},

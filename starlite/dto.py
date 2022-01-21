@@ -1,4 +1,4 @@
-from dataclasses import is_dataclass
+from dataclasses import asdict, is_dataclass
 from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
@@ -39,12 +39,15 @@ class DTO(GenericModel, Generic[T]):
         """
         Given an instance of the source model, create an instance of the given DTO subclass
         """
-        if cls.dto_source_plugin is not None:
+        if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
             values = cls.dto_source_plugin.to_dict(model_instance=model_instance)
-        elif hasattr(model_instance, "asdict"):
-            values = model_instance.asdict()  # type: ignore
+        elif isinstance(model_instance, BaseModel):
+            values = model_instance.dict()
         else:
-            values = cast(BaseModel, model_instance).dict()
+            values = asdict(model_instance)
+        for dto_key, original_key in cls.dto_field_mapping.items():
+            value = values.pop(original_key)
+            values[dto_key] = value
         return cls(**values)
 
     def to_model_instance(self) -> T:
@@ -55,7 +58,9 @@ class DTO(GenericModel, Generic[T]):
         for dto_key, original_key in self.dto_field_mapping.items():
             value = values.pop(dto_key)
             values[original_key] = value
-        if self.dto_source_plugin is not None:
+        if self.dto_source_plugin is not None and self.dto_source_plugin.is_plugin_supported_type(
+            self.dto_source_model
+        ):
             return self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values)
         # we are dealing with a pydantic model or dataclass
         return self.dto_source_model(**values)
