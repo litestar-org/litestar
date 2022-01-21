@@ -26,6 +26,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
+from starlite.datastructures import File, Redirect, Stream
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -34,19 +35,17 @@ from starlite.exceptions import (
 )
 from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
-from starlite.request import Request, WebSocket, get_model_kwargs_from_connection
+from starlite.request import Request, WebSocket, resolve_signature_kwargs
 from starlite.response import Response
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
-    File,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     Guard,
     Method,
-    Redirect,
     ResponseHeader,
-    Stream,
 )
 from starlite.utils import SignatureModel, normalize_path
+from starlite.utils.signature import get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -56,19 +55,9 @@ class _empty:
     """Placeholder"""
 
 
-def get_signature_model(value: Any) -> Type[SignatureModel]:
-    """
-    Helper function to retrieve and validate the signature model from a provider or handler
-    """
-    try:
-        return cast(Type[SignatureModel], getattr(value, "signature_model"))
-    except AttributeError as e:  # pragma: no cover
-        raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
-
-
 class BaseRouteHandler:
     __slots__ = (
-        "path",
+        "paths",
         "dependencies",
         "guards",
         "opt",
@@ -82,12 +71,14 @@ class BaseRouteHandler:
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        self.path = normalize_path(path or "/")
+        self.paths: List[str] = (
+            [normalize_path(p) for p in path] if path and isinstance(path, list) else [normalize_path(path or "/")]  # type: ignore
+        )
         self.dependencies = dependencies
         self.guards = guards
         self.opt: Dict[str, Any] = opt or {}
@@ -124,15 +115,14 @@ class BaseRouteHandler:
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
         """
-        if not self.signature_model:
+        if not self.signature_model:  # pragma: no cover
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is _empty:
-            field_names = list(self.signature_model.__fields__.keys())
             dependencies: Dict[str, Provide] = {}
             for layer in self.ownership_layers():
                 for key, value in (layer.dependencies or {}).items():
-                    self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
-                    if key in field_names and key not in dependencies:
+                    if key not in dependencies:
+                        self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
                         dependencies[key] = value
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)
@@ -153,7 +143,7 @@ class BaseRouteHandler:
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        if not self.fn:
+        if not self.fn:  # pragma: no cover
             raise ImproperlyConfiguredException("cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
@@ -171,27 +161,13 @@ class BaseRouteHandler:
         """
         signature_model = get_signature_model(self)
         try:
-            # dependency injection
-            dependencies: Dict[str, Any] = {}
-            for key, provider in self.resolve_dependencies().items():
-                provider_signature_model = get_signature_model(provider)
-                provider_kwargs = await get_model_kwargs_from_connection(
-                    connection=connection, fields=provider_signature_model.__fields__
-                )
-                value = provider(**provider_signature_model(**provider_kwargs).dict())
-                if isawaitable(value):
-                    value = await value
-                dependencies[key] = value
-            model_kwargs = await get_model_kwargs_from_connection(
-                connection=connection,
-                fields={k: v for k, v in signature_model.__fields__.items() if k not in dependencies},
+            resolved_dependencies = self.resolve_dependencies()
+            model_kwargs = await resolve_signature_kwargs(
+                signature_model=signature_model, connection=connection, providers=resolved_dependencies
             )
-            # we return the model's attributes as a dict in order to preserve any nested models
-            fields = list(signature_model.__fields__.keys())
-
             output: Dict[str, Any] = {}
-            modelled_signature = signature_model(**model_kwargs, **dependencies)
-            for key in fields:
+            modelled_signature = signature_model(**model_kwargs)  # pylint: disable=not-callable
+            for key in signature_model.__fields__:
                 value = modelled_signature.__getattribute__(key)
                 plugin_mapping: Optional[PluginMapping] = signature_model.field_plugin_mappings.get(key)
                 if plugin_mapping:
@@ -243,13 +219,13 @@ class HTTPRouteHandler(BaseRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -277,9 +253,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if status_code:
             self.status_code = status_code
         elif isinstance(self.http_method, list):
-            raise ImproperlyConfiguredException(
-                "When defining multiple methods for a given path, a status_code is required"
-            )
+            self.status_code = HTTP_200_OK
         elif self.http_method == HttpMethod.POST:
             self.status_code = HTTP_201_CREATED
         elif self.http_method == HttpMethod.DELETE:
@@ -306,8 +280,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         # memoized attributes, defaulted to _empty
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
         self.resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
-        self.resolved_after_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
-        self.resolved_before_request: Union[Optional[BEFORE_REQUEST_HANDLER], Type[_empty]] = _empty
+        self.resolved_after_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
+        self.resolved_before_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -348,7 +322,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.resolved_headers = headers
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
-    def resolve_before_request(self) -> Optional[BEFORE_REQUEST_HANDLER]:
+    def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
         """
         Resolves the before_handler handler by starting from the handler and moving up.
 
@@ -367,7 +341,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
 
-    def resolve_after_request(self) -> Optional[AFTER_REQUEST_HANDLER]:
+    def resolve_after_request(self) -> Optional[AfterRequestHandler]:
         """
         Resolves the after_request handler by starting from the handler and moving up.
 
@@ -384,7 +358,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             elif ismethod(self.resolved_after_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
-        return cast(Optional[AFTER_REQUEST_HANDLER], self.resolved_after_request)
+        return cast(Optional[AfterRequestHandler], self.resolved_after_request)
 
     @property
     def http_methods(self) -> List[HttpMethod]:
@@ -489,12 +463,12 @@ class get(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -539,12 +513,12 @@ class post(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -589,12 +563,12 @@ class put(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -639,12 +613,12 @@ class patch(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -689,12 +663,12 @@ class delete(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[str] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,

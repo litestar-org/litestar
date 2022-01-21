@@ -125,16 +125,3 @@ def test_register_router_on_itself():
 
     with pytest.raises(ImproperlyConfiguredException):
         router.register(router)
-
-
-def test_deprecates_properties_correctly():
-    router = Router(path="/first", route_handlers=[])
-
-    def my_fn() -> None:
-        pass
-
-    with pytest.raises(AttributeError):
-        router.route(my_fn)
-
-    with pytest.raises(AttributeError):
-        router.add_route(my_fn)

@@ -1,5 +1,6 @@
 from functools import partial
 
+import pytest
 from pydantic.fields import Undefined
 
 from starlite import Provide
@@ -9,20 +10,23 @@ def test_fn():
     return dict()
 
 
-def test_provide_default():
+@pytest.mark.asyncio
+async def test_provide_default():
     provider = Provide(dependency=test_fn)
-    assert isinstance(provider(), dict)
+    value = await provider()
+    assert isinstance(value, dict)
 
 
-def test_provide_cached():
+@pytest.mark.asyncio
+async def test_provide_cached():
     provider = Provide(dependency=test_fn, use_cache=True)
     assert provider.value is Undefined
-    value = provider()
+    value = await provider()
     assert isinstance(value, dict)
     assert provider.value == value
-    second_value = provider()
+    second_value = await provider()
     assert value == second_value
-    third_value = provider()
+    third_value = await provider()
     assert value == third_value
 
 

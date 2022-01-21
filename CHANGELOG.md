@@ -69,3 +69,20 @@
 - updated base path handling in controllers @vincentsarago
 - changed RouteHandlers from being pydantic models to being custom classes, allowing for optimization using `_slots_`
 - changed BaseRoute to not inherit from Starlette, allowing for optimization using `_slots_`
+
+
+[0.6.0]
+- added support for multiple paths per route handler
+- added support for static files
+- updated lifecycle support to allow for application state injection
+- updated route handlers and dependencies to allow for application state injection
+- updated dependency injection to allow for dependency injection into dependencies
+- updated `PluginProtocol` - added `from_dict` methods
+- updated `SQLAlchemyPlugin`:
+  1. added `from_dict` method
+  2. all back-references are now typed as `Any`
+  3. all relationships are now typed as `Optional`
+- updated `DTOFactory`:
+  1. supports generics
+  2. added `to_model_instance` and `from_model_instance` methods
+  3. added `field_definitions` kwarg, allowing for creating custom fields

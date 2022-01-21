@@ -8,7 +8,15 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from starlite import HTTPException, MiddlewareProtocol, Request, Response, Starlite
+from starlite import (
+    HTTPException,
+    MiddlewareProtocol,
+    Request,
+    Response,
+    Starlite,
+    create_test_client,
+)
+from starlite.datastructures import State
 
 
 def test_handle_http_exception():
@@ -79,4 +87,48 @@ def test_middleware_processing(middleware):
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cur.app
-    assert len(unpacked_middleware) == 3
+    assert len(unpacked_middleware) == 4
+
+
+def test_lifecycle():
+    counter = {"value": 0}
+
+    def sync_function_without_state() -> None:
+        counter["value"] += 1
+
+    async def async_function_without_state() -> None:
+        counter["value"] += 1
+
+    def sync_function_with_state(state: State) -> None:
+        assert state is not None
+        assert isinstance(state, State)
+        counter["value"] += 1
+        state.x = True
+
+    async def async_function_with_state(state: State) -> None:
+        assert state is not None
+        assert isinstance(state, State)
+        counter["value"] += 1
+        state.y = True
+
+    with create_test_client(
+        [],
+        on_startup=[
+            sync_function_without_state,
+            async_function_without_state,
+            sync_function_with_state,
+            async_function_with_state,
+        ],
+        on_shutdown=[
+            sync_function_without_state,
+            async_function_without_state,
+            sync_function_with_state,
+            async_function_with_state,
+        ],
+    ) as client:
+        assert counter["value"] == 4
+        assert client.app.state.x
+        assert client.app.state.y
+        counter["value"] = 0
+        assert counter["value"] == 0
+    assert counter["value"] == 4

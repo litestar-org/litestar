@@ -1,5 +1,5 @@
 from functools import partial
-from inspect import ismethod
+from inspect import isawaitable, ismethod
 from typing import Any, Optional
 
 from pydantic.fields import Undefined
@@ -21,7 +21,7 @@ class Provide:
             # ensure that the method's self argument is preserved
             self.dependency = partial(dependency, dependency.__self__)
 
-    def __call__(self, **kwargs: Any) -> Any:
+    async def __call__(self, **kwargs: Any) -> Any:
         """
         Proxies call to 'self.proxy'
         """
@@ -29,6 +29,8 @@ class Provide:
         if self.use_cache and self.value is not Undefined:
             return self.value
         value = self.dependency(**kwargs)
+        if isawaitable(value):
+            value = await value
         if self.use_cache:
             self.value = value
         return value

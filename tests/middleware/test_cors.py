@@ -24,7 +24,7 @@ def test_cors():
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cur.app
-    assert len(unpacked_middleware) == 3
+    assert len(unpacked_middleware) == 4
     cors_middleware = unpacked_middleware[1]
     assert isinstance(cors_middleware, CORSMiddleware)
     assert cors_middleware.allow_headers == ["*", "accept", "accept-language", "content-language", "content-type"]

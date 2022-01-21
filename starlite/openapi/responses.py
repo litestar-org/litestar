@@ -8,13 +8,13 @@ from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
+from starlite.datastructures import File, Redirect, Stream
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
-from starlite.types import File, Redirect, Stream
 from starlite.utils.model import create_parsed_model_field
 
 

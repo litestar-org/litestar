@@ -15,7 +15,7 @@ def test_trusted_hosts_middleware():
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cur.app
-    assert len(unpacked_middleware) == 3
+    assert len(unpacked_middleware) == 4
     trusted_hosts_middleware = unpacked_middleware[1]
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]

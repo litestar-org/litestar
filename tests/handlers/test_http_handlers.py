@@ -31,6 +31,7 @@ from starlite import (
     MediaType,
     Redirect,
     Response,
+    Stream,
     WebSocket,
     delete,
     get,
@@ -42,8 +43,7 @@ from starlite import (
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.testing import create_test_client, create_test_request
-from starlite.types import Stream
-from starlite.utils import create_function_signature_model
+from starlite.utils import create_function_signature_model, normalize_path
 from tests import Person, PersonFactory
 
 
@@ -52,12 +52,12 @@ def dummy_method() -> None:
 
 
 @given(
-    http_method=st.sampled_from(HttpMethod),
+    http_method=st.one_of(st.sampled_from(HttpMethod), st.lists(st.sampled_from(HttpMethod))),
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
     response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
-    status_code=st.one_of(st.none(), st.integers()),
+    status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     url=st.one_of(st.none(), st.text()),
 )
 def test_route_handler_param_handling(
@@ -69,15 +69,9 @@ def test_route_handler_param_handling(
     status_code,
     url,
 ):
-    if isinstance(http_method, list) and len(http_method) == 0:
-        with pytest.raises(ValidationError):
+    if not http_method:
+        with pytest.raises(ImproperlyConfiguredException):
             HTTPRouteHandler(http_method=http_method)
-    elif not status_code and isinstance(http_method, list) and len(http_method) > 1:
-        with pytest.raises(ValidationError):
-            HTTPRouteHandler(
-                http_method=http_method,
-                status_code=status_code,
-            )
     else:
         decorator = HTTPRouteHandler(
             http_method=http_method,
@@ -98,20 +92,21 @@ def test_route_handler_param_handling(
         assert result.response_class == response_class
         assert result.response_headers == response_headers
         if not url:
-            assert result.path == "/"
-        elif not url.startswith("/"):
-            assert result.path == "/" + url
+            assert result.paths[0] == "/"
         else:
-            assert result.path == url
+            assert result.paths[0] == normalize_path(url)
+        if isinstance(http_method, list) and len(http_method) == 1:
+            http_method = http_method[0]
         if status_code:
             assert result.status_code == status_code
+        elif isinstance(http_method, list):
+            assert result.status_code == HTTP_200_OK
+        elif http_method == HttpMethod.POST:
+            assert result.status_code == HTTP_201_CREATED
+        elif http_method == HttpMethod.DELETE:
+            assert result.status_code == HTTP_204_NO_CONTENT
         else:
-            if http_method == HttpMethod.POST:
-                assert result.status_code == HTTP_201_CREATED
-            elif http_method == HttpMethod.DELETE:
-                assert result.status_code == HTTP_204_NO_CONTENT
-            else:
-                assert result.status_code == HTTP_200_OK
+            assert result.status_code == HTTP_200_OK
 
 
 @pytest.mark.parametrize(
@@ -145,13 +140,6 @@ def test_route_handler_validation_http_method():
 
     with pytest.raises(ImproperlyConfiguredException):
         HTTPRouteHandler(http_method=None)
-
-    # doesn't raise when status_code is provided for multiple http_methods
-    assert route(http_method=[HttpMethod.GET, HttpMethod.POST, "DELETE"], status_code=HTTP_200_OK)
-
-    # raises otherwise
-    with pytest.raises(ImproperlyConfiguredException):
-        HTTPRouteHandler(http_method=[HttpMethod.GET, HttpMethod.POST])
 
     # also when passing an empty list
     with pytest.raises(ImproperlyConfiguredException):

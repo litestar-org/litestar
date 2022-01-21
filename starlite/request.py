@@ -7,12 +7,15 @@ from starlette.datastructures import FormData, UploadFile
 from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
 from starlette.websockets import WebSocket as StarletteWebSocket
+from typing_extensions import Type
 
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.utils import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
+    from starlite.provide import Provide
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
@@ -171,7 +174,9 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
     query_params = parse_query_params(connection=connection)
     header_params = dict(connection.headers.items())
     for field_name, field in fields.items():
-        if field_name == "headers":
+        if field_name == "state":
+            kwargs["state"] = connection.app.state.copy()
+        elif field_name == "headers":
             kwargs["headers"] = header_params
         elif field_name == "cookies":
             kwargs["cookies"] = connection.cookies
@@ -198,3 +203,26 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
                 header_params=header_params,
             )
     return kwargs
+
+
+async def resolve_signature_kwargs(
+    signature_model: Type[SignatureModel], connection: HTTPConnection, providers: Dict[str, "Provide"]
+) -> Dict[str, Any]:
+    """
+    Resolve the kwargs of a given signature model, and recursively resolve all dependencies.
+    """
+    fields = signature_model.__fields__
+    dependencies: Dict[str, Any] = {}
+    for key, provider in providers.items():
+        if key in fields:
+            provider_signature_model = get_signature_model(provider)
+            provider_kwargs = await resolve_signature_kwargs(
+                signature_model=provider_signature_model, connection=connection, providers=providers
+            )
+            dependencies[key] = await provider(
+                **provider_signature_model(**provider_kwargs).dict()  # pylint: disable=not-callable
+            )
+    connection_kwargs = await get_model_kwargs_from_connection(
+        connection=connection, fields={k: v for k, v in fields.items() if k not in dependencies}
+    )
+    return {**connection_kwargs, **dependencies}

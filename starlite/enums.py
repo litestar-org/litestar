@@ -1,12 +1,7 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
-
-if TYPE_CHECKING:  # pragma: no cover
-    from starlite.types import Method
-else:
-    Method = Any
 
 
 class HttpMethod(str, Enum):
@@ -28,10 +23,6 @@ class HttpMethod(str, Enum):
         if cls.is_http_method(value):
             return cast(HttpMethod, value.lower())
         raise ImproperlyConfiguredException(f"value {value} is not a supported http method")
-
-    def to_str(self) -> "Method":
-        """Returns the string value as an upper cased string: get -> GET"""
-        return cast(Method, self.value.upper())
 
 
 class MediaType(str, Enum):

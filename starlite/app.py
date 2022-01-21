@@ -3,8 +3,7 @@ from typing import Dict, List, Optional, Union, cast
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
-from pydantic.typing import AnyCallable, NoArgAnyCallable
-from starlette.datastructures import State
+from pydantic.typing import AnyCallable
 from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
@@ -12,12 +11,15 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.routing import Router as StarletteRouter
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
-from starlite.config import CORSConfig, OpenAPIConfig
+from starlite.asgi import StarliteASGIRouter
+from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
 from starlite.handlers import BaseRouteHandler
@@ -26,17 +28,18 @@ from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import HTTPRoute, Router
+from starlite.routing import BaseRoute, HTTPRoute, Router
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
+    LifeCycleHandler,
     MiddlewareProtocol,
     ResponseHeader,
 )
-from starlite.utils import create_function_signature_model
+from starlite.utils import create_function_signature_model, normalize_path
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
@@ -55,7 +58,7 @@ class Starlite(Router):
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
-    def __init__(
+    def __init__(  # pylint: disable=too-many-locals
         self,
         *,
         route_handlers: List[ControllerRouterHandler],
@@ -66,20 +69,23 @@ class Starlite(Router):
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
-        on_shutdown: Optional[List[NoArgAnyCallable]] = None,
-        on_startup: Optional[List[NoArgAnyCallable]] = None,
+        on_shutdown: Optional[List[LifeCycleHandler]] = None,
+        on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         # connection-lifecycle hook handlers
-        before_request: Optional[BEFORE_REQUEST_HANDLER] = None,
-        after_request: Optional[AFTER_REQUEST_HANDLER] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        # static files
+        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None
     ):
         self.debug = debug
         self.state = State()
         self.plugins = plugins or []
+        self.routes: List[Union[BaseRoute, Mount]] = []  # type: ignore
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -90,11 +96,8 @@ class Starlite(Router):
             before_request=before_request,
             after_request=after_request,
         )
-        self.asgi_router: StarletteRouter = StarletteRouter(
-            redirect_slashes=redirect_slashes,
-            on_shutdown=on_shutdown or [],
-            on_startup=on_startup or [],
-            routes=self.routes,  # type: ignore
+        self.asgi_router = StarliteASGIRouter(
+            redirect_slashes=redirect_slashes, on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self
         )
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
             StarletteHTTPException: self.handle_http_exception,
@@ -108,6 +111,12 @@ class Starlite(Router):
             self.register(openapi_config.openapi_controller)
         else:
             self.openapi_schema = None
+        if static_files_config:
+            for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
+                path = normalize_path(config.path)
+                static_files = StaticFiles(html=config.html_mode, check_dir=False)
+                static_files.all_directories = config.directories  # type: ignore
+                self.routes.append(Mount(path, static_files))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
@@ -122,8 +131,6 @@ class Starlite(Router):
         handlers = super().register(value=value)
         for route_handler in handlers:
             self.create_handler_signature_model(route_handler=route_handler)
-        if hasattr(self, "asgi_router"):
-            self.asgi_router.routes = self.routes  # type: ignore
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """
@@ -140,8 +147,8 @@ class Starlite(Router):
     def build_middleware_stack(
         self,
         user_middleware: List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]],
-        cors_config: Optional[CORSConfig],
         allowed_hosts: Optional[List[str]],
+        cors_config: Optional[CORSConfig],
     ) -> ASGIApp:
         """
         Builds the middleware by sandwiching the user middleware between
@@ -154,7 +161,6 @@ class Starlite(Router):
             current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)
         if cors_config:
             current_app = CORSMiddleware(app=current_app, **cors_config.dict())
-
         for middleware in user_middleware:
             if isinstance(middleware, Middleware):
                 current_app = middleware.cls(app=current_app, **middleware.options)

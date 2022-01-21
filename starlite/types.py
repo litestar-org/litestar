@@ -1,4 +1,3 @@
-import os
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -6,7 +5,6 @@ from typing import (
     Callable,
     Dict,
     Generic,
-    Iterator,
     Optional,
     Tuple,
     TypeVar,
@@ -15,13 +13,13 @@ from typing import (
 )
 
 from openapi_schema_pydantic import Header
-from pydantic import BaseModel, FilePath, create_model, validator
+from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import AsyncIterator, Literal, Protocol, Type, runtime_checkable
+from typing_extensions import Literal, Protocol, Type, runtime_checkable
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response
@@ -34,8 +32,9 @@ except ImportError:  # pragma: no cover
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
+    from starlite.datastructures import State
     from starlite.handlers import BaseRouteHandler
-    from starlite.request import Request, WebSocket
+    from starlite.request import Request
     from starlite.routing import Router
 else:
     Request = Any
@@ -43,9 +42,16 @@ else:
     BaseRouteHandler = Any
     Controller = Any
     Router = Any
+    State = Any
 
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
+]
+LifeCycleHandler = Union[
+    Callable[[], Any],
+    Callable[[State], Any],
+    Callable[[], Awaitable[Any]],
+    Callable[[State], Awaitable[Any]],
 ]
 Guard = Union[
     Callable[[HTTPConnection, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnection, BaseRouteHandler], None]
@@ -54,8 +60,8 @@ Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATC
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 
 # connection-lifecycle hook handlers
-BEFORE_REQUEST_HANDLER = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
-AFTER_REQUEST_HANDLER = Union[
+BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
+AfterRequestHandler = Union[
     Callable[[Union[StarletteResponse, Response]], Union[StarletteResponse, Response]],
     Callable[[Union[StarletteResponse, Response]], Awaitable[Union[StarletteResponse, Response]]],
 ]
@@ -90,33 +96,6 @@ class Partial(Generic[T]):
                     field_definitions[field_name] = (field_type, None)
                 cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)  # type: ignore
         return cast(T, cls._models.get(item))
-
-
-class File(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-
-    path: FilePath
-    filename: str
-    stat_result: Optional[os.stat_result] = None
-
-    @validator("stat_result", always=True)
-    def validate_status_code(  # pylint: disable=no-self-argument,no-self-use
-        cls, value: Optional[os.stat_result], values: Dict[str, Any]
-    ) -> os.stat_result:
-        """Set the stat_result value for the given filepath"""
-        return value or os.stat(cast(str, values.get("path")))
-
-
-class Redirect(BaseModel):
-    path: str
-
-
-class Stream(BaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-
-    iterator: Union[Iterator[Any], AsyncIterator[Any]]
 
 
 class ResponseHeader(Header):  # type: ignore

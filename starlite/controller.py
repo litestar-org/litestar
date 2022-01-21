@@ -4,8 +4,8 @@ from typing_extensions import Type
 
 from starlite.response import Response
 from starlite.types import (
-    AFTER_REQUEST_HANDLER,
-    BEFORE_REQUEST_HANDLER,
+    AfterRequestHandler,
+    BeforeRequestHandler,
     Guard,
     ResponseHeader,
 )
@@ -36,8 +36,8 @@ class Controller:
     response_class: Optional[Type[Response]]
     guards: Optional[List[Guard]]
     # connection-lifecycle hook handlers
-    before_request: Optional[BEFORE_REQUEST_HANDLER]
-    after_request: Optional[AFTER_REQUEST_HANDLER]
+    before_request: Optional[BeforeRequestHandler]
+    after_request: Optional[AfterRequestHandler]
 
     def __init__(self, owner: "Router"):
         for key in [

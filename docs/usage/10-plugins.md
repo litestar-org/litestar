@@ -23,7 +23,7 @@ app = Starlite(route_handlers=[...], plugins=[SQLAlchemyPlugin()])
 ```
 
 !!! note
-    The `SQLAlchemyPlugin` *will not* create a DB connection, a sessionmaker or anything of this kind. This
+    The `SQLAlchemyPlugin` *will not* create a DB connection, a `sessionmaker` or anything of this kind. This
     you will need to implement on your own according to the pattern of your choice, or using a 3rd party solution of some
     sort. The reason for this is that SQL Alchemy is very flexible and allows you to interact with it in various ways.
     We cannot decide upon the pattern that will fit your architecture in advance, and hence it is left to the user to decide.
@@ -61,6 +61,42 @@ def get_companies() -> List[Company]:
     The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
     because this style does not use classes, and is very hard to convert to pydantic correctly.
 
+
+### Handling of Relationships
+
+The SQL Alchemy plugin handles relationship by traversing and recursively converting the related tables into pydantic models.
+This approach, while powerful, poses some difficulties. For example, consider these two tables:
+
+```python
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship, declarative_base
+
+Base = declarative_base()
+
+
+class Pet(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    age = Column(Float)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+    owner = relationship("User", back_populates="pets")
+
+
+class User(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String, default="moishe")
+    pets = relationship(
+        "Pet",
+        back_populates="owner",
+    )
+```
+
+The `User` table references the `Pet` table, which back references the `User` table. Hence, the resulting pydantic model
+will include a circular reference. To avoid this, the plugin sets relationships of this kind in the pydantic model type
+`Any` with a default of `None`. This means you can provide any value for them - or none at all, and validation will not break.
+
+Additionally, all relationships are defined as `Optional` in the pydantic model, following the assumption you might not
+send complete data structures using the API.
 
 ## Creating Plugins
 
@@ -101,7 +137,14 @@ def from_pydantic_model_instance(
 
 def to_dict(self, model_instance: T) -> Dict[str, Any]:
     """
-    Given an instance of a model supported by the plugin, return a dictionary of serilizable values.
+    Given an instance of a model supported by the plugin, return a dictionary of serializable values.
+    """
+    ...
+
+
+def from_dict(self, model_class: Type[T], **kwargs: Any) -> T:
+    """
+    Given a class supported by this plugin and a dict of values, create an instance of the class
     """
     ...
 ```

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "0.5.0"
+version = "0.6.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
@@ -73,6 +73,7 @@ disable = [
     "missing-module-docstring",
     "super-init-not-called",
     "too-few-public-methods",
+    "duplicate-code",
 ]
 enable = "useless-suppression"
 
@@ -88,6 +89,7 @@ max-args = 15
 max-attributes = 15
 max-locals = 20
 max-returns = 15
+max-branches = 15
 
 [tool.pylint.VARIABLES]
 ignored-argument-names = "args|kwargs|_|__"
@@ -97,7 +99,6 @@ good-names = "_,i,e,fn"
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
-
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
