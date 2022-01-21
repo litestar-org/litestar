@@ -67,7 +67,7 @@ kwargs.
 The pre-requisites for dependency injection are these:
 
 1. dependencies must be callables (sync or async).
-2. dependencies can receive kwargs and a `self` arg but not other args.
+2. dependencies can receive kwargs and a `self` arg but not positional args.
 3. the kwarg name and the dependency key must be identical.
 4. the dependency must be declared using the `Provide` class.
 5. the dependency must be in the _scope_ of the handler function.
@@ -198,3 +198,50 @@ will not call it again.
     The caching done inside `Provide` is very simple - it stores the return value and returns it.
     There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
     you choose to use this option.
+
+## Using Dependencies in Dependencies
+
+You can inject dependencies into other dependencies - exactly like you would into regular functions. For example, lets
+consider a scenario where we want to inject a DB connection into a dependency.
+
+Our top level dependency will look something like this:
+
+```python title="my_app/postgres.py"
+from typing import cast
+
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from starlite.datastructures import State
+
+from app.config import settings
+
+def get_postgres_connection(state: State) -> AsyncEngine:
+    """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
+    if not hasattr(state, "postgres_connection"):
+        state.postgres_connection = create_async_engine(settings.DATABASE_URI)
+    return cast(AsyncEngine, state.postgres_connection)
+```
+
+We will place it as a the top level dependency:
+
+```python
+from starlite import Starlite, Provide
+
+from my_app.postgres import get_postgres_connection
+
+app = Starlite(
+    route_handlers=[...], dependencies={"connection": Provide(get_postgres_connection)}
+)
+```
+
+We can now use this dependency in other dependencies:
+
+```python title="my_app/dependencies.py"
+from pydantic import UUID4
+from sqlalchemy.ext.asyncio import AsyncEngine
+
+from my_app.models import Wallet
+
+
+async def get_wallet_by_id(connection: AsyncEngine, wallet_id: UUID4) -> Wallet:
+    ...
+```

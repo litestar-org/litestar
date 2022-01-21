@@ -75,7 +75,7 @@ state: dict[str, AsyncEngine] = {}
 def get_postgres_connection() -> AsyncEngine:
     """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
     if not state.get("postgres_connection"):
-        state["postgres_connection"] = create_async_engine(settings.DATABASE_URI, echo=True, pool_pre_ping=True)
+        state["postgres_connection"] = create_async_engine(settings.DATABASE_URI)
     return cast(AsyncEngine, state.get("postgres_connection"))
 
 
@@ -115,7 +115,7 @@ from app.config import settings
 def get_postgres_connection(state: State) -> AsyncEngine:
     """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
     if not hasattr(state, "postgres_connection"):
-        state.postgres_connection = create_async_engine(settings.DATABASE_URI, echo=True, pool_pre_ping=True)
+        state.postgres_connection = create_async_engine(settings.DATABASE_URI)
     return cast(AsyncEngine, state.postgres_connection)
 
 
