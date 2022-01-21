@@ -77,3 +77,5 @@
 - updated lifecycle support to allow for application state injection
 - updated route handlers and dependencies to allow for application state injection
 - updated dependency injection to allow for dependency injection into dependencies
+- updated SQLAlchemy plugin- all relationships are now typed as `Optional`
+- updated SQLAlchemy plugin- all back-references are now typed as `Any`

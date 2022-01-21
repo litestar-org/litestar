@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel
 from typing_extensions import get_args
 
@@ -14,9 +16,7 @@ def test_relationship():
     assert get_args(friends.outer_type_)  # we assert this is a List[]
     assert friends.type_ is result
     pets = fields["pets"]
-    assert get_args(pets.outer_type_)  # we assert this is a List[]
-    assert issubclass(pets.type_, BaseModel)
-    assert pets.type_.__fields__["owner"].type_ is result
+    assert pets.outer_type_ is Any
     company = fields["company"]
     assert not get_args(company.outer_type_)
     assert issubclass(company.type_, BaseModel)
