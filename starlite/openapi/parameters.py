@@ -1,27 +1,16 @@
 from typing import Any, Dict, List
-from uuid import UUID
 
 from openapi_schema_pydantic import Parameter, Schema
 from pydantic.fields import ModelField
-from typing_extensions import Type
 
 from starlite.handlers import BaseRouteHandler
 from starlite.openapi.schema import create_schema
 
 
-def create_path_parameter_schema(path_parameter: str, field: ModelField, generate_examples: bool) -> Schema:
-    """Create a path parameter from the given path_param string in the format param_name:type"""
-    param_type_map: Dict[str, Type[Any]] = {
-        "str": str,
-        "float": float,
-        "int": int,
-        "uuid": UUID,
-    }
-    parameter_type = path_parameter.split(":")[1]
-    if parameter_type not in param_type_map:
-        raise TypeError(f"Unsupported path param type {parameter_type}")
+def create_path_parameter_schema(path_parameter: Dict[str, Any], field: ModelField, generate_examples: bool) -> Schema:
+    """Create a path parameter from the given path_param definition"""
     field.sub_fields = None
-    field.outer_type_ = param_type_map[parameter_type]
+    field.outer_type_ = path_parameter["type"]
     return create_schema(field=field, generate_examples=generate_examples)
 
 
@@ -34,7 +23,7 @@ def create_parameters(
     """
     Create a list of path/query/header Parameter models for the given PathHandler
     """
-    path_parameter_names = [path_param.split(":")[0] for path_param in path_parameters]
+    path_parameter_names = [path_param["name"] for path_param in path_parameters]
     parameters: List[Parameter] = []
     ignored_fields = [
         "data",
@@ -55,7 +44,7 @@ def create_parameters(
                 param_in = "path"
                 required = True
                 schema = create_path_parameter_schema(
-                    path_parameter=[p for p in path_parameters if f_name in p][0],
+                    path_parameter=[p for p in path_parameters if f_name in p["name"]][0],
                     field=field,
                     generate_examples=generate_examples,
                 )

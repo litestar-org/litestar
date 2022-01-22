@@ -18,7 +18,7 @@ def root_delete_handler() -> None:
         [f"/path/1/2/sub/{str(uuid4())}", "/path/{first:int}/{second:str}/sub/{third:uuid}"],
         [f"/path/1/2/sub/{str(uuid4())}/", "/path/{first:int}/{second:str}/sub/{third:uuid}/"],
         ["/", "/"],
-        ["", ""]
+        ["", ""],
     ],
 )
 def test_path_parsing_and_matching(request_path, router_path):
@@ -29,6 +29,29 @@ def test_path_parsing_and_matching(request_path, router_path):
     with create_test_client(test_method) as client:
         response = client.get(request_path)
         assert response.status_code == HTTP_200_OK
+
+
+def test_path_parsing_with_ambigous_paths():
+    @get(path="/{path_param:int}", media_type=MediaType.TEXT)
+    def path_param(path_param: int) -> str:
+        return str(path_param)
+
+    @get(path="/query_param", media_type=MediaType.TEXT)
+    def query_param(value: int) -> str:
+        return str(value)
+
+    @get(path="/mixed/{path_param:int}", media_type=MediaType.TEXT)
+    def mixed_params(path_param: int, value: int) -> str:
+        return str(path_param + value)
+
+    with create_test_client([path_param, query_param, mixed_params]) as client:
+        response = client.get("/1")
+        assert response.status_code == HTTP_200_OK
+        response = client.get("/query_param?value=1")
+        assert response.status_code == HTTP_200_OK
+        response = client.get("/mixed/1/?value=1")
+        assert response.status_code == HTTP_200_OK
+
 
 @pytest.mark.parametrize(
     "decorator, test_path, decorator_path, delete_handler",

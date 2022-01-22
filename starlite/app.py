@@ -1,5 +1,4 @@
-from typing import Dict, List, Optional, Union, cast, Set, Any
-from urllib.parse import urlparse
+from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
@@ -23,7 +22,7 @@ from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import BaseRouteHandler
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -172,6 +171,10 @@ class Starlite(Router):
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
                 provider.signature_model = create_function_signature_model(fn=provider.dependency, plugins=self.plugins)
+        route_handler.resolve_guards()
+        if isinstance(route_handler, HTTPRouteHandler):
+            route_handler.resolve_before_request()
+            route_handler.resolve_after_request()
 
     def build_middleware_stack(
         self,

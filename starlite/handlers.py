@@ -395,7 +395,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         if not self.fn:
             raise ImproperlyConfiguredException("cannot call 'handle' without a decorated function")
 
-        await self.authorize_connection(connection=request)
+        if self.resolve_guards():
+            await self.authorize_connection(connection=request)
 
         before_request_handler = self.resolve_before_request()
         data = None
@@ -407,7 +408,10 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         # if data has not been returned by the before request handler, we proceed with the request
         if data is None:
-            params = await self.get_parameters_from_connection(connection=request)
+            if self.signature_model.__fields__:
+                params = await self.get_parameters_from_connection(connection=request)
+            else:
+                params = {}
             if isinstance(self.owner, Controller):
                 data = self.fn(self.owner, **params)
             else:
