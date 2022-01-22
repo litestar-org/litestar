@@ -10,6 +10,10 @@
   border-bottom: 2px solid currentColor; */
 }
 
+.md-search__form {
+  background-color: var(--md-default-bg-color) !important;
+}
+
 .md-typeset h2 {
   font-size: calc(1rem * 1.35 * 1.35);
   margin: 1.35rem 0 1rem;
@@ -33,16 +37,29 @@
   margin-bottom: 2rem;
 }
 
+
+@media screen and (max-width:76.1875em) {
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    color: var(--md-primary-fg-color);
+    color: var(--md-accent-fg-color);
+    background-color: var(--md-primary-bg-color);
+  }
+
+  .md-nav--primary .md-nav__item {
+    border-top: none;
+  }
+}
+
 [data-md-color-scheme="mirage"] {
   /* Default color shades */
-  --md-default-fg-color:               hsl(213, 16%, 71%);
-  --md-default-fg-color--light:        hsl(213, 16%, 76%);
-  --md-default-fg-color--lighter:      hsl(213, 16%, 81%);
-  --md-default-fg-color--lightest:     #d6dbe1;
+  --md-default-fg-color:               #d6dbe1;
+  --md-default-fg-color--light:        hsl(213, 15%, 76%);
+  --md-default-fg-color--lighter:      hsl(213, 15%, 66%);
+  --md-default-fg-color--lightest:     hsl(213, 15%, 56%);
   --md-default-bg-color:               #1d2433;
-  --md-default-bg-color--light:        hsl(221, 28%, 21%);
-  --md-default-bg-color--lighter:      #2f3b54;
-  --md-default-bg-color--lightest:     hsl(221, 28%, 31%);
+  --md-default-bg-color--light:        hsl(221, 28%, 26%);
+  --md-default-bg-color--lighter:      hsl(221, 28%, 36%);
+  --md-default-bg-color--lightest:     hsl(221, 28%, 46%);
 
   /* Primary color shades */
   --md-primary-fg-color:               #ffae57;
@@ -52,21 +69,21 @@
   --md-primary-bg-color--light:        hsl(221, 28%, 33%);
 
   /* Accent color shades */
-  --md-accent-bg-color:                #ffd580;
-  --md-accent-bg-color--transparent:   #ffd58033;
-  --md-accent-fg-color:                #171c28;
-  --md-accent-fg-color--light:         hsl(222, 27%, 20%);
+  --md-accent-fg-color:                #ffd580;
+  --md-accent-fg-color--transparent:   #ffd58033;
+  --md-accent-bg-color:                #171c28;
+  --md-accent-bg-color--light:         hsl(222, 27%, 20%);
 
   /* Misc */
-  --md-footer-fg-color: var(--md-accent-bg-color);
-  --md-footer-bg-color: var(--md-accent-fg-color);
+  --md-footer-fg-color: var(--md-accent-fg-color);
+  --md-footer-bg-color: var(--md-accent-bg-color);
   /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
 
 
 
   /* Code color shades */
   --md-code-fg-color:                var(--md-default-fg-color);
-  --md-code-bg-color:                var(--md-accent-fg-color--light);
+  --md-code-bg-color:                var(--md-accent-bg-color--light);
 
   /* Code highlighting color shades */
   --md-code-hl-color:                #bae67e99;
@@ -139,9 +156,9 @@
 [data-md-color-scheme="mirage-light"] {
   /* Default color shades */
   --md-default-fg-color:               #1d2433;
-  --md-default-fg-color--light:        hsl(221, 28%, 21%);
-  --md-default-fg-color--lighter:      #2f3b54;
-  --md-default-fg-color--lightest:     hsl(221, 28%, 31%);
+  --md-default-fg-color--light:        hsl(221, 28%, 26%);
+  --md-default-fg-color--lighter:      hsl(221, 28%, 36%);
+  --md-default-fg-color--lightest:     hsl(221, 28%, 46%);
   --md-default-bg-color:               #fff;
   --md-default-bg-color--light:        var(--md-default-bg-color);
   --md-default-bg-color--lighter:      var(--md-default-bg-color);
