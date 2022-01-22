@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 
@@ -9,6 +11,24 @@ from tests import Person, PersonFactory
 def root_delete_handler() -> None:
     return None
 
+
+@pytest.mark.parametrize(
+    "request_path, router_path",
+    [
+        [f"/path/1/2/sub/{str(uuid4())}", "/path/{first:int}/{second:str}/sub/{third:uuid}"],
+        [f"/path/1/2/sub/{str(uuid4())}/", "/path/{first:int}/{second:str}/sub/{third:uuid}/"],
+        ["/", "/"],
+        ["", ""]
+    ],
+)
+def test_path_parsing_and_matching(request_path, router_path):
+    @get(path=router_path)
+    def test_method() -> None:
+        return None
+
+    with create_test_client(test_method) as client:
+        response = client.get(request_path)
+        assert response.status_code == HTTP_200_OK
 
 @pytest.mark.parametrize(
     "decorator, test_path, decorator_path, delete_handler",

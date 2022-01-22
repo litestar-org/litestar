@@ -2,16 +2,17 @@ import re
 from abc import ABC
 from inspect import isclass
 from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
+from uuid import UUID
 
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.routing import Match, compile_path, get_name
+from starlette.routing import get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
-from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
+from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException, ValidationException
 from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket
@@ -28,6 +29,13 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 
 param_match_regex = re.compile(r"{(.*?)}")
 
+param_type_map = {
+    "str": str,
+    "int": int,
+    "float": float,
+    "uuid": UUID
+}
+
 
 class BaseRoute(ABC):
     __slots__ = (
@@ -36,9 +44,7 @@ class BaseRoute(ABC):
         "methods",
         "param_convertors",
         "path",
-        "path_format",
         "path_parameters",
-        "path_regex",
         "scope_type",
     )
 
@@ -51,45 +57,41 @@ class BaseRoute(ABC):
         scope_type: ScopeType,
         methods: Optional[List[Method]] = None,
     ):
-        if not path.startswith("/"):
-            raise ImproperlyConfiguredException("Routed paths must start with '/'")
+        self.path, self.path_parameters = self.parse_path(path)
         self.handler_names = handler_names
-        self.path = path
         self.scope_type = scope_type
-        self.path_regex, self.path_format, self.param_convertors = compile_path(path)
-        self.path_parameters: List[str] = param_match_regex.findall(self.path)
-
         self.methods = methods or []
         if "GET" in self.methods:
             self.methods.append("HEAD")
-        for parameter in self.path_parameters:
-            if ":" not in parameter or not parameter.split(":")[1]:
+
+    def parse_path(self, path: str) -> Tuple[str, List[Dict[str, Any]]]:
+        path = normalize_path(path)
+        path_parameters = []
+
+        for param in param_match_regex.findall(path):
+            if ":" not in param:
                 raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
+            param_name, param_type = param.split(":")
+            path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
+
+        return path, path_parameters
 
     @property
     def is_http_route(self) -> bool:
         """Determines whether the given route is an http or websocket route"""
         return self.scope_type == "http"
 
-    def matches(self, scope: Scope) -> Tuple[Match, Scope]:
-        """
-        Try to match a given scope's path to self.path
-
-        Note: The code in this method is adapted from starlette.routing
-        """
-        if scope["type"] == self.scope_type.value:
-            match = self.path_regex.match(scope["path"])
-            if match:
-                matched_params = match.groupdict()
-                for key, value in matched_params.items():
-                    matched_params[key] = self.param_convertors[key].convert(value)
-                path_params = dict(scope.get("path_params", {}))
-                path_params.update(matched_params)
-                child_scope = {"endpoint": self, "path_params": path_params}
-                if self.is_http_route and scope["method"] not in self.methods:
-                    return Match.PARTIAL, child_scope
-                return Match.FULL, child_scope
-        return Match.NONE, {}
+    def parse_path_params(self, raw_params: List[str]) -> Dict[str, Any]:
+        try:
+            parsed_params: Dict[str, Any] = {}
+            for index, param_definition in enumerate(self.path_parameters):
+                raw_param = raw_params[index]
+                param_name = cast(str, param_definition["name"])
+                param_type = cast(Type, param_definition["type"])
+                parsed_params[param_name] = param_type(raw_param)
+            return parsed_params
+        except TypeError as e:
+            raise ValidationException from e
 
 
 class HTTPRoute(BaseRoute):

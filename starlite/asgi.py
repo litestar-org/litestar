@@ -1,9 +1,12 @@
 from inspect import getfullargspec, isawaitable
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, List, cast, Set, Dict, Union
 
-from starlette.routing import Router as StarletteRouter
+from starlette.routing import Router as StarletteRouter, WebSocketRoute
+from starlette.types import Scope, Receive, Send
 
+from starlite.exceptions import NotFoundException
 from starlite.types import LifeCycleHandler
+from starlite.routing import HTTPRoute
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
@@ -24,13 +27,38 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def __getattribute__(self, key: str) -> Any:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
-        We override attribute access to return the app routes
+        The main entry point to the Router class.
         """
-        if key == "routes":
-            return self.app.routes
-        return super().__getattribute__(key)
+
+        scope_type = scope["type"]
+
+        if scope_type == "lifespan":
+            await self.lifespan(scope, receive, send)
+            return
+        path_params: List[str] = []
+        path = cast(str, scope["path"]).strip()
+        if path != "/" and path.endswith("/"):
+            path = path.rstrip("/")
+        components = path.split("/") if path != "/" else ["_root"]
+        cur = self.app.route_map
+        for component in components:
+            components_set = cast(Set[str], cur["_components"])
+            if component in components_set:
+                cur = cast(Dict[str, Any], cur[component])
+            elif "*" in components_set:
+                path_params.append(component)
+                cur = cast(Dict[str, Any], cur["*"])
+            else:
+                raise NotFoundException()
+        handlers = cast(Dict[str, Any], cur["_handlers"])
+        try:
+            route = cast(Union[WebSocketRoute, HTTPRoute], handlers[scope_type])
+            scope["path_params"] = route.parse_path_params(path_params)
+            await route.handle(scope=scope, receive=receive, send=send)
+        except KeyError:
+            raise NotFoundException()
 
     async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
         """

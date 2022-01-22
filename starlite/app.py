@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Union, cast
+from typing import Dict, List, Optional, Union, cast, Set, Any
+from urllib.parse import urlparse
 
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
@@ -53,6 +54,7 @@ class Starlite(Router):
         "openapi_schema",
         "plugins",
         "state",
+        "route_map"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -86,6 +88,7 @@ class Starlite(Router):
         self.state = State()
         self.plugins = plugins or []
         self.routes: List[Union[BaseRoute, Mount]] = []  # type: ignore
+        self.route_map: Dict[str, Any] = {}
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -117,10 +120,35 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.routes.append(Mount(path, static_files))
+        self.construct_route_map()
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
         await self.middleware_stack(scope, receive, send)
+
+    def construct_route_map(self):
+        for route in self.routes:
+            path = route.path
+            for param_definition in route.path_parameters:
+                path = path.replace(param_definition["full"], "")
+            path = path.replace("{}", "*")
+            components = path.split("/") if path not in ["/", None, ""] else ["_root"]
+            cur = self.route_map
+            for component in components:
+                if "_components" not in cur:
+                    cur["_components"] = set()
+                components_set = cast(Set[str], cur["_components"])
+                components_set.add(component)
+                if component not in cur:
+                    cur[component] = {}
+                cur = cast(Dict[str, Any], cur[component])
+            if "_handlers" not in cur:
+                cur["_handlers"] = {}
+            handlers = cast(Dict[str, BaseRoute], cur["_handlers"])
+            if isinstance(route, HTTPRoute):
+                handlers["http"] = route
+            else:
+                handlers["websocket"] = route
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """
@@ -131,6 +159,7 @@ class Starlite(Router):
         handlers = super().register(value=value)
         for route_handler in handlers:
             self.create_handler_signature_model(route_handler=route_handler)
+        self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """
