@@ -9,13 +9,16 @@
 	.st3{fill:#D6DBE1;}
 	.st4{fill:#FFFFFF;}
 	.st5{fill:none;}
-	.st6{font-family:'NuvoMonoPro-Bold';}
-	.st7{font-size:146.125px;}
-	.st8{letter-spacing:-8;}
-	.st9{letter-spacing:-7;}
-	.st10{letter-spacing:6;}
-	.st11{letter-spacing:-3;}
-	.st12{letter-spacing:-2;}
+	.st6{display:none;}
+	.st7{display:inline;fill:#D6DBE1;}
+	.st8{font-family:'NuvoMonoPro-Bold';}
+	.st9{font-size:146.125px;}
+	.st10{letter-spacing:-8;}
+	.st11{letter-spacing:-7;}
+	.st12{letter-spacing:6;}
+	.st13{letter-spacing:-3;}
+	.st14{letter-spacing:-2;}
+	.st15{display:none;fill:#1D2433;}
 </style>
 <g id="Ebene_1">
 	<rect class="st0" width="1280" height="640"/>
@@ -38,6 +41,29 @@
 </g>
 <g id="Ebene_3">
 	<rect x="38" y="435" class="st5" width="1152" height="109"/>
-	<text transform="matrix(1 0 0 1 510.2261 543.4001)"><tspan x="0" y="0" class="st3 st6 st7 st8">S</tspan><tspan x="79.6" y="0" class="st3 st6 st7 st9">T</tspan><tspan x="159.4" y="0" class="st3 st6 st7 st10">A</tspan><tspan x="254" y="0" class="st3 st6 st7 st11">RL</tspan><tspan x="422.3" y="0" class="st3 st6 st7 st12">I</tspan><tspan x="507.9" y="0" class="st3 st6 st7 st11">T</tspan><tspan x="592.1" y="0" class="st3 st6 st7 st12">E</tspan></text>
+	<text transform="matrix(1 0 0 1 510.2261 543.4001)" class="st6"><tspan x="0" y="0" class="st7 st8 st9 st10">S</tspan><tspan x="79.6" y="0" class="st7 st8 st9 st11">T</tspan><tspan x="159.4" y="0" class="st7 st8 st9 st12">A</tspan><tspan x="254" y="0" class="st7 st8 st9 st13">RL</tspan><tspan x="422.3" y="0" class="st7 st8 st9 st14">I</tspan><tspan x="507.9" y="0" class="st7 st8 st9 st13">T</tspan><tspan x="592.1" y="0" class="st7 st8 st9 st14">E</tspan></text>
+	<g>
+		<path class="st3" d="M553.3,545.2c-13.4,0-23.4-2-29.5-3.9l-2.5-2.6v-11.8l2.6-1.6c7,1.8,19.7,3.7,29.4,3.7
+			c8.6,0,15.8-3.8,15.8-12.3c0-19.6-49.1-11.7-49.1-46.5c0-20,15.3-29.5,35.5-29.5c11.3,0,19.3,2,25.1,4.2l2.3,2.3v11l-2.6,2.2
+			c-6-1.9-16.2-3.7-24.5-3.7c-8.8,0-15.6,3.1-15.6,11.5c0,20,49.2,12.6,49.2,46.3C589.4,535.4,574.4,545.2,553.3,545.2z"/>
+		<path class="st3" d="M669.5,457.5h-26.3v83.4l-2.5,2.5h-14.2l-2.5-2.5v-83.4h-26.2l-2.6-2.5v-10.2l2.6-2.5h71.6l2.6,2.5V455
+			L669.5,457.5z"/>
+		<path class="st3" d="M728.1,513.9h-29.8l-8.6,29.5l-3.4,1.8l-13.3-2.9l-1.6-3.2l31-94.2l2.5-2.5h18l2.6,2.6l30.1,94l-1.6,3.1
+			l-14.5,3.2l-3.2-1.8L728.1,513.9z M702.1,498.8h22.6l-11-38.9L702.1,498.8z"/>
+		<path class="st3" d="M844.6,540.5l-13,4.7l-3.5-1.5L799.1,499h-5.7v41.9l-2.5,2.5h-14l-2.6-2.5v-96.1l2.6-2.5h33.5
+			c22.2,0,33.2,8.9,33.2,26.9c0,16.5-12.1,25.4-25.1,27l27.2,40.8L844.6,540.5z M810.1,456.9h-16.7v26.9h9.9
+			c9.9,0,21.2-2.2,21.2-13.6C824.5,460.6,821.6,456.9,810.1,456.9z"/>
+		<path class="st3" d="M925.2,543.4h-57.9l-2.5-2.5v-96.1l2.5-2.5h14l2.6,2.5v83.4h41.2l2.6,2.5v10.2L925.2,543.4z"/>
+		<path class="st3" d="M966.7,457.5h-20.6l-2.5-2.5v-10.2l2.5-2.5h60.5l2.5,2.5V455l-2.5,2.5h-20.7v70.7h20.7l2.5,2.5v10.2l-2.5,2.5
+			h-60.5l-2.5-2.5v-10.2l2.5-2.5h20.6V457.5z"/>
+		<path class="st3" d="M1097.8,457.5h-26.3v83.4l-2.5,2.5h-14.2l-2.5-2.5v-83.4h-26.2l-2.6-2.5v-10.2l2.6-2.5h71.6l2.6,2.5V455
+			L1097.8,457.5z"/>
+		<path class="st3" d="M1175.7,543.4h-56.3l-2.6-2.5v-96.1l2.6-2.5h55.1l2.5,2.5V455l-2.5,2.5h-38.6V482h35.8l2.5,2.6v10.1l-2.5,2.5
+			h-35.8v31h39.7l2.6,2.5v10.2L1175.7,543.4z"/>
+	</g>
+</g>
+<g id="Ebene_4">
+</g>
+<g id="Ebene_5">
 </g>
 </svg>
