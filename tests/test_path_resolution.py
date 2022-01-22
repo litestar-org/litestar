@@ -1,7 +1,12 @@
 from uuid import uuid4
 
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from starlette.status import (
+    HTTP_200_OK,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+)
 
 from starlite import Controller, MediaType, create_test_client, delete, get
 from tests import Person, PersonFactory
@@ -108,3 +113,25 @@ def test_handler_multi_paths():
         fourth_response = client.get("/something/2")
         assert fourth_response.status_code == HTTP_200_OK
         assert fourth_response.text == "2"
+
+
+@pytest.mark.parametrize(
+    "handler, handler_path, request_path, expected_status_code",
+    [
+        (get, "/sub-path", "/", HTTP_404_NOT_FOUND),
+        (get, "/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
+        (get, "/sub/path", "/sub", HTTP_404_NOT_FOUND),
+        (get, "/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
+        (get, "/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        (get, "/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
+        (get, "/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+    ],
+)
+def test_path_validation(handler, handler_path, request_path, expected_status_code):
+    @get(handler_path)
+    def handler(**kwargs) -> None:
+        ...
+
+    with create_test_client(handler) as client:
+        response = client.get(request_path)
+        assert response.status_code == expected_status_code

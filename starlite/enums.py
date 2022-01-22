@@ -45,3 +45,4 @@ class RequestEncodingType(str, Enum):
 class ScopeType(str, Enum):
     HTTP = "http"
     WEBSOCKET = "websocket"
+    ASGI = "asgi"

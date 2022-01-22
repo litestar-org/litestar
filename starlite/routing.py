@@ -17,7 +17,12 @@ from starlite.exceptions import (
     MethodNotAllowedException,
     ValidationException,
 )
-from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
+from starlite.handlers import (
+    ASGIRouteHandler,
+    BaseRouteHandler,
+    HTTPRouteHandler,
+    WebsocketRouteHandler,
+)
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket
 from starlite.response import Response
@@ -64,7 +69,11 @@ class BaseRoute(ABC):
         if "GET" in self.methods:
             self.methods.append("HEAD")
 
-    def parse_path(self, path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
+    @staticmethod
+    def parse_path(path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
+        """
+        Normalizes and parses a path
+        """
         path = normalize_path(path)
         path_format = path
         path_parameters = []
@@ -75,15 +84,12 @@ class BaseRoute(ABC):
             param_name, param_type = param.split(":")
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
-
         return path, path_format, path_parameters
 
-    @property
-    def is_http_route(self) -> bool:
-        """Determines whether the given route is an http or websocket route"""
-        return self.scope_type == "http"
-
     def parse_path_params(self, raw_params: List[str]) -> Dict[str, Any]:
+        """
+        Parses raw path parameters by mapping them into a dictionary
+        """
         parsed_params: Dict[str, Any] = {}
         for index, param_definition in enumerate(self.path_parameters):
             raw_param = raw_params[index]
@@ -91,9 +97,7 @@ class BaseRoute(ABC):
             try:
                 param_type = cast(Type, param_definition["type"])
                 parsed_params[param_name] = param_type(raw_param)
-            except (ValueError, TypeError) as e:
-                print(str(raw_params))
-                print(str(param_definition))
+            except (ValueError, TypeError) as e:  # pragma: no cover
                 raise ValidationException(f"unable to parse path parameter {str(raw_param)}") from e
         return parsed_params
 
@@ -178,6 +182,34 @@ class WebSocketRoute(BaseRoute):
         await self.route_handler.handle_websocket(web_socket=web_socket)
 
 
+class ASGIRoute(BaseRoute):
+    __slots__ = (
+        "route_handler",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+    )
+
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        *,
+        path: str,
+        route_handler: ASGIRouteHandler,
+    ):
+        self.route_handler = route_handler
+        super().__init__(
+            path=path,
+            scope_type=ScopeType.ASGI,
+            handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
+        )
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
+        """
+        await self.route_handler.handle_asgi(scope=scope, receive=receive, send=send)
+
+
 class Router:
     __slots__ = (
         "after_request",
@@ -236,16 +268,16 @@ class Router:
     @staticmethod
     def map_route_handlers(
         value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]]:
+    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict[HttpMethod, HTTPRouteHandler]]]:
         """
         Maps route handlers to http methods
         """
-        handlers_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
+        handlers_map: Dict[str, Any] = {}
         if isinstance(value, BaseRouteHandler):
             for path in value.paths:
                 if isinstance(value, HTTPRouteHandler):
                     handlers_map[path] = {http_method: value for http_method in value.http_methods}
-                elif isinstance(value, WebsocketRouteHandler):
+                elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
                     handlers_map[path] = value
         elif isinstance(value, Router):
             handlers_map = value.route_handler_method_map
@@ -258,9 +290,9 @@ class Router:
                         if not isinstance(handlers_map.get(path), dict):
                             handlers_map[path] = {}
                         for http_method in route_handler.http_methods:
-                            handlers_map[path][http_method] = route_handler  # type: ignore
+                            handlers_map[path][http_method] = route_handler
                     else:
-                        handlers_map[path] = cast(WebsocketRouteHandler, route_handler)
+                        handlers_map[path] = cast(Union[WebsocketRouteHandler, ASGIRouteHandler], route_handler)
         return handlers_map.items()
 
     def validate_registration_value(
@@ -285,7 +317,9 @@ class Router:
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
-    def register(self, value: ControllerRouterHandler) -> List[Union[HTTPRouteHandler, WebsocketRouteHandler]]:
+    def register(
+        self, value: ControllerRouterHandler
+    ) -> List[Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]]:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -293,14 +327,17 @@ class Router:
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         validated_value = self.validate_registration_value(value)
-        handlers: List[Union[HTTPRouteHandler, WebsocketRouteHandler]] = []
+        handlers: List[Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]] = []
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
                 handlers.append(handler_or_method_map)
                 self.routes.append(WebSocketRoute(path=path, route_handler=handler_or_method_map))
+            elif isinstance(handler_or_method_map, ASGIRouteHandler):
+                handlers.append(handler_or_method_map)
+                self.routes.append(ASGIRoute(path=path, route_handler=handler_or_method_map))
             else:
-                route_handlers = list(handler_or_method_map.values())
+                route_handlers = list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values())
                 handlers.extend(route_handlers)
                 if self.route_handler_method_map.get(path):
                     existing_route_index = find_index(

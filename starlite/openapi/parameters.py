@@ -17,7 +17,7 @@ def create_path_parameter_schema(path_parameter: Dict[str, Any], field: ModelFie
 def create_parameters(
     route_handler: BaseRouteHandler,
     handler_fields: Dict[str, ModelField],
-    path_parameters: List[str],
+    path_parameters: List[Dict[str, Any]],
     generate_examples: bool,
 ) -> List[Parameter]:
     """
