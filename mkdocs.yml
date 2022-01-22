@@ -5,14 +5,12 @@ theme:
   name: material
   palette:
     - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: indigo
+      scheme: mirage
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
+      scheme: mirage-light
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
@@ -29,6 +27,8 @@ theme:
     - search.share
   plugins:
     - search
+extra_css:
+  - css/extra.css
 nav:
   - Overview: index.md
   - Usage:
