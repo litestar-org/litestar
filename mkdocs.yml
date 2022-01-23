@@ -58,6 +58,7 @@ extra:
       link: https://github.com/starlite-api/starlite
 markdown_extensions:
   - admonition
+  - attr_list
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite

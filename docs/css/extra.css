@@ -2,6 +2,13 @@
   --md-text-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.md-content__button {
+  display: none;
+}
+.md-typeset .md-content__button + h1 {
+  margin-top: 0;
+}
+
 .md-typeset h1 {
   font-size: calc(1rem * 1.35 * 1.35 * 1.35);
   margin: 1.35rem 0 1rem;
@@ -96,7 +103,7 @@
   --md-code-hl-name-color:           var(--md-code-fg-color);
   --md-code-hl-operator-color:       var(--md-code-hl-number-color);
   --md-code-hl-punctuation-color:    var(--md-code-hl-number-color);
-  --md-code-hl-comment-color:        var(--md-code-fg-color);
+  --md-code-hl-comment-color:        var(--md-default-bg-color--lightest);
   --md-code-hl-generic-color:        var(--md-code-hl-number-color);
   --md-code-hl-variable-color:       var(--md-code-hl-number-color);
 
@@ -199,7 +206,7 @@
   --md-code-hl-name-color:           var(--md-default-bg-color);
   --md-code-hl-operator-color:       var(--md-code-hl-number-color);
   --md-code-hl-punctuation-color:    var(--md-code-hl-number-color);
-  --md-code-hl-comment-color:        var(--md-default-bg-color);
+  --md-code-hl-comment-color:        var(--md-default-fg-color--lightest);
   --md-code-hl-generic-color:        var(--md-code-hl-number-color);
   --md-code-hl-variable-color:       var(--md-code-hl-number-color);
 
