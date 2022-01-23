@@ -53,7 +53,8 @@ class Starlite(Router):
         "plugins",
         "state",
         "route_map",
-        "static_paths"
+        "static_paths",
+        "plain_routes"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -89,6 +90,7 @@ class Starlite(Router):
         self.routes: List[BaseRoute] = []
         self.route_map: Dict[str, Any] = {}
         self.static_paths = set()
+        self.plain_routes = set()
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -134,21 +136,27 @@ class Starlite(Router):
         Create a map of the app's routes. This map is used in the asgi router to route requests.
 
         """
+        if "_components" not in self.route_map:
+            self.route_map["_components"] = set()
         for route in self.routes:
             path = route.path
-            for param_definition in route.path_parameters:
-                path = path.replace(param_definition["full"], "")
-            path = path.replace("{}", "*")
-            components = path.split("/") if path not in ["", "/", None] else ["_root"]
-            cur = self.route_map
-            for component in components:
-                if "_components" not in cur:
-                    cur["_components"] = set()
-                components_set = cast(Set[str], cur["_components"])
-                components_set.add(component)
-                if component not in cur:
-                    cur[component] = {"_components": set()}
-                cur = cast(Dict[str, Any], cur[component])
+            if route.path_parameters or path in self.static_paths:
+                for param_definition in route.path_parameters:
+                    path = path.replace(param_definition["full"], "")
+                path = path.replace("{}", "*")
+                cur = self.route_map
+                for component in path.split("/"):
+                    if "_components" not in cur:
+                        cur["_components"] = set()
+                    components_set = cast(Set[str], cur["_components"])
+                    components_set.add(component)
+                    if component not in cur:
+                        cur[component] = {"_components": set()}
+                    cur = cast(Dict[str, Any], cur[component])
+            else:
+                self.route_map[path] = {"_components": set()}
+                cur = self.route_map[path]
+                self.plain_routes.add(path)
             if "_handlers" not in cur:
                 cur["_handlers"] = {}
             if "_handler_types" not in cur:

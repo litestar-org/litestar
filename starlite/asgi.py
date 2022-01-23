@@ -37,21 +37,23 @@ class StarliteASGIRouter(StarletteRouter):
         path = cast(str, scope["path"]).strip()
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
-        components = path.split("/") if path != "/" else ["_root"]
-        cur = self.app.route_map
-        for component in components:
-            components_set = cast(Set[str], cur["_components"])
-            if component in components_set:
-                cur = cast(Dict[str, Any], cur[component])
-            elif "*" in components_set:
-                path_params.append(component)
-                cur = cast(Dict[str, Any], cur["*"])
-            elif cur.get("static_path"):  # noqa: SIM106
-                static_path = cast(str, cur["static_path"])
-                scope["path"] = scope["path"].replace(static_path, "")
-                scope_type = "asgi"
-            else:
-                raise NotFoundException()
+        if path in self.app.plain_routes:
+            cur = self.app.route_map[path]
+        else:
+            cur = self.app.route_map
+            for component in path.split("/"):
+                components_set = cast(Set[str], cur["_components"])
+                if component in components_set:
+                    cur = cast(Dict[str, Any], cur[component])
+                elif "*" in components_set:
+                    path_params.append(component)
+                    cur = cast(Dict[str, Any], cur["*"])
+                elif cur.get("static_path"):
+                    static_path = cast(str, cur["static_path"])
+                    scope["path"] = scope["path"].replace(static_path, "")
+                    scope_type = "asgi"
+                else:  # noqa: SIM106
+                    raise NotFoundException()
         try:
             handlers = cast(Dict[str, Any], cur["_handlers"])
             handler_types = cast(Set[str], cur["_handler_types"])

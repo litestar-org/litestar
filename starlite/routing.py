@@ -81,7 +81,7 @@ class BaseRoute(ABC):
         for param in param_match_regex.findall(path):
             if ":" not in param:
                 raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
-            param_name, param_type = param.split(":")
+            param_name, param_type = (p.strip() for p in param.split(":"))
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
