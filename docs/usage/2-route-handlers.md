@@ -239,15 +239,26 @@ You can write your own ASGI apps using the `asgi` route handler decorator:
 
 ```python
 from starlette.types import Scope, Receive, Send
-from starlite import asgi
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite import Response, asgi
 
 
 @asgi(path="/my-asgi-app")
 async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-    ...
+    if scope["type"] == "http":
+        method = scope["method"]
+        if method.lower() == "get":
+            response = Response({"hello": "world"}, status_code=HTTP_200_OK)
+            await response(scope=scope, receive=receive, send=send)
+        return
+    response = Response(
+        {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
+    )
+    await response(scope=scope, receive=receive, send=send)
 ```
 
-ASGI apps are currently not handled in OpenAPI generation - although this will change in the future.
+!!! note
+    ASGI apps are currently not handled in OpenAPI generation - although this might change in the future.
 
 ## Handler Function Kwargs
 
