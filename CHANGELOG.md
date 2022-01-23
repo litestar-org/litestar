@@ -86,3 +86,10 @@
   1. supports generics
   2. added `to_model_instance` and `from_model_instance` methods
   3. added `field_definitions` kwarg, allowing for creating custom fields
+
+
+[0.7.0]
+- optimization: rewrote route resolution
+- optimization: updated query parameters parsing
+- optimization: updated request-response cycle handling
+- added `@asgi` route handler decorator
