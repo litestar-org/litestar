@@ -229,6 +229,26 @@ In all other regards websocket handlers function exactly like other route handle
     OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
     handlers, and you cannot configure any schema related parameters for these.
 
+
+## ASGI Route Handlers
+
+!!! info
+    This feature is available from v0.7.0 onwards
+
+You can write your own ASGI apps using the `asgi` route handler decorator:
+
+```python
+from starlette.types import Scope, Receive, Send
+from starlite import asgi
+
+
+@asgi(path="/my-asgi-app")
+async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+    ...
+```
+
+ASGI apps are currently not handled in OpenAPI generation - although this will change in the future.
+
 ## Handler Function Kwargs
 
 Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
