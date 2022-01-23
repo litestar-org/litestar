@@ -1,5 +1,5 @@
 from functools import partial
-from inspect import isawaitable, ismethod
+from inspect import ismethod
 from typing import Any, Optional
 
 from pydantic.fields import Undefined
@@ -29,7 +29,7 @@ class Provide:
         if self.use_cache and self.value is not Undefined:
             return self.value
         value = self.dependency(**kwargs)
-        if isawaitable(value):
+        if self.signature_model.is_async_fn:
             value = await value
         if self.use_cache:
             self.value = value

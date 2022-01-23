@@ -417,7 +417,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 data = self.fn(self.owner, **params)
             else:
                 data = self.fn(**params)
-            if isawaitable(data):
+            if self.signature_model.is_async_fn:
                 data = await data
 
         return await self.to_response(request=request, data=data)

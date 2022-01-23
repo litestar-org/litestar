@@ -1,4 +1,4 @@
-from inspect import Signature, getfullargspec
+from inspect import Signature, getfullargspec, iscoroutinefunction
 from typing import Any, ClassVar, Dict, List, Type, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
@@ -17,6 +17,7 @@ class SignatureModel(BaseModel):
 
     field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
+    is_async_fn: ClassVar[bool]
 
 
 def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
@@ -60,6 +61,7 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
         model: Type[SignatureModel] = create_model(name, __base__=SignatureModel, **field_definitions)
         model.return_annotation = signature.return_annotation
         model.field_plugin_mappings = field_plugin_mappings
+        model.is_async_fn = iscoroutinefunction(fn)
         return model
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
