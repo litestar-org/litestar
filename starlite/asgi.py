@@ -1,8 +1,12 @@
 from inspect import getfullargspec, isawaitable
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any, Dict, List, Set, Union, cast
 
 from starlette.routing import Router as StarletteRouter
+from starlette.routing import WebSocketRoute
+from starlette.types import Receive, Scope, Send
 
+from starlite.exceptions import NotFoundException
+from starlite.routing import ASGIRoute, HTTPRoute
 from starlite.types import LifeCycleHandler
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -24,13 +28,41 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def __getattribute__(self, key: str) -> Any:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
-        We override attribute access to return the app routes
+        The main entry point to the Router class.
         """
-        if key == "routes":
-            return self.app.routes
-        return super().__getattribute__(key)
+        scope_type = scope["type"]
+        path_params: List[str] = []
+        path = cast(str, scope["path"]).strip()
+        if path != "/" and path.endswith("/"):
+            path = path.rstrip("/")
+        components = path.split("/") if path != "/" else ["_root"]
+        cur = self.app.route_map
+        for component in components:
+            components_set = cast(Set[str], cur["_components"])
+            if component in components_set:
+                cur = cast(Dict[str, Any], cur[component])
+            elif "*" in components_set:
+                path_params.append(component)
+                cur = cast(Dict[str, Any], cur["*"])
+            elif cur.get("static_path"):  # noqa: SIM106
+                static_path = cast(str, cur["static_path"])
+                scope["path"] = scope["path"].replace(static_path, "")
+                scope_type = "asgi"
+            else:
+                raise NotFoundException()
+        try:
+            handlers = cast(Dict[str, Any], cur["_handlers"])
+            handler_types = cast(Set[str], cur["_handler_types"])
+            route = cast(
+                Union[WebSocketRoute, ASGIRoute, HTTPRoute],
+                handlers[scope_type if scope_type in handler_types else "asgi"],
+            )
+            scope["path_params"] = route.parse_path_params(path_params)  # type: ignore
+            await route.handle(scope=scope, receive=receive, send=send)
+        except KeyError as e:
+            raise NotFoundException() from e
 
     async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
         """

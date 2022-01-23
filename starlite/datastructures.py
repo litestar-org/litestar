@@ -19,10 +19,12 @@ class State(StarletteStateClass):
         return copy(self)
 
 
-class File(BaseModel):
+class StarliteType(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
+class File(StarliteType):
     path: FilePath
     filename: str
     stat_result: Optional[os.stat_result] = None
@@ -35,11 +37,11 @@ class File(BaseModel):
         return value or os.stat(cast(str, values.get("path")))
 
 
-class Redirect(BaseModel):
+class Redirect(StarliteType):
     path: str
 
 
-class Stream(BaseModel):
+class Stream(StarliteType):
     class Config:
         arbitrary_types_allowed = True
 

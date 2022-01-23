@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
@@ -11,7 +11,6 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -22,13 +21,13 @@ from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import BaseRouteHandler
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import BaseRoute, HTTPRoute, Router
+from starlite.routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -53,6 +52,8 @@ class Starlite(Router):
         "openapi_schema",
         "plugins",
         "state",
+        "route_map",
+        "static_paths"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -85,7 +86,9 @@ class Starlite(Router):
         self.debug = debug
         self.state = State()
         self.plugins = plugins or []
-        self.routes: List[Union[BaseRoute, Mount]] = []  # type: ignore
+        self.routes: List[BaseRoute] = []
+        self.route_map: Dict[str, Any] = {}
+        self.static_paths = set()
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -114,13 +117,53 @@ class Starlite(Router):
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 path = normalize_path(config.path)
+                self.static_paths.add(path)
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
-                self.routes.append(Mount(path, static_files))
+                self.register(asgi(path=path)(static_files))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
-        await self.middleware_stack(scope, receive, send)
+        if scope["type"] != "lifespan":
+            await self.middleware_stack(scope, receive, send)
+        else:
+            await self.asgi_router.lifespan(scope, receive, send)
+
+    def construct_route_map(self) -> None:
+        """
+        Create a map of the app's routes. This map is used in the asgi router to route requests.
+
+        """
+        for route in self.routes:
+            path = route.path
+            for param_definition in route.path_parameters:
+                path = path.replace(param_definition["full"], "")
+            path = path.replace("{}", "*")
+            components = path.split("/") if path not in ["", "/", None] else ["_root"]
+            cur = self.route_map
+            for component in components:
+                if "_components" not in cur:
+                    cur["_components"] = set()
+                components_set = cast(Set[str], cur["_components"])
+                components_set.add(component)
+                if component not in cur:
+                    cur[component] = {"_components": set()}
+                cur = cast(Dict[str, Any], cur[component])
+            if "_handlers" not in cur:
+                cur["_handlers"] = {}
+            if "_handler_types" not in cur:
+                cur["_handler_types"] = set()
+            if path in self.static_paths:
+                cur["static_path"] = path
+            handler_type = cast(Set[str], cur["_handler_types"])
+            handler_type.add(route.scope_type.value)
+            handlers = cast(Dict[str, BaseRoute], cur["_handlers"])
+            if isinstance(route, HTTPRoute):
+                handlers["http"] = route
+            elif isinstance(route, WebSocketRoute):
+                handlers["websocket"] = route
+            else:
+                handlers["asgi"] = route
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """
@@ -131,6 +174,7 @@ class Starlite(Router):
         handlers = super().register(value=value)
         for route_handler in handlers:
             self.create_handler_signature_model(route_handler=route_handler)
+        self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """
@@ -143,6 +187,10 @@ class Starlite(Router):
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
                 provider.signature_model = create_function_signature_model(fn=provider.dependency, plugins=self.plugins)
+        route_handler.resolve_guards()
+        if isinstance(route_handler, HTTPRouteHandler):
+            route_handler.resolve_before_request()
+            route_handler.resolve_after_request()
 
     def build_middleware_stack(
         self,

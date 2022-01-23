@@ -23,10 +23,11 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlette.types import Receive, Scope, Send
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
-from starlite.datastructures import File, Redirect, Stream
+from starlite.datastructures import File, Redirect, StarliteType, Stream
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -392,10 +393,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         Handles a given Request in relation to self.
         """
-        if not self.fn:
+        if not self.fn or not self.signature_model:
             raise ImproperlyConfiguredException("cannot call 'handle' without a decorated function")
 
-        await self.authorize_connection(connection=request)
+        if self.resolve_guards():
+            await self.authorize_connection(connection=request)
 
         before_request_handler = self.resolve_before_request()
         data = None
@@ -407,7 +409,10 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         # if data has not been returned by the before request handler, we proceed with the request
         if data is None:
-            params = await self.get_parameters_from_connection(connection=request)
+            if self.signature_model.__fields__:
+                params = await self.get_parameters_from_connection(connection=request)
+            else:
+                params = {}
             if isinstance(self.owner, Controller):
                 data = self.fn(self.owner, **params)
             else:
@@ -424,16 +429,18 @@ class HTTPRouteHandler(BaseRouteHandler):
         after_request = self.resolve_after_request()
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
-        if isinstance(data, StarletteResponse):
-            response = data
-        elif isinstance(data, Redirect):
-            response = RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
-        elif isinstance(data, File):
-            response = FileResponse(media_type=media_type, headers=headers, **data.dict())
-        elif isinstance(data, Stream):
-            response = StreamingResponse(
-                content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
-            )
+        response: StarletteResponse
+        if isinstance(data, (StarletteResponse, StarliteType)):
+            if isinstance(data, Redirect):
+                response = RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
+            elif isinstance(data, File):
+                response = FileResponse(media_type=media_type, headers=headers, **data.dict())
+            elif isinstance(data, Stream):
+                response = StreamingResponse(
+                    content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
+                )
+            else:
+                response = cast(StarletteResponse, data)
         else:
             plugin = get_plugin_for_value(data, request.app.plugins)
             if plugin:
@@ -745,3 +752,43 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
 
 websocket = WebsocketRouteHandler
+
+
+class ASGIRouteHandler(BaseRouteHandler):
+    def __call__(self, fn: AnyCallable) -> "ASGIRouteHandler":
+        """
+        Replaces a function with itself
+        """
+        self.fn = fn
+        self.validate_handler_function()
+        return self
+
+    def validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once it's set by inspecting its return annotations
+        """
+        super().validate_handler_function()
+        signature = Signature.from_callable(cast(AnyCallable, self.fn))
+
+        if signature.return_annotation is not None:
+            raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
+        if any(key not in signature.parameters for key in ["scope", "send", "receive"]):
+            raise ImproperlyConfiguredException(
+                "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
+            )
+
+    async def handle_asgi(self, scope: Scope, send: Send, receive: Receive) -> None:
+        """
+        Handles a given Websocket in relation to self.
+        """
+        if not self.fn:  # pragma: no cover
+            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
+        connection = HTTPConnection(scope=scope, receive=receive)
+        await self.authorize_connection(connection=connection)
+        if isinstance(self.owner, Controller):
+            await self.fn(self.owner, scope=scope, receive=receive, send=send)
+        else:
+            await self.fn(scope=scope, receive=receive, send=send)
+
+
+asgi = ASGIRouteHandler

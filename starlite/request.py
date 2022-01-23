@@ -1,5 +1,7 @@
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, TypeVar, Union, cast
+from functools import reduce
+from typing import TYPE_CHECKING, Any, Dict, Generic, List, Tuple, TypeVar, Union, cast
+from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField, Undefined
@@ -65,30 +67,44 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
         return cast(Auth, self.scope["auth"])
 
 
+_true_values = {"True", "true"}
+_false_values = {"False", "false"}
+
+
+def _query_param_reducer(
+    acc: Dict[str, Union[str, List[str]]], cur: Tuple[str, str]
+) -> Dict[str, Union[str, List[str]]]:
+    key, value = cur
+    if value in _true_values:
+        value = True  # type: ignore
+    elif value in _false_values:
+        value = False  # type: ignore
+    param = acc.get(key)
+    if param:
+        if isinstance(param, str):
+            acc[key] = [param, value]
+        else:
+            acc[key] = [*cast(List[Any], param), value]
+    else:
+        acc[key] = value
+    return acc
+
+
 def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
     """
     Parses and normalize a given connection's query parameters into a regular dictionary
 
     Extends the Starlette query params handling by supporting lists
     """
-    params: Dict[str, Union[str, List[str]]] = {}
     try:
-        for key, value in connection.query_params.multi_items():
-            if value in ["True", "true"]:
-                value = True  # type: ignore
-            elif value in ["False", "false"]:
-                value = False  # type: ignore
-            param = params.get(key)
-            if param:
-                if isinstance(param, str):
-                    params[key] = [param, value]
-                else:
-                    params[key] = [*cast(List[Any], param), value]
-            else:
-                params[key] = value
-        return params
+        qs = cast(Union[str, bytes], connection.scope["query_string"])
+        return reduce(
+            _query_param_reducer,
+            parse_qsl(qs if isinstance(qs, str) else qs.decode("latin-1"), keep_blank_values=True),
+            {},
+        )
     except KeyError:
-        return params
+        return {}
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
@@ -144,25 +160,27 @@ def get_connection_parameters(
         return query_params[field_name]
 
     extra = field.field_info.extra
-    parameter_name = None
-    source = None
+    extra_keys = set(extra.keys())
     default = field.default if field.default is not Undefined else None
-    if extra.get("query"):
-        parameter_name = extra["query"]
-        source = query_params
-    if extra.get("header"):
-        parameter_name = extra["header"]
-        source = header_params
-    if extra.get("cookie"):
-        parameter_name = extra["cookie"]
-        source = connection.cookies
-    if parameter_name and source:
-        parameter_is_required = extra["required"]
-        try:
-            return source[parameter_name]
-        except KeyError as e:
-            if parameter_is_required and not default:
-                raise ValidationException(f"Missing required parameter {parameter_name}") from e
+    if extra_keys:
+        parameter_name = None
+        source = None
+        if "query" in extra_keys and extra["query"]:
+            parameter_name = extra["query"]
+            source = query_params
+        elif "header" in extra_keys and extra["header"]:
+            parameter_name = extra["header"]
+            source = header_params
+        elif "cookie" in extra_keys and extra["cookie"]:
+            parameter_name = extra["cookie"]
+            source = connection.cookies
+        if parameter_name and source:
+            parameter_is_required = extra["required"]
+            try:
+                return source[parameter_name]
+            except KeyError as e:
+                if parameter_is_required and not default:
+                    raise ValidationException(f"Missing required parameter {parameter_name}") from e
     return default
 
 
