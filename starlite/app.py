@@ -18,7 +18,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
@@ -53,6 +53,7 @@ class Starlite(Router):
         "openapi_schema",
         "plugins",
         "state",
+        "template_engine"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -71,6 +72,7 @@ class Starlite(Router):
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
+        template_config: Optional[TemplateConfig] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
@@ -117,6 +119,11 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.routes.append(Mount(path, static_files))
+
+        if template_config:
+            self.template_engine = template_config.engine(directory=template_config.directory)
+        else:
+            self.template_engine = None
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self

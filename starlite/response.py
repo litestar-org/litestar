@@ -9,6 +9,7 @@ from starlette.responses import Response as StarletteResponse
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.template import TemplateEngine
 
 
 class Response(StarletteResponse):
@@ -53,3 +54,25 @@ class Response(StarletteResponse):
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+
+
+class TemplateResponse(StarletteResponse):
+    def __init__(
+        self,
+        context: Dict[str, Any],
+        template_name: str,
+        template_engine: TemplateEngine,
+        status_code: int,
+        background: Optional[BackgroundTask] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ):
+        template = template_engine.get_template(template_name)
+        content = template.render(context)
+
+        super().__init__(
+            content=content,
+            status_code=status_code,
+            headers=headers or {},
+            media_type=MediaType.HTML,
+            background=background,  # type: ignore
+        )

@@ -31,12 +31,14 @@ from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
+    InternalServerException,
     ValidationException,
 )
 from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket, resolve_signature_kwargs
-from starlite.response import Response
+from starlite.response import Response, TemplateResponse
+from starlite.template import Template
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -198,6 +200,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "after_request",
         "before_request",
         "media_type",
+        "template_name",
         "response_class",
         "response_headers",
         "content_encoding",
@@ -227,6 +230,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         after_request: Optional[AfterRequestHandler] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
+        template_name: Optional[str] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
@@ -264,6 +268,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.after_request = after_request
         self.before_request = before_request
         self.media_type = media_type
+        self.template_name = template_name
         self.response_class = response_class
         self.response_headers = response_headers
         # OpenAPI related attributes
@@ -434,6 +439,19 @@ class HTTPRouteHandler(BaseRouteHandler):
             response = StreamingResponse(
                 content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
             )
+        elif isinstance(data, dict) and self.signature_model.return_annotation is Template:
+            if self.template_name is None:
+                raise InternalServerException(detail="Template name is not given.")
+
+            if template_engine := request.app.template_engine:
+                response = TemplateResponse(
+                    context=data,
+                    template_name=self.template_name,
+                    template_engine=template_engine,
+                    status_code=self.status_code,
+                )
+            else:
+                raise InternalServerException(detail="Template engine was not initialised in app.")
         else:
             plugin = get_plugin_for_value(data, request.app.plugins)
             if plugin:

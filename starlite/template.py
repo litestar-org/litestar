@@ -1,5 +1,7 @@
-from typing import Any, Dict, List, Union
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Union, cast
 
+from pydantic import DirectoryPath
 from typing_extensions import Protocol, runtime_checkable
 
 from starlite.exceptions import MissingDependencyException
@@ -11,42 +13,42 @@ class Template(Protocol):
         ...
 
 
-@runtime_checkable
-class TemplateEngineProtocol(Protocol):
-    directory: str
+class TemplateEngine(ABC):
+    @abstractmethod
+    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+        ...
 
+    @abstractmethod
     def get_template(self, name: str) -> Template:
         ...
 
 
-class JinjaTemplateEngine:
-    __slots__ = ("_engine", "directory")
+class JinjaTemplateEngine(TemplateEngine):
+    __slots__ = ["_engine"]
 
-    def __init__(self, directory: Union[str, List[str]]) -> None:
+    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         try:
             import jinja2  # pylint: disable=C0415
         except ImportError as e:
             raise MissingDependencyException("jinja2 is not installed") from e
 
-        self.directory = directory
         loader = jinja2.FileSystemLoader(searchpath=directory)
         self._engine = jinja2.Environment(loader=loader, autoescape=True)
 
     def get_template(self, name: str) -> Template:
-        return self._engine.get_template(name=name)
+        return cast(Template, self._engine.get_template(name=name))
 
 
-class MakoTemplateEngine:
-    __slots__ = ("_engine", "directory")
+class MakoTemplateEngine(TemplateEngine):
+    __slots__ = ["_engine"]
 
-    def __init__(self, directory: Union[str, List[str]]) -> None:
+    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         try:
             from mako.lookup import TemplateLookup  # pylint: disable=C0415
         except ImportError as e:
             raise MissingDependencyException("mako is not installed") from e
 
-        self.directory = directory
         self._engine = TemplateLookup([directory])
 
     def get_template(self, name: str) -> Template:
-        return self._engine.get_template(name)
+        return cast(Template, self._engine.get_template(name))
