@@ -21,7 +21,3 @@ async def test_http_route_raises_for_unsupported_method():
 
     with pytest.raises(MethodNotAllowedException):
         await route.handle(scope={"method": "DELETE"}, receive=lambda x: x, send=lambda x: x)
-
-
-async def async_fn():
-    return None
