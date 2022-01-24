@@ -142,7 +142,7 @@ function.
 
 ### Request Life Cycle Hooks
 
-Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_request´ and `after_request`
+Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
 
 ## Contributing
 
