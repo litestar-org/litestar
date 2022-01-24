@@ -6,9 +6,11 @@ from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dum
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
+from starlette.types import Receive, Scope, Send
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.template import AbstractTemplateEngine
 
 
 class Response(StarletteResponse):
@@ -53,3 +55,39 @@ class Response(StarletteResponse):
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+
+
+class TemplateResponse(StarletteResponse):
+    def __init__(
+        self,
+        context: Dict[str, Any],
+        template_name: str,
+        template_engine: AbstractTemplateEngine,
+        status_code: int,
+        background: Optional[BackgroundTask] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ):
+        self.template = template_engine.get_template(template_name)
+        self.context = context
+        content = self.template.render(context)
+
+        super().__init__(
+            content=content,
+            status_code=status_code,
+            headers=headers or {},
+            media_type=MediaType.HTML,
+            background=background,  # type: ignore
+        )
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        request = self.context.get("request", {})
+        extensions = request.get("extensions", {})
+        if "http.response.template" in extensions:
+            await send(
+                {
+                    "type": "http.response.template",
+                    "template": self.template,
+                    "context": self.context,
+                }
+            )
+        await super().__call__(scope, receive, send)
