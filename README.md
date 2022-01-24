@@ -56,6 +56,10 @@ Additionally, Starlite is [faster than both FastAPI and Starlette](https://githu
 
 ![plain text requests processed](static/result-plaintext.png)
 
+Legend:
+- a-: async, s-: sync
+- np: no params, pp: path param, qp: query param, mp: mixed params
+
 ### Class Based Controllers
 
 While supporting function based route handlers, Starlite also supports and promotes python OOP using class based
