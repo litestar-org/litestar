@@ -55,7 +55,7 @@ class Starlite(Router):
         "state",
         "route_map",
         "static_paths",
-        "plain_routes"
+        "plain_routes",
         "template_engine"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
