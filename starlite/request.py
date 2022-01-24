@@ -1,7 +1,5 @@
 from contextlib import suppress
-from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, Generic, List, Tuple, TypeVar, Union, cast
-from urllib.parse import parse_qsl
+from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField, Undefined
@@ -13,6 +11,7 @@ from typing_extensions import Type
 
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.parsers import parse_query_params
 from starlite.utils import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -65,46 +64,6 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
                 "auth is not defined in scope, you should install an AuthMiddleware to set it"
             )
         return cast(Auth, self.scope["auth"])
-
-
-_true_values = {"True", "true"}
-_false_values = {"False", "false"}
-
-
-def _query_param_reducer(
-    acc: Dict[str, Union[str, List[str]]], cur: Tuple[str, str]
-) -> Dict[str, Union[str, List[str]]]:
-    key, value = cur
-    if value in _true_values:
-        value = True  # type: ignore
-    elif value in _false_values:
-        value = False  # type: ignore
-    param = acc.get(key)
-    if param:
-        if isinstance(param, str):
-            acc[key] = [param, value]
-        else:
-            acc[key] = [*cast(List[Any], param), value]
-    else:
-        acc[key] = value
-    return acc
-
-
-def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
-    """
-    Parses and normalize a given connection's query parameters into a regular dictionary
-
-    Extends the Starlette query params handling by supporting lists
-    """
-    try:
-        qs = cast(Union[str, bytes], connection.scope["query_string"])
-        return reduce(
-            _query_param_reducer,
-            parse_qsl(qs if isinstance(qs, str) else qs.decode("latin-1"), keep_blank_values=True),
-            {},
-        )
-    except KeyError:
-        return {}
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:

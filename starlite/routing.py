@@ -12,11 +12,7 @@ from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MethodNotAllowedException,
-    ValidationException,
-)
+from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
 from starlite.handlers import (
     ASGIRouteHandler,
     BaseRouteHandler,
@@ -37,8 +33,6 @@ from starlite.types import (
 from starlite.utils import find_index, join_paths, normalize_path, unique
 
 param_match_regex = re.compile(r"{(.*?)}")
-
-param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
 
 
 class BaseRoute(ABC):
@@ -78,6 +72,8 @@ class BaseRoute(ABC):
         path_format = path
         path_parameters = []
 
+        param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
+
         for param in param_match_regex.findall(path):
             if ":" not in param:
                 raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
@@ -85,21 +81,6 @@ class BaseRoute(ABC):
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
-
-    def parse_path_params(self, raw_params: List[str]) -> Dict[str, Any]:
-        """
-        Parses raw path parameters by mapping them into a dictionary
-        """
-        parsed_params: Dict[str, Any] = {}
-        for index, param_definition in enumerate(self.path_parameters):
-            raw_param = raw_params[index]
-            param_name = cast(str, param_definition["name"])
-            try:
-                param_type = cast(Type, param_definition["type"])
-                parsed_params[param_name] = param_type(raw_param)
-            except (ValueError, TypeError) as e:  # pragma: no cover
-                raise ValidationException(f"unable to parse path parameter {str(raw_param)}") from e
-        return parsed_params
 
 
 class HTTPRoute(BaseRoute):

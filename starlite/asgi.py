@@ -6,6 +6,7 @@ from starlette.routing import WebSocketRoute
 from starlette.types import Receive, Scope, Send
 
 from starlite.exceptions import NotFoundException
+from starlite.parsers import parse_path_params
 from starlite.routing import ASGIRoute, HTTPRoute
 from starlite.types import LifeCycleHandler
 
@@ -61,7 +62,7 @@ class StarliteASGIRouter(StarletteRouter):
                 Union[WebSocketRoute, ASGIRoute, HTTPRoute],
                 handlers[scope_type if scope_type in handler_types else "asgi"],
             )
-            scope["path_params"] = route.parse_path_params(path_params)  # type: ignore
+            scope["path_params"] = parse_path_params(route.path_parameters, path_params) if route.path_parameters else {}  # type: ignore
             await route.handle(scope=scope, receive=receive, send=send)
         except KeyError as e:
             raise NotFoundException() from e
