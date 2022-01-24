@@ -90,7 +90,7 @@ class Starlite(Router):
         self.routes: List[BaseRoute] = []
         self.route_map: Dict[str, Any] = {}
         self.static_paths = set()
-        self.plain_routes = set()
+        self.plain_routes: Set[str] = set()
         super().__init__(
             dependencies=dependencies,
             guards=guards,
@@ -131,7 +131,7 @@ class Starlite(Router):
         else:
             await self.asgi_router.lifespan(scope, receive, send)
 
-    def construct_route_map(self) -> None:
+    def construct_route_map(self) -> None:  # noqa: C901
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
 

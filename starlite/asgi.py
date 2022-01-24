@@ -48,7 +48,7 @@ class StarliteASGIRouter(StarletteRouter):
                 elif "*" in components_set:
                     path_params.append(component)
                     cur = cast(Dict[str, Any], cur["*"])
-                elif cur.get("static_path"):
+                elif cur.get("static_path"):  # noqa: SIM106
                     static_path = cast(str, cur["static_path"])
                     scope["path"] = scope["path"].replace(static_path, "")
                     scope_type = "asgi"

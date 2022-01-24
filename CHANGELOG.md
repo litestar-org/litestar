@@ -93,3 +93,7 @@
 - optimization: updated query parameters parsing
 - optimization: updated request-response cycle handling
 - added `@asgi` route handler decorator
+
+
+[0.7.1]
+- optimization: updated handling of paths without parameters
