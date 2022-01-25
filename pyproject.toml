@@ -51,6 +51,8 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = {extras = ["mypy"], version = "*"}
+Jinja2 = "*"
+Mako = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

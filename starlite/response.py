@@ -69,7 +69,7 @@ class TemplateResponse(StarletteResponse):
     ):
         self.template = template_engine.get_template(template_name)
         self.context = context
-        content = self.template.render(context)
+        content = self.template.render(**context)
 
         super().__init__(
             content=content,

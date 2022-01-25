@@ -12,7 +12,7 @@ from typing_extensions import Type
 
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
 from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
@@ -83,6 +83,7 @@ def create_test_client(
     on_shutdown: Optional[List[LifeCycleHandler]] = None,
     on_startup: Optional[List[LifeCycleHandler]] = None,
     openapi_config: Optional[OpenAPIConfig] = None,
+    template_config: Optional[TemplateConfig] = None,
     plugins: Optional[List[PluginProtocol]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
@@ -102,6 +103,7 @@ def create_test_client(
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             openapi_config=openapi_config,
+            template_config=template_config,
             plugins=plugins,
             route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
