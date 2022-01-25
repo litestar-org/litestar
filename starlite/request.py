@@ -1,9 +1,19 @@
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Mapping,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField, Undefined
-from starlette.datastructures import FormData, UploadFile
+from starlette.datastructures import FormData, Headers, UploadFile
 from starlette.requests import HTTPConnection
 from starlette.requests import Request as StarletteRequest
 from starlette.websockets import WebSocket as StarletteWebSocket
@@ -12,6 +22,7 @@ from typing_extensions import Type
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_query_params
+from starlite.types import Method
 from starlite.utils import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -43,6 +54,14 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
             )
         return cast(Auth, self.scope["auth"])
 
+    @property
+    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        return parse_query_params(self)
+
+    @property
+    def method(self) -> Method:
+        return cast(Method, self.scope["method"])
+
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
     @property
@@ -64,6 +83,10 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
                 "auth is not defined in scope, you should install an AuthMiddleware to set it"
             )
         return cast(Auth, self.scope["auth"])
+
+    @property
+    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        return parse_query_params(self)
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
@@ -94,7 +117,7 @@ def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field
 
 async def get_request_data(request: Request, field: ModelField) -> Any:
     """Given a request, parse its data - either as json or form data and return it"""
-    if request.method.lower() == HttpMethod.GET:
+    if request.method.upper() == HttpMethod.GET:
         raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
     media_type = field.field_info.extra.get("media_type")
     if not media_type or media_type == RequestEncodingType.JSON:
@@ -110,7 +133,7 @@ def get_connection_parameters(
     field_name: str,
     field: ModelField,
     query_params: Dict[str, Any],
-    header_params: Dict[str, Any],
+    header_params: Headers,
 ) -> Any:
     """Extract path, query, header and cookie parameters correlating to field_names from the request"""
     if field_name in connection.path_params:
@@ -123,7 +146,7 @@ def get_connection_parameters(
     default = field.default if field.default is not Undefined else None
     if extra_keys:
         parameter_name = None
-        source = None
+        source: Optional[Mapping] = None
         if "query" in extra_keys and extra["query"]:
             parameter_name = extra["query"]
             source = query_params
@@ -143,47 +166,52 @@ def get_connection_parameters(
     return default
 
 
-async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: Dict[str, ModelField]) -> Dict[str, Any]:
+_reserved_field_names = {"state", "headers", "cookies", "request", "socket", "data", "query"}
+
+
+async def get_model_kwargs_from_connection(  # noqa: C901
+    connection: Union[WebSocket, Request], fields: Dict[str, ModelField]
+) -> Dict[str, Any]:
     """
     Given a function's signature Model fields, populate its kwargs from the Request object
     """
     kwargs: Dict[str, Any] = {}
-    query_params = parse_query_params(connection=connection)
-    header_params = dict(connection.headers.items())
+    query_params = connection.query_params
     for field_name, field in fields.items():
-        if field_name == "state":
-            kwargs["state"] = connection.app.state.copy()
-        elif field_name == "headers":
-            kwargs["headers"] = header_params
-        elif field_name == "cookies":
-            kwargs["cookies"] = connection.cookies
-        elif field_name == "query":
-            kwargs["query"] = query_params
-        elif field_name == "request":
-            if not isinstance(connection, Request):
-                raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
-            kwargs["request"] = connection
-        elif field_name == "socket":
-            if not isinstance(connection, WebSocket):
-                raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-            kwargs["socket"] = connection
-        elif field_name == "data":
-            if not isinstance(connection, Request):
-                raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-            kwargs["data"] = await get_request_data(request=connection, field=field)
+        if field_name in _reserved_field_names:
+            if field_name == "state":
+                kwargs["state"] = connection.app.state.copy()
+            elif field_name == "headers":
+                kwargs["headers"] = connection.headers
+            elif field_name == "cookies":
+                kwargs["cookies"] = connection.cookies
+            elif field_name == "query":
+                kwargs["query"] = query_params
+            elif field_name == "request":
+                if not isinstance(connection, Request):
+                    raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
+                kwargs["request"] = connection
+            elif field_name == "socket":
+                if not isinstance(connection, WebSocket):
+                    raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+                kwargs["socket"] = connection
+            elif field_name == "data":
+                if not isinstance(connection, Request):
+                    raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
+                kwargs["data"] = await get_request_data(request=connection, field=field)
         else:
             kwargs[field_name] = get_connection_parameters(
                 connection=connection,
                 field_name=field_name,
                 field=field,
                 query_params=query_params,
-                header_params=header_params,
+                header_params=connection.headers,
             )
     return kwargs
 
 
 async def resolve_signature_kwargs(
-    signature_model: Type[SignatureModel], connection: HTTPConnection, providers: Dict[str, "Provide"]
+    signature_model: Type[SignatureModel], connection: Union[WebSocket, Request], providers: Dict[str, "Provide"]
 ) -> Dict[str, Any]:
     """
     Resolve the kwargs of a given signature model, and recursively resolve all dependencies.

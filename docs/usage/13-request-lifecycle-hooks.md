@@ -1,7 +1,6 @@
 # Request Life Cycle Hooks
 
-Starlite borrows the concept of `before_request` and `after_request` hooks from Flask. These hooks are often used to
-execute side-effects, such as starting tasks, opening or closing DB connections etc.
+Starlite borrows the concept of `before_request` and `after_request` hooks from Flask. These are general purpose hooks that allow the user to execute a function before the request is processed by the route handler, potentially bypassing the route handler completely, and after the route handler returns - modifying or even replacing the response. The primary use case for these hooks is to perform side effects, such as opening DB connections, start celery tasks etc., or to perform operations such as caching of responses.
 
 ## Before Request
 

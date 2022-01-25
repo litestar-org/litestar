@@ -85,19 +85,6 @@ def test_register_with_route_handler_functions():
             assert route.path == "/base/first"
 
 
-def test_register_validation_duplicate_handlers_for_same_route_and_method():
-    @get(path="/first")
-    def first_route_handler() -> None:
-        pass
-
-    @get(path="/first")
-    def second_route_handler() -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Router(path="/base", route_handlers=[first_route_handler, second_route_handler])
-
-
 def test_register_validation_wrong_class():
     class MyCustomClass:
         @get(path="/first")

@@ -18,6 +18,7 @@ from typing import (
 from pydantic import ValidationError, validate_arguments
 from pydantic.error_wrappers import display_errors
 from pydantic.typing import AnyCallable
+from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.requests import HTTPConnection
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -38,6 +39,7 @@ from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket, resolve_signature_kwargs
 from starlite.response import Response
+from starlite.signature import get_signature_model
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -46,7 +48,6 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import SignatureModel, normalize_path
-from starlite.utils.signature import get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router
@@ -156,7 +157,7 @@ class BaseRouteHandler:
             if isawaitable(result):
                 await result
 
-    async def get_parameters_from_connection(self, connection: HTTPConnection) -> Dict[str, Any]:
+    async def get_parameters_from_connection(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
         """
         Parse the signature_model of the route handler return values matching function parameter keys as well as dependencies
         """
@@ -197,6 +198,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "http_method",
         "status_code",
         "after_request",
+        "background_tasks",
         "before_request",
         "media_type",
         "response_class",
@@ -222,12 +224,13 @@ class HTTPRouteHandler(BaseRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
+        after_request: Optional[AfterRequestHandler] = None,
+        background_tasks: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
+        opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
@@ -246,11 +249,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
         if isinstance(http_method, list):
-            self.http_method = [HttpMethod.from_str(v) for v in http_method]
+            self.http_method: Union[List[str], str] = [v.upper() for v in http_method]
             if len(http_method) == 1:
-                self.http_method = http_method[0]  # type: ignore
+                self.http_method = http_method[0]
         else:
-            self.http_method = HttpMethod.from_str(http_method)  # type: ignore
+            self.http_method = http_method.value if isinstance(http_method, HttpMethod) else http_method
         if status_code:
             self.status_code = status_code
         elif isinstance(self.http_method, list):
@@ -264,6 +267,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt)
         self.after_request = after_request
         self.before_request = before_request
+        self.background_tasks = background_tasks
         self.media_type = media_type
         self.response_class = response_class
         self.response_headers = response_headers
@@ -362,11 +366,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
 
     @property
-    def http_methods(self) -> List[HttpMethod]:
+    def http_methods(self) -> List[Method]:
         """
         Returns a list of the RouteHandler's HttpMethod members
         """
-        return self.http_method if isinstance(self.http_method, list) else [self.http_method]
+        return cast(List[Method], self.http_method if isinstance(self.http_method, list) else [self.http_method])
 
     def validate_handler_function(self) -> None:
         """
@@ -454,6 +458,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 status_code=self.status_code,
                 content=data,
                 media_type=media_type,
+                background=self.background_tasks,
             )
         # run the after_request hook handler
         if after_request:

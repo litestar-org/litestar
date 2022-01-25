@@ -1,6 +1,7 @@
 import re
 from abc import ABC
 from inspect import isclass
+from itertools import chain
 from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
@@ -59,9 +60,9 @@ class BaseRoute(ABC):
         self.path, self.path_format, self.path_parameters = self.parse_path(path)
         self.handler_names = handler_names
         self.scope_type = scope_type
-        self.methods = methods or []
+        self.methods = set(methods or [])
         if "GET" in self.methods:
-            self.methods.append("HEAD")
+            self.methods.add("HEAD")
 
     @staticmethod
     def parse_path(path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
@@ -86,6 +87,7 @@ class BaseRoute(ABC):
 class HTTPRoute(BaseRoute):
     __slots__ = (
         "route_handler_map",
+        "route_handlers"
         # the rest of __slots__ are defined in BaseRoute and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -95,31 +97,16 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: Union[HTTPRouteHandler, List[HTTPRouteHandler]],
+        route_handlers: List[HTTPRouteHandler],
     ):
-        route_handlers = route_handlers if isinstance(route_handlers, list) else [route_handlers]
-        self.route_handler_map = self.parse_route_handlers(route_handlers=route_handlers, path=path)
+        self.route_handlers = route_handlers
+        self.route_handler_map: Dict[Method, HTTPRouteHandler] = {}
         super().__init__(
-            methods=[cast(Method, method.upper()) for method in self.route_handler_map],
+            methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
             path=path,
             scope_type=ScopeType.HTTP,
             handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
         )
-
-    @staticmethod
-    def parse_route_handlers(route_handlers: List[HTTPRouteHandler], path: str) -> Dict[HttpMethod, HTTPRouteHandler]:
-        """
-        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
-        """
-        mapped_route_handlers: Dict[HttpMethod, HTTPRouteHandler] = {}
-        for route_handler in route_handlers:
-            for http_method in route_handler.http_methods:
-                if mapped_route_handlers.get(http_method):
-                    raise ImproperlyConfiguredException(
-                        f"handler already registered for path {path!r} and http method {http_method}"
-                    )
-                mapped_route_handlers[http_method] = route_handler
-        return mapped_route_handlers
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
@@ -128,15 +115,27 @@ class HTTPRoute(BaseRoute):
         if scope["method"] not in self.methods:
             raise MethodNotAllowedException()
         request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
-        request_method = HttpMethod.from_str(request.method)
-        handler = self.route_handler_map[request_method]
+        handler = self.route_handler_map[request.method]
         response = await handler.handle_request(request=request)
         await response(scope, receive, send)
+
+    def create_handler_map(self) -> None:
+        """
+        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
+        """
+        for route_handler in self.route_handlers:
+            for http_method in route_handler.http_methods:
+                if self.route_handler_map.get(http_method):
+                    raise ImproperlyConfiguredException(
+                        f"handler already registered for path {self.path!r} and http method {http_method}"
+                    )
+                self.route_handler_map[http_method] = route_handler
 
 
 class WebSocketRoute(BaseRoute):
     __slots__ = (
         "route_handler",
+        "handler_parameter_model"
         # the rest of __slots__ are defined in BaseRoute and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -240,8 +239,9 @@ class Router:
             if isinstance(route, HTTPRoute):
                 if not isinstance(route_map.get(route.path), dict):
                     route_map[route.path] = {}
-                for method, handler in route.route_handler_map.items():
-                    route_map[route.path][method] = handler  # type: ignore
+                for route_handler in route.route_handlers:
+                    for method in route_handler.http_methods:
+                        route_map[route.path][method] = route_handler  # type: ignore
             else:
                 route_map[route.path] = cast(WebSocketRoute, route).route_handler
         return route_map
@@ -298,9 +298,7 @@ class Router:
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
-    def register(
-        self, value: ControllerRouterHandler
-    ) -> List[Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]]:
+    def register(self, value: ControllerRouterHandler) -> List[BaseRoute]:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -308,29 +306,33 @@ class Router:
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         validated_value = self.validate_registration_value(value)
-        handlers: List[Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]] = []
+        routes: List[BaseRoute] = []
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                handlers.append(handler_or_method_map)
-                self.routes.append(WebSocketRoute(path=path, route_handler=handler_or_method_map))
+                route: BaseRoute = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
-                handlers.append(handler_or_method_map)
-                self.routes.append(ASGIRoute(path=path, route_handler=handler_or_method_map))
+                route = ASGIRoute(path=path, route_handler=handler_or_method_map)
+                self.routes.append(route)
             else:
-                route_handlers = list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values())
-                handlers.extend(route_handlers)
-                if self.route_handler_method_map.get(path):
+                existing_handlers: List[HTTPRouteHandler] = list(
+                    cast(dict, self.route_handler_method_map.get(path, {})).values()
+                )
+                route_handlers = unique(list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values()))
+                if existing_handlers:
+                    route_handlers.extend(unique(existing_handlers))
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
                     )
                     assert existing_route_index != -1, "unable to find_index existing route index"
-                    if isinstance(self.route_handler_method_map[path], dict):
-                        route_handlers.extend(list(cast(dict, self.route_handler_method_map[path]).values()))
-                    self.routes[existing_route_index] = HTTPRoute(
+                    route = HTTPRoute(
                         path=path,
-                        route_handlers=unique(route_handlers),
+                        route_handlers=route_handlers,
                     )
+                    self.routes[existing_route_index] = route
                 else:
-                    self.routes.append(HTTPRoute(path=path, route_handlers=unique(route_handlers)))
-        return unique(handlers)
+                    route = HTTPRoute(path=path, route_handlers=route_handlers)
+                    self.routes.append(route)
+            routes.append(route)
+        return routes

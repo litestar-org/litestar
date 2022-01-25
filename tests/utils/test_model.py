@@ -4,7 +4,7 @@ import pytest
 from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite import ImproperlyConfiguredException, get
-from starlite.utils import create_function_signature_model
+from starlite.utils import model_function_signature
 
 
 def test_create_function_signature_model_ignore_return_annotation():
@@ -12,9 +12,9 @@ def test_create_function_signature_model_ignore_return_annotation():
     async def health_check() -> None:
         return
 
-    assert create_function_signature_model(health_check.fn, [])().dict() == {}
+    assert model_function_signature(health_check.fn, [])().dict() == {}
 
 
 def test_create_function_signature_model_validation():
     with pytest.raises(ImproperlyConfiguredException):
-        create_function_signature_model(lru_cache(maxsize=0)(lambda x: x), [])
+        model_function_signature(lru_cache(maxsize=0)(lambda x: x), [])

@@ -22,12 +22,11 @@ class StarliteASGIRouter(StarletteRouter):
     def __init__(
         self,
         app: "Starlite",
-        redirect_slashes: bool,
         on_shutdown: List[LifeCycleHandler],
         on_startup: List[LifeCycleHandler],
     ):
         self.app = app
-        super().__init__(redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown)
+        super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
@@ -42,7 +41,8 @@ class StarliteASGIRouter(StarletteRouter):
             cur = self.app.route_map[path]
         else:
             cur = self.app.route_map
-            for component in path.split("/"):
+            components = ["/", *[component for component in path.split("/") if component]]
+            for component in components:
                 components_set = cast(Set[str], cur["_components"])
                 if component in components_set:
                     cur = cast(Dict[str, Any], cur[component])
@@ -62,6 +62,7 @@ class StarliteASGIRouter(StarletteRouter):
                 Union[WebSocketRoute, ASGIRoute, HTTPRoute],
                 handlers[scope_type if scope_type in handler_types else "asgi"],
             )
+            scope["path_format"] = route.path_format
             scope["path_params"] = parse_path_params(route.path_parameters, path_params) if route.path_parameters else {}  # type: ignore
             await route.handle(scope=scope, receive=receive, send=send)
         except KeyError as e:

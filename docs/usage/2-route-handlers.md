@@ -35,6 +35,7 @@ def my_endpoint() -> None:
     consistent schema generation, as well as stronger typing.
 
 ### Declaring Path(s)
+
 All route handlers accept an optional path argument. This argument can be declared as a kwarg using the `path` key word:
 
 ```python
@@ -91,7 +92,8 @@ a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`
 
 Additionally, you can pass the following optional kwargs:
 
-- `status_code`: the status code for a success response. If not specified, [a default value will be used](5-responses.md#status-codes).
+- `status_code`: the status code for a success response. If not
+  specified, [a default value will be used](5-responses.md#status-codes).
 - `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
   response. Defaults to `MediaType.JSON`. See [media-type](5-responses.md#media-type).
 - `response_class`: A custom response class to be used as the app default.
@@ -100,10 +102,14 @@ Additionally, you can pass the following optional kwargs:
   See [response-headers](5-responses.md#response-headers).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](9-guards.md).
-- `before_request`: a sync or async function to execute before a `Request` is passed to the route handler. If this
+- `before_request`: A sync or async function to execute before a `Request` is passed to the route handler. If this
   function returns a value, the request will not reach the route handler, and instead this value will be used.
-- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
+- `after_request`: A sync or async function to execute before the `Response` is returned. This function receives the
   `Respose` object and it must return a `Response` object.
+- `background_tasks`: A callable wrapped in an instance of `starlette.background.BackgroundTask` or a sequence
+  of `BackgroundTask` instances wrapped in `starlette.background.BackgroundTasks`. The callable(s) will be called after
+  the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
+  handler will not be executed.
 
 And the following kwargs, which affect [OpenAPI schema generation](12-openapi.md#route-handler-configuration)
 
@@ -229,7 +235,6 @@ In all other regards websocket handlers function exactly like other route handle
     OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
     handlers, and you cannot configure any schema related parameters for these.
 
-
 ## ASGI Route Handlers
 
 !!! info
@@ -246,8 +251,7 @@ from starlite import Response, asgi
 @asgi(path="/my-asgi-app")
 async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     if scope["type"] == "http":
-        method = scope["method"]
-        if method.lower() == "get":
+        if scope["method"] == "GET":
             response = Response({"hello": "world"}, status_code=HTTP_200_OK)
             await response(scope=scope, receive=receive, send=send)
         return
@@ -275,7 +279,7 @@ Additionally, you can specify the following special kwargs:
 
 - `state`: injects a copy of the application `state`.
 - `request`: injects the request instance.
-- `headers`: injects the request `headers` as a parsed dictionary.
+- `headers`: injects the request `headers` as an instance of `starlette.datastructures.Headers` - which is a case-insensitive mapping.
 - `query`: injects the request `query_params` as a parsed dictionary.
 - `cookies`: injects the request `cookies` as a parsed dictionary.
 
@@ -284,13 +288,14 @@ For example:
 ```python
 from typing import Any, Dict
 from starlite import State, Request, get
+from starlette.datastructures import Headers
 
 
 @get(path="/")
 def my_request_handler(
     state: State,
     request: Request,
-    headers: Dict[str, Any],
+    headers: Headers,
     query: Dict[str, Any],
     cookies: Dict[str, Any],
 ) -> None:
