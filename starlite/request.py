@@ -151,6 +151,9 @@ def get_connection_parameters(
     return default
 
 
+_reserved_field_names = {"state", "headers", "cookies", "request", "socket", "data", "query"}
+
+
 async def get_model_kwargs_from_connection(
     connection: Union[WebSocket, Request], fields: Dict[str, ModelField]
 ) -> Dict[str, Any]:
@@ -161,26 +164,27 @@ async def get_model_kwargs_from_connection(
     query_params = connection.query_params
     header_params = dict(connection.headers.items())
     for field_name, field in fields.items():
-        if field_name == "state":
-            kwargs["state"] = connection.app.state.copy()
-        elif field_name == "headers":
-            kwargs["headers"] = header_params
-        elif field_name == "cookies":
-            kwargs["cookies"] = connection.cookies
-        elif field_name == "query":
-            kwargs["query"] = query_params
-        elif field_name == "request":
-            if not isinstance(connection, Request):
-                raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
-            kwargs["request"] = connection
-        elif field_name == "socket":
-            if not isinstance(connection, WebSocket):
-                raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-            kwargs["socket"] = connection
-        elif field_name == "data":
-            if not isinstance(connection, Request):
-                raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-            kwargs["data"] = await get_request_data(request=connection, field=field)
+        if field_name in _reserved_field_names:
+            if field_name == "state":
+                kwargs["state"] = connection.app.state.copy()
+            elif field_name == "headers":
+                kwargs["headers"] = header_params
+            elif field_name == "cookies":
+                kwargs["cookies"] = connection.cookies
+            elif field_name == "query":
+                kwargs["query"] = query_params
+            elif field_name == "request":
+                if not isinstance(connection, Request):
+                    raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
+                kwargs["request"] = connection
+            elif field_name == "socket":
+                if not isinstance(connection, WebSocket):
+                    raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+                kwargs["socket"] = connection
+            elif field_name == "data":
+                if not isinstance(connection, Request):
+                    raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
+                kwargs["data"] = await get_request_data(request=connection, field=field)
         else:
             kwargs[field_name] = get_connection_parameters(
                 connection=connection,

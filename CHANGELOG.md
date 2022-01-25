@@ -97,3 +97,7 @@
 
 [0.7.1]
 - optimization: updated handling of paths without parameters
+
+[0.7.2]
+- add missing support for starlette background tasks
+- minor optimizations
