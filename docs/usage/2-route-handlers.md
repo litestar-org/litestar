@@ -251,8 +251,7 @@ from starlite import Response, asgi
 @asgi(path="/my-asgi-app")
 async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     if scope["type"] == "http":
-        method = scope["method"]
-        if method.lower() == "get":
+        if scope["method"] == "GET":
             response = Response({"hello": "world"}, status_code=HTTP_200_OK)
             await response(scope=scope, receive=receive, send=send)
         return

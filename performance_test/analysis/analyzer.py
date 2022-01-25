@@ -27,13 +27,9 @@ for test_type in ["json", "plaintext"]:
     starlite_results = t[t["source"] == "starlite"]
     fast_api_results = t[t["source"] == "fastapi"]
     starlette_results = t[t["source"] == "starlette"]
-    starlite_results.rename(
-        columns={"2xx": "requests_processed_starlite"}, inplace=True
-    )
+    starlite_results.rename(columns={"2xx": "requests_processed_starlite"}, inplace=True)
     fast_api_results.rename(columns={"2xx": "requests_processed_fastapi"}, inplace=True)
-    starlette_results.rename(
-        columns={"2xx": "requests_processed_starlette"}, inplace=True
-    )
+    starlette_results.rename(columns={"2xx": "requests_processed_starlette"}, inplace=True)
 
     merged_df = reduce(
         lambda left, right: pd.merge(left, right, on="url"),

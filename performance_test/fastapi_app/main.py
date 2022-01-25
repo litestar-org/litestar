@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 app = FastAPI()
 
 
-## json
+# json
 
 
 @app.get("/async-json-no-params")
@@ -53,7 +53,7 @@ def sync_json_mixed_params(first: str, second: str) -> ORJSONResponse:
     return ORJSONResponse({"message": first + second})
 
 
-## plain text
+# plain text
 
 
 @app.get("/async-plaintext-no-params")

@@ -12,6 +12,7 @@ from typing_extensions import Type
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_query_params
+from starlite.types import Method
 from starlite.utils import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -46,6 +47,10 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
         return parse_query_params(self)
+
+    @property
+    def method(self) -> Method:
+        return cast(Method, self.scope["method"])
 
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
@@ -102,7 +107,7 @@ def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field
 
 async def get_request_data(request: Request, field: ModelField) -> Any:
     """Given a request, parse its data - either as json or form data and return it"""
-    if request.method.lower() == HttpMethod.GET:
+    if request.method.upper() == HttpMethod.GET:
         raise ImproperlyConfiguredException("'data' kwarg is unsupported for GET requests")
     media_type = field.field_info.extra.get("media_type")
     if not media_type or media_type == RequestEncodingType.JSON:
@@ -154,7 +159,7 @@ def get_connection_parameters(
 _reserved_field_names = {"state", "headers", "cookies", "request", "socket", "data", "query"}
 
 
-async def get_model_kwargs_from_connection(
+async def get_model_kwargs_from_connection(  # noqa: C901
     connection: Union[WebSocket, Request], fields: Dict[str, ModelField]
 ) -> Dict[str, Any]:
     """

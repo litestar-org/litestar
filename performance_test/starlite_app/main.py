@@ -1,8 +1,8 @@
 from asyncio import sleep
 
-from starlite import MediaType, Starlite, get
+from starlite import Starlite, get
 
-## json
+# json
 
 
 @get("/async-json-no-params")
@@ -49,7 +49,7 @@ def sync_json_mixed_params(first: str, second: str) -> dict:
     return {"message": first + second}
 
 
-## plain text
+# plain text
 
 
 @get("/async-plaintext-no-params")

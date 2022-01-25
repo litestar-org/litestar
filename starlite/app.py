@@ -177,6 +177,10 @@ class Starlite(Router):
         handlers = super().register(value=value)
         for route_handler in handlers:
             self.create_handler_signature_model(route_handler=route_handler)
+            route_handler.resolve_guards()
+            if isinstance(route_handler, HTTPRouteHandler):
+                route_handler.resolve_before_request()
+                route_handler.resolve_after_request()
         self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
@@ -190,10 +194,6 @@ class Starlite(Router):
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
                 provider.signature_model = create_function_signature_model(fn=provider.dependency, plugins=self.plugins)
-        route_handler.resolve_guards()
-        if isinstance(route_handler, HTTPRouteHandler):
-            route_handler.resolve_before_request()
-            route_handler.resolve_after_request()
 
     def build_middleware_stack(
         self,

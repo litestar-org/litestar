@@ -107,11 +107,11 @@ class HTTPRoute(BaseRoute):
         )
 
     @staticmethod
-    def parse_route_handlers(route_handlers: List[HTTPRouteHandler], path: str) -> Dict[HttpMethod, HTTPRouteHandler]:
+    def parse_route_handlers(route_handlers: List[HTTPRouteHandler], path: str) -> Dict[Method, HTTPRouteHandler]:
         """
         Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
         """
-        mapped_route_handlers: Dict[HttpMethod, HTTPRouteHandler] = {}
+        mapped_route_handlers: Dict[Method, HTTPRouteHandler] = {}
         for route_handler in route_handlers:
             for http_method in route_handler.http_methods:
                 if mapped_route_handlers.get(http_method):
@@ -128,8 +128,7 @@ class HTTPRoute(BaseRoute):
         if scope["method"] not in self.methods:
             raise MethodNotAllowedException()
         request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
-        request_method = HttpMethod.from_str(request.method)
-        handler = self.route_handler_map[request_method]
+        handler = self.route_handler_map[request.method]
         response = await handler.handle_request(request=request)
         await response(scope, receive, send)
 

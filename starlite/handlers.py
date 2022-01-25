@@ -249,11 +249,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
         if isinstance(http_method, list):
-            self.http_method = [HttpMethod.from_str(v) for v in http_method]
+            self.http_method: Union[List[str], str] = [v.upper() for v in http_method]
             if len(http_method) == 1:
-                self.http_method = http_method[0]  # type: ignore
+                self.http_method = http_method[0]
         else:
-            self.http_method = HttpMethod.from_str(http_method)  # type: ignore
+            self.http_method = http_method.value if isinstance(http_method, HttpMethod) else http_method
         if status_code:
             self.status_code = status_code
         elif isinstance(self.http_method, list):
@@ -366,11 +366,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
 
     @property
-    def http_methods(self) -> List[HttpMethod]:
+    def http_methods(self) -> List[Method]:
         """
         Returns a list of the RouteHandler's HttpMethod members
         """
-        return self.http_method if isinstance(self.http_method, list) else [self.http_method]
+        return cast(List[Method], self.http_method if isinstance(self.http_method, list) else [self.http_method])
 
     def validate_handler_function(self) -> None:
         """
