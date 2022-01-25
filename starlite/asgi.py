@@ -22,12 +22,11 @@ class StarliteASGIRouter(StarletteRouter):
     def __init__(
         self,
         app: "Starlite",
-        redirect_slashes: bool,
         on_shutdown: List[LifeCycleHandler],
         on_startup: List[LifeCycleHandler],
     ):
         self.app = app
-        super().__init__(redirect_slashes=redirect_slashes, on_startup=on_startup, on_shutdown=on_shutdown)
+        super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """

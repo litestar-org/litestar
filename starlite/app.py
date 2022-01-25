@@ -74,7 +74,6 @@ class Starlite(Router):
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
@@ -101,9 +100,7 @@ class Starlite(Router):
             before_request=before_request,
             after_request=after_request,
         )
-        self.asgi_router = StarliteASGIRouter(
-            redirect_slashes=redirect_slashes, on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self
-        )
+        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
             StarletteHTTPException: self.handle_http_exception,
             **(exception_handlers or {}),
@@ -146,8 +143,6 @@ class Starlite(Router):
                 path = path.replace("{}", "*")
                 cur = self.route_map
                 for component in path.split("/"):
-                    if "_components" not in cur:
-                        cur["_components"] = set()
                     components_set = cast(Set[str], cur["_components"])
                     components_set.add(component)
                     if component not in cur:

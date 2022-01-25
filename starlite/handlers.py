@@ -18,6 +18,7 @@ from typing import (
 from pydantic import ValidationError, validate_arguments
 from pydantic.error_wrappers import display_errors
 from pydantic.typing import AnyCallable
+from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.requests import HTTPConnection
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -156,7 +157,7 @@ class BaseRouteHandler:
             if isawaitable(result):
                 await result
 
-    async def get_parameters_from_connection(self, connection: HTTPConnection) -> Dict[str, Any]:
+    async def get_parameters_from_connection(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
         """
         Parse the signature_model of the route handler return values matching function parameter keys as well as dependencies
         """
@@ -197,6 +198,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "http_method",
         "status_code",
         "after_request",
+        "background_tasks",
         "before_request",
         "media_type",
         "response_class",
@@ -222,12 +224,13 @@ class HTTPRouteHandler(BaseRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
+        after_request: Optional[AfterRequestHandler] = None,
+        background_tasks: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
+        opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
@@ -264,6 +267,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt)
         self.after_request = after_request
         self.before_request = before_request
+        self.background_tasks = background_tasks
         self.media_type = media_type
         self.response_class = response_class
         self.response_headers = response_headers
@@ -454,6 +458,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 status_code=self.status_code,
                 content=data,
                 media_type=media_type,
+                background=self.background_tasks,
             )
         # run the after_request hook handler
         if after_request:

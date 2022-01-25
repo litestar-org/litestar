@@ -1,5 +1,5 @@
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, Union, cast
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField, Undefined
@@ -43,6 +43,10 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
             )
         return cast(Auth, self.scope["auth"])
 
+    @property
+    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        return parse_query_params(self)
+
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
     @property
@@ -64,6 +68,10 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
                 "auth is not defined in scope, you should install an AuthMiddleware to set it"
             )
         return cast(Auth, self.scope["auth"])
+
+    @property
+    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        return parse_query_params(self)
 
 
 def handle_multipart(media_type: RequestEncodingType, form_data: FormData, field: ModelField) -> Any:
@@ -143,12 +151,14 @@ def get_connection_parameters(
     return default
 
 
-async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: Dict[str, ModelField]) -> Dict[str, Any]:
+async def get_model_kwargs_from_connection(
+    connection: Union[WebSocket, Request], fields: Dict[str, ModelField]
+) -> Dict[str, Any]:
     """
     Given a function's signature Model fields, populate its kwargs from the Request object
     """
     kwargs: Dict[str, Any] = {}
-    query_params = parse_query_params(connection=connection)
+    query_params = connection.query_params
     header_params = dict(connection.headers.items())
     for field_name, field in fields.items():
         if field_name == "state":
@@ -183,7 +193,7 @@ async def get_model_kwargs_from_connection(connection: HTTPConnection, fields: D
 
 
 async def resolve_signature_kwargs(
-    signature_model: Type[SignatureModel], connection: HTTPConnection, providers: Dict[str, "Provide"]
+    signature_model: Type[SignatureModel], connection: Union[WebSocket, Request], providers: Dict[str, "Provide"]
 ) -> Dict[str, Any]:
     """
     Resolve the kwargs of a given signature model, and recursively resolve all dependencies.
