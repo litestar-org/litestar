@@ -80,9 +80,10 @@ class TemplateResponse(StarletteResponse):
         )
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        # code from https://github.com/encode/starlette/blob/master/starlette/templating.py
         request = self.context.get("request", {})
         extensions = request.get("extensions", {})
-        if "http.response.template" in extensions:
+        if "http.response.template" in extensions:  # pragma: no cover
             await send(
                 {
                     "type": "http.response.template",

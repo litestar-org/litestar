@@ -7,7 +7,7 @@ from starlette.status import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 
-from starlite import File, MediaType, Redirect, Starlite, Stream, get
+from starlite import File, MediaType, Redirect, Starlite, Stream, Template, get
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -149,3 +149,13 @@ def test_create_success_response_file_data():
     assert response.headers["last-modified"].description
     assert response.headers["etag"].param_schema.type == OpenAPIType.STRING
     assert response.headers["etag"].description
+
+
+def test_create_success_response_template():
+    @get(path="/template")
+    def template_handler() -> Template:
+        ...
+
+    response = create_success_response(template_handler, True)
+    assert response.description == "Request fulfilled, document follows"
+    assert response.content[MediaType.HTML]

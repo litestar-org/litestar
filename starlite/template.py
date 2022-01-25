@@ -12,18 +12,16 @@ from starlite.exceptions import MissingDependencyException, TemplateNotFound
 class AbstractTemplate(Protocol):
     def render(self, context: Dict[str, Any]) -> str:
         """Returns the rendered template as a string"""
-        ...
 
 
 class AbstractTemplateEngine(ABC):
     @abstractmethod
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
-        ...
+        """Builds a template engine."""
 
     @abstractmethod
     def get_template(self, name: str) -> AbstractTemplate:
         """Loads the template with name and returns it."""
-        ...
 
 
 class JinjaTemplateEngine(AbstractTemplateEngine):
@@ -32,7 +30,7 @@ class JinjaTemplateEngine(AbstractTemplateEngine):
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         try:
             import jinja2
-        except ImportError as e:
+        except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("jinja2 is not installed") from e
 
         loader = jinja2.FileSystemLoader(searchpath=directory)
@@ -53,7 +51,7 @@ class MakoTemplateEngine(AbstractTemplateEngine):
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         try:
             from mako.lookup import TemplateLookup
-        except ImportError as e:
+        except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("mako is not installed") from e
 
         self._engine = TemplateLookup(directories=[directory])
