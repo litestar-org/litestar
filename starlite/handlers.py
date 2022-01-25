@@ -384,7 +384,8 @@ class HTTPRouteHandler(BaseRouteHandler):
                     content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
                 )
             elif isinstance(data, Template):
-                if template_engine := request.app.template_engine:  # noqa: SIM106
+                template_engine = request.app.template_engine
+                if template_engine:  # noqa: SIM106
                     response = TemplateResponse(
                         context=data.context,
                         template_name=data.name,
