@@ -28,6 +28,7 @@ from starlette.status import (
 from starlite import (
     File,
     HttpMethod,
+    HTTPRoute,
     MediaType,
     Redirect,
     Response,
@@ -205,12 +206,6 @@ async def test_route_handler_function_validation():
 
     assert file_method.media_type == MediaType.TEXT
 
-    route_with_no_fn = HTTPRouteHandler(http_method=HttpMethod.GET)
-    request = create_test_request(http_method=HttpMethod.GET)
-
-    with pytest.raises(ImproperlyConfiguredException):
-        await route_with_no_fn.handle_request(request=request)
-
 
 @pytest.mark.asyncio
 async def test_handle_request_async_await():
@@ -230,7 +225,7 @@ async def test_handle_request_async_await():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "response",
+    "expected_response",
     [
         Response(status_code=HTTP_200_OK, content=b"abc", media_type=MediaType.TEXT),
         StarletteResponse(status_code=HTTP_200_OK, content=b"abc"),
@@ -242,31 +237,35 @@ async def test_handle_request_async_await():
         FileResponse("./test_http_handlers.py"),
     ],
 )
-async def test_handle_request_when_handler_returns_starlette_responses(response):
+async def test_to_response_returning_redirect_starlette_response(expected_response):
     @get(path="/test")
     def test_function() -> StarletteResponse:
-        return response
+        return expected_response
 
-    request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = model_function_signature(test_function.fn, [])
-    assert await test_function.handle_request(request=request) == response
+    with create_test_client(test_function) as client:
+        route: HTTPRoute = client.app.routes[0]
+        route_handler = route.route_handlers[0]
+        response = await route_handler.to_response([], route_handler.fn())
+        assert isinstance(response, StarletteResponse)
+        assert response is expected_response
 
 
 @pytest.mark.asyncio
-async def test_handle_request_redirect_response():
+async def test_to_response_returning_redirect_response():
     @get(path="/test")
     def test_function() -> None:
         return Redirect(path="/somewhere-else")
 
-    request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = model_function_signature(test_function.fn, [])
-    response = await test_function.handle_request(request=request)
-    assert isinstance(response, RedirectResponse)
-    assert response.headers["location"] == "/somewhere-else"
+    with create_test_client(test_function) as client:
+        route: HTTPRoute = client.app.routes[0]
+        route_handler = route.route_handlers[0]
+        response = await route_handler.to_response([], route_handler.fn())
+        assert isinstance(response, RedirectResponse)
+        assert response.headers["location"] == "/somewhere-else"
 
 
 @pytest.mark.asyncio
-async def test_handle_request_file_response():
+async def test_to_response_returning_file_response():
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
 
@@ -274,11 +273,12 @@ async def test_handle_request_file_response():
     def test_function() -> File:
         return File(path=current_file_path, filename=filename)
 
-    request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = model_function_signature(test_function.fn, [])
-    response = await test_function.handle_request(request=request)
-    assert isinstance(response, FileResponse)
-    assert response.stat_result
+    with create_test_client(test_function) as client:
+        route: HTTPRoute = client.app.routes[0]
+        route_handler = route.route_handlers[0]
+        response = await route_handler.to_response([], route_handler.fn())
+        assert isinstance(response, FileResponse)
+        assert response.stat_result
 
 
 def my_iterator():
@@ -306,10 +306,11 @@ async def test_handle_request_streaming_response(iterator: Any, should_raise: bo
         def test_function() -> Stream:
             return Stream(iterator=iterator)
 
-        request = create_test_request(content=None, http_method=HttpMethod.GET)
-        test_function.signature_model = model_function_signature(test_function.fn, [])
-        response = await test_function.handle_request(request=request)
-        assert isinstance(response, StreamingResponse)
+        with create_test_client(test_function) as client:
+            route: HTTPRoute = client.app.routes[0]
+            route_handler = route.route_handlers[0]
+            response = await route_handler.to_response([], route_handler.fn())
+            assert isinstance(response, StreamingResponse)
     else:
         with pytest.raises(ValidationError):
             Stream(iterator=iterator)

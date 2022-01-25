@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
@@ -18,16 +19,11 @@ from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.controller import Controller
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import (
-    ASGIRouteHandler,
-    BaseRouteHandler,
-    HTTPRouteHandler,
-    WebsocketRouteHandler,
-    asgi,
-)
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -148,8 +144,7 @@ class Starlite(Router):
                     path = path.replace(param_definition["full"], "")
                 path = path.replace("{}", "*")
                 cur = self.route_map
-                components = ["/", *[component for component in path.split("/") if component]]
-                for component in components:
+                for component in path.split("/"):
                     components_set = cast(Set[str], cur["_components"])
                     components_set.add(component)
                     if component not in cur:
@@ -184,9 +179,7 @@ class Starlite(Router):
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
-                route_handlers: List[
-                    Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
-                ] = route.route_handlers  # type: ignore
+                route_handlers = route.route_handlers
             else:
                 route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]
             for route_handler in route_handlers:
@@ -196,8 +189,12 @@ class Starlite(Router):
                     route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_request()
+                if isinstance(route_handler.owner, Controller):
+                    route_handler.fn = partial(route_handler.fn, route_handler.owner)
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
+            elif isinstance(route, WebSocketRoute):
+                route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
         self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
@@ -265,7 +262,7 @@ class Starlite(Router):
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
-                and any(route_handler.include_in_schema for route_handler in route.route_handler_map.values())
+                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
                 and (route.path_format or "/") not in openapi_schema.paths
             ):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(

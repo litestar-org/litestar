@@ -57,6 +57,15 @@ Guard = Union[
     Callable[[HTTPConnection, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnection, BaseRouteHandler], None]
 ]
 Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
+ReservedKwargs = Union[
+    Literal["request"],
+    Literal["socket"],
+    Literal["headers"],
+    Literal["query"],
+    Literal["cookies"],
+    Literal["state"],
+    Literal["data"],
+]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 
 # connection-lifecycle hook handlers
@@ -65,6 +74,8 @@ AfterRequestHandler = Union[
     Callable[[Union[StarletteResponse, Response]], Union[StarletteResponse, Response]],
     Callable[[Union[StarletteResponse, Response]], Awaitable[Union[StarletteResponse, Response]]],
 ]
+
+AsyncAnyCallable = Callable[..., Awaitable[Any]]
 
 
 @runtime_checkable

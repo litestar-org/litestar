@@ -62,7 +62,6 @@ class StarliteASGIRouter(StarletteRouter):
                 Union[WebSocketRoute, ASGIRoute, HTTPRoute],
                 handlers[scope_type if scope_type in handler_types else "asgi"],
             )
-            scope["path_format"] = route.path_format
             scope["path_params"] = parse_path_params(route.path_parameters, path_params) if route.path_parameters else {}  # type: ignore
             await route.handle(scope=scope, receive=receive, send=send)
         except KeyError as e:

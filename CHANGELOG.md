@@ -101,6 +101,4 @@
 [0.7.2]
 - add missing support for starlette background tasks
 - fixed function signature modelling ignoring non-annotated fields
-- fixed error with static files not working with root route
-- fixed headers being case-sensitive
 - minor code refactors
