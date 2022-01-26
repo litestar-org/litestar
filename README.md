@@ -13,6 +13,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Goldziher_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Goldziher_starlite)
 
 [![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
+
 </div>
 
 # Starlite
@@ -24,20 +25,20 @@ Check out the [Starlite documentation 📚](https://starlite-api.github.io/starl
 
 ## Core Features
 
-* 👉 Class based controllers
-* 👉 Decorators based configuration
-* 👉 Extended testing support
-* 👉 Extensive typing support including inference, validation and parsing
-* 👉 Full async (ASGI) support
-* 👉 Layered dependency injection
-* 👉 OpenAPI 3.1 schema generation with [Redoc](https://github.com/Redocly/redoc) UI
-* 👉 Route guards based authorization
-* 👉 Simple middleware and authentication
-* 👉 Support for pydantic models and pydantic dataclasses
-* 👉 Support for standard library dataclasses
-* 👉 Support for SQLAlchemy declarative classes
-* 👉 Plugin system to allow extending supported classes
-* 👉 Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
+- 👉 Class based controllers
+- 👉 Decorators based configuration
+- 👉 Extended testing support
+- 👉 Extensive typing support including inference, validation and parsing
+- 👉 Full async (ASGI) support
+- 👉 Layered dependency injection
+- 👉 OpenAPI 3.1 schema generation with [Redoc](https://github.com/Redocly/redoc) UI
+- 👉 Route guards based authorization
+- 👉 Simple middleware and authentication
+- 👉 Support for pydantic models and pydantic dataclasses
+- 👉 Support for standard library dataclasses
+- 👉 Support for SQLAlchemy declarative classes
+- 👉 Plugin system to allow extending supported classes
+- 👉 Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Installation
 
@@ -57,6 +58,7 @@ Additionally, Starlite is [faster than both FastAPI and Starlette](https://githu
 ![plain text requests processed](static/result-plaintext.png)
 
 Legend:
+
 - a-: async, s-: sync
 - np: no params, pp: path param, qp: query param, mp: mixed params
 
@@ -66,10 +68,11 @@ While supporting function based route handlers, Starlite also supports and promo
 controllers:
 
 ```python title="my_app/controllers/user.py"
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
 from starlite import Controller, Partial, get, post, put, patch, delete
+from datetime import datetime
 
 from my_app.models import User
 
@@ -85,12 +88,20 @@ class UserController(Controller):
     async def list_users(self) -> List[User]:
         ...
 
+    @get(path="/{date:int}")
+    async def list_new_users(self, date: datetime) -> List[User]:
+        ...
+
     @patch(path="/{user_id:uuid}")
     async def partially_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
     async def update_user(self, user_id: UUID4, data: User) -> User:
+        ...
+
+    @get(path="/{user_name:str}")
+    async def get_user_by_name(self, user_name: str) -> Optional[User]:
         ...
 
     @get(path="/{user_id:uuid}")
