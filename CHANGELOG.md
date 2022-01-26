@@ -100,4 +100,5 @@
 
 [0.7.2]
 - add missing support for starlette background tasks
-- minor optimizations
+- fixed function signature modelling ignoring non-annotated fields
+- minor code refactors

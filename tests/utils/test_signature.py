@@ -1,6 +1,8 @@
 from typing import Optional
 
-from starlite import get
+import pytest
+
+from starlite import ImproperlyConfiguredException, get
 from starlite.utils import create_function_signature_model
 
 
@@ -23,3 +25,12 @@ def test_create_function_signature_model_parameter_parsing():
     assert fields.get("e").type_ == dict
     assert fields.get("e").allow_none
     assert fields.get("e").default is None
+
+
+def test_create_signature_validation():
+    @get()
+    def my_fn(typed: int, untyped) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_function_signature_model(my_fn.fn, [])

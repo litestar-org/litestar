@@ -179,6 +179,7 @@ class Starlite(Router):
             self.create_handler_signature_model(route_handler=route_handler)
             route_handler.resolve_guards()
             if isinstance(route_handler, HTTPRouteHandler):
+                route_handler.resolve_response_class()
                 route_handler.resolve_before_request()
                 route_handler.resolve_after_request()
         self.construct_route_map()
