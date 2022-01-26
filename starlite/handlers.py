@@ -1,4 +1,5 @@
 # pylint: disable=too-many-instance-attributes, too-many-locals, too-many-arguments
+from abc import ABC
 from contextlib import suppress
 from copy import copy
 from enum import Enum
@@ -15,8 +16,7 @@ from typing import (
     cast,
 )
 
-from pydantic import ValidationError, validate_arguments
-from pydantic.error_wrappers import display_errors
+from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.requests import HTTPConnection
@@ -24,7 +24,6 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from starlette.types import Receive, Scope, Send
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
@@ -35,13 +34,12 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     ValidationException,
 )
-from starlite.plugins.base import PluginMapping, get_plugin_for_value
+from starlite.plugins.base import PluginProtocol, get_plugin_for_value
 from starlite.provide import Provide
-from starlite.request import Request, WebSocket, resolve_signature_kwargs
 from starlite.response import Response
-from starlite.signature import get_signature_model
 from starlite.types import (
     AfterRequestHandler,
+    AsyncAnyCallable,
     BeforeRequestHandler,
     Guard,
     Method,
@@ -57,7 +55,7 @@ class _empty:
     """Placeholder"""
 
 
-class BaseRouteHandler:
+class BaseRouteHandler(ABC):
     __slots__ = (
         "paths",
         "dependencies",
@@ -79,7 +77,10 @@ class BaseRouteHandler:
         opt: Optional[Dict[str, Any]] = None,
     ):
         self.paths: List[str] = (
-            [normalize_path(p) for p in path] if path and isinstance(path, list) else [normalize_path(path or "/")]  # type: ignore
+            [normalize_path(p) for p in path]
+            if path and isinstance(path, list)
+            else [normalize_path(path or "/")]
+            # type: ignore
         )
         self.dependencies = dependencies
         self.guards = guards
@@ -156,41 +157,6 @@ class BaseRouteHandler:
             result = guard(connection, copy(self))
             if isawaitable(result):
                 await result
-
-    async def get_parameters_from_connection(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
-        """
-        Parse the signature_model of the route handler return values matching function parameter keys as well as dependencies
-        """
-        signature_model = get_signature_model(self)
-        try:
-            resolved_dependencies = self.resolve_dependencies()
-            model_kwargs = await resolve_signature_kwargs(
-                signature_model=signature_model, connection=connection, providers=resolved_dependencies
-            )
-            output: Dict[str, Any] = {}
-            modelled_signature = signature_model(**model_kwargs)  # pylint: disable=not-callable
-            for key in signature_model.__fields__:
-                value = modelled_signature.__getattribute__(key)
-                plugin_mapping: Optional[PluginMapping] = signature_model.field_plugin_mappings.get(key)
-                if plugin_mapping:
-                    if isinstance(value, (list, tuple)):
-                        output[key] = [
-                            plugin_mapping.plugin.from_pydantic_model_instance(
-                                plugin_mapping.model_class, pydantic_model_instance=v
-                            )
-                            for v in value
-                        ]
-                    else:
-                        output[key] = plugin_mapping.plugin.from_pydantic_model_instance(
-                            plugin_mapping.model_class, pydantic_model_instance=value
-                        )
-                else:
-                    output[key] = value
-            return output
-        except ValidationError as e:
-            raise ValidationException(
-                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
-            ) from e
 
 
 class HTTPRouteHandler(BaseRouteHandler):
@@ -377,7 +343,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         Validates the route handler function once it is set by inspecting its return annotations
         """
         super().validate_handler_function()
-        return_annotation = Signature.from_callable(cast(AnyCallable, self.fn)).return_annotation
+        signature = Signature.from_callable(cast(AnyCallable, self.fn))
+        return_annotation = signature.return_annotation
         if return_annotation is Signature.empty:
             raise ValidationException(
                 "A return value of a route handler function should be type annotated."
@@ -392,41 +359,12 @@ class HTTPRouteHandler(BaseRouteHandler):
                     )
                 if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
                     self.media_type = MediaType.TEXT
+        if "socket" in signature.parameters:
+            raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+        if "socket" in signature.parameters and "GET" in self.http_methods:
+            raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    async def handle_request(self, request: Request) -> StarletteResponse:
-        """
-        Handles a given Request in relation to self.
-        """
-        if not self.fn or not self.signature_model:
-            raise ImproperlyConfiguredException("cannot call 'handle' without a decorated function")
-
-        if self.resolve_guards():
-            await self.authorize_connection(connection=request)
-
-        before_request_handler = self.resolve_before_request()
-        data = None
-        # run the before_request hook handler
-        if before_request_handler:
-            data = before_request_handler(request)
-            if isawaitable(data):
-                data = await data
-
-        # if data has not been returned by the before request handler, we proceed with the request
-        if data is None:
-            if self.signature_model.__fields__:
-                params = await self.get_parameters_from_connection(connection=request)
-            else:
-                params = {}
-            if isinstance(self.owner, Controller):
-                data = self.fn(self.owner, **params)
-            else:
-                data = self.fn(**params)
-            if isawaitable(data):
-                data = await data
-
-        return await self.to_response(request=request, data=data)
-
-    async def to_response(self, request: Request, data: Any) -> StarletteResponse:
+    async def to_response(self, plugins: List[PluginProtocol], data: Any) -> StarletteResponse:
         """
         Given a data kwarg, determine its type and return the appropriate response
         """
@@ -446,7 +384,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             else:
                 response = cast(StarletteResponse, data)
         else:
-            plugin = get_plugin_for_value(data, request.app.plugins)
+            plugin = get_plugin_for_value(data, plugins)
             if plugin:
                 if isinstance(data, (list, tuple)):
                     data = [plugin.to_dict(datum) for datum in data]
@@ -722,7 +660,7 @@ class delete(HTTPRouteHandler):
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    def __call__(self, fn: AnyCallable) -> "WebsocketRouteHandler":
+    def __call__(self, fn: AsyncAnyCallable) -> "WebsocketRouteHandler":
         """
         Replaces a function with itself
         """
@@ -741,19 +679,10 @@ class WebsocketRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException("websocket handler functions should return 'None'")
         if "socket" not in signature.parameters:
             raise ImproperlyConfiguredException("websocket handlers must set a 'socket' kwarg")
-
-    async def handle_websocket(self, web_socket: WebSocket) -> None:
-        """
-        Handles a given Websocket in relation to self.
-        """
-        if not self.fn:  # pragma: no cover
-            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
-        await self.authorize_connection(connection=web_socket)
-        params = await self.get_parameters_from_connection(connection=web_socket)
-        if isinstance(self.owner, Controller):
-            await self.fn(self.owner, **params)
-        else:
-            await self.fn(**params)
+        if "request" in signature.parameters:
+            raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
+        if "data" in signature.parameters:
+            raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
 
 
 websocket = WebsocketRouteHandler
@@ -781,19 +710,6 @@ class ASGIRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
-
-    async def handle_asgi(self, scope: Scope, send: Send, receive: Receive) -> None:
-        """
-        Handles a given Websocket in relation to self.
-        """
-        if not self.fn:  # pragma: no cover
-            raise ImproperlyConfiguredException("cannot call a route handler without a decorated function")
-        connection = HTTPConnection(scope=scope, receive=receive)
-        await self.authorize_connection(connection=connection)
-        if isinstance(self.owner, Controller):
-            await self.fn(self.owner, scope=scope, receive=receive, send=send)
-        else:
-            await self.fn(scope=scope, receive=receive, send=send)
 
 
 asgi = ASGIRouteHandler

@@ -1,14 +1,17 @@
+from asyncio import iscoroutinefunction
 from inspect import Signature
-from typing import Any, ClassVar, Dict, List, Type, cast
+from typing import Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, ValidationError, create_model
+from pydantic.error_wrappers import display_errors
 from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
+from starlite.request import Request, WebSocket
 
 
 class SignatureModel(BaseModel):
@@ -17,6 +20,42 @@ class SignatureModel(BaseModel):
 
     field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
+    has_kwargs: ClassVar[bool]
+    is_async: ClassVar[bool]
+
+    @classmethod
+    def parse_values_from_connection_kwargs(cls, connection: Union[Request, WebSocket], **kwargs) -> Dict[str, Any]:
+        """
+        Given a dictionary of values extracted from the connection, create an instance of the given SignatureModel subclass and return the parsed values
+
+        This is not equivalent to calling the '.dict'  method of the pydantic model,
+        because it doesn't convert nested values into dictionary, just extracts the data from the signature model
+        """
+        try:
+            output: Dict[str, Any] = {}
+            modelled_signature = cls(**kwargs)  # pylint: disable=not-callable
+            for key in cls.__fields__:
+                value = modelled_signature.__getattribute__(key)
+                plugin_mapping: Optional[PluginMapping] = cls.field_plugin_mappings.get(key)
+                if plugin_mapping:
+                    if isinstance(value, (list, tuple)):
+                        output[key] = [
+                            plugin_mapping.plugin.from_pydantic_model_instance(
+                                plugin_mapping.model_class, pydantic_model_instance=v
+                            )
+                            for v in value
+                        ]
+                    else:
+                        output[key] = plugin_mapping.plugin.from_pydantic_model_instance(
+                            plugin_mapping.model_class, pydantic_model_instance=value
+                        )
+                else:
+                    output[key] = value
+            return output
+        except ValidationError as e:
+            raise ValidationException(
+                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
+            ) from e
 
 
 def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
@@ -68,6 +107,8 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
         )
         model.return_annotation = signature.return_annotation
         model.field_plugin_mappings = field_plugin_mappings
+        model.has_kwargs = bool(model.__fields__)
+        model.is_async = iscoroutinefunction(fn)
         return model
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
