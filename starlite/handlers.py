@@ -39,6 +39,7 @@ from starlite.plugins.base import PluginMapping, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket, resolve_signature_kwargs
 from starlite.response import Response
+from starlite.signature import get_signature_model
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -47,7 +48,6 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import SignatureModel, normalize_path
-from starlite.utils.signature import get_signature_model
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routing import Router

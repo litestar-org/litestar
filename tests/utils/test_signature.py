@@ -3,7 +3,7 @@ from typing import Optional
 import pytest
 
 from starlite import ImproperlyConfiguredException, get
-from starlite.utils import create_function_signature_model
+from starlite.utils import model_function_signature
 
 
 def test_create_function_signature_model_parameter_parsing():
@@ -11,7 +11,7 @@ def test_create_function_signature_model_parameter_parsing():
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = create_function_signature_model(my_fn.fn, [])
+    model = model_function_signature(my_fn.fn, [])
     fields = model.__fields__
     assert fields.get("a").type_ == int
     assert fields.get("a").required
@@ -33,4 +33,4 @@ def test_create_signature_validation():
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        create_function_signature_model(my_fn.fn, [])
+        model_function_signature(my_fn.fn, [])

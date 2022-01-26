@@ -19,7 +19,7 @@ class SignatureModel(BaseModel):
     return_annotation: ClassVar[Any]
 
 
-def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
+def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
     """
     Creates a subclass of SignatureModel for the signature of a given function
     """
@@ -29,12 +29,15 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
         field_plugin_mappings: Dict[str, PluginMapping] = {}
         field_definitions: Dict[str, Any] = {}
         fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
+        defaults: Dict[str, Any] = {}
         for kwarg, parameter in list(signature.parameters.items()):
             if kwarg in ["self", "cls"]:
                 continue
             type_annotation = parameter.annotation
             if type_annotation is signature.empty:
-                raise ImproperlyConfiguredException(f"kwarg {kwarg} of {fn_name} does not have a type annotation")
+                raise ImproperlyConfiguredException(
+                    f"kwarg {kwarg} of {fn_name} does not have a type annotation. If it should receive any value, use the 'Any' type."
+                )
             if kwarg in ["request", "socket"]:
                 # pydantic has issues with none-pydantic classes that receive generics
                 field_definitions[kwarg] = (Any, ...)
@@ -55,6 +58,7 @@ def create_function_signature_model(fn: AnyCallable, plugins: List[PluginProtoco
                     type_annotation = pydantic_model
             if default not in [signature.empty, Undefined]:
                 field_definitions[kwarg] = (type_annotation, default)
+                defaults[kwarg] = default
             elif not repr(parameter.annotation).startswith("typing.Optional"):
                 field_definitions[kwarg] = (type_annotation, ...)
             else:

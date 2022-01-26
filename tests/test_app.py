@@ -10,11 +10,13 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite import (
     HTTPException,
+    ImproperlyConfiguredException,
     MiddlewareProtocol,
     Request,
     Response,
     Starlite,
     create_test_client,
+    get,
 )
 from starlite.datastructures import State
 
@@ -132,3 +134,16 @@ def test_lifecycle():
         counter["value"] = 0
         assert counter["value"] == 0
     assert counter["value"] == 4
+
+
+def test_register_validation_duplicate_handlers_for_same_route_and_method():
+    @get(path="/first")
+    def first_route_handler() -> None:
+        pass
+
+    @get(path="/first")
+    def second_route_handler() -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[first_route_handler, second_route_handler])
