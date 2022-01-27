@@ -24,10 +24,11 @@ def my_endpoint() -> None:
     ...
 ```
 
+<!-- prettier-ignore -->
 !!! important
-A function decorated by `route` or any of the other route handler decorator **must** have an annotated
-return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
-consistent schema generation, as well as stronger typing.
+  A function decorated by `route` or any of the other route handler decorator **must** have an annotated
+  return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
+  consistent schema generation, as well as stronger typing.
 
 ### Declaring Path(s)
 
@@ -186,8 +187,9 @@ class methods or by abstracting code to reusable functions.
 
 ## Websocket Route Handlers
 
+<!-- prettier-ignore -->
 !!! info
-This feature is available from v0.2.0 onwards
+  This feature is available from v0.2.0 onwards
 
 Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
 
@@ -226,14 +228,16 @@ able to do anything meaningful without this and python will raise errors as requ
 
 In all other regards websocket handlers function exactly like other route handlers.
 
+<!-- prettier-ignore -->
 !!! note
-OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
-handlers, and you cannot configure any schema related parameters for these.
+  OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
+  handlers, and you cannot configure any schema related parameters for these.
 
 ## ASGI Route Handlers
 
+<!-- prettier-ignore -->
 !!! info
-This feature is available from v0.7.0 onwards
+  This feature is available from v0.7.0 onwards
 
 You can write your own ASGI apps using the `asgi` route handler decorator:
 
@@ -256,8 +260,9 @@ async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     await response(scope=scope, receive=receive, send=send)
 ```
 
+<!-- prettier-ignore -->
 !!! note
-ASGI apps are currently not handled in OpenAPI generation - although this might change in the future.
+  ASGI apps are currently not handled in OpenAPI generation - although this might change in the future.
 
 ## Handler Function Kwargs
 
@@ -297,6 +302,7 @@ def my_request_handler(
     ...
 ```
 
+<!-- prettier-ignore -->
 !!! tip
-You can define a custom typing for your application state and then use it as a type instead of just using the
-State class from Starlite
+  You can define a custom typing for your application state and then use it as a type instead of just using the
+  State class from Starlite

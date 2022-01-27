@@ -89,9 +89,10 @@ async def create_user(
 The above ensures that Starlite will inject data using the request.form() method rather than request.json(). It also
 causes the generated OpenAPI schema to use the correct media type.
 
+<!-- prettier-ignore -->
 !!! important
-url encoded data is inherently less versatile than JSON data - for example, it cannot handle complex
-dictionaries and deeply nested data. It should only be used for simple data structures, e.g. frontend forms.
+  url encoded data is inherently less versatile than JSON data - for example, it cannot handle complex
+  dictionaries and deeply nested data. It should only be used for simple data structures, e.g. frontend forms.
 
 ## MultiPart Form Data
 

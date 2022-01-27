@@ -61,12 +61,14 @@ used:
 - DELETE: 204 (No Content)
 - GET, PATCH, PUT: 200 (Ok)
 
+<!-- prettier-ignore -->
 !!! note
-  When using the `route` decorator with multiple http methods, the default status code is `200`.
+    When using the `route` decorator with multiple http methods, the default status code is `200`.
 
-  Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
-  data. This though might not be the case in your implementation - so take care of setting it as you see fit.
+    Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
+    data. This though might not be the case in your implementation - so take care of setting it as you see fit.
 
+<!-- prettier-ignore -->
 !!! tip
   While you can write integers as the value for `status_code`, e.g. `status_code=200`,
   its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
@@ -123,6 +125,7 @@ def health_check() -> str:
     """
 ```
 
+<!-- prettier-ignore -->
 !!! tip
     It's a good idea to use a [templating engine](#template-responses) for more complex HTML responses and to write the
     [template](#template-responses) itself in a separate file rather than a string.
@@ -205,12 +208,12 @@ The File class expects two kwargs:
 - `filename`: the filename to set in the
   response [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
   attachment.
-
-!!! important
-When a route handler's return value is annotated with `File`, the default `media_type` for the
-route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-the value for `media_type` instead.
+  <!-- prettier-ignore -->
+  !!! important
+    When a route handler's return value is annotated with `File`, the default `media_type` for the
+    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+    the value for `media_type` instead.
 
 For example:
 
@@ -377,8 +380,9 @@ def my_route_handler() -> Response:
     return Response(...)
 ```
 
+<!-- prettier-ignore -->
 !!! important
-If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 
