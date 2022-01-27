@@ -13,11 +13,11 @@ from typing_extensions import Type
 from starlite import Controller, Provide, Router
 from starlite.app import Starlite
 from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.handlers import BaseRouteHandler
 from starlite.plugins.base import PluginProtocol
-from starlite.request import Request
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,

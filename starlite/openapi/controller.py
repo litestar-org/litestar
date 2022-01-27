@@ -1,11 +1,11 @@
 from openapi_schema_pydantic import OpenAPI
 from orjson import OPT_INDENT_2, dumps
 
+from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
-from starlite.request import Request
 
 
 class OpenAPIController(Controller):

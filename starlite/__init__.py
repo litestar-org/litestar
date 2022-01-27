@@ -3,6 +3,7 @@ from starlite.datastructures import File, Redirect, State, Stream
 
 from .app import Starlite
 from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from .connection import Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
 from .enums import (
@@ -43,7 +44,6 @@ from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
-from .request import Request, WebSocket
 from .response import Response
 from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request

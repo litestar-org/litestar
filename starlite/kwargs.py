@@ -4,11 +4,12 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cas
 from pydantic.fields import ModelField, Undefined
 from typing_extensions import Type
 
+from starlite.connection import Request, WebSocket
 from starlite.constants import RESERVED_KWARGS
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.parsers import parse_form_data
 from starlite.provide import Provide
-from starlite.request import Request, WebSocket, handle_multipart
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import ReservedKwargs
 
@@ -306,7 +307,7 @@ class KwargsModel:
         if self.expected_form_data:
             media_type, model_field = self.expected_form_data
             form_data = await request.form()
-            return handle_multipart(media_type=media_type, form_data=form_data, field=model_field)
+            return parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
         return await request.json()
 
     async def resolve_dependency(

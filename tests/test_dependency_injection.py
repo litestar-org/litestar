@@ -13,7 +13,7 @@ from starlite import (
     create_test_client,
     get,
 )
-from starlite.request import Request
+from starlite.connection import Request
 
 
 def router_first_dependency():

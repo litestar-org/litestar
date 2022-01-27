@@ -114,7 +114,7 @@ def test_health_check():
 
 ## Create a Test Request
 
-Another helper is `create_test_request`, which creates an instance of `starlite.request.Request`. The use case for this
+Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for this
 helper is when you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples

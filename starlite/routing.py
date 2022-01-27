@@ -11,6 +11,7 @@ from starlette.routing import get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
+from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
@@ -22,7 +23,6 @@ from starlite.handlers import (
 )
 from starlite.kwargs import KwargsModel
 from starlite.provide import Provide
-from starlite.request import Request, WebSocket
 from starlite.response import Response
 from starlite.signature import get_signature_model
 from starlite.types import (
@@ -214,15 +214,12 @@ class WebSocketRoute(BaseRoute):
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=web_socket)
         signature_model = get_signature_model(route_handler)
-        if signature_model.has_kwargs:
-            kwargs = self.handler_parameter_model.to_kwargs(connection=web_socket)
-            for dependency in self.handler_parameter_model.expected_dependencies:
-                kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
-                    dependency=dependency, connection=web_socket, **kwargs
-                )
-            parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
-        else:
-            parsed_kwargs = {}
+        kwargs = self.handler_parameter_model.to_kwargs(connection=web_socket)
+        for dependency in self.handler_parameter_model.expected_dependencies:
+            kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
+                dependency=dependency, connection=web_socket, **kwargs
+            )
+        parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
         fn = cast(AsyncAnyCallable, self.route_handler.fn)
         if isinstance(route_handler.owner, Controller):
             await fn(route_handler.owner, **parsed_kwargs)

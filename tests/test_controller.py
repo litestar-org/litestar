@@ -12,7 +12,7 @@ from starlite import (
     put,
     websocket,
 )
-from starlite.request import WebSocket
+from starlite.connection import WebSocket
 from tests import Person, PersonFactory
 
 

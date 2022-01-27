@@ -18,6 +18,7 @@ from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
@@ -25,7 +26,6 @@ from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
-from starlite.request import Request
 from starlite.response import Response
 from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
 from starlite.types import (

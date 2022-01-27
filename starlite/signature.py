@@ -8,9 +8,9 @@ from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
+from starlite.connection import Request, WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
-from starlite.request import Request, WebSocket
 
 
 class SignatureModel(BaseModel):

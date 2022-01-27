@@ -1,8 +1,8 @@
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 
 from starlite import BaseRouteHandler, create_test_client, get
+from starlite.connection import Request
 from starlite.exceptions import PermissionDeniedException
-from starlite.request import Request
 
 
 async def local_guard(_: Request, route_handler: BaseRouteHandler) -> None:
