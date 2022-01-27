@@ -1,5 +1,4 @@
 import re
-from abc import ABC
 from inspect import isawaitable, isclass
 from itertools import chain
 from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
@@ -12,6 +11,7 @@ from starlette.routing import get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
+from starlite.constants import RESERVED_FIELD_NAMES
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
@@ -40,7 +40,7 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 param_match_regex = re.compile(r"{(.*?)}")
 
 
-class BaseRoute(ABC):
+class BaseRoute:
     __slots__ = (
         "app",
         "handler_names",
@@ -81,8 +81,14 @@ class BaseRoute(ABC):
 
         for param in param_match_regex.findall(path):
             if ":" not in param:
-                raise ImproperlyConfiguredException("path parameter must declare a type: '{parameter_name:type}'")
+                raise ImproperlyConfiguredException(
+                    "path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
+                )
             param_name, param_type = (p.strip() for p in param.split(":"))
+            if param_name in RESERVED_FIELD_NAMES:
+                raise ImproperlyConfiguredException(
+                    f"{param_name} is a reserved kwarg and cannot be used for path parameters, please use a different value"
+                )
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
@@ -132,7 +138,7 @@ class HTTPRoute(BaseRoute):
         request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
 
         route_handler, parameter_model = self.route_handler_map[request.method]
-        if route_handler.resolved_guards:
+        if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
         response_data = None
         before_request_handler = route_handler.resolve_before_request()
@@ -210,7 +216,7 @@ class WebSocketRoute(BaseRoute):
         assert self.handler_parameter_model, "handler parameter model not defined"
         route_handler = self.route_handler
         web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=receive, send=send)
-        if route_handler.resolved_guards:
+        if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=web_socket)
         signature_model = get_signature_model(route_handler)
         if signature_model.has_kwargs:
@@ -255,7 +261,7 @@ class ASGIRoute(BaseRoute):
         ASGI app that authorizes the connection and then awaits the handler function
         """
 
-        if self.route_handler.resolved_guards:
+        if self.route_handler.resolve_guards():
             connection = HTTPConnection(scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
         fn = cast(AnyCallable, self.route_handler.fn)

@@ -8,7 +8,9 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite import (
     Controller,
     HttpMethod,
+    MediaType,
     Request,
+    State,
     create_test_client,
     delete,
     get,
@@ -17,6 +19,22 @@ from starlite import (
     put,
 )
 from tests import Person, PersonFactory
+
+
+def test_application_state_injection():
+    @get("/", media_type=MediaType.TEXT)
+    def route_handler(state: State) -> str:
+        assert state
+        state.called = True  # this should not modify the app state
+        return state.msg  # this shows injection worked
+
+    with create_test_client(route_handler) as client:
+        state = client.app.state
+        state.msg = "hello"
+        state.called = False
+        response = client.get("/")
+        assert response.text == "hello"
+        assert not state.called
 
 
 class QueryParams(BaseModel):

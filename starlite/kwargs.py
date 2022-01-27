@@ -103,6 +103,9 @@ class KwargsModel:
 
         This function executes for each Route+RouteHandler during the application bootstrap process.
         """
+        cls.validate_raw_kwargs(
+            path_parameters=path_parameters, dependencies=dependencies, model_fields=signature_model.__fields__
+        )
         expected_reserved_kwargs = {
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_FIELD_NAMES
         }
@@ -117,12 +120,6 @@ class KwargsModel:
         expected_query_parameters: Set[ParameterDefinition] = set()
 
         dependency_keys = [dependency.key for dependency in expected_dependencies]
-        for dependency_key in dependency_keys:
-            if dependency_key in path_parameters:
-                raise ImproperlyConfiguredException(
-                    f"path parameter and dependency kwarg have a similar key - {dependency_key}"
-                )
-
         for field_name, model_field in [
             (name, field)
             for name, field in signature_model.__fields__.items()
@@ -201,7 +198,9 @@ class KwargsModel:
         expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
         dependency_kwargs_model: "KwargsModel",
     ) -> None:
-        """Validates that the dependency 'data' kwarg is compatible"""
+        """
+        Validates that the 'data' kwarg is compatible across dependencies
+        """
         if (expected_form_data and not dependency_kwargs_model.expected_form_data) or (
             not expected_form_data and dependency_kwargs_model.expected_form_data
         ):
@@ -214,6 +213,35 @@ class KwargsModel:
             if local_media_type != dependency_media_type:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form data encoding - one expects url-encoded and the other expects multi-part"
+                )
+
+    @classmethod
+    def validate_raw_kwargs(
+        cls, path_parameters: Set[str], dependencies: Dict[str, Provide], model_fields: Dict[str, ModelField]
+    ) -> None:
+        """
+        Validates that there are no ambiguous kwargs, that is, kwargs declared using the same key in different places
+        """
+        aliased_parameters = {
+            k
+            for k, f in model_fields.items()
+            if f.field_info.extra.get("query") or f.field_info.extra.get("header") or f.field_info.extra.get("cookie")
+        }
+        dependency_keys = set(dependencies.keys())
+
+        path_param_and_dependency_intersection = path_parameters.intersection(dependency_keys)
+        path_param_and_aliased_param_intersection = path_parameters.intersection(aliased_parameters)
+        dependency_and_aliased_param_intersection = dependency_keys.intersection(aliased_parameters)
+
+        for intersection in [
+            path_param_and_dependency_intersection
+            or path_param_and_aliased_param_intersection
+            or dependency_and_aliased_param_intersection
+        ]:
+            if intersection:
+                raise ImproperlyConfiguredException(
+                    f"kwarg resolution ambiguity - {', '.join(intersection)}, "
+                    f"make sure the keys used for your dependencies, path parameters and aliased parameters are unique"
                 )
 
     def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
