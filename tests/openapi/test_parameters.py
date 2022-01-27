@@ -3,7 +3,7 @@ from typing import Callable, cast
 from starlite import Starlite
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
-from starlite.utils import create_function_signature_model, find_index
+from starlite.utils import find_index, model_function_signature
 from tests.openapi.utils import PersonController
 
 
@@ -14,7 +14,7 @@ def test_create_parameters():
     route_handler = PersonController.get_persons
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=create_function_signature_model(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,
+        handler_fields=model_function_signature(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,
     )

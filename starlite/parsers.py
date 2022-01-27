@@ -25,13 +25,12 @@ def _query_param_reducer(
     elif value in _false_values:
         value = False  # type: ignore
     param = acc.get(key)
-    if param:
-        if isinstance(param, str):
-            acc[key] = [param, value]
-        else:
-            acc[key] = [*cast(List[Any], param), value]
-    else:
+    if param is None:
         acc[key] = value
+    elif isinstance(param, str):
+        acc[key] = [param, value]
+    else:
+        acc[key].append(value)  # type: ignore
     return acc
 
 

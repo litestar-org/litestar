@@ -21,13 +21,19 @@ from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
+from starlite.handlers import (
+    ASGIRouteHandler,
+    BaseRouteHandler,
+    HTTPRouteHandler,
+    WebsocketRouteHandler,
+    asgi,
+)
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.request import Request
 from starlite.response import Response
-from starlite.routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
+from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -38,7 +44,7 @@ from starlite.types import (
     MiddlewareProtocol,
     ResponseHeader,
 )
-from starlite.utils import create_function_signature_model, normalize_path
+from starlite.utils import model_function_signature, normalize_path
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
@@ -74,7 +80,6 @@ class Starlite(Router):
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        redirect_slashes: bool = True,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
@@ -82,7 +87,7 @@ class Starlite(Router):
         before_request: Optional[BeforeRequestHandler] = None,
         after_request: Optional[AfterRequestHandler] = None,
         # static files
-        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None
+        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
     ):
         self.debug = debug
         self.state = State()
@@ -101,9 +106,7 @@ class Starlite(Router):
             before_request=before_request,
             after_request=after_request,
         )
-        self.asgi_router = StarliteASGIRouter(
-            redirect_slashes=redirect_slashes, on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self
-        )
+        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
             StarletteHTTPException: self.handle_http_exception,
             **(exception_handlers or {}),
@@ -145,9 +148,8 @@ class Starlite(Router):
                     path = path.replace(param_definition["full"], "")
                 path = path.replace("{}", "*")
                 cur = self.route_map
-                for component in path.split("/"):
-                    if "_components" not in cur:
-                        cur["_components"] = set()
+                components = ["/", *[component for component in path.split("/") if component]]
+                for component in components:
                     components_set = cast(Set[str], cur["_components"])
                     components_set.add(component)
                     if component not in cur:
@@ -163,8 +165,8 @@ class Starlite(Router):
                 cur["_handler_types"] = set()
             if path in self.static_paths:
                 cur["static_path"] = path
-            handler_type = cast(Set[str], cur["_handler_types"])
-            handler_type.add(route.scope_type.value)
+            handler_types = cast(Set[str], cur["_handler_types"])
+            handler_types.add(route.scope_type.value)
             handlers = cast(Dict[str, BaseRoute], cur["_handlers"])
             if isinstance(route, HTTPRoute):
                 handlers["http"] = route
@@ -179,9 +181,23 @@ class Starlite(Router):
 
         Calls Router.register() and then creates a signature model for all handlers.
         """
-        handlers = super().register(value=value)
-        for route_handler in handlers:
-            self.create_handler_signature_model(route_handler=route_handler)
+        routes = super().register(value=value)
+        for route in routes:
+            if isinstance(route, HTTPRoute):
+                route_handlers: List[
+                    Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
+                ] = route.route_handlers  # type: ignore
+            else:
+                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]
+            for route_handler in route_handlers:
+                self.create_handler_signature_model(route_handler=route_handler)
+                route_handler.resolve_guards()
+                if isinstance(route_handler, HTTPRouteHandler):
+                    route_handler.resolve_response_class()
+                    route_handler.resolve_before_request()
+                    route_handler.resolve_after_request()
+            if isinstance(route, HTTPRoute):
+                route.create_handler_map()
         self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
@@ -189,16 +205,12 @@ class Starlite(Router):
         Creates function signature models for all route handler functions and provider dependencies
         """
         if not route_handler.signature_model:
-            route_handler.signature_model = create_function_signature_model(
+            route_handler.signature_model = model_function_signature(
                 fn=cast(AnyCallable, route_handler.fn), plugins=self.plugins
             )
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
-                provider.signature_model = create_function_signature_model(fn=provider.dependency, plugins=self.plugins)
-        route_handler.resolve_guards()
-        if isinstance(route_handler, HTTPRouteHandler):
-            route_handler.resolve_before_request()
-            route_handler.resolve_after_request()
+                provider.signature_model = model_function_signature(fn=provider.dependency, plugins=self.plugins)
 
     def build_middleware_stack(
         self,

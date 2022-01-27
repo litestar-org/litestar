@@ -43,7 +43,7 @@ from starlite import (
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
 from starlite.testing import create_test_client, create_test_request
-from starlite.utils import create_function_signature_model, normalize_path
+from starlite.utils import model_function_signature, normalize_path
 from tests import Person, PersonFactory
 
 
@@ -222,7 +222,7 @@ async def test_handle_request_async_await():
 
     person_instance = PersonFactory.build()
     request = create_test_request(content=person_instance, http_method=HttpMethod.POST)
-    test_function.signature_model = create_function_signature_model(test_function.fn, [])
+    test_function.signature_model = model_function_signature(test_function.fn, [])
 
     response = await test_function.handle_request(request=request)
     assert loads(response.body) == person_instance.dict()
@@ -248,7 +248,7 @@ async def test_handle_request_when_handler_returns_starlette_responses(response)
         return response
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = create_function_signature_model(test_function.fn, [])
+    test_function.signature_model = model_function_signature(test_function.fn, [])
     assert await test_function.handle_request(request=request) == response
 
 
@@ -259,7 +259,7 @@ async def test_handle_request_redirect_response():
         return Redirect(path="/somewhere-else")
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = create_function_signature_model(test_function.fn, [])
+    test_function.signature_model = model_function_signature(test_function.fn, [])
     response = await test_function.handle_request(request=request)
     assert isinstance(response, RedirectResponse)
     assert response.headers["location"] == "/somewhere-else"
@@ -275,7 +275,7 @@ async def test_handle_request_file_response():
         return File(path=current_file_path, filename=filename)
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = create_function_signature_model(test_function.fn, [])
+    test_function.signature_model = model_function_signature(test_function.fn, [])
     response = await test_function.handle_request(request=request)
     assert isinstance(response, FileResponse)
     assert response.stat_result
@@ -307,7 +307,7 @@ async def test_handle_request_streaming_response(iterator: Any, should_raise: bo
             return Stream(iterator=iterator)
 
         request = create_test_request(content=None, http_method=HttpMethod.GET)
-        test_function.signature_model = create_function_signature_model(test_function.fn, [])
+        test_function.signature_model = model_function_signature(test_function.fn, [])
         response = await test_function.handle_request(request=request)
         assert isinstance(response, StreamingResponse)
     else:
@@ -322,7 +322,7 @@ async def test_handle_request_validation():
         pass
 
     request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = create_function_signature_model(test_function.fn, [])
+    test_function.signature_model = model_function_signature(test_function.fn, [])
     with pytest.raises(ImproperlyConfiguredException):
         await test_function.handle_request(request=request)
 

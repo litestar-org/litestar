@@ -49,5 +49,5 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                 requestBody=request_body,
                 parameters=parameters,
             )
-            setattr(path_item, http_method, operation)
+            setattr(path_item, http_method.lower(), operation)
     return path_item

@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import uuid4
 
 import pytest
@@ -129,7 +130,7 @@ def test_handler_multi_paths():
 )
 def test_path_validation(handler, handler_path, request_path, expected_status_code):
     @get(handler_path)
-    def handler(**kwargs) -> None:
+    def handler(**kwargs: Any) -> None:
         ...
 
     with create_test_client(handler) as client:

@@ -28,15 +28,16 @@ class MyController(Controller):
     [[0, local_response], [1, controller_response], [2, router_response], [3, app_response], [None, Response]],
 )
 def test_response_class(layer: Optional[int], expected: Response):
-    MyController.test_method.resolved_response_class = _empty
-    router = Router(path="/users", route_handlers=[MyController])
-    app = Starlite(route_handlers=[router])
+    MyController.test_method.resolved_response_class = _empty if layer != 0 else expected
+    MyController.response_class = None if layer != 1 else expected
+    router = Router(path="/users", route_handlers=[MyController], response_class=None if layer != 2 else expected)
+    app = Starlite(route_handlers=[router], response_class=None if layer != 3 else expected)
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET]
     layer_map = {
         0: route_handler,
-        1: route_handler.owner,
-        2: route_handler.owner.owner,
-        3: route_handler.owner.owner.owner,
+        1: MyController,
+        2: router,
+        3: app,
     }
     component = layer_map.get(layer)
     if component:

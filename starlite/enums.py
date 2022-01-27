@@ -1,28 +1,12 @@
 from enum import Enum
-from typing import Any, cast
-
-from starlite.exceptions import ImproperlyConfiguredException
 
 
 class HttpMethod(str, Enum):
-    GET = "get"
-    POST = "post"
-    PUT = "put"
-    PATCH = "patch"
-    DELETE = "delete"
-
-    @classmethod
-    def is_http_method(cls, value: Any) -> bool:
-        """Validates that a given value is a member of the HttpMethod enum"""
-        return isinstance(value, str) and value.lower() in list(cls)
-
-    @classmethod
-    def from_str(cls, value: Any) -> "HttpMethod":
-        """Given a string value, return an enum member or raise a ValueError"""
-
-        if cls.is_http_method(value):
-            return cast(HttpMethod, value.lower())
-        raise ImproperlyConfiguredException(f"value {value} is not a supported http method")
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    DELETE = "DELETE"
 
 
 class MediaType(str, Enum):

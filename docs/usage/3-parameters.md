@@ -175,7 +175,7 @@ from my_app.models import User
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
     user_id: UUID4,
-    token: Parameter(header="X-API-KEY"),
+    token: str = Parameter(header="X-API-KEY"),
 ) -> User:
     ...
 ```
@@ -192,7 +192,7 @@ from my_app.models import User
 @get(path="/users/{user_id:uuid}/")
 async def get_user(
     user_id: UUID4,
-    cookie: Parameter(cookie="my-cookie-param"),
+    cookie: str = Parameter(cookie="my-cookie-param"),
 ) -> User:
     ...
 ```

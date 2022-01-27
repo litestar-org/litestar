@@ -41,7 +41,8 @@ app = Starlite(
 
 
 def test_response_headers():
-    resolved_headers = app.routes[0].route_handler_map[HttpMethod.GET].resolve_response_headers()
+    route_handler = app.routes[0].route_handler_map[HttpMethod.GET]
+    resolved_headers = route_handler.resolve_response_headers()
     assert resolved_headers["first"].value == local_first.value
     assert resolved_headers["second"].value == controller_second.value
     assert resolved_headers["third"].value == router_second.value

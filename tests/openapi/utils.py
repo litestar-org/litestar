@@ -65,10 +65,8 @@ class PersonController(Controller):
     ) -> List[Person]:
         pass
 
-    @post()
-    def create_person(
-        self, data: Person, secret_header: str = Parameter(header="secret"), media_type=MediaType.TEXT
-    ) -> Person:
+    @post(media_type=MediaType.TEXT)
+    def create_person(self, data: Person, secret_header: str = Parameter(header="secret")) -> Person:
         pass
 
     @post(path="/bulk")

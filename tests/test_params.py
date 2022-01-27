@@ -232,6 +232,22 @@ def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
             assert response.status_code == HTTP_200_OK
 
 
+def test_header_param_example():
+    test_token = "123abc"
+
+    @get(path="/users/{user_id:uuid}/")
+    async def my_method(
+        user_id: UUID4,
+        token: str = Parameter(header="X-API-KEY"),
+    ) -> None:
+        assert user_id
+        assert token == test_token
+
+    with create_test_client(my_method) as client:
+        response = client.get(f"/users/{str(uuid4())}/", headers={"X-API-KEY": test_token})
+        assert response.status_code == HTTP_200_OK
+
+
 @pytest.mark.parametrize(
     "t_type,param_dict, param, should_raise",
     [
