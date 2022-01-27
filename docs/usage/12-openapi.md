@@ -42,8 +42,8 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 - `webhooks`: A string keyed dictionary of `PathItem` model instances.
 
 !!! note
-All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
-rather than Starlite.
+    All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
+    rather than Starlite.
 
 #### Disable Schema Generation
 

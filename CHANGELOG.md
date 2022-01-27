@@ -41,10 +41,10 @@
 [0.3.0]
 
 - updated openapi configuration:
-  1. OpenAPI schema generation is now enabled by default
-  2. The `OpenAPIController` is now part of the `OpenAPIConfig`
-  3. The default schema download path changed from `/schema` to `/schema/openapi.json`
-  4. Added a `/schema/openapi.yaml` route to the `OpenAPIController`
+    1. OpenAPI schema generation is now enabled by default
+    2. The `OpenAPIController` is now part of the `OpenAPIConfig`
+    3. The default schema download path changed from `/schema` to `/schema/openapi.json`
+    4. Added a `/schema/openapi.yaml` route to the `OpenAPIController`
 
 [0.4.0]
 
@@ -81,13 +81,13 @@
 - updated dependency injection to allow for dependency injection into dependencies
 - updated `PluginProtocol` - added `from_dict` methods
 - updated `SQLAlchemyPlugin`:
-  1. added `from_dict` method
-  2. all back-references are now typed as `Any`
-  3. all relationships are now typed as `Optional`
+    1. added `from_dict` method
+    2. all back-references are now typed as `Any`
+    3. all relationships are now typed as `Optional`
 - updated `DTOFactory`:
-  1. supports generics
-  2. added `to_model_instance` and `from_model_instance` methods
-  3. added `field_definitions` kwarg, allowing for creating custom fields
+    1. supports generics
+    2. added `to_model_instance` and `from_model_instance` methods
+    3. added `field_definitions` kwarg, allowing for creating custom fields
 
 [0.7.0]
 
@@ -110,4 +110,6 @@
 
 [0.8.0]
 
-- moved redoc UI to `/schema`, changed from `/schema/redoc`
+- optimization: rewrote the kwarg parsing and data injection logic to compute required kwargs for each route handler
+  during application bootstrap
+- changed the redoc UI path from `/schema/redoc` to `/schema`
