@@ -1,5 +1,6 @@
-:root, body {
-  --md-text-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root,
+body {
+  --md-text-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .md-content__button {
@@ -17,11 +18,21 @@
   border-bottom: 2px solid currentColor; */
 }
 
-#starlite-hero .st0{fill:#FFAE57;}
-#starlite-hero .st1{fill:#FFD580;}
-#starlite-hero .st2{fill:#D6DBE1;}
-#starlite-hero .st3{fill:#FFFFFF;}
-#starlite-hero .st4{fill:var(--md-default-fg-color);}
+#starlite-hero .st0 {
+  fill: #ffae57;
+}
+#starlite-hero .st1 {
+  fill: #ffd580;
+}
+#starlite-hero .st2 {
+  fill: #d6dbe1;
+}
+#starlite-hero .st3 {
+  fill: #ffffff;
+}
+#starlite-hero .st4 {
+  fill: var(--md-default-fg-color);
+}
 
 .md-search__form {
   background-color: var(--md-default-bg-color) !important;
@@ -50,8 +61,7 @@
   margin-bottom: 2rem;
 }
 
-
-@media screen and (max-width:76.1875em) {
+@media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title[for="__drawer"] {
     color: var(--md-primary-fg-color);
     color: var(--md-accent-fg-color);
@@ -65,53 +75,51 @@
 
 [data-md-color-scheme="mirage"] {
   /* Default color shades */
-  --md-default-fg-color:               #d6dbe1;
-  --md-default-fg-color--light:        hsl(213, 15%, 76%);
-  --md-default-fg-color--lighter:      hsl(213, 15%, 66%);
-  --md-default-fg-color--lightest:     hsl(213, 15%, 56%);
-  --md-default-bg-color:               #1d2433;
-  --md-default-bg-color--light:        hsl(221, 28%, 26%);
-  --md-default-bg-color--lighter:      hsl(221, 28%, 36%);
-  --md-default-bg-color--lightest:     hsl(221, 28%, 46%);
+  --md-default-fg-color: #d6dbe1;
+  --md-default-fg-color--light: hsl(213, 15%, 76%);
+  --md-default-fg-color--lighter: hsl(213, 15%, 66%);
+  --md-default-fg-color--lightest: hsl(213, 15%, 56%);
+  --md-default-bg-color: #1d2433;
+  --md-default-bg-color--light: hsl(221, 28%, 26%);
+  --md-default-bg-color--lighter: hsl(221, 28%, 36%);
+  --md-default-bg-color--lightest: hsl(221, 28%, 46%);
 
   /* Primary color shades */
-  --md-primary-fg-color:               #ffae57;
-  --md-primary-fg-color--light:        #ffd580;
-  --md-primary-fg-color--dark:         hsl(31, 90%, 60%);
-  --md-primary-bg-color:               #2f3b54;
-  --md-primary-bg-color--light:        hsl(221, 28%, 33%);
+  --md-primary-fg-color: #ffae57;
+  --md-primary-fg-color--light: #ffd580;
+  --md-primary-fg-color--dark: hsl(31, 90%, 60%);
+  --md-primary-bg-color: #2f3b54;
+  --md-primary-bg-color--light: hsl(221, 28%, 33%);
 
   /* Accent color shades */
-  --md-accent-fg-color:                #ffd580;
-  --md-accent-fg-color--transparent:   #ffd58033;
-  --md-accent-bg-color:                #171c28;
-  --md-accent-bg-color--light:         hsl(222, 27%, 20%);
+  --md-accent-fg-color: #ffd580;
+  --md-accent-fg-color--transparent: #ffd58033;
+  --md-accent-bg-color: #171c28;
+  --md-accent-bg-color--light: hsl(222, 27%, 20%);
 
   /* Misc */
   --md-footer-fg-color: var(--md-accent-fg-color);
   --md-footer-bg-color: var(--md-accent-bg-color);
   /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
 
-
-
   /* Code color shades */
-  --md-code-fg-color:                var(--md-default-fg-color);
-  --md-code-bg-color:                var(--md-accent-bg-color--light);
+  --md-code-fg-color: var(--md-default-fg-color);
+  --md-code-bg-color: var(--md-accent-bg-color--light);
 
   /* Code highlighting color shades */
-  --md-code-hl-color:                #bae67e99;
-  --md-code-hl-number-color:         #ffd580;
-  --md-code-hl-special-color:        #ef6b73;
-  --md-code-hl-function-color:       #5ccfe6;
-  --md-code-hl-constant-color:       #c3a6ff;
-  --md-code-hl-keyword-color:        #ef6b73;
-  --md-code-hl-string-color:         #bae67e;
-  --md-code-hl-name-color:           var(--md-code-fg-color);
-  --md-code-hl-operator-color:       var(--md-code-hl-number-color);
-  --md-code-hl-punctuation-color:    var(--md-code-hl-number-color);
-  --md-code-hl-comment-color:        var(--md-default-bg-color--lightest);
-  --md-code-hl-generic-color:        var(--md-code-hl-number-color);
-  --md-code-hl-variable-color:       var(--md-code-hl-number-color);
+  --md-code-hl-color: #bae67e99;
+  --md-code-hl-number-color: #ffd580;
+  --md-code-hl-special-color: #ef6b73;
+  --md-code-hl-function-color: #5ccfe6;
+  --md-code-hl-constant-color: #c3a6ff;
+  --md-code-hl-keyword-color: #ef6b73;
+  --md-code-hl-string-color: #bae67e;
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-operator-color: var(--md-code-hl-number-color);
+  --md-code-hl-punctuation-color: var(--md-code-hl-number-color);
+  --md-code-hl-comment-color: var(--md-default-bg-color--lightest);
+  --md-code-hl-generic-color: var(--md-code-hl-number-color);
+  --md-code-hl-variable-color: var(--md-code-hl-number-color);
 
   /* Typeset color shades *
   --md-typeset-color:                var(--md-default-fg-color);
@@ -168,53 +176,51 @@
 
 [data-md-color-scheme="mirage-light"] {
   /* Default color shades */
-  --md-default-fg-color:               #1d2433;
-  --md-default-fg-color--light:        hsl(221, 28%, 26%);
-  --md-default-fg-color--lighter:      hsl(221, 28%, 36%);
-  --md-default-fg-color--lightest:     hsl(221, 28%, 46%);
-  --md-default-bg-color:               #fff;
-  --md-default-bg-color--light:        var(--md-default-bg-color);
-  --md-default-bg-color--lighter:      var(--md-default-bg-color);
-  --md-default-bg-color--lightest:     var(--md-default-bg-color);
+  --md-default-fg-color: #1d2433;
+  --md-default-fg-color--light: hsl(221, 28%, 26%);
+  --md-default-fg-color--lighter: hsl(221, 28%, 36%);
+  --md-default-fg-color--lightest: hsl(221, 28%, 46%);
+  --md-default-bg-color: #fff;
+  --md-default-bg-color--light: var(--md-default-bg-color);
+  --md-default-bg-color--lighter: var(--md-default-bg-color);
+  --md-default-bg-color--lightest: var(--md-default-bg-color);
 
   /* Primary color shades */
-  --md-primary-fg-color:               #ffae57;
-  --md-primary-fg-color--light:        #ffd580;
-  --md-primary-fg-color--dark:         hsl(31, 90%, 60%);
-  --md-primary-bg-color:               #2f3b54;
-  --md-primary-bg-color--light:        hsl(221, 28%, 33%);
+  --md-primary-fg-color: #ffae57;
+  --md-primary-fg-color--light: #ffd580;
+  --md-primary-fg-color--dark: hsl(31, 90%, 60%);
+  --md-primary-bg-color: #2f3b54;
+  --md-primary-bg-color--light: hsl(221, 28%, 33%);
 
   /* Accent color shades */
-  --md-accent-bg-color:                #171c28;
-  --md-accent-bg-color--light:         hsl(222, 27%, 20%);
-  --md-accent-fg-color:                #ffd580;
-  --md-accent-fg-color--transparent:   #ffd58033;
+  --md-accent-bg-color: #171c28;
+  --md-accent-bg-color--light: hsl(222, 27%, 20%);
+  --md-accent-fg-color: #ffd580;
+  --md-accent-fg-color--transparent: #ffd58033;
 
   /* Misc */
   --md-footer-fg-color: var(--md-accent-fg-color);
   --md-footer-bg-color: var(--md-primary-bg-color);
   /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
 
-
-
   /* Code color shades */
-  --md-code-fg-color:                var(--md-default-bg-color);
-  --md-code-bg-color:                var(--md-primary-bg-color);
+  --md-code-fg-color: var(--md-default-bg-color);
+  --md-code-bg-color: var(--md-primary-bg-color);
 
   /* Code highlighting color shades */
-  --md-code-hl-color:                #bae67e99;
-  --md-code-hl-number-color:         #ffd580;
-  --md-code-hl-special-color:        #ef6b73;
-  --md-code-hl-function-color:       #5ccfe6;
-  --md-code-hl-constant-color:       #c3a6ff;
-  --md-code-hl-keyword-color:        #ef6b73;
-  --md-code-hl-string-color:         #bae67e;
-  --md-code-hl-name-color:           var(--md-default-bg-color);
-  --md-code-hl-operator-color:       var(--md-code-hl-number-color);
-  --md-code-hl-punctuation-color:    var(--md-code-hl-number-color);
-  --md-code-hl-comment-color:        var(--md-default-fg-color--lightest);
-  --md-code-hl-generic-color:        var(--md-code-hl-number-color);
-  --md-code-hl-variable-color:       var(--md-code-hl-number-color);
+  --md-code-hl-color: #bae67e99;
+  --md-code-hl-number-color: #ffd580;
+  --md-code-hl-special-color: #ef6b73;
+  --md-code-hl-function-color: #5ccfe6;
+  --md-code-hl-constant-color: #c3a6ff;
+  --md-code-hl-keyword-color: #ef6b73;
+  --md-code-hl-string-color: #bae67e;
+  --md-code-hl-name-color: var(--md-default-bg-color);
+  --md-code-hl-operator-color: var(--md-code-hl-number-color);
+  --md-code-hl-punctuation-color: var(--md-code-hl-number-color);
+  --md-code-hl-comment-color: var(--md-default-fg-color--lightest);
+  --md-code-hl-generic-color: var(--md-code-hl-number-color);
+  --md-code-hl-variable-color: var(--md-code-hl-number-color);
 
   /* Typeset color shades *
   --md-typeset-color:                var(--md-default-fg-color);

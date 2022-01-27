@@ -37,14 +37,13 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-        additional_dependencies:
-          [
+        additional_dependencies: [
             "flake8-bugbear",
             "flake8-comprehensions",
             "flake8-mutable",
             "flake8-print",
             "flake8-simplify",
-            "flake8-type-checking",
+            # "flake8-type-checking",
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.12.2"
@@ -60,7 +59,7 @@ repos:
             pydantic_factories,
             pyyaml,
             starlette,
-            sqlalchemy
+            sqlalchemy,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.931"
@@ -76,5 +75,9 @@ repos:
             pydantic,
             pydantic_factories,
             starlette,
-            sqlalchemy
+            sqlalchemy,
           ]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.5.1" # Use the sha or tag you want to point at
+    hooks:
+      - id: prettier

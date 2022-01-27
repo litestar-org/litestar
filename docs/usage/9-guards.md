@@ -100,7 +100,7 @@ The deciding factor on where to place a guard is on the kind of access restricti
 route handlers need to be restricted? An entire controller? All the paths under a specific router? Or the entire app?
 
 As you can see in the above examples - `guards` is a list. This means you can add **multiple** guards at every layer.
-Unlike `dependencies`, guards do not override each other but are rather *cumulative*. This means that you can define
+Unlike `dependencies`, guards do not override each other but are rather _cumulative_. This means that you can define
 guards on different levels of your app, and they will combine.
 
 ## The Route Handler "opt" Key

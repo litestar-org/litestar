@@ -141,7 +141,6 @@ async def get_wallet_by_id(wallet_id: UUID4) -> Wallet:
 
 We will now set it on the controller with the correct keyword:
 
-
 ```python title="my_app/wallet/controller.py"
 from starlite import Controller, Provide
 
@@ -195,9 +194,9 @@ the route handler that uses it. If `use_cache` is `True`, it will cache the retu
 will not call it again.
 
 !!! important
-    The caching done inside `Provide` is very simple - it stores the return value and returns it.
-    There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
-    you choose to use this option.
+The caching done inside `Provide` is very simple - it stores the return value and returns it.
+There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
+you choose to use this option.
 
 ## Using Dependencies in Dependencies
 

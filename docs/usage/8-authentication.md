@@ -43,8 +43,8 @@ class Token(BaseModel):
 ```
 
 !!! note
-    In the real world `User` would be a database model and would be persisted using a 3rd party library. The
-    current example just assumes this is happening.
+In the real world `User` would be a database model and would be persisted using a 3rd party library. The
+current example just assumes this is happening.
 
 We will also need some utility methods to encode and decode tokens. To this end we will use
 the [python-jose](https://github.com/mpdavis/python-jose) library, which is an excellent choice.
