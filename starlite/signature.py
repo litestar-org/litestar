@@ -24,7 +24,9 @@ class SignatureModel(BaseModel):
     is_async: ClassVar[bool]
 
     @classmethod
-    def parse_values_from_connection_kwargs(cls, connection: Union[Request, WebSocket], **kwargs) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(
+        cls, connection: Union[Request, WebSocket], **kwargs: Any
+    ) -> Dict[str, Any]:
         """
         Given a dictionary of values extracted from the connection, create an instance of the given SignatureModel subclass and return the parsed values
 
@@ -33,7 +35,7 @@ class SignatureModel(BaseModel):
         """
         try:
             output: Dict[str, Any] = {}
-            modelled_signature = cls(**kwargs)  # pylint: disable=not-callable
+            modelled_signature = cls(**kwargs)
             for key in cls.__fields__:
                 value = modelled_signature.__getattribute__(key)
                 plugin_mapping: Optional[PluginMapping] = cls.field_plugin_mappings.get(key)

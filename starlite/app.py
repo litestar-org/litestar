@@ -62,7 +62,7 @@ class Starlite(Router):
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
-    def __init__(  # pylint: disable=too-many-locals
+    def __init__(
         self,
         *,
         route_handlers: List[ControllerRouterHandler],
@@ -144,7 +144,8 @@ class Starlite(Router):
                     path = path.replace(param_definition["full"], "")
                 path = path.replace("{}", "*")
                 cur = self.route_map
-                for component in path.split("/"):
+                components = ["/", *[component for component in path.split("/") if component]]
+                for component in components:
                     components_set = cast(Set[str], cur["_components"])
                     components_set.add(component)
                     if component not in cur:
@@ -181,7 +182,7 @@ class Starlite(Router):
             if isinstance(route, HTTPRoute):
                 route_handlers = route.route_handlers
             else:
-                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]
+                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]  # type: ignore
             for route_handler in route_handlers:
                 self.create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
@@ -189,7 +190,7 @@ class Starlite(Router):
                     route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_request()
-                if isinstance(route_handler.owner, Controller):
+                if route_handler.fn and isinstance(route_handler.owner, Controller):
                     route_handler.fn = partial(route_handler.fn, route_handler.owner)
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()

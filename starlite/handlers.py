@@ -1,5 +1,4 @@
-# pylint: disable=too-many-instance-attributes, too-many-locals, too-many-arguments
-from abc import ABC
+# pylint: disable=too-many-instance-attributes, too-many-arguments
 from contextlib import suppress
 from copy import copy
 from enum import Enum
@@ -55,7 +54,7 @@ class _empty:
     """Placeholder"""
 
 
-class BaseRouteHandler(ABC):
+class BaseRouteHandler:
     __slots__ = (
         "paths",
         "dependencies",
@@ -79,8 +78,7 @@ class BaseRouteHandler(ABC):
         self.paths: List[str] = (
             [normalize_path(p) for p in path]
             if path and isinstance(path, list)
-            else [normalize_path(path or "/")]
-            # type: ignore
+            else [normalize_path(path or "/")]  # type: ignore
         )
         self.dependencies = dependencies
         self.guards = guards
@@ -361,10 +359,10 @@ class HTTPRouteHandler(BaseRouteHandler):
                     self.media_type = MediaType.TEXT
         if "socket" in signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-        if "socket" in signature.parameters and "GET" in self.http_methods:
+        if "data" in signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    async def to_response(self, plugins: List[PluginProtocol], data: Any) -> StarletteResponse:
+    async def to_response(self, data: Any, plugins: List[PluginProtocol]) -> StarletteResponse:
         """
         Given a data kwarg, determine its type and return the appropriate response
         """

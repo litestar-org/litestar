@@ -2,16 +2,7 @@ import re
 from abc import ABC
 from inspect import isawaitable, isclass
 from itertools import chain
-from typing import (
-    Any,
-    Dict,
-    ItemsView,
-    List,
-    Optional,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import Any, Dict, ItemsView, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
 from pydantic import validate_arguments
@@ -23,10 +14,7 @@ from typing_extensions import Type
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MethodNotAllowedException,
-)
+from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
 from starlite.handlers import (
     ASGIRouteHandler,
     BaseRouteHandler,
@@ -37,7 +25,7 @@ from starlite.kwargs import KwargsModel
 from starlite.provide import Provide
 from starlite.request import Request, WebSocket
 from starlite.response import Response
-from starlite.signature import SignatureModel
+from starlite.signature import get_signature_model
 from starlite.types import (
     AfterRequestHandler,
     AsyncAnyCallable,
@@ -104,11 +92,12 @@ class BaseRoute(ABC):
         Method to create a KwargsModel for a given route handler
         """
         dependencies = route_handler.resolve_dependencies()
-        signature_model = cast(SignatureModel, route_handler.signature_model)
+        signature_model = get_signature_model(route_handler)
         path_parameters = {p["name"] for p in self.path_parameters}
         return KwargsModel.create_for_signature_model(
             signature_model=signature_model, dependencies=dependencies, path_parameters=path_parameters
         )
+
 
 class HTTPRoute(BaseRoute):
     __slots__ = (
@@ -147,35 +136,34 @@ class HTTPRoute(BaseRoute):
             await handler.authorize_connection(connection=request)
         response_data = None
         before_request_handler = handler.resolve_before_request()
+        # run the before_request hook handler
         if before_request_handler:
-            # run the before_request hook handler
-            if before_request_handler:
-                response_data = before_request_handler(request)
-                if isawaitable(response_data):
-                    response_data = await response_data
+            response_data = before_request_handler(request)
+            if isawaitable(response_data):
+                response_data = await response_data
         if not response_data:
-            signature_model = handler.signature_model
+            signature_model = get_signature_model(handler)
             if signature_model.has_kwargs:
                 kwargs = parameter_model.to_kwargs(connection=request)
                 request_data = kwargs.get("data")
                 if request_data:
                     kwargs["data"] = await request_data
                 for dependency in parameter_model.expected_dependencies:
-                    kwargs[dependency.key] = await parameter_model.resolve_dependency(dependency=dependency, connection=request, **kwargs)
-                parsed_kwargs = handler.signature_model.parse_values_from_connection_kwargs(
-                    connection=request, **kwargs
-                )
+                    kwargs[dependency.key] = await parameter_model.resolve_dependency(
+                        dependency=dependency, connection=request, **kwargs
+                    )
+                parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
             else:
                 parsed_kwargs = {}
             fn = cast(AnyCallable, handler.fn)
             if signature_model.is_async:
                 response_data = await fn(**parsed_kwargs)
             else:
-                response_data = handler.fn(**parsed_kwargs)
+                response_data = fn(**parsed_kwargs)
         response = await handler.to_response(plugins=request.app.plugins, data=response_data)
         await response(scope, receive, send)
 
-    def create_handler_map(self):
+    def create_handler_map(self) -> None:
         """
         Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
         """
@@ -221,14 +209,14 @@ class WebSocketRoute(BaseRoute):
         web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=receive, send=send)
         if route_handler.resolved_guards:
             await route_handler.authorize_connection(connection=web_socket)
-        signature_model = route_handler.signature_model
+        signature_model = get_signature_model(route_handler)
         if signature_model.has_kwargs:
             kwargs = self.handler_parameter_model.to_kwargs(connection=web_socket)
             for dependency in self.handler_parameter_model.expected_dependencies:
-                kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(dependency=dependency, connection=web_socket, **kwargs)
-            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=web_socket, **kwargs
-            )
+                kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
+                    dependency=dependency, connection=web_socket, **kwargs
+                )
+            parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
         else:
             parsed_kwargs = {}
         fn = cast(AsyncAnyCallable, self.route_handler.fn)
@@ -391,13 +379,13 @@ class Router:
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                route: BaseRoute = WebSocketRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             else:
-                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())
+                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
                 route_handlers = unique(list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values()))
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers))

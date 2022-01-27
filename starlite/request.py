@@ -49,9 +49,14 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
         return cast(Method, self.scope["method"])
 
     async def json(self) -> Any:
+        """
+        Method to retrieve the json request body from the request.
+
+        This method overrides the Starlette method using the much faster orjson.loads() function
+        """
         if not hasattr(self, "_json"):
             body = await self.body()
-            self._json = loads(body)
+            self._json = loads(body)  # pylint: disable=attribute-defined-outside-init
         return self._json
 
 
