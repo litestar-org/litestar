@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from openapi_schema_pydantic import OpenAPI, Schema
@@ -19,7 +18,6 @@ from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
-from starlite.controller import Controller
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
@@ -190,8 +188,6 @@ class Starlite(Router):
                     route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_request()
-                if route_handler.fn and isinstance(route_handler.owner, Controller):
-                    route_handler.fn = partial(route_handler.fn, route_handler.owner)
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
             elif isinstance(route, WebSocketRoute):

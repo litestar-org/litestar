@@ -143,13 +143,13 @@ class KwargsModel:
                 field_alias = model_info.extra["cookie"]
             else:
                 parameter_set = expected_query_parameters
-                field_alias = model_info.extra.get("query", field_name)
+                field_alias = model_info.extra.get("query") or field_name
             parameter_set.add(
                 ParameterDefinition(
                     field_name=field_name,
                     field_alias=field_alias,
                     default_value=default,
-                    is_required=is_required and default is None,
+                    is_required=is_required and default is None and not model_field.allow_none,
                 )
             )
 

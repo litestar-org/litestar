@@ -11,7 +11,7 @@ from starlite import (
 )
 
 
-def test_websocket_handler_validation():
+def test_websocket_handler_function_validation():
     def fn_without_socket_arg(websocket: WebSocket) -> None:
         pass
 
@@ -28,6 +28,18 @@ def test_websocket_handler_validation():
 
     with pytest.raises(ImproperlyConfiguredException):
         create_test_client(route_handlers=websocket_handler_with_no_fn)
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket(path="/")
+        async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None:
+            ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket(path="/")
+        async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None:
+            ...
 
 
 def test_handle_websocket():
@@ -76,27 +88,3 @@ def test_handle_websocket_params_parsing():
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data
-
-
-def test_handle_websocket_params_validation():
-    @websocket(path="/")
-    async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None:
-        await socket.accept()
-        await socket.send_json({"data": "123"})
-        await socket.close()
-
-    client = create_test_client(route_handlers=websocket_handler_with_data_kwarg)
-
-    with pytest.raises(ImproperlyConfiguredException), client.websocket_connect("/") as ws:
-        ws.receive_json()
-
-    @websocket(path="/")
-    async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None:
-        await socket.accept()
-        await socket.send_json({"data": "123"})
-        await socket.close()
-
-    client = create_test_client(route_handlers=websocket_handler_with_request_kwarg)
-
-    with pytest.raises(ImproperlyConfiguredException), client.websocket_connect("/") as ws:
-        ws.receive_json()

@@ -22,7 +22,6 @@ from starlette.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_307_TEMPORARY_REDIRECT,
-    HTTP_500_INTERNAL_SERVER_ERROR,
 )
 
 from starlite import (
@@ -43,7 +42,7 @@ from starlite import (
 )
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
-from starlite.testing import create_test_client, create_test_request
+from starlite.testing import create_test_client
 from starlite.utils import model_function_signature, normalize_path
 from tests import Person, PersonFactory
 
@@ -206,9 +205,21 @@ async def test_route_handler_function_validation():
 
     assert file_method.media_type == MediaType.TEXT
 
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @get(path="/test")
+        def test_function_1(socket: WebSocket) -> None:
+            ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @get("/person")
+        def test_function_2(self, data: Person) -> None:
+            ...
+
 
 @pytest.mark.asyncio
-async def test_handle_request_async_await():
+async def test_handle_to_response_async_await():
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person) -> None:
         assert isinstance(data, Person)
@@ -216,10 +227,9 @@ async def test_handle_request_async_await():
         return data
 
     person_instance = PersonFactory.build()
-    request = create_test_request(content=person_instance, http_method=HttpMethod.POST)
     test_function.signature_model = model_function_signature(test_function.fn, [])
 
-    response = await test_function.handle_request(request=request)
+    response = await test_function.to_response(test_function.fn(data=person_instance), [])
     assert loads(response.body) == person_instance.dict()
 
 
@@ -245,7 +255,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response([], route_handler.fn())
+        response = await route_handler.to_response(route_handler.fn(), [])
         assert isinstance(response, StarletteResponse)
         assert response is expected_response
 
@@ -259,7 +269,7 @@ async def test_to_response_returning_redirect_response():
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response([], route_handler.fn())
+        response = await route_handler.to_response(route_handler.fn(), [])
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
 
@@ -276,7 +286,7 @@ async def test_to_response_returning_file_response():
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response([], route_handler.fn())
+        response = await route_handler.to_response(route_handler.fn(), [])
         assert isinstance(response, FileResponse)
         assert response.stat_result
 
@@ -309,30 +319,8 @@ async def test_handle_request_streaming_response(iterator: Any, should_raise: bo
         with create_test_client(test_function) as client:
             route: HTTPRoute = client.app.routes[0]
             route_handler = route.route_handlers[0]
-            response = await route_handler.to_response([], route_handler.fn())
+            response = await route_handler.to_response(route_handler.fn(), [])
             assert isinstance(response, StreamingResponse)
     else:
         with pytest.raises(ValidationError):
             Stream(iterator=iterator)
-
-
-@pytest.mark.asyncio
-async def test_handle_request_validation():
-    @get(path="/test")
-    def test_function(socket: WebSocket) -> None:
-        pass
-
-    request = create_test_request(content=None, http_method=HttpMethod.GET)
-    test_function.signature_model = model_function_signature(test_function.fn, [])
-    with pytest.raises(ImproperlyConfiguredException):
-        await test_function.handle_request(request=request)
-
-
-def test_defining_data_for_get_handler_raises_exception():
-    @get("/person")
-    def test_function(self, data: Person) -> None:
-        ...
-
-    with create_test_client(test_function) as client:
-        response = client.get("/person")
-        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

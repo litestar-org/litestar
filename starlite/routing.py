@@ -131,18 +131,18 @@ class HTTPRoute(BaseRoute):
             raise MethodNotAllowedException()
         request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
 
-        handler, parameter_model = self.route_handler_map[request.method]
-        if handler.resolved_guards:
-            await handler.authorize_connection(connection=request)
+        route_handler, parameter_model = self.route_handler_map[request.method]
+        if route_handler.resolved_guards:
+            await route_handler.authorize_connection(connection=request)
         response_data = None
-        before_request_handler = handler.resolve_before_request()
+        before_request_handler = route_handler.resolve_before_request()
         # run the before_request hook handler
         if before_request_handler:
             response_data = before_request_handler(request)
             if isawaitable(response_data):
                 response_data = await response_data
         if not response_data:
-            signature_model = get_signature_model(handler)
+            signature_model = get_signature_model(route_handler)
             if signature_model.has_kwargs:
                 kwargs = parameter_model.to_kwargs(connection=request)
                 request_data = kwargs.get("data")
@@ -155,12 +155,15 @@ class HTTPRoute(BaseRoute):
                 parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
             else:
                 parsed_kwargs = {}
-            fn = cast(AnyCallable, handler.fn)
-            if signature_model.is_async:
-                response_data = await fn(**parsed_kwargs)
+            fn = cast(AnyCallable, route_handler.fn)
+            if isinstance(route_handler.owner, Controller):
+                response_data = fn(route_handler.owner, **parsed_kwargs)
             else:
                 response_data = fn(**parsed_kwargs)
-        response = await handler.to_response(plugins=request.app.plugins, data=response_data)
+        response = await route_handler.to_response(
+            data=response_data,
+            plugins=request.app.plugins,
+        )
         await response(scope, receive, send)
 
     def create_handler_map(self) -> None:
@@ -220,7 +223,10 @@ class WebSocketRoute(BaseRoute):
         else:
             parsed_kwargs = {}
         fn = cast(AsyncAnyCallable, self.route_handler.fn)
-        await fn(**parsed_kwargs)
+        if isinstance(route_handler.owner, Controller):
+            await fn(route_handler.owner, **parsed_kwargs)
+        else:
+            await fn(**parsed_kwargs)
 
 
 class ASGIRoute(BaseRoute):
@@ -246,7 +252,7 @@ class ASGIRoute(BaseRoute):
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
-        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
+        ASGI app that authorizes the connection and then awaits the handler function
         """
 
         if self.route_handler.resolved_guards:

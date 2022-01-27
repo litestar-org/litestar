@@ -366,6 +366,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         Given a data kwarg, determine its type and return the appropriate response
         """
+        if isawaitable(data):
+            data = await data
         after_request = self.resolve_after_request()
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
@@ -382,7 +384,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             else:
                 response = cast(StarletteResponse, data)
         else:
-            plugin = get_plugin_for_value(data, plugins)
+            plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
                 if isinstance(data, (list, tuple)):
                     data = [plugin.to_dict(datum) for datum in data]

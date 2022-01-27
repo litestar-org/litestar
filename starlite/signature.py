@@ -1,4 +1,3 @@
-from asyncio import iscoroutinefunction
 from inspect import Signature
 from typing import Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
@@ -21,7 +20,6 @@ class SignatureModel(BaseModel):
     field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
     has_kwargs: ClassVar[bool]
-    is_async: ClassVar[bool]
 
     @classmethod
     def parse_values_from_connection_kwargs(
@@ -110,7 +108,6 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
         model.return_annotation = signature.return_annotation
         model.field_plugin_mappings = field_plugin_mappings
         model.has_kwargs = bool(model.__fields__)
-        model.is_async = iscoroutinefunction(fn)
         return model
     except TypeError as e:
         raise ImproperlyConfiguredException(repr(e)) from e
