@@ -60,19 +60,20 @@ used:
 - POST: 201 (Created)
 - DELETE: 204 (No Content)
 - GET, PATCH, PUT: 200 (Ok)
-
-!!! note
-When using the `route` decorator with multiple http methods, the default status code is `200`.
+  <!-- prettier-ignore -->
+  !!! note
+    When using the `route` decorator with multiple http methods, the default status code is `200`.
 
 Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
 data. This though might not be the case in your implementation - so take care of setting it as you see fit.
 
+<!-- prettier-ignore -->
 !!! tip
-While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
-its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
-exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
-enum from the standard library, which also offers extra functionality.
-For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
+    While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
+    its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
+    exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
+    enum from the standard library, which also offers extra functionality.
+    For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
 
 ## Media Type
 
@@ -123,9 +124,10 @@ def health_check() -> str:
     """
 ```
 
+<!-- prettier-ignore -->
 !!! tip
-It's a good idea to use a templating engine for more complex HTML responses and to write the template itself in a
-separate file rather than a string.
+    It's a good idea to use a templating engine for more complex HTML responses and to write the template itself in a
+    separate file rather than a string.
 
 ### JSON Responses
 
@@ -205,12 +207,12 @@ The File class expects two kwargs:
 - `filename`: the filename to set in the
   response [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
   attachment.
-
-!!! important
-When a route handler's return value is annotated with `File`, the default `media_type` for the
-route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-the value for `media_type` instead.
+  <!-- prettier-ignore -->
+  !!! important
+    When a route handler's return value is annotated with `File`, the default `media_type` for the
+    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+    the value for `media_type` instead.
 
 For example:
 
@@ -353,8 +355,9 @@ def my_route_handler() -> Response:
     return Response(...)
 ```
 
+<!-- prettier-ignore -->
 !!! important
-If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 

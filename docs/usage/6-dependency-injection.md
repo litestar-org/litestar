@@ -193,10 +193,11 @@ By default `Provide` will not cache the return value of the dependency, and it w
 the route handler that uses it. If `use_cache` is `True`, it will cache the return value on the first execution and
 will not call it again.
 
+<!-- prettier-ignore -->
 !!! important
-The caching done inside `Provide` is very simple - it stores the return value and returns it.
-There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
-you choose to use this option.
+    The caching done inside `Provide` is very simple - it stores the return value and returns it.
+    There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when
+    you choose to use this option.
 
 ## Using Dependencies in Dependencies
 

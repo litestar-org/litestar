@@ -2,9 +2,10 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
+<!-- prettier-ignore -->
 !!! tip
-Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an
-easy and powerful way to generate mock data from pydantic models and dataclasses.
+    Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an
+    easy and powerful way to generate mock data from pydantic models and dataclasses.
 
 ## Test Client
 
