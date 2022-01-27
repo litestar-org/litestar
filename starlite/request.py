@@ -27,17 +27,13 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
     @property
     def user(self) -> User:
         if "user" not in self.scope:
-            raise ImproperlyConfiguredException(
-                "user is not defined in scope, you should install an AuthMiddleware to set it"
-            )
+            raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
         return cast(User, self.scope["user"])
 
     @property
     def auth(self) -> Auth:
         if "auth" not in self.scope:
-            raise ImproperlyConfiguredException(
-                "auth is not defined in scope, you should install an AuthMiddleware to set it"
-            )
+            raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
         return cast(Auth, self.scope["auth"])
 
     @property
@@ -68,17 +64,13 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
     @property
     def user(self) -> User:
         if "user" not in self.scope:
-            raise ImproperlyConfiguredException(
-                "user is not defined in scope, you should install an AuthMiddleware to set it"
-            )
+            raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
         return cast(User, self.scope["user"])
 
     @property
     def auth(self) -> Auth:
         if "auth" not in self.scope:
-            raise ImproperlyConfiguredException(
-                "auth is not defined in scope, you should install an AuthMiddleware to set it"
-            )
+            raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
         return cast(Auth, self.scope["auth"])
 
     @property

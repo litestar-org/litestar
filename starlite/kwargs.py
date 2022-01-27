@@ -4,7 +4,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cas
 from pydantic.fields import ModelField, Undefined
 from typing_extensions import Type
 
-from starlite.constants import RESERVED_FIELD_NAMES
+from starlite.constants import RESERVED_KWARGS
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.provide import Provide
@@ -107,7 +107,7 @@ class KwargsModel:
             path_parameters=path_parameters, dependencies=dependencies, model_fields=signature_model.__fields__
         )
         expected_reserved_kwargs = {
-            field_name for field_name in signature_model.__fields__ if field_name in RESERVED_FIELD_NAMES
+            field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
         }
         expected_dependencies: Set[Dependency] = {
             cls.create_dependency_graph(key=key, dependencies=dependencies)
@@ -123,7 +123,7 @@ class KwargsModel:
         for field_name, model_field in [
             (name, field)
             for name, field in signature_model.__fields__.items()
-            if name not in [*RESERVED_FIELD_NAMES, *dependency_keys]
+            if name not in [*RESERVED_KWARGS, *dependency_keys]
         ]:
             model_info = model_field.field_info
             extra_keys = set(model_info.extra)
@@ -229,20 +229,26 @@ class KwargsModel:
         }
         dependency_keys = set(dependencies.keys())
 
-        path_param_and_dependency_intersection = path_parameters.intersection(dependency_keys)
-        path_param_and_aliased_param_intersection = path_parameters.intersection(aliased_parameters)
-        dependency_and_aliased_param_intersection = dependency_keys.intersection(aliased_parameters)
-
         for intersection in [
-            path_param_and_dependency_intersection
-            or path_param_and_aliased_param_intersection
-            or dependency_and_aliased_param_intersection
+            path_parameters.intersection(dependency_keys)
+            or path_parameters.intersection(aliased_parameters)
+            or dependency_keys.intersection(aliased_parameters)
         ]:
             if intersection:
                 raise ImproperlyConfiguredException(
-                    f"kwarg resolution ambiguity - {', '.join(intersection)}, "
-                    f"make sure the keys used for your dependencies, path parameters and aliased parameters are unique"
+                    f"Kwarg resolution ambiguity detected for the following keys: {', '.join(intersection)}. "
+                    f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 )
+
+        used_reserved_kwargs = {*aliased_parameters, *path_parameters, *dependency_keys}.intersection(
+            set(RESERVED_KWARGS)
+        )
+        if used_reserved_kwargs:
+            raise ImproperlyConfiguredException(
+                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter "
+                f"arguments. The following kwargs have been used by dependencies or aliased parameters: "
+                f"{', '.join(used_reserved_kwargs)}"
+            )
 
     def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
         """

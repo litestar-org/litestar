@@ -98,7 +98,7 @@ ignored-argument-names = "args|kwargs|_|__"
 good-names = "_,i,e,fn"
 
 [tool.coverage.run]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "*/performance_test/*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

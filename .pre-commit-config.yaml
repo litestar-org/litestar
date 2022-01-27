@@ -31,6 +31,7 @@ repos:
     rev: 1.7.1
     hooks:
       - id: bandit
+        exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2

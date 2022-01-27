@@ -145,7 +145,7 @@ class BaseRouteHandler:
         Validates the route handler function once it's set by inspecting its return annotations
         """
         if not self.fn:  # pragma: no cover
-            raise ImproperlyConfiguredException("cannot call validate_handler_function without first setting self.fn")
+            raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
         """
@@ -676,9 +676,9 @@ class WebsocketRouteHandler(BaseRouteHandler):
         signature = Signature.from_callable(cast(AnyCallable, self.fn))
 
         if signature.return_annotation is not None:
-            raise ImproperlyConfiguredException("websocket handler functions should return 'None'")
+            raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
         if "socket" not in signature.parameters:
-            raise ImproperlyConfiguredException("websocket handlers must set a 'socket' kwarg")
+            raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
         if "request" in signature.parameters:
             raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
         if "data" in signature.parameters:

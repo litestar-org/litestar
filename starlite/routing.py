@@ -11,7 +11,6 @@ from starlette.routing import get_name
 from starlette.types import Receive, Scope, Send
 from typing_extensions import Type
 
-from starlite.constants import RESERVED_FIELD_NAMES
 from starlite.controller import Controller
 from starlite.enums import HttpMethod, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
@@ -82,13 +81,9 @@ class BaseRoute:
         for param in param_match_regex.findall(path):
             if ":" not in param:
                 raise ImproperlyConfiguredException(
-                    "path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
+                    "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
                 )
             param_name, param_type = (p.strip() for p in param.split(":"))
-            if param_name in RESERVED_FIELD_NAMES:
-                raise ImproperlyConfiguredException(
-                    f"{param_name} is a reserved kwarg and cannot be used for path parameters, please use a different value"
-                )
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
@@ -181,7 +176,7 @@ class HTTPRoute(BaseRoute):
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
                     raise ImproperlyConfiguredException(
-                        f"handler already registered for path {self.path!r} and http method {http_method}"
+                        f"Handler already registered for path {self.path!r} and http method {http_method}"
                     )
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 

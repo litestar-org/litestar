@@ -75,7 +75,7 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
             type_annotation = parameter.annotation
             if type_annotation is signature.empty:
                 raise ImproperlyConfiguredException(
-                    f"kwarg {kwarg} of {fn_name} does not have a type annotation. If it should receive any value, use the 'Any' type."
+                    f"Kwarg {kwarg} of {fn_name} does not have a type annotation. If it should receive any value, use the 'Any' type."
                 )
             if kwarg in ["request", "socket"]:
                 # pydantic has issues with none-pydantic classes that receive generics
