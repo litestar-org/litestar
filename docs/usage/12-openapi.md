@@ -42,8 +42,8 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 - `webhooks`: A string keyed dictionary of `PathItem` model instances.
 
 !!! note
-    All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
-    rather than Starlite.
+All models listed above are exported from [openapi-schema-pydantic](https://github.com/kuimono/openapi-schema-pydantic)
+rather than Starlite.
 
 #### Disable Schema Generation
 
@@ -57,7 +57,6 @@ app = Starlite(
     route_handlers=[...], openapi_config=None
 )
 ```
-
 
 ### Route Handler Configuration
 
@@ -111,10 +110,11 @@ Starlite includes a pre-configured controller called `OpenAPIController` which e
    Content-Type.
 2. `/schema/openapi.json`, allowing for download of the OpenAPI schema as JSON, using
    the `application/vnd.oai.openapi+json` Content-Type.
-3. `/schema/redoc`, which serves a [Redoc](https://github.com/Redocly/redoc) UI static website for the OpenAPI docs.
+3. `/schema`, which serves a [Redoc](https://github.com/Redocly/redoc) UI static website for the OpenAPI docs.
 
 !!! important
-    prior to version 0.3.0 there was only a single download endpoint by default and its path was `/schema`
+prior to version 0.3.0 there was only a single download endpoint by default and its path was `/schema`
+prior to version 0.8.0, the redoc UI was found at `/schema/redoc` and has since been moved to `/schema` for ease of use.
 
 If you would like to modify the endpoints, add new endpoints, change the styling of redoc etc., you can subclass the
 `OpenAPIController` and then pass your subclass to the `OpenAPIConfig`.
