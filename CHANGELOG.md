@@ -111,3 +111,4 @@
 [0.8.0]
 
 - moved redoc UI to `/schema`, changed from `/schema/redoc`
+- added prettier precommit hooks
