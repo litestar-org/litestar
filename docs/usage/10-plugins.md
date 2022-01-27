@@ -23,10 +23,10 @@ app = Starlite(route_handlers=[...], plugins=[SQLAlchemyPlugin()])
 ```
 
 !!! note
-    The `SQLAlchemyPlugin` *will not* create a DB connection, a `sessionmaker` or anything of this kind. This
-    you will need to implement on your own according to the pattern of your choice, or using a 3rd party solution of some
-    sort. The reason for this is that SQL Alchemy is very flexible and allows you to interact with it in various ways.
-    We cannot decide upon the pattern that will fit your architecture in advance, and hence it is left to the user to decide.
+The `SQLAlchemyPlugin` _will not_ create a DB connection, a `sessionmaker` or anything of this kind. This
+you will need to implement on your own according to the pattern of your choice, or using a 3rd party solution of some
+sort. The reason for this is that SQL Alchemy is very flexible and allows you to interact with it in various ways.
+We cannot decide upon the pattern that will fit your architecture in advance, and hence it is left to the user to decide.
 
 You can now use SQL alchemy declarative classes as route handler parameters or return values:
 
@@ -58,9 +58,8 @@ def get_companies() -> List[Company]:
 ```
 
 !!! important
-    The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
-    because this style does not use classes, and is very hard to convert to pydantic correctly.
-
+The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
+because this style does not use classes, and is very hard to convert to pydantic correctly.
 
 ### Handling of Relationships
 

@@ -44,8 +44,8 @@ on it. Thus, in the above example, `create_user_order` has the path of the contr
 the path `/user/{order_id:uuid}"`.
 
 !!! note
-    You do not have to declare a `path` variable, yet if the path variable is missing or is an empty string, it
-    will default to the root path of "/".
+You do not have to declare a `path` variable, yet if the path variable is missing or is an empty string, it
+will default to the root path of "/".
 
 Aside from the `path` class variable, you can also set the following optional class variables:
 
@@ -132,8 +132,8 @@ Once `order_router` is registered on `base_router`, the controllers registered o
 on: "/base/orders/user" and "/base/order/partner" respectively.
 
 !!! important
-    You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
-    re-registered or an exception will be raised.
+You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
+re-registered or an exception will be raised.
 
 ### Registering Controllers Multiple Times
 

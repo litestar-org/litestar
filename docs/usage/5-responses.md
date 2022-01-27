@@ -378,7 +378,7 @@ def my_route_handler() -> Response:
 ```
 
 !!! important
-    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 

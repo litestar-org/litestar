@@ -25,9 +25,9 @@ def my_endpoint() -> None:
 ```
 
 !!! important
-    A function decorated by `route` or any of the other route handler decorator **must** have an annotated
-    return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
-    consistent schema generation, as well as stronger typing.
+A function decorated by `route` or any of the other route handler decorator **must** have an annotated
+return value, even if the return value is `None` as in the above example. This limitation is enforced to ensure
+consistent schema generation, as well as stronger typing.
 
 ### Declaring Path(s)
 
@@ -184,6 +184,81 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
 
+## Websocket Route Handlers
+
+!!! info
+This feature is available from v0.2.0 onwards
+
+Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
+
+```python
+from starlite import WebSocket, websocket
+
+
+@websocket(path="/socket")
+async def my_websocket_handler(socket: WebSocket) -> None:
+    await socket.accept()
+    await socket.send_json({...})
+    await socket.close()
+```
+
+The `websocket` decorator is also an aliased class, in this case - of the `WebsocketRouteHandler`. Thus. you can write
+the above like so:
+
+```python
+from starlite import WebSocket, WebsocketRouteHandler
+
+
+@WebsocketRouteHandler(path="/socket")
+async def my_websocket_handler(socket: WebSocket) -> None:
+    await socket.accept()
+    await socket.send_json({...})
+    await socket.close()
+```
+
+In difference to HTTP routes handlers, websocket handlers have the following requirements:
+
+1. they **must** declare a `socket` kwarg. If this is missing an exception will be raised.
+2. they **must** have a return annotation of `None`. Any other annotation, or lack thereof, will raise an exception.
+
+Additionally, they should be async because the socket interface is async - but this is not enforced. You will not be
+able to do anything meaningful without this and python will raise errors as required.
+
+In all other regards websocket handlers function exactly like other route handlers.
+
+!!! note
+OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
+handlers, and you cannot configure any schema related parameters for these.
+
+## ASGI Route Handlers
+
+!!! info
+This feature is available from v0.7.0 onwards
+
+You can write your own ASGI apps using the `asgi` route handler decorator:
+
+```python
+from starlette.types import Scope, Receive, Send
+from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite import Response, asgi
+
+
+@asgi(path="/my-asgi-app")
+async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+    if scope["type"] == "http":
+        if scope["method"] == "GET":
+            response = Response({"hello": "world"}, status_code=HTTP_200_OK)
+            await response(scope=scope, receive=receive, send=send)
+        return
+    response = Response(
+        {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
+    )
+    await response(scope=scope, receive=receive, send=send)
+```
+
+!!! note
+ASGI apps are currently not handled in OpenAPI generation - although this might change in the future.
+
 ## Handler Function Kwargs
 
 Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
@@ -223,5 +298,5 @@ def my_request_handler(
 ```
 
 !!! tip
-    You can define a custom typing for your application state and then use it as a type instead of just using the
-    State class from Starlite
+You can define a custom typing for your application state and then use it as a type instead of just using the
+State class from Starlite
