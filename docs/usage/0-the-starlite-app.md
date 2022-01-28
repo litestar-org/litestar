@@ -4,7 +4,7 @@ At the root of every Starlite application is an instance of the `Starlite` class
 code will be placed in a file called `main.py` at the project's source folder root.
 
 Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
-or [route_handlers](2-route-handlers.md):
+or [route_handlers](2-route-handlers/1_http_route_handlers.md):
 
 ```python title="my_app/main.py"
 from starlite import Starlite, get
@@ -124,7 +124,7 @@ async def close_postgres_connection(state: State) -> None:
 ```
 
 The advantage of following this pattern is that the application `state` can be injected into dependencies and route
-handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
+handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs)
 
 ## Logging
 

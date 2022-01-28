@@ -6,7 +6,7 @@ from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from typing_extensions import Type
 
-from starlite.utils import SignatureModel
+from starlite.signature import SignatureModel
 
 
 class Provide:

@@ -28,6 +28,7 @@ from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
+from starlite.signature import model_function_signature
 from starlite.template import AbstractTemplateEngine
 from starlite.types import (
     AfterRequestHandler,
@@ -39,7 +40,7 @@ from starlite.types import (
     MiddlewareProtocol,
     ResponseHeader,
 )
-from starlite.utils import model_function_signature, normalize_path
+from starlite.utils import normalize_path
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 

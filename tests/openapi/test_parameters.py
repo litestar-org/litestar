@@ -3,7 +3,8 @@ from typing import Callable, cast
 from starlite import Starlite
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
-from starlite.utils import find_index, model_function_signature
+from starlite.signature import model_function_signature
+from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
 

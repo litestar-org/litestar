@@ -6,7 +6,7 @@ components that make this simple to achieve - `Router` and `Controller`.
 ## Controllers
 
 Controllers are subclasses of the Starlite `Controller` class that are used to organize endpoints under a specific
-sub-path. You can place as many [route handler](2-route-handlers.md) methods on a controller, as long as the combination
+sub-path. You can place as many [route handler](2-route-handlers/1_http_route_handlers.md) methods on a controller, as long as the combination
 of path+http method is unique. The distinct advantage of using controllers is that they allow both code sharing using
 OOP techniques and make the code better organized by promoting concern based code splitting.
 

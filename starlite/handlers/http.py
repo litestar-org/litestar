@@ -1,8 +1,7 @@
 # pylint: disable=too-many-instance-attributes, too-many-arguments
 from contextlib import suppress
-from copy import copy
 from enum import Enum
-from inspect import Signature, isawaitable, isclass, iscoroutinefunction, ismethod
+from inspect import Signature, isawaitable, isclass, ismethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -18,14 +17,12 @@ from typing import (
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.background import BackgroundTask, BackgroundTasks
-from starlette.requests import HTTPConnection
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.controller import Controller
 from starlite.datastructures import File, Redirect, StarliteType, Stream, Template
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -33,128 +30,21 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     ValidationException,
 )
-from starlite.plugins.base import PluginProtocol, get_plugin_for_value
+from starlite.handlers.base import BaseRouteHandler
+from starlite.plugins import PluginProtocol, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.response import Response, TemplateResponse
 from starlite.types import (
     AfterRequestHandler,
-    AsyncAnyCallable,
     BeforeRequestHandler,
     Guard,
     Method,
     ResponseHeader,
 )
-from starlite.utils import SignatureModel, normalize_path
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
+    from starlite.controller import Controller
     from starlite.routing import Router
-
-
-class _empty:
-    """Placeholder"""
-
-
-class BaseRouteHandler:
-    __slots__ = (
-        "paths",
-        "dependencies",
-        "guards",
-        "opt",
-        "fn",
-        "owner",
-        "resolved_dependencies",
-        "resolved_guards",
-        "signature_model",
-    )
-
-    @validate_arguments(config={"arbitrary_types_allowed": True})
-    def __init__(
-        self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-    ):
-        self.paths: List[str] = (
-            [normalize_path(p) for p in path]
-            if path and isinstance(path, list)
-            else [normalize_path(path or "/")]  # type: ignore
-        )
-        self.dependencies = dependencies
-        self.guards = guards
-        self.opt: Dict[str, Any] = opt or {}
-        self.fn: Optional[AnyCallable] = None
-        self.owner: Optional[Union[Controller, "Router"]] = None
-        self.resolved_dependencies: Union[Dict[str, Provide], Type[_empty]] = _empty
-        self.resolved_guards: Union[List[Guard], Type[_empty]] = _empty
-        self.signature_model: Optional[Type[SignatureModel]] = None
-
-    def ownership_layers(self) -> Generator[Union["BaseRouteHandler", Controller, "Router"], None, None]:
-        """
-        Returns all the handler and then all owners up to the app level
-
-        handler -> ... -> App
-        """
-        cur: Any = self
-        while cur:
-            value = cur
-            cur = cur.owner
-            yield value
-
-    def resolve_guards(self) -> List[Guard]:
-        """Returns all guards in the handlers scope, starting from highest to current layer"""
-        if self.resolved_guards is _empty:
-            resolved_guards: List[Guard] = []
-            for layer in self.ownership_layers():
-                if layer.guards:
-                    resolved_guards.extend(layer.guards)
-            # we reverse the list to ensure that the highest level guards are called first
-            self.resolved_guards = list(reversed(resolved_guards))
-        return cast(List[Guard], self.resolved_guards)
-
-    def resolve_dependencies(self) -> Dict[str, Provide]:
-        """
-        Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
-        """
-        if not self.signature_model:  # pragma: no cover
-            raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
-        if self.resolved_dependencies is _empty:
-            dependencies: Dict[str, Provide] = {}
-            for layer in self.ownership_layers():
-                for key, value in (layer.dependencies or {}).items():
-                    if key not in dependencies:
-                        self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
-                        dependencies[key] = value
-            self.resolved_dependencies = dependencies
-        return cast(Dict[str, Provide], self.resolved_dependencies)
-
-    @staticmethod
-    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
-        """
-        Validates that a given provider has not been already defined under a different key
-        """
-        for dependency_key, value in dependencies.items():
-            if provider == value:
-                raise ImproperlyConfiguredException(
-                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
-                    f"If you wish to override a provider, it must have the same key."
-                )
-
-    def validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it's set by inspecting its return annotations
-        """
-        if not self.fn:  # pragma: no cover
-            raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
-
-    async def authorize_connection(self, connection: HTTPConnection) -> None:
-        """
-        Ensures the connection is authorized by running all the route guards in scope
-        """
-        for guard in self.resolve_guards():
-            result = guard(connection, copy(self))
-            if isawaitable(result):
-                await result
 
 
 class HTTPRouteHandler(BaseRouteHandler):
@@ -247,11 +137,15 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
-        # memoized attributes, defaulted to _empty
-        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[_empty]] = _empty
-        self.resolved_response_class: Union[Type[Response], Type[_empty]] = _empty
-        self.resolved_after_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
-        self.resolved_before_request: Union[Optional[BeforeRequestHandler], Type[_empty]] = _empty
+        # memoized attributes, defaulted to BaseRouteHandler.empty
+        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_after_request: Union[
+            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
+        self.resolved_before_request: Union[
+            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -261,17 +155,19 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.validate_handler_function()
         return self
 
-    def ownership_layers(self) -> Generator[Union["HTTPRouteHandler", Controller, "Router"], None, None]:
+    def ownership_layers(self) -> Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None]:
         """
         Returns all the handler and then all owners up to the app level
 
         handler -> ... -> App
         """
-        return cast(Generator[Union["HTTPRouteHandler", Controller, "Router"], None, None], super().ownership_layers())
+        return cast(
+            Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None], super().ownership_layers()
+        )
 
     def resolve_response_class(self) -> Type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class"""
-        if self.resolved_response_class is _empty:
+        if self.resolved_response_class is BaseRouteHandler.empty:
             self.resolved_response_class = Response
             for layer in self.ownership_layers():
                 if layer.response_class is not None:
@@ -283,7 +179,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         Returns all header parameters in the scope of the handler function
         """
-        if self.resolved_headers is _empty:
+        if self.resolved_headers is BaseRouteHandler.empty:
             headers: Dict[str, ResponseHeader] = {}
             for layer in self.ownership_layers():
                 for key, value in (layer.response_headers or {}).items():
@@ -299,12 +195,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         If a handler is found it is returned, otherwise None is set.
         This mehtod is memoized so the computation occurs only once
         """
-        if self.resolved_before_request is _empty:
+        if self.resolved_before_request is BaseRouteHandler.empty:
             for layer in self.ownership_layers():
                 if layer.before_request:
                     self.resolved_before_request = layer.before_request
                     break
-            if self.resolved_before_request is _empty:
+            if self.resolved_before_request is BaseRouteHandler.empty:
                 self.resolved_before_request = None
             elif ismethod(self.resolved_before_request):
                 # python automatically binds class variables, which we do not want in this case.
@@ -318,12 +214,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         If a handler is found it is returned, otherwise None is set.
         This mehtod is memoized so the computation occurs only once
         """
-        if self.resolved_after_request is _empty:
+        if self.resolved_after_request is BaseRouteHandler.empty:
             for layer in self.ownership_layers():
                 if layer.after_request:
                     self.resolved_after_request = layer.after_request  # type: ignore
                     break
-            if self.resolved_after_request is _empty:
+            if self.resolved_after_request is BaseRouteHandler.empty:
                 self.resolved_after_request = None
             elif ismethod(self.resolved_after_request):
                 # python automatically binds class variables, which we do not want in this case.
@@ -670,63 +566,3 @@ class delete(HTTPRouteHandler):
             summary=summary,
             tags=tags,
         )
-
-
-class WebsocketRouteHandler(BaseRouteHandler):
-    def __call__(self, fn: AsyncAnyCallable) -> "WebsocketRouteHandler":
-        """
-        Replaces a function with itself
-        """
-        self.fn = fn
-        self.validate_handler_function()
-        return self
-
-    def validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it's set by inspecting its return annotations
-        """
-        super().validate_handler_function()
-        signature = Signature.from_callable(cast(AnyCallable, self.fn))
-
-        if signature.return_annotation is not None:
-            raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
-        if "socket" not in signature.parameters:
-            raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
-        if "request" in signature.parameters:
-            raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
-        if "data" in signature.parameters:
-            raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
-            raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
-
-
-websocket = WebsocketRouteHandler
-
-
-class ASGIRouteHandler(BaseRouteHandler):
-    def __call__(self, fn: AnyCallable) -> "ASGIRouteHandler":
-        """
-        Replaces a function with itself
-        """
-        self.fn = fn
-        self.validate_handler_function()
-        return self
-
-    def validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it's set by inspecting its return annotations
-        """
-        super().validate_handler_function()
-        signature = Signature.from_callable(cast(AnyCallable, self.fn))
-
-        if signature.return_annotation is not None:
-            raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
-        if any(key not in signature.parameters for key in ["scope", "send", "receive"]):
-            raise ImproperlyConfiguredException(
-                "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
-            )
-        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
-            raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
-
-
-asgi = ASGIRouteHandler

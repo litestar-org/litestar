@@ -42,8 +42,9 @@ from starlite import (
 )
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
+from starlite.signature import model_function_signature
 from starlite.testing import create_test_client
-from starlite.utils import model_function_signature, normalize_path
+from starlite.utils import normalize_path
 from tests import Person, PersonFactory
 
 

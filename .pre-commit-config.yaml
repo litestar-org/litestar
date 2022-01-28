@@ -44,7 +44,6 @@ repos:
             "flake8-mutable",
             "flake8-print",
             "flake8-simplify",
-            # "flake8-type-checking",
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.12.2"
