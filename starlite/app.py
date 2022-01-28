@@ -226,7 +226,7 @@ class Starlite(Router):
         the Starlette ExceptionMiddleware and the starlette ServerErrorMiddleware
         """
         current_app: ASGIApp = ExceptionMiddleware(
-            app=self.asgi_router, handlers=self.exception_handlers, debug=self.debug  # type: ignore[arg-type]
+            app=self.asgi_router, handlers=self.exception_handlers, debug=self.debug
         )
         if allowed_hosts:
             current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)
