@@ -113,3 +113,4 @@
 - optimization: rewrote the kwarg parsing and data injection logic to compute required kwargs for each route handler
   during application bootstrap
 - changed the redoc UI path from `/schema/redoc` to `/schema`
+- renamed `starlite.request` to `starlite.connection`

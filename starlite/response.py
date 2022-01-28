@@ -8,7 +8,7 @@ from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
 
 from starlite.enums import MediaType, OpenAPIMediaType
-from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.template import AbstractTemplate, AbstractTemplateEngine
 
 
@@ -68,7 +68,7 @@ class TemplateResponse(StarletteResponse):
     ):
         self.template = template_engine.get_template(template_name)
         if not isinstance(self.template, AbstractTemplate):
-            raise InternalServerException("Template object must have a render method.")
+            raise ImproperlyConfiguredException("Template object must have a render method.")
 
         self.context = context
         if context:

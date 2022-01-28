@@ -62,17 +62,17 @@ used:
 - GET, PATCH, PUT: 200 (Ok)
 
 !!! note
-When using the `route` decorator with multiple http methods, the default status code is `200`.
+  When using the `route` decorator with multiple http methods, the default status code is `200`.
 
-Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
-data. This though might not be the case in your implementation - so take care of setting it as you see fit.
+  Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
+  data. This though might not be the case in your implementation - so take care of setting it as you see fit.
 
 !!! tip
-While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
-its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
-exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
-enum from the standard library, which also offers extra functionality.
-For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
+  While you can write integers as the value for `status_code`, e.g. `status_code=200`,
+  its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
+  exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
+  enum from the standard library, which also offers extra functionality.
+  For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
 
 ## Media Type
 
@@ -124,8 +124,8 @@ def health_check() -> str:
 ```
 
 !!! tip
-It's a good idea to use a [templating engine](#template-responses) for more complex HTML responses and to write the
-[template](#template-responses) itself in a separate file rather than a string.
+    It's a good idea to use a [templating engine](#template-responses) for more complex HTML responses and to write the
+    [template](#template-responses) itself in a separate file rather than a string.
 
 ### JSON Responses
 
@@ -274,8 +274,8 @@ app = Starlite(
 )
 ```
 
-No templating engine is tightly integrated to Starlite, if you want support for other templating engines you can use a
-subclass of `starlite.template.AbstractTemplateEngine` and specify it as the engine in the config.
+Starlite is decoupled from the templating engines. If you want to add support for another templating engine, you can
+easily do this by subclassing `starlite.template.AbstractTemplateEngine`.
 
 ## Using Custom Responses
 
@@ -378,7 +378,7 @@ def my_route_handler() -> Response:
 ```
 
 !!! important
-If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 

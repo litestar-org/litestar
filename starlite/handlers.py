@@ -31,7 +31,6 @@ from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
-    InternalServerException,
     ValidationException,
 )
 from starlite.plugins.base import PluginProtocol, get_plugin_for_value
@@ -394,7 +393,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                         headers=headers,
                     )
                 else:
-                    raise InternalServerException(detail="Template engine was not initialized in app")
+                    raise ImproperlyConfiguredException(detail="Template engine was not initialized in app")
             else:
                 response = cast(StarletteResponse, data)
         else:
