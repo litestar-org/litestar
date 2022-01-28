@@ -208,8 +208,9 @@ The File class expects two kwargs:
 - `filename`: the filename to set in the
   response [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
   attachment.
-  <!-- prettier-ignore -->
-  !!! important
+
+<!-- prettier-ignore -->
+!!! important
     When a route handler's return value is annotated with `File`, the default `media_type` for the
     route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
     an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as

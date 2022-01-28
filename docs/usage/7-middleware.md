@@ -83,8 +83,9 @@ You can pass the following kwargs to CORSConfig:
 - `expose_headers`: A list of response headers to expose. Defaults to `[]`.
 - `max_age`: Sets a response header instructing the max amount of _seconds_ that the browser should cache a CORS
   response. Defaults to 600.
-  <!-- prettier-ignore -->
-  !!! note
+
+<!-- prettier-ignore -->
+!!! note
   The asteriks symbol in the above kwargs means "match any".
 
 You can read more about this middleware in the [starlette docs](https://www.starlette.io/middleware/#corsmiddleware).
