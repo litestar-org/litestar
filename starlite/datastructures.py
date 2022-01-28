@@ -50,4 +50,4 @@ class Stream(StarliteType):
 
 class Template(StarliteType):
     name: str
-    context: Dict[str, Any]
+    context: Optional[Dict[str, Any]]

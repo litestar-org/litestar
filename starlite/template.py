@@ -1,6 +1,6 @@
 # pylint: disable=E0401, C0415
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from pydantic import DirectoryPath
 from typing_extensions import Protocol, runtime_checkable
@@ -10,7 +10,7 @@ from starlite.exceptions import MissingDependencyException, TemplateNotFound
 
 @runtime_checkable
 class AbstractTemplate(Protocol):
-    def render(self, context: Dict[str, Any]) -> str:
+    def render(self, **context: Optional[Dict[str, Any]]) -> str:
         """Returns the rendered template as a string"""
 
 

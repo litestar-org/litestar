@@ -6,11 +6,10 @@ from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dum
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
-from starlette.types import Receive, Scope, Send
 
 from starlite.enums import MediaType, OpenAPIMediaType
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.template import AbstractTemplateEngine
+from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
+from starlite.template import AbstractTemplate, AbstractTemplateEngine
 
 
 class Response(StarletteResponse):
@@ -60,7 +59,7 @@ class Response(StarletteResponse):
 class TemplateResponse(StarletteResponse):
     def __init__(
         self,
-        context: Dict[str, Any],
+        context: Optional[Dict[str, Any]],
         template_name: str,
         template_engine: AbstractTemplateEngine,
         status_code: int,
@@ -68,8 +67,14 @@ class TemplateResponse(StarletteResponse):
         headers: Optional[Dict[str, str]] = None,
     ):
         self.template = template_engine.get_template(template_name)
+        if not isinstance(self.template, AbstractTemplate):
+            raise InternalServerException("Template object must have a render method.")
+
         self.context = context
-        content = self.template.render(**context)
+        if context:
+            content = self.template.render(**context)
+        else:
+            content = self.template.render()
 
         super().__init__(
             content=content,
@@ -78,17 +83,3 @@ class TemplateResponse(StarletteResponse):
             media_type=MediaType.HTML,
             background=background,  # type: ignore
         )
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        # code from https://github.com/encode/starlette/blob/master/starlette/templating.py
-        request = self.context.get("request", {})
-        extensions = request.get("extensions", {})
-        if "http.response.template" in extensions:  # pragma: no cover
-            await send(
-                {
-                    "type": "http.response.template",
-                    "template": self.template,
-                    "context": self.context,
-                }
-            )
-        await super().__call__(scope, receive, send)
