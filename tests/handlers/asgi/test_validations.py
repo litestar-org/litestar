@@ -5,25 +5,25 @@ from starlite import ImproperlyConfiguredException, asgi, create_test_client
 
 
 def test_asgi_handler_validation():
-    def fn_without_scope_arg(receive: Receive, send: Send) -> None:
+    async def fn_without_scope_arg(receive: Receive, send: Send) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
         asgi(path="/")(fn_without_scope_arg)
 
-    def fn_without_receive_arg(scope: Scope, send: Send) -> None:
+    async def fn_without_receive_arg(scope: Scope, send: Send) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
         asgi(path="/")(fn_without_receive_arg)
 
-    def fn_without_send_arg(scope: Scope, receive: Receive) -> None:
+    async def fn_without_send_arg(scope: Scope, receive: Receive) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
         asgi(path="/")(fn_without_send_arg)
 
-    def fn_with_return_annotation(scope: Scope, receive: Receive, send: Send) -> dict:
+    async def fn_with_return_annotation(scope: Scope, receive: Receive, send: Send) -> dict:
         return dict()
 
     with pytest.raises(ImproperlyConfiguredException):
@@ -33,3 +33,9 @@ def test_asgi_handler_validation():
 
     with pytest.raises(ImproperlyConfiguredException):
         create_test_client(route_handlers=asgi_handler_with_no_fn)
+
+    def sync_fn(scope: Scope, receive: Receive, send: Send) -> None:
+        return None
+
+    with pytest.raises(ImproperlyConfiguredException):
+        asgi(path="/")(sync_fn)

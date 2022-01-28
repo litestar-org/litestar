@@ -39,3 +39,9 @@ def test_websocket_handler_function_validation():
         @websocket(path="/")
         async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None:
             ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket(path="/")
+        def sync_websocket_handler(socket: WebSocket) -> None:
+            ...
