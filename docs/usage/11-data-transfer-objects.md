@@ -10,11 +10,11 @@ and field types, and add new fields.
 The created DTO can be used for data parsing, validation and OpenAPI schema generation like a regularly declared
 pydantic model.
 
+<!-- prettier-ignore -->
 !!! important
     Although the value generated is a pydantic factory, because it is being generated programmatically, it's
     currently impossible to extend editor auto-complete for the DTO properties - it will be typed as `DTO[T]`,
     with T being a generic argument representing the original model used to create the DTO.
-
 
 The `DTOFactory` class supports [plugins](10-plugins.md), for example, this is how it could be used with an SQL Alchemy
 declarative class:
@@ -232,6 +232,7 @@ def create_company(data: CompanyDTO) -> Company:
 In the above `company_instance` is an instance of the SQL Alchemy class `Company`. It is correctly typed as Company
 because the `DTO` class uses generic to store this data.
 
+<!-- prettier-ignore -->
 !!! important
     If you exclude keys or add additional fields, you should make sure this does not cause an error when trying to
     generate a model class from a dto instance. For example, if you exclude required fields from a pydantic model and try

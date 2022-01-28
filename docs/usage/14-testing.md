@@ -2,6 +2,7 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
+<!-- prettier-ignore -->
 !!! tip
     Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an
     easy and powerful way to generate mock data from pydantic models and dataclasses.
@@ -173,14 +174,14 @@ def test_secret_token_guard_success_scenario():
 
 Aside from `http_method`, which is **required**, you can pass the following optional kwargs to `create_test_request`:
 
-* `scheme`: "http" or "https". Defaults to `http`.
-* `server`: Server domain. Defaults to `test.org`.
-* `port`: Request port. Defaults to `3000`.
-* `root_path`: Root path. Defaults to `/`.
-* `path`: Path. Defaults to empty string.
-* `query`: A string keyed dictionary of query parameters - can contain lists. Defaults to `None`.
-* `headers`: A string keyed dictionary of header parameters. Defaults to `None`.
-* `cookie`: A string representing a cookie. Defaults to `None`.
-* `content`: A dictionary or a pydantic model that forms the request body. Defaults to `None`.
-* `request_media_type`: Media type of the request, defaults to `RequestEncodingType.JSON`.
-* `app`: An instance of Starlite to set as `request.app`. Defaults to `None`.
+- `scheme`: "http" or "https". Defaults to `http`.
+- `server`: Server domain. Defaults to `test.org`.
+- `port`: Request port. Defaults to `3000`.
+- `root_path`: Root path. Defaults to `/`.
+- `path`: Path. Defaults to empty string.
+- `query`: A string keyed dictionary of query parameters - can contain lists. Defaults to `None`.
+- `headers`: A string keyed dictionary of header parameters. Defaults to `None`.
+- `cookie`: A string representing a cookie. Defaults to `None`.
+- `content`: A dictionary or a pydantic model that forms the request body. Defaults to `None`.
+- `request_media_type`: Media type of the request, defaults to `RequestEncodingType.JSON`.
+- `app`: An instance of Starlite to set as `request.app`. Defaults to `None`.

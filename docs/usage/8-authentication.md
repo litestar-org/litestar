@@ -42,6 +42,7 @@ class Token(BaseModel):
     sub: UUID4
 ```
 
+<!-- prettier-ignore -->
 !!! note
     In the real world `User` would be a database model and would be persisted using a 3rd party library. The
     current example just assumes this is happening.

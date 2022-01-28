@@ -59,7 +59,7 @@ repos:
             pydantic_factories,
             pyyaml,
             starlette,
-            sqlalchemy
+            sqlalchemy,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.931"
@@ -75,5 +75,9 @@ repos:
             pydantic,
             pydantic_factories,
             starlette,
-            sqlalchemy
+            sqlalchemy,
           ]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.5.1" # Use the sha or tag you want to point at
+    hooks:
+      - id: prettier
