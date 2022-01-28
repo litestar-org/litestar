@@ -17,7 +17,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
 from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import MediaType
@@ -28,6 +28,7 @@ from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
+from starlite.template import AbstractTemplateEngine
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -54,7 +55,8 @@ class Starlite(Router):
         "state",
         "route_map",
         "static_paths",
-        "plain_routes"
+        "plain_routes",
+        "template_engine"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -82,6 +84,8 @@ class Starlite(Router):
         after_request: Optional[AfterRequestHandler] = None,
         # static files
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
+        # template
+        template_config: Optional[TemplateConfig] = None
     ):
         self.debug = debug
         self.state = State()
@@ -120,6 +124,11 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
+
+        if template_config:
+            self.template_engine: Optional[AbstractTemplateEngine] = template_config.engine(template_config.directory)
+        else:
+            self.template_engine = None
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
@@ -217,7 +226,7 @@ class Starlite(Router):
         the Starlette ExceptionMiddleware and the starlette ServerErrorMiddleware
         """
         current_app: ASGIApp = ExceptionMiddleware(
-            app=self.asgi_router, handlers=self.exception_handlers, debug=self.debug  # type: ignore[arg-type]
+            app=self.asgi_router, handlers=self.exception_handlers, debug=self.debug
         )
         if allowed_hosts:
             current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)

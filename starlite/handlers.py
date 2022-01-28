@@ -26,16 +26,17 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.controller import Controller
-from starlite.datastructures import File, Redirect, StarliteType, Stream
+from starlite.datastructures import File, Redirect, StarliteType, Stream, Template
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
+    InternalServerException,
     ValidationException,
 )
 from starlite.plugins.base import PluginProtocol, get_plugin_for_value
 from starlite.provide import Provide
-from starlite.response import Response
+from starlite.response import Response, TemplateResponse
 from starlite.types import (
     AfterRequestHandler,
     AsyncAnyCallable,
@@ -181,6 +182,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "resolved_response_class",
         "resolved_after_request",
         "resolved_before_request",
+        "template_name",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -381,6 +383,18 @@ class HTTPRouteHandler(BaseRouteHandler):
                 response = StreamingResponse(
                     content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
                 )
+            elif isinstance(data, Template):
+                app = list(self.ownership_layers())[-1]
+                if app.template_engine:  # type: ignore # noqa: SIM106
+                    response = TemplateResponse(
+                        context=data.context,
+                        template_name=data.name,
+                        template_engine=app.template_engine,  # type: ignore
+                        status_code=self.status_code,
+                        headers=headers,
+                    )
+                else:
+                    raise InternalServerException(detail="Template engine was not initialized in app")
             else:
                 response = cast(StarletteResponse, data)
         else:

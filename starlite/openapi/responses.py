@@ -8,7 +8,7 @@ from openapi_schema_pydantic import Response, Responses, Schema
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
-from starlite.datastructures import File, Redirect, Stream
+from starlite.datastructures import File, Redirect, Stream, Template
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.handlers import HTTPRouteHandler
@@ -38,7 +38,13 @@ def create_success_response(
         or HTTPStatus(route_handler.status_code).description
     )
     if signature.return_annotation not in [signature.empty, None, Redirect, File, Stream]:
-        as_parsed_model_field = create_parsed_model_field(signature.return_annotation)
+
+        return_annotation = signature.return_annotation
+        if signature.return_annotation is Template:
+            return_annotation = str  # since templates return str
+            route_handler.media_type = MediaType.HTML
+
+        as_parsed_model_field = create_parsed_model_field(return_annotation)
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
         schema.contentEncoding = route_handler.content_encoding
         schema.contentMediaType = route_handler.content_media_type

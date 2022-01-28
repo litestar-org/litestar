@@ -1,8 +1,8 @@
 # flake8: noqa
-from starlite.datastructures import File, Redirect, State, Stream
+from starlite.datastructures import File, Redirect, State, Stream, Template
 
 from .app import Starlite
-from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
 from .connection import Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
@@ -103,6 +103,8 @@ __all__ = [
     "StaticFilesConfig",
     "Stream",
     "TestClient",
+    "Template",
+    "TemplateConfig",
     "WebSocket",
     "websocket",
     "WebSocketRoute",

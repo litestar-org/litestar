@@ -62,17 +62,17 @@ used:
 - GET, PATCH, PUT: 200 (Ok)
 
 !!! note
-    When using the `route` decorator with multiple http methods, the default status code is `200`.
+When using the `route` decorator with multiple http methods, the default status code is `200`.
 
 Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
 data. This though might not be the case in your implementation - so take care of setting it as you see fit.
 
 !!! tip
-    While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
-    its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
-    exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
-    enum from the standard library, which also offers extra functionality.
-    For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
+While you can specify write integers as the value for `status_code`, e.g. `status_code=200`,
+its best practice to use constants (also in tests). Starlette includes easy to use statuses that are
+exported from `starlette.status`, e.g. `HTTP_200_OK` and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`
+enum from the standard library, which also offers extra functionality.
+For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).
 
 ## Media Type
 
@@ -124,12 +124,12 @@ def health_check() -> str:
 ```
 
 !!! tip
-    It's a good idea to use a templating engine for more complex HTML responses and to write the template itself in a
-    separate file rather than a string.
+It's a good idea to use a [templating engine](#template-responses) for more complex HTML responses and to write the
+[template](#template-responses) itself in a separate file rather than a string.
 
 ### JSON Responses
 
-As previously mentioned, the default `media_type` is `MediaType.JSON`.  which supports the following values:
+As previously mentioned, the default `media_type` is `MediaType.JSON`. which supports the following values:
 
 - dictionaries
 - dataclasses from the standard library
@@ -207,10 +207,10 @@ The File class expects two kwargs:
   attachment.
 
 !!! important
-    When a route handler's return value is annotated with `File`, the default `media_type` for the
-    route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
-    an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
-    the value for `media_type` instead.
+When a route handler's return value is annotated with `File`, the default `media_type` for the
+route_handler is switched from `MediaType.JSON` to `MediaType.TEXT` (i.e. "text/plain"). If the file being sent has
+an [IANA media type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types), you should set it as
+the value for `media_type` instead.
 
 For example:
 
@@ -252,6 +252,30 @@ def stream_time() -> Stream:
 ```
 
 The Stream class receives a single required kwarg - `iterator`, which should be either a sync or an async iterator.
+
+### Template Responses
+
+Starlite can automatically load and render a template file once a template engine is configured in the app. Starlite
+provides two engines by default, `jinja2` and `mako`.
+
+```python
+from starlite import Template, TemplateConfig, Starlite, Request, get
+from starlite.template import JinjaTemplateEngine
+
+
+@get(path="/info")
+def info(request: Request) -> Template:
+    return Template(name="info.html", context={"user": request.user})
+
+
+app = Starlite(
+    route_handlers=[info],
+    template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
+)
+```
+
+No templating engine is tightly integrated to Starlite, if you want support for other templating engines you can use a
+subclass of `starlite.template.AbstractTemplateEngine` and specify it as the engine in the config.
 
 ## Using Custom Responses
 
@@ -302,7 +326,7 @@ def get_document() -> Document:
 ```
 
 You can specify the response class to use at all levels of your application. On specific route handlers, on a
- controller, a router even on the app instance itself:
+controller, a router even on the app instance itself:
 
 ```python
 from starlite import Controller, Starlite, Router
@@ -354,7 +378,7 @@ def my_route_handler() -> Response:
 ```
 
 !!! important
-    If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
+If you return a response directly the OpenAPI schema generation will not be able to properly annotate the response.
 
 ## Response Headers
 
