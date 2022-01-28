@@ -121,7 +121,6 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
-
         if template_config:
             self.template_engine: Optional[AbstractTemplateEngine] = template_config.engine(template_config.directory)
         else:
@@ -129,13 +128,13 @@ class Starlite(Router):
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
-        if scope["type"] != "lifespan":
-            try:
-                await self.middleware_stack(scope, receive, send)
-            except Exception as e:  # pylint: disable=broad-except
-                await self.handle_exception(scope=scope, receive=receive, send=send, exc=e)
-        else:
+        if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
+            return
+        try:
+            await self.middleware_stack(scope, receive, send)
+        except Exception as e:  # pylint: disable=broad-except
+            await self.handle_exception(scope=scope, receive=receive, send=send, exc=e)
 
     async def handle_exception(self, scope: Scope, receive: Receive, send: Send, exc: Exception) -> None:
         """

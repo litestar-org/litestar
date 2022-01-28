@@ -10,7 +10,7 @@ from starlite.utils import SignatureModel
 
 
 class Provide:
-    __slots__ = ("dependency", "use_cache", "value", "identifier", "signature_model")
+    __slots__ = ("dependency", "use_cache", "value", "signature_model")
 
     def __init__(self, dependency: AnyCallable, use_cache: bool = False):
         self.dependency = dependency

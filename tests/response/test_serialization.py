@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 from starlette.status import HTTP_200_OK
 
-from starlite import ImproperlyConfiguredException, MediaType, Response
+from starlite import MediaType, Response
 from tests import PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
 
 
@@ -36,8 +36,3 @@ def test_response_serialization(content: Any, media_type: MediaType):
             assert [content[0].__class__(**value[0])] == content
     else:
         assert response.body == content.encode("utf-8")
-
-
-def test_response_error_handling():
-    with pytest.raises(ImproperlyConfiguredException):
-        Response(content={}, media_type=MediaType.TEXT, status_code=HTTP_200_OK)

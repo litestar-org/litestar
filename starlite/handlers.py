@@ -2,7 +2,7 @@
 from contextlib import suppress
 from copy import copy
 from enum import Enum
-from inspect import Signature, isawaitable, isclass, ismethod
+from inspect import Signature, isawaitable, isclass, iscoroutinefunction, ismethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -696,6 +696,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
         if "data" in signature.parameters:
             raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
+        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
+            raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 
 websocket = WebsocketRouteHandler
@@ -723,6 +725,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
+        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
+            raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
 
 asgi = ASGIRouteHandler

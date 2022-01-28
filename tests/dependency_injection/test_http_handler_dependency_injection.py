@@ -1,18 +1,9 @@
 from asyncio import sleep
 from typing import Any, Dict
 
-import pytest
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from starlite import (
-    Controller,
-    ImproperlyConfiguredException,
-    MediaType,
-    Provide,
-    Starlite,
-    create_test_client,
-    get,
-)
+from starlite import Controller, Provide, create_test_client, get
 from starlite.connection import Request
 
 
@@ -112,52 +103,3 @@ def test_dependency_isolation():
     with create_test_client([FirstController, SecondController]) as client:
         response = client.get("/second")
         assert response.status_code == HTTP_400_BAD_REQUEST
-
-
-def test_dependency_validation():
-    @get(
-        path=test_path + "/{path_param:int}",
-        dependencies={
-            "first": Provide(local_method_first_dependency),
-            "second": Provide(local_method_second_dependency),
-        },
-    )
-    def test_function(first: int, second: str, third: int) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Starlite(
-            route_handlers=[test_function],
-            dependencies={
-                "third": Provide(local_method_first_dependency),
-            },
-        )
-
-
-def test_recursive_dependencies():
-    def top_dependency(query_param: int) -> int:
-        return query_param
-
-    def mid_level_dependency() -> int:
-        return 5
-
-    def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
-        return path_param + mid_level + top_level
-
-    class MyController(Controller):
-        path = test_path
-        dependencies = {"mid_level": Provide(mid_level_dependency)}
-
-        @get(
-            path="/{path_param:int}",
-            dependencies={
-                "summed": Provide(local_dependency),
-            },
-            media_type=MediaType.TEXT,
-        )
-        def test_function(self, summed: int) -> str:
-            return str(summed)
-
-    with create_test_client(MyController, dependencies={"top_level": Provide(top_dependency)}) as client:
-        response = client.get(f"{test_path}/5?query_param=5")
-        assert response.text == "15"

@@ -30,7 +30,7 @@ class MyController(Controller):
         pass
 
     @websocket(path="/socket")
-    def ws(self, socket: WebSocket) -> None:
+    async def ws(self, socket: WebSocket) -> None:
         pass
 
 

@@ -29,7 +29,7 @@ for TYPE in json plaintext; do
     for i in $(seq 1 "$TEST_ITERATIONS"); do
       for ENDPOINT in "${endpoints[@]}"; do
         name=$(echo "${TYPE}-${TARGET}-${ENDPOINT}-${i}.json" | sed 's/^\///;s/\//-/g')
-        npx autocannon -d 15 -c 50 -w 4 -j "http://0.0.0.0:8001/$ENDPOINT" >>"./results/$name"
+        npx autocannon -d 5 -c 50 -w 4 -j "http://0.0.0.0:8001/$ENDPOINT" >>"./results/$name"
       done
     done
     printf "\n\ntest sequence finished\n\nterminating all running python instances\n\n"
