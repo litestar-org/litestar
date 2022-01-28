@@ -42,7 +42,7 @@ from starlite.types import (
     ResponseHeader,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
     from starlite.routing import Router
 

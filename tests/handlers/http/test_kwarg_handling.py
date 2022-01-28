@@ -1,0 +1,101 @@
+import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+from pydantic import ValidationError
+from pydantic.main import BaseModel
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+
+from starlite import (
+    HttpMethod,
+    HTTPRouteHandler,
+    ImproperlyConfiguredException,
+    MediaType,
+    Response,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+)
+from starlite.utils import normalize_path
+
+
+def dummy_method() -> None:
+    pass
+
+
+@given(
+    http_method=st.one_of(st.sampled_from(HttpMethod), st.lists(st.sampled_from(HttpMethod))),
+    media_type=st.sampled_from(MediaType),
+    include_in_schema=st.booleans(),
+    response_class=st.one_of(st.none(), st.just(Response)),
+    response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
+    status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
+    path=st.one_of(st.none(), st.text()),
+)
+def test_route_handler_kwarg_handling(
+    http_method,
+    media_type,
+    include_in_schema,
+    response_class,
+    response_headers,
+    status_code,
+    path,
+):
+    if not http_method:
+        with pytest.raises(ImproperlyConfiguredException):
+            HTTPRouteHandler(http_method=http_method)
+    else:
+        decorator = HTTPRouteHandler(
+            http_method=http_method,
+            media_type=media_type,
+            include_in_schema=include_in_schema,
+            response_class=response_class,
+            response_headers=response_headers,
+            status_code=status_code,
+            path=path,
+        )
+        result = decorator(dummy_method)
+        if not isinstance(http_method, list) or len(http_method) > 1:
+            assert result.http_method == http_method
+        else:
+            assert result.http_method == http_method[0]
+        assert result.media_type == media_type
+        assert result.include_in_schema == include_in_schema
+        assert result.response_class == response_class
+        assert result.response_headers == response_headers
+        if not path:
+            assert result.paths[0] == "/"
+        else:
+            assert result.paths[0] == normalize_path(path)
+        if isinstance(http_method, list) and len(http_method) == 1:
+            http_method = http_method[0]
+        if status_code:
+            assert result.status_code == status_code
+        elif isinstance(http_method, list):
+            assert result.status_code == HTTP_200_OK
+        elif http_method == HttpMethod.POST:
+            assert result.status_code == HTTP_201_CREATED
+        elif http_method == HttpMethod.DELETE:
+            assert result.status_code == HTTP_204_NO_CONTENT
+        else:
+            assert result.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize(
+    "sub, http_method, expected_status_code",
+    [
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+    ],
+)
+def test_semantic_route_handlers_disallow_http_method_assignment(sub, http_method, expected_status_code):
+    result = sub()(dummy_method)
+    assert result.http_method == http_method
+    assert result.status_code == expected_status_code
+
+    with pytest.raises(ValidationError):
+        sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)
