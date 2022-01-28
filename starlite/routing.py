@@ -214,8 +214,9 @@ class WebSocketRoute(BaseRoute):
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=web_socket)
         signature_model = get_signature_model(route_handler)
-        kwargs = self.handler_parameter_model.to_kwargs(connection=web_socket)
-        for dependency in self.handler_parameter_model.expected_dependencies:
+        handler_parameter_model = self.handler_parameter_model
+        kwargs = handler_parameter_model.to_kwargs(connection=web_socket)
+        for dependency in handler_parameter_model.expected_dependencies:
             kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
                 dependency=dependency, connection=web_socket, **kwargs
             )

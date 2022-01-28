@@ -22,22 +22,28 @@ from starlite.datastructures import State
 
 
 def test_handle_http_exception():
-    response = Starlite.handle_http_exception("", HTTPException(detail="starlite_exception", extra={"key": "value"}))
+    response = Starlite(route_handlers=[]).default_http_exception_handler(
+        Request(scope={"type": "http", "method": "GET"}),
+        HTTPException(detail="starlite_exception", extra={"key": "value"}),
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
         "detail": "starlite_exception",
         "extra": {"key": "value"},
     }
 
-    response = Starlite.handle_http_exception(
-        "", StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+    response = Starlite(route_handlers=[]).default_http_exception_handler(
+        Request(scope={"type": "http", "method": "GET"}),
+        StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
         "detail": "starlite_exception",
     }
 
-    response = Starlite.handle_http_exception("", AttributeError("oops"))
+    response = Starlite(route_handlers=[]).default_http_exception_handler(
+        Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")
+    )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
         "detail": repr(AttributeError("oops")),
@@ -89,7 +95,7 @@ def test_middleware_processing(middleware):
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cur.app
-    assert len(unpacked_middleware) == 4
+    assert len(unpacked_middleware) == 2
 
 
 def test_lifecycle():
