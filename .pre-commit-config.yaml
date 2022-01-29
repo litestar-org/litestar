@@ -49,6 +49,24 @@ repos:
             "flake8-print",
             "flake8-simplify",
           ]
+  - repo: https://github.com/ariebovenberg/slotscheck
+    rev: v0.9.0
+    hooks:
+      - id: slotscheck
+        exclude: "^(?!starlite/)"
+        additional_dependencies:
+          [
+            openapi_schema_pydantic,
+            orjson,
+            pydantic,
+            pydantic_factories,
+            pyyaml,
+            starlette,
+            sqlalchemy,
+            requests,
+            jinja2,
+            mako,
+          ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.12.2"
     hooks:

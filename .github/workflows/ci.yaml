@@ -45,8 +45,6 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
         run: poetry run pytest
-      - name: Slot Check # temporary until slotscheck support pre-commit
-        run: poetry run slotscheck starlite
   sonar:
     needs: test
     if: github.repository_owner == 'starlite-api'
