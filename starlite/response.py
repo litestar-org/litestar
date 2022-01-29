@@ -9,7 +9,7 @@ from starlette.responses import Response as StarletteResponse
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.template import AbstractTemplateEngine
+from starlite.template import AbstractTemplate, ProtocolEngine
 
 
 class Response(StarletteResponse):
@@ -61,12 +61,16 @@ class TemplateResponse(StarletteResponse):
         self,
         context: Optional[Dict[str, Any]],
         template_name: str,
-        template_engine: AbstractTemplateEngine,
+        template_engine: ProtocolEngine,
         status_code: int,
         background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,
     ):
         self.template = template_engine.get_template(template_name)
+
+        if not isinstance(self.template, AbstractTemplate):
+            raise ImproperlyConfiguredException("Template object must have a render method.")
+
         self.context = context
         if context:
             content = self.template.render(**context)

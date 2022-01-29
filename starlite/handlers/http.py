@@ -289,7 +289,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                         headers=headers,
                     )
                 else:
-                    raise ImproperlyConfiguredException(detail="Template engine was not initialized in app")
+                    raise ImproperlyConfiguredException(detail="Template engine is not configured")
             else:
                 response = cast(StarletteResponse, data)
         else:

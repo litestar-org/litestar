@@ -29,7 +29,7 @@ from starlite.provide import Provide
 from starlite.response import Response
 from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
 from starlite.signature import model_function_signature
-from starlite.template import AbstractTemplateEngine
+from starlite.template import ProtocolEngine
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -123,7 +123,7 @@ class Starlite(Router):
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
         if template_config:
-            self.template_engine: Optional[AbstractTemplateEngine] = template_config.engine(template_config.directory)
+            self.template_engine: Optional[ProtocolEngine] = template_config.engine(template_config.directory)
         else:
             self.template_engine = None
 
