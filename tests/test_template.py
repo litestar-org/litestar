@@ -1,7 +1,8 @@
 import os
 
 from starlite import Template, TemplateConfig, create_test_client, get
-from starlite.template import JinjaTemplateEngine, MakoTemplateEngine
+from starlite.template.jinja import JinjaTemplateEngine
+from starlite.template.mako import MakoTemplateEngine
 
 
 def test_jinja_template(tmpdir):
@@ -107,7 +108,7 @@ def test_handler_raise_for_no_template_engine():
     with create_test_client(route_handlers=[invalid_path]) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template engine was not initialized in app", "extra": None}
+        assert response.json() == {"detail": "Template engine is not configured", "extra": None}
 
 
 def test_template_with_no_context(tmpdir):
