@@ -5,16 +5,17 @@ from typing_extensions import Protocol, runtime_checkable
 
 
 @runtime_checkable
-class AbstractTemplate(Protocol):
+class AbstractTemplate(Protocol):  # pragma: no cover
     def render(self, **context: Optional[Dict[str, Any]]) -> str:
         """Returns the rendered template as a string"""
+        ...
 
 
 T = TypeVar("T", bound=AbstractTemplate, covariant=True)
 
 
 @runtime_checkable
-class ProtocolEngine(Protocol[T]):
+class TemplateEngineProtocol(Protocol[T]):  # pragma: no cover
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         """Builds a template engine."""
         ...

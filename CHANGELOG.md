@@ -108,10 +108,10 @@
 - fixed headers being case-sensitive
 - minor code refactors
 
-[0.8.0]
+[1.0.0]
 
 - optimization: rewrote the kwarg parsing and data injection logic to compute required kwargs for each route handler
   during application bootstrap
-- changed the redoc UI path from `/schema/redoc` to `/schema`
+- added template support @ashwinvin
+- changed the redoc UI path from `/schema/redoc` to `/schema` @yudjinn
 - renamed `starlite.request` to `starlite.connection`
-- added prettier precommit hooks

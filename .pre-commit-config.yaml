@@ -27,8 +27,12 @@ repos:
     rev: v1.12.0
     hooks:
       - id: blacken-docs
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.5.1"
+    hooks:
+      - id: prettier
   - repo: https://github.com/pycqa/bandit
-    rev: 1.7.1
+    rev: 1.7.2
     hooks:
       - id: bandit
         exclude: "test_*"
@@ -77,7 +81,3 @@ repos:
             starlette,
             sqlalchemy,
           ]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v2.5.1" # Use the sha or tag you want to point at
-    hooks:
-      - id: prettier

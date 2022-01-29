@@ -9,7 +9,7 @@ from starlette.responses import Response as StarletteResponse
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.template import AbstractTemplate, ProtocolEngine
+from starlite.template import AbstractTemplate, TemplateEngineProtocol
 
 
 class Response(StarletteResponse):
@@ -61,7 +61,7 @@ class TemplateResponse(StarletteResponse):
         self,
         context: Optional[Dict[str, Any]],
         template_name: str,
-        template_engine: ProtocolEngine,
+        template_engine: TemplateEngineProtocol,
         status_code: int,
         background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,

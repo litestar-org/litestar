@@ -16,7 +16,7 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
 from starlite.openapi.controller import OpenAPIController
-from starlite.template import ProtocolEngine
+from starlite.template import TemplateEngineProtocol
 
 
 class CORSConfig(BaseModel):
@@ -79,4 +79,4 @@ class TemplateConfig(BaseModel):
         arbitrary_types_allowed = True
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
-    engine: Type[ProtocolEngine]
+    engine: Type[TemplateEngineProtocol]

@@ -45,19 +45,15 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
         run: poetry run pytest
+      - name: Slot Check # temporary until slotscheck support pre-commit
+        run: poetry run slotscheck starlite
   sonar:
     needs: test
+    if: github.repository_owner == 'starlite-api'
     runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -84,6 +80,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   snyk:
     needs: test
+    if: github.repository_owner == 'starlite-api'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
