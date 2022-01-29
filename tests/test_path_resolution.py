@@ -37,7 +37,7 @@ def test_path_parsing_and_matching(request_path, router_path):
         assert response.status_code == HTTP_200_OK
 
 
-def test_path_parsing_with_ambigous_paths():
+def test_path_parsing_with_ambiguous_paths():
     @get(path="/{path_param:int}", media_type=MediaType.TEXT)
     def path_param(path_param: int) -> str:
         return str(path_param)

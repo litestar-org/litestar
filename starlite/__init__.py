@@ -1,8 +1,8 @@
-# flake8: noqa
-from starlite.datastructures import File, Redirect, State, Stream
+from starlite.datastructures import File, Redirect, State, Stream, Template
 
 from .app import Starlite
-from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
+from .connection import Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
 from .enums import (
@@ -43,32 +43,26 @@ from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
-from .request import Request, WebSocket
 from .response import Response
 from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request
 from .types import MiddlewareProtocol, Partial, ResponseHeader
 
 __all__ = [
-    "AbstractAuthenticationMiddleware",
-    "asgi",
     "ASGIRouteHandler",
+    "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
-    "Controller",
     "CORSConfig",
-    "create_test_client",
-    "create_test_request",
-    "delete",
+    "Controller",
     "DTOFactory",
     "File",
-    "get",
     "HTTPException",
-    "HttpMethod",
     "HTTPRoute",
     "HTTPRouteHandler",
+    "HttpMethod",
     "ImproperlyConfiguredException",
     "InternalServerException",
     "LoggingConfig",
@@ -82,29 +76,36 @@ __all__ = [
     "OpenAPIMediaType",
     "Parameter",
     "Partial",
-    "patch",
     "PermissionDeniedException",
     "PluginProtocol",
-    "post",
     "Provide",
-    "put",
     "Redirect",
     "Request",
     "RequestEncodingType",
     "Response",
     "ResponseHeader",
-    "route",
     "Router",
     "ScopeType",
     "ServiceUnavailableException",
-    "Starlite",
     "StarLiteException",
+    "Starlite",
     "State",
     "StaticFilesConfig",
     "Stream",
+    "Template",
+    "TemplateConfig",
     "TestClient",
     "WebSocket",
-    "websocket",
     "WebSocketRoute",
     "WebsocketRouteHandler",
+    "asgi",
+    "create_test_client",
+    "create_test_request",
+    "delete",
+    "get",
+    "patch",
+    "post",
+    "put",
+    "route",
+    "websocket",
 ]

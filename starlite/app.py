@@ -4,36 +4,32 @@ from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.exceptions import ExceptionMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.responses import Response as StarletteResponse
 from starlette.staticfiles import StaticFiles
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig
+from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
+from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException
-from starlite.handlers import (
-    ASGIRouteHandler,
-    BaseRouteHandler,
-    HTTPRouteHandler,
-    WebsocketRouteHandler,
-    asgi,
-)
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
-from starlite.request import Request
 from starlite.response import Response
 from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
+from starlite.signature import model_function_signature
+from starlite.template import TemplateEngineProtocol
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -44,7 +40,7 @@ from starlite.types import (
     MiddlewareProtocol,
     ResponseHeader,
 )
-from starlite.utils import model_function_signature, normalize_path
+from starlite.utils import normalize_path
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 
@@ -60,13 +56,14 @@ class Starlite(Router):
         "state",
         "route_map",
         "static_paths",
-        "plain_routes"
+        "plain_routes",
+        "template_engine"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
-    def __init__(  # pylint: disable=too-many-locals
+    def __init__(
         self,
         *,
         route_handlers: List[ControllerRouterHandler],
@@ -88,6 +85,8 @@ class Starlite(Router):
         after_request: Optional[AfterRequestHandler] = None,
         # static files
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
+        # template
+        template_config: Optional[TemplateConfig] = None
     ):
         self.debug = debug
         self.state = State()
@@ -107,10 +106,7 @@ class Starlite(Router):
             after_request=after_request,
         )
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
-        self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {
-            StarletteHTTPException: self.handle_http_exception,
-            **(exception_handlers or {}),
-        }
+        self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = exception_handlers or {}
         self.middleware_stack: ASGIApp = self.build_middleware_stack(
             user_middleware=middleware or [], cors_config=cors_config, allowed_hosts=allowed_hosts
         )
@@ -126,13 +122,39 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
+        if template_config:
+            self.template_engine: Optional[TemplateEngineProtocol] = template_config.engine(template_config.directory)
+        else:
+            self.template_engine = None
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
-        if scope["type"] != "lifespan":
-            await self.middleware_stack(scope, receive, send)
-        else:
+        if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
+            return
+        try:
+            await self.middleware_stack(scope, receive, send)
+        except Exception as e:  # pylint: disable=broad-except
+            await self.handle_exception(scope=scope, receive=receive, send=send, exc=e)
+
+    async def handle_exception(self, scope: Scope, receive: Receive, send: Send, exc: Exception) -> None:
+        """
+        Determine what exception handler to use given the current scope, and handle an appropriate response
+        """
+        status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
+        if scope["type"] == "http":
+            exception_handler = (
+                self.exception_handlers.get(status_code)
+                or self.exception_handlers.get(exc.__class__)
+                or self.default_http_exception_handler
+            )
+            response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
+            await response(scope=scope, receive=receive, send=send)
+        else:
+            # The 4000+ code range for websockets is customizable, hence we simply add it to the http status code
+            status_code += 4000
+            reason = repr(exc)
+            await send({"type": "websocket.close", "code": status_code, "reason": reason})
 
     def construct_route_map(self) -> None:  # noqa: C901
         """
@@ -184,11 +206,9 @@ class Starlite(Router):
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
-                route_handlers: List[
-                    Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
-                ] = route.route_handlers  # type: ignore
+                route_handlers = route.route_handlers
             else:
-                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]
+                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]  # type: ignore
             for route_handler in route_handlers:
                 self.create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
@@ -198,6 +218,8 @@ class Starlite(Router):
                     route_handler.resolve_after_request()
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
+            elif isinstance(route, WebSocketRoute):
+                route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
         self.construct_route_map()
 
     def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
@@ -219,12 +241,9 @@ class Starlite(Router):
         cors_config: Optional[CORSConfig],
     ) -> ASGIApp:
         """
-        Builds the middleware by sandwiching the user middleware between
-        the Starlette ExceptionMiddleware and the starlette ServerErrorMiddleware
+        Builds the middleware stack by passing middlewares in a specific order
         """
-        current_app: ASGIApp = ExceptionMiddleware(
-            app=self.asgi_router, handlers=self.exception_handlers, debug=self.debug
-        )
+        current_app: ASGIApp = self.asgi_router
         if allowed_hosts:
             current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)
         if cors_config:
@@ -234,16 +253,15 @@ class Starlite(Router):
                 current_app = middleware.cls(app=current_app, **middleware.options)
             else:
                 current_app = middleware(app=current_app)
-        return ServerErrorMiddleware(
-            handler=self.exception_handlers.get(HTTP_500_INTERNAL_SERVER_ERROR, self.handle_http_exception),
-            debug=self.debug,
-            app=current_app,
-        )
+        return current_app
 
-    @staticmethod
-    def handle_http_exception(_: Request, exc: Exception) -> Response:
+    def default_http_exception_handler(self, request: Request, exc: Exception) -> StarletteResponse:
         """Default handler for exceptions subclassed from HTTPException"""
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
+        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
+            # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
+            server_middleware = ServerErrorMiddleware(app=self)
+            return server_middleware.debug_response(request=request, exc=exc)
         if isinstance(exc, HTTPException):
             content = {"detail": exc.detail, "extra": exc.extra}
         elif isinstance(exc, StarletteHTTPException):
@@ -265,7 +283,7 @@ class Starlite(Router):
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
-                and any(route_handler.include_in_schema for route_handler in route.route_handler_map.values())
+                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
                 and (route.path_format or "/") not in openapi_schema.paths
             ):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(

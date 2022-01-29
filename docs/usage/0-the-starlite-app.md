@@ -4,7 +4,7 @@ At the root of every Starlite application is an instance of the `Starlite` class
 code will be placed in a file called `main.py` at the project's source folder root.
 
 Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
-or [route_handlers](2-route-handlers.md):
+or [route_handlers](2-route-handlers/1_http_route_handlers.md):
 
 ```python title="my_app/main.py"
 from starlite import Starlite, get
@@ -124,7 +124,7 @@ async def close_postgres_connection(state: State) -> None:
 ```
 
 The advantage of following this pattern is that the application `state` can be injected into dependencies and route
-handlers. Regarding this see [handler function kwargs](2-route-handlers.md#handler-function-kwargs)
+handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs)
 
 ## Logging
 
@@ -161,20 +161,20 @@ up logging - then the on_startup hook is a good place to do this.
 
 The Starlite `HTTPException` class receives 3 optional kwargs:
 
-* `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
-* `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
-* `extra`: A dictionary of arbitrary values. This dictionary will be serialized and sent as part of the response.
+- `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
+- `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
+- `extra`: A dictionary of arbitrary values. This dictionary will be serialized and sent as part of the response.
   Defaults to `None`.
 
 Starlite has several pre-configured exception subclasses with pre-set error codes that you can use:
 
-* `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
-* `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
-* `NotFoundException`: status code 404.
-* `NotAuthorizedException`: status code 401.
-* `PermissionDeniedException`: status code 403.
-* `InternalServerException`: status code 500.
-* `ServiceUnavailableException`: status code 503.
+- `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
+- `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
+- `NotFoundException`: status code 404.
+- `NotAuthorizedException`: status code 401.
+- `PermissionDeniedException`: status code 403.
+- `InternalServerException`: status code 500.
+- `ServiceUnavailableException`: status code 503.
 
 ## Exception Handling
 

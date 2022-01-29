@@ -6,7 +6,7 @@ from pydantic.fields import Field, Undefined
 from starlite.enums import RequestEncodingType
 
 
-def Parameter(  # pylint: disable=too-many-locals
+def Parameter(
     *,
     header: Optional[str] = None,
     cookie: Optional[str] = None,

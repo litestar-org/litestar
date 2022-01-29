@@ -18,7 +18,8 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """
     path_item = PathItem()
-    for http_method, route_handler in route.route_handler_map.items():
+    for http_method, handler_tuple in route.route_handler_map.items():
+        route_handler, _ = handler_tuple
         if route_handler.include_in_schema:
             handler_fields = cast(BaseModel, route_handler.signature_model).__fields__
             parameters = (

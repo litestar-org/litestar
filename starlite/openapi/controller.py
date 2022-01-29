@@ -1,11 +1,11 @@
 from openapi_schema_pydantic import OpenAPI
 from orjson import OPT_INDENT_2, dumps
 
+from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
-from starlite.request import Request
 
 
 class OpenAPIController(Controller):
@@ -32,7 +32,7 @@ class OpenAPIController(Controller):
         """Returns the openapi schema"""
         return self.schema_from_request(request)
 
-    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
+    @get(media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
         dumped_schema = dumps(

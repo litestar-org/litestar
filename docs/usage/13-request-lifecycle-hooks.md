@@ -4,7 +4,7 @@ Starlite borrows the concept of `before_request` and `after_request` hooks from 
 
 ## Before Request
 
-The before request handler is a sync or async function that receives the `starlite.request.Request` instance before it
+The before request handler is a sync or async function that receives the `starlite.connection.Request` instance before it
 reaches the route handler function. It does not have to return a value, but if it does return a value other than `None`,
 then the route handler will not be called and this value will instead be used for the response.
 

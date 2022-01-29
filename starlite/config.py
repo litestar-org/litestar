@@ -16,6 +16,7 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
 from starlite.openapi.controller import OpenAPIController
+from starlite.template import TemplateEngineProtocol
 
 
 class CORSConfig(BaseModel):
@@ -71,3 +72,11 @@ class StaticFilesConfig(BaseModel):
     path: constr(min_length=1)  # type: ignore
     directories: List[DirectoryPath]
     html_mode: bool = False
+
+
+class TemplateConfig(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    directory: Union[DirectoryPath, List[DirectoryPath]]
+    engine: Type[TemplateEngineProtocol]

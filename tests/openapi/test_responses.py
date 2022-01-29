@@ -7,7 +7,7 @@ from starlette.status import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 
-from starlite import File, MediaType, Redirect, Starlite, Stream, get
+from starlite import File, MediaType, Redirect, Starlite, Stream, Template, get
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -25,7 +25,7 @@ from tests.openapi.utils import PersonController, PetController, PetException
 
 def test_create_responses():
     for route in Starlite(route_handlers=[PersonController]).routes:
-        for route_handler in route.route_handler_map.values():
+        for route_handler, _ in route.route_handler_map.values():
             if route_handler.include_in_schema:
                 responses = create_responses(
                     route_handler=route_handler,
@@ -149,3 +149,13 @@ def test_create_success_response_file_data():
     assert response.headers["last-modified"].description
     assert response.headers["etag"].param_schema.type == OpenAPIType.STRING
     assert response.headers["etag"].description
+
+
+def test_create_success_response_template():
+    @get(path="/template")
+    def template_handler() -> Template:
+        ...
+
+    response = create_success_response(template_handler, True)
+    assert response.description == "Request fulfilled, document follows"
+    assert response.content[MediaType.HTML]

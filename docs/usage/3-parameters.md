@@ -16,11 +16,11 @@ def get_user(user_id: int) -> User:
 In the above there are two components:
 
 1. The path parameter is defined inside the `path` kwarg passed to the _@get_ decorator in the form `{parameter_name:parameter_type}`. This definition of the path parameter is based on
-the [Starlette path parameter](https://www.starlette.io/routing/#path-parameters)
-mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types, Starlite
-enforces this typing, with the following types supported: `int`, `float`, `str`, `uuid`.
+   the [Starlette path parameter](https://www.starlette.io/routing/#path-parameters)
+   mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types, Starlite
+   enforces this typing, with the following types supported: `int`, `float`, `str`, `uuid`.
 2. The `get_user` function defines a parameter with the same name as defined in the `path` kwarg. This ensures that
-the value of the path parameter will be injected into the function when it's called.
+   the value of the path parameter will be injected into the function when it's called.
 
 The types do not need to match 1:1 - as long as parameter inside the function declaration is typed with a "higher" type to which the lower type can be coerced, this is fine. For example, consider this:
 
@@ -42,10 +42,11 @@ The parameter defined inside the `path` kwarg is typed as `int`, because the val
 timestamp in milliseconds without any decimals. The parameter in the function declaration though is typed as `datetime.datetime`. This works because the int value will be passed to a pydantic model representing the function signature, which will coerce the int
 into a datetime. Thus, when the function is called it will be called with a datetime typed parameter.
 
+<!-- prettier-ignore -->
 !!! note
-    You only need to define the parameter in the function declaration if it's actually used inside the
-    function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
-    It will still be validated and added to the openapi schema correctly.
+  You only need to define the parameter in the function declaration if it's actually used inside the
+  function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
+  It will still be validated and added to the openapi schema correctly.
 
 ### Extra Validation and Documentation for Path Params
 

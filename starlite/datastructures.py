@@ -46,3 +46,8 @@ class Stream(StarliteType):
         arbitrary_types_allowed = True
 
     iterator: Union[Iterator[Any], AsyncIterator[Any]]
+
+
+class Template(StarliteType):
+    name: str
+    context: Optional[Dict[str, Any]]

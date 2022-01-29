@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "0.7.2"
+version = "1.0.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
@@ -51,6 +51,9 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = {extras = ["mypy"], version = "*"}
+Jinja2 = "*"
+Mako = "*"
+slotscheck = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -87,7 +90,7 @@ max-line-length = "120"
 [tool.pylint.DESIGN]
 max-args = 15
 max-attributes = 15
-max-locals = 20
+max-locals = 30
 max-returns = 15
 max-branches = 15
 
@@ -98,7 +101,7 @@ ignored-argument-names = "args|kwargs|_|__"
 good-names = "_,i,e,fn"
 
 [tool.coverage.run]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "*/performance_test/*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

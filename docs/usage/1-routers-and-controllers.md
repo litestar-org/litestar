@@ -6,7 +6,7 @@ components that make this simple to achieve - `Router` and `Controller`.
 ## Controllers
 
 Controllers are subclasses of the Starlite `Controller` class that are used to organize endpoints under a specific
-sub-path. You can place as many [route handler](2-route-handlers.md) methods on a controller, as long as the combination
+sub-path. You can place as many [route handler](2-route-handlers/1_http_route_handlers.md) methods on a controller, as long as the combination
 of path+http method is unique. The distinct advantage of using controllers is that they allow both code sharing using
 OOP techniques and make the code better organized by promoting concern based code splitting.
 
@@ -43,9 +43,10 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller, while `retrieve_user_order` has
 the path `/user/{order_id:uuid}"`.
 
+<!-- prettier-ignore -->
 !!! note
-    You do not have to declare a `path` variable, yet if the path variable is missing or is an empty string, it
-    will default to the root path of "/".
+  You do not have to declare a `path` variable, yet if the path variable is missing or is an empty string, it
+  will default to the root path of "/".
 
 Aside from the `path` class variable, you can also set the following optional class variables:
 
@@ -131,9 +132,10 @@ base_router = Router(path="/base", route_handlers=[order_router])
 Once `order_router` is registered on `base_router`, the controllers registered on it will be respectively available
 on: "/base/orders/user" and "/base/order/partner" respectively.
 
+<!-- prettier-ignore -->
 !!! important
-    You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
-    re-registered or an exception will be raised.
+  You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
+  re-registered or an exception will be raised.
 
 ### Registering Controllers Multiple Times
 

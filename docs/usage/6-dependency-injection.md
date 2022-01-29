@@ -85,7 +85,7 @@ the same mechanism that parses route handler functions, and they too - like rout
 injected into them.
 
 In fact, you can inject the same data that you
-can [inject into route handlers](2-route-handlers.md#handler-function-kwargs) except other dependencies.
+can [inject into route handlers](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs) except other dependencies.
 
 Let's say we have a model called `Wallet`, which we'll assume we persist in a DB:
 
@@ -141,7 +141,6 @@ async def get_wallet_by_id(wallet_id: UUID4) -> Wallet:
 
 We will now set it on the controller with the correct keyword:
 
-
 ```python title="my_app/wallet/controller.py"
 from starlite import Controller, Provide
 
@@ -194,6 +193,7 @@ By default `Provide` will not cache the return value of the dependency, and it w
 the route handler that uses it. If `use_cache` is `True`, it will cache the return value on the first execution and
 will not call it again.
 
+<!-- prettier-ignore -->
 !!! important
     The caching done inside `Provide` is very simple - it stores the return value and returns it.
     There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful when

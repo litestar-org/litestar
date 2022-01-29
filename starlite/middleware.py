@@ -32,8 +32,10 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
                 scope["auth"] = auth_result.auth
             await self.app(scope, receive, send)
         except (NotAuthorizedException, PermissionDeniedException) as e:
+            # we use a custom error code
+            status_code = e.status_code + 4000
             if scope["type"] == "websocket":  # pragma: no cover
-                await send({"type": "websocket.close", "code": 1000})
+                await send({"type": "websocket.close", "code": status_code, "reason": repr(e)})
             response = self.create_error_response(exc=e)
             await response(scope, receive, send)
         return None

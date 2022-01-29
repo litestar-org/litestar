@@ -74,3 +74,8 @@ class InternalServerException(HTTPException):
 
 class ServiceUnavailableException(HTTPException):
     status_code = HTTP_503_SERVICE_UNAVAILABLE
+
+
+class TemplateNotFound(InternalServerException):
+    def __init__(self, template_name: str):
+        super().__init__(detail=f"Template {template_name} not found.")

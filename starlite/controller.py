@@ -18,6 +18,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Controller:
+    """
+    Starlite Controller. This is the basic 'view' component of Starlite.
+    """
+
     __slots__ = (
         "dependencies",
         "owner",

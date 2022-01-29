@@ -34,7 +34,11 @@ nav:
   - Usage:
       - usage/0-the-starlite-app.md
       - usage/1-routers-and-controllers.md
-      - usage/2-route-handlers.md
+      - Route Handlers:
+          - usage/2-route-handlers/0_route_handlers_concept.md
+          - usage/2-route-handlers/1_http_route_handlers.md
+          - usage/2-route-handlers/2_websocket_route_handlers.md
+          - usage/2-route-handlers/3_asgi_route_handlers.md
       - usage/3-parameters.md
       - usage/4-request-body.md
       - usage/5-responses.md
