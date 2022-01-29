@@ -24,7 +24,7 @@ class StarLiteException(Exception):
         return self.__class__.__name__
 
 
-class MissingDependencyException(ImportError, StarLiteException):
+class MissingDependencyException(StarLiteException, ImportError):
     pass
 
 

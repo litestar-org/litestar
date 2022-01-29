@@ -115,3 +115,7 @@
 - added template support @ashwinvin
 - changed the redoc UI path from `/schema/redoc` to `/schema` @yudjinn
 - renamed `starlite.request` to `starlite.connection`
+
+[1.0.1]
+
+- fixed `MissingDependencyException` inheritance chain
