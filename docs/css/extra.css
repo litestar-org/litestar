@@ -15,7 +15,7 @@ body {
   margin: 1.35rem 0 1rem;
   font-weight: 400;
   /* padding-bottom: 1rem;
-  border-bottom: 2px solid currentColor; */
+  border-bottom: 2px solid var(--md-default-bg-color--lightest); */
 }
 
 #starlite-hero .st0 {
@@ -43,7 +43,7 @@ body {
   margin: 1.35rem 0 1rem;
   font-weight: 400;
   padding-top: 1rem;
-  border-top: 1px solid currentColor;
+  border-top: 1px solid var(--md-default-bg-color--lightest);
 }
 
 .md-typeset h3 {
@@ -51,7 +51,7 @@ body {
   margin: 1.25rem 0 1rem;
   font-weight: 400;
   padding-top: 1rem;
-  border-top: 1px solid currentColor;
+  border-top: 1px solid var(--md-default-bg-color--lightest);
 }
 
 .highlight span.filename {
@@ -63,9 +63,12 @@ body {
 
 @media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title[for="__drawer"] {
-    color: var(--md-primary-fg-color);
     color: var(--md-accent-fg-color);
     background-color: var(--md-primary-bg-color);
+  }
+
+  .md-nav__source {
+    background-color: var(--md-accent-fg-color);
   }
 
   .md-nav--primary .md-nav__item {
@@ -202,6 +205,7 @@ body {
   --md-footer-fg-color: var(--md-accent-fg-color);
   --md-footer-bg-color: var(--md-primary-bg-color);
   /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
+  --md-typeset-a-color: var(--md-primary-fg-color--dark);
 
   /* Code color shades */
   --md-code-fg-color: var(--md-default-bg-color);
@@ -269,9 +273,12 @@ body {
     0 .25rem .66rem hsla(0, 0%, 0%, 0.2),
     0 0              .06125rem  hsla(0, 0%, 0%, 0.35); */
 }
+[data-md-color-scheme="mirage-light"] .md-typeset a:focus, .md-typeset a:hover {
+  color: var(--md-primary-fg-color);
+}
 
 [data-md-color-scheme="mirage-light"] .md-header {
-  color: var(--md-accent-fg-color);
+  color: var(--md-default-bg-color);
   background-color: var(--md-primary-bg-color);
 }
 
