@@ -258,7 +258,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         """
         if not isinstance(model_class, DeclarativeMeta):
             raise ImproperlyConfiguredException(
-                "Unsupported 'model_class' kwarg: " "only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
+                "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
             )
         return inspect(model_class)
 
