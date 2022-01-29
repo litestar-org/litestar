@@ -264,7 +264,7 @@ provides two engines by default, `jinja2` and `mako`.
 
 ```python
 from starlite import Template, TemplateConfig, Starlite, Request, get
-from starlite.template import JinjaTemplateEngineProtocol
+from starlite.template import JinjaTemplateEngine
 
 
 @get(path="/info")
@@ -274,9 +274,7 @@ def info(request: Request) -> Template:
 
 app = Starlite(
     route_handlers=[info],
-    template_config=TemplateConfig(
-        directory="templates", engine=JinjaTemplateEngineProtocol
-    ),
+    template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
 )
 ```
 

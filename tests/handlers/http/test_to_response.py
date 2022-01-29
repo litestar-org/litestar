@@ -43,7 +43,7 @@ async def test_to_response_async_await():
     person_instance = PersonFactory.build()
     test_function.signature_model = model_function_signature(test_function.fn, [])
 
-    response = await test_function.to_response(test_function.fn(data=person_instance), [])
+    response = await test_function.to_response(data=test_function.fn(data=person_instance), plugins=[], app=None)
     assert loads(response.body) == person_instance.dict()
 
 
@@ -69,7 +69,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(route_handler.fn(), [])
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)
         assert isinstance(response, StarletteResponse)
         assert response is expected_response
 
@@ -83,7 +83,7 @@ async def test_to_response_returning_redirect_response():
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(route_handler.fn(), [])
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
 
@@ -100,7 +100,7 @@ async def test_to_response_returning_file_response():
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(route_handler.fn(), [])
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)
         assert isinstance(response, FileResponse)
         assert response.stat_result
 
@@ -133,7 +133,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
         with create_test_client(test_function) as client:
             route: HTTPRoute = client.app.routes[0]
             route_handler = route.route_handlers[0]
-            response = await route_handler.to_response(route_handler.fn(), [])
+            response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)
             assert isinstance(response, StreamingResponse)
     else:
         with pytest.raises(ValidationError):

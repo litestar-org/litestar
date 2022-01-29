@@ -1,8 +1,8 @@
 import os
 
 from starlite import Template, TemplateConfig, create_test_client, get
-from starlite.template.jinja import JinjaTemplateEngineProtocol
-from starlite.template.mako import MakoTemplateEngineProtocol
+from starlite.template.jinja import JinjaTemplateEngine
+from starlite.template.mako import MakoTemplateEngine
 
 
 def test_jinja_template(tmpdir):
@@ -27,7 +27,7 @@ def test_jinja_template(tmpdir):
 
     with create_test_client(
         route_handlers=[index, nested_path],
-        template_config=TemplateConfig(engine=JinjaTemplateEngineProtocol, directory=tmpdir),
+        template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmpdir),
     ) as client:
         index_response = client.request("GET", "/")
         assert index_response.status_code == 200
@@ -47,7 +47,7 @@ def test_jinja_raise_for_invalid_path(tmpdir):
 
     with create_test_client(
         route_handlers=[invalid_path],
-        template_config=TemplateConfig(engine=JinjaTemplateEngineProtocol, directory=tmpdir),
+        template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmpdir),
     ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
@@ -76,7 +76,7 @@ def test_mako_template(tmpdir):
 
     with create_test_client(
         route_handlers=[index, nested_path],
-        template_config=TemplateConfig(engine=MakoTemplateEngineProtocol, directory=tmpdir),
+        template_config=TemplateConfig(engine=MakoTemplateEngine, directory=tmpdir),
     ) as client:
         index_response = client.request("GET", "/")
         assert index_response.status_code == 200
@@ -96,7 +96,7 @@ def test_mako_raise_for_invalid_path(tmpdir):
 
     with create_test_client(
         route_handlers=[invalid_path],
-        template_config=TemplateConfig(engine=MakoTemplateEngineProtocol, directory=tmpdir),
+        template_config=TemplateConfig(engine=MakoTemplateEngine, directory=tmpdir),
     ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
@@ -125,7 +125,7 @@ def test_template_with_no_context(tmpdir):
 
     with create_test_client(
         route_handlers=[index],
-        template_config=TemplateConfig(engine=JinjaTemplateEngineProtocol, directory=tmpdir),
+        template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmpdir),
     ) as client:
         index_response = client.request("GET", "/")
         assert index_response.status_code == 200

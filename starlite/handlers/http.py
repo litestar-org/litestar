@@ -43,6 +43,7 @@ from starlite.types import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover
+    from starlite.app import Starlite
     from starlite.controller import Controller
     from starlite.routing import Router
 
@@ -259,7 +260,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    async def to_response(self, data: Any, plugins: List[PluginProtocol]) -> StarletteResponse:
+    async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
         """
         Given a data kwarg, determine its type and return the appropriate response
         """
@@ -279,17 +280,15 @@ class HTTPRouteHandler(BaseRouteHandler):
                     content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
                 )
             elif isinstance(data, Template):
-                app = list(self.ownership_layers())[-1]
-                if app.template_engine:  # type: ignore # noqa: SIM106
-                    response = TemplateResponse(
-                        context=data.context,
-                        template_name=data.name,
-                        template_engine=app.template_engine,  # type: ignore
-                        status_code=self.status_code,
-                        headers=headers,
-                    )
-                else:
-                    raise ImproperlyConfiguredException(detail="Template engine is not configured")
+                if not app.template_engine:
+                    raise ImproperlyConfiguredException("Template engine is not configured")
+                response = TemplateResponse(
+                    context=data.context,
+                    template_name=data.name,
+                    template_engine=app.template_engine,
+                    status_code=self.status_code,
+                    headers=headers,
+                )
             else:
                 response = cast(StarletteResponse, data)
         else:

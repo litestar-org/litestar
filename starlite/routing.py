@@ -162,6 +162,7 @@ class HTTPRoute(BaseRoute):
             else:
                 response_data = fn(**parsed_kwargs)
         response = await route_handler.to_response(
+            app=scope["app"],
             data=response_data,
             plugins=request.app.plugins,
         )
