@@ -40,6 +40,7 @@ body {
   font-weight: 400;
   padding-top: 1rem;
   border-top: 1px solid var(--md-default-bg-color--lightest);
+  border-color: transparent;
 }
 
 .md-typeset h3 {
@@ -48,6 +49,7 @@ body {
   font-weight: 400;
   padding-top: 1rem;
   border-top: 1px solid var(--md-default-bg-color--lightest);
+  border-color: transparent;
 }
 
 .highlight span.filename {
