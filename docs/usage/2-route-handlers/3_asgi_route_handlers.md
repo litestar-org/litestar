@@ -45,7 +45,7 @@ async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
 
 ## Limitations of ASGI route handlers
 
-In difference to the other route handlers, the `asgi` route handler accepts only 3 kwargs that must be defined:
+In difference to the other route handlers, the `asgi` route handler accepts only 3 kwargs that **must** be defined:
 
 - `scope`, a mapping of values describing the asgi connection. It always includes a `type` key, with the values being
   either `http` or `websocket`, and a `path` key. If the type is `http`, the scope dictionary will also include
@@ -54,6 +54,9 @@ In difference to the other route handlers, the `asgi` route handler accepts only
 - `send`, an injected function by which the ASGI application sends messages.
 
 You can read more about these in the [ASGI specification](https://asgi.readthedocs.io/en/latest/specs/main.html).
+
+Additionally, ASGI route handler functions **must** be async functions. This is enforced using inspection, and if the
+function is not an async function, an informative `ImproperlyConfiguredException` will be raised.
 
 ## ASGI Route Handler Kwargs
 

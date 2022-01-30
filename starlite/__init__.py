@@ -22,6 +22,7 @@ from .exceptions import (
     PermissionDeniedException,
     ServiceUnavailableException,
     StarLiteException,
+    ValidationException,
 )
 from .handlers import (
     ASGIRouteHandler,
@@ -95,6 +96,7 @@ __all__ = [
     "Template",
     "TemplateConfig",
     "TestClient",
+    "ValidationException",
     "WebSocket",
     "WebSocketRoute",
     "WebsocketRouteHandler",

@@ -29,11 +29,12 @@ async def my_websocket_handler(socket: WebSocket) -> None:
 
 In difference to HTTP routes handlers, websocket handlers have the following requirements:
 
-1. they **must** declare a `socket` kwarg. If this is missing an exception will be raised.
-2. they **must** have a return annotation of `None`. Any other annotation, or lack thereof, will raise an exception.
+1. they **must** declare a `socket` kwarg.
+2. they **must** have a return annotation of `None`.
+3. they **must** be async functions.
 
-Additionally, they should be async because the socket interface is async - but this is not enforced. You will not be
-able to do anything meaningful without this and python will raise errors as required.
+These requirements are enforced using inspection, and if any of them is unfulfilled an informative
+`ImproperlyConfiguredException` will be raised.
 
 <!-- prettier-ignore -->
 !!! note
