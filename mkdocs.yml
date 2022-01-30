@@ -28,6 +28,11 @@ theme:
     - search.share
   plugins:
     - search
+    - social:
+        cards_color:
+          fill: "#1d2433"
+          text: "#d6dbe1"
+        cards_font: Tahoma
 extra_css:
   - css/extra.css
 nav:
