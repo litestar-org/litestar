@@ -1,10 +1,10 @@
 # The Starlite App
 
-At the root of every Starlite application is an instance of the `Starlite` class or a subclass of it. Typically, this
-code will be placed in a file called `main.py` at the project's source folder root.
+At the root of every Starlite application is an **instance** of the `Starlite` class or a subclass of it. Typically, this
+code will be placed in a file called `main.py` at the **project's root directory**.
 
-Creating an app is straightforward, with the only required kwarg being list of Controllers, Routers
-or [route_handlers](2-route-handlers/1_http_route_handlers.md):
+Creating an app is straightforward – the **only required kwarg is a list** of [Controllers](usage/1-routers-and-controllers.md#controllers), [Routers](usage/1-routers-and-controllers.md#routers)
+or [Route Handlers](2-route-handlers/1_http_route_handlers.md):
 
 ```python title="my_app/main.py"
 from starlite import Starlite, get
@@ -18,11 +18,11 @@ def health_check() -> str:
 app = Starlite(route_handlers=[health_check])
 ```
 
-The app instance is the root level of the app - it has the base path of "/" and all root level Controllers, Routers and
+The **app instance is the root level** of the app - it has the base path of "/" and all root level Controllers, Routers and
 Route Handlers should be registered on it. See [registering routes](1-routers-and-controllers.md#registering-routes) for
 full details.
 
-You can additionally pass the following kwargs to the Starlite constructor:
+You **can additionally pass** the following **kwargs** to the Starlite constructor:
 
 - `allowed_hosts`: A list of allowed hosts. If set this enables the `AllowedHostsMiddleware`.
   See [middleware](7-middleware.md).
@@ -36,8 +36,8 @@ You can additionally pass the following kwargs to the Starlite constructor:
 - `guards`: A list of callables. See [guards](9-guards.md).
 - `middleware`: A list of classes adhering to the Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware`
   class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](7-middleware.md).
-- `on_shutdown`: A list of callables that are called during the application shutdown. See [life-cycle](#lifecycle).
-- `on_startup`: A list of callables that are called during the application startup. See [life-cycle](#lifecycle).
+- `on_shutdown`: A list of callables that are called during the application shutdown. See [startup-and-shutdown](#startup-and-shutdown).
+- `on_startup`: A list of callables that are called during the application startup. See [startup-and-shutdown](#startup-and-shutdown).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
   See [open-api](12-openapi.md).
 - `response_class`: A custom response class to be used as the app default.
@@ -52,13 +52,14 @@ You can additionally pass the following kwargs to the Starlite constructor:
 
 ## Startup and Shutdown
 
-You can pass a list of callables - sync and/or async, using the `on_statup` / `on_shutdown` kwargs. These callables will
+You can pass a list of callables, **sync and/or async**, using the `on_startup` / `on_shutdown` kwargs. These callables will
 be called when the ASGI server (uvicorn, dafne etc.) emits the respective "startup" or "shutdown" event.
 
-A classic use case for this is database connectivity. Often you will want to establish the connection once - on
-application startup, and then close the connection on shutdown. For example, lets assume we create a connection to a
-Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html), and
-we therefore opt to create two functions, one to get or create the connection, and another to close it:
+A classic use case for this is **database connectivity**. Often you will want to **establish** the connection **once** – on
+application startup, and then **close** the connection on shutdown.
+
+For example, lets assume we **create a connection** to a Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html), and
+we therefore opt to create **two functions**, one to get or **establish the connection**, and another to **close** it:
 
 ```python title="my_app/postgres.py"
 from typing import cast
@@ -84,7 +85,7 @@ async def close_postgres_connection() -> None:
         await cast(AsyncEngine, engine).dispose()
 ```
 
-We now simply need to pass these to the Starlite init method to ensure these are called correctly:
+We now simply need to **pass these** to the Starlite **init method** to ensure these are called correctly:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
@@ -96,9 +97,9 @@ app = Starlite(on_startup=[get_postgres_connection], on_shutdown=[close_postgres
 
 ### Using Application State
 
-Callables passed to the `on_startup` / `on_shutdown` hooks can receive either no arguments or a single argument for the
-application state. The application state is an attribute available on the app instance as `app.state` and it is an
-instance of the class `starlite.datastructures.State`, which inherits from the Starlette class of the same name.
+**Callables** passed to the `on_startup` / `on_shutdown` hooks can receive either no arguments, or a **single argument** for the
+**application state**. The application state is available on the app instance as the `app.state` attribute and it is an
+instance of the class `starlite.datastructures.State`, which inherits from `starlette.datastructures.State`.
 
 Let's rewrite the previous examples to use the application state:
 
@@ -123,13 +124,13 @@ async def close_postgres_connection(state: State) -> None:
         await cast(AsyncEngine, state.postgres_connection).dispose()
 ```
 
-The advantage of following this pattern is that the application `state` can be injected into dependencies and route
-handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs)
+The **advantage** of following this pattern is that the application `state` can be **injected** into dependencies and route
+handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs).
 
 ## Logging
 
-Another thing most applications will need to set up as part of startup is logging. Although Starlite does not configure
-logging for you, it does come with a convenience `pydantic` model called `LoggingConfig`, which you can use like so:
+Another **common requirement** for an application startup is **logging**. Although Starlite **does not configure
+logging out-of-the box**, it does come with a convenience `pydantic` model called `LoggingConfig`, which you can use like so:
 
 ```python title="my_app/main.py"
 from starlite import Starlite, LoggingConfig
@@ -146,27 +147,27 @@ my_app_logging_config = LoggingConfig(
 app = Starlite(on_startup=[my_app_logging_config.configure])
 ```
 
-`LoggingConfig` is merely a convenience wrapper around the standard library's _DictConfig_ options, which can be rather
+`LoggingConfig` is **merely a convenience wrapper** around the standard library's _DictConfig_ options, which can be rather
 confusing.
 
-In the above we defined a logger for the "my*app" namespace with a level of "INFO", i.e. only messages of INFO severity
-or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to *
+In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of INFO severity
+or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to \*
 sys.stderr\_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
-free to use whatever solution you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do set
+**free to use whatever solution** you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do set
 up logging - then the on_startup hook is a good place to do this.
 
 ## Exceptions
 
-The Starlite `HTTPException` class receives 3 optional kwargs:
+The Starlite `HTTPException` class can receive 3 optional kwargs:
 
 - `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
 - `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
 - `extra`: A dictionary of arbitrary values. This dictionary will be serialized and sent as part of the response.
   Defaults to `None`.
 
-Starlite has several pre-configured exception subclasses with pre-set error codes that you can use:
+Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use:
 
 - `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
 - `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
@@ -178,11 +179,11 @@ Starlite has several pre-configured exception subclasses with pre-set error code
 
 ## Exception Handling
 
-Starlite handles all errors by default by transforming them into JSON responses. If the errors are instances of either
+Starlite handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of** either
 the `starlette.exceptions.HTTPException` or the `starlite.exceptions.HTTPException`, the responses will include the
-appropriate status_code. Otherwise, the responses will default to 500 - "Internal Server Error".
+appropriate `status_code`. Otherwise, the responses will **default to 500** - "Internal Server Error".
 
-You can customize exception handling by passing a dictionary mapping either error codes or exception classes to
+You can **customize exception handling** by passing a dictionary – mapping either error codes, or exception classes, to
 callables. For example, if you would like to replace the default exception handler with a handler that returns
 plain-text responses you could do this:
 
@@ -214,12 +215,12 @@ app = Starlite(
 
 ## Static Files
 
-Static files are files served by the app from predefined locations. To configure static file serving, pass either an
-instance of `starlite.config.StaticFilesConfig` or a list thereof to the Starlite constructor using
+Static files are files served by the app from predefined locations. To configure static file serving, either **pass an
+instance of `starlite.config.StaticFilesConfig` or a list thereof** to the Starlite constructor using
 the `static_files_config` kwarg.
 
-For example, lets say our Starlite app is going to serve regular files from a "my_app/static" folder and html forms from
-an "my_app/html" folder, and we would like to serve the static files from a "/files" path, and the html from a "/html"
+For example, lets say our Starlite app is going to serve **regular files** from the "my_app/static" folder and **html documents** from
+the "my_app/html" folder, and we would like to serve the **static files** on the "/files" path, and the **html files** on the "/html"
 path:
 
 ```python
@@ -234,10 +235,10 @@ app = Starlite(
 )
 ```
 
-Matching is done based on filename. For example, lets assume we have a request that is trying to retrieve the path
-`/files/file.txt`. Given the base path `/files`, the directories for this path will be searched for the file. If it is
-found, the file will be sent over, otherwise a 404 response will be sent.
+Matching is done based on filename: Assumed we have a request that is trying to retrieve the path
+`/files/file.txt`, the **directory for the base path** `/files` **will be searched** for the file `file.txt`. If it is
+found, the file will be sent over, otherwise a **404 response** will be sent.
 
 If `html_mode` is enabled and no specific file is requested, the application will fallback to serving `index.html`. If
-no file is found, the application will look for a 404.html file, to render a response, otherwise a regular 404 response
+no file is found the application will look for a `404.html` file in order to render a response, otherwise a 404 `NotFoundException`
 will be returned.

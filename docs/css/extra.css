@@ -1,6 +1,6 @@
 :root,
 body {
-  --md-text-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --md-text-font-family: Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .md-content__button {
@@ -14,24 +14,20 @@ body {
   font-size: calc(1rem * 1.35 * 1.35 * 1.35);
   margin: 1.35rem 0 1rem;
   font-weight: 400;
-  /* padding-bottom: 1rem;
-  border-bottom: 2px solid currentColor; */
 }
 
-#starlite-hero .st0 {
-  fill: #ffae57;
+/* #starlite-banner .cls-1 {
+  fill: transparent;
 }
-#starlite-hero .st1 {
-  fill: #ffd580;
-}
-#starlite-hero .st2 {
-  fill: #d6dbe1;
-}
-#starlite-hero .st3 {
-  fill: #ffffff;
-}
-#starlite-hero .st4 {
+#starlite-banner #banner-text path {
   fill: var(--md-default-fg-color);
+} */
+#starlite-banner {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+[data-md-color-scheme="mirage-light"] #starlite-banner .cls-1 {
+  fill: var(--md-default-fg-color--light);
 }
 
 .md-search__form {
@@ -43,7 +39,8 @@ body {
   margin: 1.35rem 0 1rem;
   font-weight: 400;
   padding-top: 1rem;
-  border-top: 1px solid currentColor;
+  border-top: 1px solid var(--md-default-bg-color--lightest);
+  border-color: transparent;
 }
 
 .md-typeset h3 {
@@ -51,7 +48,8 @@ body {
   margin: 1.25rem 0 1rem;
   font-weight: 400;
   padding-top: 1rem;
-  border-top: 1px solid currentColor;
+  border-top: 1px solid var(--md-default-bg-color--lightest);
+  border-color: transparent;
 }
 
 .highlight span.filename {
@@ -63,9 +61,12 @@ body {
 
 @media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title[for="__drawer"] {
-    color: var(--md-primary-fg-color);
     color: var(--md-accent-fg-color);
     background-color: var(--md-primary-bg-color);
+  }
+
+  .md-nav__source {
+    background-color: var(--md-accent-fg-color);
   }
 
   .md-nav--primary .md-nav__item {
@@ -202,6 +203,7 @@ body {
   --md-footer-fg-color: var(--md-accent-fg-color);
   --md-footer-bg-color: var(--md-primary-bg-color);
   /* --md-footer-bg-color--dark: var(--md-default-bg-color); */
+  --md-typeset-a-color: var(--md-primary-fg-color--dark);
 
   /* Code color shades */
   --md-code-fg-color: var(--md-default-bg-color);
@@ -269,9 +271,13 @@ body {
     0 .25rem .66rem hsla(0, 0%, 0%, 0.2),
     0 0              .06125rem  hsla(0, 0%, 0%, 0.35); */
 }
+[data-md-color-scheme="mirage-light"] .md-typeset a:focus,
+.md-typeset a:hover {
+  color: var(--md-primary-fg-color);
+}
 
 [data-md-color-scheme="mirage-light"] .md-header {
-  color: var(--md-accent-fg-color);
+  color: var(--md-default-bg-color);
   background-color: var(--md-primary-bg-color);
 }
 
