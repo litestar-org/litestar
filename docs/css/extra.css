@@ -14,15 +14,20 @@ body {
   font-size: calc(1rem * 1.35 * 1.35 * 1.35);
   margin: 1.35rem 0 1rem;
   font-weight: 400;
-  /* padding-bottom: 1rem;
-  border-bottom: 2px solid var(--md-default-bg-color--lightest); */
 }
 
-#starlite-banner .cls-1 {
+/* #starlite-banner .cls-1 {
   fill: transparent;
 }
 #starlite-banner #banner-text path {
   fill: var(--md-default-fg-color);
+} */
+#starlite-banner {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+[data-md-color-scheme="mirage-light"] #starlite-banner .cls-1 {
+  fill: var(--md-default-fg-color--light);
 }
 
 .md-search__form {
