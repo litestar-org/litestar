@@ -1,7 +1,8 @@
 # ASGI Route Handlers
 
+<!-- prettier-ignore -->
 !!! info
-This feature is available from v0.7.0 onwards
+    This feature is available from v0.7.0 onwards
 
 If you need to write your own ASGI application, you can do so using the `asgi` decorator:
 

@@ -44,9 +44,9 @@ into a datetime. Thus, when the function is called it will be called with a date
 
 <!-- prettier-ignore -->
 !!! note
-  You only need to define the parameter in the function declaration if it's actually used inside the
-  function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
-  It will still be validated and added to the openapi schema correctly.
+    You only need to define the parameter in the function declaration if it's actually used inside the
+    function. If the path parameter is part of the path, but the function doesn't use it, its fine to omit it.
+    It will still be validated and added to the openapi schema correctly.
 
 ### Extra Validation and Documentation for Path Params
 

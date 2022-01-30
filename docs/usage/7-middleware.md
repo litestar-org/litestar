@@ -86,7 +86,7 @@ You can pass the following kwargs to CORSConfig:
 
 <!-- prettier-ignore -->
 !!! note
-  The asteriks symbol in the above kwargs means "match any".
+   The asterisks symbol in the above kwargs means "match any".
 
 You can read more about this middleware in the [starlette docs](https://www.starlette.io/middleware/#corsmiddleware).
 

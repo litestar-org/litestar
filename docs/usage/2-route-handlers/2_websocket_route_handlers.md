@@ -1,7 +1,8 @@
 # Websocket Route Handlers
 
+<!-- prettier-ignore -->
 !!! info
-This feature is available from v0.2.0 onwards
+    This feature is available from v0.2.0 onwards
 
 Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
 
@@ -40,6 +41,7 @@ able to do anything meaningful without this and python will raise errors as requ
 
 In all other regards websocket handlers function exactly like other route handlers.
 
+<!-- prettier-ignore -->
 !!! note
-OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
-handlers, and you cannot configure any schema related parameters for these.
+    OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
+    handlers, and you cannot configure any schema related parameters for these.
