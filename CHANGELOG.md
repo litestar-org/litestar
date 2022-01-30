@@ -119,4 +119,4 @@
 [1.0.1]
 
 - fixed `MissingDependencyException` inheritance chain
-- fixed `ValidationException` missing as export in **init** method
+- fixed `ValidationException` missing as export in `__init__` method

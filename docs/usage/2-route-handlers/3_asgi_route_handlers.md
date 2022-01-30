@@ -56,7 +56,7 @@ In difference to the other route handlers, the `asgi` route handler accepts only
 You can read more about these in the [ASGI specification](https://asgi.readthedocs.io/en/latest/specs/main.html).
 
 Additionally, ASGI route handler functions **must** be async functions. This is enforced using inspection, and if the
-function is not an async function, an informative `ImproperlyConfiguredException` will be raised.
+function is not an async function, an informative exception will be raised.
 
 ## ASGI Route Handler Kwargs
 
@@ -64,7 +64,3 @@ Aside from `path`, the `asgi` route handler accepts the following optional kwarg
 
 - `guards`: A list of [guards](../9-guards.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
-
-<!-- prettier-ignore -->
-!!! important
-    It's not possible to use dependency injection with the `asgi` decorator, but it is possible to use guards.
