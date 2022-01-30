@@ -1,4 +1,4 @@
-<img alt="Starlite logo" src="static/starlite-hero.svg" width=100%, height="auto">
+<img alt="Starlite logo" src="./docs/images/SVG/starlite-banner.svg" width="100%" height="auto" style="border-radius:1rem;overflow:hidden">
 
 <div align="center">
 

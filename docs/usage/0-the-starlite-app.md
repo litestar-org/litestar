@@ -151,7 +151,7 @@ app = Starlite(on_startup=[my_app_logging_config.configure])
 confusing.
 
 In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of INFO severity
-or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to *
+or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to \*
 sys.stderr\_.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are

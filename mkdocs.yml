@@ -1,6 +1,7 @@
 site_name: Starlite
 repo_url: https://github.com/starlite-api/starlite
 repo_name: starlite-api/starlite
+site_url: https://starlite-api.github.io/starlite
 theme:
   name: material
   palette:
@@ -15,7 +16,7 @@ theme:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
   favicon: images/favicon.ico
-  logo: images/starlite-icon.png
+  logo: images/2x/starlite-icon@2x.png
   icon:
     repo: fontawesome/brands/github
   features:

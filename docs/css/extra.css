@@ -1,6 +1,6 @@
 :root,
 body {
-  --md-text-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --md-text-font-family: Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .md-content__button {
@@ -18,19 +18,10 @@ body {
   border-bottom: 2px solid var(--md-default-bg-color--lightest); */
 }
 
-#starlite-hero .st0 {
-  fill: #ffae57;
+#starlite-banner .cls-1 {
+  fill: transparent;
 }
-#starlite-hero .st1 {
-  fill: #ffd580;
-}
-#starlite-hero .st2 {
-  fill: #d6dbe1;
-}
-#starlite-hero .st3 {
-  fill: #ffffff;
-}
-#starlite-hero .st4 {
+#starlite-banner #banner-text path {
   fill: var(--md-default-fg-color);
 }
 
@@ -273,7 +264,8 @@ body {
     0 .25rem .66rem hsla(0, 0%, 0%, 0.2),
     0 0              .06125rem  hsla(0, 0%, 0%, 0.35); */
 }
-[data-md-color-scheme="mirage-light"] .md-typeset a:focus, .md-typeset a:hover {
+[data-md-color-scheme="mirage-light"] .md-typeset a:focus,
+.md-typeset a:hover {
   color: var(--md-primary-fg-color);
 }
 
