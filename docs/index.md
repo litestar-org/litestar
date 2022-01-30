@@ -57,7 +57,7 @@ The Starlite framework is **[pluggable](usage/10-plugins.md)** and ships with **
 
 ## Installation
 
-Starlite can be installed with any package manager of choice:
+Starlite can be installed with any package manager of your choice:
 
 ```shell
 pip install starlite
