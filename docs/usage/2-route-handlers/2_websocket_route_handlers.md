@@ -1,10 +1,6 @@
 # Websocket Route Handlers
 
-<!-- prettier-ignore -->
-!!! info
-    This feature is available from v0.2.0 onwards
-
-Alongside the HTTP Route handlers discussed above, Starlite also support Websockets via the `websocket` decorator:
+Starlite supports Websockets via the `websocket` decorator:
 
 ```python
 from starlite import WebSocket, websocket
@@ -17,8 +13,8 @@ async def my_websocket_handler(socket: WebSocket) -> None:
     await socket.close()
 ```
 
-The `websocket` decorator is also an aliased class, in this case - of the `WebsocketRouteHandler`. Thus. you can write
-the above like so:
+The`websocket` decorator is an alias of the class `starlite.handlers.websocket.WebsocketRouteHandler`. Thus, the below
+code is equivalent to the one above:
 
 ```python
 from starlite import WebSocket, WebsocketRouteHandler
@@ -39,9 +35,14 @@ In difference to HTTP routes handlers, websocket handlers have the following req
 Additionally, they should be async because the socket interface is async - but this is not enforced. You will not be
 able to do anything meaningful without this and python will raise errors as required.
 
-In all other regards websocket handlers function exactly like other route handlers.
-
 <!-- prettier-ignore -->
 !!! note
-    OpenAPI currently does not support websockets. As a result not schema will be generated for websocket route
-    handlers, and you cannot configure any schema related parameters for these.
+    OpenAPI currently does not support websockets. As such no schema will be generated for these route handlers.
+
+## ASGI Route Handler Kwargs
+
+Aside from `path`, the `asgi` route handler accepts the following optional kwargs:
+
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
+- `guards`: A list of [guards](../9-guards.md).
+- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
