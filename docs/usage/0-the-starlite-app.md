@@ -36,8 +36,8 @@ You **can additionally pass** the following **kwargs** to the Starlite construct
 - `guards`: A list of callables. See [guards](9-guards.md).
 - `middleware`: A list of classes adhering to the Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware`
   class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](7-middleware.md).
-- `on_shutdown`: A list of callables that are called during the application shutdown. See [life-cycle](#lifecycle).
-- `on_startup`: A list of callables that are called during the application startup. See [life-cycle](#lifecycle).
+- `on_shutdown`: A list of callables that are called during the application shutdown. See [startup-and-shutdown](#startup-and-shutdown).
+- `on_startup`: A list of callables that are called during the application startup. See [startup-and-shutdown](#startup-and-shutdown).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
   See [open-api](12-openapi.md).
 - `response_class`: A custom response class to be used as the app default.
