@@ -15,7 +15,7 @@ User = TypeVar("User")
 Auth = TypeVar("Auth")
 
 
-class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
+class Request(StarletteRequest, Generic[User, Auth]):
     @property
     def app(self) -> "Starlite":
         return cast("Starlite", self.scope["app"])
@@ -52,7 +52,7 @@ class Request(StarletteRequest, Generic[User, Auth]):  # pragma: no cover
         return self._json
 
 
-class WebSocket(StarletteWebSocket, Generic[User, Auth]):  # pragma: no cover
+class WebSocket(StarletteWebSocket, Generic[User, Auth]):
     @property
     def app(self) -> "Starlite":
         return cast("Starlite", self.scope["app"])
