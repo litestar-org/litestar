@@ -54,7 +54,7 @@ def test_authentication_middleware_http_routes():
     assert success_response.status_code == HTTP_200_OK
 
 
-def test_authentication_middleware_not_installed_raises_for_user_scope():
+def test_authentication_middleware_not_installed_raises_for_user_scope_http():
     @get(path="/")
     def http_route_handler_user_scope(request: Request[User, None]) -> None:
         assert request.user
@@ -65,7 +65,7 @@ def test_authentication_middleware_not_installed_raises_for_user_scope():
     assert error_response.json()["detail"] == "'user' is not defined in scope, install an AuthMiddleware to set it"
 
 
-def test_authentication_middleware_not_installed_raises_for_auth_scope():
+def test_authentication_middleware_not_installed_raises_for_auth_scope_http():
     @get(path="/")
     def http_route_handler_auth_scope(request: Request[None, Auth]) -> None:
         assert request.auth
@@ -94,3 +94,25 @@ def test_authentication_middleware_websocket_routes():
     state[token] = AuthenticationResult(user=user, auth=auth)
     with client.websocket_connect("/", headers={"Authorization": token}) as ws:
         assert ws.receive_json()
+
+
+def test_authentication_middleware_not_installed_raises_for_user_scope_websocket():
+    @websocket(path="/")
+    async def route_handler(socket: WebSocket[User, Auth]) -> None:
+        await socket.accept()
+        assert isinstance(socket.user, User)
+
+    client = create_test_client(route_handlers=route_handler)
+    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+        ws.receive_json()
+
+
+def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket():
+    @websocket(path="/")
+    async def route_handler(socket: WebSocket[User, Auth]) -> None:
+        await socket.accept()
+        assert isinstance(socket.auth, Auth)
+
+    client = create_test_client(route_handlers=route_handler)
+    with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
+        ws.receive_json()

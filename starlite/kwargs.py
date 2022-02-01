@@ -120,12 +120,10 @@ class KwargsModel:
         expected_cookie_parameters: Set[ParameterDefinition] = set()
         expected_query_parameters: Set[ParameterDefinition] = set()
 
-        dependency_keys = [dependency.key for dependency in expected_dependencies]
-        for field_name, model_field in [
-            (name, field)
-            for name, field in signature_model.__fields__.items()
-            if name not in [*RESERVED_KWARGS, *dependency_keys]
-        ]:
+        ignored_keys = {*RESERVED_KWARGS, *[dependency.key for dependency in expected_dependencies]}
+        fields = filter(lambda keys: keys[0] not in ignored_keys, signature_model.__fields__.items())
+
+        for field_name, model_field in fields:
             model_info = model_field.field_info
             extra_keys = set(model_info.extra)
             default = model_field.default if model_field.default is not Undefined else None

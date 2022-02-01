@@ -92,7 +92,7 @@ class BaseRouteHandler:
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
         """
-        if not self.signature_model:  # pragma: no cover
+        if not self.signature_model:
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is BaseRouteHandler.empty:
             dependencies: Dict[str, Provide] = {}
@@ -120,7 +120,7 @@ class BaseRouteHandler:
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        if not self.fn:  # pragma: no cover
+        if not self.fn:
             raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
 
     async def authorize_connection(self, connection: HTTPConnection) -> None:
