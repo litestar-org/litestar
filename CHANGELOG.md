@@ -120,3 +120,7 @@
 
 - fixed `MissingDependencyException` inheritance chain
 - fixed `ValidationException` missing as export in `__init__` method
+
+[1.0.2]
+
+- fixed lifecycle injection of application state into class methods

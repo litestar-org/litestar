@@ -19,12 +19,12 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
-    rev: 21.12b0
+    rev: 22.1.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/asottile/blacken-docs
-    rev: v1.12.0
+    rev: v1.12.1
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -50,7 +50,7 @@ repos:
             "flake8-simplify",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.9.0
+    rev: v0.10.2
     hooks:
       - id: slotscheck
         exclude: "^(?!starlite/)"

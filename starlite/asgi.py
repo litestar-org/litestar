@@ -1,4 +1,4 @@
-from inspect import getfullargspec, isawaitable
+from inspect import getfullargspec, isawaitable, ismethod
 from typing import TYPE_CHECKING, Any, Dict, List, Set, Union, cast
 
 from starlette.routing import Router as StarletteRouter
@@ -73,7 +73,7 @@ class StarliteASGIRouter(StarletteRouter):
         If the handler is an async function, it awaits the return.
         """
         arg_spec = getfullargspec(handler)
-        if arg_spec.args:
+        if (not ismethod(handler) and len(arg_spec.args) == 1) or (ismethod(handler) and len(arg_spec.args) == 2):
             value = handler(self.app.state)  # type: ignore
         else:
             value = handler()  # type: ignore
