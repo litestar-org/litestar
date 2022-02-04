@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.0.2"
+version = "1.0.3"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Ashwin Vinod <ashwinvinodsa@gmail.com>"]
@@ -81,7 +81,6 @@ disable = [
 enable = "useless-suppression"
 
 [tool.pylint.REPORTS]
-msg-template = "{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 reports = "no"
 
 [tool.pylint.FORMAT]

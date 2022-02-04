@@ -124,3 +124,7 @@
 [1.0.2]
 
 - fixed lifecycle injection of application state into class methods
+
+[1.0.3]
+
+- added argument validation on `Parameter` and `Body`

@@ -1,11 +1,13 @@
 from typing import Any, Dict, List, Optional, Union
 
 from openapi_schema_pydantic import Example, ExternalDocumentation
+from pydantic import validate_arguments
 from pydantic.fields import Field, Undefined
 
 from starlite.enums import RequestEncodingType
 
 
+@validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
     *,
     header: Optional[str] = None,
@@ -62,6 +64,7 @@ def Parameter(
     )
 
 
+@validate_arguments(config={"arbitrary_types_allowed": True})
 def Body(
     *,
     media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
