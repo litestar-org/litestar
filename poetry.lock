@@ -149,7 +149,7 @@ python-versions = "*"
 
 [[package]]
 name = "faker"
-version = "12.0.0"
+version = "12.1.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -393,7 +393,7 @@ python-versions = "*"
 
 [[package]]
 name = "openapi-schema-pydantic"
-version = "1.2.1"
+version = "1.2.2"
 description = "OpenAPI (v3) specification schema as pydantic class"
 category = "main"
 optional = false
@@ -525,7 +525,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "6.2.5"
+version = "7.0.0"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
@@ -540,10 +540,10 @@ iniconfig = "*"
 packaging = "*"
 pluggy = ">=0.12,<2.0"
 py = ">=1.8.2"
-toml = "*"
+tomli = ">=1.0.0"
 
 [package.extras]
-testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
+testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
 name = "pytest-asyncio"
@@ -750,14 +750,6 @@ typing-extensions = {version = "*", markers = "python_version < \"3.10\""}
 full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests"]
 
 [[package]]
-name = "toml"
-version = "0.10.2"
-description = "Python Library for Tom's Obvious, Minimal Language"
-category = "dev"
-optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
-
-[[package]]
 name = "tomli"
 version = "2.0.0"
 description = "A lil' TOML parser"
@@ -796,7 +788,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.17.1"
+version = "0.17.4"
 description = "The lightning-fast ASGI server."
 category = "dev"
 optional = false
@@ -948,8 +940,8 @@ exrex = [
     {file = "exrex-0.10.5.tar.gz", hash = "sha256:3fb8b18fd9832eaff8b13dc042a4f63b13c5d684ee069f70a23ddfc6bcb708f3"},
 ]
 faker = [
-    {file = "Faker-12.0.0-py3-none-any.whl", hash = "sha256:56397929f87baf1d40b794dbcc4edbb9a393ad1d02d865c67f871f5921b9ae4a"},
-    {file = "Faker-12.0.0.tar.gz", hash = "sha256:4894ce3309c0099e8e6eb1db6e376372e7bcab822334bbdbcd2b1fa4df3d2231"},
+    {file = "Faker-12.1.0-py3-none-any.whl", hash = "sha256:534c9410cd003b794900504d37f0afaf8275bfe8865583250799f696cf227cd3"},
+    {file = "Faker-12.1.0.tar.gz", hash = "sha256:820e55f62b428a4d55f6700358167e84a6ba3f8371e9ef39f9ca03a504dcae18"},
 ]
 ghp-import = [
     {file = "ghp-import-2.0.2.tar.gz", hash = "sha256:947b3771f11be850c852c64b561c600fdddf794bab363060854c1ee7ad05e071"},
@@ -1158,8 +1150,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 openapi-schema-pydantic = [
-    {file = "openapi-schema-pydantic-1.2.1.tar.gz", hash = "sha256:241e4074c0e651d8a83ae9abe56daedd57634ef8e95e92d38df623a14292455c"},
-    {file = "openapi_schema_pydantic-1.2.1-py3-none-any.whl", hash = "sha256:840b60bc2fcbe7d2dc2a63f66bdf71decabe59a422d4b8030cc6cb3213111a8e"},
+    {file = "openapi-schema-pydantic-1.2.2.tar.gz", hash = "sha256:90a97fbfdf713835da71fa5728b124557c2ad33bca68d37f8fde6617026843b8"},
+    {file = "openapi_schema_pydantic-1.2.2-py3-none-any.whl", hash = "sha256:bb20956bfe67c77de053e88a1e5bde35c1b17c277d1da27913dfdf76341ac8e5"},
 ]
 orjson = [
     {file = "orjson-3.6.6-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:e4a7cad6c63306318453980d302c7c0b74c0cc290dd1f433bbd7d31a5af90cf1"},
@@ -1261,8 +1253,8 @@ pyparsing = [
     {file = "pyparsing-3.0.7.tar.gz", hash = "sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"},
 ]
 pytest = [
-    {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
-    {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
+    {file = "pytest-7.0.0-py3-none-any.whl", hash = "sha256:42901e6bd4bd4a0e533358a86e848427a49005a3256f657c5c8f8dd35ef137a9"},
+    {file = "pytest-7.0.0.tar.gz", hash = "sha256:dad48ffda394e5ad9aa3b7d7ddf339ed502e5e365b1350e0af65f4a602344b11"},
 ]
 pytest-asyncio = [
     {file = "pytest-asyncio-0.17.2.tar.gz", hash = "sha256:6d895b02432c028e6957d25fc936494e78c6305736e785d9fee408b1efbc7ff4"},
@@ -1388,10 +1380,6 @@ starlette = [
     {file = "starlette-0.18.0-py3-none-any.whl", hash = "sha256:377d64737a0e03560cb8eaa57604afee143cea5a4996933242798a7820e64f53"},
     {file = "starlette-0.18.0.tar.gz", hash = "sha256:b45c6e9a617ecb5caf7e6446bd8d767b0084d6217e8e1b08187ca5191e10f097"},
 ]
-toml = [
-    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
-    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
-]
 tomli = [
     {file = "tomli-2.0.0-py3-none-any.whl", hash = "sha256:b5bde28da1fed24b9bd1d4d2b8cba62300bfb4ec9a6187a957e8ddb9434c5224"},
     {file = "tomli-2.0.0.tar.gz", hash = "sha256:c292c34f58502a1eb2bbb9f5bbc9a5ebc37bee10ffb8c2d6bbdfa8eb13cc14e1"},
@@ -1431,8 +1419,8 @@ urllib3 = [
     {file = "urllib3-1.26.8.tar.gz", hash = "sha256:0e7c33d9a63e7ddfcb86780aac87befc2fbddf46c58dbb487e0855f7ceec283c"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.17.1-py3-none-any.whl", hash = "sha256:8b16d9ecb76500f7804184f182835fe8a2b54716d3b0b6bb2da0b2b192f62c73"},
-    {file = "uvicorn-0.17.1.tar.gz", hash = "sha256:dffbacb8cc25d924d68d231d2c478c4fe6727c36537d8de21e5de591b37afc41"},
+    {file = "uvicorn-0.17.4-py3-none-any.whl", hash = "sha256:e85872d84fb651cccc4c5d2a71cf7ead055b8fb4d8f1e78e36092282c0cf2aec"},
+    {file = "uvicorn-0.17.4.tar.gz", hash = "sha256:25850bbc86195a71a6477b3e4b3b7b4c861fb687fb96912972ce5324472b1011"},
 ]
 watchdog = [
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9693f35162dc6208d10b10ddf0458cc09ad70c30ba689d9206e02cd836ce28a3"},
