@@ -133,6 +133,7 @@ class Starlite(Router):
             await self.asgi_router.lifespan(scope, receive, send)
             return
         try:
+            scope["state"] = {}
             await self.middleware_stack(scope, receive, send)
         except Exception as e:  # pylint: disable=broad-except
             await self.handle_exception(scope=scope, receive=receive, send=send, exc=e)
