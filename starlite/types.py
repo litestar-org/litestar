@@ -87,16 +87,17 @@ class MiddlewareProtocol(Protocol):
         ...
 
 
-T = TypeVar("T", bound=Type[BaseModel])
+T = TypeVar("T", bound=BaseModel)
 
 
 class Partial(Generic[T]):
-    _models: Dict[T, Any] = {}
+    _models: Dict[Type[T], Any] = {}
 
-    def __class_getitem__(cls, item: T) -> T:
+    def __class_getitem__(cls, item: Type[T]) -> Type[T]:
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
+        item
         if not cls._models.get(item):
             field_definitions: Dict[str, Tuple[Any, None]] = {}
             for field_name, field_type in item.__annotations__.items():
@@ -106,7 +107,7 @@ class Partial(Generic[T]):
                 else:
                     field_definitions[field_name] = (field_type, None)
                 cls._models[item] = create_model("Partial" + item.__name__, **field_definitions)  # type: ignore
-        return cast(T, cls._models.get(item))
+        return cast(Type[T], cls._models.get(item))
 
 
 class ResponseHeader(Header):  # type: ignore
