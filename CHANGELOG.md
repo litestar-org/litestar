@@ -128,3 +128,7 @@
 [1.0.3]
 
 - added argument validation on `Parameter` and `Body`
+
+[1.0.4]
+
+- updated `Request.state` to be defined already in the application @ashwinvin
