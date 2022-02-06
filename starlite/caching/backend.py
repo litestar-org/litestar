@@ -1,25 +1,37 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Protocol, cast
+from typing import Any, Awaitable, Dict, Optional, Protocol, cast, overload
 
 from typing_extensions import runtime_checkable
 
 
 @runtime_checkable
 class CacheBackendProtocol(Protocol):  # pragma: no cover
+    @overload  # type: ignore[misc]
     def get(self, key: str) -> Any:
+        ...
+
+    async def get(self, key: str) -> Awaitable[Any]:
         """
         Retrieve a valued from cache corresponding to the given key
         """
         ...
 
-    def set(self, key: str, value: Any, expiration: int) -> None:
+    @overload  # type: ignore[misc]
+    def set(self, key: str, value: Any, expiration: int) -> Any:
+        ...
+
+    async def set(self, key: str, value: Any, expiration: int) -> Awaitable[Any]:
         """
         Set a value in cache for a given key with a given expiration in seconds
         """
         ...
 
-    def delete(self, key: str) -> None:
+    @overload  # type: ignore[misc]
+    def delete(self, key: str) -> Any:
+        ...
+
+    async def delete(self, key: str) -> Awaitable[Any]:
         """
         Remove a value from the cache for a given key
         """
@@ -28,7 +40,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
 class NaiveCacheBackend(CacheBackendProtocol):
     """
-    This class offers a cache backend that just stores values in a dict.
+    This class offers a cache backend that stores values in a dict.
 
     In a production system you probably should use Redis or MemCached instead.
     """

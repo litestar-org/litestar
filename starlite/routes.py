@@ -1,6 +1,6 @@
 import pickle
 import re
-from inspect import isawaitable
+from inspect import isawaitable, iscoroutinefunction
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urlencode
@@ -131,7 +131,7 @@ class HTTPRoute(BaseRoute):
         caching_enabled = request.method == "GET" and route_handler.cache
         response: Optional[Union[Response, StarletteResponse]] = None
         if caching_enabled:
-            response = self.get_cached_response(request=request)
+            response = await self.get_cached_response(request=request)
         if not response:
             response_data = None
             before_request_handler = route_handler.resolve_before_request()
@@ -151,7 +151,7 @@ class HTTPRoute(BaseRoute):
             )
             # we cache the response instance
             if caching_enabled:
-                self.set_cached_response(
+                await self.set_cached_response(
                     response=response,
                     request=request,
                     expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
@@ -203,7 +203,7 @@ class HTTPRoute(BaseRoute):
         qp.sort(key=lambda x: x[0])
         return request.url.path + urlencode(qp, doseq=True)
 
-    def get_cached_response(self, request: Request) -> Optional[StarletteResponse]:
+    async def get_cached_response(self, request: Request) -> Optional[StarletteResponse]:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
@@ -211,10 +211,12 @@ class HTTPRoute(BaseRoute):
         cache_key = self.get_cache_key(request=request)
         cached_value = cache_backend.get(cache_key)
         if cached_value:
+            if isawaitable(cached_value):
+                cached_value = await cached_value
             return cast(StarletteResponse, pickle.loads(cached_value))  # nosec
         return None
 
-    def set_cached_response(
+    async def set_cached_response(
         self, response: Union[Response, StarletteResponse], request: Request, expiration: Optional[int]
     ) -> None:
         """
@@ -223,7 +225,10 @@ class HTTPRoute(BaseRoute):
         cache_config = request.app.cache_config
         cache_key = self.get_cache_key(request=request)
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
-        cache_config.backend.set(cache_key, pickled_response, expiration or cache_config.default_expiration)
+        if iscoroutinefunction(cache_config.backend.set):
+            await cache_config.backend.set(cache_key, pickled_response, expiration or cache_config.default_expiration)
+        else:
+            cache_config.backend.set(cache_key, pickled_response, expiration or cache_config.default_expiration)
 
 
 class WebSocketRoute(BaseRoute):
