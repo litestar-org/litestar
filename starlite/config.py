@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+from urllib.parse import urlencode
 
 from openapi_schema_pydantic import (
     Contact,
@@ -16,8 +17,10 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
 from starlite.caching.backend import CacheBackendProtocol, NaiveCacheBackend
+from starlite.connection import Request
 from starlite.openapi.controller import OpenAPIController
 from starlite.template import TemplateEngineProtocol
+from starlite.types import CacheKeyBuilder
 
 
 class CORSConfig(BaseModel):
@@ -83,9 +86,19 @@ class TemplateConfig(BaseModel):
     engine: Type[TemplateEngineProtocol]
 
 
+def default_cache_key_builder(request: Request) -> str:
+    """
+    Given a request object, returns a cache key by combining the path with the sorted query params
+    """
+    qp: List[Tuple[str, Any]] = list(request.query_params.items())
+    qp.sort(key=lambda x: x[0])
+    return request.url.path + urlencode(qp, doseq=True)
+
+
 class CacheConfig(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
     backend: CacheBackendProtocol = NaiveCacheBackend()
-    default_expiration: int = 60  # value in seconds
+    expiration: int = 60  # value in seconds
+    cache_key_builder: CacheKeyBuilder = default_cache_key_builder

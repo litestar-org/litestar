@@ -76,6 +76,7 @@ AfterRequestHandler = Union[
 ]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
+CacheKeyBuilder = Callable[[Request], str]
 
 
 @runtime_checkable

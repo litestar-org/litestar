@@ -3,7 +3,6 @@ import re
 from inspect import isawaitable, iscoroutinefunction
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
-from urllib.parse import urlencode
 from uuid import UUID
 
 from pydantic import validate_arguments
@@ -26,7 +25,7 @@ from starlite.handlers import (
 from starlite.kwargs import KwargsModel
 from starlite.response import Response
 from starlite.signature import get_signature_model
-from starlite.types import AsyncAnyCallable, Method
+from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import normalize_path
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -128,10 +127,10 @@ class HTTPRoute(BaseRoute):
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
-        caching_enabled = request.method == "GET" and route_handler.cache
+        caching_enabled = route_handler.cache
         response: Optional[Union[Response, StarletteResponse]] = None
         if caching_enabled:
-            response = await self.get_cached_response(request=request)
+            response = await self.get_cached_response(request=request, route_handler=route_handler)
         if not response:
             response_data = None
             before_request_handler = route_handler.resolve_before_request()
@@ -154,7 +153,7 @@ class HTTPRoute(BaseRoute):
                 await self.set_cached_response(
                     response=response,
                     request=request,
-                    expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
+                    route_handler=route_handler,
                 )
         await response(scope, receive, send)
 
@@ -195,40 +194,36 @@ class HTTPRoute(BaseRoute):
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
     @staticmethod
-    def get_cache_key(request: Request) -> Any:
-        """
-        Constructs a cache key out of the request and calls the cache backend to retrieve this value
-        """
-        qp: List[Tuple[str, Any]] = list(request.query_params.items())
-        qp.sort(key=lambda x: x[0])
-        return request.url.path + urlencode(qp, doseq=True)
-
-    async def get_cached_response(self, request: Request) -> Optional[StarletteResponse]:
+    async def get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> Optional[StarletteResponse]:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
-        cache_backend = request.app.cache_config.backend
-        cache_key = self.get_cache_key(request=request)
-        cached_value = cache_backend.get(cache_key)
+        cache_config = request.app.cache_config
+        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        cache_key = key_builder(request)
+        cached_value = cache_config.backend.get(cache_key)
         if cached_value:
             if isawaitable(cached_value):
                 cached_value = await cached_value
             return cast(StarletteResponse, pickle.loads(cached_value))  # nosec
         return None
 
+    @staticmethod
     async def set_cached_response(
-        self, response: Union[Response, StarletteResponse], request: Request, expiration: Optional[int]
+        response: Union[Response, StarletteResponse], request: Request, route_handler: HTTPRouteHandler
     ) -> None:
         """
         Pickles and caches a response object
         """
         cache_config = request.app.cache_config
-        cache_key = self.get_cache_key(request=request)
+        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        cache_key = key_builder(request)
+        expiration = route_handler.cache if isinstance(route_handler.cache, int) else cache_config.expiration
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
         if iscoroutinefunction(cache_config.backend.set):
-            await cache_config.backend.set(cache_key, pickled_response, expiration or cache_config.default_expiration)
+            await cache_config.backend.set(cache_key, pickled_response, expiration)
         else:
-            cache_config.backend.set(cache_key, pickled_response, expiration or cache_config.default_expiration)
+            cache_config.backend.set(cache_key, pickled_response, expiration)
 
 
 class WebSocketRoute(BaseRoute):
