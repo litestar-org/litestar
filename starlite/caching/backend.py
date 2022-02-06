@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Awaitable, Dict, Optional, Protocol, cast, overload
+from typing import Any, Dict, Optional, cast
 
-from typing_extensions import runtime_checkable
+from typing_extensions import Awaitable, Protocol, overload, runtime_checkable
 
 
 @runtime_checkable
