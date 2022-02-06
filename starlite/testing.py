@@ -10,8 +10,14 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
 from typing_extensions import Type
 
-from starlite.app import Starlite
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
+from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.config import (
+    CacheConfig,
+    CORSConfig,
+    OpenAPIConfig,
+    StaticFilesConfig,
+    TemplateConfig,
+)
 from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.datastructures import State
@@ -90,6 +96,7 @@ def create_test_client(
     raise_server_exceptions: bool = True,
     root_path: str = "",
     static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
+    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
 ) -> TestClient:
     """Create a TestClient"""
     return TestClient(
@@ -109,6 +116,7 @@ def create_test_client(
             plugins=plugins,
             route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
+            cache_config=cache_config,
         ),
         backend=backend,
         backend_options=backend_options,
