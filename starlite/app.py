@@ -17,7 +17,13 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
-from starlite.config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
+from starlite.config import (
+    CacheConfig,
+    CORSConfig,
+    OpenAPIConfig,
+    StaticFilesConfig,
+    TemplateConfig,
+)
 from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import MediaType
@@ -27,7 +33,8 @@ from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.routing import ASGIRoute, BaseRoute, HTTPRoute, Router, WebSocketRoute
+from starlite.router import Router
+from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import model_function_signature
 from starlite.template import TemplateEngineProtocol
 from starlite.types import (
@@ -43,6 +50,7 @@ from starlite.types import (
 from starlite.utils import normalize_path
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
+DEFAULT_CACHE_CONFIG = CacheConfig()
 
 
 class Starlite(Router):
@@ -57,7 +65,8 @@ class Starlite(Router):
         "route_map",
         "static_paths",
         "plain_routes",
-        "template_engine"
+        "template_engine",
+        "cache_config"
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
@@ -86,7 +95,9 @@ class Starlite(Router):
         # static files
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         # template
-        template_config: Optional[TemplateConfig] = None
+        template_config: Optional[TemplateConfig] = None,
+        # caching
+        cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
     ):
         self.debug = debug
         self.state = State()
@@ -95,6 +106,7 @@ class Starlite(Router):
         self.route_map: Dict[str, Any] = {}
         self.static_paths = set()
         self.plain_routes: Set[str] = set()
+        self.cache_config = cache_config
         super().__init__(
             dependencies=dependencies,
             guards=guards,

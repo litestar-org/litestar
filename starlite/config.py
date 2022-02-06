@@ -15,6 +15,7 @@ from openapi_schema_pydantic import (
 from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
+from starlite.caching.backend import CacheBackendProtocol, NaiveCacheBackend
 from starlite.openapi.controller import OpenAPIController
 from starlite.template import TemplateEngineProtocol
 
@@ -80,3 +81,11 @@ class TemplateConfig(BaseModel):
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
     engine: Type[TemplateEngineProtocol]
+
+
+class CacheConfig(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    backend: CacheBackendProtocol = NaiveCacheBackend()
+    default_expiration: int = 60  # value in seconds

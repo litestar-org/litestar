@@ -10,7 +10,7 @@ from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.routing import HTTPRoute
+    from starlite.routes import HTTPRoute
 
 
 def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
