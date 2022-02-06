@@ -97,7 +97,6 @@ class Partial(Generic[T]):
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
-        item
         if not cls._models.get(item):
             field_definitions: Dict[str, Tuple[Any, None]] = {}
             for field_name, field_type in item.__annotations__.items():

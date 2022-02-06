@@ -132,3 +132,7 @@
 [1.0.4]
 
 - updated `Request.state` to be defined already in the application @ashwinvin
+
+[1.0.5]
+
+- fixed typing of `Partial` @to-ph
