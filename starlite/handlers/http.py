@@ -334,6 +334,7 @@ class get(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -358,6 +359,7 @@ class get(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,
