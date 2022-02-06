@@ -33,35 +33,32 @@ def test_default_cache_response():
         assert first_response.json() == second_response.json()
 
 
-def test_expiration():
+def test_handler_expiration():
     now = datetime.now()
-    with freeze_time(now) as frozen_datetime:
-        # test the default expiration
-        with create_test_client(
-            route_handlers=[get("/cached", cache=True)(slow_handler)], after_request=after_request_handler
-        ) as client:
-            first_response = client.get("/cached")
-            frozen_datetime.tick()
-            now += timedelta(seconds=60)
-            second_response = client.get("/cached")
-            assert first_response.json() == second_response.json()
-            frozen_datetime.tick()
-            now += timedelta(seconds=1)
-            third_response = client.get("/cached")
-            assert first_response.json() != third_response.json()
-        # test handler expiration
-        with create_test_client(
-            route_handlers=[get("/cached", cache=10)(slow_handler)], after_request=after_request_handler
-        ) as client:
-            first_response = client.get("/cached")
-            frozen_datetime.tick()
-            now += timedelta(seconds=10)
-            second_response = client.get("/cached")
-            assert first_response.json() == second_response.json()
-            frozen_datetime.tick()
-            now += timedelta(seconds=1)
-            third_response = client.get("/cached")
-            assert first_response.json() != third_response.json()
+    with freeze_time(now) as frozen_datetime, create_test_client(
+        route_handlers=[get("/cached-local", cache=10)(slow_handler)], after_request=after_request_handler
+    ) as client:
+        first_response = client.get("/cached-local")
+        frozen_datetime.tick(delta=timedelta(seconds=5))
+        second_response = client.get("/cached-local")
+        assert first_response.headers["unique-identifier"] == second_response.headers["unique-identifier"]
+        frozen_datetime.tick(delta=timedelta(seconds=11))
+        third_response = client.get("/cached-local")
+        assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
+
+
+def test_default_expiration():
+    now = datetime.now()
+    with freeze_time(now) as frozen_datetime, create_test_client(
+        route_handlers=[get("/cached-default", cache=True)(slow_handler)], after_request=after_request_handler
+    ) as client:
+        first_response = client.get("/cached-default")
+        frozen_datetime.tick(delta=timedelta(seconds=30))
+        second_response = client.get("/cached-default")
+        assert first_response.headers["unique-identifier"] == second_response.headers["unique-identifier"]
+        frozen_datetime.tick(delta=timedelta(seconds=61))
+        third_response = client.get("/cached-default")
+        assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
 def test_cache_key():

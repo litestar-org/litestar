@@ -218,7 +218,7 @@ class HTTPRoute(BaseRoute):
         cache_config = request.app.cache_config
         key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
         cache_key = key_builder(request)
-        expiration = route_handler.cache if isinstance(route_handler.cache, int) else cache_config.expiration
+        expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
         if iscoroutinefunction(cache_config.backend.set):
             await cache_config.backend.set(cache_key, pickled_response, expiration)
