@@ -31,11 +31,11 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite import Router
     from starlite.connection import Request
     from starlite.controller import Controller
     from starlite.datastructures import State
     from starlite.handlers import BaseRouteHandler
+    from starlite.router import Router
 else:
     Request = Any
     WebSocket = Any
