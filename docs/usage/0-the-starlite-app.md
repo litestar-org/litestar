@@ -3,7 +3,7 @@
 At the root of every Starlite application is an **instance** of the `Starlite` class or a subclass of it. Typically, this
 code will be placed in a file called `main.py` at the **project's root directory**.
 
-Creating an app is straightforward – the **only required kwarg is a list** of [Controllers](usage/1-routers-and-controllers.md#controllers), [Routers](usage/1-routers-and-controllers.md#routers)
+Creating an app is straightforward – the **only required kwarg is a list** of [Controllers](1-routers-and-controllers.md#controllers), [Routers](1-routers-and-controllers.md#routers)
 or [Route Handlers](2-route-handlers/1_http_route_handlers.md):
 
 ```python title="my_app/main.py"

@@ -6,7 +6,7 @@ part **inter-compatible**. So what does need to be changed?
 ### LifeCycle
 
 If you use the **Starlette/FastAPI `lifecycle` kwarg** with an **`AsyncContextManager`** to bootstrap your application, you will
-need to convert it to use the **`on_startup` and `on_shutdown` [hooks](0-the-starlite-app.md#startup-and-shutdown)**. Otherwise, using lifecycle management is identical.
+need to convert it to use the **`on_startup` and `on_shutdown` [hooks](usage/0-the-starlite-app.md#startup-and-shutdown)**. Otherwise, using lifecycle management is identical.
 
 ### Routing Decorators
 
