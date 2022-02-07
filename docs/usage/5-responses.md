@@ -257,30 +257,6 @@ def stream_time() -> Stream:
 
 The Stream class receives a single required kwarg - `iterator`, which should be either a sync or an async iterator.
 
-### Template Responses
-
-Starlite can automatically load and render a template file once a template engine is configured in the app. Starlite
-provides two engines by default, `jinja2` and `mako`.
-
-```python
-from starlite import Template, TemplateConfig, Starlite, Request, get
-from starlite.template import JinjaTemplateEngine
-
-
-@get(path="/info")
-def info(request: Request) -> Template:
-    return Template(name="info.html", context={"user": request.user})
-
-
-app = Starlite(
-    route_handlers=[info],
-    template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
-)
-```
-
-Starlite is decoupled from the templating engines. If you want to add support for another templating engine, you can
-easily do this by subclassing `starlite.template.AbstractTemplateEngine`.
-
 ## Using Custom Responses
 
 You can use a subclass of `starlite.responses.Response` and specify it as the response class using the `response_class`
