@@ -7,7 +7,6 @@ expected. Starlite comes with a simple mechanism for caching:
 from starlite import get
 
 
-# cached for default , which is 60 seconds unless modified
 @get("/cached-path", cache=True)
 def my_cached_handler() -> str:
     ...
