@@ -57,6 +57,7 @@ nav:
       - usage/12-openapi.md
       - usage/13-request-lifecycle-hooks.md
       - usage/14-testing.md
+      - usage/15-templating.md
   - migration.md
   - contributing.md
   - license.md

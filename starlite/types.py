@@ -35,7 +35,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
     from starlite.datastructures import State
     from starlite.handlers import BaseRouteHandler
-    from starlite.routing import Router
+    from starlite.router import Router
 else:
     Request = Any
     WebSocket = Any
@@ -76,6 +76,7 @@ AfterRequestHandler = Union[
 ]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
+CacheKeyBuilder = Callable[[Request], str]
 
 
 @runtime_checkable

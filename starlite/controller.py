@@ -14,7 +14,7 @@ from starlite.utils import normalize_path
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.handlers import BaseRouteHandler
     from starlite.provide import Provide
-    from starlite.routing import Router
+    from starlite.router import Router
 
 
 class Controller:

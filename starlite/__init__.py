@@ -1,7 +1,13 @@
 from starlite.datastructures import File, Redirect, State, Stream, Template
 
 from .app import Starlite
-from .config import CORSConfig, OpenAPIConfig, StaticFilesConfig, TemplateConfig
+from .config import (
+    CacheConfig,
+    CORSConfig,
+    OpenAPIConfig,
+    StaticFilesConfig,
+    TemplateConfig,
+)
 from .connection import Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
@@ -45,7 +51,8 @@ from .params import Body, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
 from .response import Response
-from .routing import BaseRoute, HTTPRoute, Router, WebSocketRoute
+from .router import Router
+from .routes import BaseRoute, HTTPRoute, WebSocketRoute
 from .testing import TestClient, create_test_client, create_test_request
 from .types import MiddlewareProtocol, Partial, ResponseHeader
 
@@ -56,6 +63,7 @@ __all__ = [
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
+    "CacheConfig",
     "CORSConfig",
     "Controller",
     "DTOFactory",

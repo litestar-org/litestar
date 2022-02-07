@@ -37,6 +37,7 @@ from starlite.response import Response, TemplateResponse
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
+    CacheKeyBuilder,
     Guard,
     Method,
     ResponseHeader,
@@ -45,33 +46,35 @@ from starlite.types import (
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
     from starlite.controller import Controller
-    from starlite.routing import Router
+    from starlite.router import Router
 
 
 class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
-        "http_method",
-        "status_code",
         "after_request",
         "background_tasks",
         "before_request",
-        "media_type",
-        "response_class",
-        "response_headers",
+        "cache",
+        "cache_key_builder",
         "content_encoding",
         "content_media_type",
         "deprecated",
         "description",
+        "http_method",
         "include_in_schema",
+        "media_type",
         "operation_id",
         "raises",
-        "response_description",
-        "summary",
-        "tags",
-        "resolved_headers",
-        "resolved_response_class",
         "resolved_after_request",
         "resolved_before_request",
+        "resolved_headers",
+        "resolved_response_class",
+        "response_class",
+        "response_description",
+        "response_headers",
+        "status_code",
+        "summary",
+        "tags",
         "template_name",
     )
 
@@ -90,6 +93,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -147,6 +152,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolved_before_request: Union[
             Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
+        self.cache = cache
+        self.cache_key_builder = cache_key_builder
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -331,6 +338,9 @@ class get(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
+        # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
         deprecated: bool = False,
@@ -354,6 +364,8 @@ class get(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
+            cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,
@@ -381,6 +393,9 @@ class post(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
+        # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
         deprecated: bool = False,
@@ -404,6 +419,8 @@ class post(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
+            cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,
@@ -431,6 +448,9 @@ class put(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
+        # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
         deprecated: bool = False,
@@ -454,6 +474,8 @@ class put(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
+            cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,
@@ -481,6 +503,9 @@ class patch(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
+        # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
         deprecated: bool = False,
@@ -504,6 +529,8 @@ class patch(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
+            cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,
@@ -531,6 +558,9 @@ class delete(HTTPRouteHandler):
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
+        cache: Union[bool, int] = False,
+        cache_key_builder: Optional[CacheKeyBuilder] = None,
+        # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
         deprecated: bool = False,
@@ -554,6 +584,8 @@ class delete(HTTPRouteHandler):
             response_class=response_class,
             response_headers=response_headers,
             status_code=status_code,
+            cache=cache,
+            cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
             deprecated=deprecated,

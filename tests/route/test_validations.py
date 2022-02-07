@@ -2,7 +2,7 @@ import pytest
 
 from starlite import ImproperlyConfiguredException, Starlite, get, post
 from starlite.exceptions import MethodNotAllowedException
-from starlite.routing import HTTPRoute
+from starlite.routes import HTTPRoute
 
 
 @get(path="/")

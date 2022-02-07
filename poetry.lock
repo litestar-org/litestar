@@ -160,6 +160,17 @@ python-dateutil = ">=2.4"
 typing-extensions = {version = ">=3.10.0.2", markers = "python_version < \"3.8\""}
 
 [[package]]
+name = "freezegun"
+version = "1.1.0"
+description = "Let your Python tests travel through time"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "ghp-import"
 version = "2.0.2"
 description = "Copy your docs directly to the gh-pages branch."
@@ -343,7 +354,7 @@ i18n = ["babel (>=2.9.0)"]
 
 [[package]]
 name = "mkdocs-material"
-version = "8.1.9"
+version = "8.1.10"
 description = "A Material Design theme for MkDocs"
 category = "dev"
 optional = false
@@ -816,7 +827,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "0262b103743055184cb932d238070aa5ff0da11528f55cef861a2cb2310cd9f0"
+content-hash = "5d35a6012219e6f294e3549157035c4d64a96056820916f47cf81dad48318926"
 
 [metadata.files]
 anyio = [
@@ -929,6 +940,10 @@ exrex = [
 faker = [
     {file = "Faker-12.1.0-py3-none-any.whl", hash = "sha256:534c9410cd003b794900504d37f0afaf8275bfe8865583250799f696cf227cd3"},
     {file = "Faker-12.1.0.tar.gz", hash = "sha256:820e55f62b428a4d55f6700358167e84a6ba3f8371e9ef39f9ca03a504dcae18"},
+]
+freezegun = [
+    {file = "freezegun-1.1.0-py2.py3-none-any.whl", hash = "sha256:2ae695f7eb96c62529f03a038461afe3c692db3465e215355e1bb4b0ab408712"},
+    {file = "freezegun-1.1.0.tar.gz", hash = "sha256:177f9dd59861d871e27a484c3332f35a6e3f5d14626f2bf91be37891f18927f3"},
 ]
 ghp-import = [
     {file = "ghp-import-2.0.2.tar.gz", hash = "sha256:947b3771f11be850c852c64b561c600fdddf794bab363060854c1ee7ad05e071"},
@@ -1103,8 +1118,8 @@ mkdocs = [
     {file = "mkdocs-1.2.3.tar.gz", hash = "sha256:89f5a094764381cda656af4298727c9f53dc3e602983087e1fe96ea1df24f4c1"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-8.1.9.tar.gz", hash = "sha256:a15873a5e116bf4615af4fcedc85a0537492464365286cba50310d96fb066958"},
-    {file = "mkdocs_material-8.1.9-py2.py3-none-any.whl", hash = "sha256:6feb433f29227b862418bd1009edeec2e52870770c476bf02840fc094b8823f2"},
+    {file = "mkdocs-material-8.1.10.tar.gz", hash = "sha256:10970bfe2628eaa41c379e9075121b1232f4304cac9876feac8ac9d0d2e9035b"},
+    {file = "mkdocs_material-8.1.10-py2.py3-none-any.whl", hash = "sha256:e47ad89b98c32a0832509a72ade2114e0c84727a573018d768f4c6de19886b2f"},
 ]
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},

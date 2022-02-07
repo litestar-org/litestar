@@ -7,7 +7,7 @@ from starlette.types import Receive, Scope, Send
 
 from starlite.exceptions import NotFoundException
 from starlite.parsers import parse_path_params
-from starlite.routing import ASGIRoute, HTTPRoute
+from starlite.routes import ASGIRoute, HTTPRoute
 from starlite.types import LifeCycleHandler
 
 if TYPE_CHECKING:  # pragma: no cover
