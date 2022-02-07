@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, timedelta
+from time import sleep
 from typing import Any
 from uuid import uuid4
 
@@ -8,7 +9,7 @@ from freezegun import freeze_time
 from pydantic import ValidationError
 
 from starlite import CacheConfig, Request, Response, create_test_client, get
-from starlite.caching import SimpleCacheBackend
+from starlite.cache import SimpleCacheBackend
 
 
 async def slow_handler() -> dict:
@@ -84,7 +85,7 @@ def test_async_handling():
         async def get(self, key: str) -> Any:
             return super().get(key=key)
 
-    cache_config = CacheConfig(backend=AsyncCacheBackend)
+    cache_config = CacheConfig(backend=AsyncCacheBackend())
 
     with create_test_client(
         route_handlers=[get("/cached-async", cache=True)(slow_handler)],
@@ -109,3 +110,11 @@ def test_config_validation():
 
     with pytest.raises(ValidationError):
         CacheConfig(backend=MyBackend)
+
+
+def test_naive_cache_backend():
+    backend = SimpleCacheBackend()
+    backend.set("test", "1", 0.1)  # type: ignore
+    assert backend.get("test")
+    sleep(0.2)
+    assert not backend.get("test")

@@ -96,7 +96,7 @@ class Starlite(Router):
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         # template
         template_config: Optional[TemplateConfig] = None,
-        # caching
+        # cache
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
     ):
         self.debug = debug

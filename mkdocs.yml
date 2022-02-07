@@ -58,6 +58,7 @@ nav:
       - usage/13-request-lifecycle-hooks.md
       - usage/14-testing.md
       - usage/15-templating.md
+      - usage/16-caching.md
   - migration.md
   - contributing.md
   - license.md

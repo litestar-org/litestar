@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional, cast
 
-from starlite.caching.base import CacheBackendProtocol
+from starlite.cache.base import CacheBackendProtocol
 
 
 class SimpleCacheBackend(CacheBackendProtocol):

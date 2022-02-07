@@ -136,3 +136,7 @@
 [1.0.5]
 
 - fixed typing of `Partial` @to-ph
+
+[1.1.0]
+
+- added response caching support
