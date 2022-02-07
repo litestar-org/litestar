@@ -1,3 +1,4 @@
+from inspect import isclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
@@ -13,7 +14,7 @@ from openapi_schema_pydantic import (
     Server,
     Tag,
 )
-from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
+from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
 from typing_extensions import Type
 
 from starlite.caching import CacheBackendProtocol, SimpleCacheBackend
@@ -102,3 +103,14 @@ class CacheConfig(BaseModel):
     backend: CacheBackendProtocol = SimpleCacheBackend()
     expiration: int = 60  # value in seconds
     cache_key_builder: CacheKeyBuilder = default_cache_key_builder
+
+    @validator("backend")
+    def validate_backend(cls, value: Any) -> Any:  # pylint: disable=no-self-argument, no-self-use
+        """
+        Custom validator for backend, handling non initialized classes
+        """
+        if not all(hasattr(value, attr) for attr in ["set", "get", "delete"]):
+            raise ValueError
+        if isclass(value):
+            return value()
+        return value

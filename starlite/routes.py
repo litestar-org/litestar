@@ -201,10 +201,11 @@ class HTTPRoute(BaseRoute):
         cache_config = request.app.cache_config
         key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
         cache_key = key_builder(request)
-        cached_value = cache_config.backend.get(cache_key)
+        if iscoroutinefunction(cache_config.backend.get):
+            cached_value = await cache_config.backend.get(cache_key)
+        else:
+            cached_value = cache_config.backend.get(cache_key)
         if cached_value:
-            if isawaitable(cached_value):
-                cached_value = await cached_value
             return cast(StarletteResponse, pickle.loads(cached_value))  # nosec
         return None
 
