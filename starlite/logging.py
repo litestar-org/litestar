@@ -14,12 +14,13 @@ class LoggingConfig(BaseModel):
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
     handlers: Dict[str, Dict[str, Any]] = {
-        "console": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "standard"}
+        "console": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "standard"},
+        "queue_listener": {"class": "starlite.QueueListenerHandler", "handlers": ["cfg://handlers.console"]},
     }
     loggers: Dict[str, Dict[str, Any]] = {
         "starlite": {
             "level": "INFO",
-            "handlers": ["console"],
+            "handlers": ["queue_listener"],
         },
     }
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["console"], "level": "WARNING"}
