@@ -60,10 +60,14 @@ jobs:
     if: github.repository_owner == 'starlite-api'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
         with:
           name: coverage-xml
+      - name: Fix coverage file for sonarcloud
+        run: sed -i "s/home\/runner\/work\/starlite\/starlite/github\/workspace/g" coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
