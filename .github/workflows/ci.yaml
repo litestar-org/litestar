@@ -37,41 +37,34 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}-1
+          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
       - name: Test
         run: poetry run pytest
+        if: matrix.python-version != '3.10'
+      - name: Test with Coverage
+        run: poetry run pytest --cov=. --cov-report=xml
+        if: matrix.python-version == '3.10'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage-xml
+          path: coverage.xml
+        if: matrix.python-version == '3.10'
   sonar:
     needs: test
     if: github.repository_owner == 'starlite-api'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - uses: actions/download-artifact@v2
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-3.9-${{ hashFiles('**/poetry.lock') }}-1
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-      - name: Test
-        run: poetry run pytest --cov=. --cov-report=xml
+          name: coverage-xml
       - name: SonarCloud Scan
-        if: github.repository_owner == 'starlite-api' # do not run workflow on PRs from forks
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
