@@ -1,3 +1,5 @@
+from typing import Any
+
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
@@ -5,8 +7,8 @@ from starlite import HttpMethod, RequestEncodingType, create_test_request
 from tests import Person
 
 
-@settings(suppress_health_check=HealthCheck.all())
-@given(
+@settings(suppress_health_check=HealthCheck.all())  # type: ignore[misc]
+@given(  # type: ignore[misc]
     http_method=st.sampled_from(HttpMethod),
     scheme=st.text(),
     server=st.text(),
@@ -27,8 +29,18 @@ from tests import Person
     request_media_type=st.sampled_from(RequestEncodingType),
 )
 def test_create_test_request(
-    http_method, scheme, server, port, root_path, path, query, headers, cookie, content, request_media_type
-):
+    http_method: Any,
+    scheme: Any,
+    server: Any,
+    port: Any,
+    root_path: Any,
+    path: Any,
+    query: Any,
+    headers: Any,
+    cookie: Any,
+    content: Any,
+    request_media_type: Any,
+) -> None:
     create_test_request(
         http_method=http_method,
         scheme=scheme,

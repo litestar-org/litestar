@@ -15,7 +15,7 @@ class Provide:
     def __init__(self, dependency: AnyCallable, use_cache: bool = False):
         self.dependency = dependency
         self.use_cache = use_cache
-        self.value = Undefined
+        self.value: Any = Undefined
         self.signature_model: Optional[Type[SignatureModel]] = None
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved

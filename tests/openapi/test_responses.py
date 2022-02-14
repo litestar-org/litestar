@@ -23,15 +23,16 @@ from starlite.types import ResponseHeader
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
-def test_create_responses():
+def test_create_responses() -> None:
     for route in Starlite(route_handlers=[PersonController]).routes:
-        for route_handler, _ in route.route_handler_map.values():
+        for route_handler, _ in route.route_handler_map.values():  # type: ignore
             if route_handler.include_in_schema:
                 responses = create_responses(
                     route_handler=route_handler,
                     raises_validation_error=True,
                     generate_examples=True,
                 )
+                assert responses
                 assert str(route_handler.status_code) in responses
                 assert str(HTTP_400_BAD_REQUEST) in responses
 
@@ -40,12 +41,13 @@ def test_create_responses():
         raises_validation_error=False,
         generate_examples=True,
     )
+    assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
     assert str(HTTP_406_NOT_ACCEPTABLE) in responses
     assert str(HTTP_200_OK) in responses
 
 
-def test_create_error_responses():
+def test_create_error_responses() -> None:
     class AlternativePetException(HTTPException):
         status_code = ValidationException.status_code
 
@@ -75,21 +77,21 @@ def test_create_error_responses():
         permission_denied_exc_response[1].description == HTTPStatus(PermissionDeniedException.status_code).description
     )
     assert permission_denied_exc_response[1].content[MediaType.JSON]
-    permission_denied_exc_response = permission_denied_exc_response[1].content[MediaType.JSON].media_type_schema
-    assert permission_denied_exc_response.examples
-    assert permission_denied_exc_response.properties
-    assert permission_denied_exc_response.description
-    assert permission_denied_exc_response.required
-    assert permission_denied_exc_response.type
-    assert not permission_denied_exc_response.oneOf
+    media_type_schema = permission_denied_exc_response[1].content[MediaType.JSON].media_type_schema
+    assert media_type_schema.examples
+    assert media_type_schema.properties
+    assert media_type_schema.description
+    assert media_type_schema.required
+    assert media_type_schema.type
+    assert not media_type_schema.oneOf
 
     assert validation_exc_response[0] == str(ValidationException.status_code)
     assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).description
     assert validation_exc_response[1].content[MediaType.JSON]
-    validation_exc_response = validation_exc_response[1].content[MediaType.JSON].media_type_schema
-    assert validation_exc_response.oneOf
-    assert len(validation_exc_response.oneOf) == 2
-    for schema in validation_exc_response.oneOf:
+    media_type_schema = validation_exc_response[1].content[MediaType.JSON].media_type_schema
+    assert media_type_schema.oneOf
+    assert len(media_type_schema.oneOf) == 2
+    for schema in media_type_schema.oneOf:
         assert schema.examples
         assert schema.description
         assert schema.properties
@@ -97,7 +99,7 @@ def test_create_error_responses():
         assert schema.type
 
 
-def test_create_success_response_with_headers():
+def test_create_success_response_with_headers() -> None:
     @get(
         path="/test",
         response_headers={"special-header": ResponseHeader(value=100, description="super-duper special")},
@@ -110,13 +112,13 @@ def test_create_success_response_with_headers():
 
     response = create_success_response(handler, True)
     assert response.description == "test"
-    assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"
-    assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"
+    assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"  # type: ignore
+    assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
     assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER
     assert response.headers["special-header"].description == "super-duper special"
 
 
-def test_create_success_response_with_stream():
+def test_create_success_response_with_stream() -> None:
     @get(path="/test")
     def handler() -> Stream:
         pass
@@ -125,7 +127,7 @@ def test_create_success_response_with_stream():
     assert response.description == "Stream Response"
 
 
-def test_create_success_response_redirect():
+def test_create_success_response_redirect() -> None:
     @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
@@ -136,7 +138,7 @@ def test_create_success_response_redirect():
     assert response.headers["location"].description
 
 
-def test_create_success_response_file_data():
+def test_create_success_response_file_data() -> None:
     @get(path="/test")
     def file_handler() -> File:
         ...
@@ -151,7 +153,7 @@ def test_create_success_response_file_data():
     assert response.headers["etag"].description
 
 
-def test_create_success_response_template():
+def test_create_success_response_template() -> None:
     @get(path="/template")
     def template_handler() -> Template:
         ...

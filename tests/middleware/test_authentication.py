@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 from pydantic import BaseModel
 from starlette.requests import HTTPConnection
@@ -26,7 +28,7 @@ class Auth(BaseModel):
 user = User(name="moishe", id=100)
 auth = Auth(props="abc")
 
-state = {}
+state: Dict[str, AuthenticationResult] = {}
 
 
 class AuthMiddleware(AbstractAuthenticationMiddleware):
@@ -44,7 +46,7 @@ def http_route_handler(request: Request[User, Auth]) -> None:
     return None
 
 
-def test_authentication_middleware_http_routes():
+def test_authentication_middleware_http_routes() -> None:
     client = create_test_client(route_handlers=[http_route_handler], middleware=[AuthMiddleware])
     token = "abc"
     error_response = client.get("/", headers={"Authorization": token})
@@ -54,7 +56,7 @@ def test_authentication_middleware_http_routes():
     assert success_response.status_code == HTTP_200_OK
 
 
-def test_authentication_middleware_not_installed_raises_for_user_scope_http():
+def test_authentication_middleware_not_installed_raises_for_user_scope_http() -> None:
     @get(path="/")
     def http_route_handler_user_scope(request: Request[User, None]) -> None:
         assert request.user
@@ -65,7 +67,7 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_http():
     assert error_response.json()["detail"] == "'user' is not defined in scope, install an AuthMiddleware to set it"
 
 
-def test_authentication_middleware_not_installed_raises_for_auth_scope_http():
+def test_authentication_middleware_not_installed_raises_for_auth_scope_http() -> None:
     @get(path="/")
     def http_route_handler_auth_scope(request: Request[None, Auth]) -> None:
         assert request.auth
@@ -86,7 +88,7 @@ async def websocket_route_handler(socket: WebSocket[User, Auth]) -> None:
     await socket.close()
 
 
-def test_authentication_middleware_websocket_routes():
+def test_authentication_middleware_websocket_routes() -> None:
     token = "abc"
     client = create_test_client(route_handlers=websocket_route_handler, middleware=[AuthMiddleware])
     with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": token}) as ws:
@@ -96,7 +98,7 @@ def test_authentication_middleware_websocket_routes():
         assert ws.receive_json()
 
 
-def test_authentication_middleware_not_installed_raises_for_user_scope_websocket():
+def test_authentication_middleware_not_installed_raises_for_user_scope_websocket() -> None:
     @websocket(path="/")
     async def route_handler(socket: WebSocket[User, Auth]) -> None:
         await socket.accept()
@@ -107,7 +109,7 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
         ws.receive_json()
 
 
-def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket():
+def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket() -> None:
     @websocket(path="/")
     async def route_handler(socket: WebSocket[User, Auth]) -> None:
         await socket.accept()

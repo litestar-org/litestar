@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
@@ -5,7 +7,7 @@ from starlite import HttpMethod
 from starlite.handlers import HTTPRouteHandler
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "http_method, expected_status_code",
     [
         (HttpMethod.POST, HTTP_201_CREATED),
@@ -20,6 +22,6 @@ from starlite.handlers import HTTPRouteHandler
         ([HttpMethod.PATCH], HTTP_200_OK),
     ],
 )
-def test_route_handler_default_status_code(http_method, expected_status_code):
+def test_route_handler_default_status_code(http_method: Any, expected_status_code: int) -> None:
     route_handler = HTTPRouteHandler(http_method=http_method)
     assert route_handler.status_code == expected_status_code

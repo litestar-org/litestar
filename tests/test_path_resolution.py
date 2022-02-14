@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Callable, Optional
 from uuid import uuid4
 
 import pytest
@@ -8,8 +8,16 @@ from starlette.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
 )
+from typing_extensions import Type
 
-from starlite import Controller, MediaType, create_test_client, delete, get
+from starlite import (
+    Controller,
+    HTTPRouteHandler,
+    MediaType,
+    create_test_client,
+    delete,
+    get,
+)
 from tests import Person, PersonFactory
 
 
@@ -18,7 +26,7 @@ def root_delete_handler() -> None:
     return None
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "request_path, router_path",
     [
         [f"/path/1/2/sub/{str(uuid4())}", "/path/{first:int}/{second:str}/sub/{third:uuid}"],
@@ -27,7 +35,7 @@ def root_delete_handler() -> None:
         ["", ""],
     ],
 )
-def test_path_parsing_and_matching(request_path, router_path):
+def test_path_parsing_and_matching(request_path: str, router_path: str) -> None:
     @get(path=router_path)
     def test_method() -> None:
         return None
@@ -37,7 +45,7 @@ def test_path_parsing_and_matching(request_path, router_path):
         assert response.status_code == HTTP_200_OK
 
 
-def test_path_parsing_with_ambiguous_paths():
+def test_path_parsing_with_ambiguous_paths() -> None:
     @get(path="/{path_param:int}", media_type=MediaType.TEXT)
     def path_param(path_param: int) -> str:
         return str(path_param)
@@ -59,7 +67,7 @@ def test_path_parsing_with_ambiguous_paths():
         assert response.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, test_path, decorator_path, delete_handler",
     [
         (get, "", "/something", None),
@@ -76,7 +84,9 @@ def test_path_parsing_with_ambiguous_paths():
         (get, "/", "", root_delete_handler),
     ],
 )
-def test_root_route_handler(decorator, test_path, decorator_path, delete_handler):
+def test_root_route_handler(
+    decorator: Type[HTTPRouteHandler], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
+) -> None:
     person_instance = PersonFactory.build()
 
     class MyController(Controller):
@@ -95,7 +105,7 @@ def test_root_route_handler(decorator, test_path, decorator_path, delete_handler
             assert delete_response.status_code == HTTP_204_NO_CONTENT
 
 
-def test_handler_multi_paths():
+def test_handler_multi_paths() -> None:
     @get(path=["/", "/something", "/{some_id:int}", "/something/{some_id:int}"], media_type=MediaType.TEXT)
     def handler_fn(some_id: int = 1) -> str:
         assert some_id
@@ -116,23 +126,23 @@ def test_handler_multi_paths():
         assert fourth_response.text == "2"
 
 
-@pytest.mark.parametrize(
-    "handler, handler_path, request_path, expected_status_code",
+@pytest.mark.parametrize(  # type: ignore[misc]
+    "handler_path, request_path, expected_status_code",
     [
-        (get, "/sub-path", "/", HTTP_404_NOT_FOUND),
-        (get, "/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
-        (get, "/sub/path", "/sub", HTTP_404_NOT_FOUND),
-        (get, "/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
-        (get, "/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
-        (get, "/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
-        (get, "/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        ("/sub-path", "/", HTTP_404_NOT_FOUND),
+        ("/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
+        ("/sub/path", "/sub", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
+        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
     ],
 )
-def test_path_validation(handler, handler_path, request_path, expected_status_code):
+def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
     @get(handler_path)
-    def handler(**kwargs: Any) -> None:
+    def handler_fn(**kwargs: Any) -> None:
         ...
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler_fn) as client:
         response = client.get(request_path)
         assert response.status_code == expected_status_code

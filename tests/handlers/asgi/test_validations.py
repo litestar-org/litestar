@@ -4,7 +4,7 @@ from starlette.types import Receive, Scope, Send
 from starlite import ImproperlyConfiguredException, asgi, create_test_client
 
 
-def test_asgi_handler_validation():
+def test_asgi_handler_validation() -> None:
     async def fn_without_scope_arg(receive: Receive, send: Send) -> None:
         pass
 

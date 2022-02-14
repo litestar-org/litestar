@@ -26,7 +26,7 @@ def after_request_handler(response: Response) -> Response:
     return response
 
 
-def test_default_cache_response():
+def test_default_cache_response() -> None:
     with create_test_client(
         route_handlers=[get("/cached", cache=True)(slow_handler)], after_request=after_request_handler
     ) as client:
@@ -38,7 +38,7 @@ def test_default_cache_response():
         assert first_response.json() == second_response.json()
 
 
-def test_handler_expiration():
+def test_handler_expiration() -> None:
     now = datetime.now()
     with freeze_time(now) as frozen_datetime, create_test_client(
         route_handlers=[get("/cached-local", cache=10)(slow_handler)], after_request=after_request_handler
@@ -52,7 +52,7 @@ def test_handler_expiration():
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
-def test_default_expiration():
+def test_default_expiration() -> None:
     now = datetime.now()
     with freeze_time(now) as frozen_datetime, create_test_client(
         route_handlers=[get("/cached-default", cache=True)(slow_handler)], after_request=after_request_handler
@@ -66,7 +66,7 @@ def test_default_expiration():
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
-def test_cache_key():
+def test_cache_key() -> None:
     def custom_cache_key_builder(request: Request) -> str:
         return request.url.path + ":::cached"
 
@@ -74,13 +74,13 @@ def test_cache_key():
         route_handlers=[get("/cached", cache=True, cache_key_builder=custom_cache_key_builder)(slow_handler)]
     ) as client:
         client.get("/cached")
-        assert client.app.cache_config.backend.get("/cached:::cached")
+        assert client.app.cache_config.backend.get("/cached:::cached")  # type: ignore
 
 
-def test_async_handling():
+def test_async_handling() -> None:
     class AsyncCacheBackend(SimpleCacheBackend):
-        async def set(self, key: str, value: Any, expiration: int) -> None:
-            return super().set(key=key, value=value, expiration=expiration)
+        async def set(self, key: str, value: Any, expiration: int) -> Any:  # type: ignore
+            super().set(key=key, value=value, expiration=expiration)
 
         async def get(self, key: str) -> Any:
             return super().get(key=key)
@@ -100,19 +100,19 @@ def test_async_handling():
         assert first_response.json() == second_response.json()
 
 
-def test_config_validation():
+def test_config_validation() -> None:
     class MyBackend:
-        def get(self):
+        def get(self) -> None:
             ...
 
-        def set(self):
+        def set(self) -> None:
             ...
 
     with pytest.raises(ValidationError):
-        CacheConfig(backend=MyBackend)
+        CacheConfig(backend=MyBackend)  # type: ignore[arg-type]
 
 
-def test_naive_cache_backend():
+def test_naive_cache_backend() -> None:
     backend = SimpleCacheBackend()
     backend.set("test", "1", 0.1)  # type: ignore
     assert backend.get("test")

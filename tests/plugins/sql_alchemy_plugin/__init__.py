@@ -9,20 +9,20 @@ class SQLAlchemyBase:
     id: Column
 
     # Generate the table name from the class name
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
+    @declared_attr  # type: ignore[misc]
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()  # type: ignore
 
 
 association_table = Table(
     "association",
-    SQLAlchemyBase.metadata,
+    SQLAlchemyBase.metadata,  # type: ignore
     Column("pet_id", ForeignKey("pet.id")),
     Column("user_id", ForeignKey("user.id")),
 )
 friendship_table = Table(
     "friendships",
-    SQLAlchemyBase.metadata,
+    SQLAlchemyBase.metadata,  # type: ignore
     Column("friend_a_id", Integer, ForeignKey("user.id"), primary_key=True),
     Column("friend_b_id", Integer, ForeignKey("user.id"), primary_key=True),
 )

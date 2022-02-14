@@ -19,8 +19,8 @@ class FormData(BaseModel):
         arbitrary_types_allowed = True
 
 
-@pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])
-def test_request_body_multi_part(t_type: Type[Any]):
+@pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])  # type: ignore[misc]
+def test_request_body_multi_part(t_type: Type[Any]) -> None:
 
     body = Body(media_type=RequestEncodingType.MULTI_PART)
 
@@ -28,7 +28,7 @@ def test_request_body_multi_part(t_type: Type[Any]):
     data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
 
     @post(path=test_path)
-    def test_method(data: t_type = body) -> None:
+    def test_method(data: t_type = body) -> None:  # type: ignore
         assert data
 
     with create_test_client(test_method) as client:

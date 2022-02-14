@@ -50,7 +50,7 @@ repos:
             "flake8-simplify",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.12.0
+    rev: v0.12.1
     hooks:
       - id: slotscheck
         exclude: "^(?!starlite/)"
@@ -87,7 +87,7 @@ repos:
     rev: "v0.931"
     hooks:
       - id: mypy
-        exclude: "test_*"
+        exclude: "performance_test"
         additional_dependencies:
           [
             orjson,
@@ -98,4 +98,5 @@ repos:
             pydantic_factories,
             starlette,
             sqlalchemy,
+            types-freezegun,
           ]

@@ -1,3 +1,5 @@
+from typing import Any, Optional, Type
+
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
@@ -24,7 +26,7 @@ def dummy_method() -> None:
     pass
 
 
-@given(
+@given(  # type: ignore[misc]
     http_method=st.one_of(st.sampled_from(HttpMethod), st.lists(st.sampled_from(HttpMethod))),
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
@@ -34,14 +36,14 @@ def dummy_method() -> None:
     path=st.one_of(st.none(), st.text()),
 )
 def test_route_handler_kwarg_handling(
-    http_method,
-    media_type,
-    include_in_schema,
-    response_class,
-    response_headers,
-    status_code,
-    path,
-):
+    http_method: Any,
+    media_type: MediaType,
+    include_in_schema: bool,
+    response_class: Optional[Type[Response]],
+    response_headers: Any,
+    status_code: Any,
+    path: Any,
+) -> None:
     if not http_method:
         with pytest.raises(ImproperlyConfiguredException):
             HTTPRouteHandler(http_method=http_method)
@@ -82,7 +84,7 @@ def test_route_handler_kwarg_handling(
             assert result.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "sub, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -92,7 +94,9 @@ def test_route_handler_kwarg_handling(
         (patch, HttpMethod.PATCH, HTTP_200_OK),
     ],
 )
-def test_semantic_route_handlers_disallow_http_method_assignment(sub, http_method, expected_status_code):
+def test_semantic_route_handlers_disallow_http_method_assignment(
+    sub: Any, http_method: Any, expected_status_code: int
+) -> None:
     result = sub()(dummy_method)
     assert result.http_method == http_method
     assert result.status_code == expected_status_code

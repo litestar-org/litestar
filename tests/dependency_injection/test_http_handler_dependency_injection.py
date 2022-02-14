@@ -7,32 +7,32 @@ from starlite import Controller, Provide, create_test_client, get
 from starlite.connection import Request
 
 
-def router_first_dependency():
+def router_first_dependency() -> bool:
     return True
 
 
-async def router_second_dependency():
+async def router_second_dependency() -> bool:
     await sleep(0.1)
     return False
 
 
-def controller_first_dependency(headers: Dict[str, Any]):
+def controller_first_dependency(headers: Dict[str, Any]) -> dict:
     assert headers
     return dict()
 
 
-async def controller_second_dependency(request: Request):
+async def controller_second_dependency(request: Request) -> dict:
     assert request
     await sleep(0.1)
     return dict()
 
 
-def local_method_first_dependency(query_param: int):
+def local_method_first_dependency(query_param: int) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def local_method_second_dependency(path_param: str):
+def local_method_second_dependency(path_param: str) -> str:
     assert isinstance(path_param, str)
     return path_param
 
@@ -56,7 +56,7 @@ class FirstController(Controller):
         assert third is False
 
 
-def test_controller_dependency_injection():
+def test_controller_dependency_injection() -> None:
     with create_test_client(
         FirstController,
         dependencies={
@@ -68,7 +68,7 @@ def test_controller_dependency_injection():
         assert response.status_code == HTTP_200_OK
 
 
-def test_function_dependency_injection():
+def test_function_dependency_injection() -> None:
     @get(
         path=test_path + "/{path_param:str}",
         dependencies={
@@ -92,7 +92,7 @@ def test_function_dependency_injection():
         assert response.status_code == HTTP_200_OK
 
 
-def test_dependency_isolation():
+def test_dependency_isolation() -> None:
     class SecondController(Controller):
         path = "/second"
 

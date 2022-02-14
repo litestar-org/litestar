@@ -3,7 +3,7 @@ from starlette.status import HTTP_200_OK
 from starlite import Parameter, create_test_client, get
 
 
-def test_params_default():
+def test_params_default() -> None:
     test_path = "/test"
 
     @get(path=test_path)

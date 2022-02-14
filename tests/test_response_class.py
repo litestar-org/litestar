@@ -23,23 +23,23 @@ class MyController(Controller):
         pass
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "layer, expected",
     [[0, local_response], [1, controller_response], [2, router_response], [3, app_response], [None, Response]],
 )
-def test_response_class(layer: Optional[int], expected: Response):
-    MyController.test_method.resolved_response_class = BaseRouteHandler.empty if layer != 0 else expected
-    MyController.response_class = None if layer != 1 else expected
-    router = Router(path="/users", route_handlers=[MyController], response_class=None if layer != 2 else expected)
-    app = Starlite(route_handlers=[router], response_class=None if layer != 3 else expected)
-    route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]
+def test_response_class(layer: Optional[int], expected: Response) -> None:
+    MyController.test_method.resolved_response_class = BaseRouteHandler.empty if layer != 0 else expected  # type: ignore
+    MyController.response_class = None if layer != 1 else expected  # type: ignore
+    router = Router(path="/users", route_handlers=[MyController], response_class=None if layer != 2 else expected)  # type: ignore
+    app = Starlite(route_handlers=[router], response_class=None if layer != 3 else expected)  # type: ignore
+    route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
     layer_map = {
         0: route_handler,
         1: MyController,
         2: router,
         3: app,
     }
-    component = layer_map.get(layer)
+    component = layer_map.get(layer)  # type: ignore
     if component:
         component.response_class = expected
         assert component.response_class is expected

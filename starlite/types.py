@@ -71,8 +71,10 @@ ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyC
 # connection-lifecycle hook handlers
 BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
 AfterRequestHandler = Union[
-    Callable[[Union[StarletteResponse, Response]], Union[StarletteResponse, Response]],
-    Callable[[Union[StarletteResponse, Response]], Awaitable[Union[StarletteResponse, Response]]],
+    Callable[[Response], Response],
+    Callable[[Response], Awaitable[Response]],
+    Callable[[StarletteResponse], StarletteResponse],
+    Callable[[StarletteResponse], Awaitable[StarletteResponse]],
 ]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]

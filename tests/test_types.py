@@ -7,10 +7,10 @@ except ImportError:
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 
-def test_partial():
+def test_partial() -> None:
     partial = Partial[Person]
     assert partial
-    for field in partial.__fields__.values():
+    for field in partial.__fields__.values():  # type: ignore
         assert field.allow_none
         assert not field.required
     for field in partial.__annotations__.values():

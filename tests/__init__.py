@@ -29,7 +29,7 @@ class Person(BaseModel):
     pets: Optional[List[Pet]] = None
 
 
-class PersonFactory(ModelFactory):
+class PersonFactory(ModelFactory[Person]):
     __model__ = Person
 
 

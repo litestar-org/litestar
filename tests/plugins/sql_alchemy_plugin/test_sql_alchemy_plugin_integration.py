@@ -11,7 +11,7 @@ from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests.plugins.sql_alchemy_plugin import Company
 
 companies = [
-    Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))
+    Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))  # type: ignore
     for i in range(3)
 ]
 
@@ -38,7 +38,7 @@ def bulk_create_company(data: List[Company]) -> List[Company]:
     return data
 
 
-def test_return_single_sql_alchemy_model_instances():
+def test_return_single_sql_alchemy_model_instances() -> None:
     with create_test_client([get_companies], plugins=[SQLAlchemyPlugin()]) as client:
         response = client.get("/companies")
         assert response.status_code == HTTP_200_OK
@@ -47,7 +47,7 @@ def test_return_single_sql_alchemy_model_instances():
         ]
 
 
-def test_return_of_a_single_sql_alchemy_model_instance():
+def test_return_of_a_single_sql_alchemy_model_instance() -> None:
     with create_test_client([get_company_by_id], plugins=[SQLAlchemyPlugin()]) as client:
         response = client.get("/companies/1")
         assert response.status_code == HTTP_200_OK
@@ -60,7 +60,7 @@ def test_return_of_a_single_sql_alchemy_model_instance():
         )
 
 
-def test_serializing_a_single_sql_alchemy_instance():
+def test_serializing_a_single_sql_alchemy_instance() -> None:
     company = {"id": 10, "name": create_random_string(), "worth": create_random_float()}
     with create_test_client([create_company], plugins=[SQLAlchemyPlugin()]) as client:
         response = client.post("/companies", json=company)
@@ -68,7 +68,7 @@ def test_serializing_a_single_sql_alchemy_instance():
         assert response.json() == company
 
 
-def test_serializing_a_list_of_sql_alchemy_instances():
+def test_serializing_a_list_of_sql_alchemy_instances() -> None:
     serialized_companies = [{"id": company.id, "name": company.name, "worth": company.worth} for company in companies]
     with create_test_client([bulk_create_company], plugins=[SQLAlchemyPlugin()]) as client:
         response = client.post("/companies/bulk", json=serialized_companies)

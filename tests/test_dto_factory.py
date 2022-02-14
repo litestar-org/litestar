@@ -20,7 +20,7 @@ from tests import Species, VanillaDataClassPerson
 from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "model, exclude, field_mapping, field_definitions, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
@@ -28,7 +28,7 @@ from tests.plugins.sql_alchemy_plugin import Pet, User
         [Pet, ["age"], {"species": "kind"}, {"special": (str, ...)}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_dto_factory(model: Any, exclude: list, field_mapping: dict, field_definitions: dict, plugins: list):
+def test_dto_factory(model: Any, exclude: list, field_mapping: dict, field_definitions: dict, plugins: list) -> None:
     dto = DTOFactory(plugins=plugins)(
         "MyDTO", model, exclude=exclude, field_mapping=field_mapping, field_definitions=field_definitions
     )
@@ -41,7 +41,7 @@ def test_dto_factory(model: Any, exclude: list, field_mapping: dict, field_defin
     assert special.type_ is str
 
 
-def test_dto_factory_type_remap():
+def test_dto_factory_type_remap() -> None:
     dto = DTOFactory(plugins=[])(
         "PersonDTO", Person, field_mapping={"id": ("id", int), "optional": ("required", str), "complex": "simple"}
     )
@@ -52,14 +52,14 @@ def test_dto_factory_type_remap():
     assert fields["simple"].type_ == Person.__fields__["complex"].type_
 
 
-def test_dto_factory_handle_of_default_values():
+def test_dto_factory_handle_of_default_values() -> None:
     dto = DTOFactory(plugins=[])("PetFactory", PydanticPet)
     assert issubclass(dto, BaseModel)
     fields = dto.__fields__
     assert fields["species"].default is Species.MONKEY
 
 
-def test_dto_factory_validation():
+def test_dto_factory_validation() -> None:
     class MyClass:
         name: str
 
@@ -67,7 +67,7 @@ def test_dto_factory_validation():
         DTOFactory(plugins=[])("MyDTO", MyClass)
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "model, exclude, field_mapping, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, []],
@@ -75,21 +75,21 @@ def test_dto_factory_validation():
         [Pet, ["owner"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins: list):
-    dto = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
+def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
+    MyDTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
-    class DTOModelFactory(ModelFactory):
-        __model__ = dto
+    class DTOModelFactory(ModelFactory[MyDTO]):  # type: ignore
+        __model__ = MyDTO
 
-    dto_instance = DTOModelFactory.build().dict()
+    dto_instance = DTOModelFactory.build().dict()  # type: ignore
 
     @post(path="/")
-    def post_handler(data: dto) -> None:
-        assert isinstance(data, dto)
+    def post_handler(data: MyDTO) -> None:  # type: ignore
+        assert isinstance(data, MyDTO)
         assert data == dto_instance
 
     @get(path="/")
-    def get_handler() -> dto:
+    def get_handler() -> Any:
         return dto_instance
 
     with create_test_client(route_handlers=[post_handler, get_handler]) as client:
@@ -100,7 +100,7 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
         assert get_response.json() == dto_instance
 
 
-def test_dto_openapi_generation():
+def test_dto_openapi_generation() -> None:
     SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
     UserCreateDTO = SQLAlchemyDTOFactory(
@@ -112,18 +112,18 @@ def test_dto_openapi_generation():
     UserReadDTO = SQLAlchemyDTOFactory("UserRead", User, exclude=["hashed_password"])
 
     @get(path="/user")
-    def get_user() -> UserReadDTO:
+    def get_user() -> UserReadDTO:  # type: ignore
         ...
 
     @post(path="/user")
-    def create_user(data: UserCreateDTO) -> UserReadDTO:
+    def create_user(data: UserCreateDTO) -> UserReadDTO:  # type: ignore
         ...
 
     app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
     assert app.openapi_schema
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "model, exclude, field_mapping, plugins",
     [
         [Person, [], {"complex": "ultra"}, []],
@@ -131,25 +131,25 @@ def test_dto_openapi_generation():
         [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_conversion_to_model_instance(model, exclude, field_mapping, plugins):
-    DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
+def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
+    MyDTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
-    class DTOModelFactory(ModelFactory[DTO]):
-        __model__ = DTO
+    class DTOModelFactory(ModelFactory[MyDTO]):  # type: ignore
+        __model__ = MyDTO
         __allow_none_optionals__ = False
 
     dto_instance = DTOModelFactory.build()
-    model_instance = dto_instance.to_model_instance()
+    model_instance = dto_instance.to_model_instance()  # type: ignore
 
-    for key in dto_instance.__fields__:
-        if key not in DTO.dto_field_mapping:
-            assert model_instance.__getattribute__(key) == dto_instance.__getattribute__(key)
+    for key in dto_instance.__fields__:  # type: ignore
+        if key not in MyDTO.dto_field_mapping:
+            assert model_instance.__getattribute__(key) == dto_instance.__getattribute__(key)  # type: ignore
         else:
-            original_key = DTO.dto_field_mapping[key]
-            assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
+            original_key = MyDTO.dto_field_mapping[key]
+            assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)  # type: ignore
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "model, exclude, field_mapping, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, []],
@@ -157,7 +157,7 @@ def test_conversion_to_model_instance(model, exclude, field_mapping, plugins):
         [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_conversion_from_model_instance(model, exclude, field_mapping, plugins):
+def test_conversion_from_model_instance(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
     DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
     if issubclass(model, (Person, VanillaDataClassPerson)):
@@ -170,7 +170,7 @@ def test_conversion_from_model_instance(model, exclude, field_mapping, plugins):
             pets=None,
         )
     else:
-        model_instance = cast(Type[Pet], model)(
+        model_instance = cast(Type[Pet], model)(  # type: ignore
             id=1,
             species=Species.MONKEY,
             name="Mike",

@@ -8,7 +8,7 @@ from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
 
-def test_create_parameters():
+def test_create_parameters() -> None:
     app = Starlite(route_handlers=[PersonController])
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person")
     route = app.routes[index]

@@ -1,6 +1,17 @@
+from typing import Optional
+
 import pytest
 
-from starlite import Controller, Request, Response, Router, create_test_client, get
+from starlite import (
+    Controller,
+    HTTPRouteHandler,
+    Request,
+    Response,
+    Router,
+    create_test_client,
+    get,
+)
+from starlite.types import AfterRequestHandler, BeforeRequestHandler
 
 
 def greet() -> dict:
@@ -39,7 +50,7 @@ async def async_after_request_handler(response: Response) -> Response:
     return response
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "handler, expected",
     [
         [get(path="/")(greet), {"hello": "world"}],
@@ -49,13 +60,13 @@ async def async_after_request_handler(response: Response) -> Response:
         [get(path="/", before_request=async_before_request_handler_without_return_value)(greet), {"hello": "world"}],
     ],
 )
-def test_before_request_handler_called(handler, expected):
+def test_before_request_handler_called(handler: HTTPRouteHandler, expected: dict) -> None:
     with create_test_client(route_handlers=handler) as client:
         response = client.get("/")
         assert response.json() == expected
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "handler, expected",
     [
         [get(path="/")(greet), {"hello": "world"}],
@@ -63,13 +74,13 @@ def test_before_request_handler_called(handler, expected):
         [get(path="/", after_request=async_after_request_handler)(greet), {"hello": "moon"}],
     ],
 )
-def test_after_request_handler_called(handler, expected):
+def test_after_request_handler_called(handler: HTTPRouteHandler, expected: dict) -> None:
     with create_test_client(route_handlers=handler) as client:
         response = client.get("/")
         assert response.json() == expected
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "app_before_request_handler, router_before_request_handler, controller_before_request_handler, method_before_request_handler, expected",
     [
         [None, None, None, None, {"hello": "world"}],
@@ -102,12 +113,12 @@ def test_after_request_handler_called(handler, expected):
     ],
 )
 def test_before_request_handler_resolution(
-    app_before_request_handler,
-    router_before_request_handler,
-    controller_before_request_handler,
-    method_before_request_handler,
-    expected,
-):
+    app_before_request_handler: Optional[BeforeRequestHandler],
+    router_before_request_handler: Optional[BeforeRequestHandler],
+    controller_before_request_handler: Optional[BeforeRequestHandler],
+    method_before_request_handler: Optional[BeforeRequestHandler],
+    expected: dict,
+) -> None:
     class MyController(Controller):
         path = "/hello"
 
@@ -130,7 +141,7 @@ async def async_after_request_handler_with_hello_world(response: Response) -> Re
     return response
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "app_after_request_handler, router_after_request_handler, controller_after_request_handler, method_after_request_handler, expected",
     [
         [None, None, None, None, {"hello": "world"}],
@@ -145,12 +156,12 @@ async def async_after_request_handler_with_hello_world(response: Response) -> Re
     ],
 )
 def test_after_request_handler_resolution(
-    app_after_request_handler,
-    router_after_request_handler,
-    controller_after_request_handler,
-    method_after_request_handler,
-    expected,
-):
+    app_after_request_handler: Optional[AfterRequestHandler],
+    router_after_request_handler: Optional[AfterRequestHandler],
+    controller_after_request_handler: Optional[AfterRequestHandler],
+    method_after_request_handler: Optional[AfterRequestHandler],
+    expected: dict,
+) -> None:
     class MyController(Controller):
         path = "/hello"
 

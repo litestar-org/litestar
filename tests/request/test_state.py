@@ -14,12 +14,12 @@ class BeforeRequestMiddleWare(MiddlewareProtocol):
         await self.app(scope, receive, send)
 
 
-def before_request(request: Request):
+def before_request(request: Request) -> None:
     assert request.state.main == "Success!"
     request.state.main = "Success! x2"
 
 
-def test_state():
+def test_state() -> None:
     @get(path="/")
     async def get_state(request: Request) -> Dict[str, str]:
         return {"state": request.state.main}

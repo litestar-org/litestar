@@ -3,7 +3,7 @@ import pytest
 from starlite import BaseRouteHandler, ImproperlyConfiguredException
 
 
-def test_raise_no_fn_validation():
+def test_raise_no_fn_validation() -> None:
     handler = BaseRouteHandler(path="/")
 
     with pytest.raises(ImproperlyConfiguredException):

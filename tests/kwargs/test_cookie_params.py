@@ -8,7 +8,7 @@ from typing_extensions import Type
 from starlite import Parameter, create_test_client, get
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "t_type,param_dict, param, should_raise",
     [
         (str, {"special-cookie": "123"}, Parameter(cookie="special-cookie", min_length=1, max_length=3), False),
@@ -21,13 +21,13 @@ from starlite import Parameter, create_test_client, get
         (Optional[int], {}, Parameter(cookie="special-cookie", ge=100, le=120, required=False), False),
     ],
 )
-def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_raise: bool):
+def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, should_raise: bool) -> None:
     test_path = "/test"
 
     @get(path=test_path)
-    def test_method(special_cookie: t_type = param) -> None:
+    def test_method(special_cookie: t_type = param) -> None:  # type: ignore
         if special_cookie:
-            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]
+            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]  # type: ignore
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, cookies=param_dict)

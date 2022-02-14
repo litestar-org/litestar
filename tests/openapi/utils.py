@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from decimal import Decimal
 from enum import Enum
 from typing import Any, List, Optional, Union
 
@@ -51,7 +52,7 @@ class PersonController(Controller):
             examples=[Example(description="example value", value=1)],
         ),
         # path parameter
-        service_id: int = conint(gt=0),
+        service_id: int = conint(gt=0),  # type: ignore
         # non-required query parameters below
         from_date: Optional[Union[int, datetime, date]] = None,
         to_date: Optional[Union[int, datetime, date]] = None,
@@ -124,10 +125,10 @@ constrained_numbers = [
     confloat(ge=10, le=100),
     confloat(ge=10, le=100, multiple_of=4.2),
     confloat(gt=10, lt=100, multiple_of=10),
-    condecimal(gt=10, lt=100),
-    condecimal(ge=10, le=100),
-    condecimal(gt=10, lt=100, multiple_of=5),
-    condecimal(ge=10, le=100, multiple_of=2),
+    condecimal(gt=Decimal("10"), lt=Decimal("100")),
+    condecimal(ge=Decimal("10"), le=Decimal("100")),
+    condecimal(gt=Decimal("10"), lt=Decimal("100"), multiple_of=Decimal("5")),
+    condecimal(ge=Decimal("10"), le=Decimal("100"), multiple_of=Decimal("2")),
 ]
 constrained_string = [
     constr(regex="^[a-zA-Z]$"),

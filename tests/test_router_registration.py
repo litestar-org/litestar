@@ -34,7 +34,7 @@ class MyController(Controller):
         pass
 
 
-def test_register_with_controller_class():
+def test_register_with_controller_class() -> None:
     router = Router(path="/base", route_handlers=[MyController])
     assert len(router.routes) == 3
     for route in router.routes:
@@ -46,7 +46,7 @@ def test_register_with_controller_class():
             assert route.path == "/base/test"
 
 
-def test_register_with_router_instance():
+def test_register_with_router_instance() -> None:
     top_level_router = Router(path="/top-level", route_handlers=[MyController])
     base_router = Router(path="/base", route_handlers=[top_level_router])
 
@@ -60,7 +60,7 @@ def test_register_with_router_instance():
             assert route.path == "/base/top-level/test"
 
 
-def test_register_with_route_handler_functions():
+def test_register_with_route_handler_functions() -> None:
     @route_decorator(path="/first", http_method=[HttpMethod.GET, HttpMethod.POST], status_code=200)
     def first_route_handler() -> None:
         pass
@@ -85,7 +85,7 @@ def test_register_with_route_handler_functions():
             assert route.path == "/base/first"
 
 
-def test_register_validation_wrong_class():
+def test_register_validation_wrong_class() -> None:
     class MyCustomClass:
         @get(path="/first")
         def first_route_handler(self) -> None:
@@ -99,7 +99,7 @@ def test_register_validation_wrong_class():
         Router(path="/base", route_handlers=[MyCustomClass])
 
 
-def test_register_already_registered_router():
+def test_register_already_registered_router() -> None:
     first_router = Router(path="/first", route_handlers=[])
     Router(path="/second", route_handlers=[first_router])
 
@@ -107,7 +107,7 @@ def test_register_already_registered_router():
         Router(path="/third", route_handlers=[first_router])
 
 
-def test_register_router_on_itself():
+def test_register_router_on_itself() -> None:
     router = Router(path="/first", route_handlers=[])
 
     with pytest.raises(ImproperlyConfiguredException):

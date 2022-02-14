@@ -7,7 +7,7 @@ from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
-def test_relationship():
+def test_relationship() -> None:
     result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)
     assert issubclass(result, BaseModel)
     result.update_forward_refs()
@@ -22,7 +22,7 @@ def test_relationship():
     assert issubclass(company.type_, BaseModel)
 
 
-def test_table_name():
+def test_table_name() -> None:
     pet_table = Pet
     user_table = User
     assert pet_table.__tablename__ == "pet" and user_table.__tablename__ == "user"

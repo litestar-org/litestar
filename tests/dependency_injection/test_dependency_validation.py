@@ -3,17 +3,17 @@ import pytest
 from starlite import ImproperlyConfiguredException, Provide, Starlite, get
 
 
-def first_method(query_param: int):
+def first_method(query_param: int) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def second_method(path_param: str):
+def second_method(path_param: str) -> str:
     assert isinstance(path_param, str)
     return path_param
 
 
-def test_dependency_validation():
+def test_dependency_validation() -> None:
     @get(
         path="/{path_param:int}",
         dependencies={

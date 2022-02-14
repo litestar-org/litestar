@@ -1,7 +1,7 @@
 from starlite import Parameter, WebSocket, create_test_client, websocket
 
 
-def test_handle_websocket_params_parsing():
+def test_handle_websocket_params_parsing() -> None:
     @websocket(path="/{socket_id:int}")
     async def websocket_handler(
         socket: WebSocket,

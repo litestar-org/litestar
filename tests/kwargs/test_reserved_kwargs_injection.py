@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 import pytest
 from pydantic import BaseModel, Field
@@ -10,6 +10,7 @@ from starlite import (
     HttpMethod,
     MediaType,
     Request,
+    Starlite,
     State,
     create_test_client,
     delete,
@@ -21,15 +22,15 @@ from starlite import (
 from tests import Person, PersonFactory
 
 
-def test_application_state_injection():
+def test_application_state_injection() -> None:
     @get("/", media_type=MediaType.TEXT)
     def route_handler(state: State) -> str:
         assert state
         state.called = True  # this should not modify the app state
-        return state.msg  # this shows injection worked
+        return cast(str, state.msg)  # this shows injection worked
 
     with create_test_client(route_handler) as client:
-        state = client.app.state
+        state = cast(Starlite, client.app).state
         state.msg = "hello"
         state.called = False
         response = client.get("/")
@@ -50,7 +51,7 @@ class QueryParamsFactory(ModelFactory):
 person_instance = PersonFactory.build()
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -59,13 +60,13 @@ person_instance = PersonFactory.build()
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_data_using_model(decorator, http_method, expected_status_code):
+def test_data_using_model(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, data: Person) -> None:
             assert data == person_instance
 
@@ -74,7 +75,7 @@ def test_data_using_model(decorator, http_method, expected_status_code):
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -83,7 +84,7 @@ def test_data_using_model(decorator, http_method, expected_status_code):
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_data_using_list_of_models(decorator, http_method, expected_status_code):
+def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     people = PersonFactory.batch(size=5)
@@ -91,7 +92,7 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, data: List[Person]) -> None:
             assert data == people
 
@@ -100,7 +101,7 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -110,13 +111,13 @@ def test_data_using_list_of_models(decorator, http_method, expected_status_code)
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_path_params(decorator, http_method, expected_status_code):
+def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     class MyController(Controller):
         path = test_path
 
-        @decorator(path="/{person_id:str}")
+        @decorator(path="/{person_id:str}")  # type: ignore[misc]
         def test_method(self, person_id: str) -> None:
             assert person_id == person_instance.id
             return None
@@ -126,7 +127,7 @@ def test_path_params(decorator, http_method, expected_status_code):
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -136,7 +137,7 @@ def test_path_params(decorator, http_method, expected_status_code):
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_query_params(decorator, http_method, expected_status_code):
+def test_query_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     query_params_instance = QueryParamsFactory.build()
@@ -144,7 +145,7 @@ def test_query_params(decorator, http_method, expected_status_code):
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, first: str, second: List[str], third: Optional[int] = None) -> None:
             assert first == query_params_instance.first
             assert second == query_params_instance.second
@@ -156,7 +157,7 @@ def test_query_params(decorator, http_method, expected_status_code):
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -166,7 +167,7 @@ def test_query_params(decorator, http_method, expected_status_code):
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_header_params(decorator, http_method, expected_status_code):
+def test_header_params(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     request_headers = {
@@ -179,7 +180,7 @@ def test_header_params(decorator, http_method, expected_status_code):
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, headers: dict) -> None:
             for key, value in request_headers.items():
                 assert headers[key] == value
@@ -189,7 +190,7 @@ def test_header_params(decorator, http_method, expected_status_code):
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -199,13 +200,13 @@ def test_header_params(decorator, http_method, expected_status_code):
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_request(decorator, http_method, expected_status_code):
+def test_request(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
     test_path = "/person"
 
     class MyController(Controller):
         path = test_path
 
-        @decorator()
+        @decorator()  # type: ignore[misc]
         def test_method(self, request: Request) -> None:
             assert isinstance(request, Request)
 

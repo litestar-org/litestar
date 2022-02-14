@@ -1,7 +1,7 @@
 from starlite import WebSocket, create_test_client, websocket
 
 
-def test_handle_websocket():
+def test_handle_websocket() -> None:
     @websocket(path="/")
     async def simple_websocket_handler(socket: WebSocket) -> None:
         await socket.accept()

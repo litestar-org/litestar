@@ -8,7 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import Parameter, create_test_client, get
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "params_dict,should_raise",
     [
         (
@@ -79,7 +79,7 @@ from starlite import Parameter, create_test_client, get
         ),
     ],
 )
-def test_query_params(params_dict: dict, should_raise: bool):
+def test_query_params(params_dict: dict, should_raise: bool) -> None:
     test_path = "/test"
 
     @get(path=test_path)

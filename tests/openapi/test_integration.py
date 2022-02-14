@@ -11,9 +11,9 @@ from starlite.enums import OpenAPIMediaType
 from tests.openapi.utils import PersonController, PetController
 
 
-def test_openapi_yaml():
+def test_openapi_yaml() -> None:
     with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
-        app = client.app
+        app = cast(Starlite, client.app)
         assert app.openapi_schema
         openapi_schema = app.openapi_schema
         assert openapi_schema.paths
@@ -25,7 +25,7 @@ def test_openapi_yaml():
         )
 
 
-def test_openapi_json():
+def test_openapi_json() -> None:
     with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
         app = cast(Starlite, client.app)
         assert app.openapi_schema

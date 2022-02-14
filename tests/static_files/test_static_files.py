@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -5,7 +7,7 @@ from starlite import create_test_client
 from starlite.config import StaticFilesConfig
 
 
-def test_staticfiles(tmpdir):
+def test_staticfiles(tmpdir: Any) -> None:
     path = tmpdir.join("test.txt")
     path.write("content")
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
@@ -15,7 +17,7 @@ def test_staticfiles(tmpdir):
         assert response.text == "content"
 
 
-def test_staticfiles_for_slash_path(tmpdir):
+def test_staticfiles_for_slash_path(tmpdir: Any) -> None:
     path = tmpdir.join("text.txt")
     path.write("content")
 
@@ -26,7 +28,7 @@ def test_staticfiles_for_slash_path(tmpdir):
         assert response.text == "content"
 
 
-def test_config_validation(tmpdir):
+def test_config_validation(tmpdir: Any) -> None:
     path = tmpdir.join("text.txt")
     path.write("content")
 

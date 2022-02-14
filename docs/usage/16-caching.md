@@ -1,6 +1,6 @@
 # Response Caching
 
-Sometimes its desirable to cache some responses, especially if these involve expensive calculations, or when polling is
+Sometimes it's desirable to cache some responses, especially if these involve expensive calculations, or when polling is
 expected. Starlite comes with a simple mechanism for caching:
 
 ```python

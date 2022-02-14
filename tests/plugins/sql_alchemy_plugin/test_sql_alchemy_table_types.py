@@ -69,8 +69,6 @@ mapper_registry = registry()
 
 
 class DeclarativeModel(SQLAlchemyBase):
-    __tablename__ = "declarative"
-
     id = Column(Integer, primary_key=True)
     ARRAY_column = Column(ARRAY(String, dimensions=2))
     BIGINT_column = Column(BIGINT)
@@ -221,12 +219,12 @@ imperative_model = Table(
 )
 
 
-def test_sql_alchemy_plugin_model_class_parsing():
+def test_sql_alchemy_plugin_model_class_parsing() -> None:
     result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
 
 
-def test_sql_alchemy_plugin_validation():
+def test_sql_alchemy_plugin_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         plugin.to_pydantic_model_class(model_class=imperative_model)
 
@@ -237,13 +235,11 @@ def test_sql_alchemy_plugin_validation():
         plugin.to_pydantic_model_class(model_class=MyClass)
 
 
-def test_provider_validation():
-    class MyStrColumn(sqlalchemy.String):
+def test_provider_validation() -> None:
+    class MyStrColumn(sqlalchemy.String):  # type: ignore
         pass
 
     class ModelWithCustomColumn(SQLAlchemyBase):
-        __tablename__ = "custom"
-
         id = Column(Integer, primary_key=True)
         custom_column = Column(MyStrColumn)
 

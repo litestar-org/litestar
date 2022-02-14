@@ -16,7 +16,7 @@ from starlite import (
 from starlite.exceptions import InternalServerException
 
 
-def test_default_handle_http_exception_handling():
+def test_default_handle_http_exception_handling() -> None:
     response = Starlite(route_handlers=[]).default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra={"key": "value"}),
@@ -45,12 +45,12 @@ def test_default_handle_http_exception_handling():
     }
 
 
-def test_using_custom_http_exception_handler():
+def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
     def my_route_handler(param: int) -> None:
         ...
 
-    def my_custom_handler(req: Request, exc: Exception) -> Response:
+    def my_custom_handler(_: Request, __: Exception) -> Response:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
 
     with create_test_client(my_route_handler, exception_handlers={HTTP_400_BAD_REQUEST: my_custom_handler}) as client:
@@ -59,7 +59,7 @@ def test_using_custom_http_exception_handler():
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 
-def test_uses_starlette_debug_responses():
+def test_uses_starlette_debug_responses() -> None:
     @get("/")
     def my_route_handler() -> None:
         raise InternalServerException()

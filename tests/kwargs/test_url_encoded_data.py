@@ -4,7 +4,7 @@ from starlite import Body, RequestEncodingType, create_test_client, post
 from tests.kwargs import Form
 
 
-def test_request_body_url_encoded():
+def test_request_body_url_encoded() -> None:
     body = Body(media_type=RequestEncodingType.URL_ENCODED)
 
     test_path = "/test"

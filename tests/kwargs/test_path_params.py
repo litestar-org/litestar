@@ -13,7 +13,7 @@ from starlite import (
 )
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "params_dict,should_raise",
     [
         (
@@ -63,7 +63,7 @@ from starlite import (
         ),
     ],
 )
-def test_path_params(params_dict: dict, should_raise: bool):
+def test_path_params(params_dict: dict, should_raise: bool) -> None:
     test_path = "{version:float}/{service_id:int}/{user_id:str}/{order_id:uuid}"
 
     @get(path=test_path)
@@ -88,7 +88,7 @@ def test_path_params(params_dict: dict, should_raise: bool):
             assert response.status_code == HTTP_200_OK
 
 
-def test_path_param_validation():
+def test_path_param_validation() -> None:
     @get(path="/{param}")
     def test_method() -> None:
         pass

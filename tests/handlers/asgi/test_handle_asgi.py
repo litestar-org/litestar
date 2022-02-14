@@ -4,7 +4,7 @@ from starlette.types import Receive, Scope, Send
 from starlite import Controller, MediaType, Response, asgi, create_test_client
 
 
-def test_handle_asgi():
+def test_handle_asgi() -> None:
     @asgi(path="/")
     async def root_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
         assert scope["type"] == "http"

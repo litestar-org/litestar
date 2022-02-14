@@ -8,32 +8,32 @@ from starlite import Controller, Provide, create_test_client, websocket
 from starlite.connection import WebSocket
 
 
-def router_first_dependency():
+def router_first_dependency() -> bool:
     return True
 
 
-async def router_second_dependency():
+async def router_second_dependency() -> bool:
     await sleep(0.1)
     return False
 
 
-def controller_first_dependency(headers: Dict[str, Any]):
+def controller_first_dependency(headers: Dict[str, Any]) -> dict:
     assert headers
     return dict()
 
 
-async def controller_second_dependency(socket: WebSocket):
+async def controller_second_dependency(socket: WebSocket) -> dict:
     assert socket
     await sleep(0.1)
     return dict()
 
 
-def local_method_first_dependency(query_param: int):
+def local_method_first_dependency(query_param: int) -> int:
     assert isinstance(query_param, int)
     return query_param
 
 
-def local_method_second_dependency(path_param: str):
+def local_method_second_dependency(path_param: str) -> str:
     assert isinstance(path_param, str)
     return path_param
 
@@ -62,7 +62,7 @@ class FirstController(Controller):
         await socket.close()
 
 
-def test_controller_dependency_injection():
+def test_controller_dependency_injection() -> None:
     client = create_test_client(
         FirstController,
         dependencies={
@@ -74,7 +74,7 @@ def test_controller_dependency_injection():
         ws.send_json({"data": "123"})
 
 
-def test_function_dependency_injection():
+def test_function_dependency_injection() -> None:
     @websocket(
         path=test_path + "/{path_param:str}",
         dependencies={
@@ -103,18 +103,13 @@ def test_function_dependency_injection():
         ws.send_json({"data": "123"})
 
 
-def test_dependency_isolation():
+def test_dependency_isolation() -> None:
     class SecondController(Controller):
         path = "/second"
 
         @websocket()
         async def test_method(self, socket: WebSocket, first: dict) -> None:
             await socket.accept()
-            assert socket
-            msg = await socket.receive_json()
-            assert msg
-            assert isinstance(first, int)
-            await socket.close()
 
     client = create_test_client([FirstController, SecondController])
     with pytest.raises(WebSocketDisconnect), client.websocket_connect("/second/abcdef?query_param=12345") as ws:

@@ -27,7 +27,7 @@ def app_guard(request: HTTPConnection, _: BaseRouteHandler) -> None:
         raise PermissionDeniedException("app")
 
 
-def test_guards_with_http_handler():
+def test_guards_with_http_handler() -> None:
     @get(path="/secret", guards=[local_guard])
     def my_http_route_handler() -> None:
         ...
@@ -44,7 +44,7 @@ def test_guards_with_http_handler():
         assert response.status_code == HTTP_200_OK
 
 
-def test_guards_with_asgi_handler():
+def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
         response = Response(media_type=MediaType.JSON, status_code=HTTP_200_OK, content={"hello": "world"})
@@ -62,7 +62,7 @@ def test_guards_with_asgi_handler():
         assert response.status_code == HTTP_200_OK
 
 
-def test_guards_with_websocket_handler():
+def test_guards_with_websocket_handler() -> None:
     @websocket(path="/", guards=[local_guard])
     async def my_websocket_route_handler(socket: WebSocket) -> None:
         await socket.accept()

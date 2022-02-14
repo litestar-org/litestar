@@ -9,7 +9,7 @@ from starlite.openapi.constants import (
 from starlite.openapi.schema import update_schema_with_field_info
 
 
-def test_update_schema_with_field_info():
+def test_update_schema_with_field_info() -> None:
     test_str = "abc"
     extra = {
         "examples": [Example(value=1)],

@@ -1,11 +1,12 @@
 import os
+from typing import Any
 
 from starlite import Template, TemplateConfig, create_test_client, get
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.template.mako import MakoTemplateEngine
 
 
-def test_jinja_template(tmpdir):
+def test_jinja_template(tmpdir: Any) -> None:
     path = os.path.join(tmpdir, "index.html")
     with open(path, "w") as file:
         file.write("<html>Injected? {{test}}</html>")
@@ -18,15 +19,15 @@ def test_jinja_template(tmpdir):
         file.write("<html>Does nested dirs work? {{test}}</html>")
 
     @get(path="/")
-    def index() -> Template:
+    def index_handler() -> Template:
         return Template(name="index.html", context={"test": "yep"})
 
     @get(path="/nested")
-    def nested_path() -> Template:
+    def nested_path_handler() -> Template:
         return Template(name="users/nested.html", context={"test": "yep"})
 
     with create_test_client(
-        route_handlers=[index, nested_path],
+        route_handlers=[index_handler, nested_path_handler],
         template_config=TemplateConfig(engine=JinjaTemplateEngine, directory=tmpdir),
     ) as client:
         index_response = client.request("GET", "/")
@@ -40,7 +41,7 @@ def test_jinja_template(tmpdir):
         assert nested_response.headers["Content-Type"] == "text/html; charset=utf-8"
 
 
-def test_jinja_raise_for_invalid_path(tmpdir):
+def test_jinja_raise_for_invalid_path(tmpdir: Any) -> None:
     @get(path="/")
     def invalid_path() -> Template:
         return Template(name="invalid.html", context={"test": "yep"})
@@ -54,7 +55,7 @@ def test_jinja_raise_for_invalid_path(tmpdir):
         assert response.json() == {"detail": "Template invalid.html not found.", "extra": None}
 
 
-def test_mako_template(tmpdir):
+def test_mako_template(tmpdir: Any) -> None:
     path = os.path.join(tmpdir, "index.html")
     with open(path, "w") as file:
         file.write("<html>Injected? ${test}</html>")
@@ -67,15 +68,15 @@ def test_mako_template(tmpdir):
         file.write("<html>Does nested dirs work? ${test}</html>")
 
     @get(path="/")
-    def index() -> Template:
+    def index_handler() -> Template:
         return Template(name="index.html", context={"test": "yep"})
 
     @get(path="/nested")
-    def nested_path() -> Template:
+    def nested_path_handler() -> Template:
         return Template(name="users/nested.html", context={"test": "yep"})
 
     with create_test_client(
-        route_handlers=[index, nested_path],
+        route_handlers=[index_handler, nested_path_handler],
         template_config=TemplateConfig(engine=MakoTemplateEngine, directory=tmpdir),
     ) as client:
         index_response = client.request("GET", "/")
@@ -89,7 +90,7 @@ def test_mako_template(tmpdir):
         assert nested_response.headers["Content-Type"] == "text/html; charset=utf-8"
 
 
-def test_mako_raise_for_invalid_path(tmpdir):
+def test_mako_raise_for_invalid_path(tmpdir: Any) -> None:
     @get(path="/")
     def invalid_path() -> Template:
         return Template(name="invalid.html", context={"test": "yep"})
@@ -103,7 +104,7 @@ def test_mako_raise_for_invalid_path(tmpdir):
         assert response.json() == {"detail": "Template invalid.html not found.", "extra": None}
 
 
-def test_handler_raise_for_no_template_engine():
+def test_handler_raise_for_no_template_engine() -> None:
     @get(path="/")
     def invalid_path() -> Template:
         return Template(name="index.html", context={"ye": "yeeee"})
@@ -114,7 +115,7 @@ def test_handler_raise_for_no_template_engine():
         assert response.json() == {"detail": "Template engine is not configured", "extra": None}
 
 
-def test_template_with_no_context(tmpdir):
+def test_template_with_no_context(tmpdir: Any) -> None:
     path = os.path.join(tmpdir, "index.html")
     with open(path, "w") as file:
         file.write("<html>This works!</html>")

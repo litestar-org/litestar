@@ -1,7 +1,7 @@
 from starlite import Controller, MediaType, Provide, create_test_client, get
 
 
-def test_inter_dependencies():
+def test_inter_dependencies() -> None:
     def top_dependency(query_param: int) -> int:
         return query_param
 

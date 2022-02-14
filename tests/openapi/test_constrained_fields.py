@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Any, List, Union
 
 from hypothesis import given
 from hypothesis import strategies as st
@@ -19,10 +19,10 @@ from tests.openapi.utils import (
 )
 
 
-@given(
+@given(  # type: ignore[misc]
     field_type=st.sampled_from(constrained_collection),
 )
-def test_create_collection_constrained_field_schema(field_type):
+def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     schema = create_collection_constrained_field_schema(field_type=field_type, sub_fields=None)
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER
@@ -30,11 +30,11 @@ def test_create_collection_constrained_field_schema(field_type):
     assert schema.maxItems == field_type.max_items
 
 
-def test_create_collection_constrained_field_schema_sub_fields():
+def test_create_collection_constrained_field_schema_sub_fields() -> None:
     field_type = List[Union[str, int]]
     for pydantic_fn in [conlist, conset]:
         schema = create_collection_constrained_field_schema(
-            field_type=pydantic_fn(field_type, min_items=1, max_items=10),
+            field_type=pydantic_fn(field_type, min_items=1, max_items=10),  # type: ignore
             sub_fields=create_parsed_model_field(field_type).sub_fields,
         )
         assert schema.type == OpenAPIType.ARRAY
@@ -51,8 +51,8 @@ def test_create_collection_constrained_field_schema_sub_fields():
         assert schema.dict(exclude_none=True) == expected
 
 
-@given(field_type=st.sampled_from(constrained_string))
-def test_create_string_constrained_field_schema(field_type):
+@given(field_type=st.sampled_from(constrained_string))  # type: ignore[misc]
+def test_create_string_constrained_field_schema(field_type: Any) -> None:
     schema = create_string_constrained_field_schema(field_type=field_type)
     assert schema.type == OpenAPIType.STRING
     assert schema.minLength == field_type.min_length
@@ -63,8 +63,8 @@ def test_create_string_constrained_field_schema(field_type):
         assert schema.description
 
 
-@given(field_type=st.sampled_from(constrained_numbers))
-def test_create_numerical_constrained_field_schema(field_type):
+@given(field_type=st.sampled_from(constrained_numbers))  # type: ignore[misc]
+def test_create_numerical_constrained_field_schema(field_type: Any) -> None:
     schema = create_numerical_constrained_field_schema(field_type=field_type)
     assert schema.type == OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER
     assert schema.exclusiveMinimum == field_type.gt
@@ -75,7 +75,7 @@ def test_create_numerical_constrained_field_schema(field_type):
     assert schema.multipleOf == field_type.multiple_of
 
 
-@given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))
-def test_create_constrained_field_schema(field_type):
+@given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))  # type: ignore[misc]
+def test_create_constrained_field_schema(field_type: Any) -> None:
     schema = create_constrained_field_schema(field_type=field_type, sub_fields=None)
     assert schema

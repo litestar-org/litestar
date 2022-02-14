@@ -1,7 +1,9 @@
-from starlite import State, create_test_client
+from typing import cast
+
+from starlite import Starlite, State, create_test_client
 
 
-def test_lifecycle():
+def test_lifecycle() -> None:
     counter = {"value": 0}
 
     def sync_function_without_state() -> None:
@@ -38,8 +40,9 @@ def test_lifecycle():
         ],
     ) as client:
         assert counter["value"] == 4
-        assert client.app.state.x
-        assert client.app.state.y
+        app = cast(Starlite, client.app)
+        assert app.state.x
+        assert app.state.y
         counter["value"] = 0
         assert counter["value"] == 0
     assert counter["value"] == 4

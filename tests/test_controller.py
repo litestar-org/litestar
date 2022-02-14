@@ -1,9 +1,11 @@
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from typing_extensions import Type
 
 from starlite import (
     Controller,
     HttpMethod,
+    HTTPRouteHandler,
     create_test_client,
     delete,
     get,
@@ -16,7 +18,7 @@ from starlite.connection import WebSocket
 from tests import Person, PersonFactory
 
 
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -26,7 +28,9 @@ from tests import Person, PersonFactory
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
     ],
 )
-def test_controller_http_method(decorator, http_method, expected_status_code):
+def test_controller_http_method(
+    decorator: Type[HTTPRouteHandler], http_method: HttpMethod, expected_status_code: int
+) -> None:
     test_path = "/person"
     person_instance = PersonFactory.build()
 
@@ -43,7 +47,7 @@ def test_controller_http_method(decorator, http_method, expected_status_code):
         assert response.json() == person_instance.dict()
 
 
-def test_controller_with_websocket_handler():
+def test_controller_with_websocket_handler() -> None:
     test_path = "/person"
 
     class MyController(Controller):

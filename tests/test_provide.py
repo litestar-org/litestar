@@ -6,19 +6,19 @@ from pydantic.fields import Undefined
 from starlite import Provide
 
 
-def test_fn():
+def test_fn() -> dict:
     return dict()
 
 
-@pytest.mark.asyncio
-async def test_provide_default():
+@pytest.mark.asyncio  # type: ignore[misc]
+async def test_provide_default() -> None:
     provider = Provide(dependency=test_fn)
     value = await provider()
     assert isinstance(value, dict)
 
 
-@pytest.mark.asyncio
-async def test_provide_cached():
+@pytest.mark.asyncio  # type: ignore[misc]
+async def test_provide_cached() -> None:
     provider = Provide(dependency=test_fn, use_cache=True)
     assert provider.value is Undefined
     value = await provider()
@@ -30,18 +30,18 @@ async def test_provide_cached():
     assert value == third_value
 
 
-def test_provide_method():
+def test_provide_method() -> None:
     class MyClass:
-        def my_method(self):
-            assert self is MyClass
+        def my_method(self) -> None:
+            assert self.__class__ is MyClass
 
     provider = Provide(dependency=MyClass().my_method)
     assert isinstance(provider.dependency, partial)
     assert isinstance(provider.dependency.args[0], MyClass)
 
 
-def test_provider_equality_check():
-    def fn():
+def test_provider_equality_check() -> None:
+    def fn() -> None:
         pass
 
     first_provider = Provide(dependency=fn)
