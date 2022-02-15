@@ -50,6 +50,9 @@ Additionally, you can pass the following optional kwargs:
   of `BackgroundTask` instances wrapped in `starlette.background.BackgroundTasks`. The callable(s) will be called after
   the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
   handler will not be executed.
+- `sync_to_thread`: A boolean dictating whether the handler function will be executed in a worker thread or the main
+  event loop. This has an effect only for sync handler functions.
+  See [using sync handler functions](#using-sync-handler-functions).
 
 And the following kwargs, which affect [OpenAPI schema generation](../12-openapi.md#route-handler-configuration)
 
@@ -120,7 +123,8 @@ def delete_resource(pk: int) -> None:
 ```
 
 Although these decorators are merely subclasses of `starlite.handlers.http.HTTPRouteHandler` that pre-set
-the `http_method`, using _get_, _patch_, _put_, _delete_ or _post_ instead of _route_ makes the code clearer and simpler.
+the `http_method`, using _get_, _patch_, _put_, _delete_ or _post_ instead of _route_ makes the code clearer and
+simpler.
 
 Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
 regarded as a distinct [operation](https://spec.openapis.org/oas/latest.html#operation-object), and each operation
@@ -128,3 +132,24 @@ should be distinguished by a unique `operationId` and optimally also have a `sum
 
 As such, using the `route` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
+
+### Using Sync Handler Functions
+
+You can use both sync and async functions as the base for route handler functions, but which should you use? and when?
+
+If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), he most
+performant solution within the scope of an ASGI application, including Starlite, is going to be by using an async
+solution for this purpose.
+
+The reason for this is that async code, if written correctly, is **non-blocking**. That is, async code can be paused and
+resumed, and it therefore does not interupt the main event loop from executing (if written correctly). On the other
+hand, sync I/O handling is often **blocking**, and if you use such code in your function it can create performance
+issues.
+
+In this case you should use the `sync_to_thread` option. What this does, is tell Starlite to run the sync function in a
+separate async thread, where it can block but will not interrupt the main event loop's execution.
+
+The problem with this though is that this will slow down the execution of your sync code quite dramatically - by between
+%40-60%. So this is really quite far from performant. Thus, you should use this option **only** when your sync code
+performs blocking I/O operations. If your sync code simply performs simple tasks, non-expensive calculations, etc. you
+should not use the `sync_to_thread` option.

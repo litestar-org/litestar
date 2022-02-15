@@ -1,4 +1,3 @@
-from inspect import isawaitable
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cast
 
 from pydantic.fields import ModelField, Undefined
@@ -320,7 +319,4 @@ class KwargsModel:
                 dependency=sub_dependency, connection=connection, **kwargs
             )
         dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        value = dependency.provide(**dependency_kwargs)
-        if isawaitable(value):
-            value = await value
-        return value
+        return await dependency.provide(**dependency_kwargs)

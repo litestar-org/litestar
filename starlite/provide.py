@@ -1,7 +1,8 @@
 from functools import partial
-from inspect import isawaitable, ismethod
+from inspect import iscoroutinefunction, ismethod
 from typing import Any, Optional
 
+from anyio.to_thread import run_sync
 from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from typing_extensions import Type
@@ -10,13 +11,14 @@ from starlite.signature import SignatureModel
 
 
 class Provide:
-    __slots__ = ("dependency", "use_cache", "value", "signature_model")
+    __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread")
 
-    def __init__(self, dependency: AnyCallable, use_cache: bool = False):
+    def __init__(self, dependency: AnyCallable, use_cache: bool = False, sync_to_thread: bool = False):
         self.dependency = dependency
         self.use_cache = use_cache
         self.value: Any = Undefined
         self.signature_model: Optional[Type[SignatureModel]] = None
+        self.sync_to_thread = sync_to_thread
         if ismethod(dependency) and hasattr(dependency, "__self__"):
             # ensure that the method's self argument is preserved
             self.dependency = partial(dependency, dependency.__self__)
@@ -28,9 +30,13 @@ class Provide:
 
         if self.use_cache and self.value is not Undefined:
             return self.value
-        value = self.dependency(**kwargs)
-        if isawaitable(value):
-            value = await value
+        fn = partial(self.dependency, **kwargs)
+        if iscoroutinefunction(self.dependency):
+            value = await fn()
+        elif self.sync_to_thread:
+            value = await run_sync(fn)
+        else:
+            value = fn()
         if self.use_cache:
             self.value = value
         return value

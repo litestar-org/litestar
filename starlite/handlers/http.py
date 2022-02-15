@@ -1,7 +1,7 @@
 # pylint: disable=too-many-instance-attributes, too-many-arguments
 from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass, ismethod
+from inspect import Signature, isawaitable, isclass, iscoroutinefunction, ismethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,6 +14,7 @@ from typing import (
     cast,
 )
 
+from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.background import BackgroundTask, BackgroundTasks
@@ -76,6 +77,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "summary",
         "tags",
         "template_name",
+        "sync_to_thread",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -106,6 +108,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -154,6 +158,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         ] = BaseRouteHandler.empty
         self.cache = cache
         self.cache_key_builder = cache_key_builder
+        self.sync_to_thread = sync_to_thread
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -315,9 +320,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
         # run the after_request hook handler
         if after_request:
-            response = after_request(response)  # type: ignore
-            if isawaitable(response):
-                response = await response
+            if iscoroutinefunction(after_request):
+                response = await after_request(response)  # type: ignore
+            else:
+                response = await run_sync(after_request, response)  # type: ignore
         return response
 
 
@@ -351,6 +357,8 @@ class get(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.GET,
@@ -376,6 +384,7 @@ class get(HTTPRouteHandler):
             response_description=response_description,
             summary=summary,
             tags=tags,
+            sync_to_thread=sync_to_thread,
         )
 
 
@@ -406,6 +415,8 @@ class post(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.POST,
@@ -431,6 +442,7 @@ class post(HTTPRouteHandler):
             response_description=response_description,
             summary=summary,
             tags=tags,
+            sync_to_thread=sync_to_thread,
         )
 
 
@@ -461,6 +473,8 @@ class put(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.PUT,
@@ -486,6 +500,7 @@ class put(HTTPRouteHandler):
             response_description=response_description,
             summary=summary,
             tags=tags,
+            sync_to_thread=sync_to_thread,
         )
 
 
@@ -516,6 +531,8 @@ class patch(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.PATCH,
@@ -541,6 +558,7 @@ class patch(HTTPRouteHandler):
             response_description=response_description,
             summary=summary,
             tags=tags,
+            sync_to_thread=sync_to_thread,
         )
 
 
@@ -571,6 +589,8 @@ class delete(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        # sync only
+        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.DELETE,
@@ -596,4 +616,5 @@ class delete(HTTPRouteHandler):
             response_description=response_description,
             summary=summary,
             tags=tags,
+            sync_to_thread=sync_to_thread,
         )

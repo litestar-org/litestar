@@ -1,5 +1,5 @@
 from copy import copy
-from inspect import isawaitable
+from inspect import iscoroutinefunction
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -12,6 +12,7 @@ from typing import (
     cast,
 )
 
+from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
@@ -128,6 +129,7 @@ class BaseRouteHandler:
         Ensures the connection is authorized by running all the route guards in scope
         """
         for guard in self.resolve_guards():
-            result = guard(connection, copy(self))
-            if isawaitable(result):
-                await result
+            if iscoroutinefunction(guard):
+                await guard(connection, copy(self))  # type: ignore[misc]
+            else:
+                await run_sync(guard, connection, copy(self))

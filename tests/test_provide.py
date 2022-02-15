@@ -30,6 +30,13 @@ async def test_provide_cached() -> None:
     assert value == third_value
 
 
+@pytest.mark.asyncio  # type: ignore[misc]
+async def test_run_in_thread() -> None:
+    provider = Provide(dependency=test_fn, sync_to_thread=True)
+    value = await provider()
+    assert isinstance(value, dict)
+
+
 def test_provide_method() -> None:
     class MyClass:
         def my_method(self) -> None:
@@ -46,13 +53,8 @@ def test_provider_equality_check() -> None:
 
     first_provider = Provide(dependency=fn)
     second_provider = Provide(dependency=fn)
-
     assert first_provider == second_provider
-
     third_provider = Provide(dependency=fn, use_cache=True)
-
     assert first_provider != third_provider
-
     second_provider.value = True
-
     assert first_provider != second_provider

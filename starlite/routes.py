@@ -1,10 +1,12 @@
 import pickle
 import re
-from inspect import isawaitable, iscoroutinefunction
+from functools import partial
+from inspect import iscoroutinefunction
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
+from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
@@ -136,9 +138,10 @@ class HTTPRoute(BaseRoute):
             before_request_handler = route_handler.resolve_before_request()
             # run the before_request hook handler
             if before_request_handler:
-                response_data = before_request_handler(request)
-                if isawaitable(response_data):
-                    response_data = await response_data
+                if iscoroutinefunction(before_request_handler):
+                    response_data = await before_request_handler(request)
+                else:
+                    response_data = await run_sync(before_request_handler, request)
             if not response_data:
                 response_data = await self.get_response_data(
                     route_handler=route_handler, parameter_model=parameter_model, request=request
@@ -175,10 +178,15 @@ class HTTPRoute(BaseRoute):
             parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
         else:
             parsed_kwargs = {}
-        fn = cast(AnyCallable, route_handler.fn)
         if isinstance(route_handler.owner, Controller):
-            return fn(route_handler.owner, **parsed_kwargs)
-        return fn(**parsed_kwargs)
+            fn = partial(cast(AnyCallable, route_handler.fn), route_handler.owner, **parsed_kwargs)
+        else:
+            fn = partial(cast(AnyCallable, route_handler.fn), **parsed_kwargs)
+        if iscoroutinefunction(fn):
+            return await fn()
+        if route_handler.sync_to_thread:
+            return await run_sync(fn)
+        return fn()
 
     def create_handler_map(self) -> None:
         """

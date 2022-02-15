@@ -66,7 +66,7 @@ class Starlite(Router):
         "static_paths",
         "plain_routes",
         "template_engine",
-        "cache_config"
+        "cache_config",
         # the rest of __slots__ are defined in Router and should not be duplicated
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
