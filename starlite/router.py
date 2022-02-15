@@ -33,6 +33,7 @@ class Router:
         "guards",
         "owner",
         "path",
+        "tags",
         "response_class",
         "response_headers",
         "routes",
@@ -44,6 +45,7 @@ class Router:
         *,
         path: str,
         route_handlers: List[ControllerRouterHandler],
+        tags: Optional[List[str]] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         guards: Optional[List[Guard]] = None,
         response_class: Optional[Type[Response]] = None,
@@ -55,6 +57,7 @@ class Router:
         self.owner: Optional["Router"] = None
         self.routes: List[BaseRoute] = []
         self.path = normalize_path(path)
+        self.tags = tags
         self.response_class = response_class
         self.dependencies = dependencies
         self.response_headers = response_headers
