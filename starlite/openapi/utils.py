@@ -12,6 +12,9 @@ def pascal_case_to_text(s: str) -> str:
 
 
 def extract_tags_from_route_handler(route_handler: HTTPRouteHandler) -> Optional[List[str]]:
-    child_tags = set(route_handler.tags or [])
-    parent_tags = set(route_handler.owner.tags if route_handler.owner and hasattr(route_handler.owner, "tags") else [])
-    return list(child_tags | parent_tags) or None
+    """Extracts and combines tags from route_handler and any owners"""
+    child_tags = route_handler.tags or []
+    parent_tags = []
+    if route_handler.owner and hasattr(route_handler.owner, "tags"):
+        parent_tags = route_handler.owner.tags or []
+    return list(set(child_tags) | set(parent_tags)) or None
