@@ -140,3 +140,8 @@
 [1.1.0]
 
 - added response caching support
+
+[1.1.1]
+
+- added tags support to Controller @tclasen
+- updated OpenAPI operationIds to be more humanized @tclasen

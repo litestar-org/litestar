@@ -12,10 +12,10 @@ def test_create_path_item() -> None:
     route = cast(HTTPRoute, app.routes[index])
     schema = create_path_item(route=route, create_examples=True)
     assert schema.delete
-    assert schema.delete.operationId == "delete_person"
+    assert schema.delete.operationId == "Delete Person"
     assert schema.get
-    assert schema.get.operationId == "get_person_by_id"
+    assert schema.get.operationId == "Get Person By Id"
     assert schema.patch
-    assert schema.patch.operationId == "partial_update_person"
+    assert schema.patch.operationId == "Partial Update Person"
     assert schema.put
-    assert schema.put.operationId == "update_person"
+    assert schema.put.operationId == "Update Person"
