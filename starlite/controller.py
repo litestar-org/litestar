@@ -26,6 +26,7 @@ class Controller:
         "dependencies",
         "owner",
         "path",
+        "tags",
         "response_headers",
         "response_class",
         "guards",
@@ -36,6 +37,7 @@ class Controller:
     dependencies: Optional[Dict[str, "Provide"]]
     owner: "Router"
     path: str
+    tags: Optional[List[str]]
     response_headers: Optional[Dict[str, ResponseHeader]]
     response_class: Optional[Type[Response]]
     guards: Optional[List[Guard]]
