@@ -117,8 +117,8 @@ class UserController(Controller):
 
 ### ReDoc Automatic API Documentation
 
-While running Starlite, you can access the [ReDoc API Documentation Page](https://redoc.ly/) by accessing it at the default
-location of /schema or change the location using the [OpenAPIController](https://starlite-api.github.io/starlite/usage/12-openapi/#the-openapi-controller). If your app is running locally on port 8000 you can access the [ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema).
+While running Starlite, you can view the [ReDoc API Documentation Page](https://redoc.ly/) by accessing it at the default
+location of /schema or change the location using the [OpenAPIController](https://starlite-api.github.io/starlite/usage/12-openapi-and-redoc/#the-openapi-controller). If your app is running locally on port 8000 you can access the [ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema).
 
 ### Data Parsing, Type Hints and Pydantic
 
