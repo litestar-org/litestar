@@ -30,9 +30,9 @@ class DTO(GenericModel, Generic[T]):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    dto_source_model: ClassVar[Type[T]]  # type: ignore
+    dto_source_model: ClassVar[Any]
     dto_field_mapping: ClassVar[Dict[str, str]]
-    dto_source_plugin: ClassVar[Optional[PluginProtocol[T]]] = None  # type: ignore
+    dto_source_plugin: ClassVar[Optional[PluginProtocol]] = None
 
     @classmethod
     def from_model_instance(cls, model_instance: T) -> "DTO[T]":
@@ -61,9 +61,9 @@ class DTO(GenericModel, Generic[T]):
         if self.dto_source_plugin is not None and self.dto_source_plugin.is_plugin_supported_type(
             self.dto_source_model
         ):
-            return self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values)
+            return cast(T, self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values))
         # we are dealing with a pydantic model or dataclass
-        return self.dto_source_model(**values)
+        return cast(T, self.dto_source_model(**values))
 
 
 class DTOFactory:
@@ -143,7 +143,7 @@ class DTOFactory:
                     field_definitions[field_name] = (field_type, ...)
                 else:
                     field_definitions[field_name] = (field_type, None)
-        dto = cast(Type[DTO], create_model(name, __base__=DTO, **field_definitions))  # type: ignore
+        dto = cast(Type[DTO[T]], create_model(name, __base__=DTO, **field_definitions))  # type: ignore
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
         dto.dto_field_mapping = {}

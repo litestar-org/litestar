@@ -16,6 +16,11 @@ pydantic model.
     currently impossible to extend editor auto-complete for the DTO properties - it will be typed as `DTO[T]`,
     with T being a generic argument representing the original model used to create the DTO.
 
+<!-- prettier-ignore -->
+!!! note
+    MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
+    There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
+
 The `DTOFactory` class supports [plugins](10-plugins.md), for example, this is how it could be used with an SQL Alchemy
 declarative class:
 
