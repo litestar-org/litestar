@@ -8,6 +8,7 @@ from starlette.routing import get_name
 from starlite.openapi.parameters import create_parameters
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
+from starlite.openapi.utils import extract_tags_from_route_handler
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.routes import HTTPRoute
@@ -38,7 +39,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                 request_body = create_request_body(field=handler_fields["data"], generate_examples=create_examples)
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
-                tags=route_handler.tags,
+                tags=extract_tags_from_route_handler(route_handler),
                 summary=route_handler.summary,
                 description=route_handler.description,
                 deprecated=route_handler.deprecated,
