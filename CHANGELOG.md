@@ -145,3 +145,7 @@
 
 - added tags support to Controller @tclasen
 - updated OpenAPI operationIds to be more humanized @tclasen
+
+[1.2.0]
+
+- add run_in_thread configuration
