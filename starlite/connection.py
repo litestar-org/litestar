@@ -48,7 +48,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
         """
         if not hasattr(self, "_json"):
             body = await self.body()
-            self._json = loads(body)  # pylint: disable=attribute-defined-outside-init
+            self._json = loads(body or "null")  # pylint: disable=attribute-defined-outside-init
         return self._json
 
 
