@@ -149,3 +149,7 @@
 [1.2.0]
 
 - add run_in_thread configuration
+
+[1.2.1]
+
+- fix handling of empty request body @t1waz
