@@ -46,6 +46,16 @@ def test_register_with_controller_class() -> None:
             assert route.path == "/base/test"
 
 
+def test_register_controller_on_different_routers() -> None:
+    first_router = Router(path="/first", route_handlers=[MyController])
+    second_router = Router(path="/second", route_handlers=[MyController])
+    third_router = Router(path="/third", route_handlers=[MyController])
+
+    assert first_router.routes[0].route_handlers[0].owner.owner is first_router  # type: ignore
+    assert second_router.routes[0].route_handlers[0].owner.owner is second_router  # type: ignore
+    assert third_router.routes[0].route_handlers[0].owner.owner is third_router  # type: ignore
+
+
 def test_register_with_router_instance() -> None:
     top_level_router = Router(path="/top-level", route_handlers=[MyController])
     base_router = Router(path="/base", route_handlers=[top_level_router])

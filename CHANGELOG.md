@@ -153,3 +153,7 @@
 [1.2.1]
 
 - fix handling of empty request body @t1waz
+
+[1.2.2]
+
+- fix regression with controller multi-registration

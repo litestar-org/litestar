@@ -12,7 +12,7 @@ def test_create_parameters() -> None:
     app = Starlite(route_handlers=[PersonController])
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person")
     route = app.routes[index]
-    route_handler = PersonController.get_persons
+    route_handler = route.route_handler_map["GET"][0]  # type: ignore
     parameters = create_parameters(
         route_handler=route_handler,
         handler_fields=model_function_signature(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,

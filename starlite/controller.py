@@ -1,7 +1,9 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+from copy import copy
+from typing import TYPE_CHECKING, Dict, List, Optional, cast
 
 from typing_extensions import Type
 
+from starlite.handlers import BaseRouteHandler
 from starlite.response import Response
 from starlite.types import (
     AfterRequestHandler,
@@ -12,7 +14,6 @@ from starlite.types import (
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.handlers import BaseRouteHandler
     from starlite.provide import Provide
     from starlite.router import Router
 
@@ -59,19 +60,20 @@ class Controller:
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner
-        for route_handler in self.get_route_handlers():
-            route_handler.owner = self
 
-    def get_route_handlers(self) -> List["BaseRouteHandler"]:
+    def get_route_handlers(self) -> List[BaseRouteHandler]:
         """
         Returns a list of route handlers defined on the controller
         """
-        from starlite.handlers import (  # pylint: disable=import-outside-toplevel
-            BaseRouteHandler,
-        )
-
-        return [
-            getattr(self, f_name)
+        route_handlers: List[BaseRouteHandler] = []
+        route_handler_fields = [
+            f_name
             for f_name in dir(self)
             if f_name not in dir(Controller) and isinstance(getattr(self, f_name), BaseRouteHandler)
         ]
+        for f_name in route_handler_fields:
+            source_route_handler = cast(BaseRouteHandler, getattr(self, f_name))
+            route_handler = copy(source_route_handler)
+            route_handler.owner = self
+            route_handlers.append(route_handler)
+        return route_handlers
