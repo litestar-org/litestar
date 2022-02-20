@@ -40,8 +40,13 @@ pydantic-factories = "*"
 python-multipart = "*"
 pyyaml = "*"
 requests = "*"
+sqlalchemy = {version = "*", optional = true}
 starlette = "*"
 typing-extensions = "*"
+
+[tool.poetry.extras]
+all = ["sqlalchemy"]
+sqlalchemy = ["sqlalchemy"]
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }

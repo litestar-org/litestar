@@ -136,7 +136,17 @@ Furthermore, Starlite allows extending its support using plugins.
 Starlite has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
 features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQL Alchemy declarative classes
 "natively", i.e. as type parameters that will be serialized/deserialized and to return them as values from route
-handlers.
+handlers. You can install SQLAlchemy support using:
+
+```shell
+pip install 'starlite[sqlalchemy]'
+```
+
+or
+
+```shell
+poetry add 'starlite[sqlalchemy]'
+```
 
 Starlite also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of plugins.
 
