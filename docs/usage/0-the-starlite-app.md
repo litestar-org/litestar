@@ -58,7 +58,8 @@ be called when the ASGI server (uvicorn, dafne etc.) emits the respective "start
 A classic use case for this is **database connectivity**. Often you will want to **establish** the connection **once** – on
 application startup, and then **close** the connection on shutdown.
 
-For example, lets assume we **create a connection** to a Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html), and
+For example, lets assume we **create a connection** to a Postgres DB using the async engine from [SQLAlchemy](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html) and using [SQLAlchemyPlugin](10-plugins.md#sqlalchemyplugin)
+, and
 we therefore opt to create **two functions**, one to get or **establish the connection**, and another to **close** it:
 
 ```python title="my_app/postgres.py"

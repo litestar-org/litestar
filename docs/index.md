@@ -68,6 +68,12 @@ poetry add starlite
 pipenv install starlite
 ```
 
+You can also install integrations with third-party packages using extra dependencies:
+
+```shell
+pip install 'starlite[sqlalchemy]'
+```
+
 ## Minimal Example
 
 **Define your data model** using pydantic or any library based on it (for example ormar, beanie, SQLModel):

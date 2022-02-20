@@ -13,6 +13,18 @@ planned / discussed - see the pinned issues in github for the current state of t
 
 ### SQLAlchemyPlugin
 
+To install the `SQLAlchemyPLugin`, install it using pip or poetry:
+
+```shell
+pip install 'starlite[sqlalchemy]'
+```
+
+or
+
+```shell
+poetry add 'starlite[sqlalchemy]'
+```
+
 To use the `SQLAlchemyPlugin` simply import it and pass it to the `Starlite` constructor:
 
 ```python title="my_app/main.py"
