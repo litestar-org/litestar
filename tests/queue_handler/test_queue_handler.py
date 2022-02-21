@@ -1,6 +1,8 @@
 import logging
 from logging import StreamHandler
 
+from _pytest.logging import LogCaptureFixture
+
 from starlite.logging import LoggingConfig
 
 config = LoggingConfig(root={"handlers": ["queue_listener"], "level": "WARNING"})
@@ -8,7 +10,7 @@ config.configure()
 logger = logging.getLogger()
 
 
-def test_logger(caplog) -> None:
+def test_logger(caplog: LogCaptureFixture) -> None:
     """
     Test to check logging output contains the logged message
     """
