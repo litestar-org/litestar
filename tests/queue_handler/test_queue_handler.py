@@ -8,7 +8,7 @@ config.configure()
 logger = logging.getLogger()
 
 
-def test_logger(caplog):
+def test_logger(caplog) -> None:
     """
     Test to check logging output contains the logged message
     """
@@ -17,9 +17,9 @@ def test_logger(caplog):
     assert "Testing now!" in caplog.text
 
 
-def test_resolve_handler():
+def test_resolve_handler() -> None:
     """
     Tests resolve handler
     """
     handlers = logger.handlers
-    assert isinstance(handlers[0].handlers[0], StreamHandler)
+    assert isinstance(handlers[0].handlers[0], StreamHandler)  # type: ignore
