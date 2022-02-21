@@ -50,6 +50,7 @@ from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
+from .queue_listener_handler import QueueListenerHandler
 from .response import Response
 from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
@@ -104,6 +105,7 @@ __all__ = [
     "Template",
     "TemplateConfig",
     "TestClient",
+    "QueueListenerHandler",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",
