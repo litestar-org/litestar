@@ -157,3 +157,8 @@
 [1.2.2]
 
 - fix regression with controller multi-registration
+
+[1.2.3]
+
+- update `LoggingConfig` to be non-blocking @madlad33
+- fix regression in error handling, returning 404 instead of 500

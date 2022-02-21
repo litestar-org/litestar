@@ -63,9 +63,10 @@ class StarliteASGIRouter(StarletteRouter):
                 handlers[scope_type if scope_type in handler_types else "asgi"],
             )
             scope["path_params"] = parse_path_params(route.path_parameters, path_params) if route.path_parameters else {}  # type: ignore
-            await route.handle(scope=scope, receive=receive, send=send)
         except KeyError as e:
             raise NotFoundException() from e
+        else:
+            await route.handle(scope=scope, receive=receive, send=send)
 
     async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
         """

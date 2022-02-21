@@ -147,8 +147,8 @@ my_app_logging_config = LoggingConfig(
 app = Starlite(on_startup=[my_app_logging_config.configure])
 ```
 
-`LoggingConfig` is **merely a convenience wrapper** around the standard library's _DictConfig_ options, which can be rather
-confusing.
+`LoggingConfig` is a convenience wrapper around the standard library's _DictConfig_ options, which can be rather
+confusing. It pre-configures logging to use the `QueueHandler`, which is non-blocking and recommended for async applications.
 
 In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of INFO severity
 or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to \*

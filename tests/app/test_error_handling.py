@@ -1,5 +1,4 @@
 import json
-import pytest
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -73,12 +72,11 @@ def test_uses_starlette_debug_responses() -> None:
     assert "text/html" in response.headers["content-type"]
 
 
-@pytest.mark.xfail
-def test_route_throws_key_exception() -> None:
+def test_handler_error_return_status_500() -> None:
     @get("/")
     def my_route_handler() -> None:
         raise KeyError("custom message")
 
     with create_test_client(my_route_handler) as client:
         response = client.get("/")
-        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
