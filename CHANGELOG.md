@@ -162,3 +162,7 @@
 
 - update `LoggingConfig` to be non-blocking @madlad33
 - fix regression in error handling, returning 404 instead of 500
+
+[1.2.4]
+
+- updated `Starlette` to version `0.19.0`
