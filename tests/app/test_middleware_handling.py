@@ -16,6 +16,7 @@ from starlite import (
     Starlite,
     create_test_client,
     get,
+    post,
 )
 
 
@@ -26,8 +27,8 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         logger = logging.getLogger(__name__)
         if scope["type"] == "http":
-            request: Request = Request(scope)
-            logger.info("%s - %s", request.method, request.url)
+            request: Request = Request(scope=scope, receive=receive)
+            logger.info(f"{request.method}, {request.url}, {await request.json()}")
         await self.app(scope, receive, send)
 
 
@@ -72,6 +73,11 @@ def handler() -> None:
     ...
 
 
+@post(path="/")
+def post_handler(data: str) -> str:
+    return data
+
+
 def test_setting_cors_middleware() -> None:
     cors_config = CORSConfig()
     assert cors_config.allow_credentials is False
@@ -108,3 +114,9 @@ def test_trusted_hosts_middleware() -> None:
     trusted_hosts_middleware = unpacked_middleware[0]
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
+
+
+@pytest.mark.xfail  # type: ignore[misc]
+def test_request_body_logging_middleware() -> None:
+    client = create_test_client(route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware])
+    client.post("/", json="abc", timeout=1.0)
