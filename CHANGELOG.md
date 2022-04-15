@@ -166,3 +166,7 @@
 [1.2.4]
 
 - updated `Starlette` to version `0.19.0`
+
+[1.2.5]
+
+- fix request.body being only readable once by setting the read result into scope
