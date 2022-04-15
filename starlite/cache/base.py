@@ -13,7 +13,6 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
         Retrieve a valued from cache corresponding to the given key
         """
-        ...
 
     @overload  # type: ignore[misc]
     def set(self, key: str, value: Any, expiration: int) -> Any:
@@ -23,7 +22,6 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
         Set a value in cache for a given key with a given expiration in seconds
         """
-        ...
 
     @overload  # type: ignore[misc]
     def delete(self, key: str) -> Any:
@@ -33,4 +31,3 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
         Remove a value from the cache for a given key
         """
-        ...
