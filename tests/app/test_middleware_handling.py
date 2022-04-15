@@ -2,6 +2,8 @@ import logging
 from typing import Any, Awaitable, Callable
 
 import pytest
+from _pytest.logging import LogCaptureFixture
+from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
@@ -19,16 +21,19 @@ from starlite import (
     post,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
     def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        logger = logging.getLogger(__name__)
+
         if scope["type"] == "http":
             request: Request = Request(scope=scope, receive=receive)
-            logger.info(f"{request.method}, {request.url}, {await request.json()}")
+            body = await request.json()
+            logger.info(f"test logging: {request.method}, {request.url}, {body}")
         await self.app(scope, receive, send)
 
 
@@ -73,8 +78,14 @@ def handler() -> None:
     ...
 
 
+class JSONRequest(BaseModel):
+    name: str
+    age: int
+    programmer: bool
+
+
 @post(path="/")
-def post_handler(data: str) -> str:
+def post_handler(data: JSONRequest) -> JSONRequest:
     return data
 
 
@@ -116,7 +127,11 @@ def test_trusted_hosts_middleware() -> None:
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
 
 
-@pytest.mark.xfail  # type: ignore[misc]
-def test_request_body_logging_middleware() -> None:
-    client = create_test_client(route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware])
-    client.post("/", json="abc", timeout=1.0)
+def test_request_body_logging_middleware(caplog: LogCaptureFixture) -> None:
+    with caplog.at_level(logging.INFO):
+        client = create_test_client(
+            route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
+        )
+        response = client.post("/", json={"name": "moishe zuchmir", "age": 40, "programmer": True})
+        assert response.status_code == 201
+        assert "test logging" in caplog.text

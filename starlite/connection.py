@@ -47,7 +47,9 @@ class Request(StarletteRequest, Generic[User, Auth]):
         This method overrides the Starlette method using the much faster orjson.loads() function
         """
         if not hasattr(self, "_json"):
-            body = await self.body()
+            body = self.scope.get("_body")
+            if not body:
+                body = self.scope["_body"] = await self.body()
             self._json = loads(body or "null")  # pylint: disable=attribute-defined-outside-init
         return self._json
 
