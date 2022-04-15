@@ -1,8 +1,0 @@
-{
-  "name": "performance-tests",
-  "version": "1.0.0",
-  "description": "Performance testing using autocannon",
-  "dependencies": {
-    "autocannon": "^7.8.1"
-  }
-}

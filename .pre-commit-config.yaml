@@ -87,7 +87,6 @@ repos:
     rev: "v0.942"
     hooks:
       - id: mypy
-        exclude: "performance_test"
         additional_dependencies:
           [
             orjson,
