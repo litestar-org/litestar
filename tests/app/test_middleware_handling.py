@@ -155,4 +155,4 @@ def test_middleware_call_order(mocker: MockerFixture) -> None:
     )
     client.get("/")
 
-    manager.assert_has_calls([mocker.call.m1(*m1.call_args.args), mocker.call.m2(*m2.call_args.args)], any_order=False)
+    manager.assert_has_calls([mocker.call.m1(*m1.call_args[0]), mocker.call.m2(*m2.call_args[0])], any_order=False)

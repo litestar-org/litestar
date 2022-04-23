@@ -26,7 +26,7 @@ class Response(StarletteResponse):
             status_code=status_code,
             headers=headers or {},
             media_type=media_type,
-            background=background,  # type: ignore
+            background=background,
         )
 
     @staticmethod
