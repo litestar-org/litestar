@@ -68,7 +68,7 @@ repos:
             mako,
           ]
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.13.5"
+    rev: "v2.13.7"
     hooks:
       - id: pylint
         exclude: "test_*"

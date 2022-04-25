@@ -170,3 +170,7 @@
 [1.2.5]
 
 - fix request.body being only readable once by setting the read result into scope
+
+[1.3.0]
+
+- updated middleware call order @slavugan
