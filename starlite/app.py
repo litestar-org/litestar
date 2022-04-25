@@ -259,7 +259,7 @@ class Starlite(Router):
         current_app: ASGIApp = self.asgi_router
         # last added middleware will be on the top of stack and it will therefore be called first.
         # we therefore need to reverse the middlewares to keep the call order according to
-        # middlewares list provided by a user
+        # the middlewares' list provided by the user
         for middleware in reversed(user_middleware):
             if isinstance(middleware, Middleware):
                 current_app = middleware.cls(app=current_app, **middleware.options)
