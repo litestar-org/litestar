@@ -257,15 +257,18 @@ class Starlite(Router):
         Builds the middleware stack by passing middlewares in a specific order
         """
         current_app: ASGIApp = self.asgi_router
-        if allowed_hosts:
-            current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)
-        if cors_config:
-            current_app = CORSMiddleware(app=current_app, **cors_config.dict())
-        for middleware in user_middleware:
+        # last added middleware will be on the top of stack and it will therefore be called first.
+        # we therefore need to reverse the middlewares to keep the call order according to
+        # the middlewares' list provided by the user
+        for middleware in reversed(user_middleware):
             if isinstance(middleware, Middleware):
                 current_app = middleware.cls(app=current_app, **middleware.options)
             else:
                 current_app = middleware(app=current_app)
+        if allowed_hosts:
+            current_app = TrustedHostMiddleware(app=current_app, allowed_hosts=allowed_hosts)
+        if cors_config:
+            current_app = CORSMiddleware(app=current_app, **cors_config.dict())
         return current_app
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> StarletteResponse:
