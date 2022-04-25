@@ -257,7 +257,7 @@ class Starlite(Router):
         Builds the middleware stack by passing middlewares in a specific order
         """
         current_app: ASGIApp = self.asgi_router
-        # last added middleware will be on top of stack hense it will be called first
+        # last added middleware will be on the top of stack and it will therefore be called first.
         # we therefore need to reverse the middlewares to keep the call order according to
         # middlewares list provided by a user
         for middleware in reversed(user_middleware):
