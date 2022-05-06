@@ -56,9 +56,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
     with create_test_client(test_method) as client:
         response = client.post(
             "/",
-            files=[
-                ("image", ("image.png", b"data")),
-            ],
+            files={"image": ("image.png", b"data")},
             data=[("tags", "1"), ("tags", "2"), ("tags", "3"), ("profile", person.json())],
         )
         assert response.status_code == HTTP_201_CREATED
