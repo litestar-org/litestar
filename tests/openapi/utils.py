@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from openapi_schema_pydantic import Example
 from pydantic import conbytes, condecimal, confloat, conint, conlist, conset, constr
@@ -12,6 +12,7 @@ from starlite import (
     MediaType,
     Parameter,
     Partial,
+    State,
     delete,
     get,
     patch,
@@ -42,6 +43,9 @@ class PersonController(Controller):
         # expected to be ignored
         headers: Any,
         request: Any,
+        state: State,
+        query: Dict[str, Any],
+        cookies: Dict[str, Any],
         # required query parameters below
         page: int,
         name: Optional[Union[str, List[str]]],  # intentionally without default
