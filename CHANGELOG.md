@@ -174,3 +174,7 @@
 [1.3.0]
 
 - updated middleware call order @slavugan
+
+[1.3.1]
+
+- fix reserved keywords appearing in OpenAPI documentation @Joko013
