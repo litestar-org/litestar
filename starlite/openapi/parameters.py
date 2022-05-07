@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 from openapi_schema_pydantic import Parameter, Schema
 from pydantic.fields import ModelField
 
+from starlite.constants import RESERVED_KWARGS
 from starlite.handlers import BaseRouteHandler
 from starlite.openapi.schema import create_schema
 
@@ -26,9 +27,7 @@ def create_parameters(
     path_parameter_names = [path_param["name"] for path_param in path_parameters]
     parameters: List[Parameter] = []
     ignored_fields = [
-        "data",
-        "request",
-        "headers",
+        *RESERVED_KWARGS,
         *list(route_handler.resolve_dependencies().keys()),
     ]
     for f_name, field in handler_fields.items():
