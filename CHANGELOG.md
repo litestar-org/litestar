@@ -178,3 +178,8 @@
 [1.3.1]
 
 - fix reserved keywords appearing in OpenAPI documentation @Joko013
+
+[1.3.2]
+
+- fix static path resolution when static files are served from "/"
+- refactor logging

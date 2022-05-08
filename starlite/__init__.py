@@ -44,13 +44,12 @@ from .handlers import (
     route,
     websocket,
 )
-from .logging import LoggingConfig
+from .logging import LoggingConfig, QueueListenerHandler
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
 from .params import Body, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
-from .queue_listener_handler import QueueListenerHandler
 from .response import Response
 from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
@@ -64,8 +63,8 @@ __all__ = [
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
-    "CacheConfig",
     "CORSConfig",
+    "CacheConfig",
     "Controller",
     "DTOFactory",
     "File",
@@ -89,6 +88,7 @@ __all__ = [
     "PermissionDeniedException",
     "PluginProtocol",
     "Provide",
+    "QueueListenerHandler",
     "Redirect",
     "Request",
     "RequestEncodingType",
@@ -105,7 +105,6 @@ __all__ = [
     "Template",
     "TemplateConfig",
     "TestClient",
-    "QueueListenerHandler",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",

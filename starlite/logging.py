@@ -1,8 +1,49 @@
+from atexit import register
 from logging import config
+from logging.handlers import QueueHandler, QueueListener
+from queue import Queue
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
+
+
+def _resolve_handlers(handlers: List[Any]) -> List[Any]:
+    """
+    Converts list of string of handlers to the object of respective handler.
+    Indexing the list performs the evaluation of the object.
+    """
+    return [handlers[i] for i in range(len(handlers))]
+
+
+class QueueListenerHandler(QueueHandler):
+    """
+    Configures queue listener and handler to support non-blocking logging configuration.
+    """
+
+    def __init__(
+        self, handlers: List[Any], respect_handler_level: bool = False, auto_run: bool = True, queue: Queue = Queue(-1)
+    ):
+        super().__init__(queue)
+        self.handlers = _resolve_handlers(handlers)
+        self._listener: QueueListener = QueueListener(
+            self.queue, *self.handlers, respect_handler_level=respect_handler_level
+        )
+        if auto_run:
+            self.start()
+            register(self.stop)
+
+    def start(self) -> None:
+        """
+        starts the listener.
+        """
+        self._listener.start()
+
+    def stop(self) -> None:
+        """
+        Manually stop a listener.
+        """
+        self._listener.stop()
 
 
 class LoggingConfig(BaseModel):
