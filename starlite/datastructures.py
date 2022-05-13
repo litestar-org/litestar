@@ -30,7 +30,7 @@ class File(StarliteType):
     stat_result: Optional[os.stat_result] = None
 
     @validator("stat_result", always=True)
-    def validate_status_code(  # pylint: disable=no-self-argument, no-self-use
+    def validate_status_code(  # pylint: disable=no-self-argument
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath"""

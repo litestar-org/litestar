@@ -35,12 +35,11 @@ from starlite import TestClient
 
 from my_app.main import app
 
-client = TestClient(app=app)
-
 def test_health_check():
-    response = client.get("/health-check")
-    assert response.status_code == HTTP_200_OK
-    assert response.text == "healthy"
+    with TestClient(app=app) as client:
+        response = client.get("/health-check")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "healthy"
 ```
 
 Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
@@ -70,6 +69,9 @@ def test_health_check(test_client: TestClient):
     assert response.status_code == HTTP_200_OK
     assert response.text == "healthy"
 ```
+
+!!! important use the test client as a context manager (i.e. with the `with`) keyword if you want to use the starlite
+app's `on_startup` and `on_shutdown`.
 
 ## Creating a Testing App
 

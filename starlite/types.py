@@ -44,6 +44,9 @@ else:
     Router = Any
     State = Any
 
+T = TypeVar("T", bound=BaseModel)
+H = TypeVar("H", bound=HTTPConnection)
+
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
 ]
@@ -53,10 +56,7 @@ LifeCycleHandler = Union[
     Callable[[], Awaitable[Any]],
     Callable[[State], Awaitable[Any]],
 ]
-HTTPConnectionT = TypeVar("HTTPConnectionT", bound=HTTPConnection)
-Guard = Union[
-    Callable[[HTTPConnectionT, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnectionT, BaseRouteHandler], None]
-]
+Guard = Union[Callable[[H, BaseRouteHandler], Awaitable[None]], Callable[[H, BaseRouteHandler], None]]
 Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
 ReservedKwargs = Union[
     Literal["request"],
@@ -89,9 +89,6 @@ class MiddlewareProtocol(Protocol):
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:  # pragma: no cover
         ...
-
-
-T = TypeVar("T", bound=BaseModel)
 
 
 class Partial(Generic[T]):

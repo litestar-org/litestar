@@ -3,7 +3,15 @@ from typing import Any
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from starlite import HttpMethod, RequestEncodingType, create_test_request
+from starlite import (
+    HttpMethod,
+    RequestEncodingType,
+    Starlite,
+    State,
+    TestClient,
+    create_test_request,
+    get,
+)
 from tests import Person
 
 
@@ -54,3 +62,18 @@ def test_create_test_request(
         content=content,
         request_media_type=request_media_type,
     )
+
+
+async def test_test_client() -> None:
+    def start_up_handler(state: State) -> None:
+        state.value = 1
+
+    @get(path="/test")
+    def test_handler(state: State) -> None:
+        assert state.value == 1
+
+    app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler])
+
+    with TestClient(app=app) as client:
+        client.get("/test")
+        assert app.state.value == 1

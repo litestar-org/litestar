@@ -35,7 +35,7 @@ class SignatureModel(BaseModel):
             output: Dict[str, Any] = {}
             modelled_signature = cls(**kwargs)
             for key in cls.__fields__:
-                value = modelled_signature.__getattribute__(key)
+                value = modelled_signature.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
                 plugin_mapping: Optional[PluginMapping] = cls.field_plugin_mappings.get(key)
                 if plugin_mapping:
                     if isinstance(value, (list, tuple)):
