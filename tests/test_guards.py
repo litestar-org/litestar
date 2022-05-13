@@ -7,6 +7,7 @@ from starlette.websockets import WebSocketDisconnect
 from starlite import (
     BaseRouteHandler,
     MediaType,
+    Request,
     Response,
     asgi,
     create_test_client,
@@ -22,7 +23,7 @@ async def local_guard(_: HTTPConnection, route_handler: BaseRouteHandler) -> Non
         raise PermissionDeniedException("local")
 
 
-def app_guard(request: HTTPConnection, _: BaseRouteHandler) -> None:
+def app_guard(request: Request, _: BaseRouteHandler) -> None:
     if not request.headers.get("Authorization"):
         raise PermissionDeniedException("app")
 
