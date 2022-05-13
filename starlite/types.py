@@ -53,8 +53,9 @@ LifeCycleHandler = Union[
     Callable[[], Awaitable[Any]],
     Callable[[State], Awaitable[Any]],
 ]
+HTTPConnectionT = TypeVar("HTTPConnectionT", bound=HTTPConnection)
 Guard = Union[
-    Callable[[HTTPConnection, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnection, BaseRouteHandler], None]
+    Callable[[HTTPConnectionT, BaseRouteHandler], Awaitable[None]], Callable[[HTTPConnectionT, BaseRouteHandler], None]
 ]
 Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
 ReservedKwargs = Union[
