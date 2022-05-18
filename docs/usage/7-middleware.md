@@ -8,7 +8,7 @@ compatible with it - and any 3rd party middlewares created for it.
 
 ## The Middleware Protocol
 
-You can build your own middleware by either subclassing the `starlette.middleware.base.BaseMiddleware` class (see the
+You can build your own middleware by either subclassing the `starlette.middleware.base.BaseHTTPMiddleware` class (see the
 starlette documentation), or by creating a class that implements the Starlite `MiddlewareProtocol`.
 
 For example, lets create a simple middleware that does some naive logging for every request:
