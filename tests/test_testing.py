@@ -64,7 +64,7 @@ def test_create_test_request(
     )
 
 
-async def test_test_client() -> None:
+def test_test_client() -> None:
     def start_up_handler(state: State) -> None:
         state.value = 1
 

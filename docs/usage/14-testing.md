@@ -65,9 +65,10 @@ from starlite import TestClient
 
 
 def test_health_check(test_client: TestClient):
-    response = test_client.get("/health-check")
-    assert response.status_code == HTTP_200_OK
-    assert response.text == "healthy"
+    with test_client as client:
+        response = client.get("/health-check")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "healthy"
 ```
 
 !!! important use the test client as a context manager (i.e. with the `with`) keyword if you want to use the starlite

@@ -120,7 +120,7 @@ class UserController(Controller):
         ...
 
     @patch(path="/{user_id:uuid}")
-    async def partially_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
         ...
 
     @put(path="/{user_id:uuid}")
