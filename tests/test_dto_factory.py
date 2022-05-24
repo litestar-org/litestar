@@ -195,3 +195,8 @@ def test_dto_factory_preserves_field_allow_none_false() -> None:
     assert Example.__fields__["password"].allow_none is False
     ExampleDTO = DTOFactory()("ExampleDTO", Example)
     assert ExampleDTO.__fields__["password"].allow_none is False
+
+
+def test_dto_factory_preserves_field_info_where_unnecessary_to_change() -> None:
+    ExampleDTO = DTOFactory(plugins=[])("ExampleDTO", PydanticPet, exclude=[], field_mapping={}, field_definitions={})
+    assert PydanticPet.__fields__["name"].field_info is ExampleDTO.__fields__["name"].field_info
