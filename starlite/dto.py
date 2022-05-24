@@ -137,7 +137,7 @@ class DTOFactory:
                         field_name, field_type = mapping
                     else:
                         field_name = mapping
-                if model_field.field_info.default is not Undefined:
+                if model_field.field_info.default not in (Undefined, ...):
                     field_definitions[field_name] = (field_type, model_field.default)
                 elif not model_field.allow_none:
                     field_definitions[field_name] = (field_type, ...)
