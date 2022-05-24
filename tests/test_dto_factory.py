@@ -1,4 +1,5 @@
-from typing import Any, Type, cast
+import sys
+from typing import Any, Dict, List, Type, cast
 
 import pytest
 from pydantic import BaseModel, create_model
@@ -149,6 +150,7 @@ def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: 
             assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)  # type: ignore
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="dataclasses behave differently in lower versions")  # type: ignore
 @pytest.mark.parametrize(  # type: ignore[misc]
     "model, exclude, field_mapping, plugins",
     [
@@ -157,7 +159,9 @@ def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: 
         [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
-def test_conversion_from_model_instance(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
+def test_conversion_from_model_instance(
+    model: Any, exclude: List[Any], field_mapping: Dict[str, Any], plugins: List[Any]
+) -> None:
     DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
     if issubclass(model, (Person, VanillaDataClassPerson)):
