@@ -1,7 +1,7 @@
 from typing import Any, Type, cast
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 from pydantic_factories import ModelFactory
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
@@ -184,3 +184,10 @@ def test_conversion_from_model_instance(model: Any, exclude: list, field_mapping
         else:
             original_key = DTO.dto_field_mapping[key]
             assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
+
+
+def test_dto_factory_preserves_field_allow_none_false() -> None:
+    Example = create_model("Example", password=(str, ...))
+    assert Example.__fields__["password"].allow_none is False
+    ExampleDTO = DTOFactory()("ExampleDTO", Example)
+    assert ExampleDTO.__fields__["password"].allow_none is False
