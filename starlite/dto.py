@@ -137,12 +137,16 @@ class DTOFactory:
                         field_name, field_type = mapping
                     else:
                         field_name = mapping
-                if model_field.field_info.default not in (Undefined, None, ...):
-                    field_definitions[field_name] = (field_type, model_field.default)
-                elif model_field.required or not model_field.allow_none:
-                    field_definitions[field_name] = (field_type, ...)
+                    if model_field.field_info.default not in (Undefined, None, ...):
+                        field_definitions[field_name] = (field_type, model_field.default)
+                    elif model_field.required or not model_field.allow_none:
+                        field_definitions[field_name] = (field_type, ...)
+                    else:
+                        field_definitions[field_name] = (field_type, None)
                 else:
-                    field_definitions[field_name] = (field_type, None)
+                    # prevents losing Optional
+                    field_type = Optional[field_type] if model_field.allow_none else field_type
+                    field_definitions[field_name] = (field_type, model_field.field_info)
         dto = cast(Type[DTO[T]], create_model(name, __base__=DTO, **field_definitions))  # type: ignore
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
