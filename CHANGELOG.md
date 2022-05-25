@@ -183,3 +183,11 @@
 
 - fix static path resolution when static files are served from "/"
 - refactor logging
+
+[1.3.3]
+
+- update pydantic to 1.9.1
+
+[1.3.4]
+
+- fix `DTOFactory` handling of optional fields @peterschutt
