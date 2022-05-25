@@ -76,7 +76,7 @@ The Starlite `Router` class is used to organize sub-paths under a common namespa
 different controllers, and each controller's respective path is combined with the router's path.
 
 Assuming that the `UserOrderController` defines a _path_ of "/user" and `PartnerOrderController` defines a _path_ of "
-/partner", their paths will be "/orders/user" and "order/partner" respectively.
+/partner", their paths will be "/orders/user" and "orders/partner" respectively.
 
 Aside from `path` and `route_handlers` which are required kwargs, you can also pass the following kwargs to Router:
 
