@@ -139,7 +139,7 @@ my_app_logging_config = LoggingConfig(
     loggers={
         "my_app": {
             "level": "INFO",
-            "handlers": ["console"],
+            "handlers": ["queue_listener"],
         }
     }
 )
@@ -152,7 +152,7 @@ confusing. It pre-configures logging to use the `QueueHandler`, which is non-blo
 
 In the above we defined a logger for the "my_app" namespace with a level of "INFO", i.e. only messages of INFO severity
 or above will be logged by it, using the `LoggingConfig` default console handler, which will emit logging messages to \*
-sys.stderr\_.
+sys.stderr\_ using the `QueueHandler`.
 
 You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and you are
 **free to use whatever solution** you want for this (e.g. [loguru](https://github.com/Delgan/loguru)). Still, if you do set

@@ -200,3 +200,7 @@
 [1.3.6]
 
 - updated validation errors to return more useful json objects
+
+[1.3.7]
+
+- fix logging configure hanging in startup

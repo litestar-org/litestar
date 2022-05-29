@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.3.6"
+version = "1.3.7"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
