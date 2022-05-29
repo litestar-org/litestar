@@ -2,7 +2,6 @@ from inspect import Signature
 from typing import Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
-from pydantic.error_wrappers import display_errors
 from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
@@ -54,7 +53,8 @@ class SignatureModel(BaseModel):
             return output
         except ValidationError as e:
             raise ValidationException(
-                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}:\n\n{display_errors(e.errors())}"
+                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}",
+                extra=e.errors(),
             ) from e
 
 

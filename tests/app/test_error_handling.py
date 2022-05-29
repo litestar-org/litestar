@@ -12,8 +12,10 @@ from starlite import (
     TestClient,
     create_test_client,
     get,
+    post,
 )
 from starlite.exceptions import InternalServerException
+from tests import Person
 
 
 def test_default_handle_http_exception_handling() -> None:
@@ -43,6 +45,18 @@ def test_default_handle_http_exception_handling() -> None:
     assert json.loads(response.body) == {
         "detail": repr(AttributeError("oops")),
     }
+
+
+def test_default_handling_of_pydantic_errors() -> None:
+    @post("/{param:int}")
+    def my_route_handler(param: int, data: Person) -> None:
+        ...
+
+    with create_test_client(my_route_handler) as client:
+        response = client.post("/123", json={"first_name": "moishe"})
+        extra = response.json().get("extra")
+        assert extra is not None
+        assert len(extra) == 3
 
 
 def test_using_custom_http_exception_handler() -> None:

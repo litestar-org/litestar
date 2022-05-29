@@ -196,3 +196,7 @@
 
 - update Starlette to 0.20.1
 - add memoization to openAPI schema
+
+[1.3.6]
+
+- updated validation errors to return more useful json objects
