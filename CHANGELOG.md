@@ -191,3 +191,8 @@
 [1.3.4]
 
 - fix `DTOFactory` handling of optional fields @peterschutt
+
+[1.3.5]
+
+- update Starlette to 0.20.1
+- add memoization to openAPI schema
