@@ -13,7 +13,7 @@ def my_cached_handler() -> str:
 ```
 
 By setting `cache=True` in the route handler, caching for the route handler will be enabled for the default duration,
-which 60 seconds unless modified.
+which is 60 seconds unless modified.
 
 Alternatively you can specify the number of seconds to cache the responses from the given handler like so:
 
