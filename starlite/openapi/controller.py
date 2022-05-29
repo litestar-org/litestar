@@ -14,6 +14,7 @@ class OpenAPIController(Controller):
         body { margin: 0; padding: 0 }
     """
     redoc_version = "next"
+    dumped_schema = ""
 
     @staticmethod
     def schema_from_request(request: Request) -> OpenAPI:
@@ -35,9 +36,11 @@ class OpenAPIController(Controller):
     @get(media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
-        dumped_schema = dumps(
-            request.app.openapi_schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2
-        ).decode("utf-8")
+        if self.dumped_schema == "":
+            schema = self.schema_from_request(request)
+            self.dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
+                "utf-8"
+            )
         head = f"""
           <head>
             <title>{request.app.openapi_schema.info.title}</title>
@@ -55,7 +58,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    JSON.parse({dumped_schema}),
+                    JSON.parse({self.dumped_schema}),
                     undefined,
                     document.getElementById('redoc-container')
                 )
