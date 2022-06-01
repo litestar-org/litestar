@@ -27,14 +27,13 @@ def create_parameters(
     """
     path_parameter_names = [path_param["name"] for path_param in path_parameters]
     parameters: List[Parameter] = []
-    ignored_fields = [*RESERVED_KWARGS]
     dependencies = route_handler.resolve_dependencies()
     for f_name, field in handler_fields.items():
         if f_name in dependencies:
             dependency_fields = cast(BaseModel, dependencies[f_name].signature_model).__fields__
             parameters.extend(create_parameters(route_handler, dependency_fields, path_parameters, generate_examples))
             continue
-        if f_name not in ignored_fields:
+        if f_name not in RESERVED_KWARGS:
             schema = None
             param_in = "query"
             required = field.required
