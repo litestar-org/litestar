@@ -10,8 +10,8 @@ jobs:
     env:
       SETUPTOOLS_USE_DISTUTILS: stdlib
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
       - uses: pre-commit/action@v2.0.3
   test:
     needs: validate
@@ -22,19 +22,16 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -43,14 +40,13 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-
       - name: Test
         run: poetry run pytest
         if: matrix.python-version != '3.10'
       - name: Test with Coverage
         run: poetry run pytest --cov=. --cov-report=xml
         if: matrix.python-version == '3.10'
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: coverage-xml
           path: coverage.xml
@@ -61,9 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-xml
       - name: Fix coverage file for sonarcloud
