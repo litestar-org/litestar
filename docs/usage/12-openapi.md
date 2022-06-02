@@ -82,8 +82,7 @@ def my_route_handler() -> None:
 
 You can also affect the schema by enriching and/or modifying it using the following kwargs:
 
-- `tags`: a list of openapi-pydantic `Tag` models, which correlate to
-  the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
+- `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 - `summary`: Text used for the route's schema _summary_ section.
 - `description`: Text used for the route's schema _description_ section.
 - `response_description`: Text used for the route's response schema _description_ section.
