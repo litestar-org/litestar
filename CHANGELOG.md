@@ -204,3 +204,7 @@
 [1.3.7]
 
 - fix logging configure hanging in startup
+
+[1.3.8]
+
+- fix `Router.tags` being omitted from the docs @peterschutt
