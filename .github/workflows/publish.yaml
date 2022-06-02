@@ -16,13 +16,15 @@ jobs:
         uses: snok/install-poetry@v1
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
-      - name: test-publish
-        uses: JRubics/poetry-publish@v1.11
-        with:
-          pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
-          repository_name: "testpypi"
-          repository_url: "https://test.pypi.org/legacy/"
+      - name: config poetry
+        shell: bash
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry config repositories.test "https://test.pypi.org/legacy/"
+          poetry config pypi-token.test ${{ secrets.TEST_PYPI_TOKEN }}
+      #      - name: publish test
+      #        shell: bash
+      #        run: poetry publish --build --no-interaction --repository test
       - name: publish
-        uses: JRubics/poetry-publish@v1.11
-        with:
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+        shell: bash
+        run: poetry publish --build --no-interaction
