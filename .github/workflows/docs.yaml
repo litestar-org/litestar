@@ -1,3 +1,4 @@
+name: docs
 on:
   workflow_run:
     workflows: ["ci"]

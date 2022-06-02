@@ -1,22 +1,18 @@
-name: Publish package
-
+name: publish
 on:
   release:
-    types: [published, edited]
-
+    types: [published]
 jobs:
-  build-and-publish-test:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: JRubics/poetry-publish@v1.11
+      - name: test-publish
+        uses: JRubics/poetry-publish@v1.11
         with:
           pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
           repository_name: "testpypi"
           repository_url: "https://test.pypi.org/legacy/"
-  build-and-publish:
-    needs: build-and-publish-test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: JRubics/poetry-publish@v1.11
+      - name: publish
+        uses: JRubics/poetry-publish@v1.11
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}
