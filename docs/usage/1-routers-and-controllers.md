@@ -61,6 +61,7 @@ Aside from the `path` class variable, you can also set the following optional cl
   will be used.
 - `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
   `Respose` object and it must return a `Response` object.
+- `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 
 ## Routers
 
@@ -91,6 +92,7 @@ Aside from `path` and `route_handlers` which are required kwargs, you can also p
   and instead this value will be used.
 - `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
   `Respose` object and it must return a `Response` object.
+- `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 
 ## Registering Routes
 
