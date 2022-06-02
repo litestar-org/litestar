@@ -8,15 +8,15 @@ jobs:
   build-and-publish-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: snok/.github/workflows/publish@main
+      - uses: JRubics/poetry-publish@v1.11
         with:
-          overwrite-repository: true
-          repository-url: https://test.pypi.org/legacy/
-          token: ${{ secrets.TEST_PYPI_TOKEN }}
+          pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
+          repository_name: "testpypi"
+          repository_url: "https://test.pypi.org/legacy/"
   build-and-publish:
     needs: build-and-publish-test
     runs-on: ubuntu-latest
     steps:
-      - uses: snok/.github/workflows/publish@main
+      - uses: JRubics/poetry-publish@v1.11
         with:
-          token: ${{ secrets.PYPI_TOKEN }}
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
