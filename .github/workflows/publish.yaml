@@ -20,4 +20,4 @@ jobs:
         shell: bash
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-          poetry publish --build --no-interaction --repository pypi
+          poetry publish --build --no-interaction
