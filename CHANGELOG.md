@@ -208,3 +208,7 @@
 [1.3.8]
 
 - fix `Router.tags` being omitted from the docs @peterschutt
+
+[1.3.9]
+
+- include dependencies in docs @timwedde
