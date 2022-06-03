@@ -1,7 +1,19 @@
+from typing import cast
+
 from openapi_schema_pydantic import Example
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.fields import FieldInfo
 
+from starlite import (
+    Controller,
+    MediaType,
+    Parameter,
+    Provide,
+    Starlite,
+    create_test_client,
+    get,
+)
+from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
@@ -40,3 +52,43 @@ def test_update_schema_with_field_info() -> None:
         assert getattr(schema, schema_key) == getattr(field_info, pydantic_key)
     for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
         assert getattr(schema, schema_key) == field_info.extra[extra_key]
+
+
+def test_dependency_schema_generation() -> None:
+    def top_dependency(query_param: int) -> int:
+        return query_param
+
+    def mid_level_dependency(header_param: str = Parameter(header="header_param", required=False)) -> int:
+        return 5
+
+    def local_dependency(path_param: int, mid_level: int, top_level: int) -> int:
+        return path_param + mid_level + top_level
+
+    class MyController(Controller):
+        path = "/test"
+        dependencies = {"mid_level": Provide(mid_level_dependency)}
+
+        @get(
+            path="/{path_param:int}",
+            dependencies={
+                "summed": Provide(local_dependency),
+            },
+            media_type=MediaType.TEXT,
+        )
+        def test_function(self, summed: int, handler_param: int) -> str:
+            return str(summed)
+
+    with create_test_client(
+        MyController,
+        dependencies={"top_level": Provide(top_dependency)},
+        openapi_config=DEFAULT_OPENAPI_CONFIG,
+    ) as client:
+        app = cast(Starlite, client.app)
+        handler = app.openapi_schema.paths["/test/{path_param}"]
+        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
+        assert data == {
+            "path_param": {"in": "path", "required": True},
+            "header_param": {"in": "header", "required": False},
+            "query_param": {"in": "query", "required": True},
+            "handler_param": {"in": "query", "required": True},
+        }
