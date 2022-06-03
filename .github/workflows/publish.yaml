@@ -15,16 +15,9 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
-      - name: config poetry
+        run: poetry install --no-interaction --no-root --no-dev
+      - name: publish
         shell: bash
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
-          poetry config repositories.test "https://test.pypi.org/legacy/"
-          poetry config pypi-token.test ${{ secrets.TEST_PYPI_TOKEN }}
-      - name: publish test
-        shell: bash
-        run: poetry publish --build --no-interaction --repository test
-      - name: publish
-        shell: bash
-        run: poetry publish --build --no-interaction
+          poetry publish --build --no-interaction --repository pypi
