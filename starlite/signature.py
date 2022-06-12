@@ -17,7 +17,7 @@ if sys.version_info >= (3, 10):
 
     UNION_TYPES = {UnionType, Union}
 else:
-    UNION_TYPES = {Union}
+    UNION_TYPES = {Union}  # pragma: no cover
 
 
 class SignatureModel(BaseModel):
