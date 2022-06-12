@@ -1,23 +1,12 @@
 import sys
 from inspect import Signature
-from typing import (
-    AbstractSet,
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Type,
-    Union,
-    cast,
-    get_origin,
-)
+from typing import AbstractSet, Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
-from typing_extensions import get_args
+from typing_extensions import get_args, get_origin
 
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
