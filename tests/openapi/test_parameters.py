@@ -1,4 +1,4 @@
-from typing import Callable, cast
+from typing import Callable, Optional, cast
 
 import pytest
 
@@ -126,7 +126,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
         return 13
 
     @get(dependencies={"dep": Provide(produce_dep)})
-    def handler(dep: int | None = Dependency()) -> None:
+    def handler(dep: Optional[int] = Dependency()) -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
@@ -137,7 +137,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 
 def test_dependency_not_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(dep: int | None = Dependency()) -> None:
+    def handler(dep: Optional[int] = Dependency()) -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
@@ -146,7 +146,7 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
 
 def test_non_dependency_in_doc_params_if_not_provided() -> None:
     @get()
-    def handler(param: int | None) -> None:
+    def handler(param: Optional[int]) -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
