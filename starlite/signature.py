@@ -1,8 +1,20 @@
 from inspect import Signature
-from typing import Any, ClassVar, Dict, List, Optional, Type, Union, cast
+from types import UnionType
+from typing import (
+    AbstractSet,
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+    get_origin,
+)
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
-from pydantic.fields import Undefined
+from pydantic.fields import FieldInfo, Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
@@ -58,7 +70,54 @@ class SignatureModel(BaseModel):
             ) from e
 
 
-def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
+def detect_optional_union(annotation: Any) -> bool:
+    """Given a type annotation determine if the annotation infers an optional union.
+
+    >>> from typing import Optional, Union, get_args, get_origin
+    >>> from types import UnionType
+    >>> get_origin(Optional[int]) is Union
+    True
+    >>> get_origin(int | None) is UnionType
+    True
+    >>> get_origin(Union[int, None]) is Union
+    True
+    >>> get_args(Optional[int])
+    (<class 'int'>, <class 'NoneType'>)
+    >>> get_args(int | None)
+    (<class 'int'>, <class 'NoneType'>)
+    >>> get_args(Union[int, None])
+    (<class 'int'>, <class 'NoneType'>)
+    """
+    return get_origin(annotation) in (Union, UnionType) and type(None) in get_args(annotation)
+
+
+def check_for_unprovided_dependency(
+    key: str, field: Any, is_optional: bool, provided_dependencies: AbstractSet[str], fn_name: str
+) -> None:
+    """
+    Where a dependency has been explicitly marked using the ``Dependency`` function, it is a
+    configuration error if that dependency has been defined without a default value, and it hasn't
+    been provided to the handler.
+
+    Raises ``ImproperlyConfiguredException`` where case is detected.
+    """
+    if is_optional:
+        return
+    if not isinstance(field, FieldInfo):
+        return
+    if not field.extra.get("is_dependency"):
+        return
+    if field.default is not Undefined:
+        return
+    if key not in provided_dependencies:
+        raise ImproperlyConfiguredException(
+            f"Explicit dependency '{key}' for '{fn_name}' has no default value, or provided dependency."
+        )
+
+
+def model_function_signature(
+    fn: AnyCallable, plugins: List[PluginProtocol], provided_dependencies: AbstractSet[str]
+) -> Type[SignatureModel]:
     """
     Creates a subclass of SignatureModel for the signature of a given function
     """
@@ -85,6 +144,8 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
             if ModelFactory.is_constrained_field(default):
                 field_definitions[kwarg] = (default, ...)
                 continue
+            type_optional = detect_optional_union(type_annotation)
+            check_for_unprovided_dependency(kwarg, default, type_optional, provided_dependencies, fn_name)
             plugin = get_plugin_for_value(value=type_annotation, plugins=plugins)
             if plugin:
                 type_args = get_args(type_annotation)
@@ -98,7 +159,7 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
             if default not in [signature.empty, Undefined]:
                 field_definitions[kwarg] = (type_annotation, default)
                 defaults[kwarg] = default
-            elif not repr(parameter.annotation).startswith("typing.Optional"):
+            elif not type_optional:
                 field_definitions[kwarg] = (type_annotation, ...)
             else:
                 field_definitions[kwarg] = (type_annotation, None)

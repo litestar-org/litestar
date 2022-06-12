@@ -42,7 +42,7 @@ async def test_to_response_async_await() -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = model_function_signature(test_function.fn, [])  # type: ignore
+    test_function.signature_model = model_function_signature(test_function.fn, [], set())  # type: ignore
 
     response = await test_function.to_response(data=test_function.fn(data=person_instance), plugins=[], app=None)  # type: ignore
     assert loads(response.body) == person_instance.dict()

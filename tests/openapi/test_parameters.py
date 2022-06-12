@@ -18,7 +18,9 @@ def test_create_parameters() -> None:
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=model_function_signature(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,
+        handler_fields=model_function_signature(
+            fn=cast(Callable, route_handler.fn), plugins=[], provided_dependencies=set()
+        ).__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,
     )
@@ -42,8 +44,8 @@ def test_create_parameters() -> None:
     assert page_size.param_schema.examples[0].value == 1
     assert name.param_in == "query"
     assert name.name == "name"
-    assert len(name.param_schema.oneOf) == 2
-    assert name.required
+    assert len(name.param_schema.oneOf) == 3
+    assert not name.required
     assert name.param_schema.examples
     assert from_date.param_in == "query"
     assert from_date.name == "from_date"
