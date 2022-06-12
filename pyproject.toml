@@ -78,6 +78,7 @@ disable = [
     "super-init-not-called",
     "too-few-public-methods",
     "duplicate-code",
+    "unnecessary-comprehension",
 ]
 enable = "useless-suppression"
 
