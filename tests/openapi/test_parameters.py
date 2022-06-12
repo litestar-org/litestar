@@ -2,7 +2,7 @@ from typing import Callable, cast
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, Provide, Starlite, get
+from starlite import Dependency, ImproperlyConfiguredException, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
@@ -119,3 +119,36 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
+
+
+def test_dependency_params_in_docs_if_dependency_provided() -> None:
+    def produce_dep(param: str) -> int:
+        return 13
+
+    @get(dependencies={"dep": Provide(produce_dep)})
+    def handler(dep: int | None = Dependency()) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    param_name_set = {p.name for p in app.openapi_schema.paths["/"].get.parameters}
+    assert "dep" not in param_name_set
+    assert "param" in param_name_set
+
+
+def test_dependency_not_in_doc_params_if_not_provided() -> None:
+    @get()
+    def handler(dep: int | None = Dependency()) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    assert app.openapi_schema.paths["/"].get.parameters is None
+
+
+def test_non_dependency_in_doc_params_if_not_provided() -> None:
+    @get()
+    def handler(param: int | None) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    param_name_set = {p.name for p in app.openapi_schema.paths["/"].get.parameters}
+    assert "param" in param_name_set
