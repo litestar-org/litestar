@@ -1,5 +1,5 @@
+import sys
 from inspect import Signature
-from types import UnionType
 from typing import (
     AbstractSet,
     Any,
@@ -22,6 +22,13 @@ from typing_extensions import get_args
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
+
+if sys.version_info >= (3, 10):
+    from types import UnionType
+
+    UNION_TYPES = {UnionType, Union}
+else:
+    UNION_TYPES = {Union}
 
 
 class SignatureModel(BaseModel):
@@ -88,7 +95,7 @@ def detect_optional_union(annotation: Any) -> bool:
     >>> get_args(Union[int, None])
     (<class 'int'>, <class 'NoneType'>)
     """
-    return get_origin(annotation) in (Union, UnionType) and type(None) in get_args(annotation)
+    return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)
 
 
 def check_for_unprovided_dependency(
