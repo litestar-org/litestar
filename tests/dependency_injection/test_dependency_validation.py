@@ -1,5 +1,3 @@
-from typing import Generic, TypeVar
-
 import pytest
 
 from starlite import ImproperlyConfiguredException, Provide, Starlite, get
@@ -33,18 +31,3 @@ def test_dependency_validation() -> None:
                 "third": Provide(first_method),
             },
         )
-
-
-@pytest.mark.xfail  # type:ignore[misc]
-def test_create_schema_generic_type_field() -> None:
-    T = TypeVar("T")
-
-    class GenericType(Generic[T]):
-        t: T
-
-    @get("/")
-    def handler_function(dep: GenericType[int]) -> None:
-        ...
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler_function])

@@ -19,6 +19,7 @@ from pydantic.fields import FieldInfo, ModelField, Undefined
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
 
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_FIELD_SHAPE_MAP,
@@ -208,7 +209,15 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
     elif field.sub_fields:
         # we are dealing with complex types in this case
         # the problem here is that the Python typing system is too crude to define OpenAPI objects properly
-        openapi_type = PYDANTIC_FIELD_SHAPE_MAP[field.shape]
+        try:
+            openapi_type = PYDANTIC_FIELD_SHAPE_MAP[field.shape]
+        except KeyError as e:
+            raise ImproperlyConfiguredException(
+                f"Parameter '{field.name}' with type '{field.outer_type_}' could not be mapped to an Open API type. "
+                f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
+                "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
+                f"`{field.name}: ... = Dependency(...)`."
+            ) from e
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
             schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
