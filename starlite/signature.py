@@ -1,23 +1,17 @@
-import sys
 from inspect import Signature
 from typing import AbstractSet, Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
-from pydantic.fields import FieldInfo, Undefined
+from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
-from typing_extensions import get_args, get_origin
+from typing_extensions import get_args
 
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
-
-if sys.version_info >= (3, 10):
-    from types import UnionType
-
-    UNION_TYPES = {UnionType, Union}
-else:
-    UNION_TYPES = {Union}  # pragma: no cover
+from starlite.utils.dependency import check_for_unprovided_dependency
+from starlite.utils.typing import detect_optional_union
 
 
 class SignatureModel(BaseModel):
@@ -64,51 +58,6 @@ class SignatureModel(BaseModel):
                 detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}",
                 extra=e.errors(),
             ) from e
-
-
-def detect_optional_union(annotation: Any) -> bool:
-    """Given a type annotation determine if the annotation infers an optional union.
-
-    >>> from typing import Optional, Union, get_args, get_origin
-    >>> from types import UnionType
-    >>> get_origin(Optional[int]) is Union
-    True
-    >>> get_origin(int | None) is UnionType
-    True
-    >>> get_origin(Union[int, None]) is Union
-    True
-    >>> get_args(Optional[int])
-    (<class 'int'>, <class 'NoneType'>)
-    >>> get_args(int | None)
-    (<class 'int'>, <class 'NoneType'>)
-    >>> get_args(Union[int, None])
-    (<class 'int'>, <class 'NoneType'>)
-    """
-    return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)
-
-
-def check_for_unprovided_dependency(
-    key: str, field: Any, is_optional: bool, provided_dependencies: AbstractSet[str], fn_name: str
-) -> None:
-    """
-    Where a dependency has been explicitly marked using the ``Dependency`` function, it is a
-    configuration error if that dependency has been defined without a default value, and it hasn't
-    been provided to the handler.
-
-    Raises ``ImproperlyConfiguredException`` where case is detected.
-    """
-    if is_optional:
-        return
-    if not isinstance(field, FieldInfo):
-        return
-    if not field.extra.get("is_dependency"):
-        return
-    if field.default is not Undefined:
-        return
-    if key not in provided_dependencies:
-        raise ImproperlyConfiguredException(
-            f"Explicit dependency '{key}' for '{fn_name}' has no default value, or provided dependency."
-        )
 
 
 def model_function_signature(
