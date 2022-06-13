@@ -1,4 +1,3 @@
-import itertools
 from copy import copy
 from inspect import iscoroutinefunction
 from typing import (
@@ -81,12 +80,8 @@ class BaseRouteHandler:
         ``BaseRouteHandler.resolve_dependencies()``.
         """
         if self.resolved_dependency_name_set is BaseRouteHandler.empty:
-            self.resolved_dependency_name_set = {
-                k
-                for k in itertools.chain.from_iterable(
-                    (layer.dependencies or {}).keys() for layer in self.ownership_layers()
-                )
-            }
+            layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers())
+            self.resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
         return cast(Set[str], self.resolved_dependency_name_set)
 
     def ownership_layers(self) -> Generator[Union["BaseRouteHandler", "Controller", "Router"], None, None]:
