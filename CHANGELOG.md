@@ -212,3 +212,11 @@
 [1.3.9]
 
 - include dependencies in docs @timwedde
+
+[1.4.0]
+
+- update Starlette to 0.20.3
+- added test for generic model injection @Goldziher
+- selective deduplication of openapi parameters @peterschutt
+- raise improper configuration when user-defined generic type resolved as openapi parameter @peterschutt
+- dependency function @peterschutt
