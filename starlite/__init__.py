@@ -47,7 +47,7 @@ from .handlers import (
 from .logging import LoggingConfig, QueueListenerHandler
 from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from .openapi.controller import OpenAPIController
-from .params import Body, Parameter
+from .params import Body, Dependency, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
 from .response import Response
@@ -66,6 +66,7 @@ __all__ = [
     "CORSConfig",
     "CacheConfig",
     "Controller",
+    "Dependency",
     "DTOFactory",
     "File",
     "HTTPException",

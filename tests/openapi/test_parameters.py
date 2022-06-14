@@ -1,8 +1,8 @@
-from typing import Callable, cast
+from typing import Callable, Optional, cast
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, Provide, Starlite, get
+from starlite import Dependency, ImproperlyConfiguredException, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
@@ -18,7 +18,9 @@ def test_create_parameters() -> None:
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=model_function_signature(fn=cast(Callable, route_handler.fn), plugins=[]).__fields__,
+        handler_fields=model_function_signature(
+            fn=cast(Callable, route_handler.fn), plugins=[], provided_dependency_names=set()
+        ).__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,
     )
@@ -42,8 +44,8 @@ def test_create_parameters() -> None:
     assert page_size.param_schema.examples[0].value == 1
     assert name.param_in == "query"
     assert name.name == "name"
-    assert len(name.param_schema.oneOf) == 2
-    assert name.required
+    assert len(name.param_schema.oneOf) == 3
+    assert not name.required
     assert name.param_schema.examples
     assert from_date.param_in == "query"
     assert from_date.name == "from_date"
@@ -117,3 +119,36 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
+
+
+def test_dependency_params_in_docs_if_dependency_provided() -> None:
+    def produce_dep(param: str) -> int:
+        return 13
+
+    @get(dependencies={"dep": Provide(produce_dep)})
+    def handler(dep: Optional[int] = Dependency()) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    param_name_set = {p.name for p in app.openapi_schema.paths["/"].get.parameters}
+    assert "dep" not in param_name_set
+    assert "param" in param_name_set
+
+
+def test_dependency_not_in_doc_params_if_not_provided() -> None:
+    @get()
+    def handler(dep: Optional[int] = Dependency()) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    assert app.openapi_schema.paths["/"].get.parameters is None
+
+
+def test_non_dependency_in_doc_params_if_not_provided() -> None:
+    @get()
+    def handler(param: Optional[int]) -> None:
+        ...
+
+    app = Starlite(route_handlers=[handler])
+    param_name_set = {p.name for p in app.openapi_schema.paths["/"].get.parameters}
+    assert "param" in param_name_set

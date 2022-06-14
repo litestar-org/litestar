@@ -241,11 +241,17 @@ class Starlite(Router):
         """
         if not route_handler.signature_model:
             route_handler.signature_model = model_function_signature(
-                fn=cast(AnyCallable, route_handler.fn), plugins=self.plugins
+                fn=cast(AnyCallable, route_handler.fn),
+                plugins=self.plugins,
+                provided_dependency_names=route_handler.dependency_name_set,
             )
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
-                provider.signature_model = model_function_signature(fn=provider.dependency, plugins=self.plugins)
+                provider.signature_model = model_function_signature(
+                    fn=provider.dependency,
+                    plugins=self.plugins,
+                    provided_dependency_names=route_handler.dependency_name_set,
+                )
 
     def build_middleware_stack(
         self,

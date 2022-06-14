@@ -73,6 +73,10 @@ def create_parameters(
 
     dependencies = route_handler.resolve_dependencies()
     for f_name, field in handler_fields.items():
+        extra = field.field_info.extra
+        if extra.get("is_dependency") and f_name not in dependencies:
+            # never document explicit dependencies
+            continue
         if f_name in dependencies:
             dependency_fields = cast(BaseModel, dependencies[f_name].signature_model).__fields__
             for parameter in create_parameters(route_handler, dependency_fields, path_parameters, generate_examples):

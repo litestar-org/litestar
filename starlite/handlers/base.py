@@ -7,6 +7,7 @@ from typing import (
     Generator,
     List,
     Optional,
+    Set,
     Type,
     Union,
     cast,
@@ -40,6 +41,7 @@ class BaseRouteHandler:
         "fn",
         "owner",
         "resolved_dependencies",
+        "resolved_dependency_name_set",
         "resolved_guards",
         "signature_model",
     )
@@ -63,8 +65,24 @@ class BaseRouteHandler:
         self.fn: Optional[AnyCallable] = None
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.signature_model: Optional[Type[SignatureModel]] = None
+
+    @property
+    def dependency_name_set(self) -> Set[str]:
+        """
+        The set of all dependency names provided in the handler's ownership layers.
+
+        Intended as a fast to compute set of the names of dependencies provided to the handler, and
+        available at the time that the handler's signature model is generated. Full resolution of
+        dependencies requires that the signature model is already generated and is performed in
+        ``BaseRouteHandler.resolve_dependencies()``.
+        """
+        if self.resolved_dependency_name_set is BaseRouteHandler.empty:
+            layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers())
+            self.resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
+        return cast(Set[str], self.resolved_dependency_name_set)
 
     def ownership_layers(self) -> Generator[Union["BaseRouteHandler", "Controller", "Router"], None, None]:
         """

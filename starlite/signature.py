@@ -1,5 +1,5 @@
 from inspect import Signature
-from typing import Any, ClassVar, Dict, List, Optional, Type, Union, cast
+from typing import AbstractSet, Any, ClassVar, Dict, List, Optional, Type, Union, cast
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import Undefined
@@ -10,6 +10,8 @@ from typing_extensions import get_args
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
+from starlite.utils.dependency import check_for_unprovided_dependency
+from starlite.utils.typing import detect_optional_union
 
 
 class SignatureModel(BaseModel):
@@ -58,7 +60,9 @@ class SignatureModel(BaseModel):
             ) from e
 
 
-def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> Type[SignatureModel]:
+def model_function_signature(
+    fn: AnyCallable, plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
+) -> Type[SignatureModel]:
     """
     Creates a subclass of SignatureModel for the signature of a given function
     """
@@ -85,6 +89,8 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
             if ModelFactory.is_constrained_field(default):
                 field_definitions[kwarg] = (default, ...)
                 continue
+            type_optional = detect_optional_union(type_annotation)
+            check_for_unprovided_dependency(kwarg, default, type_optional, provided_dependency_names, fn_name)
             plugin = get_plugin_for_value(value=type_annotation, plugins=plugins)
             if plugin:
                 type_args = get_args(type_annotation)
@@ -98,7 +104,7 @@ def model_function_signature(fn: AnyCallable, plugins: List[PluginProtocol]) -> 
             if default not in [signature.empty, Undefined]:
                 field_definitions[kwarg] = (type_annotation, default)
                 defaults[kwarg] = default
-            elif not repr(parameter.annotation).startswith("typing.Optional"):
+            elif not type_optional:
                 field_definitions[kwarg] = (type_annotation, ...)
             else:
                 field_definitions[kwarg] = (type_annotation, None)

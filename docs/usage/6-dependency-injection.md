@@ -245,3 +245,70 @@ from my_app.models import Wallet
 async def get_wallet_by_id(connection: AsyncEngine, wallet_id: UUID4) -> Wallet:
     ...
 ```
+
+## The Dependency Function
+
+We infer any function parameter in the recursive tree of handler and dependency function parameters to be a developer
+provided dependency if there is a `Provide` anywhere in the handler's ownership tree keyed to the same name as the
+function parameter. Other parameters are assumed to be query parameters unless instructed otherwise via reserved
+kwargs, or the `Parameter` function.
+
+There may be times when that doesn't suit. Take the following example of a `Repository` object:
+
+```python
+from typing import NamedTuple
+from starlite import Provide, get, post
+from .models import Thing
+
+
+class LimitOffset(NamedTuple):
+    limit: int
+    offset: int
+
+
+class Repository:
+    def __init__(self, limit_offset: LimitOffset | None = None) -> None:
+        # we know what to do if `limit_offset` is provided or not
+        ...
+
+
+def limit_offset_filter(limit: int = 100, offset: int = 0) -> LimitOffset:
+    return LimitOffset(limit, offset)
+
+
+@post(dependencies={"repository": Provide(Repository)})
+def create_a_thing(repository: Repository) -> Thing:
+    return repository.create_thing()
+
+
+@get(
+    dependencies={
+        "repository": Provide(Repository),
+        "limit_offset": Provide(limit_offset_filter),
+    }
+)
+def get_a_thing(repository: Repository) -> list[Thing]:
+    return repository.get_things()
+```
+
+This configuration works, however, `limit_offset` will appear as a query parameter to the POST
+route due to the way we infer the source of data for handler and dependency function parameters.
+
+To resolve this, simply mark the function parameter as a dependency with the `Dependency` function.
+
+```python
+from starlite import Dependency
+
+
+class Repository:
+    def __init__(self, limit_offset: LimitOffset | None = Dependency()) -> None:
+        # we know what to do if `limit_offset` is provided or not
+        ...
+```
+
+Now Starlite knows that the function parameter should never be exposed to the client through the docs.
+
+`Dependency` exposes a single keyword argument, `default`, e.g., `dependency: int = Dependency(default=3)`.
+
+Using the `Dependency` function also allows us to check that a dependency is either provided or has a default value.
+If not, we raise an `ImproperlyConfiguredException` on application startup.

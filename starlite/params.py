@@ -113,3 +113,12 @@ def Body(
         regex=regex,  # type: ignore
         **extra,
     )
+
+
+@validate_arguments(config={"arbitrary_types_allowed": True})
+def Dependency(*, default: Any = Undefined) -> Any:
+    """
+    Creates a pydantic FieldInfo instance with an extra kwargs,
+    used for both parameter parsing and OpenAPI schema generation.
+    """
+    return Field(default, is_dependency=True)

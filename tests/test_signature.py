@@ -13,7 +13,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = model_function_signature(my_fn.fn, [])  # type: ignore
+    model = model_function_signature(my_fn.fn, [], set())  # type: ignore
     fields = model.__fields__
     assert fields["a"].type_ == int
     assert fields["a"].required
@@ -35,7 +35,7 @@ def test_create_signature_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        model_function_signature(my_fn.fn, [])  # type: ignore
+        model_function_signature(my_fn.fn, [], set())  # type: ignore
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -43,9 +43,9 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
     async def health_check() -> None:
         return
 
-    assert model_function_signature(health_check.fn, [])().dict() == {}  # type: ignore
+    assert model_function_signature(health_check.fn, [], set())().dict() == {}  # type: ignore
 
 
 def test_create_function_signature_model_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        model_function_signature(lru_cache(maxsize=0)(lambda x: x), [])  # type: ignore
+        model_function_signature(lru_cache(maxsize=0)(lambda x: x), [], set())  # type: ignore
