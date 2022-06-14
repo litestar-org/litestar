@@ -1,5 +1,6 @@
-from typing import cast
+from typing import Generic, TypeVar, cast
 
+import pytest
 from openapi_schema_pydantic import Example
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.fields import FieldInfo
@@ -14,6 +15,7 @@ from starlite import (
     get,
 )
 from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
@@ -92,3 +94,17 @@ def test_dependency_schema_generation() -> None:
             "query_param": {"in": "query", "required": True},
             "handler_param": {"in": "query", "required": True},
         }
+
+
+def test_create_schema_for_generic_type_raises_improper_config() -> None:
+    T = TypeVar("T")
+
+    class GenericType(Generic[T]):
+        t: T
+
+    @get("/")
+    def handler_function(dep: GenericType[int]) -> None:
+        ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[handler_function])

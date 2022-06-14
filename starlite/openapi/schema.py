@@ -21,11 +21,11 @@ from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
 
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
-    PYDANTIC_FIELD_SHAPE_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
     TYPE_MAP,
 )
 from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
 
 
@@ -206,9 +206,7 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
         field.outer_type_ = field.type_
         schema = create_constrained_field_schema(field_type=field.outer_type_, sub_fields=field.sub_fields)
     elif field.sub_fields:
-        # we are dealing with complex types in this case
-        # the problem here is that the Python typing system is too crude to define OpenAPI objects properly
-        openapi_type = PYDANTIC_FIELD_SHAPE_MAP[field.shape]
+        openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
             schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
