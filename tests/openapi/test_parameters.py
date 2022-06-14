@@ -1,6 +1,9 @@
 from typing import Callable, cast
 
-from starlite import Starlite
+import pytest
+
+from starlite import ImproperlyConfiguredException, Provide, Starlite, get
+from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
 from starlite.signature import model_function_signature
@@ -71,3 +74,46 @@ def test_create_parameters() -> None:
     assert cookie_value.param_schema.type == OpenAPIType.INTEGER
     assert cookie_value.required
     assert cookie_value.param_schema.examples
+
+
+def test_deduplication_for_param_where_key_and_type_equal() -> None:
+    class BaseDep:
+        def __init__(self, query_param: str) -> None:
+            ...
+
+    class ADep(BaseDep):
+        ...
+
+    class BDep(BaseDep):
+        ...
+
+    def c_dep(other_param: float) -> float:
+        ...
+
+    def d_dep(other_param: float) -> float:
+        ...
+
+    @get("/test", dependencies={"a": Provide(ADep), "b": Provide(BDep), "c": Provide(c_dep), "d": Provide(d_dep)})
+    def handler(a: ADep, b: BDep, c: float, d: float) -> str:
+        return "OK"
+
+    app = Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
+    open_api_path_item = app.openapi_schema.paths["/test"]
+    open_api_parameters = open_api_path_item.get.parameters
+    assert len(open_api_parameters) == 2
+    assert {p.name for p in open_api_parameters} == {"query_param", "other_param"}
+
+
+def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> None:
+    def a_dep(query_param: int) -> int:
+        ...
+
+    def b_dep(query_param: str) -> int:
+        ...
+
+    @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
+    def handler(a: int, b: int) -> str:
+        return "OK"
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
