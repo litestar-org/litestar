@@ -11,7 +11,7 @@ jobs:
       SETUPTOOLS_USE_DISTUTILS: stdlib
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
       - uses: pre-commit/action@v2.0.3
   test:
     needs: validate
@@ -24,7 +24,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Set up python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
