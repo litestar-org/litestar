@@ -19,14 +19,13 @@ from pydantic.fields import FieldInfo, ModelField, Undefined
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
 
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
-    PYDANTIC_FIELD_SHAPE_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
     TYPE_MAP,
 )
 from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
 
 
@@ -207,17 +206,7 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
         field.outer_type_ = field.type_
         schema = create_constrained_field_schema(field_type=field.outer_type_, sub_fields=field.sub_fields)
     elif field.sub_fields:
-        # we are dealing with complex types in this case
-        # the problem here is that the Python typing system is too crude to define OpenAPI objects properly
-        try:
-            openapi_type = PYDANTIC_FIELD_SHAPE_MAP[field.shape]
-        except KeyError as e:
-            raise ImproperlyConfiguredException(
-                f"Parameter '{field.name}' with type '{field.outer_type_}' could not be mapped to an Open API type. "
-                f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
-                "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
-                f"`{field.name}: ... = Dependency(...)`."
-            ) from e
+        openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
             schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]

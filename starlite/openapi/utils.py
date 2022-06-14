@@ -1,7 +1,12 @@
 import re
 from typing import TYPE_CHECKING, List, Optional
 
+from pydantic.fields import ModelField
+
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
+from starlite.openapi.constants import PYDANTIC_FIELD_SHAPE_MAP
+from starlite.openapi.enums import OpenAPIType
 
 if TYPE_CHECKING:
     from typing import Union
@@ -29,3 +34,20 @@ def extract_tags_from_route_handler(route_handler: HTTPRouteHandler) -> Optional
         obj = obj.owner
         parent_tags += getattr(obj, "tags", None) or []
     return list(set(child_tags) | set(parent_tags)) or None
+
+
+def get_openapi_type_for_complex_type(field: ModelField) -> OpenAPIType:
+    """
+    We are dealing with complex types in this case.
+
+    The problem here is that the Python typing system is too crude to define OpenAPI objects properly.
+    """
+    try:
+        return PYDANTIC_FIELD_SHAPE_MAP[field.shape]
+    except KeyError as e:
+        raise ImproperlyConfiguredException(
+            f"Parameter '{field.name}' with type '{field.outer_type_}' could not be mapped to an Open API type. "
+            f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
+            "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
+            f"`{field.name}: ... = Dependency(...)`."
+        ) from e
