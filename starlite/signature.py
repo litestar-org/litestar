@@ -61,7 +61,7 @@ class SignatureModel(BaseModel):
 
 
 def model_function_signature(
-    fn: AnyCallable, plugins: List[PluginProtocol], provided_dependencies: AbstractSet[str]
+    fn: AnyCallable, plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
 ) -> Type[SignatureModel]:
     """
     Creates a subclass of SignatureModel for the signature of a given function
@@ -90,7 +90,7 @@ def model_function_signature(
                 field_definitions[kwarg] = (default, ...)
                 continue
             type_optional = detect_optional_union(type_annotation)
-            check_for_unprovided_dependency(kwarg, default, type_optional, provided_dependencies, fn_name)
+            check_for_unprovided_dependency(kwarg, default, type_optional, provided_dependency_names, fn_name)
             plugin = get_plugin_for_value(value=type_annotation, plugins=plugins)
             if plugin:
                 type_args = get_args(type_annotation)

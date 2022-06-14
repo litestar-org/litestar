@@ -19,7 +19,7 @@ def test_create_parameters() -> None:
     parameters = create_parameters(
         route_handler=route_handler,
         handler_fields=model_function_signature(
-            fn=cast(Callable, route_handler.fn), plugins=[], provided_dependencies=set()
+            fn=cast(Callable, route_handler.fn), plugins=[], provided_dependency_names=set()
         ).__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,

@@ -6,7 +6,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 
 
 def check_for_unprovided_dependency(
-    key: str, field: Any, is_optional: bool, provided_dependencies: AbstractSet[str], fn_name: str
+    key: str, field: Any, is_optional: bool, provided_dependency_names: AbstractSet[str], fn_name: str
 ) -> None:
     """
     Where a dependency has been explicitly marked using the ``Dependency`` function, it is a
@@ -23,7 +23,7 @@ def check_for_unprovided_dependency(
         return
     if field.default is not Undefined:
         return
-    if key not in provided_dependencies:
+    if key not in provided_dependency_names:
         raise ImproperlyConfiguredException(
             f"Explicit dependency '{key}' for '{fn_name}' has no default value, or provided dependency."
         )
