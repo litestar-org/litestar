@@ -7,7 +7,7 @@ from starlite import HttpMethod
 from starlite.handlers import HTTPRouteHandler
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "http_method, expected_status_code",
     [
         (HttpMethod.POST, HTTP_201_CREATED),

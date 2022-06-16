@@ -19,7 +19,7 @@ from tests.openapi.utils import (
 )
 
 
-@given(  # type: ignore[misc]
+@given(
     field_type=st.sampled_from(constrained_collection),
 )
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
@@ -51,7 +51,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
         assert schema.dict(exclude_none=True) == expected
 
 
-@given(field_type=st.sampled_from(constrained_string))  # type: ignore[misc]
+@given(field_type=st.sampled_from(constrained_string))
 def test_create_string_constrained_field_schema(field_type: Any) -> None:
     schema = create_string_constrained_field_schema(field_type=field_type)
     assert schema.type == OpenAPIType.STRING
@@ -63,7 +63,7 @@ def test_create_string_constrained_field_schema(field_type: Any) -> None:
         assert schema.description
 
 
-@given(field_type=st.sampled_from(constrained_numbers))  # type: ignore[misc]
+@given(field_type=st.sampled_from(constrained_numbers))
 def test_create_numerical_constrained_field_schema(field_type: Any) -> None:
     schema = create_numerical_constrained_field_schema(field_type=field_type)
     assert schema.type == OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER
@@ -75,7 +75,7 @@ def test_create_numerical_constrained_field_schema(field_type: Any) -> None:
     assert schema.multipleOf == field_type.multiple_of
 
 
-@given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))  # type: ignore[misc]
+@given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))
 def test_create_constrained_field_schema(field_type: Any) -> None:
     schema = create_constrained_field_schema(field_type=field_type, sub_fields=None)
     assert schema

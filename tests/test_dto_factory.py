@@ -21,7 +21,7 @@ from tests import Species, VanillaDataClassPerson
 from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "model, exclude, field_mapping, field_definitions, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
@@ -68,7 +68,7 @@ def test_dto_factory_validation() -> None:
         DTOFactory(plugins=[])("MyDTO", MyClass)
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "model, exclude, field_mapping, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, []],
@@ -124,7 +124,7 @@ def test_dto_openapi_generation() -> None:
     assert app.openapi_schema
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "model, exclude, field_mapping, plugins",
     [
         [Person, [], {"complex": "ultra"}, []],
@@ -150,8 +150,8 @@ def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: 
             assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)  # type: ignore
 
 
-@pytest.mark.skipif(sys.version_info < (3, 9), reason="dataclasses behave differently in lower versions")  # type: ignore
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="dataclasses behave differently in lower versions")
+@pytest.mark.parametrize(
     "model, exclude, field_mapping, plugins",
     [
         [Person, ["id"], {"complex": "ultra"}, []],
@@ -174,7 +174,7 @@ def test_conversion_from_model_instance(
             pets=None,
         )
     else:
-        model_instance = cast(Type[Pet], model)(  # type: ignore
+        model_instance = cast(Type[Pet], model)(  # type: ignore[call-arg]
             id=1,
             species=Species.MONKEY,
             name="Mike",

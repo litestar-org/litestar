@@ -8,7 +8,7 @@ from typing_extensions import Type
 from starlite import Parameter, create_test_client, get
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "t_type,param_dict, param, should_raise",
     [
         (str, {"special-cookie": "123"}, Parameter(cookie="special-cookie", min_length=1, max_length=3), False),

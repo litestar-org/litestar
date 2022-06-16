@@ -18,7 +18,7 @@ from starlite.connection import WebSocket
 from tests import Person, PersonFactory
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),

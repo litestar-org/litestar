@@ -13,7 +13,7 @@ from starlite import (
 )
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "params_dict,should_raise",
     [
         (

@@ -15,8 +15,8 @@ from starlite import (
 from tests import Person
 
 
-@settings(suppress_health_check=HealthCheck.all())  # type: ignore[misc]
-@given(  # type: ignore[misc]
+@settings(suppress_health_check=HealthCheck.all())
+@given(
     http_method=st.sampled_from(HttpMethod),
     scheme=st.text(),
     server=st.text(),

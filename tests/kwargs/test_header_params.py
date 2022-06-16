@@ -10,7 +10,7 @@ from typing_extensions import Type
 from starlite import Parameter, create_test_client, get
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "t_type,param_dict, param, should_raise",
     [
         (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=3), False),

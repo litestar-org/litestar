@@ -50,7 +50,7 @@ def test_route_handler_validation_response_class() -> None:
         HTTPRouteHandler(http_method=HttpMethod.GET, response_class=dict())  # type: ignore
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_function_validation() -> None:
     with pytest.raises(ValidationException):
 

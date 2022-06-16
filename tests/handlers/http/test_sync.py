@@ -7,7 +7,7 @@ def sync_handler() -> str:
     return "Hello World"
 
 
-@pytest.mark.parametrize(  # type: ignore
+@pytest.mark.parametrize(
     "handler",
     [
         get("/", media_type=MediaType.TEXT, sync_to_thread=True)(sync_handler),

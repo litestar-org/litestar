@@ -26,7 +26,7 @@ def dummy_method() -> None:
     pass
 
 
-@given(  # type: ignore[misc]
+@given(
     http_method=st.one_of(st.sampled_from(HttpMethod), st.lists(st.sampled_from(HttpMethod))),
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
@@ -84,7 +84,7 @@ def test_route_handler_kwarg_handling(
             assert result.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "sub, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),

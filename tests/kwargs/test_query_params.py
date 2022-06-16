@@ -8,7 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import Parameter, create_test_client, get
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "params_dict,should_raise",
     [
         (
