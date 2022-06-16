@@ -45,7 +45,7 @@ typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
-mkdocs-material = "*"
+mkdocs-material = ">=8.2.16,<8.3"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
