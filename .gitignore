@@ -3,6 +3,7 @@
 .idea/
 .mypy_cache/
 .pytest_cache/
+.tox/
 .venv/
 .vscode/
 __pycache__/
