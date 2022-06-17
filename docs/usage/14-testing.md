@@ -2,11 +2,6 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
-<!-- prettier-ignore -->
-!!! tip
-    Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an
-    easy and powerful way to generate mock data from pydantic models and dataclasses.
-
 ## Test Client
 
 Starlite extends the Starlette testing client, which in turn is built using
@@ -71,10 +66,10 @@ def test_health_check(test_client: TestClient):
         assert response.text == "healthy"
 ```
 
-!!! important use the test client as a context manager (i.e. with the `with`) keyword if you want to use the starlite
-app's `on_startup` and `on_shutdown`.
+!!! important
+Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's `on_startup` and `on_shutdown`.
 
-## Creating a Testing App
+## Creating a Test App
 
 Starlite also offers a helper function called `create_test_client` which first creates an instance of Starlite and then
 a test client using it. There are multiple use cases for this helper - when you need to check generic logic that is
@@ -116,7 +111,112 @@ def test_health_check():
         assert response.text == "healthy"
 ```
 
-## Create a Test Request
+## Using pydantic-factories
+
+Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an easy and powerful way to generate mock data from pydantic models and dataclasses.
+
+Let's say we have an API that talks to external service (that we don't care about in unit tests) and retrieves some item:
+
+```python title="main.py"
+from typing import Protocol, runtime_checkable
+
+import pytest
+from pydantic import BaseModel
+from starlette.status import HTTP_200_OK
+from starlite import Provide, create_test_client, get
+
+
+class Item(BaseModel):
+    name: str
+
+
+@runtime_checkable
+class Service(Protocol):
+    def get(self) -> Item:
+        ...
+
+
+@get(path="/item")
+def get_item(service: Service) -> Item:
+    return service.get()
+```
+
+Then we can add a test for `/item` route:
+
+```python title="main.py"
+@pytest.fixture
+def item():
+    return Item(name="Chair")
+
+
+def test_get_item(item: Item):
+    class MyService(Service):
+        def get_one(self) -> Item:
+            return item
+
+    with create_test_client(
+        route_handlers=get_item,
+        dependencies={"service": Provide(lambda: MyService()),
+    }) as client:
+        response = client.get("/item")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == item.dict()
+```
+
+As you can see, we came up with a test product by ourselves. It is fine for small applications, but can be quite a pain in larger ones. That's where [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library comes in. It generates mock data for pydantic datastructures based on type annotations. Let's rewrite our example using it:
+
+```python title="main.py"
+from typing import Protocol, runtime_checkable
+
+import pytest
+from pydantic import BaseModel
+from pydantic_factories import ModelFactory
+from starlette.status import HTTP_200_OK
+
+from starlite import Provide, create_test_client, get
+
+
+class Item(BaseModel):
+    name: str
+
+
+@runtime_checkable
+class Service(Protocol):
+    def get_one(self) -> Item:
+        ...
+
+
+@get(path="/item")
+def get_item(service: Service) -> Item:
+    return service.get_one()
+
+
+class ItemFactory(ModelFactory[Item]):
+    __model__ = Item
+
+
+@pytest.fixture
+def item():
+    return ItemFactory.build()
+
+
+def test_get_item(item: Item):
+    class MyService(Service):
+        def get_one(self) -> Item:
+            return item
+
+    with create_test_client(
+        route_handlers=get_item,
+        dependencies={"service": Provide(lambda: MyService()),
+    }) as client:
+        response = client.get("/item")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == item.dict()
+```
+
+That's better! Now we don't have to think about this not important thing.
+
+## Creating a Test Request
 
 Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for this
 helper is when you need to test logic that expects to receive a request object.
