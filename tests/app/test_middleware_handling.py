@@ -56,7 +56,7 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
         return response
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "middleware",
     [
         MiddlewareProtocolRequestLoggingMiddleware,

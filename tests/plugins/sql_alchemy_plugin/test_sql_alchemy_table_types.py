@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 import sqlalchemy
 from pydantic import BaseModel
@@ -42,7 +44,6 @@ from sqlalchemy import (
     Table,
     Text,
     Time,
-    TupleType,
     Unicode,
     UnicodeText,
 )
@@ -57,6 +58,9 @@ from sqlalchemy.dialects import (
 )
 from sqlalchemy.orm import registry
 from sqlalchemy.sql.functions import now
+
+# TupleType not a sqlalchemy2-stubs top-level import
+from sqlalchemy.sql.sqltypes import TupleType
 
 from starlite import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
@@ -106,7 +110,8 @@ class DeclarativeModel(SQLAlchemyBase):
     TIMESTAMP_column = Column(TIMESTAMP)
     Text_column = Column(Text)
     Time_column = Column(Time)
-    TupleType_column = Column(TupleType(str, int, bool))
+    # `TupleType[Any]` for 'Value of type variable "_TE" of "TupleType" cannot be "type"  [type-var]'
+    TupleType_column = Column(TupleType[Any](str, int, bool))
     Unicode_column = Column(Unicode)
     UnicodeText_column = Column(UnicodeText)
     VARBINARY_column = Column(VARBINARY)
@@ -175,27 +180,27 @@ class DeclarativeModel(SQLAlchemyBase):
     oracle_VARCHAR_column = Column(oracle.VARCHAR)
     # postgresql
     postgresql_ARRAY_column = Column(postgresql.ARRAY(String, dimensions=2))
-    postgresql_BIT_column = Column(postgresql.BIT)
+    postgresql_BIT_column: bytes = Column(postgresql.BIT)
     postgresql_BYTEA_column = Column(postgresql.BYTEA)
-    postgresql_CIDR_column = Column(postgresql.CIDR)
+    postgresql_CIDR_column: str = Column(postgresql.CIDR)
     postgresql_DATERANGE_column = Column(postgresql.DATERANGE)
     postgresql_DOUBLE_PRECISION_column = Column(postgresql.DOUBLE_PRECISION)
     postgresql_ENUM_column = Column(postgresql.ENUM(Species))
     postgresql_HSTORE_column = Column(postgresql.HSTORE)
-    postgresql_INET_column = Column(postgresql.INET)
+    postgresql_INET_column: str = Column(postgresql.INET)
     postgresql_INT4RANGE_column = Column(postgresql.INT4RANGE)
     postgresql_INT8RANGE_column = Column(postgresql.INT8RANGE)
     postgresql_INTERVAL_column = Column(postgresql.INTERVAL)
     postgresql_JSON_column = Column(postgresql.JSON)
     postgresql_JSONB_column = Column(postgresql.JSONB)
-    postgresql_MACADDR_column = Column(postgresql.MACADDR)
-    postgresql_MONEY_column = Column(postgresql.MONEY)
+    postgresql_MACADDR_column: str = Column(postgresql.MACADDR)
+    postgresql_MONEY_column: str = Column(postgresql.MONEY)
     postgresql_NUMRANGE_column = Column(postgresql.NUMRANGE)
     postgresql_TIME_column = Column(postgresql.TIME)
     postgresql_TIMESTAMP_column = Column(postgresql.TIMESTAMP)
     postgresql_TSRANGE_column = Column(postgresql.TSRANGE)
     postgresql_TSTZRANGE_column = Column(postgresql.TSTZRANGE)
-    postgresql_UUID_column = Column(postgresql.UUID)
+    postgresql_UUID_column: postgresql.UUID = Column(postgresql.UUID)
     # sqlite
     sqlite_DATE_column = Column(sqlite.DATE)
     sqlite_DATETIME_column = Column(sqlite.DATETIME)
@@ -236,7 +241,7 @@ def test_sql_alchemy_plugin_validation() -> None:
 
 
 def test_provider_validation() -> None:
-    class MyStrColumn(sqlalchemy.String):  # type: ignore
+    class MyStrColumn(sqlalchemy.String):  # type:ignore[misc]
         pass
 
     class ModelWithCustomColumn(SQLAlchemyBase):

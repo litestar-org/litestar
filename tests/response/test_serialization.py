@@ -8,7 +8,7 @@ from starlite import MediaType, Response
 from tests import PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "content, media_type",
     [
         [PersonFactory.build(), MediaType.JSON],

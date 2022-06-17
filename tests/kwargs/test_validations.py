@@ -57,7 +57,7 @@ def handler_with_dependency_and_aliased_cookie_parameter_collision(my_key: str =
     ...
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "handler",
     [
         handler_with_path_param_and_aliased_query_parameter_collision,
@@ -74,7 +74,7 @@ def test_raises_exception_when_keys_are_ambiguous(handler: HTTPRouteHandler) -> 
         Starlite(route_handlers=[handler])
 
 
-@pytest.mark.parametrize("reserved_kwarg", RESERVED_KWARGS)  # type: ignore[misc]
+@pytest.mark.parametrize("reserved_kwarg", RESERVED_KWARGS)
 def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
     decorator = post if reserved_kwarg != "socket" else websocket
 
@@ -136,12 +136,12 @@ def accepted_multi_part_handler(
     assert first
 
 
-@pytest.mark.parametrize("handler", [accepted_json_handler, accepted_url_encoded_handler, accepted_multi_part_handler])  # type: ignore[misc]
+@pytest.mark.parametrize("handler", [accepted_json_handler, accepted_url_encoded_handler, accepted_multi_part_handler])
 def test_dependency_data_kwarg_validation_success_scenarios(handler: HTTPRouteHandler) -> None:
     Starlite(route_handlers=[handler])
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "body, dependency",
     [
         [Body(media_type=RequestEncodingType.JSON), url_encoded_dependency],

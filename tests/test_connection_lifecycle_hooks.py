@@ -50,7 +50,7 @@ async def async_after_request_handler(response: Response) -> Response:
     return response
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "handler, expected",
     [
         [get(path="/")(greet), {"hello": "world"}],
@@ -66,7 +66,7 @@ def test_before_request_handler_called(handler: HTTPRouteHandler, expected: dict
         assert response.json() == expected
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "handler, expected",
     [
         [get(path="/")(greet), {"hello": "world"}],
@@ -80,7 +80,7 @@ def test_after_request_handler_called(handler: HTTPRouteHandler, expected: dict)
         assert response.json() == expected
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "app_before_request_handler, router_before_request_handler, controller_before_request_handler, method_before_request_handler, expected",
     [
         [None, None, None, None, {"hello": "world"}],
@@ -141,7 +141,7 @@ async def async_after_request_handler_with_hello_world(response: Response) -> Re
     return response
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "app_after_request_handler, router_after_request_handler, controller_after_request_handler, method_after_request_handler, expected",
     [
         [None, None, None, None, {"hello": "world"}],

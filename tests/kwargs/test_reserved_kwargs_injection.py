@@ -51,7 +51,7 @@ class QueryParamsFactory(ModelFactory):
 person_instance = PersonFactory.build()
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -66,7 +66,7 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
     class MyController(Controller):
         path = test_path
 
-        @decorator()  # type: ignore[misc]
+        @decorator()
         def test_method(self, data: Person) -> None:
             assert data == person_instance
 
@@ -75,7 +75,7 @@ def test_data_using_model(decorator: Any, http_method: Any, expected_status_code
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (post, HttpMethod.POST, HTTP_201_CREATED),
@@ -92,7 +92,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
     class MyController(Controller):
         path = test_path
 
-        @decorator()  # type: ignore[misc]
+        @decorator()
         def test_method(self, data: List[Person]) -> None:
             assert data == people
 
@@ -101,7 +101,7 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -117,7 +117,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
     class MyController(Controller):
         path = test_path
 
-        @decorator(path="/{person_id:str}")  # type: ignore[misc]
+        @decorator(path="/{person_id:str}")
         def test_method(self, person_id: str) -> None:
             assert person_id == person_instance.id
             return None
@@ -127,7 +127,7 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -145,7 +145,7 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
     class MyController(Controller):
         path = test_path
 
-        @decorator()  # type: ignore[misc]
+        @decorator()
         def test_method(self, first: str, second: List[str], third: Optional[int] = None) -> None:
             assert first == query_params_instance.first
             assert second == query_params_instance.second
@@ -157,7 +157,7 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -180,7 +180,7 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
     class MyController(Controller):
         path = test_path
 
-        @decorator()  # type: ignore[misc]
+        @decorator()
         def test_method(self, headers: dict) -> None:
             for key, value in request_headers.items():
                 assert headers[key] == value
@@ -190,7 +190,7 @@ def test_header_params(decorator: Any, http_method: Any, expected_status_code: A
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, http_method, expected_status_code",
     [
         (get, HttpMethod.GET, HTTP_200_OK),
@@ -206,7 +206,7 @@ def test_request(decorator: Any, http_method: Any, expected_status_code: Any) ->
     class MyController(Controller):
         path = test_path
 
-        @decorator()  # type: ignore[misc]
+        @decorator()
         def test_method(self, request: Request) -> None:
             assert isinstance(request, Request)
 

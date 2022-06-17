@@ -23,7 +23,7 @@ class MyController(Controller):
         pass
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "layer, expected",
     [[0, local_response], [1, controller_response], [2, router_response], [3, app_response], [None, Response]],
 )

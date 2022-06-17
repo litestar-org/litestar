@@ -33,7 +33,7 @@ from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_to_response_async_await() -> None:
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person) -> Person:
@@ -48,8 +48,8 @@ async def test_to_response_async_await() -> None:
     assert loads(response.body) == person_instance.dict()
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     "expected_response",
     [
         Response(status_code=HTTP_200_OK, content=b"abc", media_type=MediaType.TEXT),
@@ -75,7 +75,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
         assert response is expected_response
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_to_response_returning_redirect_response() -> None:
     @get(path="/test", status_code=301)
     def test_function() -> Redirect:
@@ -89,7 +89,7 @@ async def test_to_response_returning_redirect_response() -> None:
         assert response.headers["location"] == "/somewhere-else"
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_to_response_returning_file_response() -> None:
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
@@ -120,8 +120,8 @@ async def my_async_iterator() -> AsyncGenerator[int, None]:
         yield count
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     "iterator, should_raise", [[my_iterator(), False], [my_async_iterator(), False], [{"key": 1}, True]]
 )
 async def test_to_response_streaming_response(iterator: Any, should_raise: bool) -> None:

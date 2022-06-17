@@ -10,14 +10,14 @@ def test_fn() -> dict:
     return dict()
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_provide_default() -> None:
     provider = Provide(dependency=test_fn)
     value = await provider()
     assert isinstance(value, dict)
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_provide_cached() -> None:
     provider = Provide(dependency=test_fn, use_cache=True)
     assert provider.value is Undefined
@@ -30,7 +30,7 @@ async def test_provide_cached() -> None:
     assert value == third_value
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_run_in_thread() -> None:
     provider = Provide(dependency=test_fn, sync_to_thread=True)
     value = await provider()

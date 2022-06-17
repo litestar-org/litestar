@@ -15,7 +15,7 @@ def my_post_handler() -> None:
     pass
 
 
-@pytest.mark.asyncio  # type: ignore[misc]
+@pytest.mark.asyncio
 async def test_http_route_raises_for_unsupported_method() -> None:
     route = HTTPRoute(path="/", route_handlers=[my_get_handler, my_post_handler])
 

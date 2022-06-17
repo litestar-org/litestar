@@ -26,7 +26,7 @@ def root_delete_handler() -> None:
     return None
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "request_path, router_path",
     [
         [f"/path/1/2/sub/{str(uuid4())}", "/path/{first:int}/{second:str}/sub/{third:uuid}"],
@@ -67,7 +67,7 @@ def test_path_parsing_with_ambiguous_paths() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "decorator, test_path, decorator_path, delete_handler",
     [
         (get, "", "/something", None),
@@ -126,7 +126,7 @@ def test_handler_multi_paths() -> None:
         assert fourth_response.text == "2"
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "handler_path, request_path, expected_status_code",
     [
         ("/sub-path", "/", HTTP_404_NOT_FOUND),
