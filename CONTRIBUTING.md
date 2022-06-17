@@ -10,6 +10,45 @@ To contribute code changes or update the documentation, please follow these step
 
 Note: if you add new code or modify existing code - 100% test coverage is mandatory and tests should be well written.
 
+## Tox for testing against different versions
+
+### Config
+
+1. Install and configure [pyenv](https://github.com/pyenv/pyenv)
+2. Install required python versions via pyenv, e.g., `$ pyenv install 3.x.x` for each required version.
+3. In root directory of library, create .python-version file in root, e.g.:
+
+```text
+3.10.5
+3.9.13
+3.8.13
+3.7.13
+```
+
+4. Restart shell or run command like: `$ pyenv shell 3.10.5 3.9.13 3.8.13 3.7.13`
+5. Remove any existing poetry environment: `$ poetry env remove python`
+6. Tell poetry to use system python <sup>1</sup>: `$ poetry env use system`
+7. `$ poetry install`
+
+1: Not sure if this is the "right" way to handle this yet, however this prevents poetry from reusing
+the local environment in each of the tox environments.
+
+### Run
+
+`$ poetry run tox`
+
+#### force recreate tox environments
+
+`$ poetry run tox -r`
+
+#### run specific tox environment
+
+`$ poetry run tox -e py37`
+
+#### run pre-commit only
+
+`$ poetry run -e lint`
+
 ## Release workflow
 
 1. Update changelog.md

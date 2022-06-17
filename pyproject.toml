@@ -55,6 +55,7 @@ Jinja2 = "*"
 Mako = "*"
 freezegun = "*"
 pytest-mock = "*"
+tox = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
