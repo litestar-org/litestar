@@ -1,5 +1,5 @@
 from functools import partial
-from inspect import iscoroutinefunction, ismethod
+from inspect import iscoroutinefunction
 from typing import Any, Optional
 
 from anyio.to_thread import run_sync
@@ -19,9 +19,6 @@ class Provide:
         self.value: Any = Undefined
         self.signature_model: Optional[Type[SignatureModel]] = None
         self.sync_to_thread = sync_to_thread
-        if ismethod(dependency) and hasattr(dependency, "__self__"):
-            # ensure that the method's self argument is preserved
-            self.dependency = partial(dependency, dependency.__self__)
 
     async def __call__(self, **kwargs: Any) -> Any:
         """
