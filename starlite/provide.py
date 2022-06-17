@@ -11,7 +11,7 @@ from starlite.signature import SignatureModel
 
 
 class Provide:
-    __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread")
+    __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread", "is_coro")
 
     def __init__(self, dependency: AnyCallable, use_cache: bool = False, sync_to_thread: bool = False):
         self.dependency = dependency
@@ -19,6 +19,11 @@ class Provide:
         self.value: Any = Undefined
         self.signature_model: Optional[Type[SignatureModel]] = None
         self.sync_to_thread = sync_to_thread
+        # manage async partial objects in 3.7 (https://stackoverflow.com/a/52422903/6560549)
+        if isinstance(dependency, partial):
+            self.is_coro = iscoroutinefunction(dependency.func)
+        else:
+            self.is_coro = iscoroutinefunction(dependency)
 
     async def __call__(self, **kwargs: Any) -> Any:
         """
@@ -28,7 +33,7 @@ class Provide:
         if self.use_cache and self.value is not Undefined:
             return self.value
         fn = partial(self.dependency, **kwargs)
-        if iscoroutinefunction(self.dependency):
+        if self.is_coro:
             value = await fn()
         elif self.sync_to_thread:
             value = await run_sync(fn)
