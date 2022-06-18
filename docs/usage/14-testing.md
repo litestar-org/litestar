@@ -115,7 +115,7 @@ def test_health_check():
 
 Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an easy and powerful way to generate mock data from pydantic models and dataclasses.
 
-Let's say we have an API that talks to external service (that we don't care about in unit tests) and retrieves some item:
+Let's say we have an API that talks to an external service and retrieves some data:
 
 ```python title="main.py"
 from typing import Protocol, runtime_checkable
