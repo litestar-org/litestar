@@ -163,7 +163,7 @@ def test_get_item(item: Item):
         assert response.json() == item.dict()
 ```
 
-As you can see, we came up with a test product by ourselves. It is fine for small applications, but can be quite a pain in larger ones. That's where [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library comes in. It generates mock data for pydantic datastructures based on type annotations. Let's rewrite our example using it:
+While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's where [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library comes in. It generates mock data for pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
 ```python title="main.py"
 from typing import Protocol, runtime_checkable
