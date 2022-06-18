@@ -214,7 +214,6 @@ def test_get_item(item: Item):
         assert response.json() == item.dict()
 ```
 
-That's better! Now we don't have to think about this not important thing.
 
 ## Creating a Test Request
 
