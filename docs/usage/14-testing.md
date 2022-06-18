@@ -141,7 +141,7 @@ def get_item(service: Service) -> Item:
     return service.get()
 ```
 
-Then we can add a test for `/item` route:
+We could test the `/item` route like so:
 
 ```python title="main.py"
 @pytest.fixture
