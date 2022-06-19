@@ -6,6 +6,7 @@ from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dum
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
+from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -42,6 +43,9 @@ class Response(StarletteResponse):
 
     def render(self, content: Any) -> bytes:
         """Renders content into bytes"""
+        if self.status_code == HTTP_204_NO_CONTENT and content is None:
+            return b""
+
         try:
             if self.media_type == MediaType.JSON:
                 return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
