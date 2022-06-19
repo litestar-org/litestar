@@ -214,7 +214,6 @@ def test_get_item(item: Item):
         assert response.json() == item.dict()
 ```
 
-
 ## Creating a Test Request
 
 Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for this
