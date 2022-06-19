@@ -10,6 +10,7 @@ __pycache__/
 dist/
 node_modules/
 results/
+site/
 
 # files
 *.iml
