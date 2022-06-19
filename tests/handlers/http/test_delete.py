@@ -2,7 +2,7 @@ from starlite import delete
 from starlite.testing import create_test_client
 
 
-def test_none_response() -> None:
+def test_handler_return_none_and_204_status_response_empty() -> None:
     @delete(path="/")
     async def route() -> None:
         return None
