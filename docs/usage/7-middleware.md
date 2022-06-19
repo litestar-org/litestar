@@ -105,3 +105,34 @@ app = Starlite(
 ```
 
 You can use `*` to match any subdomains, as in the above.
+
+## Examples
+
+### Middleware protocol class that modifies the response
+
+```python
+import time
+
+from starlette.datastructures import MutableHeaders
+from starlette.types import Message, Receive, Scope, Send
+from starlite import MiddlewareProtocol
+from starlite.types import ASGIApp
+
+
+class ProcessTimeHeader(MiddlewareProtocol):
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            start_time = time.time()
+
+            async def send_wrapper(message: Message) -> None:
+                if message["type"] == "http.response.start":
+                    process_time = time.time() - start_time
+                    headers = MutableHeaders(scope=message)
+                    headers.append("X-Process-Time", str(process_time))
+                await send(message)
+
+        await self.app(scope, receive, send_wrapper)
+```
