@@ -183,7 +183,7 @@ Starlite handles all errors by default by transforming them into **JSON response
 the `starlette.exceptions.HTTPException` or the `starlite.exceptions.HTTPException`, the responses will include the
 appropriate `status_code`. Otherwise, the responses will **default to 500** - "Internal Server Error".
 
-You can **customize exception handling** by passing a dictionary – mapping either error codes, or exception classes, to
+You can **customize exception handling** by passing a dictionary – mapping either `error status codes`, or `exception classes`, to
 callables. For example, if you would like to replace the default exception handler with a handler that returns
 plain-text responses you could do this:
 
@@ -210,6 +210,73 @@ def plain_text_exception_handler(_: Request, exc: Exception) -> Response:
 app = Starlite(
     route_handlers=[...],
     exception_handlers={HTTPException: plain_text_exception_handler},
+)
+```
+
+The above will define a top level exception handler that will apply the `plain_text_exception_handler` function to all
+exceptions that inherit from `HTTPException`. You could of course be more granular:
+
+```python
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite import ValidationException, Request, Response, Starlite
+
+
+def first_exception_handler(request: Request, exc: Exception) -> Response:
+    ...
+
+
+def second_exception_handler(request: Request, exc: Exception) -> Response:
+    ...
+
+
+def third_exception_handler(request: Request, exc: Exception) -> Response:
+    ...
+
+
+app = Starlite(
+    route_handlers=[...],
+    exception_handlers={
+        ValidationException: first_exception_handler,
+        HTTP_500_INTERNAL_SERVER_ERROR: second_exception_handler,
+        ValueError: third_exception_handler,
+    },
+)
+```
+
+The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
+specific needs.
+
+While it does not make much sense to have different functions with a top-level exception handling,
+Starlite supports defining exception handlers on all levels of the app, with the lower levels overriding levels above
+them. Thus, in the following example, the exception handler for the route handler function will handle the `ValidationException` related to it:
+
+```python
+from starlite import (
+    HTTPException,
+    ValidationException,
+    Request,
+    Response,
+    Starlite,
+    get,
+)
+
+
+def top_level_handler(request: Request, exc: Exception) -> Response:
+    ...
+
+
+def handler_level_handler(request: Request, exc: Exception) -> Response:
+    ...
+
+
+@get("/greet", exception_handlers={ValidationException: top_level_handler})
+def my_route_handler(name: str) -> str:
+    return f"hello {name}"
+
+
+app = Starlite(
+    route_handlers=[my_route_handler],
+    exception_handlers={HTTPException: top_level_handler},
 )
 ```
 
