@@ -48,6 +48,7 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import normalize_path
+from starlite.utils.exception import get_exception_handler
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 DEFAULT_CACHE_CONFIG = CacheConfig()
@@ -156,9 +157,7 @@ class Starlite(Router):
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if scope["type"] == "http":
             exception_handler = (
-                self.exception_handlers.get(status_code)
-                or self.exception_handlers.get(exc.__class__)
-                or self.default_http_exception_handler
+                get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
             )
             response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
             await response(scope=scope, receive=receive, send=send)

@@ -9,11 +9,9 @@ from uuid import UUID
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.exceptions import HTTPException
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.routing import get_name
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import Receive, Scope, Send
 
 from starlite.connection import Request, WebSocket
@@ -29,8 +27,9 @@ from starlite.handlers import (
 from starlite.kwargs import KwargsModel
 from starlite.response import Response
 from starlite.signature import get_signature_model
-from starlite.types import AsyncAnyCallable, CacheKeyBuilder, ExceptionHandler, Method
+from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import normalize_path
+from starlite.utils.exception import get_exception_handler
 
 param_match_regex = re.compile(r"{(.*?)}")
 
@@ -171,26 +170,16 @@ class HTTPRoute(BaseRoute):
                 response_data = await self.get_response_data(
                     route_handler=route_handler, parameter_model=parameter_model, request=request
                 )
-            response = await route_handler.to_response(
+            return await route_handler.to_response(
                 app=scope["app"],
                 data=response_data,
                 plugins=request.app.plugins,
             )
-        except Exception as e:  # pylint: disable=broad-except
-            handler: Optional[ExceptionHandler] = None
-            exception_handlers = route_handler.resolve_exception_handlers()
-            if exception_handlers:
-                if isinstance(e, HTTPException):
-                    handler = exception_handlers.get(e.status_code)
-                if not handler:
-                    handler = exception_handlers.get(e.__class__) or exception_handlers.get(
-                        HTTP_500_INTERNAL_SERVER_ERROR
-                    )
+        except Exception as e:
+            handler = get_exception_handler(route_handler.resolve_exception_handlers(), e)
             if handler:
-                response = handler(request, e)
-            else:
-                raise e
-        return response
+                return handler(request, e)
+            raise e
 
     @staticmethod
     async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:
