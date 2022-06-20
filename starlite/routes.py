@@ -9,9 +9,11 @@ from uuid import UUID
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
+from starlette.exceptions import HTTPException
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.routing import get_name
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import Receive, Scope, Send
 
 from starlite.connection import Request, WebSocket
@@ -27,7 +29,7 @@ from starlite.handlers import (
 from starlite.kwargs import KwargsModel
 from starlite.response import Response
 from starlite.signature import get_signature_model
-from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
+from starlite.types import AsyncAnyCallable, CacheKeyBuilder, ExceptionHandler, Method
 from starlite.utils import normalize_path
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -134,6 +136,29 @@ class HTTPRoute(BaseRoute):
         if caching_enabled:
             response = await self.get_cached_response(request=request, route_handler=route_handler)
         if not response:
+            response = await self.call_handler(
+                scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+            )
+            # we cache the response instance
+            if caching_enabled:
+                await self.set_cached_response(
+                    response=response,
+                    request=request,
+                    route_handler=route_handler,
+                )
+        await response(scope, receive, send)
+
+    async def call_handler(
+        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
+    ) -> Union[Response, StarletteResponse]:
+        """
+        Calls the before request handlers, retrieves any data required for the route handler,
+        and calls the route handler's to_response method.
+
+        This is wrapped in a try except block - and if an exception is raised,
+        it tries to pass it to an appropriate exception handler - if defined.
+        """
+        try:
             response_data = None
             before_request_handler = route_handler.resolve_before_request()
             # run the before_request hook handler
@@ -151,14 +176,21 @@ class HTTPRoute(BaseRoute):
                 data=response_data,
                 plugins=request.app.plugins,
             )
-            # we cache the response instance
-            if caching_enabled:
-                await self.set_cached_response(
-                    response=response,
-                    request=request,
-                    route_handler=route_handler,
-                )
-        await response(scope, receive, send)
+        except Exception as e:  # pylint: disable=broad-except
+            handler: Optional[ExceptionHandler] = None
+            exception_handlers = route_handler.resolve_exception_handlers()
+            if exception_handlers:
+                if isinstance(e, HTTPException):
+                    handler = exception_handlers.get(e.status_code)
+                if not handler:
+                    handler = exception_handlers.get(e.__class__) or exception_handlers.get(
+                        HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+            if handler:
+                response = handler(request, e)
+            else:
+                raise e
+        return response
 
     @staticmethod
     async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:
@@ -207,7 +239,9 @@ class HTTPRoute(BaseRoute):
         Retrieves and un-pickles the cached value, if it exists
         """
         cache_config = request.app.cache_config
-        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        key_builder = cast(
+            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+        )
         cache_key = key_builder(request)
         if iscoroutinefunction(cache_config.backend.get):
             cached_value = await cache_config.backend.get(cache_key)
@@ -225,7 +259,9 @@ class HTTPRoute(BaseRoute):
         Pickles and caches a response object
         """
         cache_config = request.app.cache_config
-        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        key_builder = cast(
+            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+        )
         cache_key = key_builder(request)
         expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)

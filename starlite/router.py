@@ -19,6 +19,7 @@ from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
     ControllerRouterHandler,
+    ExceptionHandler,
     Guard,
     ResponseHeader,
 )
@@ -37,6 +38,7 @@ class Router:
         "response_class",
         "response_headers",
         "routes",
+        "exception_handlers",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -50,6 +52,7 @@ class Router:
         guards: Optional[List[Guard]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         # connection-lifecycle hook handlers
         before_request: Optional[BeforeRequestHandler] = None,
         after_request: Optional[AfterRequestHandler] = None,
@@ -64,6 +67,7 @@ class Router:
         self.guards = guards
         self.before_request = before_request
         self.after_request = after_request
+        self.exception_handlers = exception_handlers
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 

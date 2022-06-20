@@ -39,6 +39,7 @@ from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
     CacheKeyBuilder,
+    ExceptionHandler,
     Guard,
     Method,
     ResponseHeader,
@@ -70,6 +71,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "resolved_before_request",
         "resolved_headers",
         "resolved_response_class",
+        "resolved_exception_handlers",
         "response_class",
         "response_description",
         "response_headers",
@@ -78,6 +80,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "tags",
         "template_name",
         "sync_to_thread",
+        "exception_handlers",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -110,6 +113,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         tags: Optional[List[str]] = None,
         # sync only
         sync_to_thread: bool = False,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     ):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -136,6 +140,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.media_type = media_type
         self.response_class = response_class
         self.response_headers = response_headers
+        self.exception_handlers = exception_handlers
+        self.cache = cache
+        self.cache_key_builder = cache_key_builder
+        self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
         self.content_encoding = content_encoding
         self.content_media_type = content_media_type
@@ -156,9 +164,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolved_before_request: Union[
             Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
-        self.cache = cache
-        self.cache_key_builder = cache_key_builder
-        self.sync_to_thread = sync_to_thread
+        self.resolved_exception_handlers: Union[
+            Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -179,7 +187,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         )
 
     def resolve_response_class(self) -> Type[Response]:
-        """Return the closest custom Response class in the owner graph or the default Response class"""
+        """
+        Returns the closest custom Response class in the owner graph or the default Response class.
+
+        This method is memoized so the computation occurs only once.
+        """
         if self.resolved_response_class is BaseRouteHandler.empty:
             self.resolved_response_class = Response
             for layer in self.ownership_layers():
@@ -191,6 +203,8 @@ class HTTPRouteHandler(BaseRouteHandler):
     def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
         """
         Returns all header parameters in the scope of the handler function
+
+        This method is memoized so the computation occurs only once.
         """
         if self.resolved_headers is BaseRouteHandler.empty:
             headers: Dict[str, ResponseHeader] = {}
@@ -203,10 +217,10 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
         """
-        Resolves the before_handler handler by starting from the handler and moving up.
+        Resolves the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
-        This mehtod is memoized so the computation occurs only once
+        This method is memoized so the computation occurs only once
         """
         if self.resolved_before_request is BaseRouteHandler.empty:
             for layer in self.ownership_layers():
@@ -222,10 +236,10 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     def resolve_after_request(self) -> Optional[AfterRequestHandler]:
         """
-        Resolves the after_request handler by starting from the handler and moving up.
+        Resolves the after_request handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
-        This mehtod is memoized so the computation occurs only once
+        This method is memoized so the computation occurs only once
         """
         if self.resolved_after_request is BaseRouteHandler.empty:
             for layer in self.ownership_layers():
@@ -238,6 +252,22 @@ class HTTPRouteHandler(BaseRouteHandler):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
+
+    def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
+        """
+        Resolves the exception_handlers by starting from the route handler and moving up.
+
+        This method is memoized so the computation occurs only once.
+        """
+        if self.resolved_exception_handlers is BaseRouteHandler.empty:
+            exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
+            for layer in self.ownership_layers():
+                if layer.exception_handlers:
+                    for key, value in (layer.exception_handlers or {}).items():
+                        if key not in exception_handlers:
+                            exception_handlers[key] = value
+            self.resolved_exception_handlers = exception_handlers
+        return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
     @property
     def http_methods(self) -> List[Method]:

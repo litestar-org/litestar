@@ -57,7 +57,6 @@ class Starlite(Router):
     __slots__ = (
         "asgi_router",
         "debug",
-        "exception_handlers",
         "middleware_stack",
         "openapi_schema",
         "plugins",
