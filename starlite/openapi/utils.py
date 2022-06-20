@@ -8,7 +8,7 @@ from starlite.handlers.http import HTTPRouteHandler
 from starlite.openapi.constants import PYDANTIC_FIELD_SHAPE_MAP
 from starlite.openapi.enums import OpenAPIType
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing import Union
 
     from starlite import Controller, Router, Starlite

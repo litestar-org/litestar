@@ -100,6 +100,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -111,9 +114,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     ):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -376,6 +376,9 @@ class get(HTTPRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -387,8 +390,6 @@ class get(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.GET,
@@ -415,6 +416,7 @@ class get(HTTPRouteHandler):
             summary=summary,
             tags=tags,
             sync_to_thread=sync_to_thread,
+            exception_handlers=exception_handlers,
         )
 
 
@@ -434,6 +436,9 @@ class post(HTTPRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -445,8 +450,6 @@ class post(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.POST,
@@ -473,6 +476,7 @@ class post(HTTPRouteHandler):
             summary=summary,
             tags=tags,
             sync_to_thread=sync_to_thread,
+            exception_handlers=exception_handlers,
         )
 
 
@@ -492,6 +496,9 @@ class put(HTTPRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -503,8 +510,6 @@ class put(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.PUT,
@@ -531,6 +536,7 @@ class put(HTTPRouteHandler):
             summary=summary,
             tags=tags,
             sync_to_thread=sync_to_thread,
+            exception_handlers=exception_handlers,
         )
 
 
@@ -550,6 +556,9 @@ class patch(HTTPRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -561,8 +570,6 @@ class patch(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.PATCH,
@@ -589,6 +596,7 @@ class patch(HTTPRouteHandler):
             summary=summary,
             tags=tags,
             sync_to_thread=sync_to_thread,
+            exception_handlers=exception_handlers,
         )
 
 
@@ -608,6 +616,9 @@ class delete(HTTPRouteHandler):
         status_code: Optional[int] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        # sync only
+        sync_to_thread: bool = False,
         # OpenAPI related attributes
         content_encoding: Optional[str] = None,
         content_media_type: Optional[str] = None,
@@ -619,8 +630,6 @@ class delete(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        # sync only
-        sync_to_thread: bool = False,
     ):
         super().__init__(
             http_method=HttpMethod.DELETE,
@@ -647,4 +656,5 @@ class delete(HTTPRouteHandler):
             summary=summary,
             tags=tags,
             sync_to_thread=sync_to_thread,
+            exception_handlers=exception_handlers,
         )
