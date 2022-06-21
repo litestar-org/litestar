@@ -220,3 +220,14 @@
 - selective deduplication of openapi parameters @peterschutt
 - raise improper configuration when user-defined generic type resolved as openapi parameter @peterschutt
 - dependency function @peterschutt
+
+[1.4.1]
+
+- lots of housekeeping
+- temporarily pin `mkdocs` to improve dark theme appearance
+- `Provide` properly detects async `@classmethod` as async callables
+- examples for using `pydantic-factories` for generating mock data. Thanks @vrslev
+- `None` return value from handler with `204` has empty response content
+- added example to docs for modifying the response using `MiddlewareProtocol`
+- exception handlers configurable at each layer of the application
+- better detection of async callables
