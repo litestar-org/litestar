@@ -1,4 +1,4 @@
-from inspect import Signature, iscoroutinefunction
+from inspect import Signature
 from typing import cast
 
 from pydantic.typing import AnyCallable
@@ -6,6 +6,7 @@ from pydantic.typing import AnyCallable
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.types import AsyncAnyCallable
+from starlite.utils import is_async_callable
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
@@ -32,7 +33,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
         if "data" in signature.parameters:
             raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
+        if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 

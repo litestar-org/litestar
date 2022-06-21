@@ -1,4 +1,4 @@
-from inspect import Signature, iscoroutinefunction
+from inspect import Signature
 from typing import Any, Dict, List, Optional, Union, cast
 
 from pydantic import validate_arguments
@@ -7,6 +7,7 @@ from pydantic.typing import AnyCallable
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.types import Guard
+from starlite.utils import is_async_callable
 
 
 class ASGIRouteHandler(BaseRouteHandler):
@@ -40,7 +41,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
-        if not iscoroutinefunction(self.fn) and not iscoroutinefunction(self.fn.__call__):  # type: ignore[operator]
+        if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
 

@@ -1,5 +1,4 @@
 from copy import copy
-from inspect import iscoroutinefunction
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,7 +21,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.signature import SignatureModel
 from starlite.types import Guard
-from starlite.utils import normalize_path
+from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.controller import Controller
@@ -147,7 +146,7 @@ class BaseRouteHandler:
         Ensures the connection is authorized by running all the route guards in scope
         """
         for guard in self.resolve_guards():
-            if iscoroutinefunction(guard):
+            if is_async_callable(guard):
                 await guard(connection, copy(self))  # type: ignore[misc]
             else:
                 await run_sync(guard, connection, copy(self))
