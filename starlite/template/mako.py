@@ -14,8 +14,11 @@ except ImportError as exc:  # pragma: no cover
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
+    """Template engine using the mako templating library"""
+
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
-        self.engine = TemplateLookup(directories=[directory])
+        super().__init__(directory)
+        self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
 
     def get_template(self, name: str) -> MakoTemplate:
         """Loads the template with the name and returns it."""

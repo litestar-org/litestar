@@ -1,3 +1,3 @@
-from .base import AbstractTemplate, TemplateEngineProtocol
+from .base import TemplateEngineProtocol, TemplateProtocol
 
-__all__ = ["TemplateEngineProtocol", "AbstractTemplate"]
+__all__ = ["TemplateEngineProtocol", "TemplateProtocol"]

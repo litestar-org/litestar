@@ -127,8 +127,8 @@ def health_check() -> str:
 
 <!-- prettier-ignore -->
 !!! tip
-    It's a good idea to use a [templating engine](#template-responses) for more complex HTML responses and to write the
-    [template](#template-responses) itself in a separate file rather than a string.
+    It's a good idea to use a [templating engine](15-templating#template-responses) for more complex HTML responses and to write the
+    [template](15-templating#template-responses) itself in a separate file rather than a string.
 
 ### JSON Responses
 

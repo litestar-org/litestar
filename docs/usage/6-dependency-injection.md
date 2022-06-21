@@ -85,7 +85,7 @@ the same mechanism that parses route handler functions, and they too - like rout
 injected into them.
 
 In fact, you can inject the same data that you
-can [inject into route handlers](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs) except other dependencies.
+can [inject into route handlers](2-route-handlers/1_http_route_handlers.md#http-route-handlers-kwargs) except other dependencies.
 
 Let's say we have a model called `Wallet`, which we'll assume we persist in a DB:
 

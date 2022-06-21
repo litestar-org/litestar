@@ -34,7 +34,7 @@ async def create_user(
     ...
 ```
 
-The `Body` function is very similar to the [Parameter function](#the-parameter-function), and it receives the following
+The `Body` function is very similar to the [Parameter function](3-parameters#the-parameter-function), and it receives the following
 kwargs:
 
 - `media_type`: An instance of the `starlite.enums.RequestEncodingType` enum. Defaults to `RequestEncodingType.JSON`.

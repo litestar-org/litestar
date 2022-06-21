@@ -125,7 +125,7 @@ async def close_postgres_connection(state: State) -> None:
 ```
 
 The **advantage** of following this pattern is that the application `state` can be **injected** into dependencies and route
-handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#handler-function-kwargs).
+handlers. Regarding this see [handler function kwargs](2-route-handlers/1_http_route_handlers.md#http-route-handlers-kwargs).
 
 ## Logging
 

@@ -82,7 +82,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         types = [self.get_pydantic_type(column_type=t) for t in column_type.types]
         return Tuple[tuple(types)]
 
-    def handle_enum(self, column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
+    @staticmethod
+    def handle_enum(column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
         """
         Handles the SQLAlchemy Enum types
         """
@@ -252,7 +253,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                 raise ImproperlyConfiguredException("Unsupported Column type, please extend the provider table.") from e
         return type(column_type)
 
-    def parse_model(self, model_class: DeclarativeMeta) -> Mapper:
+    @staticmethod
+    def parse_model(model_class: DeclarativeMeta) -> Mapper:
         """
         Validates that the passed in model_class is an SQLAlchemy declarative model, and returns a Mapper of it
         """
