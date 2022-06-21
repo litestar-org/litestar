@@ -1,7 +1,7 @@
 # pylint: disable=too-many-instance-attributes, too-many-arguments
 from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass, iscoroutinefunction, ismethod
+from inspect import Signature, isawaitable, isclass, ismethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -44,6 +44,7 @@ from starlite.types import (
     Method,
     ResponseHeader,
 )
+from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
@@ -345,7 +346,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
         # run the after_request hook handler
         if after_request:
-            if iscoroutinefunction(after_request):
+            if is_async_callable(after_request):
                 response = await after_request(response)  # type: ignore
             else:
                 response = await run_sync(after_request, response)  # type: ignore

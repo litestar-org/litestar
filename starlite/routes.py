@@ -1,7 +1,6 @@
 import pickle
 import re
 from functools import partial
-from inspect import iscoroutinefunction
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 from uuid import UUID
@@ -28,7 +27,7 @@ from starlite.kwargs import KwargsModel
 from starlite.response import Response
 from starlite.signature import get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
-from starlite.utils import normalize_path
+from starlite.utils import is_async_callable, normalize_path
 from starlite.utils.exception import get_exception_handler
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -162,7 +161,7 @@ class HTTPRoute(BaseRoute):
             before_request_handler = route_handler.resolve_before_request()
             # run the before_request hook handler
             if before_request_handler:
-                if iscoroutinefunction(before_request_handler):
+                if is_async_callable(before_request_handler):
                     response_data = await before_request_handler(request)
                 else:
                     response_data = await run_sync(before_request_handler, request)
@@ -203,7 +202,7 @@ class HTTPRoute(BaseRoute):
             fn = partial(cast(AnyCallable, route_handler.fn), route_handler.owner, **parsed_kwargs)
         else:
             fn = partial(cast(AnyCallable, route_handler.fn), **parsed_kwargs)
-        if iscoroutinefunction(fn):
+        if is_async_callable(fn):
             return await fn()
         if route_handler.sync_to_thread:
             return await run_sync(fn)
@@ -232,7 +231,7 @@ class HTTPRoute(BaseRoute):
             CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
         )
         cache_key = key_builder(request)
-        if iscoroutinefunction(cache_config.backend.get):
+        if is_async_callable(cache_config.backend.get):
             cached_value = await cache_config.backend.get(cache_key)
         else:
             cached_value = cache_config.backend.get(cache_key)
@@ -254,7 +253,7 @@ class HTTPRoute(BaseRoute):
         cache_key = key_builder(request)
         expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
-        if iscoroutinefunction(cache_config.backend.set):
+        if is_async_callable(cache_config.backend.set):
             await cache_config.backend.set(cache_key, pickled_response, expiration)
         else:
             cache_config.backend.set(cache_key, pickled_response, expiration)
