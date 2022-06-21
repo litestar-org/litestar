@@ -208,10 +208,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self.resolved_headers is BaseRouteHandler.empty:
             headers: Dict[str, ResponseHeader] = {}
-            for layer in self.ownership_layers():
-                for key, value in (layer.response_headers or {}).items():
-                    if key not in headers:
-                        headers[key] = value
+            for layer in reversed(list(self.ownership_layers())):
+                headers = {**headers, **(layer.response_headers or {})}
             self.resolved_headers = headers
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
@@ -261,11 +259,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self.resolved_exception_handlers is BaseRouteHandler.empty:
             exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
-            for layer in self.ownership_layers():
-                if layer.exception_handlers:
-                    for key, value in (layer.exception_handlers or {}).items():
-                        if key not in exception_handlers:
-                            exception_handlers[key] = value
+            for layer in reversed(list(self.ownership_layers())):
+                exception_handlers = {**exception_handlers, **(layer.exception_handlers or {})}
             self.resolved_exception_handlers = exception_handlers
         return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
