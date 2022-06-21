@@ -107,7 +107,7 @@ class MyClass(BaseModel):
 
 dto_factory = DTOFactory()
 
-MyClassDTO = dto_factory("MyClassDTO", MyClass, remap={"first": "third"})
+MyClassDTO = dto_factory("MyClassDTO", MyClass, field_mapping={"first": "third"})
 ```
 
 The generated `MyClassDTO` is equal to this model declaration:
@@ -136,7 +136,7 @@ class MyClass(BaseModel):
 dto_factory = DTOFactory()
 
 MyClassDTO = dto_factory(
-    "MyClassDTO", MyClass, remap={"first": "third", "second": ("fourth", float)}
+    "MyClassDTO", MyClass, field_mapping={"first": "third", "second": ("fourth", float)}
 )
 ```
 

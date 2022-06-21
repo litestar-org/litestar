@@ -12,7 +12,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
     In a production system you probably should use Redis or MemCached instead.
     """
 
-    @dataclass(init=True)
+    @dataclass()
     class CacheObject:
         """
         A container class

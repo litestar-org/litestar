@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class MyRequestLoggingMiddleware(MiddlewareProtocol):
     def __init__(self, app: ASGIApp):
+        super().__init__(app)
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -121,6 +122,7 @@ from starlite.types import ASGIApp
 
 class ProcessTimeHeader(MiddlewareProtocol):
     def __init__(self, app: ASGIApp):
+        super().__init__(app)
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -134,5 +136,7 @@ class ProcessTimeHeader(MiddlewareProtocol):
                     headers.append("X-Process-Time", str(process_time))
                 await send(message)
 
-        await self.app(scope, receive, send_wrapper)
+            await self.app(scope, receive, send_wrapper)
+        else:
+            await self.app(scope, receive, send)
 ```
