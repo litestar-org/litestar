@@ -1,5 +1,5 @@
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 
 from typing_extensions import Type
 
@@ -8,6 +8,7 @@ from starlite.response import Response
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
+    ExceptionHandler,
     Guard,
     ResponseHeader,
 )
@@ -33,6 +34,7 @@ class Controller:
         "guards",
         "before_request",
         "after_request",
+        "exception_handlers",
     )
 
     dependencies: Optional[Dict[str, "Provide"]]
@@ -42,6 +44,7 @@ class Controller:
     response_headers: Optional[Dict[str, ResponseHeader]]
     response_class: Optional[Type[Response]]
     guards: Optional[List[Guard]]
+    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]]
     # connection-lifecycle hook handlers
     before_request: Optional[BeforeRequestHandler]
     after_request: Optional[AfterRequestHandler]
@@ -54,6 +57,7 @@ class Controller:
             "guards",
             "before_request",
             "after_request",
+            "exception_handlers",
         ]:
             if not hasattr(self, key):
                 setattr(self, key, None)

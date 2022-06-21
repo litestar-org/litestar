@@ -29,6 +29,7 @@ from starlite.response import Response
 from starlite.signature import get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import normalize_path
+from starlite.utils.exception import get_exception_handler
 
 param_match_regex = re.compile(r"{(.*?)}")
 
@@ -134,6 +135,29 @@ class HTTPRoute(BaseRoute):
         if caching_enabled:
             response = await self.get_cached_response(request=request, route_handler=route_handler)
         if not response:
+            response = await self.call_handler(
+                scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+            )
+            # we cache the response instance
+            if caching_enabled:
+                await self.set_cached_response(
+                    response=response,
+                    request=request,
+                    route_handler=route_handler,
+                )
+        await response(scope, receive, send)
+
+    async def call_handler(
+        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
+    ) -> Union[Response, StarletteResponse]:
+        """
+        Calls the before request handlers, retrieves any data required for the route handler,
+        and calls the route handler's to_response method.
+
+        This is wrapped in a try except block - and if an exception is raised,
+        it tries to pass it to an appropriate exception handler - if defined.
+        """
+        try:
             response_data = None
             before_request_handler = route_handler.resolve_before_request()
             # run the before_request hook handler
@@ -146,19 +170,16 @@ class HTTPRoute(BaseRoute):
                 response_data = await self.get_response_data(
                     route_handler=route_handler, parameter_model=parameter_model, request=request
                 )
-            response = await route_handler.to_response(
+            return await route_handler.to_response(
                 app=scope["app"],
                 data=response_data,
                 plugins=request.app.plugins,
             )
-            # we cache the response instance
-            if caching_enabled:
-                await self.set_cached_response(
-                    response=response,
-                    request=request,
-                    route_handler=route_handler,
-                )
-        await response(scope, receive, send)
+        except Exception as e:
+            handler = get_exception_handler(route_handler.resolve_exception_handlers(), e)
+            if handler:
+                return handler(request, e)
+            raise e
 
     @staticmethod
     async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:
@@ -207,7 +228,9 @@ class HTTPRoute(BaseRoute):
         Retrieves and un-pickles the cached value, if it exists
         """
         cache_config = request.app.cache_config
-        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        key_builder = cast(
+            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+        )
         cache_key = key_builder(request)
         if iscoroutinefunction(cache_config.backend.get):
             cached_value = await cache_config.backend.get(cache_key)
@@ -225,7 +248,9 @@ class HTTPRoute(BaseRoute):
         Pickles and caches a response object
         """
         cache_config = request.app.cache_config
-        key_builder = cast(CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder)  # type: ignore[misc]
+        key_builder = cast(
+            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+        )
         cache_key = key_builder(request)
         expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)

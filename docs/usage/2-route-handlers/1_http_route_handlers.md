@@ -53,6 +53,8 @@ Additionally, you can pass the following optional kwargs:
 - `sync_to_thread`: A boolean dictating whether the handler function will be executed in a worker thread or the main
   event loop. This has an effect only for sync handler functions.
   See [using sync handler functions](#using-sync-handler-functions).
+- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
+  See [exception-handlers](../0-the-starlite-app#exception-handling).
 
 And the following kwargs, which affect [OpenAPI schema generation](../12-openapi.md#route-handler-configuration)
 
@@ -142,7 +144,7 @@ performant solution within the scope of an ASGI application, including Starlite,
 solution for this purpose.
 
 The reason for this is that async code, if written correctly, is **non-blocking**. That is, async code can be paused and
-resumed, and it therefore does not interupt the main event loop from executing (if written correctly). On the other
+resumed, and it therefore does not interrupt the main event loop from executing (if written correctly). On the other
 hand, sync I/O handling is often **blocking**, and if you use such code in your function it can create performance
 issues.
 
