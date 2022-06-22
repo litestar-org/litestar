@@ -41,6 +41,17 @@ python-multipart = "*"
 pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
+
+Jinja2 = { version = "*", optional = true }
+Mako = { version = "*", optional = true }
+freezegun = { version = "*", optional = true }
+hypothesis = { extras = ["cli"], version = "*", optional = true }
+mkdocs-material = { version = "^8.2.0", optional = true }
+pre-commit = { version = "*", optional = true }
+pytest = { version = "*", optional = true }
+pytest-asyncio = { version = "*", optional = true }
+pytest-cov = { version = "*", optional = true }
+pytest-mock = { version = "*", optional = true }
 requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 
@@ -58,10 +69,20 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+sqlalchemy = { extras = ["mypy"], version = "*", optional = true }
+tox = { version = "*", optional = true }
+uvicorn = { version = "*", optional = true }
 
 [tool.poetry.extras]
 testing = ["requests","brotli"]
 brotli = ["brotli"]
+test = [
+    "hypothesis", "pytest", "pytest-asyncio", "pytest-cov", "uvicorn", "sqlalchemy", "Jinja2",
+    "Mako", "freezegun", "pytest-mock"
+]
+lint = ["pre-commit"]
+docs = ["mkdocs-material"]
+dev = ["tox"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
