@@ -27,6 +27,7 @@ def test_default_handle_http_exception_handling() -> None:
     assert json.loads(response.body) == {
         "detail": "starlite_exception",
         "extra": {"key": "value"},
+        "status_code": 500,
     }
 
     response = Starlite(route_handlers=[]).default_http_exception_handler(
