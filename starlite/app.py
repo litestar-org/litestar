@@ -283,7 +283,7 @@ class Starlite(Router):
             server_middleware = ServerErrorMiddleware(app=self)
             return server_middleware.debug_response(request=request, exc=exc)
         if isinstance(exc, HTTPException):
-            content = {"detail": exc.detail, "extra": exc.extra}
+            content = {"detail": exc.detail, "extra": exc.extra, "status_code": exc.status_code}
         elif isinstance(exc, StarletteHTTPException):
             content = {"detail": exc.detail}
         else:

@@ -52,7 +52,7 @@ def test_jinja_raise_for_invalid_path(tmpdir: Any) -> None:
     ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template invalid.html not found.", "extra": None}
+        assert response.json() == {"detail": "Template invalid.html not found.", "extra": None, "status_code": 500}
 
 
 def test_mako_template(tmpdir: Any) -> None:
@@ -101,7 +101,7 @@ def test_mako_raise_for_invalid_path(tmpdir: Any) -> None:
     ) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template invalid.html not found.", "extra": None}
+        assert response.json() == {"detail": "Template invalid.html not found.", "extra": None, "status_code": 500}
 
 
 def test_handler_raise_for_no_template_engine() -> None:
@@ -112,7 +112,7 @@ def test_handler_raise_for_no_template_engine() -> None:
     with create_test_client(route_handlers=[invalid_path]) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template engine is not configured", "extra": None}
+        assert response.json() == {"detail": "Template engine is not configured", "extra": None, "status_code": 500}
 
 
 def test_template_with_no_context(tmpdir: Any) -> None:
