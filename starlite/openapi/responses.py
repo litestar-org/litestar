@@ -125,7 +125,9 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
                 properties=dict(
                     status_code=Schema(type=OpenAPIType.INTEGER),
                     detail=Schema(type=OpenAPIType.STRING),
-                    extra=Schema(type=OpenAPIType.OBJECT, additionalProperties=Schema()),
+                    extra=Schema(
+                        type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY], additionalProperties=Schema()
+                    ),
                 ),
                 description=pascal_case_to_text(get_name(exc)),
                 examples=[{"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}}],
