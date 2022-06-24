@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
 from openapi_schema_pydantic import (
@@ -84,6 +84,7 @@ class TemplateConfig(BaseModel):
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
     engine: Type[TemplateEngineProtocol]
+    engine_callback: Optional[Callable[[Any], Any]]
 
 
 def default_cache_key_builder(request: Request) -> str:

@@ -136,6 +136,8 @@ class Starlite(Router):
                 self.register(asgi(path=path)(static_files))
         if template_config:
             self.template_engine: Optional[TemplateEngineProtocol] = template_config.engine(template_config.directory)
+            if template_config.engine_callback is not None:
+                template_config.engine_callback(self.template_engine)
         else:
             self.template_engine = None
 
