@@ -20,7 +20,7 @@ from starlette.requests import HTTPConnection
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.signature import SignatureModel
-from starlite.types import Guard
+from starlite.types import Guard, Middleware
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -33,12 +33,14 @@ class BaseRouteHandler:
         """Placeholder"""
 
     __slots__ = (
-        "paths",
+        "resolved_middleware",
         "dependencies",
-        "guards",
-        "opt",
         "fn",
+        "guards",
+        "middleware",
+        "opt",
         "owner",
+        "paths",
         "resolved_dependencies",
         "resolved_dependency_name_set",
         "resolved_guards",
@@ -52,6 +54,7 @@ class BaseRouteHandler:
         dependencies: Optional[Dict[str, "Provide"]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
+        middleware: Optional[List[Middleware]] = None,
     ):
         self.paths: List[str] = (
             [normalize_path(p) for p in path]
@@ -60,12 +63,14 @@ class BaseRouteHandler:
         )
         self.dependencies = dependencies
         self.guards = guards
+        self.middleware = middleware
         self.opt: Dict[str, Any] = opt or {}
         self.fn: Optional[AnyCallable] = None
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.signature_model: Optional[Type[SignatureModel]] = None
 
     @property
@@ -121,6 +126,20 @@ class BaseRouteHandler:
                         dependencies[key] = value
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)
+
+    def resolve_middleware(self) -> List[Middleware]:
+        """
+        Builds the middleware stack for the RouteHandler and returns it.
+
+        The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
+        """
+        if self.resolved_middleware is BaseRouteHandler.empty:
+            resolved_middleware = []
+            for layer in self.ownership_layers():
+                if layer.middleware:
+                    resolved_middleware.extend(layer.middleware)
+            self.resolved_middleware = list(reversed(resolved_middleware))
+        return cast(List[Middleware], self.resolved_middleware)
 
     @staticmethod
     def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:

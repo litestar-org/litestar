@@ -4,15 +4,6 @@ from urllib.parse import urlencode
 from orjson import dumps
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
-
-try:
-    from requests.models import RequestEncodingMixin
-except ImportError:  # pragma: no cover
-    from starlite.exceptions import MissingDependencyException
-
-    raise MissingDependencyException(
-        "To use starlite.testing, intall starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    )
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
@@ -40,9 +31,17 @@ from starlite.types import (
     ExceptionHandler,
     Guard,
     LifeCycleHandler,
-    MiddlewareProtocol,
+    Middleware,
 )
 
+try:
+    from requests.models import RequestEncodingMixin
+except ImportError:  # pragma: no cover
+    from starlite.exceptions import MissingDependencyException
+
+    raise MissingDependencyException(
+        "To use starlite.testing, intall starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
+    )
 __all__ = [
     "TestClient",
     "create_test_client",
@@ -101,7 +100,7 @@ def create_test_client(
     dependencies: Optional[Dict[str, Provide]] = None,
     exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     guards: Optional[List[Guard]] = None,
-    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
+    middleware: Optional[List[Middleware]] = None,
     on_shutdown: Optional[List[LifeCycleHandler]] = None,
     on_startup: Optional[List[LifeCycleHandler]] = None,
     openapi_config: Optional[OpenAPIConfig] = None,
