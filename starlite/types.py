@@ -16,6 +16,8 @@ from openapi_schema_pydantic import Header
 from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware import Middleware as StarletteMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -112,3 +114,6 @@ class Partial(Generic[T]):
 
 class ResponseHeader(Header):  # type: ignore
     value: Any = ...
+
+
+Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]

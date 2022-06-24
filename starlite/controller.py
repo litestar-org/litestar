@@ -1,6 +1,8 @@
 from copy import copy
 from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from typing_extensions import Type
 
 from starlite.handlers import BaseRouteHandler
@@ -10,6 +12,7 @@ from starlite.types import (
     BeforeRequestHandler,
     ExceptionHandler,
     Guard,
+    MiddlewareProtocol,
     ResponseHeader,
 )
 from starlite.utils import normalize_path
@@ -25,39 +28,41 @@ class Controller:
     """
 
     __slots__ = (
+        "after_request",
+        "before_request",
         "dependencies",
+        "exception_handlers",
+        "guards",
+        "middleware",
         "owner",
         "path",
-        "tags",
-        "response_headers",
         "response_class",
-        "guards",
-        "before_request",
-        "after_request",
-        "exception_handlers",
+        "response_headers",
+        "tags",
     )
 
+    after_request: Optional[AfterRequestHandler]
+    before_request: Optional[BeforeRequestHandler]
     dependencies: Optional[Dict[str, "Provide"]]
+    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]]
+    guards: Optional[List[Guard]]
+    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]]
     owner: "Router"
     path: str
-    tags: Optional[List[str]]
-    response_headers: Optional[Dict[str, ResponseHeader]]
     response_class: Optional[Type[Response]]
-    guards: Optional[List[Guard]]
-    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]]
-    # connection-lifecycle hook handlers
-    before_request: Optional[BeforeRequestHandler]
-    after_request: Optional[AfterRequestHandler]
+    response_headers: Optional[Dict[str, ResponseHeader]]
+    tags: Optional[List[str]]
 
     def __init__(self, owner: "Router"):
         for key in [
-            "dependencies",
-            "response_headers",
-            "response_class",
-            "guards",
-            "before_request",
             "after_request",
+            "before_request",
+            "dependencies",
             "exception_handlers",
+            "guards",
+            "middleware",
+            "response_class",
+            "response_headers",
         ]:
             if not hasattr(self, key):
                 setattr(self, key, None)

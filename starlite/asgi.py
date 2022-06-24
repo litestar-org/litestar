@@ -1,13 +1,12 @@
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, cast
 
 from starlette.routing import Router as StarletteRouter
-from starlette.routing import WebSocketRoute
-from starlette.types import Receive, Scope, Send
+from starlette.types import ASGIApp, Receive, Scope, Send
 
-from starlite.exceptions import NotFoundException
+from starlite.enums import ScopeType
+from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.parsers import parse_path_params
-from starlite.routes import ASGIRoute, HTTPRoute
 from starlite.types import LifeCycleHandler
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -28,17 +27,16 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    def parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
         """
-        The main entry point to the Router class.
+        Given a scope object, traverse the route mapping and retrieve the correct "leaf" in the route tree.
         """
-        scope_type = scope["type"]
         path_params: List[str] = []
         path = cast(str, scope["path"]).strip()
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
-            cur = self.app.route_map[path]
+            cur: Dict[str, Any] = self.app.route_map[path]
         else:
             cur = self.app.route_map
             components = ["/", *[component for component in path.split("/") if component]]
@@ -46,28 +44,47 @@ class StarliteASGIRouter(StarletteRouter):
                 components_set = cast(Set[str], cur["_components"])
                 if component in components_set:
                     cur = cast(Dict[str, Any], cur[component])
-                elif "*" in components_set:
+                    continue
+                if "*" in components_set:
                     path_params.append(component)
                     cur = cast(Dict[str, Any], cur["*"])
-                elif cur.get("static_path"):  # noqa: SIM106
-                    scope_type = "asgi"
+                    continue
+                if cur.get("static_path"):
                     static_path = cast(str, cur["static_path"])
                     if static_path != "/":
                         scope["path"] = scope["path"].replace(static_path, "")
-                else:  # noqa: SIM106
-                    raise NotFoundException()
+                    continue
+                raise NotFoundException()
+        scope["path_params"] = (
+            parse_path_params(cur["_path_parameters"], path_params) if cur["_path_parameters"] else {}
+        )
+        asgi_handlers = cast(Dict[str, ASGIApp], cur["_asgi_handlers"])
+        is_asgi = cast(bool, cur["_is_asgi"])
+        return asgi_handlers, is_asgi
+
+    @staticmethod
+    def resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
+        """
+        Given a scope, retrieves the correct ASGI App for the route
+        """
+        if is_asgi:
+            return asgi_handlers[ScopeType.ASGI]
+        if scope["type"] == ScopeType.HTTP:
+            if scope["method"] not in asgi_handlers:
+                raise MethodNotAllowedException()
+            return asgi_handlers[scope["method"]]
+        return asgi_handlers[ScopeType.WEBSOCKET]
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        The main entry point to the Router class.
+        """
         try:
-            handlers = cast(Dict[str, Any], cur["_handlers"])
-            handler_types = cast(Set[str], cur["_handler_types"])
-            route = cast(
-                Union[WebSocketRoute, ASGIRoute, HTTPRoute],
-                handlers[scope_type if scope_type in handler_types else "asgi"],
-            )
-            scope["path_params"] = parse_path_params(route.path_parameters, path_params) if route.path_parameters else {}  # type: ignore
+            asgi_handlers, is_asgi = self.parse_scope_to_route(scope=scope)
+            asgi_handler = self.resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
         except KeyError as e:
             raise NotFoundException() from e
-        else:
-            await route.handle(scope=scope, receive=receive, send=send)
+        await asgi_handler(scope, receive, send)
 
     async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
         """

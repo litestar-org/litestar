@@ -12,13 +12,13 @@ class BeforeRequestMiddleWare(MiddlewareProtocol):
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        scope["state"]["main"] = "Success!"
+        scope["state"]["main"] = 1
         await self.app(scope, receive, send)
 
 
 def before_request(request: Request) -> None:
-    assert request.state.main == "Success!"
-    request.state.main = "Success! x2"
+    assert request.state.main == 1
+    request.state.main = 2
 
 
 def test_state() -> None:
@@ -30,4 +30,4 @@ def test_state() -> None:
         route_handlers=[get_state], middleware=[BeforeRequestMiddleWare], before_request=before_request
     ) as client:
         response = client.get("/")
-        assert response.json() == {"state": "Success! x2"}
+        assert response.json() == {"state": 2}

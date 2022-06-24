@@ -12,7 +12,6 @@ class Config(BaseConfig):
 
 def create_parsed_model_field(value: Type[Any]) -> ModelField:
     """Create a pydantic model with the passed in value as its sole field, and return the parsed field"""
-
     model = create_model("temp", __config__=Config, **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)})  # type: ignore
     return cast(BaseModel, model).__fields__["value"]
 

@@ -16,7 +16,7 @@ from starlette.types import Receive, Scope, Send
 from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
 from starlite.enums import ScopeType
-from starlite.exceptions import ImproperlyConfiguredException, MethodNotAllowedException
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
     BaseRouteHandler,
@@ -122,10 +122,8 @@ class HTTPRoute(BaseRoute):
         """
         ASGI app that creates a Request from the passed in args, and then awaits a Response
         """
-        if scope["method"] not in self.methods:
-            raise MethodNotAllowedException()
         request: Request[Any, Any] = Request(scope=scope, receive=receive, send=send)
-        route_handler, parameter_model = self.route_handler_map[request.method]
+        route_handler, parameter_model = self.route_handler_map[scope["method"]]
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
