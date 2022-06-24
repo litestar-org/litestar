@@ -8,7 +8,7 @@ if sys.version_info >= (3, 10):
 
     UNION_TYPES = {UnionType, Union}
 else:
-    UNION_TYPES = {Union}  # pragma: no cover
+    UNION_TYPES = {Union}
 
 
 def detect_optional_union(annotation: Any) -> bool:

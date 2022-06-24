@@ -77,8 +77,16 @@ uvicorn = { version = "*", optional = true }
 testing = ["requests","brotli"]
 brotli = ["brotli"]
 test = [
-    "hypothesis", "pytest", "pytest-asyncio", "pytest-cov", "uvicorn", "sqlalchemy", "Jinja2",
-    "Mako", "freezegun", "pytest-mock"
+    "Jinja2",
+    "Mako",
+    "freezegun",
+    "hypothesis",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "sqlalchemy",
+    "uvicorn",
 ]
 lint = ["pre-commit"]
 docs = ["mkdocs-material"]
@@ -131,7 +139,22 @@ ignored-argument-names = "args|kwargs|_|__"
 good-names = "_,i,e,fn"
 
 [tool.coverage.run]
+branch = true
+data_file = "./.coverage"
 omit = ["*/tests/*"]
+source = ["starlite"]
+
+[tool.coverage.paths]
+source = [
+    "../starlite",
+    "*/site-packages/starlite"
+]
+
+[tool.coverage.report]
+fail_under = 97
+
+[tool.coverage.xml]
+output = "./coverage.xml"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -11,6 +11,10 @@ To contribute code changes or update the documentation, please follow these step
 
 Note: if you add new code or modify existing code - 100% test coverage is mandatory and tests should be well written.
 
+## Setup a simple dev environment
+
+1. Ensure `poetry` is available
+
 ## Setup a dev environment
 
 1. Install `pyenv` and configure per the instructions for your platform: https://github.com/pyenv/pyenv#installation
