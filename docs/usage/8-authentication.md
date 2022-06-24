@@ -97,7 +97,7 @@ from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
-from starlette import HTTPConnection
+from starlette.requests import HTTPConnection
 from starlite import AbstractAuthenticationMiddleware, AuthenticationResult, NotAuthorizedException
 
 from app.db.models import User
