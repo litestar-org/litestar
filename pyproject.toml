@@ -41,7 +41,6 @@ python-multipart = "*"
 pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
-
 requests = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
