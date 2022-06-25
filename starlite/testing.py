@@ -7,9 +7,11 @@ from pydantic.typing import AnyCallable
 
 try:
     from requests.models import RequestEncodingMixin
-except ImportError:
-    raise RuntimeError(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
+except ImportError:  # pragma: no cover
+    from starlite.exceptions import MissingDependencyException
+
+    raise MissingDependencyException(
+        "To use starlite.testing, intall starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
     )
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
