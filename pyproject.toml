@@ -39,9 +39,10 @@ pydantic = "*"
 pydantic-factories = "*"
 python-multipart = "*"
 pyyaml = "*"
-requests = "*"
 starlette = "*"
 typing-extensions = "*"
+
+requests = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -56,6 +57,10 @@ Mako = "*"
 freezegun = "*"
 pytest-mock = "*"
 tox = "*"
+requests = "*"
+
+[tool.poetry.extras]
+testing = ["requests"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
