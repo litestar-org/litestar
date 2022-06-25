@@ -2,7 +2,7 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
-To use them, you need to install starlite with `testing` extra:
+!!!important Testing utils rely on extra dependencies. So make sure to install them, e.g.:
 `pip install starlite[testing]` or `poetry install starlite --extras testing`
 
 ## Test Client
