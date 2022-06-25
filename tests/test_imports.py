@@ -1,6 +1,5 @@
 import subprocess
 import sys
-import warnings
 
 import pytest
 
@@ -9,26 +8,27 @@ import pytest
 def test_testing_import_deprecation() -> None:
     import starlite
 
-    deprecated_imports = {"TestClient", "create_test_client", "create_test_request"}
-    assert deprecated_imports & starlite.__dict__.keys() == set()
+    dynamic_imports_names = {"TestClient", "create_test_client", "create_test_request"}
+    assert dynamic_imports_names & starlite.__dict__.keys() == set()
     assert "starlite.testing" not in sys.modules
     assert "requests" not in sys.modules
     assert "requests.models" not in sys.modules
 
-    for deprecated_name in deprecated_imports:
-        with pytest.warns(DeprecationWarning):
-            getattr(starlite, deprecated_name)
+    dynamic_imports = {}
+    for dynamic_import_name in dynamic_imports_names:
+        dynamic_imports[dynamic_import_name] = getattr(starlite, dynamic_import_name)
 
-    assert deprecated_imports & starlite.__dict__.keys() == deprecated_imports
+    assert dynamic_imports_names & starlite.__dict__.keys() == dynamic_imports_names
     assert "starlite.testing" in sys.modules
     assert "requests.models" in sys.modules
 
-    # ensure no warnings emited on the second usage
-    with warnings.catch_warnings(record=True) as record:
-        for deprecated_name in deprecated_imports:
-            getattr(starlite, deprecated_name)
+    from starlite import testing
 
-    assert record == []
+    assert dynamic_imports == {
+        "TestClient": testing.TestClient,
+        "create_test_client": testing.create_test_client,
+        "create_test_request": testing.create_test_request,
+    }
 
 
 @pytest.mark.skipif(
