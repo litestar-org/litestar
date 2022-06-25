@@ -4,7 +4,13 @@ from urllib.parse import urlencode
 from orjson import dumps
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
-from requests.models import RequestEncodingMixin
+
+try:
+    from requests.models import RequestEncodingMixin
+except ImportError:
+    raise RuntimeError(
+        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
+    )
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
@@ -34,6 +40,12 @@ from starlite.types import (
     LifeCycleHandler,
     MiddlewareProtocol,
 )
+
+__all__ = [
+    "TestClient",
+    "create_test_client",
+    "create_test_request",
+]
 
 
 class RequestEncoder(RequestEncodingMixin):
