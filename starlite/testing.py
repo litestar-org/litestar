@@ -4,7 +4,6 @@ from urllib.parse import urlencode
 from orjson import dumps
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
-from requests.models import RequestEncodingMixin
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
@@ -34,6 +33,7 @@ from starlite.types import (
     LifeCycleHandler,
     MiddlewareProtocol,
 )
+from starlite._vendor.requests import RequestEncodingMixin
 
 
 class RequestEncoder(RequestEncodingMixin):
