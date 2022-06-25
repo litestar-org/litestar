@@ -55,7 +55,7 @@ jobs:
         if: matrix.python-version == '3.10'
   sonar:
     needs: test
-    if: github.repository_owner == 'starlite-api'
+    if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -73,7 +73,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   snyk:
     needs: test
-    if: github.repository_owner == 'starlite-api'
+    if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
