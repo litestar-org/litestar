@@ -2,6 +2,9 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
+To use them, you need to install starlite with `testing` extra:
+`pip install starlite[testing]` or `poetry install starlite --extras testing`
+
 ## Test Client
 
 Starlite extends the Starlette testing client, which in turn is built using
@@ -26,7 +29,7 @@ We would then test it using the test client like so:
 
 ```python title="tests/test_health_check.py"
 from starlette.status import HTTP_200_OK
-from starlite import TestClient
+from starlite.testing import TestClient
 
 from my_app.main import app
 
@@ -42,7 +45,7 @@ Since we would probably need to use the client in multiple places, it's better t
 ```python title="tests/conftest.py"
 import pytest
 
-from starlite import TestClient
+from starlite.testing import TestClient
 
 from my_app.main import app
 
@@ -56,7 +59,7 @@ We would then be able to rewrite our test like so:
 
 ```python title="tests/test_health_check.py"
 from starlette.status import HTTP_200_OK
-from starlite import TestClient
+from starlite.testing import TestClient
 
 
 def test_health_check(test_client: TestClient):
@@ -83,7 +86,7 @@ For example, you can do this:
 
 ```python title="my_app/tests/test_health_check.py"
 from starlette.status import HTTP_200_OK
-from starlite import create_test_client
+from starlite.testing import create_test_client
 
 from my_app.main import health_check
 
@@ -99,7 +102,7 @@ But also this:
 
 ```python title="my_app/tests/test_health_check.py"
 from starlette.status import HTTP_200_OK
-from starlite import create_test_client
+from starlite.testing import create_test_client
 
 from my_app.main import health_check
 
@@ -123,7 +126,8 @@ from typing import Protocol, runtime_checkable
 import pytest
 from pydantic import BaseModel
 from starlette.status import HTTP_200_OK
-from starlite import Provide, create_test_client, get
+from starlite import Provide, get
+from starlite.testing import  create_test_client
 
 
 class Item(BaseModel):
@@ -172,9 +176,8 @@ import pytest
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 from starlette.status import HTTP_200_OK
-
-from starlite import Provide, create_test_client, get
-
+from starlite import Provide, get
+from starlite.testing import  create_test_client
 
 class Item(BaseModel):
     name: str
@@ -251,7 +254,8 @@ We could thus test the guard function like so:
 ```python title="tests/guards/test_secret_token_guard.py"
 import pytest
 
-from starlite import NotAuthorizedException, HttpMethod, create_test_request
+from starlite import NotAuthorizedException, HttpMethod
+from starlite.testing import  create_test_request
 
 from my_app.guards import secret_token_guard
 from my_app.secret import secret_endpoint
