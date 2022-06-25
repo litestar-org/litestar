@@ -37,5 +37,5 @@ def test_testing_import_deprecation() -> None:
 def test_testing_import_deprecation_in_subprocess() -> None:
     """Run test_testing_import_deprecation in subprocess so it can test importing starlite for the first time"""
     subprocess.check_call(
-        [sys.executable, "-m", "pytest", f"{__file__}::{test_testing_import_deprecation.__name__}"], timeout=1
+        [sys.executable, "-m", "pytest", f"{__file__}::{test_testing_import_deprecation.__name__}"], timeout=5
     )
