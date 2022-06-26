@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 from starlite.datastructures import File, Redirect, State, Stream, Template
 
 from .app import Starlite
@@ -53,8 +55,11 @@ from .provide import Provide
 from .response import Response
 from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
-from .testing import TestClient, create_test_client, create_test_request
 from .types import MiddlewareProtocol, Partial, ResponseHeader
+
+if TYPE_CHECKING:
+    from .testing import TestClient, create_test_client, create_test_request
+
 
 __all__ = [
     "ASGIRouteHandler",
@@ -121,3 +126,17 @@ __all__ = [
     "route",
     "websocket",
 ]
+
+_dynamic_imports = {"TestClient", "create_test_client", "create_test_request"}
+
+
+# pylint: disable=import-outside-toplevel
+def __getattr__(name: str) -> Any:
+    """Provide lazy importing as per https://peps.python.org/pep-0562/"""
+    if name not in _dynamic_imports:
+        raise AttributeError(f"Module {__package__} has no attribute {name}")
+
+    from . import testing
+
+    attr = globals()[name] = getattr(testing, name)
+    return attr
