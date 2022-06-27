@@ -1,31 +1,39 @@
 import subprocess
 import sys
+import warnings
 
 import pytest
 
-dynamic_imports_names = {"TestClient", "create_test_client", "create_test_request"}
+deprecated_imports_names = {"TestClient", "create_test_client", "create_test_request"}
 
 
 @pytest.mark.skipif("starlite" in sys.modules, reason="This tests expects starlite to be imported for the first time")
 def test_testing_import_deprecation() -> None:
     import starlite
 
-    assert dynamic_imports_names & starlite.__dict__.keys() == set()
+    assert deprecated_imports_names & starlite.__dict__.keys() == set()
     assert "starlite.testing" not in sys.modules
     assert "requests" not in sys.modules
     assert "requests.models" not in sys.modules
 
-    dynamic_imports = {}
-    for dynamic_import_name in dynamic_imports_names:
-        dynamic_imports[dynamic_import_name] = getattr(starlite, dynamic_import_name)
+    imported_values = {}
+    for dynamic_import_name in deprecated_imports_names:
+        with pytest.warns(DeprecationWarning):
+            imported_values[dynamic_import_name] = getattr(starlite, dynamic_import_name)
 
-    assert dynamic_imports_names & starlite.__dict__.keys() == dynamic_imports_names
+    assert deprecated_imports_names & starlite.__dict__.keys() == deprecated_imports_names
     assert "starlite.testing" in sys.modules
     assert "requests.models" in sys.modules
 
+    # ensure no warnings emitted on the second usage
+    with warnings.catch_warnings(record=True) as record:
+        for deprecated_name in deprecated_imports_names:
+            getattr(starlite, deprecated_name)
+
+    assert record == []
     from starlite import testing
 
-    assert dynamic_imports == {
+    assert imported_values == {
         "TestClient": testing.TestClient,
         "create_test_client": testing.create_test_client,
         "create_test_request": testing.create_test_request,
@@ -45,4 +53,4 @@ def test_testing_import_deprecation_in_subprocess() -> None:
 def test_star_import_doesnt_import_testing() -> None:
     import starlite
 
-    assert set(starlite.__all__) & dynamic_imports_names == set()
+    assert set(starlite.__all__) & deprecated_imports_names == set()

@@ -120,15 +120,23 @@ __all__ = [
     "websocket",
 ]
 
-# these imports are still allowed, but importing from starlite.testing instead is encouraged
-_dynamic_imports = {"TestClient", "create_test_client", "create_test_request"}
+
+_deprecated_imports = {"TestClient", "create_test_client", "create_test_request"}
 
 
 # pylint: disable=import-outside-toplevel
 def __getattr__(name: str) -> Any:
     """Provide lazy importing as per https://peps.python.org/pep-0562/"""
-    if name not in _dynamic_imports:
+    if name not in _deprecated_imports:
         raise AttributeError(f"Module {__package__} has no attribute {name}")
+
+    import warnings
+
+    warnings.warn(
+        f"Importing {name} from {__package__} is deprecated, use `from startlite.testing import {name}` instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     from . import testing
 
