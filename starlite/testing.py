@@ -4,8 +4,6 @@ from urllib.parse import urlencode
 from orjson import dumps
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
-from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.testclient import TestClient as StarletteTestClient
 from typing_extensions import Type
 

@@ -11,18 +11,7 @@ from starlette.status import (
 )
 from typing_extensions import Type
 
-from starlite.testing import create_test_client
-
-from starlite import (
-    Controller,
-    HTTPRouteHandler,
-    MediaType,
-    create_test_client,
-    delete,
-    get,
-    post,
-)
-from starlite import Controller, HTTPRouteHandler, MediaType, delete, get
+from starlite import Controller, HTTPRouteHandler, MediaType, delete, get, post
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
