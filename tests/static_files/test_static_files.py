@@ -3,8 +3,8 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from starlite import create_test_client
 from starlite.config import StaticFilesConfig
+from starlite.testing import create_test_client
 
 
 def test_staticfiles(tmpdir: Any) -> None:

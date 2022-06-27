@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import HTTPRouteHandler, MediaType, create_test_client, get
+from starlite import HTTPRouteHandler, MediaType, get
+from starlite.testing import create_test_client
 
 
 def sync_handler() -> str:

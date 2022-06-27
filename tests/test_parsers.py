@@ -1,5 +1,5 @@
-from starlite import create_test_request
 from starlite.parsers import parse_query_params
+from starlite.testing import create_test_request
 
 
 def test_parse_query_params() -> None:

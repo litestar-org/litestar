@@ -5,9 +5,10 @@ from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from orjson import loads
 from starlette.status import HTTP_200_OK
 
-from starlite import Starlite, create_test_client
+from starlite import Starlite
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import OpenAPIMediaType
+from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
 
 

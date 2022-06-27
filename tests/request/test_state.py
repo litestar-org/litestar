@@ -2,7 +2,8 @@ from typing import Dict
 
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from starlite import MiddlewareProtocol, Request, create_test_client, get
+from starlite import MiddlewareProtocol, Request, get
+from starlite.testing import create_test_client
 
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):

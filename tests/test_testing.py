@@ -3,15 +3,8 @@ from typing import Any
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from starlite import (
-    HttpMethod,
-    RequestEncodingType,
-    Starlite,
-    State,
-    TestClient,
-    create_test_request,
-    get,
-)
+from starlite import HttpMethod, RequestEncodingType, Starlite, State, get
+from starlite.testing import TestClient, create_test_request
 from tests import Person
 
 

@@ -13,9 +13,9 @@ from starlite import (
     Router,
     ServiceUnavailableException,
     ValidationException,
-    create_test_client,
     get,
 )
+from starlite.testing import create_test_client
 from starlite.types import ExceptionHandler
 
 

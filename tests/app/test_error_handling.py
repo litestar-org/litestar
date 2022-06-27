@@ -3,18 +3,9 @@ import json
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import (
-    HTTPException,
-    MediaType,
-    Request,
-    Response,
-    Starlite,
-    TestClient,
-    create_test_client,
-    get,
-    post,
-)
+from starlite import HTTPException, MediaType, Request, Response, Starlite, get, post
 from starlite.exceptions import InternalServerException
+from starlite.testing import TestClient, create_test_client
 from tests import Person
 
 

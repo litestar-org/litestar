@@ -2,12 +2,8 @@ from typing import Any
 
 import pytest
 
-from starlite import (
-    ImproperlyConfiguredException,
-    WebSocket,
-    create_test_client,
-    websocket,
-)
+from starlite import ImproperlyConfiguredException, WebSocket, websocket
+from starlite.testing import create_test_client
 
 
 def test_websocket_handler_function_validation() -> None:

@@ -5,15 +5,7 @@ from openapi_schema_pydantic import Example
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.fields import FieldInfo
 
-from starlite import (
-    Controller,
-    MediaType,
-    Parameter,
-    Provide,
-    Starlite,
-    create_test_client,
-    get,
-)
+from starlite import Controller, MediaType, Parameter, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
@@ -21,6 +13,7 @@ from starlite.openapi.constants import (
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
 )
 from starlite.openapi.schema import update_schema_with_field_info
+from starlite.testing import create_test_client
 
 
 def test_update_schema_with_field_info() -> None:

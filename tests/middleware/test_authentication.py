@@ -10,10 +10,11 @@ from starlette.status import (
 )
 from starlette.websockets import WebSocketDisconnect
 
-from starlite import Starlite, create_test_client, get, websocket
+from starlite import Starlite, get, websocket
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
+from starlite.testing import create_test_client
 
 
 class User(BaseModel):

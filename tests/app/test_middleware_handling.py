@@ -17,10 +17,10 @@ from starlite import (
     Request,
     Response,
     Starlite,
-    create_test_client,
     get,
     post,
 )
+from starlite.testing import create_test_client
 
 logger = logging.getLogger(__name__)
 

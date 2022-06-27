@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from pydantic.generics import GenericModel
 from starlette.status import HTTP_200_OK
 
-from starlite import Provide, create_test_client, get
+from starlite import Provide, get
+from starlite.testing import create_test_client
 
 T = TypeVar("T")
 

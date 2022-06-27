@@ -4,13 +4,8 @@ import pytest
 from pydantic import UUID4
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from starlite import (
-    ImproperlyConfiguredException,
-    Parameter,
-    Starlite,
-    create_test_client,
-    get,
-)
+from starlite import ImproperlyConfiguredException, Parameter, Starlite, get
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(

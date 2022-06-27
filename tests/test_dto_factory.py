@@ -6,15 +6,9 @@ from pydantic import BaseModel, create_model
 from pydantic_factories import ModelFactory
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from starlite import (
-    DTOFactory,
-    ImproperlyConfiguredException,
-    Starlite,
-    create_test_client,
-    get,
-    post,
-)
+from starlite import DTOFactory, ImproperlyConfiguredException, Starlite, get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.testing import create_test_client
 from tests import Person
 from tests import Pet as PydanticPet
 from tests import Species, VanillaDataClassPerson

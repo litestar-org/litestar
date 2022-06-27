@@ -1,6 +1,7 @@
 from typing import cast
 
-from starlite import Starlite, State, create_test_client
+from starlite import Starlite, State
+from starlite.testing import create_test_client
 
 
 def test_lifecycle() -> None:

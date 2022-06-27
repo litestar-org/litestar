@@ -2,15 +2,8 @@ from typing import Optional
 
 import pytest
 
-from starlite import (
-    Controller,
-    HTTPRouteHandler,
-    Request,
-    Response,
-    Router,
-    create_test_client,
-    get,
-)
+from starlite import Controller, HTTPRouteHandler, Request, Response, Router, get
+from starlite.testing import create_test_client
 from starlite.types import AfterRequestHandler, BeforeRequestHandler
 
 

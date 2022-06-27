@@ -3,8 +3,9 @@ from typing import Any, Dict
 
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from starlite import Controller, Provide, create_test_client, get
+from starlite import Controller, Provide, get
 from starlite.connection import Request
+from starlite.testing import create_test_client
 
 
 def router_first_dependency() -> bool:
