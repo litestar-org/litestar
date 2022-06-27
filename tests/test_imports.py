@@ -3,12 +3,13 @@ import sys
 
 import pytest
 
+dynamic_imports_names = {"TestClient", "create_test_client", "create_test_request"}
+
 
 @pytest.mark.skipif("starlite" in sys.modules, reason="This tests expects starlite to be imported for the first time")
 def test_testing_import_deprecation() -> None:
     import starlite
 
-    dynamic_imports_names = {"TestClient", "create_test_client", "create_test_request"}
     assert dynamic_imports_names & starlite.__dict__.keys() == set()
     assert "starlite.testing" not in sys.modules
     assert "requests" not in sys.modules
@@ -39,3 +40,11 @@ def test_testing_import_deprecation_in_subprocess() -> None:
     subprocess.check_call(
         [sys.executable, "-m", "pytest", f"{__file__}::{test_testing_import_deprecation.__name__}"], timeout=5
     )
+
+
+def test_star_import_doesnt_import_testing() -> None:
+    from starlite import *  # noqa
+
+    assert locals().keys() & dynamic_imports_names == set()
+    assert Starlite  # noqa
+    assert "Starlite" in locals()
