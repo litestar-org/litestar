@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from starlite.datastructures import File, Redirect, State, Stream, Template
 
@@ -57,10 +57,6 @@ from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
 from .types import MiddlewareProtocol, Partial, ResponseHeader
 
-if TYPE_CHECKING:
-    from .testing import TestClient, create_test_client, create_test_request
-
-
 __all__ = [
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
@@ -110,14 +106,11 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
-    "TestClient",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",
-    "create_test_client",
-    "create_test_request",
     "delete",
     "get",
     "patch",
@@ -127,6 +120,7 @@ __all__ = [
     "websocket",
 ]
 
+# these imports are still allowed, but importing from starlite.testing instead is encouraged
 _dynamic_imports = {"TestClient", "create_test_client", "create_test_request"}
 
 
