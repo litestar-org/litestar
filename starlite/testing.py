@@ -93,7 +93,7 @@ class TestClient(StarletteTestClient):
         Starlette's `TestClient.__enter__()` return value is strongly typed to return their own
         `TestClient`, i.e., not-generic to support subclassing.
 
-        Override here to provide a nicer typing experience downstream from us.
+        We override here to provide a nicer typing experience for our users.
 
         Parameters
         ----------
