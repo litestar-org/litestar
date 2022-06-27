@@ -1,4 +1,5 @@
-from starlite import Controller, MediaType, Provide, create_test_client, get
+from starlite import Controller, MediaType, Provide, get
+from starlite.testing import create_test_client
 
 
 def test_inter_dependencies() -> None:

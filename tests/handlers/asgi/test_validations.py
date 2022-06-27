@@ -1,7 +1,8 @@
 import pytest
 from starlette.types import Receive, Scope, Send
 
-from starlite import ImproperlyConfiguredException, asgi, create_test_client
+from starlite import ImproperlyConfiguredException, asgi
+from starlite.testing import create_test_client
 
 
 def test_asgi_handler_validation() -> None:

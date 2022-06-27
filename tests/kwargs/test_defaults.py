@@ -1,6 +1,7 @@
 from starlette.status import HTTP_200_OK
 
-from starlite import Parameter, create_test_client, get
+from starlite import Parameter, get
+from starlite.testing import create_test_client
 
 
 def test_params_default() -> None:

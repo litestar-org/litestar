@@ -8,8 +8,9 @@ import pytest
 from freezegun import freeze_time
 from pydantic import ValidationError
 
-from starlite import CacheConfig, Request, Response, create_test_client, get
+from starlite import CacheConfig, Request, Response, get
 from starlite.cache import SimpleCacheBackend
+from starlite.testing import create_test_client
 
 
 async def slow_handler() -> dict:

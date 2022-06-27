@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from starlite.datastructures import File, Redirect, State, Stream, Template
 
@@ -57,10 +57,6 @@ from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
 from .types import MiddlewareProtocol, Partial, ResponseHeader
 
-if TYPE_CHECKING:
-    from .testing import TestClient, create_test_client, create_test_request
-
-
 __all__ = [
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
@@ -110,14 +106,11 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
-    "TestClient",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",
-    "create_test_client",
-    "create_test_request",
     "delete",
     "get",
     "patch",
@@ -127,14 +120,23 @@ __all__ = [
     "websocket",
 ]
 
-_dynamic_imports = {"TestClient", "create_test_client", "create_test_request"}
+
+_deprecated_imports = {"TestClient", "create_test_client", "create_test_request"}
 
 
 # pylint: disable=import-outside-toplevel
 def __getattr__(name: str) -> Any:
     """Provide lazy importing as per https://peps.python.org/pep-0562/"""
-    if name not in _dynamic_imports:
+    if name not in _deprecated_imports:
         raise AttributeError(f"Module {__package__} has no attribute {name}")
+
+    import warnings
+
+    warnings.warn(
+        f"Importing {name} from {__package__} is deprecated, use `from startlite.testing import {name}` instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
     from . import testing
 

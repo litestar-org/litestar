@@ -4,8 +4,9 @@ from typing import Any, Dict
 import pytest
 from starlette.websockets import WebSocketDisconnect
 
-from starlite import Controller, Provide, create_test_client, websocket
+from starlite import Controller, Provide, websocket
 from starlite.connection import WebSocket
+from starlite.testing import create_test_client
 
 
 def router_first_dependency() -> bool:

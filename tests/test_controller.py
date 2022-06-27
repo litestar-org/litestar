@@ -6,7 +6,6 @@ from starlite import (
     Controller,
     HttpMethod,
     HTTPRouteHandler,
-    create_test_client,
     delete,
     get,
     patch,
@@ -15,6 +14,7 @@ from starlite import (
     websocket,
 )
 from starlite.connection import WebSocket
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 

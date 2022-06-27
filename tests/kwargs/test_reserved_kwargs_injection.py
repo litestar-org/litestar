@@ -12,13 +12,13 @@ from starlite import (
     Request,
     Starlite,
     State,
-    create_test_client,
     delete,
     get,
     patch,
     post,
     put,
 )
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 

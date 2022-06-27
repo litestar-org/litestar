@@ -6,8 +6,9 @@ from pydantic_factories.value_generators.primitives import (
 )
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from starlite import create_test_client, get, post
+from starlite import get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.testing import create_test_client
 from tests.plugins.sql_alchemy_plugin import Company
 
 companies = [

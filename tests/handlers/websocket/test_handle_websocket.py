@@ -1,4 +1,5 @@
-from starlite import WebSocket, create_test_client, websocket
+from starlite import WebSocket, websocket
+from starlite.testing import create_test_client
 
 
 def test_handle_websocket() -> None:

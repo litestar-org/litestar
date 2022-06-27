@@ -1,9 +1,10 @@
 import os
 from typing import Any
 
-from starlite import Template, TemplateConfig, create_test_client, get
+from starlite import Template, TemplateConfig, get
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.template.mako import MakoTemplateEngine
+from starlite.testing import create_test_client
 
 
 def test_jinja_template(tmpdir: Any) -> None:

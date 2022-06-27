@@ -3,8 +3,9 @@ from unittest.mock import Mock, patch
 
 from _pytest.logging import LogCaptureFixture
 
-from starlite import Starlite, TestClient, create_test_client
+from starlite import Starlite
 from starlite.logging import LoggingConfig
+from starlite.testing import TestClient, create_test_client
 
 
 @patch("logging.config.dictConfig")

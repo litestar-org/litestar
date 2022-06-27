@@ -10,12 +10,12 @@ from starlite import (
     Request,
     Response,
     asgi,
-    create_test_client,
     get,
     websocket,
 )
 from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException
+from starlite.testing import create_test_client
 
 
 async def local_guard(_: HTTPConnection, route_handler: BaseRouteHandler) -> None:
