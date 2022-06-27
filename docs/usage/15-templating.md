@@ -68,3 +68,22 @@ class TemplateEngineProtocol(Protocol[T]):
 ```
 
 Once you have your custom engine you can regiter it as you would the built-in engines.
+
+## Modifying the Template Engine Instance
+
+`TemplateConfig` accepts the `engine_callback` keyword arg which provides a way to modify the instantiated
+template engine instance. For example:
+
+```python
+def engine_callback(jinja_engine: JinjaTemplateEngine) -> JinjaTemplateEngine:
+    jinja_engine.engine.globals["key"] = "value"
+    return jinja_engine
+
+
+template_config = TemplateConfig(
+    directory="templates", engine=JinjaTemplateEngine, engine_callback=engine_callback
+)
+```
+
+The callback should receive a single argument which will be the instantiated engine, and must
+return the instantiated engine.

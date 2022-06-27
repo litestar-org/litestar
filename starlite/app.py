@@ -36,7 +36,6 @@ from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import model_function_signature
-from starlite.template import TemplateEngineProtocol
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -49,6 +48,7 @@ from starlite.types import (
 )
 from starlite.utils import normalize_path
 from starlite.utils.exception import get_exception_handler
+from starlite.utils.templates import create_template_engine
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 DEFAULT_CACHE_CONFIG = CacheConfig()
@@ -134,10 +134,7 @@ class Starlite(Router):
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
-        if template_config:
-            self.template_engine: Optional[TemplateEngineProtocol] = template_config.engine(template_config.directory)
-        else:
-            self.template_engine = None
+        self.template_engine = create_template_engine(template_config)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["app"] = self
