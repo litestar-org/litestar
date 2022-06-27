@@ -43,8 +43,6 @@ def test_testing_import_deprecation_in_subprocess() -> None:
 
 
 def test_star_import_doesnt_import_testing() -> None:
-    from starlite import *  # noqa
+    import starlite
 
-    assert locals().keys() & dynamic_imports_names == set()
-    assert Starlite  # noqa
-    assert "Starlite" in locals()
+    assert set(starlite.__all__) & dynamic_imports_names == set()
