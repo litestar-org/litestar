@@ -10,7 +10,6 @@ from starlite import (
     HttpMethod,
     MediaType,
     Request,
-    Starlite,
     State,
     delete,
     get,
@@ -30,12 +29,11 @@ def test_application_state_injection() -> None:
         return cast(str, state.msg)  # this shows injection worked
 
     with create_test_client(route_handler) as client:
-        state = cast(Starlite, client.app).state
-        state.msg = "hello"
-        state.called = False
+        client.app.state.msg = "hello"
+        client.app.state.called = False
         response = client.get("/")
         assert response.text == "hello"
-        assert not state.called
+        assert not client.app.state.called
 
 
 class QueryParams(BaseModel):

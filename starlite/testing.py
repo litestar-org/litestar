@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
@@ -64,6 +64,9 @@ class RequestEncoder(RequestEncodingMixin):
         return self._encode_params(data).encode("utf-8")  # type: ignore
 
 
+T_client = TypeVar("T_client", bound="TestClient")
+
+
 class TestClient(StarletteTestClient):
     app: Starlite
 
@@ -84,6 +87,25 @@ class TestClient(StarletteTestClient):
             backend=backend,
             backend_options=backend_options,
         )
+
+    def __enter__(self: T_client, *args: Any, **kwargs: Any) -> T_client:
+        """
+        Starlette's `TestClient.__enter__()` return value is strongly typed to return their own
+        `TestClient`, i.e., not-generic to support subclassing.
+
+        We override here to provide a nicer typing experience for our users.
+
+        Parameters
+        ----------
+        args : Any
+        kwargs : Any
+            `*args, **kwargs` passed straight through to `Starlette.testing.TestClient.__enter__()`
+
+        Returns
+        -------
+        TestClient
+        """
+        return super().__enter__(*args, **kwargs)  # type:ignore[return-value]
 
 
 def create_test_client(

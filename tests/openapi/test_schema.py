@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, cast
+from typing import Generic, TypeVar
 
 import pytest
 from openapi_schema_pydantic import Example
@@ -78,8 +78,7 @@ def test_dependency_schema_generation() -> None:
         dependencies={"top_level": Provide(top_dependency)},
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
-        app = cast(Starlite, client.app)
-        handler = app.openapi_schema.paths["/test/{path_param}"]
+        handler = client.app.openapi_schema.paths["/test/{path_param}"]
         data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
         assert data == {
             "path_param": {"in": "path", "required": True},

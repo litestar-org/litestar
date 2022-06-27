@@ -75,7 +75,7 @@ def test_cache_key() -> None:
         route_handlers=[get("/cached", cache=True, cache_key_builder=custom_cache_key_builder)(slow_handler)]
     ) as client:
         client.get("/cached")
-        assert client.app.cache_config.backend.get("/cached:::cached")  # type: ignore
+        assert client.app.cache_config.backend.get("/cached:::cached")
 
 
 def test_async_handling() -> None:
