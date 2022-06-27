@@ -1,6 +1,7 @@
 from starlite import State
 from starlite.testing import create_test_client
 
+
 def test_lifecycle() -> None:
     counter = {"value": 0}
 
