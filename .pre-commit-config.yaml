@@ -50,7 +50,7 @@ repos:
             "flake8-simplify",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.14.0
+    rev: v0.14.1
     hooks:
       - id: slotscheck
         exclude: "^(?!starlite/)"

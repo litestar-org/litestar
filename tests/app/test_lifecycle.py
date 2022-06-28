@@ -1,6 +1,4 @@
-from typing import cast
-
-from starlite import Starlite, State
+from starlite import State
 from starlite.testing import create_test_client
 
 
@@ -41,9 +39,8 @@ def test_lifecycle() -> None:
         ],
     ) as client:
         assert counter["value"] == 4
-        app = cast(Starlite, client.app)
-        assert app.state.x
-        assert app.state.y
+        assert client.app.state.x
+        assert client.app.state.y
         counter["value"] = 0
         assert counter["value"] == 0
     assert counter["value"] == 4
