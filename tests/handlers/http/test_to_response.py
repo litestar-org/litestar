@@ -1,4 +1,3 @@
-from asyncio import sleep
 from json import loads
 from pathlib import Path
 from typing import Any, Generator
@@ -38,7 +37,6 @@ async def test_to_response_async_await() -> None:
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person) -> Person:
         assert isinstance(data, Person)
-        await sleep(0.1)
         return data
 
     person_instance = PersonFactory.build()
@@ -46,6 +44,16 @@ async def test_to_response_async_await() -> None:
 
     response = await test_function.to_response(data=test_function.fn(data=person_instance), plugins=[], app=None)  # type: ignore
     assert loads(response.body) == person_instance.dict()
+
+
+async def slow_numbers(minimum: int, maximum: int) -> Any:
+    yield ("<html><body><ul>")
+    for number in range(minimum, maximum + 1):
+        yield "<li>%d</li>" % number
+    yield ("</ul></body></html>")
+
+
+generator = slow_numbers(1, 10)
 
 
 @pytest.mark.asyncio
@@ -58,7 +66,7 @@ async def test_to_response_async_await() -> None:
         HTMLResponse(content="<div><span/></div"),
         JSONResponse(status_code=HTTP_200_OK, content={}),
         RedirectResponse(url="/person"),
-        StreamingResponse(status_code=HTTP_200_OK, content=b"abc"),
+        StreamingResponse(status_code=HTTP_200_OK, content=generator),
         FileResponse("./test_to_response.py"),
     ],
 )
