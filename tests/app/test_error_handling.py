@@ -10,7 +10,7 @@ from tests import Person
 
 
 def test_default_handle_http_exception_handling() -> None:
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra={"key": "value"}),
     )
@@ -21,7 +21,7 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception"),
     )
@@ -32,7 +32,7 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra=None),
     )
@@ -43,7 +43,7 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra=["extra-1", "extra-2"]),
     )
@@ -54,7 +54,7 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}),
         StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
     )
@@ -63,7 +63,7 @@ def test_default_handle_http_exception_handling() -> None:
         "detail": "starlite_exception",
     }
 
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
+    response = Starlite(route_handlers=[]).default_http_exception_handler(  # type:ignore
         Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

@@ -4,14 +4,10 @@ from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from pydantic import Extra, validate_arguments
 from pydantic.typing import AnyCallable
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.responses import Response as StarletteResponse
 from starlette.staticfiles import StaticFiles
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
@@ -23,11 +19,9 @@ from starlite.config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from starlite.connection import Request
 from starlite.datastructures import State
-from starlite.enums import MediaType, ScopeType
-from starlite.exceptions import HTTPException
 from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, asgi
+from starlite.middleware import ExceptionMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -46,7 +40,6 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import normalize_path
-from starlite.utils.exception import get_exception_handler
 from starlite.utils.templates import create_template_engine
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
@@ -139,28 +132,8 @@ class Starlite(Router):
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
             return
-        try:
-            scope["state"] = {}
-            await self.asgi_router(scope, receive, send)
-        except Exception as e:  # pylint: disable=broad-except
-            await self.handle_exception(scope=scope, receive=receive, send=send, exc=e)
-
-    async def handle_exception(self, scope: Scope, receive: Receive, send: Send, exc: Exception) -> None:
-        """
-        Determine what exception handler to use given the current scope, and handle an appropriate response
-        """
-        status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
-        if scope["type"] == ScopeType.HTTP:
-            exception_handler = (
-                get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
-            )
-            response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
-            await response(scope=scope, receive=receive, send=send)
-        else:
-            # The 4000+ code range for websockets is customizable, hence we simply add it to the http status code
-            status_code += 4000
-            reason = repr(exc)
-            await send({"type": "websocket.close", "code": status_code, "reason": reason})
+        scope["state"] = {}
+        await self.asgi_router(scope, receive, send)
 
     def construct_route_map(self) -> None:  # noqa: C901
         """
@@ -211,6 +184,10 @@ class Starlite(Router):
         self, route: Union[HTTPRoute, WebSocketRoute, ASGIRoute], route_handler: BaseRouteHandler
     ) -> ASGIApp:
         """Constructs a middleware stack that serves as the point of entry for each route"""
+        if isinstance(route_handler, HTTPRouteHandler):
+            exception_handlers = route_handler.resolve_exception_handlers()
+        else:
+            exception_handlers = {}
         asgi_handler: ASGIApp = route.handle
         for middleware in route_handler.resolve_middleware():
             if isinstance(middleware, StarletteMiddleware):
@@ -221,7 +198,7 @@ class Starlite(Router):
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
-        return asgi_handler
+        return ExceptionMiddleware(app=asgi_handler, exception_handlers=exception_handlers, debug=self.debug)
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """
@@ -266,25 +243,6 @@ class Starlite(Router):
                     plugins=self.plugins,
                     provided_dependency_names=route_handler.dependency_name_set,
                 )
-
-    def default_http_exception_handler(self, request: Request, exc: Exception) -> StarletteResponse:
-        """Default handler for exceptions subclassed from HTTPException"""
-        status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
-        if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
-            # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
-            server_middleware = ServerErrorMiddleware(app=self)
-            return server_middleware.debug_response(request=request, exc=exc)
-        if isinstance(exc, HTTPException):
-            content = {"detail": exc.detail, "extra": exc.extra, "status_code": exc.status_code}
-        elif isinstance(exc, StarletteHTTPException):
-            content = {"detail": exc.detail}
-        else:
-            content = {"detail": repr(exc)}
-        return Response(
-            media_type=MediaType.JSON,
-            content=content,
-            status_code=status_code,
-        )
 
     def create_openapi_schema_model(self, openapi_config: OpenAPIConfig) -> OpenAPI:
         """
