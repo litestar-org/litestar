@@ -40,7 +40,7 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
 
 
 class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # type: ignore[override]
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # type: ignore
         logging.getLogger(__name__).info("%s - %s", request.method, request.url)
         return await call_next(request)  # type: ignore
 
@@ -50,7 +50,9 @@ class CustomHeaderMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.header_value = header_value
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:  # type: ignore[override]
+    async def dispatch(  # type: ignore
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         response = await call_next(request)
         response.headers["Custom"] = self.header_value
         return response
