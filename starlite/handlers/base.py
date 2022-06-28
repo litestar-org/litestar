@@ -137,8 +137,8 @@ class BaseRouteHandler:
             resolved_middleware = []
             for layer in self.ownership_layers():
                 if layer.middleware:
-                    resolved_middleware.extend(layer.middleware)
-            self.resolved_middleware = list(reversed(resolved_middleware))
+                    resolved_middleware.extend(list(reversed(layer.middleware)))
+            self.resolved_middleware = resolved_middleware
         return cast(List[Middleware], self.resolved_middleware)
 
     @staticmethod

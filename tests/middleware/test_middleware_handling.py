@@ -1,22 +1,23 @@
 import logging
-from typing import Any, Awaitable, Callable, cast
-from unittest import skip
+from typing import Any, Awaitable, Callable, List, cast
 
 import pytest
 from _pytest.logging import LogCaptureFixture
 from pydantic import BaseModel
-from pytest_mock import MockerFixture
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
+from typing_extensions import Type
 
 from starlite import (
+    Controller,
     CORSConfig,
     MiddlewareProtocol,
     Request,
     Response,
+    Router,
     Starlite,
     get,
     post,
@@ -147,21 +148,38 @@ def test_request_body_logging_middleware(caplog: LogCaptureFixture) -> None:
         assert "test logging" in caplog.text
 
 
-@skip("fixme: flaky test")
-def test_middleware_call_order(mocker: MockerFixture) -> None:
+def test_middleware_call_order() -> None:
     """Test that middlewares are called in the order they have been passed"""
-    m1 = mocker.spy(BaseMiddlewareRequestLoggingMiddleware, "dispatch")
-    m2 = mocker.spy(CustomHeaderMiddleware, "dispatch")
-    manager = mocker.Mock()
-    manager.attach_mock(m1, "m1")
-    manager.attach_mock(m2, "m2")
-    client = create_test_client(
-        route_handlers=[handler],
-        middleware=[
-            BaseMiddlewareRequestLoggingMiddleware,
-            Middleware(CustomHeaderMiddleware, header_value="Customized"),
-        ],
-    )
-    client.get("/")
 
-    manager.assert_has_calls([mocker.call.m1(*m1.call_args[0]), mocker.call.m2(*m2.call_args[0])], any_order=False)
+    results: List[int] = []
+
+    def create_test_middleware(middleware_id: int) -> Type[MiddlewareProtocol]:
+        class TestMiddleware(MiddlewareProtocol):
+            def __init__(self, app: ASGIApp):
+                self.app = app
+
+            async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+                results.append(middleware_id)
+                await self.app(scope, receive, send)
+
+        return TestMiddleware
+
+    class MyController(Controller):
+        path = "/controller"
+        middleware = [create_test_middleware(4), create_test_middleware(5)]
+
+        @get("/handler", middleware=[create_test_middleware(6), create_test_middleware(7)])
+        def my_handler(self) -> None:
+            return None
+
+    router = Router(
+        path="/router", route_handlers=[MyController], middleware=[create_test_middleware(2), create_test_middleware(3)]
+    )
+
+    with create_test_client(
+        route_handlers=[router],
+        middleware=[create_test_middleware(0), create_test_middleware(1)],
+    ) as client:
+        client.get("/router/controller/handler")
+
+        assert results == [0, 1, 2, 3, 4, 5, 6, 7]
