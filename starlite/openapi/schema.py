@@ -3,8 +3,9 @@ from decimal import Decimal
 from enum import Enum, EnumMeta
 from typing import Any, List, Optional, Type, Union
 
-from openapi_schema_pydantic import Example, Schema
 from openapi_schema_pydantic.util import PydanticSchema
+from openapi_schema_pydantic.v3.v3_1_0.example import Example
+from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic import (
     BaseModel,
     ConstrainedBytes,
@@ -62,15 +63,15 @@ def create_numerical_constrained_field_schema(
     """
     schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
     if field_type.le is not None:
-        schema.maximum = field_type.le
+        schema.maximum = float(field_type.le)
     if field_type.lt is not None:
-        schema.exclusiveMaximum = field_type.lt
+        schema.exclusiveMaximum = float(field_type.lt)
     if field_type.ge is not None:
-        schema.minimum = field_type.ge
+        schema.minimum = float(field_type.ge)
     if field_type.gt is not None:
-        schema.exclusiveMinimum = field_type.gt
+        schema.exclusiveMinimum = float(field_type.gt)
     if field_type.multiple_of is not None:
-        schema.multipleOf = field_type.multiple_of
+        schema.multipleOf = float(field_type.multiple_of)
     return schema
 
 
@@ -83,8 +84,8 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
         schema.minLength = field_type.min_length
     if field_type.max_length:
         schema.maxLength = field_type.max_length
-    if issubclass(field_type, ConstrainedStr):
-        schema.pattern = field_type.regex
+    if issubclass(field_type, ConstrainedStr) and field_type.regex is not None:
+        schema.pattern = field_type.regex.pattern
     if field_type.to_lower:
         schema.description = "must be in lower case"
     return schema
@@ -105,7 +106,11 @@ def create_collection_constrained_field_schema(
     if issubclass(field_type, ConstrainedSet):
         schema.uniqueItems = True
     if sub_fields:
-        schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in sub_fields]
+        items = [create_schema(field=sub_field, generate_examples=False) for sub_field in sub_fields]
+        if len(items) > 1:
+            schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
+        else:
+            schema.items = items[0]
     else:
         parsed_model_field = create_parsed_model_field(field_type.item_type)
         schema.items = create_schema(field=parsed_model_field, generate_examples=False)
@@ -209,7 +214,11 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
         openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
-            schema.items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
+            items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
+            if len(items) > 1:
+                schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
+            else:
+                schema.items = items[0]
     else:
         # value is not a complex typing - hence we can try and get the value schema directly
         schema = get_schema_for_field_type(field=field)

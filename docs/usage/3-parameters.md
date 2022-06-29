@@ -54,7 +54,7 @@ If you want to add validation or enhance the OpenAPI documentation generated for
 so using the [Parameter function](#the-parameter-function):
 
 ```python
-from openapi_schema_pydantic import Example
+from openapi_schema_pydantic.v3.v3_1_0.example import Example
 from starlite import get, Parameter
 
 from my_app.models import Version

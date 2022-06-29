@@ -25,7 +25,7 @@ from tests.openapi.utils import (
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     schema = create_collection_constrained_field_schema(field_type=field_type, sub_fields=None)
     assert schema.type == OpenAPIType.ARRAY
-    assert schema.items.type == OpenAPIType.INTEGER
+    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
     assert schema.minItems == field_type.min_items
     assert schema.maxItems == field_type.max_items
 
@@ -39,7 +39,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
         )
         assert schema.type == OpenAPIType.ARRAY
         expected = {
-            "items": [{"oneOf": [{"type": "string"}, {"type": "integer"}]}],
+            "items": {"oneOf": [{"type": "string"}, {"type": "integer"}]},
             "type": "array",
             "maxItems": 10,
             "minItems": 1,
@@ -57,8 +57,8 @@ def test_create_string_constrained_field_schema(field_type: Any) -> None:
     assert schema.type == OpenAPIType.STRING
     assert schema.minLength == field_type.min_length
     assert schema.maxLength == field_type.max_length
-    if hasattr(field_type, "regex"):
-        assert schema.pattern == field_type.regex
+    if getattr(field_type, "regex", None):
+        assert schema.pattern == field_type.regex.pattern
     if field_type.to_lower:
         assert schema.description
 

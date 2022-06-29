@@ -1,7 +1,7 @@
-from typing import Any, Type
+from typing import Any, Type, cast
 
 import pytest
-from openapi_schema_pydantic import OpenAPI
+from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 
 from starlite import Controller, HTTPRouteHandler, Router, Starlite, get
 
@@ -40,16 +40,16 @@ def app(handler: HTTPRouteHandler, controller: Type[Controller], router: Router)
 
 @pytest.fixture
 def openapi_schema(app: Starlite) -> OpenAPI:
-    return app.openapi_schema
+    return cast(OpenAPI, app.openapi_schema)
 
 
 def test_openapi_schema_handler_tags(openapi_schema: OpenAPI) -> None:
-    assert openapi_schema.paths["/handler"].get.tags == ["handler"]
+    assert openapi_schema.paths["/handler"].get.tags == ["handler"]  # type: ignore
 
 
 def test_openapi_schema_controller_tags(openapi_schema: OpenAPI) -> None:
-    assert set(openapi_schema.paths["/controller"].get.tags) == {"handler", "controller"}
+    assert set(openapi_schema.paths["/controller"].get.tags) == {"handler", "controller"}  # type: ignore
 
 
 def test_openapi_schema_router_tags(openapi_schema: OpenAPI) -> None:
-    assert set(openapi_schema.paths["/router/controller"].get.tags) == {"handler", "controller", "router"}
+    assert set(openapi_schema.paths["/router/controller"].get.tags) == {"handler", "controller", "router"}  # type: ignore

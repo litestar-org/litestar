@@ -2,9 +2,13 @@ from http import HTTPStatus
 from inspect import Signature
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
-from openapi_schema_pydantic import Header
-from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
-from openapi_schema_pydantic import Response, Responses, Schema
+from openapi_schema_pydantic.v3.v3_1_0.header import Header
+from openapi_schema_pydantic.v3.v3_1_0.media_type import (
+    MediaType as OpenAPISchemaMediaType,
+)
+from openapi_schema_pydantic.v3.v3_1_0.response import Response
+from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
+from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
@@ -135,7 +139,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             for exc in exception_group
         ]
         if len(exceptions_schemas) > 1:
-            schema = Schema(oneOf=exceptions_schemas)
+            schema = Schema(oneOf=exceptions_schemas)  # type:ignore[arg-type]
         else:
             schema = exceptions_schemas[0]
         yield str(status_code), Response(

@@ -1,7 +1,9 @@
 from typing import Optional
 
-from openapi_schema_pydantic import MediaType as OpenAPISchemaMediaType
-from openapi_schema_pydantic import RequestBody
+from openapi_schema_pydantic.v3.v3_1_0.media_type import (
+    MediaType as OpenAPISchemaMediaType,
+)
+from openapi_schema_pydantic.v3.v3_1_0.request_body import RequestBody
 from pydantic.fields import ModelField
 
 from starlite.enums import RequestEncodingType

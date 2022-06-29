@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, cast
 
-from openapi_schema_pydantic import Parameter, Schema
+from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
+from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic import BaseModel
-from pydantic.fields import ModelField
+from pydantic.fields import ModelField, Undefined
 
 from starlite.constants import RESERVED_KWARGS
 from starlite.exceptions import ImproperlyConfiguredException
@@ -85,7 +86,7 @@ def create_parameters(
         if f_name not in RESERVED_KWARGS:
             schema = None
             param_in = "query"
-            required = field.required
+            required = cast(bool, field.required) if field.required is not Undefined else False
             extra = field.field_info.extra
             header_key = extra.get("header")
             cookie_key = extra.get("cookie")
@@ -109,7 +110,7 @@ def create_parameters(
             elif query_key:
                 f_name = query_key
                 param_in = "query"
-                required = field.required
+                required = cast(bool, field.required) if field.required is not Undefined else False
             if not schema:
                 schema = create_schema(field=field, generate_examples=generate_examples)
             parameters.add(
