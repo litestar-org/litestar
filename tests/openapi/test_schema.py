@@ -1,7 +1,7 @@
 from typing import Generic, TypeVar
 
 import pytest
-from openapi_schema_pydantic import Example
+from openapi_schema_pydantic.v3.v3_1_0.example import Example
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.fields import FieldInfo
 
@@ -78,8 +78,8 @@ def test_dependency_schema_generation() -> None:
         dependencies={"top_level": Provide(top_dependency)},
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
-        handler = client.app.openapi_schema.paths["/test/{path_param}"]
-        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
+        handler = client.app.openapi_schema.paths["/test/{path_param}"]  # type: ignore
+        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}  # type: ignore
         assert data == {
             "path_param": {"in": "path", "required": True},
             "header_param": {"in": "header", "required": False},

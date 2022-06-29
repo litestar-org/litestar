@@ -1,18 +1,18 @@
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
-from openapi_schema_pydantic import (
-    Contact,
+from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
+from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
     ExternalDocumentation,
-    Info,
-    License,
-    OpenAPI,
-    PathItem,
-    Reference,
-    SecurityRequirement,
-    Server,
-    Tag,
 )
+from openapi_schema_pydantic.v3.v3_1_0.info import Info
+from openapi_schema_pydantic.v3.v3_1_0.license import License
+from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
+from openapi_schema_pydantic.v3.v3_1_0.path_item import PathItem
+from openapi_schema_pydantic.v3.v3_1_0.reference import Reference
+from openapi_schema_pydantic.v3.v3_1_0.security_requirement import SecurityRequirement
+from openapi_schema_pydantic.v3.v3_1_0.server import Server
+from openapi_schema_pydantic.v3.v3_1_0.tag import Tag
 from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 

@@ -1,4 +1,4 @@
-from openapi_schema_pydantic import OpenAPI
+from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from orjson import OPT_INDENT_2, dumps
 
 from starlite.connection import Request
@@ -36,14 +36,14 @@ class OpenAPIController(Controller):
     @get(media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
+        schema = self.schema_from_request(request)
         if self.dumped_schema == "":
-            schema = self.schema_from_request(request)
             self.dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
         head = f"""
           <head>
-            <title>{request.app.openapi_schema.info.title}</title>
+            <title>{schema.info.title}</title>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">

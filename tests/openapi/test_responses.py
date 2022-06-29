@@ -63,40 +63,40 @@ def test_create_error_responses() -> None:
     )
     assert pet_exc_response[0] == str(PetException.status_code)
     assert pet_exc_response[1].description == HTTPStatus(PetException.status_code).description
-    assert pet_exc_response[1].content[MediaType.JSON]
-    pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].media_type_schema
-    assert pet_exc_response_schema.examples
-    assert pet_exc_response_schema.properties
-    assert pet_exc_response_schema.description
-    assert pet_exc_response_schema.required
-    assert pet_exc_response_schema.type
-    assert not pet_exc_response_schema.oneOf
+    assert pet_exc_response[1].content[MediaType.JSON]  # type: ignore
+    pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
+    assert pet_exc_response_schema.examples  # type: ignore
+    assert pet_exc_response_schema.properties  # type: ignore
+    assert pet_exc_response_schema.description  # type: ignore
+    assert pet_exc_response_schema.required  # type: ignore
+    assert pet_exc_response_schema.type  # type: ignore
+    assert not pet_exc_response_schema.oneOf  # type: ignore
 
     assert permission_denied_exc_response[0] == str(PermissionDeniedException.status_code)
     assert (
         permission_denied_exc_response[1].description == HTTPStatus(PermissionDeniedException.status_code).description
     )
-    assert permission_denied_exc_response[1].content[MediaType.JSON]
-    media_type_schema = permission_denied_exc_response[1].content[MediaType.JSON].media_type_schema
-    assert media_type_schema.examples
-    assert media_type_schema.properties
-    assert media_type_schema.description
-    assert media_type_schema.required
-    assert media_type_schema.type
-    assert not media_type_schema.oneOf
+    assert permission_denied_exc_response[1].content[MediaType.JSON]  # type: ignore
+    media_type_schema = permission_denied_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
+    assert media_type_schema.examples  # type: ignore
+    assert media_type_schema.properties  # type: ignore
+    assert media_type_schema.description  # type: ignore
+    assert media_type_schema.required  # type: ignore
+    assert media_type_schema.type  # type: ignore
+    assert not media_type_schema.oneOf  # type: ignore
 
     assert validation_exc_response[0] == str(ValidationException.status_code)
     assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).description
-    assert validation_exc_response[1].content[MediaType.JSON]
-    media_type_schema = validation_exc_response[1].content[MediaType.JSON].media_type_schema
-    assert media_type_schema.oneOf
-    assert len(media_type_schema.oneOf) == 2
-    for schema in media_type_schema.oneOf:
-        assert schema.examples
+    assert validation_exc_response[1].content[MediaType.JSON]  # type: ignore
+    media_type_schema = validation_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
+    assert media_type_schema.oneOf  # type: ignore
+    assert len(media_type_schema.oneOf) == 2  # type: ignore
+    for schema in media_type_schema.oneOf:  # type: ignore
+        assert schema.examples  # type: ignore
         assert schema.description
-        assert schema.properties
-        assert schema.required
-        assert schema.type
+        assert schema.properties  # type: ignore
+        assert schema.required  # type: ignore
+        assert schema.type  # type: ignore
 
 
 def test_create_success_response_with_headers() -> None:
@@ -114,8 +114,8 @@ def test_create_success_response_with_headers() -> None:
     assert response.description == "test"
     assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"  # type: ignore
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
-    assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER
-    assert response.headers["special-header"].description == "super-duper special"
+    assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert response.headers["special-header"].description == "super-duper special"  # type: ignore
 
 
 def test_create_success_response_with_stream() -> None:
@@ -134,8 +134,8 @@ def test_create_success_response_redirect() -> None:
 
     response = create_success_response(redirect_handler, True)
     assert response.description == "Redirect Response"
-    assert response.headers["location"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["location"].description
+    assert response.headers["location"].param_schema.type == OpenAPIType.STRING  # type: ignore
+    assert response.headers["location"].description  # type: ignore
 
 
 def test_create_success_response_file_data() -> None:
@@ -145,12 +145,12 @@ def test_create_success_response_file_data() -> None:
 
     response = create_success_response(file_handler, True)
     assert response.description == "File Download"
-    assert response.headers["content-length"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["content-length"].description
-    assert response.headers["last-modified"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["last-modified"].description
-    assert response.headers["etag"].param_schema.type == OpenAPIType.STRING
-    assert response.headers["etag"].description
+    assert response.headers["content-length"].param_schema.type == OpenAPIType.STRING  # type: ignore
+    assert response.headers["content-length"].description  # type: ignore
+    assert response.headers["last-modified"].param_schema.type == OpenAPIType.STRING  # type: ignore
+    assert response.headers["last-modified"].description  # type: ignore
+    assert response.headers["etag"].param_schema.type == OpenAPIType.STRING  # type: ignore
+    assert response.headers["etag"].description  # type: ignore
 
 
 def test_create_success_response_template() -> None:
@@ -160,4 +160,4 @@ def test_create_success_response_template() -> None:
 
     response = create_success_response(template_handler, True)
     assert response.description == "Request fulfilled, document follows"
-    assert response.content[MediaType.HTML]
+    assert response.content[MediaType.HTML]  # type: ignore

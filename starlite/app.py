@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional, Set, Union, cast
 
-from openapi_schema_pydantic import OpenAPI, Schema
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
-from pydantic import Extra, validate_arguments
+from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
+from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware as StarletteMiddleware
@@ -120,11 +120,10 @@ class Starlite(Router):
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = exception_handlers or {}
+        self.openapi_schema: Optional[OpenAPI] = None
         if openapi_config:
             self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
             self.register(openapi_config.openapi_controller)
-        else:
-            self.openapi_schema = None
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 path = normalize_path(config.path)
@@ -301,7 +300,4 @@ class Starlite(Router):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(
                     route=route, create_examples=openapi_config.create_examples
                 )
-        # we have to monkey patch the "openapi-schema-pydantic" library, because it doesn't allow extra which causes
-        # failures with third party libs such as ormar.
-        Schema.Config.extra = Extra.ignore
-        return construct_open_api_with_schema_class(openapi_schema)
+        return cast(OpenAPI, construct_open_api_with_schema_class(openapi_schema))

@@ -1,6 +1,9 @@
 from typing import Any, Dict, List, Optional, Union
 
-from openapi_schema_pydantic import Example, ExternalDocumentation
+from openapi_schema_pydantic.v3.v3_1_0.example import Example
+from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
+    ExternalDocumentation,
+)
 from pydantic import validate_arguments
 from pydantic.fields import Field, Undefined
 

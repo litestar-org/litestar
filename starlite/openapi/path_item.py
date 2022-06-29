@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, cast
 
-from openapi_schema_pydantic import Operation, PathItem
+from openapi_schema_pydantic.v3.v3_1_0.operation import Operation
+from openapi_schema_pydantic.v3.v3_1_0.path_item import PathItem
 from pydantic import BaseModel
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
@@ -49,7 +50,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                     generate_examples=create_examples,
                 ),
                 requestBody=request_body,
-                parameters=parameters,
+                parameters=parameters,  # type: ignore[arg-type]
             )
             setattr(path_item, http_method.lower(), operation)
     return path_item

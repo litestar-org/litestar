@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, Union, cast
 
 import yaml
-from openapi_schema_pydantic import OpenAPI
+from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 from starlette.background import BackgroundTask

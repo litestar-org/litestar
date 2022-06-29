@@ -12,7 +12,7 @@ from typing import (
     cast,
 )
 
-from openapi_schema_pydantic import Header
+from openapi_schema_pydantic.v3.v3_1_0.header import Header
 from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -112,7 +112,7 @@ class Partial(Generic[T]):
         return cast(Type[T], cls._models.get(item))
 
 
-class ResponseHeader(Header):  # type: ignore
+class ResponseHeader(Header):
     value: Any = ...
 
 

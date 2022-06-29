@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from openapi_schema_pydantic import Example
+from openapi_schema_pydantic.v3.v3_1_0.example import Example
 from pydantic import conbytes, condecimal, confloat, conint, conlist, conset, constr
 
 from starlite import (
