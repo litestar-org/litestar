@@ -1,15 +1,14 @@
 # Middleware
 
 Middlewares are mini ASGI apps that receive the raw request object and validate or transform it in some manner.
-Middlewares are useful when you need to operate on all incoming requests on the app level.
-
-Starlite builds on top of the [Starlette middleware architecture](https://www.starlette.io/middleware/) and is 100%
-compatible with it - and any 3rd party middlewares created for it.
 
 ## The Middleware Protocol
 
-You can build your own middleware by either subclassing the `starlette.middleware.base.BaseHTTPMiddleware` class (see the
-starlette documentation), or by creating a class that implements the Starlite `MiddlewareProtocol`.
+!!! important Starlite allows users to use [Starlette Middleware](https://www.starlette.io/middleware/) and any 3rd party
+middlewares created for it, while offers other patterns as well.
+
+You can build your own middleware by either subclassing the `starlette.middleware.base.BaseHTTPMiddleware` class (see
+the starlette documentation), or by creating a class that implements the Starlite `MiddlewareProtocol`.
 
 For example, lets create a simple middleware that does some naive logging for every request:
 
@@ -54,6 +53,42 @@ It's important to note here two things:
    either `self.app` or an instance of `Response` - this is equivalent in other middleware architectures to
    calling `next`, which is what happens in the last line of the example.
 
+### Modifying Responses using the MiddlewareProtocol
+
+While Starlite exposes a special life-cycle hook called [After Request](13-request-lifecycle-hooks.md#After Request),
+which is in most cases the correct place to modify a response. Sometimes its desirable to do this using middleware. To
+do this, you will need to wrap the `send` function, for example:
+
+```python
+import time
+
+from starlette.datastructures import MutableHeaders
+from starlette.types import Message, Receive, Scope, Send
+from starlite import MiddlewareProtocol
+from starlite.types import ASGIApp
+
+
+class ProcessTimeHeader(MiddlewareProtocol):
+    def __init__(self, app: ASGIApp):
+        super().__init__(app)
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            start_time = time.time()
+
+            async def send_wrapper(message: Message) -> None:
+                if message["type"] == "http.response.start":
+                    process_time = time.time() - start_time
+                    headers = MutableHeaders(scope=message)
+                    headers.append("X-Process-Time", str(process_time))
+                await send(message)
+
+            await self.app(scope, receive, send_wrapper)
+        else:
+            await self.app(scope, receive, send)
+```
+
 ## Built-in Middlewares
 
 Starlette includes several builtin middlewares - you can see the list in the Starlette docs. Of these middlewares,
@@ -86,8 +121,7 @@ You can pass the following kwargs to CORSConfig:
   response. Defaults to 600.
 
 <!-- prettier-ignore -->
-!!! note
-   The asterisks symbol in the above kwargs means "match any".
+!!! note The asterisks symbol in the above kwargs means "match any".
 
 You can read more about this middleware in the [starlette docs](https://www.starlette.io/middleware/#corsmiddleware).
 
@@ -107,36 +141,65 @@ app = Starlite(
 
 You can use `*` to match any subdomains, as in the above.
 
-## Examples
+## Layering Middlewares
 
-### Middleware protocol class that modifies the response
+Starlite following its layered architecture also in middleware - allowing users to define middleware on all layers of
+the application - the Starlite instance, routers, controllers and individual route handlers. For example:
 
 ```python
-import time
-
-from starlette.datastructures import MutableHeaders
-from starlette.types import Message, Receive, Scope, Send
-from starlite import MiddlewareProtocol
-from starlite.types import ASGIApp
+from starlite import Starlite, Controller, Router, MiddlewareProtocol, get
 
 
-class ProcessTimeHeader(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp):
-        super().__init__(app)
-        self.app = app
+class TopLayerMiddleware(MiddlewareProtocol):
+    ...
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] == "http":
-            start_time = time.time()
 
-            async def send_wrapper(message: Message) -> None:
-                if message["type"] == "http.response.start":
-                    process_time = time.time() - start_time
-                    headers = MutableHeaders(scope=message)
-                    headers.append("X-Process-Time", str(process_time))
-                await send(message)
+class RouterLayerMiddleware(MiddlewareProtocol):
+    ...
 
-            await self.app(scope, receive, send_wrapper)
-        else:
-            await self.app(scope, receive, send)
+
+class ControllerLayerMiddleware(MiddlewareProtocol):
+    ...
+
+
+class RouteHandlerLayerMiddleware(MiddlewareProtocol):
+    ...
+
+
+class MyController(Controller):
+    path = "/controller"
+    middleware = [ControllerLayerMiddleware]
+
+    @get("/handler", middleware=[RouteHandlerLayerMiddleware])
+    def my_route_handlers(self) -> dict[str, str]:
+        return {"hello": "world"}
+
+
+router = Router(path="/router", middleware=[RouterLayerMiddleware])
+
+app = Starlite(route_handlers=[router], middleware=[TopLayerMiddleware])
+```
+
+In the above example a request to "/router/controller/handler" will be processed by `TopLayerMiddleware`
+-> `RouterLayerMiddleware` -> `ControllerLayerMiddleware` -> `RouteHandlerLayerMiddleware`. If multiple middlewares were
+declared in a layer, these middlewares would be processed in the order of the list. I.e. in the example
+below, `TopLayerMiddleware1` receives the `scope`, `receive` and `send` first, and it either creates a response and
+responds, or calls
+`TopLayerMiddleware2`:
+
+```python
+from starlite import Starlite, MiddlewareProtocol
+
+
+class TopLayerMiddleware1(MiddlewareProtocol):
+    ...
+
+
+class TopLayerMiddleware2(MiddlewareProtocol):
+    ...
+
+
+app = Starlite(
+    route_handlers=[...], middleware=[TopLayerMiddleware1, TopLayerMiddleware2]
+)
 ```

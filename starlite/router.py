@@ -2,6 +2,8 @@ from inspect import isclass
 from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from starlite.controller import Controller
 from starlite.enums import HttpMethod
@@ -21,6 +23,7 @@ from starlite.types import (
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
+    MiddlewareProtocol,
     ResponseHeader,
 )
 from starlite.utils import find_index, join_paths, normalize_path, unique
@@ -39,23 +42,24 @@ class Router:
         "response_headers",
         "routes",
         "exception_handlers",
+        "middleware",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
-        path: str,
-        route_handlers: List[ControllerRouterHandler],
-        tags: Optional[List[str]] = None,
+        after_request: Optional[AfterRequestHandler] = None,
+        before_request: Optional[BeforeRequestHandler] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
+        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
+        path: str,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        # connection-lifecycle hook handlers
-        before_request: Optional[BeforeRequestHandler] = None,
-        after_request: Optional[AfterRequestHandler] = None,
+        route_handlers: List[ControllerRouterHandler],
+        tags: Optional[List[str]] = None,
     ):
         self.owner: Optional["Router"] = None
         self.routes: List[BaseRoute] = []
@@ -68,6 +72,7 @@ class Router:
         self.before_request = before_request
         self.after_request = after_request
         self.exception_handlers = exception_handlers
+        self.middleware = middleware
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 

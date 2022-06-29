@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -50,7 +50,7 @@ repos:
             "flake8-simplify",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.14.0
+    rev: v0.14.1
     hooks:
       - id: slotscheck
         exclude: "^(?!starlite/)"

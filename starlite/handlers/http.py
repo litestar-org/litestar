@@ -42,6 +42,7 @@ from starlite.types import (
     ExceptionHandler,
     Guard,
     Method,
+    Middleware,
     ResponseHeader,
 )
 from starlite.utils import is_async_callable
@@ -63,6 +64,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "content_media_type",
         "deprecated",
         "description",
+        "exception_handlers",
         "http_method",
         "include_in_schema",
         "media_type",
@@ -70,18 +72,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         "raises",
         "resolved_after_request",
         "resolved_before_request",
+        "resolved_exception_handlers",
         "resolved_headers",
         "resolved_response_class",
-        "resolved_exception_handlers",
         "response_class",
         "response_description",
         "response_headers",
         "status_code",
         "summary",
+        "sync_to_thread",
         "tags",
         "template_name",
-        "sync_to_thread",
-        "exception_handlers",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -102,6 +103,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -134,7 +136,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.status_code = HTTP_204_NO_CONTENT
         else:
             self.status_code = HTTP_200_OK
-        super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt)
+        super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt, middleware=middleware)
         self.after_request = after_request
         self.before_request = before_request
         self.background_tasks = background_tasks
@@ -373,6 +375,7 @@ class get(HTTPRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -413,6 +416,7 @@ class get(HTTPRouteHandler):
             tags=tags,
             sync_to_thread=sync_to_thread,
             exception_handlers=exception_handlers,
+            middleware=middleware,
         )
 
 
@@ -433,6 +437,7 @@ class post(HTTPRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -473,6 +478,7 @@ class post(HTTPRouteHandler):
             tags=tags,
             sync_to_thread=sync_to_thread,
             exception_handlers=exception_handlers,
+            middleware=middleware,
         )
 
 
@@ -493,6 +499,7 @@ class put(HTTPRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -533,6 +540,7 @@ class put(HTTPRouteHandler):
             tags=tags,
             sync_to_thread=sync_to_thread,
             exception_handlers=exception_handlers,
+            middleware=middleware,
         )
 
 
@@ -553,6 +561,7 @@ class patch(HTTPRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -593,6 +602,7 @@ class patch(HTTPRouteHandler):
             tags=tags,
             sync_to_thread=sync_to_thread,
             exception_handlers=exception_handlers,
+            middleware=middleware,
         )
 
 
@@ -613,6 +623,7 @@ class delete(HTTPRouteHandler):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        middleware: Optional[List[Middleware]] = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -653,4 +664,5 @@ class delete(HTTPRouteHandler):
             tags=tags,
             sync_to_thread=sync_to_thread,
             exception_handlers=exception_handlers,
+            middleware=middleware,
         )

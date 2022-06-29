@@ -7,10 +7,11 @@ from starlette.status import (
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
+    HTTP_405_METHOD_NOT_ALLOWED,
 )
 from typing_extensions import Type
 
-from starlite import Controller, HTTPRouteHandler, MediaType, delete, get
+from starlite import Controller, HTTPRouteHandler, MediaType, delete, get, post
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
@@ -140,3 +141,18 @@ def test_path_validation(handler_path: str, request_path: str, expected_status_c
     with create_test_client(handler_fn) as client:
         response = client.get(request_path)
         assert response.status_code == expected_status_code
+
+
+@pytest.mark.asyncio
+async def test_http_route_raises_for_unsupported_method() -> None:
+    @get()
+    def my_get_handler() -> None:
+        pass
+
+    @post()
+    def my_post_handler() -> None:
+        pass
+
+    with create_test_client(route_handlers=[my_get_handler, my_post_handler]) as client:
+        response = client.delete("/")
+        assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
