@@ -1,75 +1,9 @@
-import json
-
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HTTPException, MediaType, Request, Response, Starlite, get, post
+from starlite import MediaType, Request, Response, Starlite, get, post
 from starlite.exceptions import InternalServerException
 from starlite.testing import TestClient, create_test_client
 from tests import Person
-
-
-def test_default_handle_http_exception_handling() -> None:
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
-        HTTPException(detail="starlite_exception", extra={"key": "value"}),
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": {"key": "value"},
-        "status_code": 500,
-    }
-
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
-        HTTPException(detail="starlite_exception"),
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": None,
-        "status_code": 500,
-    }
-
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
-        HTTPException(detail="starlite_exception", extra=None),
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": None,
-        "status_code": 500,
-    }
-
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
-        HTTPException(detail="starlite_exception", extra=["extra-1", "extra-2"]),
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": ["extra-1", "extra-2"],
-        "status_code": 500,
-    }
-
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
-        StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-    }
-
-    response = Starlite(route_handlers=[]).default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")
-    )
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": repr(AttributeError("oops")),
-    }
 
 
 def test_default_handling_of_pydantic_errors() -> None:

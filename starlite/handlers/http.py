@@ -64,7 +64,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "content_media_type",
         "deprecated",
         "description",
-        "exception_handlers",
         "http_method",
         "include_in_schema",
         "media_type",
@@ -72,7 +71,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "raises",
         "resolved_after_request",
         "resolved_before_request",
-        "resolved_exception_handlers",
         "resolved_headers",
         "resolved_response_class",
         "response_class",
@@ -136,14 +134,20 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.status_code = HTTP_204_NO_CONTENT
         else:
             self.status_code = HTTP_200_OK
-        super().__init__(path=path, dependencies=dependencies, guards=guards, opt=opt, middleware=middleware)
+        super().__init__(
+            path=path,
+            dependencies=dependencies,
+            guards=guards,
+            opt=opt,
+            middleware=middleware,
+            exception_handlers=exception_handlers,
+        )
         self.after_request = after_request
         self.before_request = before_request
         self.background_tasks = background_tasks
         self.media_type = media_type
         self.response_class = response_class
         self.response_headers = response_headers
-        self.exception_handlers = exception_handlers
         self.cache = cache
         self.cache_key_builder = cache_key_builder
         self.sync_to_thread = sync_to_thread
@@ -166,9 +170,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         ] = BaseRouteHandler.empty
         self.resolved_before_request: Union[
             Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_exception_handlers: Union[
-            Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
@@ -253,19 +254,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
-
-    def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
-        """
-        Resolves the exception_handlers by starting from the route handler and moving up.
-
-        This method is memoized so the computation occurs only once.
-        """
-        if self.resolved_exception_handlers is BaseRouteHandler.empty:
-            exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
-            for layer in reversed(list(self.ownership_layers())):
-                exception_handlers = {**exception_handlers, **(layer.exception_handlers or {})}
-            self.resolved_exception_handlers = exception_handlers
-        return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
     @property
     def http_methods(self) -> List[Method]:
