@@ -59,8 +59,9 @@ nav:
       - usage/14-testing.md
       - usage/15-templating.md
       - usage/16-caching.md
+      - usage/17-exceptions.md
   - migration.md
-  - contributing.md
+  - governance-and-contribution.md
   - license.md
 extra:
   social:
@@ -71,6 +72,7 @@ extra:
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
