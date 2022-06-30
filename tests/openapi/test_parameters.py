@@ -7,7 +7,7 @@ from starlite import Dependency, ImproperlyConfiguredException, Provide, Starlit
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameters
-from starlite.signature import model_function_signature
+from starlite.signature import SignatureModelFactory
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
@@ -19,9 +19,11 @@ def test_create_parameters() -> None:
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=model_function_signature(
+        handler_fields=SignatureModelFactory(
             fn=cast(Callable, route_handler.fn), plugins=[], provided_dependency_names=set()
-        ).__fields__,
+        )
+        .model()
+        .__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,
     )

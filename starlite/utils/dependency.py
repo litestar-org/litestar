@@ -1,29 +1,18 @@
-from typing import AbstractSet, Any
+from typing import Any
 
-from pydantic.fields import FieldInfo, Undefined
-
-from starlite.exceptions import ImproperlyConfiguredException
+from pydantic.fields import FieldInfo
 
 
-def check_for_unprovided_dependency(
-    key: str, field: Any, is_optional: bool, provided_dependency_names: AbstractSet[str], fn_name: str
-) -> None:
+def is_dependency_field(val: Any) -> bool:
     """
-    Where a dependency has been explicitly marked using the ``Dependency`` function, it is a
-    configuration error if that dependency has been defined without a default value, and it hasn't
-    been provided to the handler.
+    Determine if a value is a `FieldInfo` instance created via the `Dependency()` function.
 
-    Raises ``ImproperlyConfiguredException`` where case is detected.
+    Parameters
+    ----------
+    val : Any
+
+    Returns
+    -------
+    bool
     """
-    if is_optional:
-        return
-    if not isinstance(field, FieldInfo):
-        return
-    if not field.extra.get("is_dependency"):
-        return
-    if field.default is not Undefined:
-        return
-    if key not in provided_dependency_names:
-        raise ImproperlyConfiguredException(
-            f"Explicit dependency '{key}' for '{fn_name}' has no default value, or provided dependency."
-        )
+    return isinstance(val, FieldInfo) and bool(val.extra.get("is_dependency"))
