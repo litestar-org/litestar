@@ -100,19 +100,14 @@ def test_setting_cors_middleware() -> None:
 
     with create_test_client(route_handlers=[handler], cors_config=cors_config) as client:
         unpacked_middleware = []
-        scope = {"path": handler.paths[0], "method": handler.http_methods[0], "type": "http"}
-        asgi_handlers, is_asgi = client.app.asgi_router.parse_scope_to_route(scope)
-        asgi_handler = client.app.asgi_router.resolve_asgi_app(
-            scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi
-        )
-        cur = asgi_handler
+        cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast(ASGIApp, cur.app)  # type: ignore
         else:
             unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 2
-        cors_middleware = unpacked_middleware[0]
+        assert len(unpacked_middleware) == 4
+        cors_middleware = unpacked_middleware[1]
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.allow_headers == ["*", "accept", "accept-language", "content-language", "content-type"]
         assert cors_middleware.allow_methods == ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
@@ -123,17 +118,14 @@ def test_setting_cors_middleware() -> None:
 def test_trusted_hosts_middleware() -> None:
     client = create_test_client(route_handlers=[handler], allowed_hosts=["*"])
     unpacked_middleware = []
-    scope = {"path": handler.paths[0], "method": handler.http_methods[0], "type": "http"}
-    asgi_handlers, is_asgi = client.app.asgi_router.parse_scope_to_route(scope)
-    asgi_handler = client.app.asgi_router.resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
-    cur = asgi_handler
+    cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cast(ASGIApp, cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
-    trusted_hosts_middleware = unpacked_middleware[0]
+    assert len(unpacked_middleware) == 4
+    trusted_hosts_middleware = unpacked_middleware[1]
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
 

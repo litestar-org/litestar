@@ -28,9 +28,10 @@ from starlite.response import Response
 from starlite.signature import get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
-from starlite.utils.exception import get_exception_handler
 
 param_match_regex = re.compile(r"{(.*?)}")
+
+__all__ = ["BaseRoute", "HTTPRoute", "WebSocketRoute", "ASGIRoute"]
 
 
 class BaseRoute:
@@ -154,29 +155,23 @@ class HTTPRoute(BaseRoute):
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
         """
-        try:
-            response_data = None
-            before_request_handler = route_handler.resolve_before_request()
-            # run the before_request hook handler
-            if before_request_handler:
-                if is_async_callable(before_request_handler):
-                    response_data = await before_request_handler(request)
-                else:
-                    response_data = await run_sync(before_request_handler, request)
-            if not response_data:
-                response_data = await self.get_response_data(
-                    route_handler=route_handler, parameter_model=parameter_model, request=request
-                )
-            return await route_handler.to_response(
-                app=scope["app"],
-                data=response_data,
-                plugins=request.app.plugins,
+        response_data = None
+        before_request_handler = route_handler.resolve_before_request()
+        # run the before_request hook handler
+        if before_request_handler:
+            if is_async_callable(before_request_handler):
+                response_data = await before_request_handler(request)
+            else:
+                response_data = await run_sync(before_request_handler, request)
+        if not response_data:
+            response_data = await self.get_response_data(
+                route_handler=route_handler, parameter_model=parameter_model, request=request
             )
-        except Exception as e:
-            handler = get_exception_handler(route_handler.resolve_exception_handlers(), e)
-            if handler:
-                return handler(request, e)
-            raise e
+        return await route_handler.to_response(
+            app=scope["app"],
+            data=response_data,
+            plugins=request.app.plugins,
+        )
 
     @staticmethod
     async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:

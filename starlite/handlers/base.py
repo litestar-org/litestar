@@ -20,7 +20,7 @@ from starlette.requests import HTTPConnection
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.signature import SignatureModel
-from starlite.types import Guard, Middleware
+from starlite.types import ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -33,8 +33,8 @@ class BaseRouteHandler:
         """Placeholder"""
 
     __slots__ = (
-        "resolved_middleware",
         "dependencies",
+        "exception_handlers",
         "fn",
         "guards",
         "middleware",
@@ -43,7 +43,9 @@ class BaseRouteHandler:
         "paths",
         "resolved_dependencies",
         "resolved_dependency_name_set",
+        "resolved_exception_handlers",
         "resolved_guards",
+        "resolved_middleware",
         "signature_model",
     )
 
@@ -55,6 +57,7 @@ class BaseRouteHandler:
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
         middleware: Optional[List[Middleware]] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     ):
         self.paths: List[str] = (
             [normalize_path(p) for p in path]
@@ -67,11 +70,15 @@ class BaseRouteHandler:
         self.opt: Dict[str, Any] = opt or {}
         self.fn: Optional[AnyCallable] = None
         self.owner: Optional[Union["Controller", "Router"]] = None
+        self.signature_model: Optional[Type[SignatureModel]] = None
+        self.exception_handlers = exception_handlers
         self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.signature_model: Optional[Type[SignatureModel]] = None
+        self.resolved_exception_handlers: Union[
+            Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
 
     @property
     def dependency_name_set(self) -> Set[str]:
@@ -140,6 +147,19 @@ class BaseRouteHandler:
                     resolved_middleware.extend(list(reversed(layer.middleware)))
             self.resolved_middleware = resolved_middleware
         return cast(List[Middleware], self.resolved_middleware)
+
+    def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
+        """
+        Resolves the exception_handlers by starting from the route handler and moving up.
+
+        This method is memoized so the computation occurs only once.
+        """
+        if self.resolved_exception_handlers is BaseRouteHandler.empty:
+            exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
+            for layer in reversed(list(self.ownership_layers())):
+                exception_handlers = {**exception_handlers, **(layer.exception_handlers or {})}
+            self.resolved_exception_handlers = exception_handlers
+        return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
     @staticmethod
     def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
