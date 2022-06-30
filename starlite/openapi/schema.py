@@ -108,7 +108,7 @@ def create_collection_constrained_field_schema(
     if sub_fields:
         items = [create_schema(field=sub_field, generate_examples=False) for sub_field in sub_fields]
         if len(items) > 1:
-            schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
+            schema.items = Schema(oneOf=items)
         else:
             schema.items = items[0]
     else:
@@ -216,7 +216,7 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
         if openapi_type == OpenAPIType.ARRAY:
             items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
             if len(items) > 1:
-                schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
+                schema.items = Schema(oneOf=items)
             else:
                 schema.items = items[0]
     else:

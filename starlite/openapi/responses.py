@@ -139,7 +139,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             for exc in exception_group
         ]
         if len(exceptions_schemas) > 1:
-            schema = Schema(oneOf=exceptions_schemas)  # type:ignore[arg-type]
+            schema = Schema(oneOf=exceptions_schemas)
         else:
             schema = exceptions_schemas[0]
         yield str(status_code), Response(

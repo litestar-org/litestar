@@ -44,12 +44,12 @@ def openapi_schema(app: Starlite) -> OpenAPI:
 
 
 def test_openapi_schema_handler_tags(openapi_schema: OpenAPI) -> None:
-    assert openapi_schema.paths["/handler"].get.tags == ["handler"]  # type: ignore
+    assert openapi_schema.paths["/handler"].get.tags == ["handler"]
 
 
 def test_openapi_schema_controller_tags(openapi_schema: OpenAPI) -> None:
-    assert set(openapi_schema.paths["/controller"].get.tags) == {"handler", "controller"}  # type: ignore
+    assert set(openapi_schema.paths["/controller"].get.tags) == {"handler", "controller"}
 
 
 def test_openapi_schema_router_tags(openapi_schema: OpenAPI) -> None:
-    assert set(openapi_schema.paths["/router/controller"].get.tags) == {"handler", "controller", "router"}  # type: ignore
+    assert set(openapi_schema.paths["/router/controller"].get.tags) == {"handler", "controller", "router"}

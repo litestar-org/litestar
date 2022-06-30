@@ -112,7 +112,7 @@ class Partial(Generic[T]):
         return cast(Type[T], cls._models.get(item))
 
 
-class ResponseHeader(Header):
+class ResponseHeader(Header):  # type:ignore[misc]
     value: Any = ...
 
 

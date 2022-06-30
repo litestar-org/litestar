@@ -25,7 +25,7 @@ from tests.openapi.utils import (
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
     schema = create_collection_constrained_field_schema(field_type=field_type, sub_fields=None)
     assert schema.type == OpenAPIType.ARRAY
-    assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
+    assert schema.items.type == OpenAPIType.INTEGER
     assert schema.minItems == field_type.min_items
     assert schema.maxItems == field_type.max_items
 

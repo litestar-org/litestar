@@ -50,7 +50,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                     generate_examples=create_examples,
                 ),
                 requestBody=request_body,
-                parameters=parameters,  # type: ignore[arg-type]
+                parameters=parameters,
             )
             setattr(path_item, http_method.lower(), operation)
     return path_item
