@@ -232,3 +232,12 @@
 
 - fix `status_code` missing from exception OpenAPI documentation @timwedde
 - fix exceptioin `extra` being mistyped in OpenAPI documentation
+
+[1.5.0]
+
+- add layered middleware support
+- update exception handlers to work in layers
+- fix CORS headers and middlewares not processing exceptions
+- fix order of exception handlers
+- fix OpenAPI array items being double nested
+- make `requests` and optional dependency @Bobronium
