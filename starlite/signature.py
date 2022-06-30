@@ -22,7 +22,11 @@ from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
 from starlite.connection import Request, WebSocket
-from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    InternalServerException,
+    ValidationException,
+)
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 from starlite.utils.dependency import is_dependency_field
 from starlite.utils.typing import detect_optional_union
@@ -37,6 +41,7 @@ class SignatureModel(BaseModel):
     field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
     has_kwargs: ClassVar[bool]
+    # this is the factory instance used to construct the model
     factory: ClassVar["SignatureModelFactory"]
 
     @classmethod
@@ -50,8 +55,8 @@ class SignatureModel(BaseModel):
         This is not equivalent to calling the '.dict'  method of the pydantic model,
         because it doesn't convert nested values into dictionary, just extracts the data from the signature model
         """
+        output: Dict[str, Any] = {}
         try:
-            output: Dict[str, Any] = {}
             modelled_signature = cls(**kwargs)
             for key in cls.__fields__:
                 value = modelled_signature.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
@@ -70,12 +75,47 @@ class SignatureModel(BaseModel):
                         )
                 else:
                     output[key] = value
-            return output
         except ValidationError as e:
-            raise ValidationException(
-                detail=f"Validation failed for {connection.method if isinstance(connection, Request) else 'websocket'} {connection.url}",
-                extra=e.errors(),
-            ) from e
+            raise cls.construct_exception(connection, e) from e
+        return output
+
+    @classmethod
+    def construct_exception(
+        cls, connection: Union[Request, WebSocket], exc: ValidationError
+    ) -> Union[InternalServerException, ValidationException]:
+        """
+        Distinguish between validation errors that arise from parameters and dependencies.
+
+        If both parameter and dependency values are invalid, we raise the client error first.
+
+        Parameters
+        ----------
+        connection : Request | WebSocket
+        exc : ValidationError
+
+        Returns
+        -------
+        ValidationException | InternalServerException
+        """
+        client_errors = []
+        server_errors = []
+        for error in exc.errors():
+            if error["loc"][-1] in cls.factory.dependency_name_set:
+                server_errors.append(error)
+            else:
+                client_errors.append(error)
+        method = connection.method if isinstance(connection, Request) else "websocket"
+
+        if client_errors:
+            return ValidationException(
+                detail=f"Validation failed for {method} {connection.url}",
+                extra=client_errors,
+            )
+
+        return InternalServerException(
+            detail=f"A dependency failed validation for {method} {connection.url}",
+            extra=server_errors,
+        )
 
 
 @dataclass
