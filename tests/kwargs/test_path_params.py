@@ -90,3 +90,12 @@ def test_path_param_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[test_method])
+
+
+def test_duplicate_path_param_validation() -> None:
+    @get(path="/{param:int}/foo/{param:int}")
+    def test_method(param: int) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[test_method])
