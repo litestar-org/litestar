@@ -89,7 +89,12 @@ class BaseRoute:
         """
         dependencies = route_handler.resolve_dependencies()
         signature_model = get_signature_model(route_handler)
-        path_parameters = {p["name"] for p in self.path_parameters}
+        path_parameters = set()
+        for param in self.path_parameters:
+            param_name = param["name"]
+            if param_name in path_parameters:
+                raise ImproperlyConfiguredException(f"Duplicate parameter '{param_name}' detected in '{self.path}'.")
+            path_parameters.add(param_name)
         return KwargsModel.create_for_signature_model(
             signature_model=signature_model, dependencies=dependencies, path_parameters=path_parameters
         )
