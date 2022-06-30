@@ -31,7 +31,7 @@ from starlite.provide import Provide
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from starlite.signature import model_function_signature
+from starlite.signature import SignatureModelFactory
 from starlite.types import (
     AfterRequestHandler,
     BeforeRequestHandler,
@@ -267,18 +267,18 @@ class Starlite(Router):
         Creates function signature models for all route handler functions and provider dependencies
         """
         if not route_handler.signature_model:
-            route_handler.signature_model = model_function_signature(
+            route_handler.signature_model = SignatureModelFactory(
                 fn=cast(AnyCallable, route_handler.fn),
                 plugins=self.plugins,
                 provided_dependency_names=route_handler.dependency_name_set,
-            )
+            ).model()
         for provider in list(route_handler.resolve_dependencies().values()):
             if not provider.signature_model:
-                provider.signature_model = model_function_signature(
+                provider.signature_model = SignatureModelFactory(
                     fn=provider.dependency,
                     plugins=self.plugins,
                     provided_dependency_names=route_handler.dependency_name_set,
-                )
+                ).model()
 
     def create_openapi_schema_model(self, openapi_config: OpenAPIConfig) -> OpenAPI:
         """

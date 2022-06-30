@@ -27,7 +27,7 @@ from starlite import (
     get,
     route,
 )
-from starlite.signature import model_function_signature
+from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
@@ -40,7 +40,7 @@ async def test_to_response_async_await() -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = model_function_signature(test_function.fn, [], set())  # type: ignore
+    test_function.signature_model = SignatureModelFactory(test_function.fn, [], set()).model()  # type:ignore[arg-type]
 
     response = await test_function.to_response(data=test_function.fn(data=person_instance), plugins=[], app=None)  # type: ignore
     assert loads(response.body) == person_instance.dict()
