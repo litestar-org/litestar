@@ -27,6 +27,8 @@ from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_
 from starlite.utils.dependency import is_dependency_field
 from starlite.utils.typing import detect_optional_union
 
+UNDEFINED_SENTINELS = {Undefined, Signature.empty}
+
 
 class SignatureModel(BaseModel):
     class Config(BaseConfig):
@@ -80,12 +82,38 @@ class SignatureModel(BaseModel):
 class SignatureParameter:
     """
     Represents the parameters of a callable for purpose of signature model generation.
+
+    Parameters
+    ----------
+    fn_name : str
+        Name of function.
+    parameter_name : str
+        Name of parameter.
+    parameter : inspect.Parameter
     """
+
+    __slots__ = (
+        "name",
+        "annotation",
+        "optional",
+        "default",
+    )
 
     name: str
     annotation: Any
     optional: bool
     default: Any
+
+    def __init__(self, fn_name: str, parameter_name: str, parameter: Parameter) -> None:
+        if parameter.annotation is Signature.empty:
+            raise ImproperlyConfiguredException(
+                f"Kwarg {parameter_name} of {fn_name} does not have a type annotation. If it "
+                f"should receive any value, use the 'Any' type."
+            )
+        self.name = parameter_name
+        self.annotation = parameter.annotation
+        self.optional = detect_optional_union(parameter.annotation)
+        self.default = parameter.default
 
     @property
     def default_defined(self) -> bool:
@@ -96,36 +124,7 @@ class SignatureParameter:
         -------
         bool
         """
-        return self.default not in {Signature.empty, Undefined}
-
-    @classmethod
-    def new(cls, fn_name: str, parameter_name: str, parameter: Parameter) -> "SignatureParameter":
-        """
-        Create a new `SignatureParameter`
-
-        Parameters
-        ----------
-        fn_name : str
-            Name of function.
-        parameter_name : str
-            Name of parameter.
-        parameter : inspect.Parameter
-
-        Returns
-        -------
-        SignatureParameter
-        """
-        if parameter.annotation is Signature.empty:
-            raise ImproperlyConfiguredException(
-                f"Kwarg {parameter_name} of {fn_name} does not have a type annotation. If it "
-                f"should receive any value, use the 'Any' type."
-            )
-        return cls(
-            name=parameter_name,
-            annotation=parameter.annotation,
-            optional=detect_optional_union(parameter.annotation),
-            default=parameter.default,
-        )
+        return self.default not in UNDEFINED_SENTINELS
 
 
 class SignatureModelFactory:
@@ -155,6 +154,16 @@ class SignatureModelFactory:
         The names of all known dependency parameters.
     """
 
+    __slots__ = (
+        "signature",
+        "fn_name",
+        "plugins",
+        "provided_dependency_names",
+        "field_plugin_mappings",
+        "field_definitions",
+        "defaults",
+        "dependency_name_set",
+    )
     # names of fn params not included in signature model.
     SKIP_NAMES = {"self", "cls"}
     # names of params always typed `Any`.
@@ -281,7 +290,7 @@ class SignatureModelFactory:
         for name, parameter in self.signature.parameters.items():
             if name in self.SKIP_NAMES:
                 continue
-            yield SignatureParameter.new(self.fn_name, name, parameter)
+            yield SignatureParameter(self.fn_name, name, parameter)
 
     def model(self) -> Type[SignatureModel]:
         """
