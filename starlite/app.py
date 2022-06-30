@@ -51,6 +51,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class Starlite(Router):
     __slots__ = (
+        "asgi_handler",
         "asgi_router",
         "debug",
         "openapi_schema",
@@ -114,8 +115,9 @@ class Starlite(Router):
             middleware=middleware,
         )
 
-        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = exception_handlers or {}
+        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
+        self.asgi_handler = self.create_asgi_handler()
         self.openapi_schema: Optional[OpenAPI] = None
         if openapi_config:
             self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
@@ -129,16 +131,33 @@ class Starlite(Router):
                 self.register(asgi(path=path)(static_files))
         self.template_engine = create_template_engine(template_config)
 
+    def create_asgi_handler(self) -> ASGIApp:
+        """
+        Creates an ASGIApp that wraps the ASGI router inside an exception handler.
+
+        If CORS or TruseedHost configs are provided to the constructor, they will wrap the router as well.
+        """
+        asgi_handler: ASGIApp = self.asgi_router
+        if self.allowed_hosts:
+            asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
+        if self.cors_config:
+            asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
+        return self.wrap_in_exception_handler(
+            asgi_handler,
+            exception_handlers=self.exception_handlers,
+        )
+
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        The application entry point.
+        Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
+        """
         scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
             return
         scope["state"] = {}
-        await self.wrap_in_exception_handler(
-            app=self.asgi_router,
-            exception_handlers=self.exception_handlers,
-        )(scope, receive, send)
+        await self.asgi_handler(scope, receive, send)
 
     def wrap_in_exception_handler(
         self, app: ASGIApp, exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
@@ -211,10 +230,6 @@ class Starlite(Router):
                 asgi_handler = middleware.cls(app=asgi_handler, **middleware.options)
             else:
                 asgi_handler = middleware(app=asgi_handler)
-        if self.allowed_hosts:
-            asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
 
         # we wrap the entire stack again in ExceptionHandlerMiddleware
         return self.wrap_in_exception_handler(

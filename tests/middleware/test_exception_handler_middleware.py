@@ -8,12 +8,14 @@ from starlite import HTTPException, Request
 from starlite.middleware import ExceptionHandlerMiddleware
 
 
-def test_default_handle_http_exception_handling() -> None:
-    async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
-        return None
+async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
+    return None
 
-    middleware = ExceptionHandlerMiddleware(dummy_app, False, {})
 
+middleware = ExceptionHandlerMiddleware(dummy_app, False, {})
+
+
+def test_default_handle_http_exception_handling_extra_object() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra={"key": "value"}),
@@ -25,6 +27,8 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
+
+def test_default_handle_http_exception_handling_extra_none() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception"),
@@ -36,9 +40,11 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
+
+def test_default_handle_starlite_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
-        HTTPException(detail="starlite_exception", extra=None),
+        HTTPException(detail="starlite_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
@@ -47,6 +53,8 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
+
+def test_default_handle_starlite_http_exception_extra_list() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
         HTTPException(detail="starlite_exception", extra=["extra-1", "extra-2"]),
@@ -58,6 +66,8 @@ def test_default_handle_http_exception_handling() -> None:
         "status_code": 500,
     }
 
+
+def test_default_handle_starlette_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}),
         StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
@@ -65,8 +75,11 @@ def test_default_handle_http_exception_handling() -> None:
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
         "detail": "starlite_exception",
+        "status_code": 500,
     }
 
+
+def test_default_handle_python_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
         Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")
     )

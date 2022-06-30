@@ -100,12 +100,7 @@ def test_setting_cors_middleware() -> None:
 
     with create_test_client(route_handlers=[handler], cors_config=cors_config) as client:
         unpacked_middleware = []
-        scope = {"path": handler.paths[0], "method": handler.http_methods[0], "type": "http"}
-        asgi_handlers, is_asgi = client.app.asgi_router.parse_scope_to_route(scope)
-        asgi_handler = client.app.asgi_router.resolve_asgi_app(
-            scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi
-        )
-        cur = asgi_handler
+        cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast(ASGIApp, cur.app)  # type: ignore
@@ -123,10 +118,7 @@ def test_setting_cors_middleware() -> None:
 def test_trusted_hosts_middleware() -> None:
     client = create_test_client(route_handlers=[handler], allowed_hosts=["*"])
     unpacked_middleware = []
-    scope = {"path": handler.paths[0], "method": handler.http_methods[0], "type": "http"}
-    asgi_handlers, is_asgi = client.app.asgi_router.parse_scope_to_route(scope)
-    asgi_handler = client.app.asgi_router.resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
-    cur = asgi_handler
+    cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cast(ASGIApp, cur.app)  # type: ignore

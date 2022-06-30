@@ -114,7 +114,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
         if isinstance(exc, HTTPException):
             content = {"detail": exc.detail, "extra": exc.extra, "status_code": exc.status_code}
         elif isinstance(exc, StarletteHTTPException):
-            content = {"detail": exc.detail}
+            content = {"detail": exc.detail, "status_code": exc.status_code}
         else:
             content = {"detail": repr(exc)}
         return Response(
