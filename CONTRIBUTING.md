@@ -10,6 +10,8 @@ To contribute code changes or update the documentation, please follow these step
 
 Note: if you add new code or modify existing code - 100% test coverage is mandatory and tests should be well written.
 
+---
+
 ## Tox for testing against different versions
 
 ### Config
@@ -48,6 +50,16 @@ the local environment in each of the tox environments.
 #### run pre-commit only
 
 `$ poetry run -e lint`
+
+---
+
+## Contributing to the documentation
+
+From the squidfunk/mkdocs-material [docker quick start guide](https://hub.docker.com/r/squidfunk/mkdocs-material):
+
+`docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material`
+
+---
 
 ## Release workflow
 
