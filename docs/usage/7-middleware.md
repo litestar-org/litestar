@@ -203,3 +203,7 @@ app = Starlite(
     route_handlers=[...], middleware=[TopLayerMiddleware1, TopLayerMiddleware2]
 )
 ```
+
+## Execution with exceptions
+
+Before app will send some error response that results from an exception being caught, all declared middleware still will be called. Due to project architecure there's a limitation: it is not applicable for 404 (not found) and 405 (method not allowed) errors.
