@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cast
 
 from pydantic.fields import ModelField, Undefined
+from starlette.datastructures import URL
 from typing_extensions import Type
 
 from starlite.connection import Request, WebSocket
@@ -307,16 +308,14 @@ class KwargsModel:
             return parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
         return await request.json()
 
-    async def resolve_dependency(
-        self, dependency: Dependency, connection: Union[WebSocket, Request], **kwargs: Any
-    ) -> Any:
+    async def resolve_dependency(self, dependency: Dependency, method: str, url: URL, **kwargs: Any) -> Any:
         """
         Recursively resolve a dependency graph
         """
         signature_model = get_signature_model(dependency.provide)
         for sub_dependency in dependency.dependencies:
             kwargs[sub_dependency.key] = await self.resolve_dependency(
-                dependency=sub_dependency, connection=connection, **kwargs
+                dependency=sub_dependency, method=method, url=url, **kwargs
             )
-        dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+        dependency_kwargs = signature_model.parse_values_from_connection_kwargs(method=method, url=url, **kwargs)
         return await dependency.provide(**dependency_kwargs)

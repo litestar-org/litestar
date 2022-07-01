@@ -191,9 +191,11 @@ class HTTPRoute(BaseRoute):
                 kwargs["data"] = await request_data
             for dependency in parameter_model.expected_dependencies:
                 kwargs[dependency.key] = await parameter_model.resolve_dependency(
-                    dependency=dependency, connection=request, **kwargs
+                    dependency=dependency, method=request.method, url=request.url, **kwargs
                 )
-            parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
+            parsed_kwargs = signature_model.parse_values_from_connection_kwargs(
+                method=request.method, url=request.url, **kwargs
+            )
         else:
             parsed_kwargs = {}
         if isinstance(route_handler.owner, Controller):
@@ -294,9 +296,11 @@ class WebSocketRoute(BaseRoute):
         kwargs = handler_parameter_model.to_kwargs(connection=web_socket)
         for dependency in handler_parameter_model.expected_dependencies:
             kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
-                dependency=dependency, connection=web_socket, **kwargs
+                dependency=dependency, method="websocket", url=web_socket.url, **kwargs
             )
-        parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
+        parsed_kwargs = signature_model.parse_values_from_connection_kwargs(
+            method="websocket", url=web_socket.url, **kwargs
+        )
         fn = cast(AsyncAnyCallable, self.route_handler.fn)
         if isinstance(route_handler.owner, Controller):
             await fn(route_handler.owner, **parsed_kwargs)
