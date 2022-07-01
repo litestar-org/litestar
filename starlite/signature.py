@@ -39,7 +39,7 @@ UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 
 
 def get_value_using_plugin_mapping(
-    mapping: PluginMapping, value: BaseModel | list[BaseModel] | tuple[BaseModel, ...]
+    mapping: PluginMapping, value: Union[BaseModel, List[BaseModel], Tuple[BaseModel, ...]]
 ) -> Any:
     """
     Given a plugin mapping and some generated value by plugin,
