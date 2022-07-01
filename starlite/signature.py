@@ -100,7 +100,8 @@ class SignatureModel(BaseModel):
 
         Parameters
         ----------
-        connection : Request | WebSocket
+        method : str
+        url : URL
         exc : ValidationError
 
         Returns
