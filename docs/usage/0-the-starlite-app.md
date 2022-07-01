@@ -32,7 +32,7 @@ You **can additionally pass** the following **kwargs** to the Starlite construct
   trace. This option should _not_ be used in production. Default to `False`.
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](6-dependency-injection.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
-  See [exception-handlers](#exception-handling).
+  See [exception-handlers](17-exceptions#exception-handling).
 - `guards`: A list of callables. See [guards](9-guards.md).
 - `middleware`: A list of classes adhering to the Starlite `MiddlewareProtocol`, instance of the Starlette `Middleware`
   class, or subclasses of the Starlette `BaseHTTPMiddleware` class. See [middleware](7-middleware.md).
