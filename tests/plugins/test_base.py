@@ -68,7 +68,6 @@ class APlugin(DummyPlugin[AModel]):
         [(APydanticModel(name="1"), APydanticModel(name="2")), [AModel(name="1"), AModel(name="2")]],
     ],
 )
-def test_plugin_mapping_get_value_converted_to_model_class(input: Any, output: Any) -> None:
-
+def test_plugin_mapping_value_to_model_instance(input: Any, output: Any) -> None:
     mapping = PluginMapping(plugin=APlugin(), model_class=AModel)
-    assert mapping.get_value_converted_to_model_class(input) == output
+    assert mapping.value_to_model_instance(input) == output

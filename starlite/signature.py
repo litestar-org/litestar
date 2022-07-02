@@ -73,7 +73,7 @@ class SignatureModel(BaseModel):
         """
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
-        return mapping.get_value_converted_to_model_class(value) if mapping else value
+        return mapping.value_to_model_instance(value) if mapping else value
 
     @classmethod
     def construct_exception(
