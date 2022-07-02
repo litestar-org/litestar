@@ -92,8 +92,8 @@ class SignatureModel(BaseModel):
         -------
         ValidationException | InternalServerException
         """
-        client_errors: List["ErrorDict"] = []
         server_errors: List["ErrorDict"] = []
+        client_errors: List["ErrorDict"] = []
 
         for error in exc.errors():
             if cls.is_server_error(error):
@@ -110,7 +110,7 @@ class SignatureModel(BaseModel):
 
     @classmethod
     def is_server_error(cls, error: "ErrorDict") -> bool:
-        """Check whether validation error is server error"""
+        """Check whether given validation error is a server error"""
         return error["loc"][-1] in cls.factory.dependency_name_set
 
     @staticmethod
