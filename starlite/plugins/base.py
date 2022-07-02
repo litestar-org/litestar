@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, NamedTuple, Optional, TypeVar
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, TypeVar, Union
 
 from pydantic import BaseModel
 from typing_extensions import Protocol, Type, get_args, runtime_checkable
@@ -54,3 +54,20 @@ def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[
 class PluginMapping(NamedTuple):
     plugin: PluginProtocol
     model_class: Any
+
+    def get_value_converted_to_model_class(
+        self, value: Union[BaseModel, List[BaseModel], Tuple[BaseModel, ...]]
+    ) -> Any:
+        """
+        Given some generated value by plugin,
+        return instance of original class.
+
+        Also excepts can accept list or tuple of values.
+        """
+
+        def get_instance(value: BaseModel) -> Any:
+            return self.plugin.from_pydantic_model_instance(self.model_class, pydantic_model_instance=value)
+
+        if isinstance(value, (list, tuple)):
+            return [get_instance(item) for item in value]
+        return get_instance(value)

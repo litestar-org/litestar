@@ -22,6 +22,7 @@ from pydantic_factories import ModelFactory
 from starlette.datastructures import URL
 from typing_extensions import get_args
 
+from starlite.connection import Request, WebSocket
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     InternalServerException,
@@ -38,24 +39,6 @@ if TYPE_CHECKING:
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 
 
-def get_value_using_plugin_mapping(
-    mapping: PluginMapping, value: Union[BaseModel, List[BaseModel], Tuple[BaseModel, ...]]
-) -> Any:
-    """
-    Given a plugin mapping and some generated value by plugin,
-    return instance of original plugin class.
-
-    Also excepts can except list or tuple of values.
-    """
-
-    def get_instance(value: BaseModel) -> Any:
-        return mapping.plugin.from_pydantic_model_instance(mapping.model_class, pydantic_model_instance=value)
-
-    if isinstance(value, (list, tuple)):
-        return [get_instance(item) for item in value]
-    return get_instance(value)
-
-
 class SignatureModel(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -67,7 +50,9 @@ class SignatureModel(BaseModel):
     factory: ClassVar["SignatureModelFactory"]
 
     @classmethod
-    def parse_values_from_connection_kwargs(cls, method: str, url: URL, **kwargs: Any) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(
+        cls, connection: Union[Request, WebSocket], **kwargs: Any
+    ) -> Dict[str, Any]:
         """
         Given a dictionary of values extracted from the connection, create an instance of the given
         SignatureModel subclass and return the parsed values.
@@ -79,7 +64,7 @@ class SignatureModel(BaseModel):
             signature = cls(**kwargs)
             return {key: signature.resolve_field_value(key) for key in cls.__fields__}
         except ValidationError as exc:
-            raise cls.construct_exception(method=method, url=url, exc=exc) from exc
+            raise cls.construct_exception(connection, exc) from exc
 
     def resolve_field_value(self, key: str) -> Any:
         """
@@ -87,11 +72,11 @@ class SignatureModel(BaseModel):
         """
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
-        return get_value_using_plugin_mapping(mapping, value) if mapping else value
+        return mapping.get_value_converted_to_model_class(value) if mapping else value
 
     @classmethod
     def construct_exception(
-        cls, method: str, url: URL, exc: ValidationError
+        cls, connection: Union[Request, WebSocket], exc: ValidationError
     ) -> Union[InternalServerException, ValidationException]:
         """
         Distinguish between validation errors that arise from parameters and dependencies.
@@ -100,8 +85,7 @@ class SignatureModel(BaseModel):
 
         Parameters
         ----------
-        method : str
-        url : URL
+        connection : Request | WebSocket
         exc : ValidationError
 
         Returns
@@ -112,14 +96,28 @@ class SignatureModel(BaseModel):
         server_errors: List["ErrorDict"] = []
 
         for error in exc.errors():
-            is_server_error = error["loc"][-1] in cls.factory.dependency_name_set
-            lst = server_errors if is_server_error else client_errors
-            lst.append(error)
+            if cls.is_server_error(error):
+                server_errors.append(error)
+            else:
+                client_errors.append(error)
+
+        method, url = cls.get_connection_method_and_url(connection)
 
         if client_errors:
             return ValidationException(detail=f"Validation failed for {method} {url}", extra=client_errors)
 
         return InternalServerException(detail=f"A dependency failed validation for {method} {url}", extra=server_errors)
+
+    @classmethod
+    def is_server_error(cls, error: "ErrorDict") -> bool:
+        """Check whether validation error is server error"""
+        return error["loc"][-1] in cls.factory.dependency_name_set
+
+    @staticmethod
+    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, URL]:
+        """Extract method and URL from Request or WebSocket"""
+        method = "websocket" if isinstance(connection, WebSocket) else connection.method
+        return method, connection.url
 
 
 @dataclass
