@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any, Dict, Type
 
 import pytest
@@ -25,13 +24,40 @@ class DummyPlugin(PluginProtocol[ModelT]):
         raise NotImplementedError
 
 
-@dataclass
 class AModel:
-    name: str
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def __eq__(self, __o: object) -> bool:
+        if isinstance(__o, type(self)):
+            return __o.name == self.name
+        return False
 
 
 class APydanticModel(BaseModel):
     name: str
+
+
+class APlugin(DummyPlugin[AModel]):
+    def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[BaseModel]:
+        assert model_class is AModel
+        return APydanticModel
+
+    @staticmethod
+    def is_plugin_supported_type(value: Any) -> bool:
+        return value is AModel
+
+    def from_pydantic_model_instance(self, model_class: Type[AModel], pydantic_model_instance: BaseModel) -> AModel:
+        assert model_class is AModel
+        assert isinstance(pydantic_model_instance, APydanticModel)
+        return model_class(**pydantic_model_instance.dict())
+
+    def to_dict(self, model_instance: ModelT) -> Dict[str, Any]:
+        return dict(model_instance)  # type: ignore
+
+    def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
+        assert model_class is AModel
+        return model_class(**kwargs)
 
 
 @pytest.mark.parametrize(
@@ -43,11 +69,6 @@ class APydanticModel(BaseModel):
     ],
 )
 def test_plugin_mapping_get_value_converted_to_model_class(input: Any, output: Any) -> None:
-    class APlugin(DummyPlugin[AModel]):
-        def from_pydantic_model_instance(self, model_class: Type[AModel], pydantic_model_instance: BaseModel) -> AModel:
-            assert model_class is AModel
-            assert isinstance(pydantic_model_instance, APydanticModel)
-            return model_class(name=pydantic_model_instance.name)
 
     mapping = PluginMapping(plugin=APlugin(), model_class=AModel)
     assert mapping.get_value_converted_to_model_class(input) == output

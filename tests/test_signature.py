@@ -1,13 +1,119 @@
 from functools import lru_cache
-from typing import Optional
+from typing import TYPE_CHECKING, AbstractSet, Any, List, Optional, Type, cast
 
 import pytest
+from pydantic import BaseModel, ValidationError
+from pydantic.error_wrappers import ErrorWrapper
+from pydantic.typing import AnyCallable
+from starlette.datastructures import URL
 from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite import ImproperlyConfiguredException, Provide, get
+from starlite.connection import WebSocket
+from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import Dependency
-from starlite.signature import SignatureModelFactory
-from starlite.testing import create_test_client
+from starlite.plugins.base import PluginProtocol
+from starlite.signature import SignatureModel, SignatureModelFactory
+from starlite.testing import create_test_client, create_test_request
+from tests.plugins.test_base import AModel, APlugin
+
+if TYPE_CHECKING:
+    from pydantic.error_wrappers import ErrorDict
+
+
+def make_signature_model(
+    fn: AnyCallable,
+    plugins: Optional[List[PluginProtocol]] = None,
+    provided_dependency_names: Optional[AbstractSet[str]] = None,
+) -> Type[SignatureModel]:
+    return SignatureModelFactory(
+        fn=fn, plugins=plugins or [], provided_dependency_names=provided_dependency_names or set()
+    ).model()
+
+
+class TestParseValuesFromConnectionKwargs:
+    def test_with_plugin(self) -> None:
+        def fn(a: AModel, b: int) -> None:
+            pass
+
+        model = make_signature_model(fn, plugins=[APlugin()])
+        arbitary_a = {"name": 1}
+        result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitary_a, b=1)
+        assert result == {"a": AModel(name="1"), "b": 1}
+
+    def test_without_plugin(self) -> None:
+        class MyModel(BaseModel):
+            name: str
+
+        def fn(a: MyModel) -> None:
+            pass
+
+        model = make_signature_model(fn)
+        result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a={"name": "my name"})
+        assert result == {"a": MyModel(name="my name")}
+
+    def test_raises(self) -> None:
+        def fn(a: int) -> None:
+            pass
+
+        model = make_signature_model(fn)
+        with pytest.raises(ValidationException):
+            model.parse_values_from_connection_kwargs(connection=create_test_request(), a="not an int")
+
+
+def test_resolve_field_value() -> None:
+    def fn(a: AModel, b: int) -> None:
+        pass
+
+    model: Any = make_signature_model(fn, plugins=[APlugin()])
+    instance: SignatureModel = model(a={"name": "my name"}, b=2)
+    assert instance.resolve_field_value("a") == AModel(name="my name")
+    assert instance.resolve_field_value("b") == 2
+
+
+@pytest.mark.parametrize(
+    ["exc_type", "loc_errors", "extra_loc"],
+    [[InternalServerException, ["a"], "a"], [ValidationException, ["a", "b"], "b"]],
+)
+def test_construct_exception(exc_type: Type[Exception], loc_errors: List[str], extra_loc: str) -> None:
+    def fn() -> None:
+        pass
+
+    model = make_signature_model(fn, provided_dependency_names={"a"})
+    request = create_test_request()
+    errors = [ErrorWrapper(Exception(), loc) for loc in loc_errors]
+    validation_error = ValidationError(errors=errors, model=BaseModel)
+    exc = model.construct_exception(connection=request, exc=validation_error)
+
+    assert isinstance(exc, exc_type)
+    assert request.method in exc.detail
+    assert str(request.url) in exc.detail
+    assert exc.extra == [{"loc": (extra_loc,), "msg": "", "type": "value_error.exception"}]
+
+
+def test_is_server_error() -> None:
+    def fn() -> None:
+        pass
+
+    model = make_signature_model(fn, provided_dependency_names={"a"})
+
+    def error_dict(loc: str) -> "ErrorDict":
+        return {"loc": (loc,), "msg": "", "type": ""}
+
+    assert model.is_server_error(error_dict("a")) is True
+    assert model.is_server_error(error_dict("b")) is False
+
+
+class TestGetConnectionMethodAndUrl:
+    def test_websocket(self) -> None:
+        obj = cast(Any, object())
+        scope = {"type": "websocket", "path": "/", "headers": []}
+        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=obj, send=obj)
+        assert SignatureModel.get_connection_method_and_url(web_socket) == ("websocket", URL("/"))
+
+    def test_request(self) -> None:
+        request = create_test_request()
+        assert SignatureModel.get_connection_method_and_url(request) == (request.method, request.url)
 
 
 def test_create_function_signature_model_parameter_parsing() -> None:
