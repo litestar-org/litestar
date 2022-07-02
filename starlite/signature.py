@@ -23,6 +23,7 @@ from starlette.datastructures import URL
 from typing_extensions import get_args
 
 from starlite.connection import Request, WebSocket
+from starlite.enums import ScopeType
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     InternalServerException,
@@ -68,7 +69,7 @@ class SignatureModel(BaseModel):
 
     def resolve_field_value(self, key: str) -> Any:
         """
-        Return value for a given field key using plugin mapping if available.
+        Given a field key, return value using plugin mapping, if available.
         """
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
@@ -116,7 +117,7 @@ class SignatureModel(BaseModel):
     @staticmethod
     def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, URL]:
         """Extract method and URL from Request or WebSocket"""
-        method = "websocket" if isinstance(connection, WebSocket) else connection.method
+        method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
         return method, connection.url
 
 
