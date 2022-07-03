@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from inspect import Parameter, Signature
 from typing import (
+    TYPE_CHECKING,
     AbstractSet,
     Any,
     ClassVar,
     Dict,
     Generator,
     List,
-    Optional,
     Set,
     Tuple,
     Type,
@@ -19,9 +19,11 @@ from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, Undefined
 from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
+from starlette.datastructures import URL
 from typing_extensions import get_args
 
 from starlite.connection import Request, WebSocket
+from starlite.enums import ScopeType
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     InternalServerException,
@@ -30,6 +32,10 @@ from starlite.exceptions import (
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 from starlite.utils.dependency import is_dependency_field
 from starlite.utils.typing import detect_optional_union
+
+if TYPE_CHECKING:
+    from pydantic.error_wrappers import ErrorDict
+
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 
@@ -55,29 +61,19 @@ class SignatureModel(BaseModel):
         This is not equivalent to calling the '.dict'  method of the pydantic model,
         because it doesn't convert nested values into dictionary, just extracts the data from the signature model
         """
-        output: Dict[str, Any] = {}
         try:
-            modelled_signature = cls(**kwargs)
-            for key in cls.__fields__:
-                value = modelled_signature.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
-                plugin_mapping: Optional[PluginMapping] = cls.field_plugin_mappings.get(key)
-                if plugin_mapping:
-                    if isinstance(value, (list, tuple)):
-                        output[key] = [
-                            plugin_mapping.plugin.from_pydantic_model_instance(
-                                plugin_mapping.model_class, pydantic_model_instance=v
-                            )
-                            for v in value
-                        ]
-                    else:
-                        output[key] = plugin_mapping.plugin.from_pydantic_model_instance(
-                            plugin_mapping.model_class, pydantic_model_instance=value
-                        )
-                else:
-                    output[key] = value
-        except ValidationError as e:
-            raise cls.construct_exception(connection, e) from e
-        return output
+            signature = cls(**kwargs)
+            return {key: signature.resolve_field_value(key) for key in cls.__fields__}
+        except ValidationError as exc:
+            raise cls.construct_exception(connection, exc) from exc
+
+    def resolve_field_value(self, key: str) -> Any:
+        """
+        Given a field key, return value using plugin mapping, if available.
+        """
+        value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
+        mapping = self.field_plugin_mappings.get(key)
+        return mapping.value_to_model_instance(value) if mapping else value
 
     @classmethod
     def construct_exception(
@@ -97,25 +93,32 @@ class SignatureModel(BaseModel):
         -------
         ValidationException | InternalServerException
         """
-        client_errors = []
-        server_errors = []
+        server_errors: List["ErrorDict"] = []
+        client_errors: List["ErrorDict"] = []
+
         for error in exc.errors():
-            if error["loc"][-1] in cls.factory.dependency_name_set:
+            if cls.is_server_error(error):
                 server_errors.append(error)
             else:
                 client_errors.append(error)
-        method = connection.method if isinstance(connection, Request) else "websocket"
+
+        method, url = cls.get_connection_method_and_url(connection)
 
         if client_errors:
-            return ValidationException(
-                detail=f"Validation failed for {method} {connection.url}",
-                extra=client_errors,
-            )
+            return ValidationException(detail=f"Validation failed for {method} {url}", extra=client_errors)
 
-        return InternalServerException(
-            detail=f"A dependency failed validation for {method} {connection.url}",
-            extra=server_errors,
-        )
+        return InternalServerException(detail=f"A dependency failed validation for {method} {url}", extra=server_errors)
+
+    @classmethod
+    def is_server_error(cls, error: "ErrorDict") -> bool:
+        """Check whether given validation error is a server error"""
+        return error["loc"][-1] in cls.factory.dependency_name_set
+
+    @staticmethod
+    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, URL]:
+        """Extract method and URL from Request or WebSocket"""
+        method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
+        return method, connection.url
 
 
 @dataclass
