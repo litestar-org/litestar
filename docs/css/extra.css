@@ -122,26 +122,26 @@ body {
   --md-code-hl-generic-color: var(--md-code-hl-number-color);
   --md-code-hl-variable-color: var(--md-code-hl-number-color);
 
-  /* Typeset color shades *
-  --md-typeset-color:                var(--md-default-fg-color);
+  /* Typeset color shades */
+  --md-typeset-color: var(--md-default-fg-color);
 
-  /* Typeset `a` color shades *
-  --md-typeset-a-color:              var(--md-primary-fg-color);
+  /* Typeset `a` color shades */
+  --md-typeset-a-color: var(--md-primary-fg-color);
 
-  /* Typeset `mark` color shades *
-  --md-typeset-mark-color:           hsla(#{hex2hsl($clr-yellow-a200)}, 0.5);
+  /* Typeset `mark` color shades */
+  --md-typeset-mark-color: hsla(#{hex2hsl($clr-yellow-a200)}, 0.5);
 
-  /* Typeset `del` and `ins` color shades *
-  --md-typeset-del-color:            hsla(6, 90%, 60%, 0.15);
-  --md-typeset-ins-color:            hsla(150, 90%, 44%, 0.15);
+  /* Typeset `del` and `ins` color shades */
+  --md-typeset-del-color: hsla(6, 90%, 60%, 0.15);
+  --md-typeset-ins-color: hsla(150, 90%, 44%, 0.15);
 
-  /* Typeset `kbd` color shades *
-  --md-typeset-kbd-color:            hsla(0, 0%, 98%, 1);
-  --md-typeset-kbd-accent-color:     hsla(0, 100%, 100%, 1);
-  --md-typeset-kbd-border-color:     hsla(0, 0%, 72%, 1);
+  /* Typeset `kbd` color shades */
+  --md-typeset-kbd-color: hsla(0, 0%, 98%, 1);
+  --md-typeset-kbd-accent-color: hsla(0, 100%, 100%, 1);
+  --md-typeset-kbd-border-color: hsla(0, 0%, 72%, 1);
 
-  /* Typeset `table` color shades *
-  --md-typeset-table-color:          hsla(0, 0%, 0%, 0.12);
+  /* Typeset `table` color shades */
+  --md-typeset-table-color: hsla(0, 0%, 0%, 0.12);
 
   /* Admonition color shades *
   --md-admonition-fg-color:          var(--md-default-fg-color);
@@ -224,26 +224,26 @@ body {
   --md-code-hl-generic-color: var(--md-code-hl-number-color);
   --md-code-hl-variable-color: var(--md-code-hl-number-color);
 
-  /* Typeset color shades *
-  --md-typeset-color:                var(--md-default-fg-color);
+  /* Typeset color shades */
+  --md-typeset-color: var(--md-default-fg-color);
 
-  /* Typeset `a` color shades *
-  --md-typeset-a-color:              var(--md-primary-fg-color);
+  /* Typeset `a` color shades */
+  --md-typeset-a-color: var(--md-primary-fg-color);
 
-  /* Typeset `mark` color shades *
-  --md-typeset-mark-color:           hsla(#{hex2hsl($clr-yellow-a200)}, 0.5);
+  /* Typeset `mark` color shades */
+  --md-typeset-mark-color: hsla(#{hex2hsl($clr-yellow-a200)}, 0.5);
 
-  /* Typeset `del` and `ins` color shades *
-  --md-typeset-del-color:            hsla(6, 90%, 60%, 0.15);
-  --md-typeset-ins-color:            hsla(150, 90%, 44%, 0.15);
+  /* Typeset `del` and `ins` color shades */
+  --md-typeset-del-color: hsla(6, 90%, 60%, 0.15);
+  --md-typeset-ins-color: hsla(150, 90%, 44%, 0.15);
 
-  /* Typeset `kbd` color shades *
-  --md-typeset-kbd-color:            hsla(0, 0%, 98%, 1);
-  --md-typeset-kbd-accent-color:     hsla(0, 100%, 100%, 1);
-  --md-typeset-kbd-border-color:     hsla(0, 0%, 72%, 1);
+  /* Typeset `kbd` color shades */
+  --md-typeset-kbd-color: hsla(0, 0%, 98%, 1);
+  --md-typeset-kbd-accent-color: hsla(0, 100%, 100%, 1);
+  --md-typeset-kbd-border-color: hsla(0, 0%, 72%, 1);
 
-  /* Typeset `table` color shades *
-  --md-typeset-table-color:          hsla(0, 0%, 0%, 0.12);
+  /* Typeset `table` color shades */
+  --md-typeset-table-color: hsla(0, 0%, 0%, 0.12);
 
   /* Admonition color shades *
   --md-admonition-fg-color:          var(--md-default-fg-color);
