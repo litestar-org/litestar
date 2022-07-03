@@ -6,6 +6,7 @@ from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -15,6 +16,7 @@ from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
     CacheConfig,
     CORSConfig,
+    GZIPConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -51,21 +53,20 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class Starlite(Router):
     __slots__ = (
+        "allowed_hosts",
         "asgi_handler",
         "asgi_router",
-        "debug",
-        "openapi_schema",
-        "plugins",
-        "state",
-        "route_map",
-        "static_paths",
-        "plain_routes",
-        "template_engine",
         "cache_config",
         "cors_config",
-        "allowed_hosts",
-        # the rest of __slots__ are defined in Router and should not be duplicated
-        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+        "debug",
+        "gzip_config",
+        "openapi_schema",
+        "plain_routes",
+        "plugins",
+        "route_map",
+        "state",
+        "static_paths",
+        "template_engine",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -81,6 +82,7 @@ class Starlite(Router):
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
+        gzip_config: Optional[GZIPConfig] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
@@ -92,16 +94,17 @@ class Starlite(Router):
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
     ):
-        self.debug = debug
-        self.state = State()
-        self.plugins = plugins or []
-        self.routes: List[BaseRoute] = []
-        self.route_map: Dict[str, Any] = {}
-        self.static_paths = set()
-        self.plain_routes: Set[str] = set()
+        self.allowed_hosts = allowed_hosts
         self.cache_config = cache_config
         self.cors_config = cors_config
-        self.allowed_hosts = allowed_hosts
+        self.debug = debug
+        self.gzip_config = gzip_config
+        self.plain_routes: Set[str] = set()
+        self.plugins = plugins or []
+        self.route_map: Dict[str, Any] = {}
+        self.routes: List[BaseRoute] = []
+        self.state = State()
+        self.static_paths = set()
 
         super().__init__(
             dependencies=dependencies,
@@ -138,6 +141,8 @@ class Starlite(Router):
         If CORS or TruseedHost configs are provided to the constructor, they will wrap the router as well.
         """
         asgi_handler: ASGIApp = self.asgi_router
+        if self.gzip_config:
+            asgi_handler = GZipMiddleware(app=asgi_handler, **self.gzip_config.dict())
         if self.allowed_hosts:
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
         if self.cors_config:

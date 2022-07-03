@@ -33,6 +33,11 @@ class CORSConfig(BaseModel):
     max_age: int = 600
 
 
+class GZIPConfig(BaseModel):
+    minimum_size: int = 500
+    compresslevel: int = 9
+
+
 class OpenAPIConfig(BaseModel):
     """Class containing Settings and Schema Properties"""
 

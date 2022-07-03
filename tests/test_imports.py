@@ -1,4 +1,3 @@
-import subprocess
 import sys
 import warnings
 
@@ -7,8 +6,12 @@ import pytest
 deprecated_imports_names = {"TestClient", "create_test_client", "create_test_request"}
 
 
-@pytest.mark.skipif("starlite" in sys.modules, reason="This tests expects starlite to be imported for the first time")
 def test_testing_import_deprecation() -> None:
+    del sys.modules["starlite"]
+    del sys.modules["starlite.testing"]
+    del sys.modules["requests"]
+    del sys.modules["requests.models"]
+
     import starlite
 
     assert deprecated_imports_names & starlite.__dict__.keys() == set()
@@ -38,16 +41,6 @@ def test_testing_import_deprecation() -> None:
         "create_test_client": testing.create_test_client,
         "create_test_request": testing.create_test_request,
     }
-
-
-@pytest.mark.skipif(
-    "starlite" not in sys.modules, reason="Was able to run previous test, no need to launch subprocess for that"
-)
-def test_testing_import_deprecation_in_subprocess() -> None:
-    """Run test_testing_import_deprecation in subprocess so it can test importing starlite for the first time"""
-    subprocess.check_call(
-        [sys.executable, "-m", "pytest", f"{__file__}::{test_testing_import_deprecation.__name__}"], timeout=5
-    )
 
 
 def test_star_import_doesnt_import_testing() -> None:
