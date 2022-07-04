@@ -17,6 +17,8 @@
 
 [![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
 
+[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlitespace:matrix.org)
+
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
 
 </div>
@@ -171,7 +173,7 @@ Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_re
 
 ## Contributing
 
-Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
+Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.md).
 
