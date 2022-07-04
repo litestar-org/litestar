@@ -522,6 +522,17 @@ optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
+name = "pick"
+version = "1.2.0"
+description = "Pick an option in the terminal with a simple GUI"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+windows-curses = {version = ">=2.2.0,<3.0.0", markers = "sys_platform == \"win32\""}
+
+[[package]]
 name = "platformdirs"
 version = "2.5.2"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -995,6 +1006,14 @@ python-versions = ">=3.6"
 watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
+name = "windows-curses"
+version = "2.3.0"
+description = "Support for the standard curses module on Windows"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "zipp"
 version = "3.8.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -1012,7 +1031,7 @@ testing = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "aa5606da59b6115f4d10a8d30663b039ad385d598cd32942a7d6338da66e7cf1"
+content-hash = "2caaaa411cd4e452fded1d6a6490f2934f7bd96c23f1e484fdeef783ff33b1f1"
 
 [metadata.files]
 anyio = [
@@ -1389,6 +1408,10 @@ pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
     {file = "pathspec-0.9.0.tar.gz", hash = "sha256:e564499435a2673d586f6b2130bb5b95f04a3ba06f81b8f895b651a3c76aabb1"},
 ]
+pick = [
+    {file = "pick-1.2.0-py3-none-any.whl", hash = "sha256:faffd2ba4c5409d22cad366b4e8892fd26ebedcd4d3fd5e98562914279208da7"},
+    {file = "pick-1.2.0.tar.gz", hash = "sha256:594f96c205d75bff889f4cee40d87fe50d2a477ff937c9cf6b3a9d4feb44e7f8"},
+]
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
@@ -1675,6 +1698,18 @@ watchdog = [
     {file = "watchdog-2.1.9-py3-none-win_amd64.whl", hash = "sha256:7a833211f49143c3d336729b0020ffd1274078e94b0ae42e22f596999f50279c"},
     {file = "watchdog-2.1.9-py3-none-win_ia64.whl", hash = "sha256:ad576a565260d8f99d97f2e64b0f97a48228317095908568a9d5c786c829d428"},
     {file = "watchdog-2.1.9.tar.gz", hash = "sha256:43ce20ebb36a51f21fa376f76d1d4692452b2527ccd601950d69ed36b9e21609"},
+]
+windows-curses = [
+    {file = "windows_curses-2.3.0-cp310-cp310-win32.whl", hash = "sha256:a3a63a0597729e10f923724c2cf972a23ea677b400d2387dee1d668cf7116177"},
+    {file = "windows_curses-2.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:7a35eda4cb120b9e1a5ae795f3bc06c55b92c9d391baba6be1903285a05f3551"},
+    {file = "windows_curses-2.3.0-cp36-cp36m-win32.whl", hash = "sha256:4d5fb991d1b90a41c2332f02241a1f84c8a1e6bc8f6e0d26f532d0da7a9f7b51"},
+    {file = "windows_curses-2.3.0-cp36-cp36m-win_amd64.whl", hash = "sha256:170c0d941c2e0cdf864e7f0441c1bdf0709232bf4aa7ce7f54d90fc76a4c0504"},
+    {file = "windows_curses-2.3.0-cp37-cp37m-win32.whl", hash = "sha256:d5cde8ec6d582aa77af791eca54f60858339fb3f391945f9cad11b1ab71062e3"},
+    {file = "windows_curses-2.3.0-cp37-cp37m-win_amd64.whl", hash = "sha256:e913dc121446d92b33fe4f5bcca26d3a34e4ad19f2af160370d57c3d1e93b4e1"},
+    {file = "windows_curses-2.3.0-cp38-cp38-win32.whl", hash = "sha256:fbc2131cec57e422c6660e6cdb3420aff5be5169b8e45bb7c471f884b0590a2b"},
+    {file = "windows_curses-2.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:cc5fa913780d60f4a40824d374a4f8ca45b4e205546e83a2d85147315a57457e"},
+    {file = "windows_curses-2.3.0-cp39-cp39-win32.whl", hash = "sha256:935be95cfdb9213f6f5d3d5bcd489960e3a8fbc9b574e7b2e8a3a3cc46efff49"},
+    {file = "windows_curses-2.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:c860f596d28377e47f322b7382be4d3573fd76d1292234996bb7f72e0bc0ed0d"},
 ]
 zipp = [
     {file = "zipp-3.8.0-py3-none-any.whl", hash = "sha256:c4f6e5bbf48e74f7a38e7cc5b0480ff42b0ae5178957d564d18932525d5cf099"},
