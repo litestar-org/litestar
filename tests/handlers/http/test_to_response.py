@@ -42,7 +42,9 @@ async def test_to_response_async_await() -> None:
     person_instance = PersonFactory.build()
     test_function.signature_model = SignatureModelFactory(test_function.fn, [], set()).model()  # type:ignore[arg-type]
 
-    response = await test_function.to_response(data=test_function.fn(data=person_instance), plugins=[], app=None)  # type: ignore
+    response = await test_function.to_response(
+        data=test_function.fn(data=person_instance), plugins=[], app=None  # type: ignore
+    )
     assert loads(response.body) == person_instance.dict()
 
 
@@ -76,8 +78,8 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
         return expected_response
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]  # type: ignore
-        route_handler = route.route_handlers[0]
+        http_route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
         assert isinstance(response, StarletteResponse)
         assert response is expected_response
