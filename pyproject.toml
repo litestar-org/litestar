@@ -42,6 +42,8 @@ pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
+typer = "^0.4.2"
+cookiecutter = "^2.1.1"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -110,3 +112,6 @@ omit = ["*/tests/*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.poetry.scripts]
+starlite-cli = "starlite.cli:cli"
