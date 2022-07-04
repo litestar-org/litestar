@@ -36,6 +36,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "dkress59",
+      "name": "Damian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28515387?v=4",
+      "profile": "http://www.damiankress.de",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
