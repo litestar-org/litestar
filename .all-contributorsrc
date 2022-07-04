@@ -54,6 +54,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JonasKs",
+      "name": "Jonas Krüger Svensson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5310116?v=4",
+      "profile": "https://hotfix.guru",
+      "contributions": [
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,
