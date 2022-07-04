@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "ashwinvin",
+      "name": "Ashwin Vinod",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38067089?v=4",
+      "profile": "https://ashwinvin.github.io",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "starlite",
+  "projectOwner": "starlite-api",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
