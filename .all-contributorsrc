@@ -100,6 +100,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Bobronium",
+      "name": "Arseny Boykov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36469655?v=4",
+      "profile": "http://t.me/Bobronium",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
