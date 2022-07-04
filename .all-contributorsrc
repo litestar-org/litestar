@@ -15,6 +15,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "peterschutt",
+      "name": "Peter Schutt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20659309?v=4",
+      "profile": "https://github.com/peterschutt",
+      "contributions": [
+        "maintenance",
+        "code",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
