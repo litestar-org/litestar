@@ -91,6 +91,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tclasen",
+      "name": "Tory Clasen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11999013?v=4",
+      "profile": "https://github.com/tclasen",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
