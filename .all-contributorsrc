@@ -110,6 +110,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "yudjinn",
+      "name": "Jacob Rodgers",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7493084?v=4",
+      "profile": "https://github.com/yudjinn",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
