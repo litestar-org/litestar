@@ -119,6 +119,15 @@
       "contributions": [
         "example"
       ]
+    },
+    {
+      "login": "danesolberg",
+      "name": "Dane Solberg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25882507?v=4",
+      "profile": "https://github.com/danesolberg",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
