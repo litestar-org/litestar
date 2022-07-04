@@ -54,6 +54,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "sondrelg",
+      "name": "Sondre Lillebø Gundersen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25310870?v=4",
+      "profile": "https://github.com/sondrelg",
+      "contributions": [
+        "platform"
+      ]
     }
   ],
   "contributorsPerLine": 7,
