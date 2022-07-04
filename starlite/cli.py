@@ -1,6 +1,8 @@
-import typer
 import importlib.metadata
+from enum import Enum
+from typing import List
 
+import typer
 from cookiecutter.main import cookiecutter
 
 cli = typer.Typer(
@@ -9,14 +11,25 @@ cli = typer.Typer(
 )
 
 
+class ProjectTemplates(str, Enum):
+    template = "asdfasdf"
+    template2 = "asdfas"
+
+
 def version_callback(version: bool) -> None:
     if version:
         print(f"Current CLI Version: {importlib.metadata.version('starlite')}")
         raise typer.Exit()
 
+
 @cli.command()
-def create():
-    cookiecutter('https://github.com/audreyr/cookiecutter-pypackage.git')
+def create(
+    project_template: ProjectTemplates = typer.Option(
+        ..., "--project-template", "-p", help="Select which project structure should be generated", prompt=True
+    ),
+):
+    cookiecutter("https://github.com/JeromeK13/starlite-minimal-starter.git")
+
 
 @cli.callback()
 def main(
