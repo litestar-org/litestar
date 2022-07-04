@@ -173,6 +173,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "imbev",
+      "name": "imbev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/105524473?v=4",
+      "profile": "https://imbev.gitlab.io/site",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
