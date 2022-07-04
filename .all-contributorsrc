@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "yudjinn",
+      "name": "Jacob Rodgers",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7493084?v=4",
+      "profile": "https://github.com/yudjinn",
+      "contributions": [
+        "tutorial"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "starlite",
+  "projectOwner": "starlite-api",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
