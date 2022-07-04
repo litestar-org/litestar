@@ -26,6 +26,16 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "ashwinvin",
+      "name": "Ashwin Vinod",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38067089?v=4",
+      "profile": "https://ashwinvin.github.io",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
