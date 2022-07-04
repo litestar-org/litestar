@@ -241,3 +241,9 @@
 - fix order of exception handlers
 - fix OpenAPI array items being double nested
 - make `requests` and optional dependency @Bobronium
+
+[1.5.1]
+
+- add gzip middleware support
+- raise exception on routes with duplicate path parameters @danesolberg
+- fix dependency validation failure returning 400 (instead of 500)
