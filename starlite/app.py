@@ -173,7 +173,7 @@ class Starlite(Router):
 
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
-    def construct_route_map(self) -> None:  # noqa: C901
+    def construct_route_map(self) -> None:  # noqa: C901 # pylint: disable=R0912
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
 
@@ -195,7 +195,8 @@ class Starlite(Router):
                         cur[component] = {"_components": set()}
                     cur = cast(Dict[str, Any], cur[component])
             else:
-                self.route_map[path] = {"_components": set()}
+                if path not in self.route_map:
+                    self.route_map[path] = {"_components": set()}
                 self.plain_routes.add(path)
                 cur = self.route_map[path]
             if "_path_parameters" not in cur:
