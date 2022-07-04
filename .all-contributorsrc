@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "dkress59",
+      "name": "Damian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28515387?v=4",
+      "profile": "http://www.damiankress.de",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "starlite",
+  "projectOwner": "starlite-api",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
