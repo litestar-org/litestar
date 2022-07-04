@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "vincentsarago",
+      "name": "Vincent Sarago",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10407788?v=4",
+      "profile": "https://remotepixel.ca",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "starlite",
+  "projectOwner": "starlite-api",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
