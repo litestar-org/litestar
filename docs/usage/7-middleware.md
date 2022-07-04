@@ -5,8 +5,7 @@ Middlewares are mini ASGI apps that receive the raw request object and validate 
 ## The Middleware Protocol
 
 !!! important Starlite allows users to use [Starlette Middleware](https://www.starlette.io/middleware/) and any 3rd
-party
-middlewares created for it, while offers other patterns as well.
+party middlewares created for it, while offering its own middleware protocol as well.
 
 You can build your own middleware by either subclassing the `starlette.middleware.base.BaseHTTPMiddleware` class (see
 the starlette documentation), or by creating a class that implements the Starlite `MiddlewareProtocol`.
@@ -141,6 +140,23 @@ app = Starlite(
 ```
 
 You can use `*` to match any subdomains, as in the above.
+
+### GZIP
+
+You can enable gzip compression of responses by passing an instance of `starlite.config.GZIPConfig`:
+
+```python
+from starlite import Starlite, GZIPConfig
+
+app = Starlite(request_handlers=[...], gzip_config=GZIPConfig())
+```
+
+You can cofigure two values:
+
+- `minimum_size`: the minimum threshold for response size to enable compression. Smaller responses will not be
+  compressed. Defaults is `500`, i.e. half a kilobyte.
+- `compresslevel`: a range between 0-9, see the [official python docs](https://docs.python.org/3/library/gzip.html).
+  Defaults to `9`, which is the maximum value.
 
 ## Layering Middlewares
 
