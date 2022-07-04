@@ -164,6 +164,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "to-ph",
+      "name": "to-ph",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84818322?v=4",
+      "profile": "https://github.com/to-ph",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
