@@ -14,10 +14,17 @@ from starlite.handlers import (
     BaseRouteHandler,
     HTTPRouteHandler,
     WebsocketRouteHandler,
+    WSMessageHandler,
 )
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import (
+    ASGIRoute,
+    BaseRoute,
+    HTTPRoute,
+    WebSocketRoute,
+    WSMessageRoute,
+)
 from starlite.types import (
     AfterRequestHandler,
     AfterResponseHandler,
@@ -105,7 +112,7 @@ class Router:
     @staticmethod
     def map_route_handlers(
         value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict[HttpMethod, HTTPRouteHandler]]]:
+    ) -> ItemsView[str, Union[WebsocketRouteHandler, WSMessageHandler, ASGIRoute, Dict[HttpMethod, HTTPRouteHandler]]]:
         """
         Maps route handlers to http methods
         """
@@ -114,7 +121,7 @@ class Router:
             for path in value.paths:
                 if isinstance(value, HTTPRouteHandler):
                     handlers_map[path] = {http_method: value for http_method in value.http_methods}
-                elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
+                elif isinstance(value, (WebsocketRouteHandler, WSMessageHandler, ASGIRouteHandler)):
                     handlers_map[path] = value
         elif isinstance(value, Router):
             handlers_map = value.route_handler_method_map
@@ -167,6 +174,9 @@ class Router:
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
                 route: BaseRoute = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                self.routes.append(route)
+            elif isinstance(handler_or_method_map, WSMessageHandler):
+                route = WSMessageRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)

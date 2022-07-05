@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
 from anyio.to_thread import run_sync
-from pydantic import validate_arguments
+from pydantic import create_model, validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
@@ -14,14 +14,20 @@ from starlette.routing import get_name
 
 from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
+from starlite.dto import get_field_type
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import ASGIRouteHandler  # noqa: TC001
-from starlite.handlers import BaseRouteHandler  # noqa: TC001
-from starlite.handlers import HTTPRouteHandler  # noqa: TC001
-from starlite.handlers import WebsocketRouteHandler  # noqa: TC001
+from starlite.handlers import (
+    ASGIRouteHandler,
+    BaseRouteHandler,
+    HTTPRouteHandler,
+    WebsocketRouteHandler,
+    WSMessageHandler,
+)
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
+from starlite.response import Response
+from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
 
@@ -34,7 +40,7 @@ if TYPE_CHECKING:
 param_match_regex = re.compile(r"{(.*?)}")
 param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
 
-__all__ = ["BaseRoute", "HTTPRoute", "WebSocketRoute", "ASGIRoute"]
+__all__ = ["BaseRoute", "HTTPRoute", "WebSocketRoute", "ASGIRoute", "WSMessageRoute"]
 
 
 class BaseRoute:
@@ -331,6 +337,86 @@ class WebSocketRoute(BaseRoute):
             await fn(route_handler.owner, **parsed_kwargs)
         else:
             await fn(**parsed_kwargs)
+
+
+class WSMessageRoute(BaseRoute):
+    __slots__ = (
+        "route_handler",
+        "handler_parameter_model",
+        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
+        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+    )
+
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        *,
+        path: str,
+        route_handler: WSMessageHandler,
+    ):
+        self.route_handler = route_handler
+        self.handler_parameter_model: Optional[KwargsModel] = None
+        super().__init__(
+            path=path,
+            scope_type=ScopeType.WEBSOCKET,
+            handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
+        )
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        Holds the websocket connection and feeds parsed/validated messages into the handler.
+
+        - create WebSocket
+        - accept the connection after running guards
+        - iterate over the socket
+        - parse each message into the type of the handler's `message` kwarg
+        - invoke handler with resolved dependencies
+        """
+        assert self.handler_parameter_model, "handler parameter model not defined"
+        # `data` must be declared in the handler signature, but we manually provide the kwarg
+        # to the message handler, so we don't want kwargs model to do anything for us.
+        self.handler_parameter_model.expected_reserved_kwargs.discard("data")
+        route_handler = self.route_handler
+        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=receive, send=send)
+        if route_handler.resolve_guards():
+            await route_handler.authorize_connection(connection=web_socket)
+        # we don't want the signature model to parse `data`
+        signature_model = get_signature_model(route_handler)
+        # copy the fields so don't modify the original signature model
+        signature_model_fields = dict(signature_model.__fields__)
+        data_field = signature_model_fields.pop("data")
+        # TODO: these models can be cached
+        signature_model_no_data = create_model(  # type:ignore[call-overload]
+            "signature_model_no_data", __base__=SignatureModel, **signature_model_fields
+        )
+        data_model = create_model("data_model", data=(get_field_type(data_field), data_field))
+        handler_parameter_model = self.handler_parameter_model
+        # TODO: need to make the websocket that is passed as connection a proxy that doesn't allow
+        # TODO: the socket to be iterated upon or received from again.
+        kwargs = handler_parameter_model.to_kwargs(connection=web_socket)
+        for dependency in handler_parameter_model.expected_dependencies:
+            kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
+                dependency=dependency, connection=web_socket, **kwargs
+            )
+        # this should resolve all params and dependencies from the connection request for the handler
+        # except for the `data` kwarg.
+        # TODO: these can be cached
+        parsed_kwargs = signature_model_no_data.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
+        # TODO: cache fn? If i cache this then prob don't need to cache all the other stuff above...
+        fn = cast(AsyncAnyCallable, self.route_handler.fn)
+        if isinstance(route_handler.owner, Controller):
+            fn = partial(fn, route_handler.owner, **parsed_kwargs)
+        else:
+            fn = partial(fn, **parsed_kwargs)
+        # open the connection
+        await web_socket.accept()
+        async for raw in web_socket.iter_json():
+            # is using a pydantic model to parse the raw data overkill?
+            parsed = data_model(data=raw)
+            # pass parsed data to handler and collect handler response
+            data = await fn(data=parsed.data)  # type:ignore[attr-defined]
+            # send handler response
+            await web_socket.send_json(data.dict())
 
 
 class ASGIRoute(BaseRoute):
