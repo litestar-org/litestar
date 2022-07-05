@@ -288,6 +288,44 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
+    def _get_response_from_starlette_data(
+        self,
+        headers: dict,
+        data: Union[StarletteResponse, StarliteType],
+        media_type: Union[MediaType, str],
+        app: "Starlite",
+    ) -> StarletteResponse:
+        if isinstance(data, Redirect):
+            return RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
+        if isinstance(data, File):
+            return FileResponse(media_type=media_type, headers=headers, **data.dict())
+        if isinstance(data, Stream):
+            return StreamingResponse(
+                content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
+            )
+        if isinstance(data, Template):
+            if not app.template_engine:
+                raise ImproperlyConfiguredException("Template engine is not configured")
+            return TemplateResponse(
+                context=data.context,
+                template_name=data.name,
+                template_engine=app.template_engine,
+                status_code=self.status_code,
+                headers=headers,
+            )
+        return cast(StarletteResponse, data)
+
+    @staticmethod
+    async def _process_after_request_hook(
+        response: StarletteResponse,
+        after_request: Optional[AfterRequestHandler] = None,
+    ) -> StarletteResponse:
+        if after_request:
+            if is_async_callable(after_request):
+                return await after_request(response)  # type: ignore[no-any-return,misc,arg-type]
+            return await run_sync(after_request, response)  # type: ignore[arg-type]
+        return response
+
     async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
         """
         Given a data kwarg, determine its type and return the appropriate response
@@ -299,26 +337,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
         response: StarletteResponse
         if isinstance(data, (StarletteResponse, StarliteType)):
-            if isinstance(data, Redirect):
-                response = RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
-            elif isinstance(data, File):
-                response = FileResponse(media_type=media_type, headers=headers, **data.dict())
-            elif isinstance(data, Stream):
-                response = StreamingResponse(
-                    content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
-                )
-            elif isinstance(data, Template):
-                if not app.template_engine:
-                    raise ImproperlyConfiguredException("Template engine is not configured")
-                response = TemplateResponse(
-                    context=data.context,
-                    template_name=data.name,
-                    template_engine=app.template_engine,
-                    status_code=self.status_code,
-                    headers=headers,
-                )
-            else:
-                response = cast(StarletteResponse, data)
+            response = self._get_response_from_starlette_data(
+                headers=headers, data=data, media_type=media_type, app=app
+            )
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
@@ -334,13 +355,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 media_type=media_type,
                 background=self.background_tasks,
             )
-        # run the after_request hook handler
-        if after_request:
-            if is_async_callable(after_request):
-                response = await after_request(response)  # type: ignore
-            else:
-                response = await run_sync(after_request, response)  # type: ignore
-        return response
+        return await self._process_after_request_hook(response, after_request)
 
 
 route = HTTPRouteHandler
