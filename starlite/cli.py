@@ -1,11 +1,13 @@
 import importlib.metadata
+import os
 from enum import Enum
-from typing import List
-from pick import pick
+from pathlib import Path
+from typing import List, Optional
 
 import typer
 from cookiecutter.main import cookiecutter
 
+# Init CLI
 cli = typer.Typer(
     chain=True,
     context_settings=dict(help_option_names=["-h", "--help"]),
@@ -14,10 +16,10 @@ cli = typer.Typer(
 
 class ProjectTemplates(str, Enum):
     minimal = "https://github.com/JeromeK13/starlite-minimal-starter.git"
-    other = "someother repo"
 
 
 def version_callback(version: bool) -> None:
+    """Returns current version of starlite"""
     if version:
         print(f"Current CLI Version: {importlib.metadata.version('starlite')}")
         raise typer.Exit()
@@ -26,11 +28,18 @@ def version_callback(version: bool) -> None:
 @cli.command()
 def create(
     project_template: ProjectTemplates = typer.Option(
-        ..., "--project-template", "-p", help="Select which project structure should be generated", prompt=True
+        ProjectTemplates.minimal,
+        "--project-template",
+        "-p",
+        help="Select preset for generating the project",
+        case_sensitive=False,
+    ),
+    output_dir: Path = typer.Option(
+        os.getcwd(), "--output-dir", "-o", help="Directory where the template will be generated", prompt=True
     ),
 ):
-    pick(ProjectTemplates)
-    
+    """Generates project from cookiecutter template"""
+    cookiecutter(template=project_template.value, output_dir=output_dir)
 
 
 @cli.callback()
@@ -45,7 +54,3 @@ def main(
     )
 ) -> None:
     pass
-
-
-if __name__ == "__main__":
-    cli()

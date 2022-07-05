@@ -44,7 +44,6 @@ typing-extensions = "*"
 requests = { version = "*", optional = true }
 typer = "^0.4.2"
 cookiecutter = "^2.1.1"
-pick = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
