@@ -1,9 +1,14 @@
 <img alt="Starlite logo" src="./docs/images/SVG/starlite-banner.svg" width="100%" height="auto">
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
+
+[logo]: https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <div align="center">
+
+[![All Contributors][logo]](#contributors-)
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
