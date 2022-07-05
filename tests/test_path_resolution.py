@@ -11,7 +11,15 @@ from starlette.status import (
 )
 from typing_extensions import Type
 
-from starlite import Controller, HTTPRouteHandler, MediaType, delete, get, post
+from starlite import (
+    Controller,
+    HTTPRouteHandler,
+    ImproperlyConfiguredException,
+    MediaType,
+    delete,
+    get,
+    post,
+)
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
@@ -170,3 +178,12 @@ def test_path_order() -> None:
         second_response = client.get("/")
         assert second_response.status_code == HTTP_200_OK
         assert second_response.text == "1"
+
+
+def test_conflicting_paths() -> None:
+    @get(path=["/lmno/{a:int}/{b:int}", "/lmno/{c:int}/{d:int}"], media_type=MediaType.TEXT)
+    def handler_fn(a: int = 0, b: int = 0, c: int = 0, d: int = 0) -> None:
+        ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_test_client(handler_fn)
