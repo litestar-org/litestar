@@ -23,6 +23,8 @@
 
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
 
+</div>
+
 # Starlite
 
 Starlite is a light and flexible ASGI API framework. Using [Starlette](https://github.com/encode/starlette)
