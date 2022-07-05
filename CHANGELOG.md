@@ -247,3 +247,7 @@
 - add gzip middleware support
 - raise exception on routes with duplicate path parameters @danesolberg
 - fix dependency validation failure returning 400 (instead of 500)
+
+[1.5.2]
+
+- fix path resolution edge cases

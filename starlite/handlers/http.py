@@ -288,7 +288,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    def _get_response_from_starlette_data(
+    def _get_response_from_data(
         self,
         headers: dict,
         data: Union[StarletteResponse, StarliteType],
@@ -337,9 +337,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
         response: StarletteResponse
         if isinstance(data, (StarletteResponse, StarliteType)):
-            response = self._get_response_from_starlette_data(
-                headers=headers, data=data, media_type=media_type, app=app
-            )
+            response = self._get_response_from_data(headers=headers, data=data, media_type=media_type, app=app)
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:

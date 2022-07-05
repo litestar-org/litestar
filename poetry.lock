@@ -225,7 +225,7 @@ typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "hypothesis"
-version = "6.48.3"
+version = "6.49.1"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -374,7 +374,7 @@ i18n = ["babel (>=2.9.0)"]
 
 [[package]]
 name = "mkdocs-material"
-version = "8.3.8"
+version = "8.3.9"
 description = "Documentation that simply works"
 category = "dev"
 optional = false
@@ -1105,8 +1105,8 @@ h11 = [
     {file = "h11-0.13.0.tar.gz", hash = "sha256:70813c1135087a248a4d38cc0e1a0181ffab2188141a93eaf567940c3957ff06"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.48.3-py3-none-any.whl", hash = "sha256:5e08711eb2c746c6d47d33f7b101fe0e7aee889e767f7195dbdde5273d2b04c3"},
-    {file = "hypothesis-6.48.3.tar.gz", hash = "sha256:6992c9f13f211b8972f0bae0e28c3b403e888e37efe2e6c9679e0bc4bd5e7b68"},
+    {file = "hypothesis-6.49.1-py3-none-any.whl", hash = "sha256:a28a74e700960065f9fc972983c56f7c0821989c6c06a6fbcc42abe3a47e9986"},
+    {file = "hypothesis-6.49.1.tar.gz", hash = "sha256:0310d446fb87415e31798e8267288acc22f0be4a0530128a3a694190fcc43e5b"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
@@ -1183,8 +1183,8 @@ mkdocs = [
     {file = "mkdocs-1.3.0.tar.gz", hash = "sha256:b504405b04da38795fec9b2e5e28f6aa3a73bb0960cb6d5d27ead28952bd35ea"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-8.3.8.tar.gz", hash = "sha256:b9cd305c3c29ef758931dae06e4aea0ca9f8bcc8ac6b2d45f10f932a015d6b83"},
-    {file = "mkdocs_material-8.3.8-py2.py3-none-any.whl", hash = "sha256:949c75fa934d4b9ecc7b519964e58f0c9fc29f2ceb04736c85809cdbc403dfb5"},
+    {file = "mkdocs-material-8.3.9.tar.gz", hash = "sha256:dc82b667d2a83f0de581b46a6d0949732ab77e7638b87ea35b770b33bc02e75a"},
+    {file = "mkdocs_material-8.3.9-py2.py3-none-any.whl", hash = "sha256:263f2721f3abe533b61f7c8bed435a0462620912742c919821ac2d698b4bfe67"},
 ]
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
