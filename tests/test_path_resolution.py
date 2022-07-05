@@ -11,7 +11,15 @@ from starlette.status import (
 )
 from typing_extensions import Type
 
-from starlite import Controller, HTTPRouteHandler, MediaType, delete, get, post
+from starlite import (
+    Controller,
+    HTTPRouteHandler,
+    ImproperlyConfiguredException,
+    MediaType,
+    delete,
+    get,
+    post,
+)
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
@@ -156,3 +164,26 @@ async def test_http_route_raises_for_unsupported_method() -> None:
     with create_test_client(route_handlers=[my_get_handler, my_post_handler]) as client:
         response = client.delete("/")
         assert response.status_code == HTTP_405_METHOD_NOT_ALLOWED
+
+
+def test_path_order() -> None:
+    @get(path=["/something/{some_id:int}", "/"], media_type=MediaType.TEXT)
+    def handler_fn(some_id: int = 1) -> str:
+        return str(some_id)
+
+    with create_test_client(handler_fn) as client:
+        first_response = client.get("/something/5")
+        assert first_response.status_code == HTTP_200_OK
+        assert first_response.text == "5"
+        second_response = client.get("/")
+        assert second_response.status_code == HTTP_200_OK
+        assert second_response.text == "1"
+
+
+def test_conflicting_paths() -> None:
+    @get(path=["/lmno/{a:int}/{b:int}", "/lmno/{c:int}/{d:int}"], media_type=MediaType.TEXT)
+    def handler_fn(a: int = 0, b: int = 0, c: int = 0, d: int = 0) -> None:
+        ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_test_client(handler_fn)

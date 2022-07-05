@@ -22,6 +22,7 @@ from starlite.config import (
     TemplateConfig,
 )
 from starlite.datastructures import State
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http import HTTPRouteHandler
@@ -173,11 +174,12 @@ class Starlite(Router):
 
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
-    def construct_route_map(self) -> None:  # noqa: C901
+    def construct_route_map(self) -> None:  # noqa: C901 # pylint: disable=R0912
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
 
         """
+        seen_param_paths = set()
         if "_components" not in self.route_map:
             self.route_map["_components"] = set()
         for route in self.routes:
@@ -186,6 +188,9 @@ class Starlite(Router):
                 for param_definition in route.path_parameters:
                     path = path.replace(param_definition["full"], "")
                 path = path.replace("{}", "*")
+                if path in seen_param_paths:
+                    raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
+                seen_param_paths.add(path)
                 cur = self.route_map
                 components = ["/", *[component for component in path.split("/") if component]]
                 for component in components:
@@ -195,7 +200,8 @@ class Starlite(Router):
                         cur[component] = {"_components": set()}
                     cur = cast(Dict[str, Any], cur[component])
             else:
-                self.route_map[path] = {"_components": set()}
+                if path not in self.route_map:
+                    self.route_map[path] = {"_components": set()}
                 self.plain_routes.add(path)
                 cur = self.route_map[path]
             if "_path_parameters" not in cur:
