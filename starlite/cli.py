@@ -37,7 +37,7 @@ def create(
     output_dir: Path = typer.Option(
         os.getcwd(), "--output-dir", "-o", help="Directory where the template will be generated", prompt=True
     ),
-):
+) -> None:
     """Generates project from cookiecutter template"""
     cookiecutter(template=project_template.value, output_dir=output_dir)
 
