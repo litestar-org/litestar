@@ -30,6 +30,7 @@ from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
 
 param_match_regex = re.compile(r"{(.*?)}")
+param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
 
 __all__ = ["BaseRoute", "HTTPRoute", "WebSocketRoute", "ASGIRoute"]
 
@@ -63,21 +64,36 @@ class BaseRoute:
             self.methods.add("HEAD")
 
     @staticmethod
-    def parse_path(path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
+    def validate_path_parameters(parameters: List[str]) -> None:
+        """
+        Validates that path parameters adhere to the required format and datatypes
+
+        Raises ImproperlyConfiguredException if any parameter is found with invalid format
+        """
+        for param in parameters:
+            if len(param.split(":")) != 2:
+                raise ImproperlyConfiguredException(
+                    "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
+                )
+            param_name, param_type = (p.strip() for p in param.split(":"))
+            if len(param_name) == 0:
+                raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
+            if param_type not in param_type_map:
+                raise ImproperlyConfiguredException(
+                    "Path parameters should be declared with an allowed type, i.e. 'str', 'int', 'float' or 'uuid'"
+                )
+
+    @classmethod
+    def parse_path(cls, path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
         """
         Normalizes and parses a path
         """
         path = normalize_path(path)
         path_format = path
         path_parameters = []
-
-        param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
-
-        for param in param_match_regex.findall(path):
-            if ":" not in param:
-                raise ImproperlyConfiguredException(
-                    "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
-                )
+        identified_params = param_match_regex.findall(path)
+        cls.validate_path_parameters(identified_params)
+        for param in identified_params:
             param_name, param_type = (p.strip() for p in param.split(":"))
             path_format = path_format.replace(param, param_name)
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
