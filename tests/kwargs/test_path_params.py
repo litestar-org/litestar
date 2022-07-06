@@ -83,8 +83,22 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
             assert response.status_code == HTTP_200_OK
 
 
-def test_path_param_validation() -> None:
-    @get(path="/{param}")
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/{param}",
+        "/{param:foo}",
+        "/{param:int:int}",
+        "/{:int}",
+        "/{param:}",
+        "/{  :int}",
+        "/{:}",
+        "/{::}",
+        "/{}",
+    ],
+)
+def test_path_param_validation(path: str) -> None:
+    @get(path=path)
     def test_method() -> None:
         pass
 
