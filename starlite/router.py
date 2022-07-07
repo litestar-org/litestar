@@ -1,5 +1,5 @@
 from inspect import isclass
-from typing import Any, Dict, ItemsView, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
 from pydantic.fields import FieldInfo
@@ -57,7 +57,7 @@ class Router:
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
-        parameters: Optional[Dict[str, Tuple[Any, FieldInfo]]] = None,
+        parameters: Optional[Dict[str, FieldInfo]] = None,
         path: str,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,

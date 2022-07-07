@@ -66,6 +66,8 @@ class BaseRouteHandler:
             else [normalize_path(path or "/")]  # type: ignore
         )
         self.dependencies = dependencies
+        self.exception_handlers = exception_handlers
+        self.fn: Optional[AnyCallable] = None
         self.guards = guards
         self.middleware = middleware
         self.opt: Dict[str, Any] = opt or {}
@@ -75,11 +77,12 @@ class BaseRouteHandler:
         self.exception_handlers = exception_handlers
         self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_exception_handlers: Union[
             Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
+        self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.signature_model: Optional[Type[SignatureModel]] = None
 
     @property
     def dependency_name_set(self) -> Set[str]:

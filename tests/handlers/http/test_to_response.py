@@ -42,7 +42,9 @@ async def test_to_response_async_await() -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = SignatureModelFactory(test_function.fn, [], set()).model()  # type:ignore[arg-type]
+    test_function.signature_model = SignatureModelFactory(
+        test_function.fn, [], set()  # type:ignore[arg-type]
+    ).create_signature_model()
 
     response = await test_function.to_response(
         data=test_function.fn(data=person_instance), plugins=[], app=None  # type: ignore

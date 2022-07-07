@@ -1,5 +1,5 @@
 from copy import copy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast, Tuple, Any
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path

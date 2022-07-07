@@ -19,10 +19,8 @@ def test_create_parameters() -> None:
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
     parameters = create_parameters(
         route_handler=route_handler,
-        handler_fields=SignatureModelFactory(
-            fn=cast(Callable, route_handler.fn), plugins=[], provided_dependency_names=set()
-        )
-        .model()
+        handler_fields=SignatureModelFactory(fn=cast(Callable, route_handler.fn), plugins=[], dependency_names=set())
+        .create_signature_model()
         .__fields__,
         path_parameters=route.path_parameters,
         generate_examples=True,

@@ -47,8 +47,8 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 
 class KwargsModel:
     """
-    This class is used to model the required kwargs for a given handler and its dependencies. This done during
-    application bootstrap, to reduce the computation required during run-time.
+    This class is used to create_signature_model the required kwargs for a given handler and its dependencies.
+    This is done once and is cached during application bootstrap, ensuring minimal runtime overhead.
     """
 
     __slots__ = (
@@ -64,17 +64,17 @@ class KwargsModel:
     def __init__(
         self,
         *,
+        expected_cookie_params: Set[ParameterDefinition],
         expected_dependencies: Set[Dependency],
         expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
-        expected_cookie_params: Set[ParameterDefinition],
         expected_header_params: Set[ParameterDefinition],
         expected_path_params: Set[ParameterDefinition],
         expected_query_params: Set[ParameterDefinition],
         expected_reserved_kwargs: Set[ReservedKwargs],
     ) -> None:
+        self.expected_cookie_params = expected_cookie_params
         self.expected_dependencies = expected_dependencies
         self.expected_form_data = expected_form_data
-        self.expected_cookie_params = expected_cookie_params
         self.expected_header_params = expected_header_params
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
@@ -99,9 +99,9 @@ class KwargsModel:
     ) -> "KwargsModel":
         """
         This function pre-determines what parameters are required for a given combination of route + route handler.
-
-        This function executes for each Route+RouteHandler during the application bootstrap process.
+        It is executed during the application bootstrap process.
         """
+
         cls.validate_raw_kwargs(
             path_parameters=path_parameters, dependencies=dependencies, model_fields=signature_model.__fields__
         )
@@ -126,6 +126,7 @@ class KwargsModel:
             extra_keys = set(model_info.extra)
             default = model_field.default if model_field.default is not Undefined else None
             is_required = model_info.extra.get("required", True)
+
             if field_name in path_parameters:
                 parameter_set = expected_path_parameters
                 field_alias = field_name
@@ -138,6 +139,7 @@ class KwargsModel:
             else:
                 parameter_set = expected_query_parameters
                 field_alias = model_info.extra.get("query") or field_name
+
             parameter_set.add(
                 ParameterDefinition(
                     field_name=field_name,
@@ -156,6 +158,7 @@ class KwargsModel:
                 RequestEncodingType.URL_ENCODED,
             ]:
                 expected_form_data = (media_type, data_model_field)
+
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
                 signature_model=get_signature_model(dependency.provide),
@@ -179,6 +182,7 @@ class KwargsModel:
                     expected_form_data=expected_form_data, dependency_kwargs_model=dependency_kwargs_model
                 )
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
+
         return KwargsModel(
             expected_form_data=expected_form_data,
             expected_dependencies=expected_dependencies,
@@ -237,9 +241,7 @@ class KwargsModel:
                     f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 )
 
-        used_reserved_kwargs = {*aliased_parameters, *path_parameters, *dependency_keys}.intersection(
-            set(RESERVED_KWARGS)
-        )
+        used_reserved_kwargs = {*aliased_parameters, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
         if used_reserved_kwargs:
             raise ImproperlyConfiguredException(
                 f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter "
@@ -310,7 +312,7 @@ class KwargsModel:
         self, dependency: Dependency, connection: Union[WebSocket, Request], **kwargs: Any
     ) -> Any:
         """
-        Recursively resolve a dependency graph
+        Recursively resolves a dependency graph
         """
         signature_model = get_signature_model(dependency.provide)
         for sub_dependency in dependency.dependencies:
