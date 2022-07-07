@@ -4,8 +4,10 @@ Middlewares are mini ASGI apps that receive the raw request object and validate 
 
 ## The Middleware Protocol
 
-!!! important Starlite allows users to use [Starlette Middleware](https://www.starlette.io/middleware/) and any 3rd
-party middlewares created for it, while offering its own middleware protocol as well.
+<!-- prettier-ignore -->
+!!! important
+    Starlite allows users to use [Starlette Middleware](https://www.starlette.io/middleware/) and any 3rd
+    party middlewares created for it, while offering its own middleware protocol as well.
 
 You can build your own middleware by either subclassing the `starlette.middleware.base.BaseHTTPMiddleware` class (see
 the starlette documentation), or by creating a class that implements the Starlite `MiddlewareProtocol`.
