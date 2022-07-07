@@ -26,6 +26,7 @@ from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:
+    from pydantic.fields import FieldInfo
     from starlette.types import Receive, Scope, Send
 
     from starlite.response import Response
@@ -107,14 +108,23 @@ class BaseRoute:
         """
         dependencies = route_handler.resolve_dependencies()
         signature_model = get_signature_model(route_handler)
+
         path_parameters = set()
         for param in self.path_parameters:
             param_name = param["name"]
             if param_name in path_parameters:
                 raise ImproperlyConfiguredException(f"Duplicate parameter '{param_name}' detected in '{self.path}'.")
             path_parameters.add(param_name)
+
+        layered_parameters: Dict[str, "FieldInfo"] = {}
+        for layer in route_handler.ownership_layers:
+            layered_parameters.update(getattr(layer, "parameters", None) or {})
+
         return KwargsModel.create_for_signature_model(
-            signature_model=signature_model, dependencies=dependencies, path_parameters=path_parameters
+            signature_model=signature_model,
+            dependencies=dependencies,
+            path_parameters=path_parameters,
+            layered_parameters=layered_parameters,
         )
 
 
@@ -202,7 +212,7 @@ class HTTPRoute(BaseRoute):
         Determines what kwargs are required for the given route handler's 'fn' and calls it
         """
         signature_model = get_signature_model(route_handler)
-        if signature_model.has_kwargs:
+        if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
             request_data = kwargs.get("data")
             if request_data:
@@ -215,9 +225,9 @@ class HTTPRoute(BaseRoute):
         else:
             parsed_kwargs = {}
         if isinstance(route_handler.owner, Controller):
-            fn = partial(cast(AnyCallable, route_handler.fn), route_handler.owner, **parsed_kwargs)
+            fn = partial(cast("AnyCallable", route_handler.fn), route_handler.owner, **parsed_kwargs)
         else:
-            fn = partial(cast(AnyCallable, route_handler.fn), **parsed_kwargs)
+            fn = partial(cast("AnyCallable", route_handler.fn), **parsed_kwargs)
         if is_async_callable(fn):
             return await fn()
         if route_handler.sync_to_thread:

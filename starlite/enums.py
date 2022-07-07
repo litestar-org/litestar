@@ -30,3 +30,10 @@ class ScopeType(str, Enum):
     HTTP = "http"
     WEBSOCKET = "websocket"
     ASGI = "asgi"
+
+
+class ParamType(str, Enum):
+    PATH = "path"
+    QUERY = "query"
+    COOKIE = "cookie"
+    HEADER = "header"

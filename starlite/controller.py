@@ -1,5 +1,5 @@
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast, Tuple, Any
+from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
@@ -51,7 +51,7 @@ class Controller:
     guards: Optional[List["Guard"]]
     middleware: Optional[List[Union["Middleware", "Type[BaseHTTPMiddleware]", "Type[MiddlewareProtocol]"]]]
     owner: "Router"
-    parameters: Optional[Dict[str, Tuple[Any, "FieldInfo"]]]
+    parameters: Optional[Dict[str, "FieldInfo"]]
     path: str
     response_class: Optional["Type[Response]"]
     response_headers: Optional[Dict[str, "ResponseHeader"]]

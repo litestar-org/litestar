@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, c
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
+from pydantic.fields import FieldInfo  # noqa: TC002
 from pydantic.typing import AnyCallable
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware

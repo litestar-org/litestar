@@ -134,7 +134,7 @@ def create_test_client(
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,
     on_startup: Optional[List["LifeCycleHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
-    parameters: Optional[Dict[str, Tuple[Any, "FieldInfo"]]] = None,
+    parameters: Optional[Dict[str, "FieldInfo"]] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",

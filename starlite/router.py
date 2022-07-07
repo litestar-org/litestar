@@ -2,7 +2,7 @@ from inspect import isclass
 from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
+from pydantic.fields import FieldInfo  # noqa: TC002
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
