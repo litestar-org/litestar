@@ -98,25 +98,25 @@ class BaseRouteHandler:
 
     def ownership_layers(self) -> Generator[Union["BaseRouteHandler", "Controller", "Router"], None, None]:
         """
-        Returns all the handler and then all owners up to the app level
+        Returns the handler layers from the app down to the route handler
 
-        handler -> ... -> App
+        app -> ... -> route handler
         """
+        layers = []
+
         cur: Any = self
         while cur:
-            value = cur
+            layers.append(cur)
             cur = cur.owner
-            yield value
+
+        yield from reversed(layers)
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
         if self.resolved_guards is BaseRouteHandler.empty:
-            resolved_guards: List[Guard] = []
+            self.resolved_guards = []
             for layer in self.ownership_layers():
-                if layer.guards:
-                    resolved_guards.extend(layer.guards)
-            # we reverse the list to ensure that the highest level guards are called first
-            self.resolved_guards = list(reversed(resolved_guards))
+                self.resolved_guards.extend(layer.guards or [])
         return cast(List[Guard], self.resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
@@ -126,13 +126,11 @@ class BaseRouteHandler:
         if not self.signature_model:
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is BaseRouteHandler.empty:
-            dependencies: Dict[str, Provide] = {}
+            self.resolved_dependencies = {}
             for layer in self.ownership_layers():
                 for key, value in (layer.dependencies or {}).items():
-                    if key not in dependencies:
-                        self.validate_dependency_is_unique(dependencies=dependencies, key=key, provider=value)
-                        dependencies[key] = value
-            self.resolved_dependencies = dependencies
+                    self.validate_dependency_is_unique(dependencies=self.resolved_dependencies, key=key, provider=value)
+                    self.resolved_dependencies[key] = value
         return cast(Dict[str, Provide], self.resolved_dependencies)
 
     def resolve_middleware(self) -> List[Middleware]:
@@ -142,11 +140,10 @@ class BaseRouteHandler:
         The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
         """
         if self.resolved_middleware is BaseRouteHandler.empty:
-            resolved_middleware = []
+            self.resolved_middleware = []
             for layer in self.ownership_layers():
-                if layer.middleware:
-                    resolved_middleware.extend(list(reversed(layer.middleware)))
-            self.resolved_middleware = resolved_middleware
+                self.resolved_middleware.extend(layer.middleware or [])
+            self.resolved_middleware = list(reversed(self.resolved_middleware))
         return cast(List[Middleware], self.resolved_middleware)
 
     def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
@@ -156,10 +153,12 @@ class BaseRouteHandler:
         This method is memoized so the computation occurs only once.
         """
         if self.resolved_exception_handlers is BaseRouteHandler.empty:
-            exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
-            for layer in reversed(list(self.ownership_layers())):
-                exception_handlers = {**exception_handlers, **(layer.exception_handlers or {})}
-            self.resolved_exception_handlers = exception_handlers
+            self.resolved_exception_handlers = {}
+            for layer in self.ownership_layers():
+                self.resolved_exception_handlers = {
+                    **self.resolved_exception_handlers,
+                    **(layer.exception_handlers or {}),
+                }
         return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
     @staticmethod

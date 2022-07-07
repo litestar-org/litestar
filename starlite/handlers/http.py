@@ -166,7 +166,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_after_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+            Optional[AfterRequestHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_before_request: Union[
             Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
@@ -201,7 +201,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             for layer in self.ownership_layers():
                 if layer.response_class is not None:
                     self.resolved_response_class = layer.response_class
-                    break
         return cast(Type[Response], self.resolved_response_class)
 
     def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
@@ -211,10 +210,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once.
         """
         if self.resolved_headers is BaseRouteHandler.empty:
-            headers: Dict[str, ResponseHeader] = {}
-            for layer in reversed(list(self.ownership_layers())):
-                headers = {**headers, **(layer.response_headers or {})}
-            self.resolved_headers = headers
+            self.resolved_headers = {}
+            for layer in self.ownership_layers():
+                self.resolved_headers = {**self.resolved_headers, **(layer.response_headers or {})}
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
     def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
@@ -225,13 +223,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_before_request is BaseRouteHandler.empty:
+            self.resolved_before_request = None
             for layer in self.ownership_layers():
                 if layer.before_request:
                     self.resolved_before_request = layer.before_request
-                    break
-            if self.resolved_before_request is BaseRouteHandler.empty:
-                self.resolved_before_request = None
-            elif ismethod(self.resolved_before_request):
+            if self.resolved_before_request is not None and ismethod(self.resolved_before_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
@@ -244,13 +240,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_after_request is BaseRouteHandler.empty:
+            self.resolved_after_request = None
             for layer in self.ownership_layers():
                 if layer.after_request:
-                    self.resolved_after_request = layer.after_request  # type: ignore
-                    break
-            if self.resolved_after_request is BaseRouteHandler.empty:
-                self.resolved_after_request = None
-            elif ismethod(self.resolved_after_request):
+                    self.resolved_after_request = layer.after_request
+            if self.resolved_after_request is not None and ismethod(self.resolved_after_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
