@@ -1,7 +1,8 @@
 from inspect import isclass
-from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
+from typing import Any, Dict, ItemsView, List, Optional, Tuple, Type, Union, cast
 
 from pydantic import validate_arguments
+from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -34,15 +35,16 @@ class Router:
         "after_request",
         "before_request",
         "dependencies",
+        "exception_handlers",
         "guards",
+        "middleware",
         "owner",
+        "parameters",
         "path",
-        "tags",
         "response_class",
         "response_headers",
         "routes",
-        "exception_handlers",
-        "middleware",
+        "tags",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -55,24 +57,27 @@ class Router:
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
+        parameters: Optional[Dict[str, Tuple[Any, FieldInfo]]] = None,
         path: str,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):
-        self.owner: Optional["Router"] = None
-        self.routes: List[BaseRoute] = []
-        self.path = normalize_path(path)
-        self.tags = tags
-        self.response_class = response_class
-        self.dependencies = dependencies
-        self.response_headers = response_headers
-        self.guards = guards
-        self.before_request = before_request
         self.after_request = after_request
+        self.before_request = before_request
+        self.dependencies = dependencies
         self.exception_handlers = exception_handlers
+        self.guards = guards
         self.middleware = middleware
+        self.owner: Optional["Router"] = None
+        self.parameters = parameters
+        self.path = normalize_path(path)
+        self.response_class = response_class
+        self.response_headers = response_headers
+        self.routes: List[BaseRoute] = []
+        self.tags = tags
+
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 

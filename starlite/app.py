@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, c
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from pydantic import validate_arguments
+from pydantic.fields import FieldInfo
 from pydantic.typing import AnyCallable
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -89,6 +90,7 @@ class Starlite(Router):
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
+        parameters: Optional[Dict[str, Tuple[Any, FieldInfo]]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         response_class: Optional[Type[Response]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
@@ -109,16 +111,17 @@ class Starlite(Router):
         self.static_paths = set()
 
         super().__init__(
+            after_request=after_request,
+            before_request=before_request,
             dependencies=dependencies,
+            exception_handlers=exception_handlers,
             guards=guards,
+            middleware=middleware,
+            parameters=parameters,
             path="",
             response_class=response_class,
             response_headers=response_headers,
             route_handlers=route_handlers,
-            before_request=before_request,
-            after_request=after_request,
-            middleware=middleware,
-            exception_handlers=exception_handlers,
         )
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
