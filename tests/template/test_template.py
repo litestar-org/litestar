@@ -1,4 +1,5 @@
 import pathlib
+from typing import Optional
 
 from starlite import Starlite, Template, TemplateConfig, get
 from starlite.template.jinja import JinjaTemplateEngine
@@ -17,7 +18,7 @@ def test_handler_raise_for_no_template_engine() -> None:
 
 
 def test_engine_passed_to_callback(template_dir: pathlib.Path) -> None:
-    received_engine: JinjaTemplateEngine | None = None
+    received_engine: Optional[JinjaTemplateEngine] = None
 
     def callback(engine: JinjaTemplateEngine) -> JinjaTemplateEngine:
         nonlocal received_engine

@@ -254,5 +254,5 @@
 
 [1.5.3]
 
-- Improve path param validation during registration  @danesolberg
+- Improve path param validation during registration @danesolberg
 - Fix route handler exception resolution
