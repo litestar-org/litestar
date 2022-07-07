@@ -117,9 +117,9 @@ class Starlite(Router):
             before_request=before_request,
             after_request=after_request,
             middleware=middleware,
+            exception_handlers=exception_handlers,
         )
 
-        self.exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = exception_handlers or {}
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.asgi_handler = self.create_asgi_handler()
         self.openapi_schema: Optional[OpenAPI] = None
@@ -148,10 +148,7 @@ class Starlite(Router):
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
-        return self.wrap_in_exception_handler(
-            asgi_handler,
-            exception_handlers=self.exception_handlers,
-        )
+        return self.wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """

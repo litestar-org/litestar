@@ -4,7 +4,8 @@ from typing import Any
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HTTPException, Request
+from starlite import HTTPException, Request, Response, Starlite, get
+from starlite.enums import MediaType
 from starlite.middleware import ExceptionHandlerMiddleware
 
 
@@ -87,3 +88,15 @@ def test_default_handle_python_http_exception_handling() -> None:
     assert json.loads(response.body) == {
         "detail": repr(AttributeError("oops")),
     }
+
+
+def test_exception_handler_middleware_exception_handlers_mapping() -> None:
+    @get("/")
+    def handler() -> None:
+        ...
+
+    def exception_handler(request: Request, exc: Exception) -> Response:
+        return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR, media_type=MediaType.JSON)
+
+    app = Starlite(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
+    assert app.route_map["/"]["_asgi_handlers"]["GET"].exception_handlers == {Exception: exception_handler}
