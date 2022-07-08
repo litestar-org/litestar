@@ -16,16 +16,14 @@ from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers import ASGIRouteHandler  # noqa: TC001
+from starlite.handlers import BaseRouteHandler  # noqa: TC001
+from starlite.handlers import HTTPRouteHandler  # noqa: TC001
+from starlite.handlers import WebsocketRouteHandler  # noqa: TC001
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
-from starlite.handlers import (
-    ASGIRouteHandler,
-    BaseRouteHandler,
-    HTTPRouteHandler,
-    WebsocketRouteHandler,
-)
 
 if TYPE_CHECKING:
     from starlette.types import Receive, Scope, Send
@@ -103,7 +101,7 @@ class BaseRoute:
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
 
-    def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
+    def create_handler_kwargs_model(self, route_handler: BaseRouteHandler) -> KwargsModel:
         """
         Method to create a KwargsModel for a given route handler
         """
@@ -133,10 +131,10 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: List["HTTPRouteHandler"],
+        route_handlers: List[HTTPRouteHandler],
     ):
         self.route_handlers = route_handlers
-        self.route_handler_map: Dict[Method, Tuple["HTTPRouteHandler", KwargsModel]] = {}
+        self.route_handler_map: Dict[Method, Tuple[HTTPRouteHandler, KwargsModel]] = {}
         super().__init__(
             methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
             path=path,
@@ -171,7 +169,7 @@ class HTTPRoute(BaseRoute):
         await response(scope, receive, send)
 
     async def call_handler(
-        self, scope: "Scope", request: Request, parameter_model: KwargsModel, route_handler: "HTTPRouteHandler"
+        self, scope: "Scope", request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
     ) -> Union["Response", StarletteResponse]:
         """
         Calls the before request handlers, retrieves any data required for the route handler,
@@ -199,9 +197,7 @@ class HTTPRoute(BaseRoute):
         )
 
     @staticmethod
-    async def get_response_data(
-        route_handler: "HTTPRouteHandler", parameter_model: KwargsModel, request: Request
-    ) -> Any:
+    async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:
         """
         Determines what kwargs are required for the given route handler's 'fn' and calls it
         """
@@ -242,7 +238,7 @@ class HTTPRoute(BaseRoute):
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
     @staticmethod
-    async def get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional[StarletteResponse]:
+    async def get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> Optional[StarletteResponse]:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
@@ -261,7 +257,7 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def set_cached_response(
-        response: Union["Response", StarletteResponse], request: Request, route_handler: "HTTPRouteHandler"
+        response: Union["Response", StarletteResponse], request: Request, route_handler: HTTPRouteHandler
     ) -> None:
         """
         Pickles and caches a response object
@@ -292,7 +288,7 @@ class WebSocketRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: "WebsocketRouteHandler",
+        route_handler: WebsocketRouteHandler,
     ):
         self.route_handler = route_handler
         self.handler_parameter_model: Optional[KwargsModel] = None
@@ -338,7 +334,7 @@ class ASGIRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: "ASGIRouteHandler",
+        route_handler: ASGIRouteHandler,
     ):
         self.route_handler = route_handler
         super().__init__(
