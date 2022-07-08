@@ -1,9 +1,11 @@
-import pathlib
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from starlite import Starlite, Template, TemplateConfig, get
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 def test_handler_raise_for_no_template_engine() -> None:
@@ -17,7 +19,7 @@ def test_handler_raise_for_no_template_engine() -> None:
         assert response.json() == {"detail": "Template engine is not configured", "extra": None, "status_code": 500}
 
 
-def test_engine_passed_to_callback(template_dir: pathlib.Path) -> None:
+def test_engine_passed_to_callback(template_dir: "pathlib.Path") -> None:
     received_engine: Optional[JinjaTemplateEngine] = None
 
     def callback(engine: JinjaTemplateEngine) -> JinjaTemplateEngine:
