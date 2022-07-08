@@ -2,12 +2,11 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from inspect import isclass
 from ipaddress import IPv4Network, IPv6Network
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Json, conint, constr, create_model
 from pydantic_factories import ModelFactory
-from typing_extensions import Type
 
 from starlite.exceptions import (
     ImproperlyConfiguredException,
@@ -32,11 +31,14 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise MissingDependencyException("sqlalchemy is not installed") from exc
 
+if TYPE_CHECKING:
+    from typing_extensions import Type
+
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def __init__(self) -> None:
         # a map object that maps SQLAlchemy entity qualnames to pydantic BaseModel subclasses
-        self.model_namespace_map: Dict[str, Type[BaseModel]] = {}
+        self.model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -46,7 +48,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
 
     @staticmethod
-    def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> Type:
+    def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
         """
         Handles the SQLAlchemy String types, including Blob and Binaric types
         """
@@ -55,7 +57,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return str
 
     @staticmethod
-    def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> Type:
+    def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> "Type":
         """
         Handles the SQLAlchemy non-int Numeric types
         """
@@ -90,7 +92,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return column_type.enum_class
 
     @property
-    def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
+    def providers_map(self) -> Dict["Type[TypeEngine]", Callable[[Union[TypeEngine, "Type[TypeEngine]"]], Any]]:
         """
         A map of SQLAlchemy column types to provider functions.
 
@@ -264,7 +266,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             )
         return inspect(model_class)
 
-    def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> Type[BaseModel]:
+    def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> "Type[BaseModel]":
         """
         Generates a pydantic model for a given SQLAlchemy declarative table and any nested relations.
         """
@@ -307,7 +309,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return model
 
     def from_pydantic_model_instance(
-        self, model_class: Type[DeclarativeMeta], pydantic_model_instance: BaseModel
+        self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
         """
         Create an instance of a given model_class using the values stored in the given pydantic_model_instance
@@ -327,7 +329,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             kwargs[field] = getattr(model_instance, field)
         return pydantic_model(**kwargs).dict()
 
-    def from_dict(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> DeclarativeMeta:
+    def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
         """
         Given a dictionary of kwargs, return an instance of the given model_class
         """
