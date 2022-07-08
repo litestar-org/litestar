@@ -6,7 +6,7 @@ from .app import Starlite
 from .config import (
     CacheConfig,
     CORSConfig,
-    GZIPConfig,
+    CompressionConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -71,7 +71,7 @@ __all__ = [
     "DTOFactory",
     "Dependency",
     "File",
-    "GZIPConfig",
+    "CompressionConfig",
     "HTTPException",
     "HTTPRoute",
     "HTTPRouteHandler",
@@ -135,7 +135,7 @@ def __getattr__(name: str) -> Any:
     import warnings
 
     warnings.warn(
-        f"Importing {name} from {__package__} is deprecated, use `from startlite.testing import {name}` instead",
+        f"Importing {name} from {__package__} is deprecated, use `from starlite.testing import {name}` instead",
         DeprecationWarning,
         stacklevel=2,
     )

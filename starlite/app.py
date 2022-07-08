@@ -6,7 +6,6 @@ from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -15,8 +14,8 @@ from typing_extensions import Type
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
     CacheConfig,
+    CompressionConfig,
     CORSConfig,
-    GZIPConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -27,7 +26,7 @@ from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.handlers.websocket import WebsocketRouteHandler
-from starlite.middleware import ExceptionHandlerMiddleware
+from starlite.middleware import CompressionMiddleware, ExceptionHandlerMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -60,7 +59,7 @@ class Starlite(Router):
         "cache_config",
         "cors_config",
         "debug",
-        "gzip_config",
+        "compression_config",
         "openapi_schema",
         "plain_routes",
         "plugins",
@@ -83,7 +82,7 @@ class Starlite(Router):
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
-        gzip_config: Optional[GZIPConfig] = None,
+        compression_config: Optional[CompressionConfig] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
@@ -99,7 +98,7 @@ class Starlite(Router):
         self.cache_config = cache_config
         self.cors_config = cors_config
         self.debug = debug
-        self.gzip_config = gzip_config
+        self.compression_config = compression_config
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: Dict[str, Any] = {}
@@ -139,11 +138,11 @@ class Starlite(Router):
         """
         Creates an ASGIApp that wraps the ASGI router inside an exception handler.
 
-        If CORS or TruseedHost configs are provided to the constructor, they will wrap the router as well.
+        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
         asgi_handler: ASGIApp = self.asgi_router
-        if self.gzip_config:
-            asgi_handler = GZipMiddleware(app=asgi_handler, **self.gzip_config.dict())
+        if self.compression_config:
+            asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
         if self.cors_config:

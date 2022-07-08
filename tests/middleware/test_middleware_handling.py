@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
@@ -23,7 +22,6 @@ from starlite import (
     get,
     post,
 )
-from starlite.config import GZIPConfig
 from starlite.testing import create_test_client
 
 logger = logging.getLogger(__name__)
@@ -130,22 +128,6 @@ def test_trusted_hosts_middleware() -> None:
     trusted_hosts_middleware = unpacked_middleware[1]
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
-
-
-def test_gzip_middleware() -> None:
-    client = create_test_client(route_handlers=[handler], gzip_config=GZIPConfig())
-    unpacked_middleware = []
-    cur = client.app.asgi_handler
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast(ASGIApp, cur.app)  # type: ignore
-    else:
-        unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 4
-    gzip_middleware = unpacked_middleware[1]
-    assert isinstance(gzip_middleware, GZipMiddleware)
-    assert gzip_middleware.minimum_size == 500
-    assert gzip_middleware.compresslevel == 9
 
 
 def test_request_body_logging_middleware(caplog: LogCaptureFixture) -> None:

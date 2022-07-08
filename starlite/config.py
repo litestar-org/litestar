@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
@@ -33,9 +34,49 @@ class CORSConfig(BaseModel):
     max_age: int = 600
 
 
-class GZIPConfig(BaseModel):
+class CompressionBackend(str, Enum):
+    """CompressionBackend is an enum that defines the available compression backends."""
+
+    GZIP = "gzip"
+    BROTLI = "brotli"
+
+
+class BrotliMode(str, Enum):
+    """BrotliMode is an enum that defines the available brotli compression optimization modes."""
+
+    GENERIC = "generic"
+    TEXT = "text"
+    FONT = "font"
+
+
+class CompressionConfig(BaseModel):
+    """Class containing the configuration for request compression."""
+
+    backend: CompressionBackend
     minimum_size: int = 500
-    compresslevel: int = 9
+    gzip_compress_level: int = 9
+    brotli_quality: int = 5
+    brotli_mode: BrotliMode = BrotliMode.TEXT
+    brotli_lgwin: int = 22
+    brotli_lgblock: int = 0
+    brotli_gzip_fallback: bool = True
+
+    def dict(self) -> Dict[str, Any]:
+        """Returns a dictionary representation of the CompressionConfig.
+
+        Returns:
+            Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
+        """
+        default_keys = set({"backend"})
+        brotli_keys = set({"brotli_quality", "brotli_mode", "brotli_lgwin", "brotli_lgblock", "brotli_gzip_fallback"})
+        gzip_keys = set({"gzip_compress_level"})
+        if self.backend == CompressionBackend.GZIP:
+            excluded_keys = default_keys.union(brotli_keys)
+        elif self.backend == CompressionBackend.BROTLI:
+            excluded_keys = default_keys.union(gzip_keys)
+        else:
+            excluded_keys = default_keys.union(brotli_keys).union(gzip_keys)
+        return super().dict(exclude=excluded_keys)
 
 
 class OpenAPIConfig(BaseModel):

@@ -143,24 +143,51 @@ app = Starlite(
 
 You can use `*` to match any subdomains, as in the above.
 
-### GZIP
+### Compression
+
+HTML responses can optionally be compressed.  Starlite has built in support for gzip and brotli.  Gzip support is provided through the built in Starlette classes, and brotli support can be added by installing the `brotli` extras.
+
+You can enable either backend by passing an instance of `starlite.config.CompressionConfig` into the `compression_config` application parameter.
+
+#### GZIP
 
 You can enable gzip compression of responses by passing an instance of `starlite.config.GZIPConfig`:
 
 ```python
-from starlite import Starlite, GZIPConfig
+from starlite import Starlite, CompressionConfig
 
-app = Starlite(request_handlers=[...], gzip_config=GZIPConfig())
+app = Starlite(request_handlers=[...], compression_config=CompressionConfig((backend='gzip'))
 ```
 
-You can cofigure two values:
+You can configure two values:
 
 - `minimum_size`: the minimum threshold for response size to enable compression. Smaller responses will not be
   compressed. Defaults is `500`, i.e. half a kilobyte.
-- `compresslevel`: a range between 0-9, see the [official python docs](https://docs.python.org/3/library/gzip.html).
+- `gzip_compress_level`: a range between 0-9, see the [official python docs](https://docs.python.org/3/library/gzip.html).
   Defaults to `9`, which is the maximum value.
 
-## Layering Middlewares
+#### Brotli
+
+The Brotli package is required to run this middleware.  It is available as an extras to starlite with the `brotli` group.  (`pip install starlite[brotli]`)
+
+You can enable brotli compression of responses by passing an instance of `starlite.config.BrotliConfig`:
+
+```python
+from starlite import Starlite
+from starlite.config import CompressionConfig
+
+app = Starlite(request_handlers=[...], compression_config=CompressionConfig((backend='brotli'))
+```
+
+You can configure two values:
+
+- `brotli_quality`: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Defaults is `500`, i.e. half a kilobyte.
+- `brotli_mode`: The compression mode can be MODE_GENERIC (default), MODE_TEXT (for UTF-8 format text input) or MODE_FONT (for WOFF 2.0).
+- `brotli_lgwin`: Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.
+- `brotli_lgblock`: Base 2 logarithm of the maximum input block size.  Range is 16 to 24. If set to 0, the value will be set based on the  quality. Defaults to 0.
+- `brotli_gzip_fallback`: a boolean to indicate if gzip should be use if brotli is not supported.
+
+## Layering Middleware
 
 Starlite following its layered architecture also in middleware - allowing users to define middleware on all layers of
 the application - the Starlite instance, routers, controllers and individual route handlers. For example:
@@ -225,7 +252,7 @@ app = Starlite(
 
 ## Middlewares and Exceptions
 
-When an exception is raised by a route handler or depdenecy and is then transformed into a response by
+When an exception is raised by a route handler or dependency and is then transformed into a response by
 an [exception handler](17-exceptions#exception-handling), middlewares are still applied to it. The one limitation on
 this though are the two exceptions that can be raised by the ASGI router - `404 Not Found` and `405 Method Not Allowed`.
 These exceptions are raised before them middleware stack is called, and are only handled by exceptions handlers defined
