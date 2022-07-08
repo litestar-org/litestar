@@ -1,16 +1,18 @@
 from contextlib import suppress
 from functools import reduce
-from typing import Any, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from starlette.datastructures import FormData, UploadFile
-from starlette.requests import HTTPConnection
 from typing_extensions import Type
 
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ValidationException
+
+if TYPE_CHECKING:
+    from starlette.requests import HTTPConnection
 
 _true_values = {"True", "true"}
 _false_values = {"False", "false"}
@@ -39,7 +41,7 @@ def _query_param_reducer(
     return acc
 
 
-def parse_query_params(connection: HTTPConnection) -> Dict[str, Any]:
+def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
     """
     Parses and normalize a given connection's query parameters into a regular dictionary
     """
