@@ -1,25 +1,25 @@
 from copy import copy
 from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 
-from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from typing_extensions import Type
-
 from starlite.handlers import BaseRouteHandler
-from starlite.response import Response
-from starlite.types import (
-    AfterRequestHandler,
-    BeforeRequestHandler,
-    ExceptionHandler,
-    Guard,
-    MiddlewareProtocol,
-    ResponseHeader,
-)
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
+    from starlette.middleware import Middleware
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from typing_extensions import Type
+
     from starlite.provide import Provide
+    from starlite.response import Response
     from starlite.router import Router
+    from starlite.types import (
+        AfterRequestHandler,
+        BeforeRequestHandler,
+        ExceptionHandler,
+        Guard,
+        MiddlewareProtocol,
+        ResponseHeader,
+    )
 
 
 class Controller:
@@ -41,16 +41,16 @@ class Controller:
         "tags",
     )
 
-    after_request: Optional[AfterRequestHandler]
-    before_request: Optional[BeforeRequestHandler]
+    after_request: Optional["AfterRequestHandler"]
+    before_request: Optional["BeforeRequestHandler"]
     dependencies: Optional[Dict[str, "Provide"]]
-    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]]
-    guards: Optional[List[Guard]]
-    middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]]
+    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]
+    guards: Optional[List["Guard"]]
+    middleware: Optional[List[Union["Middleware", "Type[BaseHTTPMiddleware]", "Type[MiddlewareProtocol]"]]]
     owner: "Router"
     path: str
-    response_class: Optional[Type[Response]]
-    response_headers: Optional[Dict[str, ResponseHeader]]
+    response_class: Optional["Type[Response]"]
+    response_headers: Optional[Dict[str, "ResponseHeader"]]
     tags: Optional[List[str]]
 
     def __init__(self, owner: "Router"):
