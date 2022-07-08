@@ -2,15 +2,15 @@ from typing import List, Union
 
 from pydantic import DirectoryPath
 
-from starlite.exceptions import MissingDependencyException, TemplateNotFound
+from starlite.exceptions import TemplateNotFound
+from starlite.extras import MAKO
 from starlite.template.base import TemplateEngineProtocol
 
-try:
+with MAKO:
+    # pylint: disable=import-error
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
     from mako.lookup import TemplateLookup
     from mako.template import Template as MakoTemplate
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("mako is not installed") from exc
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):

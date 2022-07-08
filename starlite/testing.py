@@ -20,6 +20,7 @@ from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
+from starlite.extras import TESTING
 from starlite.handlers import BaseRouteHandler
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -33,14 +34,9 @@ from starlite.types import (
     Middleware,
 )
 
-try:
+with TESTING:
     from requests.models import RequestEncodingMixin
-except ImportError:  # pragma: no cover
-    from starlite.exceptions import MissingDependencyException
 
-    raise MissingDependencyException(
-        "To use starlite.testing, intall starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    )
 __all__ = [
     "TestClient",
     "create_test_client",

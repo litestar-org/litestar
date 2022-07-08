@@ -1,6 +1,5 @@
 from typing import Any, Dict, Optional, Union, cast
 
-import yaml
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
@@ -10,6 +9,7 @@ from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.extras import YAML
 from starlite.template import TemplateEngineProtocol
 
 
@@ -52,6 +52,10 @@ class Response(StarletteResponse):
             if isinstance(content, OpenAPI):
                 content_dict = content.dict(by_alias=True, exclude_none=True)
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+                    # FIXME: this should be handled better
+                    #  404 or perhaps 503 with nice message should be returned?
+                    with YAML:
+                        import yaml  # pylint: disable=import-outside-toplevel
                     encoded = yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
                     return cast(bytes, encoded)
                 return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)

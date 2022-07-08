@@ -25,7 +25,29 @@ class StarLiteException(Exception):
 
 
 class MissingDependencyException(StarLiteException, ImportError):
-    pass
+    def __init__(self, feature: str, extras: tuple[str, ...]) -> None:
+        self.feature = feature
+        self.extras = extras
+
+        if len(extras) > 1:
+            _extras_repr = ", ".join(map(repr, extras[:-1])) + " or " + repr(extras[-1])
+        elif extras:
+            _extras_repr = repr(extras[0])
+        else:
+            raise RuntimeError(f"`extras` argument of {self.__class__.__name__} cannot be empty.")
+
+        detail = (
+            f"To use {feature}, install starlite with {_extras_repr} extra:\n"
+            f"e.g. `pip install starlite[{extras[0]}]`\n"
+            f"or `poetry add starlite --extras {extras[0]}`"
+        )
+        super().__init__(detail)
+
+        # this and custom Exception.__repr__ below is a workaround
+        # for https://github.com/starlite-api/starlite/issues/188
+        Exception.__init__(self, detail)
+
+    __repr__ = Exception.__repr__
 
 
 class HTTPException(StarLiteException, StarletteHTTPException):

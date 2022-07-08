@@ -6,16 +6,16 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Json, conint, constr, create_model
-from pydantic_factories import ModelFactory
 from typing_extensions import Type
 
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MissingDependencyException,
-)
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.extras import PYDANTIC_FACTORIES, SQLALCHEMY
 from starlite.plugins.base import PluginProtocol
 
-try:
+with PYDANTIC_FACTORIES:
+    from pydantic_factories import ModelFactory
+
+with SQLALCHEMY:
     from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type
     from sqlalchemy.dialects import (
@@ -29,8 +29,6 @@ try:
     )
     from sqlalchemy.orm import DeclarativeMeta, Mapper
     from sqlalchemy.sql.type_api import TypeEngine
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("sqlalchemy is not installed") from exc
 
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):

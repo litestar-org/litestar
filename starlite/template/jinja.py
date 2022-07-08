@@ -2,15 +2,15 @@ from typing import List, Union
 
 from pydantic import DirectoryPath
 
-from starlite.exceptions import MissingDependencyException, TemplateNotFound
+from starlite.exceptions import TemplateNotFound
+from starlite.extras import JINJA
 from starlite.template.base import TemplateEngineProtocol
 
-try:
+with JINJA:
+    # pylint: disable=import-error
     from jinja2 import Environment, FileSystemLoader
     from jinja2 import Template as JinjaTemplate
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("jinja2 is not installed") from exc
 
 
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
