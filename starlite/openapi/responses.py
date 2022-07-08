@@ -1,13 +1,12 @@
 from http import HTTPStatus
 from inspect import Signature
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.header import Header
 from openapi_schema_pydantic.v3.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
 )
 from openapi_schema_pydantic.v3.v3_1_0.response import Response
-from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
@@ -15,15 +14,19 @@ from starlette.routing import get_name
 from starlite.datastructures import File, Redirect, Stream, Template
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
-from starlite.handlers import HTTPRouteHandler
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.utils.model import create_parsed_model_field
 
+if TYPE_CHECKING:
+    from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
+
+    from starlite.handlers import HTTPRouteHandler
+
 
 def create_success_response(
-    route_handler: HTTPRouteHandler,
+    route_handler: "HTTPRouteHandler",
     generate_examples: bool,
 ) -> Response:
     """
@@ -149,14 +152,14 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 
 
 def create_responses(
-    route_handler: HTTPRouteHandler,
+    route_handler: "HTTPRouteHandler",
     raises_validation_error: bool,
     generate_examples: bool,
-) -> Optional[Responses]:
+) -> Optional["Responses"]:
     """
     Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None
     """
-    responses: Responses = {
+    responses: "Responses" = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
             generate_examples=generate_examples,
