@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
 
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
@@ -24,9 +24,7 @@ from starlite.config import (
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
-from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.handlers.websocket import WebsocketRouteHandler
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
@@ -47,6 +45,10 @@ from starlite.types import (
 )
 from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
+
+if TYPE_CHECKING:
+    from starlite.handlers.base import BaseRouteHandler
+    from starlite.handlers.websocket import WebsocketRouteHandler
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 DEFAULT_CACHE_CONFIG = CacheConfig()
@@ -224,7 +226,7 @@ class Starlite(Router):
     def build_route_middleware_stack(
         self,
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler],
+        route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", ASGIRouteHandler],
     ) -> ASGIApp:
         """Constructs a middleware stack that serves as the point of entry for each route"""
 
@@ -270,7 +272,7 @@ class Starlite(Router):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
         self.construct_route_map()
 
-    def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
+    def create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
         """
         Creates function signature models for all route handler functions and provider dependencies
         """
