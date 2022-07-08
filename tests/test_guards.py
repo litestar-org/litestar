@@ -1,5 +1,6 @@
+from typing import TYPE_CHECKING
+
 import pytest
-from starlette.requests import HTTPConnection
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 from starlette.types import Receive, Scope, Send
 from starlette.websockets import WebSocketDisconnect
@@ -17,8 +18,11 @@ from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException
 from starlite.testing import create_test_client
 
+if TYPE_CHECKING:
+    from starlette.requests import HTTPConnection
 
-async def local_guard(_: HTTPConnection, route_handler: BaseRouteHandler) -> None:
+
+async def local_guard(_: "HTTPConnection", route_handler: BaseRouteHandler) -> None:
     if not route_handler.opt or not route_handler.opt.get("allow_all"):
         raise PermissionDeniedException("local")
 
