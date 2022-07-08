@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Union
 
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.requests import HTTPConnection
-from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
-from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import Type
 
 from starlite.connection import Request
 from starlite.enums import MediaType, ScopeType
@@ -20,6 +17,11 @@ from starlite.exceptions import (
 from starlite.response import Response
 from starlite.types import ExceptionHandler, MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
+
+if TYPE_CHECKING:
+    from starlette.responses import Response as StarletteResponse
+    from starlette.types import ASGIApp, Receive, Scope, Send
+    from typing_extensions import Type
 
 
 class AuthenticationResult(BaseModel):
@@ -33,11 +35,11 @@ class AuthenticationResult(BaseModel):
 class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: "ASGIApp"):
         super().__init__(app)
         self.app = app
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         try:
             if scope["type"] in self.scopes:
                 auth_result = await self.authenticate_request(HTTPConnection(scope))
@@ -76,13 +78,13 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):
     def __init__(
-        self, app: ASGIApp, debug: bool, exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
+        self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], ExceptionHandler]
     ):
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:  # pragma: no cover
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
         """
         Wraps self.app inside a try catch block and handles any exceptions raised
         """
@@ -104,7 +106,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
                 reason = repr(exc)
                 await send({"type": "websocket.close", "code": status_code, "reason": reason})
 
-    def default_http_exception_handler(self, request: Request, exc: Exception) -> StarletteResponse:
+    def default_http_exception_handler(self, request: Request, exc: Exception) -> "StarletteResponse":
         """Default handler for exceptions subclassed from HTTPException"""
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
