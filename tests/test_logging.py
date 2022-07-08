@@ -1,11 +1,13 @@
 import logging
+from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
-
-from _pytest.logging import LogCaptureFixture
 
 from starlite import Starlite
 from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
+
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
 
 
 @patch("logging.config.dictConfig")
@@ -28,7 +30,7 @@ config.configure()
 logger = logging.getLogger()
 
 
-def test_queue_logger(caplog: LogCaptureFixture) -> None:
+def test_queue_logger(caplog: "LogCaptureFixture") -> None:
     """
     Test to check logging output contains the logged message
     """
@@ -37,7 +39,7 @@ def test_queue_logger(caplog: LogCaptureFixture) -> None:
         assert "Testing now!" in caplog.text
 
 
-def test_logger_statup(caplog: LogCaptureFixture) -> None:
+def test_logger_statup(caplog: "LogCaptureFixture") -> None:
     with TestClient(app=Starlite(route_handlers=[], on_startup=[LoggingConfig().configure])) as client, caplog.at_level(
         logging.INFO
     ):
