@@ -1,6 +1,6 @@
 from json import loads
 from pathlib import Path
-from typing import Any, Generator
+from typing import TYPE_CHECKING, Any, Generator
 
 import pytest
 from pydantic import ValidationError
@@ -14,7 +14,6 @@ from starlette.responses import (
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK
-from typing_extensions import AsyncGenerator
 
 from starlite import (
     File,
@@ -30,6 +29,9 @@ from starlite import (
 from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
+
+if TYPE_CHECKING:
+    from typing_extensions import AsyncGenerator
 
 
 @pytest.mark.asyncio
@@ -123,7 +125,7 @@ def my_iterator() -> Generator[int, None, None]:
         yield count
 
 
-async def my_async_iterator() -> AsyncGenerator[int, None]:
+async def my_async_iterator() -> "AsyncGenerator[int, None]":
     count = 0
     while True:
         count += 1
