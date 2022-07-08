@@ -1,37 +1,41 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
 from pydantic import BaseModel
-from pydantic.typing import AnyCallable
 from starlette.testclient import TestClient as StarletteTestClient
-from typing_extensions import Type
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
-from starlite.config import (
-    CacheConfig,
-    CORSConfig,
-    GZIPConfig,
-    OpenAPIConfig,
-    StaticFilesConfig,
-    TemplateConfig,
-)
 from starlite.connection import Request
-from starlite.controller import Controller
 from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
-from starlite.handlers import BaseRouteHandler
-from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
-from starlite.router import Router
-from starlite.types import (
-    AfterRequestHandler,
-    BeforeRequestHandler,
-    ExceptionHandler,
-    Guard,
-    LifeCycleHandler,
-    Middleware,
-)
+
+if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
+    from typing_extensions import Type
+
+    from starlite.config import (
+        CacheConfig,
+        CORSConfig,
+        GZIPConfig,
+        OpenAPIConfig,
+        StaticFilesConfig,
+        TemplateConfig,
+    )
+    from starlite.controller import Controller
+    from starlite.handlers import BaseRouteHandler
+    from starlite.plugins.base import PluginProtocol
+    from starlite.provide import Provide
+    from starlite.router import Router
+    from starlite.types import (
+        AfterRequestHandler,
+        BeforeRequestHandler,
+        ExceptionHandler,
+        Guard,
+        LifeCycleHandler,
+        Middleware,
+    )
+
 
 try:
     from requests.models import RequestEncodingMixin
@@ -108,31 +112,31 @@ class TestClient(StarletteTestClient):
 
 def create_test_client(
     route_handlers: Union[
-        Union[Type[Controller], BaseRouteHandler, Router, AnyCallable],
-        List[Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]],
+        Union["Type[Controller]", "BaseRouteHandler", "Router", AnyCallable],
+        List[Union["Type[Controller]", "BaseRouteHandler", "Router", AnyCallable]],
     ],
     *,
-    after_request: Optional[AfterRequestHandler] = None,
+    after_request: Optional["AfterRequestHandler"] = None,
     allowed_hosts: Optional[List[str]] = None,
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver",
-    before_request: Optional[BeforeRequestHandler] = None,
-    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
-    cors_config: Optional[CORSConfig] = None,
-    dependencies: Optional[Dict[str, Provide]] = None,
-    exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-    guards: Optional[List[Guard]] = None,
-    gzip_config: Optional[GZIPConfig] = None,
-    middleware: Optional[List[Middleware]] = None,
-    on_shutdown: Optional[List[LifeCycleHandler]] = None,
-    on_startup: Optional[List[LifeCycleHandler]] = None,
-    openapi_config: Optional[OpenAPIConfig] = None,
-    plugins: Optional[List[PluginProtocol]] = None,
+    before_request: Optional["BeforeRequestHandler"] = None,
+    cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
+    cors_config: Optional["CORSConfig"] = None,
+    dependencies: Optional[Dict[str, "Provide"]] = None,
+    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]] = None,
+    guards: Optional[List["Guard"]] = None,
+    gzip_config: Optional["GZIPConfig"] = None,
+    middleware: Optional[List["Middleware"]] = None,
+    on_shutdown: Optional[List["LifeCycleHandler"]] = None,
+    on_startup: Optional[List["LifeCycleHandler"]] = None,
+    openapi_config: Optional["OpenAPIConfig"] = None,
+    plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
-    static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
-    template_config: Optional[TemplateConfig] = None,
+    static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
+    template_config: Optional["TemplateConfig"] = None,
 ) -> TestClient:
     """Create a TestClient"""
     return TestClient(
