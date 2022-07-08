@@ -112,8 +112,8 @@ class TestClient(StarletteTestClient):
 
 def create_test_client(
     route_handlers: Union[
-        Union["Type[Controller]", "BaseRouteHandler", "Router", AnyCallable],
-        List[Union["Type[Controller]", "BaseRouteHandler", "Router", AnyCallable]],
+        Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"],
+        List[Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"]],
     ],
     *,
     after_request: Optional["AfterRequestHandler"] = None,
