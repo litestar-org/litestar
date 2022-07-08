@@ -2,7 +2,7 @@ import pickle
 import re
 from functools import partial
 from itertools import chain
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
 from anyio.to_thread import run_sync
@@ -11,23 +11,27 @@ from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.routing import get_name
-from starlette.types import Receive, Scope, Send
 
 from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.kwargs import KwargsModel
+from starlite.signature import get_signature_model
+from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
+from starlite.utils import is_async_callable, normalize_path
 from starlite.handlers import (
     ASGIRouteHandler,
     BaseRouteHandler,
     HTTPRouteHandler,
     WebsocketRouteHandler,
 )
-from starlite.kwargs import KwargsModel
-from starlite.response import Response
-from starlite.signature import get_signature_model
-from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
-from starlite.utils import is_async_callable, normalize_path
+
+if TYPE_CHECKING:
+    from starlette.types import Receive, Scope, Send
+
+    from starlite.response import Response
+
 
 param_match_regex = re.compile(r"{(.*?)}")
 param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
@@ -99,7 +103,7 @@ class BaseRoute:
             path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
         return path, path_format, path_parameters
 
-    def create_handler_kwargs_model(self, route_handler: BaseRouteHandler) -> KwargsModel:
+    def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
         """
         Method to create a KwargsModel for a given route handler
         """
@@ -129,10 +133,10 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: List[HTTPRouteHandler],
+        route_handlers: List["HTTPRouteHandler"],
     ):
         self.route_handlers = route_handlers
-        self.route_handler_map: Dict[Method, Tuple[HTTPRouteHandler, KwargsModel]] = {}
+        self.route_handler_map: Dict[Method, Tuple["HTTPRouteHandler", KwargsModel]] = {}
         super().__init__(
             methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
             path=path,
@@ -140,7 +144,7 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
         )
 
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that creates a Request from the passed in args, and then awaits a Response
         """
@@ -150,7 +154,7 @@ class HTTPRoute(BaseRoute):
             await route_handler.authorize_connection(connection=request)
 
         caching_enabled = route_handler.cache
-        response: Optional[Union[Response, StarletteResponse]] = None
+        response: Optional[Union["Response", StarletteResponse]] = None
         if caching_enabled:
             response = await self.get_cached_response(request=request, route_handler=route_handler)
         if not response:
@@ -167,8 +171,8 @@ class HTTPRoute(BaseRoute):
         await response(scope, receive, send)
 
     async def call_handler(
-        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
-    ) -> Union[Response, StarletteResponse]:
+        self, scope: "Scope", request: Request, parameter_model: KwargsModel, route_handler: "HTTPRouteHandler"
+    ) -> Union["Response", StarletteResponse]:
         """
         Calls the before request handlers, retrieves any data required for the route handler,
         and calls the route handler's to_response method.
@@ -195,7 +199,9 @@ class HTTPRoute(BaseRoute):
         )
 
     @staticmethod
-    async def get_response_data(route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request) -> Any:
+    async def get_response_data(
+        route_handler: "HTTPRouteHandler", parameter_model: KwargsModel, request: Request
+    ) -> Any:
         """
         Determines what kwargs are required for the given route handler's 'fn' and calls it
         """
@@ -236,7 +242,7 @@ class HTTPRoute(BaseRoute):
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
     @staticmethod
-    async def get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> Optional[StarletteResponse]:
+    async def get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional[StarletteResponse]:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
@@ -255,7 +261,7 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def set_cached_response(
-        response: Union[Response, StarletteResponse], request: Request, route_handler: HTTPRouteHandler
+        response: Union["Response", StarletteResponse], request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
         """
         Pickles and caches a response object
@@ -286,7 +292,7 @@ class WebSocketRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: WebsocketRouteHandler,
+        route_handler: "WebsocketRouteHandler",
     ):
         self.route_handler = route_handler
         self.handler_parameter_model: Optional[KwargsModel] = None
@@ -296,7 +302,7 @@ class WebSocketRoute(BaseRoute):
             handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
         )
 
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
         """
@@ -332,7 +338,7 @@ class ASGIRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: ASGIRouteHandler,
+        route_handler: "ASGIRouteHandler",
     ):
         self.route_handler = route_handler
         super().__init__(
@@ -341,7 +347,7 @@ class ASGIRoute(BaseRoute):
             handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
         )
 
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that authorizes the connection and then awaits the handler function
         """
