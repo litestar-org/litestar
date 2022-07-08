@@ -7,10 +7,10 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.parsers import parse_path_params
-from starlite.types import LifeCycleHandler
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.app import Starlite
+    from starlite.types import LifeCycleHandler
 
 
 class StarliteASGIRouter(StarletteRouter):
@@ -21,8 +21,8 @@ class StarliteASGIRouter(StarletteRouter):
     def __init__(
         self,
         app: "Starlite",
-        on_shutdown: List[LifeCycleHandler],
-        on_startup: List[LifeCycleHandler],
+        on_shutdown: List["LifeCycleHandler"],
+        on_startup: List["LifeCycleHandler"],
     ):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
@@ -97,7 +97,7 @@ class StarliteASGIRouter(StarletteRouter):
             raise NotFoundException() from e
         await asgi_handler(scope, receive, send)
 
-    async def call_lifecycle_handler(self, handler: LifeCycleHandler) -> None:
+    async def call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
         """
         Determines whether the lifecycle handler expects an argument, and if so passed the app.state to it.
         If the handler is an async function, it awaits the return.
