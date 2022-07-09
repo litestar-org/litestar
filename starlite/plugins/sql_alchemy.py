@@ -284,7 +284,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                     field_definitions[name] = (self.get_pydantic_type(column.type), None)
             related_entity_classes: List[DeclarativeMeta] = []
             if mapper.relationships:
-                # list of refernces to other entities, not the self entity
+                # list of references to other entities, not the self entity
                 # to avoid duplication of pydantic models, we are using forward refs
                 # see: https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
                 for name, relationship_property in mapper.relationships.items():

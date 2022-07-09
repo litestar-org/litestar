@@ -106,7 +106,7 @@ class DTOFactory:
 
         This will affect parsing, validation and how OpenAPI schema is generated exactly like when using a pydantic model.
 
-        Note: Although the value generated is a pydantic factory, because it is being generated programmaticaly,
+        Note: Although the value generated is a pydantic factory, because it is being generated programmatically,
         it's currently not possible to extend editor auto-complete for the DTO properties - it will be typed as a
         Pydantic BaseModel, but no attributes will be inferred in the editor.
         """

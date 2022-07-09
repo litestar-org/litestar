@@ -44,7 +44,7 @@ Starlite also offers several pre-configured **exception subclasses** with pre-se
 - `ServiceUnavailableException`: status code 503.
 
 When a value fails `pydantic` validaton, the result will be a `ValidationException` with the `extra` key set to the
-pydantic validation errors. Thus this data will be made availble for the API consumers by default.
+pydantic validation errors. Thus this data will be made available for the API consumers by default.
 
 ## Exception Handling
 
