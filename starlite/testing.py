@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 
     from starlite.config import (
         CacheConfig,
+        CompressionConfig,
         CORSConfig,
-        GZIPConfig,
         OpenAPIConfig,
         StaticFilesConfig,
         TemplateConfig,
@@ -127,7 +127,7 @@ def create_test_client(
     dependencies: Optional[Dict[str, "Provide"]] = None,
     exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]] = None,
     guards: Optional[List["Guard"]] = None,
-    gzip_config: Optional["GZIPConfig"] = None,
+    compression_config: Optional["CompressionConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,
     on_startup: Optional[List["LifeCycleHandler"]] = None,
@@ -149,7 +149,7 @@ def create_test_client(
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
-            gzip_config=gzip_config,
+            compression_config=compression_config,
             middleware=middleware,
             on_shutdown=on_shutdown,
             on_startup=on_startup,
