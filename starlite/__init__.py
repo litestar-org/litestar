@@ -5,8 +5,8 @@ from starlite.datastructures import File, Redirect, State, Stream, Template
 from .app import Starlite
 from .config import (
     CacheConfig,
-    CORSConfig,
     CompressionConfig,
+    CORSConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,

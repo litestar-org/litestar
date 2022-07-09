@@ -1,3 +1,5 @@
+from typing import cast
+
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.config import CompressionBackend, CompressionConfig
@@ -34,4 +36,4 @@ def _load_compression_middleware(app: ASGIApp, config: CompressionConfig) -> Mid
         AsgiHandler = import_string("starlite.middleware.compression.brotli.BrotliMiddleware")
     else:
         raise ValueError("Unknown compression backend")
-    return AsgiHandler(app=app, **config.dict())
+    return cast(MiddlewareProtocol, AsgiHandler(app=app, **config.dict()))

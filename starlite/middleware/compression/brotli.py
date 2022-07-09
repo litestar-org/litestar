@@ -49,7 +49,7 @@ class BrotliMiddleware:
         if scope["type"] == ScopeType.HTTP:
             headers = Headers(scope=scope)
             if ContentEncoding.BROTLI in headers.get("Accept-Encoding", ""):
-                responder = BrotliResponder(
+                brotli_responser = BrotliResponder(
                     app=self.app,
                     minimum_size=self.minimum_size,
                     quality=self.quality,
@@ -57,11 +57,11 @@ class BrotliMiddleware:
                     lgwin=self.lgwin,
                     lgblock=self.lgblock,
                 )
-                await responder(scope, receive, send)
+                await brotli_responser(scope, receive, send)
                 return
-            elif self.gzip_fallback and ContentEncoding.GZIP in headers.get("Accept-Encoding", ""):
-                responder = GZipResponder(self.app, self.minimum_size)
-                await responder(scope, receive, send)
+            if self.gzip_fallback and ContentEncoding.GZIP in headers.get("Accept-Encoding", ""):
+                gzip_responder = GZipResponder(self.app, self.minimum_size)
+                await gzip_responder(scope, receive, send)
                 return
         await self.app(scope, receive, send)
 
@@ -77,7 +77,7 @@ class BrotliResponder:
         app: ASGIApp,
         minimum_size: int,
         quality: int,
-        mode: str,
+        mode: int,
         lgwin: int,
         lgblock: int,
     ) -> None:
@@ -162,7 +162,7 @@ def _brotli_mode_lookup(mode: Union[BrotliMode, str]) -> int:
         # convert to enum
         mode = getattr(BrotliMode, mode.upper())
     if mode == BrotliMode.TEXT:
-        return brotli.MODE_TEXT
+        return int(brotli.MODE_TEXT)
     if mode == BrotliMode.FONT:
-        return brotli.MODE_FONT
-    return brotli.MODE_GENERIC
+        return int(brotli.MODE_FONT)
+    return int(brotli.MODE_GENERIC)

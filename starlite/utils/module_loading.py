@@ -1,10 +1,10 @@
 import sys
 from importlib import import_module
 from types import ModuleType
-from typing import Optional
+from typing import Any, Optional
 
 
-def import_string(dotted_path: str) -> object:
+def import_string(dotted_path: str) -> Any:
     """Dotted Path Import.
 
     Import a dotted module path and return the attribute/class designated by the
@@ -19,7 +19,7 @@ def import_string(dotted_path: str) -> object:
         object: The imported object.
     """
 
-    def cached_import(module_path: str, class_name: str) -> object:
+    def cached_import(module_path: str, class_name: str) -> Any:
         """Import and cache a class from a module.
 
         Args:
@@ -33,12 +33,12 @@ def import_string(dotted_path: str) -> object:
         module = sys.modules.get(module_path)
         if not _is_loaded(module):
             module = import_module(module_path)
-        return getattr(module, class_name)
+        return getattr(module, class_name)  #
 
     def _is_loaded(module: Optional[ModuleType]) -> bool:
         spec = getattr(module, "__spec__", None)
         initializing = getattr(spec, "_initializing", False)
-        return module and spec and not initializing
+        return bool(module and spec and not initializing)
 
     try:
         module_path, class_name = dotted_path.rsplit(".", 1)

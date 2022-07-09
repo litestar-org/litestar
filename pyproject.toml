@@ -87,6 +87,7 @@ disable = [
     "duplicate-code",
 ]
 enable = "useless-suppression"
+extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.REPORTS]
 reports = "no"

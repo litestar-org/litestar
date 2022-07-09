@@ -10,8 +10,8 @@ from typing_extensions import Type
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config import (
     CacheConfig,
-    CORSConfig,
     CompressionConfig,
+    CORSConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,

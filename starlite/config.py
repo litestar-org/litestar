@@ -1,5 +1,16 @@
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    AbstractSet,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 from urllib.parse import urlencode
 
 from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
@@ -22,6 +33,12 @@ from starlite.connection import Request
 from starlite.openapi.controller import OpenAPIController
 from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder
+
+if TYPE_CHECKING:
+    DictStrAny = Dict[str, Any]
+    IntStr = Union[int, str]
+    AbstractSetIntStr = AbstractSet[IntStr]
+    MappingIntStrAny = Mapping[IntStr, Any]
 
 
 class CORSConfig(BaseModel):
@@ -61,22 +78,34 @@ class CompressionConfig(BaseModel):
     brotli_lgblock: int = 0
     brotli_gzip_fallback: bool = True
 
-    def dict(self) -> Dict[str, Any]:
+    def dict(self, *args, **kwargs) -> "DictStrAny":  # type: ignore[no-untyped-def]
         """Returns a dictionary representation of the CompressionConfig.
 
         Returns:
             Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
         """
-        default_keys = set({"backend"})
-        brotli_keys = set({"brotli_quality", "brotli_mode", "brotli_lgwin", "brotli_lgblock", "brotli_gzip_fallback"})
-        gzip_keys = set({"gzip_compress_level"})
+        # if include is None:
+        #     include = set()
+        # if exclude is None:
+        #     exclude = set()
+        brotli_keys = set(
+            {"minimum_size", "brotli_quality", "brotli_mode", "brotli_lgwin", "brotli_lgblock", "brotli_gzip_fallback"}
+        )
+        gzip_keys = set({"minimum_size", "gzip_compress_level"})
         if self.backend == CompressionBackend.GZIP:
-            excluded_keys = default_keys.union(brotli_keys)
+            included_keys = gzip_keys
         elif self.backend == CompressionBackend.BROTLI:
-            excluded_keys = default_keys.union(gzip_keys)
+            included_keys = brotli_keys
         else:
-            excluded_keys = default_keys.union(brotli_keys).union(gzip_keys)
-        return super().dict(exclude=excluded_keys)
+            included_keys = brotli_keys.union(gzip_keys)
+        return super().dict(
+            include=included_keys,
+            # by_alias=by_alias,
+            # skip_defaults=skip_defaults,
+            # exclude_unset=exclude_unset,
+            # exclude_defaults=exclude_defaults,
+            # exclude_none=exclude_none,
+        )
 
 
 class OpenAPIConfig(BaseModel):

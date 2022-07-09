@@ -1,6 +1,5 @@
 from typing import Dict, Union
 
-from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.responses import Response as StarletteResponse
