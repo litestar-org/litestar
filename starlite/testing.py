@@ -43,7 +43,7 @@ except ImportError:  # pragma: no cover
     from starlite.exceptions import MissingDependencyException
 
     raise MissingDependencyException(
-        "To use starlite.testing, intall starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
+        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
     )
 __all__ = [
     "TestClient",
