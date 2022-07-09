@@ -228,6 +228,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "cclauss",
+      "name": "Christian Clauss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3709715?v=4",
+      "profile": "https://www.patreon.com/cclauss",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
