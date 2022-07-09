@@ -1,0 +1,13 @@
+[package]
+name = "rust_backend"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust_backend"
+crate-type = ["cdylib"]
+path = "./starlite/extensions/rust/lib.rs"
+
+[dependencies]
+pyo3 = { version = "0.16.5", features = ["extension-module"] }
+matchit = "0.6.0"

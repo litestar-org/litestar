@@ -44,4 +44,3 @@ class RouteMap:
         Removes a path from the static path set
         """
         pass
-

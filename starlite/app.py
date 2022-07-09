@@ -9,6 +9,8 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from rust_backend import RouteMap as RouteMapInit
+
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
     CacheConfig,
