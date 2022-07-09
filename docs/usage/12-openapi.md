@@ -49,7 +49,7 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 ## Viewing the API Documentation in ReDoc
 
 Starlite comes with integration of [ReDoc API Documentation Page](https://redoc.ly/) to render your OpenAPI schema as an
-interactive web user interace. If your app is running locally on port 8000 you can access the
+interactive web user interface. If your app is running locally on port 8000 you can access the
 [ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema). The ReDoc page will show and document all your routes,
 DTOs, and any metadata attached to your controllers mentioned above.
 
