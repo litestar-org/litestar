@@ -1,17 +1,22 @@
-from typing import Any, Dict, List, cast
+from typing import TYPE_CHECKING, Any, Dict, List, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
-from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic import BaseModel
 from pydantic.fields import ModelField, Undefined
 
 from starlite.constants import RESERVED_KWARGS
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import BaseRouteHandler
 from starlite.openapi.schema import create_schema
 
+if TYPE_CHECKING:
+    from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 
-def create_path_parameter_schema(path_parameter: Dict[str, Any], field: ModelField, generate_examples: bool) -> Schema:
+    from starlite.handlers import BaseRouteHandler
+
+
+def create_path_parameter_schema(
+    path_parameter: Dict[str, Any], field: ModelField, generate_examples: bool
+) -> "Schema":
     """Create a path parameter from the given path_param definition"""
     field.sub_fields = None
     field.outer_type_ = path_parameter["type"]
@@ -28,7 +33,7 @@ class ParameterCollection:
     is raised.
     """
 
-    def __init__(self, route_handler: BaseRouteHandler) -> None:
+    def __init__(self, route_handler: "BaseRouteHandler") -> None:
         self.route_handler = route_handler
         self._parameters: Dict[str, Parameter] = {}
 
@@ -61,7 +66,7 @@ class ParameterCollection:
 
 
 def create_parameters(
-    route_handler: BaseRouteHandler,
+    route_handler: "BaseRouteHandler",
     handler_fields: Dict[str, ModelField],
     path_parameters: List[Dict[str, Any]],
     generate_examples: bool,

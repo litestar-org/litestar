@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
 from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
@@ -17,10 +17,12 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
-from starlite.connection import Request
 from starlite.openapi.controller import OpenAPIController
 from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder
+
+if TYPE_CHECKING:
+    from starlite.connection import Request
 
 
 class CORSConfig(BaseModel):
@@ -92,7 +94,7 @@ class TemplateConfig(BaseModel):
     engine_callback: Optional[Callable[[Any], Any]]
 
 
-def default_cache_key_builder(request: Request) -> str:
+def default_cache_key_builder(request: "Request") -> str:
     """
     Given a request object, returns a cache key by combining the path with the sorted query params
     """

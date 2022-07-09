@@ -1,8 +1,7 @@
-from typing import Dict
+from typing import TYPE_CHECKING, Dict
 
 import pytest
 from pydantic import BaseModel
-from starlette.requests import HTTPConnection
 from starlette.status import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,
@@ -15,6 +14,9 @@ from starlite.connection import Request, WebSocket
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlette.requests import HTTPConnection
 
 
 class User(BaseModel):
@@ -33,7 +35,7 @@ state: Dict[str, AuthenticationResult] = {}
 
 
 class AuthMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:
+    async def authenticate_request(self, request: "HTTPConnection") -> AuthenticationResult:
         param = request.headers.get("Authorization")
         if param in state:
             return state.pop(param)

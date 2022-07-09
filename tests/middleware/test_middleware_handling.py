@@ -1,8 +1,7 @@
 import logging
-from typing import Any, Awaitable, Callable, List, cast
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, cast
 
 import pytest
-from _pytest.logging import LogCaptureFixture
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -10,7 +9,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import Type
 
 from starlite import (
     Controller,
@@ -25,6 +23,10 @@ from starlite import (
 )
 from starlite.config import GZIPConfig
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
+    from typing_extensions import Type
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +150,7 @@ def test_gzip_middleware() -> None:
     assert gzip_middleware.compresslevel == 9
 
 
-def test_request_body_logging_middleware(caplog: LogCaptureFixture) -> None:
+def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
     with caplog.at_level(logging.INFO):
         client = create_test_client(
             route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
@@ -163,7 +165,7 @@ def test_middleware_call_order() -> None:
 
     results: List[int] = []
 
-    def create_test_middleware(middleware_id: int) -> Type[MiddlewareProtocol]:
+    def create_test_middleware(middleware_id: int) -> "Type[MiddlewareProtocol]":
         class TestMiddleware(MiddlewareProtocol):
             def __init__(self, app: ASGIApp):
                 self.app = app

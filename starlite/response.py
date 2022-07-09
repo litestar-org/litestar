@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
 import yaml
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
@@ -10,7 +10,9 @@ from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.template import TemplateEngineProtocol
+
+if TYPE_CHECKING:
+    from starlite.template import TemplateEngineProtocol
 
 
 class Response(StarletteResponse):
@@ -65,7 +67,7 @@ class TemplateResponse(Response):
         self,
         context: Optional[Dict[str, Any]],
         template_name: str,
-        template_engine: TemplateEngineProtocol,
+        template_engine: "TemplateEngineProtocol",
         status_code: int,
         background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,

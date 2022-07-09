@@ -14,18 +14,19 @@ from typing import (
 
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
-from pydantic.typing import AnyCallable
-from starlette.requests import HTTPConnection
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
-from starlite.signature import SignatureModel
 from starlite.types import ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
+    from pydantic.typing import AnyCallable
+    from starlette.requests import HTTPConnection
+
     from starlite.controller import Controller
     from starlite.router import Router
+    from starlite.signature import SignatureModel
 
 
 class BaseRouteHandler:
@@ -68,9 +69,9 @@ class BaseRouteHandler:
         self.guards = guards
         self.middleware = middleware
         self.opt: Dict[str, Any] = opt or {}
-        self.fn: Optional[AnyCallable] = None
+        self.fn: Optional["AnyCallable"] = None
         self.owner: Optional[Union["Controller", "Router"]] = None
-        self.signature_model: Optional[Type[SignatureModel]] = None
+        self.signature_model: Optional[Type["SignatureModel"]] = None
         self.exception_handlers = exception_handlers
         self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
@@ -180,7 +181,7 @@ class BaseRouteHandler:
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
 
-    async def authorize_connection(self, connection: HTTPConnection) -> None:
+    async def authorize_connection(self, connection: "HTTPConnection") -> None:
         """
         Ensures the connection is authorized by running all the route guards in scope
         """

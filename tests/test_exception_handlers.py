@@ -1,4 +1,4 @@
-from typing import Type
+from typing import TYPE_CHECKING, Type
 
 import pytest
 from starlette.status import HTTP_400_BAD_REQUEST
@@ -16,7 +16,9 @@ from starlite import (
     get,
 )
 from starlite.testing import create_test_client
-from starlite.types import ExceptionHandler
+
+if TYPE_CHECKING:
+    from starlite.types import ExceptionHandler
 
 
 @pytest.mark.parametrize(
@@ -31,7 +33,7 @@ from starlite.types import ExceptionHandler
 def test_exception_handling(exc_to_raise: Exception, expected_layer: str) -> None:
     caller = {"name": ""}
 
-    def create_named_handler(caller_name: str, expected_exception: Type[Exception]) -> ExceptionHandler:
+    def create_named_handler(caller_name: str, expected_exception: Type[Exception]) -> "ExceptionHandler":
         def handler(req: Request, exc: Exception) -> Response:
             assert isinstance(exc, expected_exception)
             assert isinstance(req, Request)
