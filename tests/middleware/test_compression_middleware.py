@@ -8,6 +8,7 @@ from starlette.types import ASGIApp
 from starlite import get
 from starlite.config import BrotliMode, CompressionBackend, CompressionConfig
 from starlite.datastructures import Stream
+from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.middleware.compression.brotli import (
     BrotliMiddleware,
     ContentEncoding,
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @get(path="/")
-def handler() -> None:
+def handler() -> PlainTextResponse:
     return PlainTextResponse("_starlite_" * 4000, status_code=200)
 
 
@@ -29,7 +30,7 @@ def no_compress_handler() -> PlainTextResponse:
     return PlainTextResponse("_starlite_", status_code=200)
 
 
-async def streaming_iter(content, count) -> Any:
+async def streaming_iter(content: bytes, count: int) -> Any:
     for _ in range(count):
         yield content
 
@@ -63,7 +64,7 @@ def test_gzip_middleware_from_enum() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    gzip_middleware = unpacked_middleware[1].handler
+    gzip_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 500
     assert gzip_middleware.compresslevel == 9
@@ -82,7 +83,8 @@ def test_gzip_middleware_custom_settings() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    gzip_middleware = unpacked_middleware[1].handler
+    middleware = cast(CompressionMiddleware, unpacked_middleware[1])
+    gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 1000
     assert gzip_middleware.compresslevel == 3
@@ -98,7 +100,8 @@ def test_gzip_middleware_set_from_string() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    gzip_middleware = unpacked_middleware[1].handler
+    middleware = cast(CompressionMiddleware, unpacked_middleware[1])
+    gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 500
     assert gzip_middleware.compresslevel == 9
@@ -116,7 +119,7 @@ def test_brotli_middleware_from_enum() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler
+    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
     assert brotli_middleware.mode == _brotli_mode_lookup(BrotliMode.TEXT)
@@ -134,7 +137,7 @@ def test_brotli_middleware_from_string() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler
+    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
     assert brotli_middleware.mode == _brotli_mode_lookup(BrotliMode.TEXT)
@@ -233,7 +236,7 @@ def test_brotli_middleware_custom_settings() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler
+    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
     assert brotli_middleware.mode == _brotli_mode_lookup(BrotliMode.FONT)
@@ -252,19 +255,12 @@ def test_brotli_middleware_invalid_mode() -> None:
         )
     except Exception as exc:
         assert isinstance(exc, ValueError)
-        assert "value is not a valid enumeration member" in str(exc)
+        assert "not a valid compression optimization mode" in str(exc)
 
 
 def test_invalid_compression_middleware() -> None:
 
     try:
         create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="super-zip"))
-    except Exception as exc:
-        assert isinstance(exc, ValueError)
-
-
-def test_invalid_none_compression_middleware() -> None:
-    try:
-        create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend=None))
     except Exception as exc:
         assert isinstance(exc, ValueError)

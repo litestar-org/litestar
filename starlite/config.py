@@ -25,7 +25,7 @@ from openapi_schema_pydantic.v3.v3_1_0.reference import Reference
 from openapi_schema_pydantic.v3.v3_1_0.security_requirement import SecurityRequirement
 from openapi_schema_pydantic.v3.v3_1_0.server import Server
 from openapi_schema_pydantic.v3.v3_1_0.tag import Tag
-from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
+from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
 from typing_extensions import Type
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
@@ -69,14 +69,56 @@ class BrotliMode(str, Enum):
 class CompressionConfig(BaseModel):
     """Class containing the configuration for request compression."""
 
-    backend: CompressionBackend
+    backend: Union[CompressionBackend, str]
     minimum_size: int = 500
     gzip_compress_level: int = 9
     brotli_quality: int = 5
-    brotli_mode: BrotliMode = BrotliMode.TEXT
+    brotli_mode: Union[BrotliMode, str] = BrotliMode.TEXT
     brotli_lgwin: int = 22
     brotli_lgblock: int = 0
     brotli_gzip_fallback: bool = True
+
+    @validator("backend", pre=True, always=True)
+    def backend_must_be_supported(  # pylint: disable=no-self-argument
+        cls, v: Union[CompressionBackend, str]
+    ) -> CompressionBackend:
+        """Compression Backend Validation
+
+        Args:
+            v (CompressionBackend|str): Holds the selected compression backend
+
+        Raises:
+            ValueError: Value is not a valid compression backend
+
+        Returns:
+            _type_: CompressionBackend
+        """
+        if isinstance(v, str):
+            try:
+                v = CompressionBackend[v.upper()]
+            except KeyError as e:
+                raise ValueError(f"{v} is not a valid compression backend") from e
+        return v
+
+    @validator("brotli_mode", pre=True, always=True)
+    def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
+        """Compression Backend Validation
+
+        Args:
+            v (CompressionBackend|str): Holds the selected compression backend
+
+        Raises:
+            ValueError: Value is not a valid compression backend
+
+        Returns:
+            _type_: CompressionBackend
+        """
+        if isinstance(v, str):
+            try:
+                v = BrotliMode[v.upper()]
+            except KeyError as e:
+                raise ValueError(f"{v} is not a valid compression optimization mode") from e
+        return v
 
     def dict(self, *args, **kwargs) -> "DictStrAny":  # type: ignore[no-untyped-def]
         """Returns a dictionary representation of the CompressionConfig.
