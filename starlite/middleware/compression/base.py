@@ -1,10 +1,11 @@
-from typing import cast
-
-from starlette.types import ASGIApp, Receive, Scope, Send
+from typing import TYPE_CHECKING, cast
 
 from starlite.config import CompressionBackend, CompressionConfig
 from starlite.types import MiddlewareProtocol
 from starlite.utils import import_string
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Receive, Scope, Send
 
 
 class CompressionMiddleware(MiddlewareProtocol):
@@ -13,10 +14,10 @@ class CompressionMiddleware(MiddlewareProtocol):
     This is a class to store the configured compression backend for Starlite
     """
 
-    def __init__(self, app: ASGIApp, config: CompressionConfig) -> None:
+    def __init__(self, app: "ASGIApp", config: CompressionConfig) -> None:
         self._handler = _load_compression_middleware(app, config)
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         return await self.handler(scope, receive, send)
 
     @property
@@ -29,7 +30,7 @@ class CompressionMiddleware(MiddlewareProtocol):
         return self._handler
 
 
-def _load_compression_middleware(app: ASGIApp, config: CompressionConfig) -> MiddlewareProtocol:
+def _load_compression_middleware(app: "ASGIApp", config: CompressionConfig) -> MiddlewareProtocol:
     if config.backend == CompressionBackend.GZIP:
         AsgiHandler = import_string("starlite.middleware.compression.gzip.GZipMiddleware")
     elif config.backend == CompressionBackend.BROTLI:

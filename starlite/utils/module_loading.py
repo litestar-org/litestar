@@ -1,7 +1,9 @@
 import sys
 from importlib import import_module
-from types import ModuleType
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 def import_string(dotted_path: str) -> Any:
@@ -35,7 +37,7 @@ def import_string(dotted_path: str) -> Any:
             module = import_module(module_path)
         return getattr(module, class_name)  #
 
-    def _is_loaded(module: Optional[ModuleType]) -> bool:
+    def _is_loaded(module: Optional["ModuleType"]) -> bool:
         spec = getattr(module, "__spec__", None)
         initializing = getattr(spec, "_initializing", False)
         return bool(module and spec and not initializing)

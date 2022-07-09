@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from pydantic import BaseModel
 from starlette.requests import HTTPConnection
-from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.enums import MediaType, ScopeType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
 from starlite.response import Response
 from starlite.types import MiddlewareProtocol
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Receive, Scope, Send
 
 
 class AuthenticationResult(BaseModel):
@@ -22,11 +24,11 @@ class AuthenticationResult(BaseModel):
 class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: "ASGIApp"):
         super().__init__(app)
         self.app = app
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         try:
             if scope["type"] in self.scopes:
                 auth_result = await self.authenticate_request(HTTPConnection(scope))

@@ -1,5 +1,9 @@
+from typing import TYPE_CHECKING
+
 from starlette.middleware.gzip import GZipMiddleware as StarletteGzipMiddleware
-from starlette.types import ASGIApp
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp
 
 
 class GZipMiddleware(StarletteGzipMiddleware):
@@ -11,7 +15,7 @@ class GZipMiddleware(StarletteGzipMiddleware):
 
     def __init__(
         self,
-        app: ASGIApp,
+        app: "ASGIApp",
         minimum_size: int = 400,
         gzip_compress_level: int = 9,
     ) -> None:

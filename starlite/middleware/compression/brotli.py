@@ -1,14 +1,17 @@
 import io
 from enum import Enum
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
-from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from starlite.config import BrotliMode
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
 
 try:
     import brotli
@@ -29,7 +32,7 @@ class BrotliMiddleware:
 
     def __init__(
         self,
-        app: ASGIApp,
+        app: "ASGIApp",
         minimum_size: int = 400,
         brotli_quality: int = 4,
         brotli_mode: BrotliMode = BrotliMode.TEXT,
@@ -45,7 +48,7 @@ class BrotliMiddleware:
         self.lgblock = brotli_lgblock
         self.gzip_fallback = brotli_gzip_fallback
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
             headers = Headers(scope=scope)
             if ContentEncoding.BROTLI in headers.get("Accept-Encoding", ""):
@@ -74,7 +77,7 @@ class BrotliResponder:
 
     def __init__(
         self,
-        app: ASGIApp,
+        app: "ASGIApp",
         minimum_size: int,
         quality: int,
         mode: int,
@@ -83,8 +86,8 @@ class BrotliResponder:
     ) -> None:
         self.app = app
         self.minimum_size = minimum_size
-        self.send: Send = unattached_send
-        self.initial_message: Message = {}
+        self.send: "Send" = unattached_send
+        self.initial_message: "Message" = {}
         self.started = False
         self.br_buffer = io.BytesIO()
         self.quality = quality
@@ -93,11 +96,11 @@ class BrotliResponder:
         self.lgblock = lgblock
         self.br_file = brotli.Compressor(quality=self.quality, mode=self.mode, lgwin=self.lgwin, lgblock=self.lgblock)
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         self.send = send
         await self.app(scope, receive, self.send_with_brotli)
 
-    async def send_with_brotli(self, message: Message) -> None:
+    async def send_with_brotli(self, message: "Message") -> None:
         """Handles and compresses the HTTP Message with brotli
 
         Args:
