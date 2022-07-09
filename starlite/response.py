@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
 
 import yaml
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
@@ -20,9 +22,9 @@ class Response(StarletteResponse):
         self,
         content: Any,
         status_code: int,
-        media_type: Union[MediaType, OpenAPIMediaType, str],
-        background: Optional[BackgroundTask] = None,
-        headers: Optional[Dict[str, str]] = None,
+        media_type: MediaType | OpenAPIMediaType | str,
+        background: BackgroundTask | None = None,
+        headers: dict[str, str] | None = None,
     ):
         super().__init__(
             content=content,
@@ -33,7 +35,7 @@ class Response(StarletteResponse):
         )
 
     @staticmethod
-    def serializer(value: Any) -> Dict[str, Any]:
+    def serializer(value: Any) -> dict[str, Any]:
         """
         Serializer hook for orjson to handle pydantic models.
 
@@ -65,12 +67,12 @@ class Response(StarletteResponse):
 class TemplateResponse(Response):
     def __init__(
         self,
-        context: Optional[Dict[str, Any]],
+        context: dict[str, Any] | None,
         template_name: str,
-        template_engine: "TemplateEngineProtocol",
+        template_engine: TemplateEngineProtocol,
         status_code: int,
-        background: Optional[BackgroundTask] = None,
-        headers: Optional[Dict[str, str]] = None,
+        background: BackgroundTask | None = None,
+        headers: dict[str, str] | None = None,
     ):
         context = context or {}
         template = template_engine.get_template(template_name)

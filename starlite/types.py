@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 from typing import (
     TYPE_CHECKING,
     Any,
     Awaitable,
     Callable,
-    Dict,
     Generic,
     Optional,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -87,7 +87,7 @@ CacheKeyBuilder = Callable[[Request], str]
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp"):  # pragma: no cover
+    def __init__(self, app: ASGIApp):  # pragma: no cover
         ...
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
@@ -95,14 +95,14 @@ class MiddlewareProtocol(Protocol):
 
 
 class Partial(Generic[T]):
-    _models: Dict[Type[T], Any] = {}
+    _models: dict[Type[T], Any] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
         if not cls._models.get(item):
-            field_definitions: Dict[str, Tuple[Any, None]] = {}
+            field_definitions: dict[str, tuple[Any, None]] = {}
             for field_name, field_type in item.__annotations__.items():
                 # we modify the field annotations to make it optional
                 if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:

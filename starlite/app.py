@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Set, Union, cast
 
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
@@ -76,36 +78,36 @@ class Starlite(Router):
     def __init__(
         self,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        allowed_hosts: Optional[List[str]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        after_request: AfterRequestHandler | None = None,
+        allowed_hosts: list[str] | None = None,
+        before_request: BeforeRequestHandler | None = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
-        cors_config: Optional[CORSConfig] = None,
+        cors_config: CORSConfig | None = None,
         debug: bool = False,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        guards: Optional[List[Guard]] = None,
-        gzip_config: Optional[GZIPConfig] = None,
-        middleware: Optional[List[Middleware]] = None,
-        on_shutdown: Optional[List[LifeCycleHandler]] = None,
-        on_startup: Optional[List[LifeCycleHandler]] = None,
-        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        plugins: Optional[List[PluginProtocol]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        route_handlers: List[ControllerRouterHandler],
-        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
-        template_config: Optional[TemplateConfig] = None,
+        dependencies: dict[str, Provide] | None = None,
+        exception_handlers: dict[int | Type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        gzip_config: GZIPConfig | None = None,
+        middleware: list[Middleware] | None = None,
+        on_shutdown: list[LifeCycleHandler] | None = None,
+        on_startup: list[LifeCycleHandler] | None = None,
+        openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
+        plugins: list[PluginProtocol] | None = None,
+        response_class: Type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        route_handlers: list[ControllerRouterHandler],
+        static_files_config: StaticFilesConfig | list[StaticFilesConfig] | None = None,
+        template_config: TemplateConfig | None = None,
     ):
         self.allowed_hosts = allowed_hosts
         self.cache_config = cache_config
         self.cors_config = cors_config
         self.debug = debug
         self.gzip_config = gzip_config
-        self.plain_routes: Set[str] = set()
+        self.plain_routes: set[str] = set()
         self.plugins = plugins or []
-        self.route_map: Dict[str, Any] = {}
-        self.routes: List[BaseRoute] = []
+        self.route_map: dict[str, Any] = {}
+        self.routes: list[BaseRoute] = []
         self.state = State()
         self.static_paths = set()
 
@@ -124,7 +126,7 @@ class Starlite(Router):
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.asgi_handler = self.create_asgi_handler()
-        self.openapi_schema: Optional[OpenAPI] = None
+        self.openapi_schema: OpenAPI | None = None
         if openapi_config:
             self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
             self.register(openapi_config.openapi_controller)
@@ -165,7 +167,7 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, send)
 
     def wrap_in_exception_handler(
-        self, app: ASGIApp, exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
+        self, app: ASGIApp, exception_handlers: dict[int | Type[Exception], ExceptionHandler]
     ) -> ASGIApp:
         """
         Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware
@@ -173,7 +175,7 @@ class Starlite(Router):
 
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
-    def add_node_to_route_map(self, route: BaseRoute) -> Dict[str, Any]:
+    def add_node_to_route_map(self, route: BaseRoute) -> dict[str, Any]:
         """
         Adds a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
 
@@ -202,7 +204,7 @@ class Starlite(Router):
         self.configure_route_map_node(route, cur_node)
         return cur_node
 
-    def configure_route_map_node(self, route: BaseRoute, node: Dict[str, Any]) -> None:
+    def configure_route_map_node(self, route: BaseRoute, node: dict[str, Any]) -> None:
         """
         Set required attributes and route handlers on route_map tree node.
         """
@@ -239,8 +241,8 @@ class Starlite(Router):
 
     def build_route_middleware_stack(
         self,
-        route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", ASGIRouteHandler],
+        route: HTTPRoute | WebSocketRoute | ASGIRoute,
+        route_handler: HTTPRouteHandler | WebsocketRouteHandler | ASGIRouteHandler,
     ) -> ASGIApp:
         """Constructs a middleware stack that serves as the point of entry for each route"""
 
@@ -286,7 +288,7 @@ class Starlite(Router):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
         self.construct_route_map()
 
-    def create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
+    def create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """
         Creates function signature models for all route handler functions and provider dependencies
         """

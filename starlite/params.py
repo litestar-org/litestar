@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import Any
 
 from openapi_schema_pydantic.v3.v3_1_0.example import Example
 from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
@@ -13,33 +15,33 @@ from starlite.enums import RequestEncodingType
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
     *,
-    header: Optional[str] = None,
-    cookie: Optional[str] = None,
-    query: Optional[str] = None,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
-    content_encoding: Optional[str] = None,
+    header: str | None = None,
+    cookie: str | None = None,
+    query: str | None = None,
+    examples: list[Example] | None = None,
+    external_docs: ExternalDocumentation | None = None,
+    content_encoding: str | None = None,
     required: bool = True,
     default: Any = Undefined,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None
+    title: str | None = None,
+    description: str | None = None,
+    const: bool | None = None,
+    gt: float | None = None,
+    ge: float | None = None,
+    lt: float | None = None,
+    le: float | None = None,
+    multiple_of: float | None = None,
+    min_items: int | None = None,
+    max_items: int | None = None,
+    min_length: int | None = None,
+    max_length: int | None = None,
+    regex: str | None = None,
 ) -> Any:
     """
     Creates a pydantic FieldInfo instance with an extra kwargs,
     used for both parameter parsing and OpenAPI schema generation.
     """
-    extra: Dict[str, Any] = {}
+    extra: dict[str, Any] = {}
     extra.update(header=header)
     extra.update(cookie=cookie)
     extra.update(query=query)
@@ -70,30 +72,30 @@ def Parameter(
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Body(
     *,
-    media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
-    content_encoding: Optional[str] = None,
+    media_type: str | RequestEncodingType = RequestEncodingType.JSON,
+    examples: list[Example] | None = None,
+    external_docs: ExternalDocumentation | None = None,
+    content_encoding: str | None = None,
     default: Any = Undefined,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None
+    title: str | None = None,
+    description: str | None = None,
+    const: bool | None = None,
+    gt: float | None = None,
+    ge: float | None = None,
+    lt: float | None = None,
+    le: float | None = None,
+    multiple_of: float | None = None,
+    min_items: int | None = None,
+    max_items: int | None = None,
+    min_length: int | None = None,
+    max_length: int | None = None,
+    regex: str | None = None,
 ) -> Any:
     """
     Creates a pydantic FieldInfo instance with an extra kwargs,
     used for both parameter parsing and OpenAPI schema generation.
     """
-    extra: Dict[str, Any] = {}
+    extra: dict[str, Any] = {}
     extra.update(media_type=media_type)
     extra.update(examples=examples)
     extra.update(external_docs=external_docs)

@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 from logging import config
 from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel
 from typing_extensions import Literal
 
 
-def _resolve_handlers(handlers: List[Any]) -> List[Any]:
+def _resolve_handlers(handlers: list[Any]) -> list[Any]:
     """
     Converts list of string of handlers to the object of respective handler.
     Indexing the list performs the evaluation of the object.
@@ -20,7 +22,7 @@ class QueueListenerHandler(QueueHandler):
     Configures queue listener and handler to support non-blocking logging configuration.
     """
 
-    def __init__(self, handlers: List[Any], respect_handler_level: bool = False, queue: Queue = Queue(-1)):
+    def __init__(self, handlers: list[Any], respect_handler_level: bool = False, queue: Queue = Queue(-1)):
         super().__init__(queue)
         self.handlers = _resolve_handlers(handlers)
         self._listener: QueueListener = QueueListener(
@@ -33,22 +35,22 @@ class LoggingConfig(BaseModel):
     version: Literal[1] = 1
     incremental: bool = False
     disable_existing_loggers: bool = False
-    filters: Optional[Dict[str, Dict[str, Any]]] = None
+    filters: dict[str, dict[str, Any]] | None = None
     propagate: bool = True
-    formatters: Dict[str, Dict[str, Any]] = {
+    formatters: dict[str, dict[str, Any]] = {
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
-    handlers: Dict[str, Dict[str, Any]] = {
+    handlers: dict[str, dict[str, Any]] = {
         "console": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "standard"},
         "queue_listener": {"class": "starlite.QueueListenerHandler", "handlers": ["cfg://handlers.console"]},
     }
-    loggers: Dict[str, Dict[str, Any]] = {
+    loggers: dict[str, dict[str, Any]] = {
         "starlite": {
             "level": "INFO",
             "handlers": ["queue_listener"],
         },
     }
-    root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
+    root: dict[str, dict[str, Any] | list[Any] | str] = {"handlers": ["queue_listener"], "level": "INFO"}
 
     def configure(self) -> None:
         """Configure logging by converting 'self' to dict and passing it to logging.config.dictConfig"""

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
@@ -41,19 +43,19 @@ class Controller:
         "tags",
     )
 
-    after_request: Optional["AfterRequestHandler"]
-    before_request: Optional["BeforeRequestHandler"]
-    dependencies: Optional[Dict[str, "Provide"]]
-    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]
-    guards: Optional[List["Guard"]]
-    middleware: Optional[List[Union["Middleware", "Type[BaseHTTPMiddleware]", "Type[MiddlewareProtocol]"]]]
-    owner: "Router"
+    after_request: AfterRequestHandler | None
+    before_request: BeforeRequestHandler | None
+    dependencies: dict[str, Provide] | None
+    exception_handlers: dict[int | Type[Exception], ExceptionHandler] | None
+    guards: list[Guard] | None
+    middleware: list[Middleware | Type[BaseHTTPMiddleware] | Type[MiddlewareProtocol]] | None
+    owner: Router
     path: str
-    response_class: Optional["Type[Response]"]
-    response_headers: Optional[Dict[str, "ResponseHeader"]]
-    tags: Optional[List[str]]
+    response_class: Type[Response] | None
+    response_headers: dict[str, ResponseHeader] | None
+    tags: list[str] | None
 
-    def __init__(self, owner: "Router"):
+    def __init__(self, owner: Router):
         for key in [
             "after_request",
             "before_request",
@@ -70,11 +72,11 @@ class Controller:
         self.path = normalize_path(self.path or "/")
         self.owner = owner
 
-    def get_route_handlers(self) -> List[BaseRouteHandler]:
+    def get_route_handlers(self) -> list[BaseRouteHandler]:
         """
         Returns a list of route handlers defined on the controller
         """
-        route_handlers: List[BaseRouteHandler] = []
+        route_handlers: list[BaseRouteHandler] = []
         route_handler_fields = [
             f_name
             for f_name in dir(self)

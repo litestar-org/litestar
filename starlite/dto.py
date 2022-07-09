@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import asdict, is_dataclass
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union, cast
+from typing import Any, Generic, List, Optional, TypeVar, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
@@ -31,11 +33,11 @@ class DTO(GenericModel, Generic[T]):
         arbitrary_types_allowed = True
 
     dto_source_model: ClassVar[Any]
-    dto_field_mapping: ClassVar[Dict[str, str]]
-    dto_source_plugin: ClassVar[Optional[PluginProtocol]] = None
+    dto_field_mapping: ClassVar[dict[str, str]]
+    dto_source_plugin: ClassVar[PluginProtocol | None] = None
 
     @classmethod
-    def from_model_instance(cls, model_instance: T) -> "DTO[T]":
+    def from_model_instance(cls, model_instance: T) -> DTO[T]:
         """
         Given an instance of the source model, create an instance of the given DTO subclass
         """
@@ -67,16 +69,16 @@ class DTO(GenericModel, Generic[T]):
 
 
 class DTOFactory:
-    def __init__(self, plugins: Optional[List[PluginProtocol]] = None):
+    def __init__(self, plugins: list[PluginProtocol] | None = None):
         self.plugins = plugins or []
 
     def __call__(
         self,
         name: str,
         source: Type[T],
-        exclude: Optional[List[str]] = None,
-        field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
-        field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
+        exclude: list[str] | None = None,
+        field_mapping: dict[str, str | tuple[str, Any]] | None = None,
+        field_definitions: dict[str, tuple[Any, Any]] | None = None,
     ) -> Type[DTO[T]]:
         """
         Given a supported model class - either pydantic, dataclass or a class supported via plugins,
@@ -110,7 +112,7 @@ class DTOFactory:
         it's currently not possible to extend editor auto-complete for the DTO properties - it will be typed as a
         Pydantic BaseModel, but no attributes will be inferred in the editor.
         """
-        fields: Dict[str, ModelField]
+        fields: dict[str, ModelField]
         exclude = exclude or []
         field_mapping = field_mapping or {}
         field_definitions = field_definitions or {}

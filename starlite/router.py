@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import isclass
-from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
+from typing import Any, Dict, ItemsView, Type, Union, cast
 
 from pydantic import validate_arguments
 from starlette.middleware import Middleware
@@ -49,20 +51,20 @@ class Router:
     def __init__(
         self,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware | type[BaseHTTPMiddleware] | type[MiddlewareProtocol]] | None = None,
         path: str,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        route_handlers: List[ControllerRouterHandler],
-        tags: Optional[List[str]] = None,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        route_handlers: list[ControllerRouterHandler],
+        tags: list[str] | None = None,
     ):
-        self.owner: Optional["Router"] = None
-        self.routes: List[BaseRoute] = []
+        self.owner: Router | None = None
+        self.routes: list[BaseRoute] = []
         self.path = normalize_path(path)
         self.tags = tags
         self.response_class = response_class
@@ -77,11 +79,11 @@ class Router:
             self.register(value=route_handler)
 
     @property
-    def route_handler_method_map(self) -> Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]]:
+    def route_handler_method_map(self) -> dict[str, WebsocketRouteHandler | dict[HttpMethod, HTTPRouteHandler]]:
         """
         Returns dictionary that maps paths (keys) to a list of route handler functions (values)
         """
-        route_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
+        route_map: dict[str, WebsocketRouteHandler | dict[HttpMethod, HTTPRouteHandler]] = {}
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 if not isinstance(route_map.get(route.path), dict):
@@ -95,12 +97,12 @@ class Router:
 
     @staticmethod
     def map_route_handlers(
-        value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict[HttpMethod, HTTPRouteHandler]]]:
+        value: Controller | BaseRouteHandler | Router,
+    ) -> ItemsView[str, WebsocketRouteHandler | ASGIRoute | dict[HttpMethod, HTTPRouteHandler]]:
         """
         Maps route handlers to http methods
         """
-        handlers_map: Dict[str, Any] = {}
+        handlers_map: dict[str, Any] = {}
         if isinstance(value, BaseRouteHandler):
             for path in value.paths:
                 if isinstance(value, HTTPRouteHandler):
@@ -123,9 +125,7 @@ class Router:
                         handlers_map[path] = cast(Union[WebsocketRouteHandler, ASGIRouteHandler], route_handler)
         return handlers_map.items()
 
-    def validate_registration_value(
-        self, value: ControllerRouterHandler
-    ) -> Union[Controller, BaseRouteHandler, "Router"]:
+    def validate_registration_value(self, value: ControllerRouterHandler) -> Controller | BaseRouteHandler | Router:
         """
         Validates that the value passed to the register method is supported
         """
@@ -145,7 +145,7 @@ class Router:
         value.owner = self
         return cast(Union[Controller, BaseRouteHandler, "Router"], value)
 
-    def register(self, value: ControllerRouterHandler) -> List[BaseRoute]:
+    def register(self, value: ControllerRouterHandler) -> list[BaseRoute]:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -153,7 +153,7 @@ class Router:
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         validated_value = self.validate_registration_value(value)
-        routes: List[BaseRoute] = []
+        routes: list[BaseRoute] = []
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
@@ -163,7 +163,7 @@ class Router:
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             else:
-                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
+                existing_handlers: list[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
                 route_handlers = unique(list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values()))
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers))

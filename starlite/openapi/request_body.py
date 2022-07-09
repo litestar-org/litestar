@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from openapi_schema_pydantic.v3.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
 
-def create_request_body(field: "ModelField", generate_examples: bool) -> Optional[RequestBody]:
+def create_request_body(field: ModelField, generate_examples: bool) -> RequestBody | None:
     """
     Create a RequestBody model for the given RouteHandler or return None
     """

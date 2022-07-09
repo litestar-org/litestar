@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import Signature
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import Any, cast
 
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
@@ -14,14 +16,14 @@ class ASGIRouteHandler(BaseRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        path: str | None | list[str] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     ):
         super().__init__(path=path, guards=guards, opt=opt, exception_handlers=exception_handlers)
 
-    def __call__(self, fn: AnyCallable) -> "ASGIRouteHandler":
+    def __call__(self, fn: AnyCallable) -> ASGIRouteHandler:
         """
         Replaces a function with itself
         """

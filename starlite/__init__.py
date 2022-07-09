@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from starlite.datastructures import File, Redirect, State, Stream, Template

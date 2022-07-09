@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
 from urllib.parse import urlencode
 
 from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
@@ -26,12 +28,12 @@ if TYPE_CHECKING:
 
 
 class CORSConfig(BaseModel):
-    allow_origins: List[str] = ["*"]
-    allow_methods: List[str] = ["*"]
-    allow_headers: List[str] = ["*"]
+    allow_origins: list[str] = ["*"]
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
     allow_credentials: bool = False
-    allow_origin_regex: Optional[str] = None
-    expose_headers: List[str] = []
+    allow_origin_regex: str | None = None
+    expose_headers: list[str] = []
     max_age: int = 600
 
 
@@ -48,16 +50,16 @@ class OpenAPIConfig(BaseModel):
 
     title: str
     version: str
-    contact: Optional[Contact] = None
-    description: Optional[str] = None
-    external_docs: Optional[ExternalDocumentation] = None
-    license: Optional[License] = None
-    security: Optional[List[SecurityRequirement]] = None
-    servers: List[Server] = [Server(url="/")]
-    summary: Optional[str] = None
-    tags: Optional[List[Tag]] = None
-    terms_of_service: Optional[AnyUrl] = None
-    webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
+    contact: Contact | None = None
+    description: str | None = None
+    external_docs: ExternalDocumentation | None = None
+    license: License | None = None
+    security: list[SecurityRequirement] | None = None
+    servers: list[Server] = [Server(url="/")]
+    summary: str | None = None
+    tags: list[Tag] | None = None
+    terms_of_service: AnyUrl | None = None
+    webhooks: dict[str, PathItem | Reference] | None = None
 
     def to_openapi_schema(self) -> OpenAPI:
         """Generates an OpenAPI model"""
@@ -81,7 +83,7 @@ class OpenAPIConfig(BaseModel):
 
 class StaticFilesConfig(BaseModel):
     path: constr(min_length=1)  # type: ignore
-    directories: List[DirectoryPath]
+    directories: list[DirectoryPath]
     html_mode: bool = False
 
 
@@ -89,16 +91,16 @@ class TemplateConfig(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    directory: Union[DirectoryPath, List[DirectoryPath]]
+    directory: DirectoryPath | list[DirectoryPath]
     engine: Type[TemplateEngineProtocol]
-    engine_callback: Optional[Callable[[Any], Any]]
+    engine_callback: Callable[[Any], Any] | None
 
 
-def default_cache_key_builder(request: "Request") -> str:
+def default_cache_key_builder(request: Request) -> str:
     """
     Given a request object, returns a cache key by combining the path with the sorted query params
     """
-    qp: List[Tuple[str, Any]] = list(request.query_params.items())
+    qp: list[tuple[str, Any]] = list(request.query_params.items())
     qp.sort(key=lambda x: x[0])
     return request.url.path + urlencode(qp, doseq=True)
 

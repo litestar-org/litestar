@@ -1,11 +1,13 @@
-from typing import TYPE_CHECKING, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     from starlite.config import TemplateConfig
     from starlite.template import TemplateEngineProtocol
 
 
-def create_template_engine(template_config: Optional["TemplateConfig"]) -> Optional["TemplateEngineProtocol"]:
+def create_template_engine(template_config: TemplateConfig | None) -> TemplateEngineProtocol | None:
     """
     Construct a template engine if `template_config` is provided.
 
@@ -17,7 +19,7 @@ def create_template_engine(template_config: Optional["TemplateConfig"]) -> Optio
     -------
     TemplateEngineProtocol | None
     """
-    template_engine: Optional["TemplateEngineProtocol"]
+    template_engine: TemplateEngineProtocol | None
     if template_config:
         template_engine = template_config.engine(template_config.directory)
         if template_config.engine_callback is not None:

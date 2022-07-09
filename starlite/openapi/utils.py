@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import re
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import PYDANTIC_FIELD_SHAPE_MAP
 
 if TYPE_CHECKING:  # pragma: no cover
-    from typing import Union
-
     from pydantic.fields import ModelField
 
     from starlite import Controller, Router, Starlite
@@ -22,11 +22,11 @@ def pascal_case_to_text(s: str) -> str:
     return " ".join(re.split(CAPITAL_LETTERS_PATTERN, s)).strip()
 
 
-def extract_tags_from_route_handler(route_handler: "HTTPRouteHandler") -> Optional[List[str]]:
+def extract_tags_from_route_handler(route_handler: HTTPRouteHandler) -> list[str] | None:
     """Extracts and combines tags from route_handler and any owners"""
     child_tags = route_handler.tags or []
-    parent_tags: List[str] = []
-    obj: "Union[HTTPRouteHandler, Controller, Router, Starlite]"
+    parent_tags: list[str] = []
+    obj: HTTPRouteHandler | Controller | Router | Starlite
     obj = route_handler
     while hasattr(obj, "owner"):
         if obj.owner is None:
@@ -36,7 +36,7 @@ def extract_tags_from_route_handler(route_handler: "HTTPRouteHandler") -> Option
     return list(set(child_tags) | set(parent_tags)) or None
 
 
-def get_openapi_type_for_complex_type(field: "ModelField") -> "OpenAPIType":
+def get_openapi_type_for_complex_type(field: ModelField) -> OpenAPIType:
     """
     We are dealing with complex types in this case.
 

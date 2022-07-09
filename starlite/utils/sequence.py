@@ -1,9 +1,11 @@
-from typing import Callable, Iterable, List, TypeVar
+from __future__ import annotations
+
+from typing import Callable, Iterable, TypeVar
 
 T = TypeVar("T")
 
 
-def find_index(target_list: List[T], predicate: Callable[[T], bool]) -> int:
+def find_index(target_list: list[T], predicate: Callable[[T], bool]) -> int:
     """Find element in list given a key and value. List elements can be dicts or classes"""
     for i, element in enumerate(target_list):
         if predicate(element):
@@ -11,12 +13,12 @@ def find_index(target_list: List[T], predicate: Callable[[T], bool]) -> int:
     return -1
 
 
-def unique(value: Iterable[T]) -> List[T]:
+def unique(value: Iterable[T]) -> list[T]:
     """Return all unique values in a given sequence or iterator"""
     try:
         return list(set(value))
     except TypeError:
-        output: List[T] = []
+        output: list[T] = []
         for element in value:
             if not any(v == element for v in output):
                 output.append(element)

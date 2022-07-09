@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, List, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
 from pydantic import BaseModel
@@ -14,9 +16,7 @@ if TYPE_CHECKING:
     from starlite.handlers import BaseRouteHandler
 
 
-def create_path_parameter_schema(
-    path_parameter: Dict[str, Any], field: ModelField, generate_examples: bool
-) -> "Schema":
+def create_path_parameter_schema(path_parameter: dict[str, Any], field: ModelField, generate_examples: bool) -> Schema:
     """Create a path parameter from the given path_param definition"""
     field.sub_fields = None
     field.outer_type_ = path_parameter["type"]
@@ -33,9 +33,9 @@ class ParameterCollection:
     is raised.
     """
 
-    def __init__(self, route_handler: "BaseRouteHandler") -> None:
+    def __init__(self, route_handler: BaseRouteHandler) -> None:
         self.route_handler = route_handler
-        self._parameters: Dict[str, Parameter] = {}
+        self._parameters: dict[str, Parameter] = {}
 
     def add(self, parameter: Parameter) -> None:
         """
@@ -58,7 +58,7 @@ class ParameterCollection:
             f"'{parameter.name}' with different types."
         )
 
-    def list(self) -> List[Parameter]:
+    def list(self) -> list[Parameter]:
         """
         Return a list of all `Parameter`'s in the collection.
         """
@@ -66,11 +66,11 @@ class ParameterCollection:
 
 
 def create_parameters(
-    route_handler: "BaseRouteHandler",
-    handler_fields: Dict[str, ModelField],
-    path_parameters: List[Dict[str, Any]],
+    route_handler: BaseRouteHandler,
+    handler_fields: dict[str, ModelField],
+    path_parameters: list[dict[str, Any]],
     generate_examples: bool,
-) -> List[Parameter]:
+) -> list[Parameter]:
     """
     Create a list of path/query/header Parameter models for the given PathHandler
     """

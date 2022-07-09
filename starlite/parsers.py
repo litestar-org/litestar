@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -18,9 +20,7 @@ _true_values = {"True", "true"}
 _false_values = {"False", "false"}
 
 
-def _query_param_reducer(
-    acc: Dict[str, Union[str, List[str]]], cur: Tuple[str, str]
-) -> Dict[str, Union[str, List[str]]]:
+def _query_param_reducer(acc: dict[str, str | list[str]], cur: tuple[str, str]) -> dict[str, str | list[str]]:
     """
     Reducer function - acc is a dictionary, cur is a tuple of key + value
 
@@ -41,7 +41,7 @@ def _query_param_reducer(
     return acc
 
 
-def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
+def parse_query_params(connection: HTTPConnection) -> dict[str, Any]:
     """
     Parses and normalize a given connection's query parameters into a regular dictionary
     """
@@ -53,7 +53,7 @@ def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
     )
 
 
-def _path_param_reducer(acc: Dict[str, Union[str, List[str]]], cur: Tuple[Dict[str, Any], str]) -> Dict[str, Any]:
+def _path_param_reducer(acc: dict[str, str | list[str]], cur: tuple[dict[str, Any], str]) -> dict[str, Any]:
     """
     Reducer function - acc is a dictionary, cur is a tuple of a param definition object + raw string value
     """
@@ -64,7 +64,7 @@ def _path_param_reducer(acc: Dict[str, Union[str, List[str]]], cur: Tuple[Dict[s
     return acc
 
 
-def parse_path_params(path_parameters: List[Dict[str, Any]], raw_params: List[str]) -> Dict[str, Any]:
+def parse_path_params(path_parameters: list[dict[str, Any]], raw_params: list[str]) -> dict[str, Any]:
     """
     Parses raw path parameters by mapping them into a dictionary
     """
@@ -80,7 +80,7 @@ def parse_form_data(media_type: RequestEncodingType, form_data: FormData, field:
 
     Supports lists.
     """
-    values_dict: Dict[str, Any] = {}
+    values_dict: dict[str, Any] = {}
     for key, value in form_data.multi_items():
         if not isinstance(value, UploadFile):
             with suppress(JSONDecodeError):

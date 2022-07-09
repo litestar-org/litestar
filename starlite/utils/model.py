@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Dict, Type, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic_factories.utils import create_model_from_dataclass
@@ -12,16 +14,16 @@ class Config(BaseConfig):
     arbitrary_types_allowed = True
 
 
-def create_parsed_model_field(value: Type[Any]) -> "ModelField":
+def create_parsed_model_field(value: type[Any]) -> ModelField:
     """Create a pydantic model with the passed in value as its sole field, and return the parsed field"""
     model = create_model("temp", __config__=Config, **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)})  # type: ignore
     return cast(BaseModel, model).__fields__["value"]
 
 
-_dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
+_dataclass_model_map: dict[Any, type[BaseModel]] = {}
 
 
-def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
+def convert_dataclass_to_model(dataclass: Any) -> type[BaseModel]:
     """Converts a dataclass to a pydantic model and memoizes the result"""
     if not isclass(dataclass) and hasattr(dataclass, "__class__"):
         dataclass = dataclass.__class__

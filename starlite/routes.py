@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import pickle
 import re
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 from uuid import UUID
 
 from anyio.to_thread import run_sync
@@ -53,10 +55,10 @@ class BaseRoute:
     def __init__(
         self,
         *,
-        handler_names: List[str],
+        handler_names: list[str],
         path: str,
         scope_type: ScopeType,
-        methods: Optional[List[Method]] = None,
+        methods: list[Method] | None = None,
     ):
         self.path, self.path_format, self.path_parameters = self.parse_path(path)
         self.handler_names = handler_names
@@ -66,7 +68,7 @@ class BaseRoute:
             self.methods.add("HEAD")
 
     @staticmethod
-    def validate_path_parameters(parameters: List[str]) -> None:
+    def validate_path_parameters(parameters: list[str]) -> None:
         """
         Validates that path parameters adhere to the required format and datatypes
 
@@ -86,7 +88,7 @@ class BaseRoute:
                 )
 
     @classmethod
-    def parse_path(cls, path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
+    def parse_path(cls, path: str) -> tuple[str, str, list[dict[str, Any]]]:
         """
         Normalizes and parses a path
         """
@@ -131,10 +133,10 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: List[HTTPRouteHandler],
+        route_handlers: list[HTTPRouteHandler],
     ):
         self.route_handlers = route_handlers
-        self.route_handler_map: Dict[Method, Tuple[HTTPRouteHandler, KwargsModel]] = {}
+        self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
         super().__init__(
             methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
             path=path,
@@ -152,7 +154,7 @@ class HTTPRoute(BaseRoute):
             await route_handler.authorize_connection(connection=request)
 
         caching_enabled = route_handler.cache
-        response: Optional[Union["Response", StarletteResponse]] = None
+        response: Response | StarletteResponse | None = None
         if caching_enabled:
             response = await self.get_cached_response(request=request, route_handler=route_handler)
         if not response:
@@ -238,7 +240,7 @@ class HTTPRoute(BaseRoute):
                 self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
     @staticmethod
-    async def get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> Optional[StarletteResponse]:
+    async def get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> StarletteResponse | None:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
@@ -291,7 +293,7 @@ class WebSocketRoute(BaseRoute):
         route_handler: WebsocketRouteHandler,
     ):
         self.route_handler = route_handler
-        self.handler_parameter_model: Optional[KwargsModel] = None
+        self.handler_parameter_model: KwargsModel | None = None
         super().__init__(
             path=path,
             scope_type=ScopeType.WEBSOCKET,

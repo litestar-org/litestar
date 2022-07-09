@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .base import PluginMapping, PluginProtocol, get_plugin_for_value
 
 __all__ = [

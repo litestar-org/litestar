@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import deque
 from datetime import date, datetime, time, timedelta
-from typing import Any, Dict, Pattern, Type, Union
+from typing import Any, Pattern
 from uuid import UUID
 
 from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
@@ -54,7 +56,7 @@ from pydantic.fields import (
 
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 
-PYDANTIC_FIELD_SHAPE_MAP: Dict[int, OpenAPIType] = {
+PYDANTIC_FIELD_SHAPE_MAP: dict[int, OpenAPIType] = {
     SHAPE_LIST: OpenAPIType.ARRAY,
     SHAPE_SET: OpenAPIType.ARRAY,
     SHAPE_TUPLE: OpenAPIType.ARRAY,
@@ -66,7 +68,7 @@ PYDANTIC_FIELD_SHAPE_MAP: Dict[int, OpenAPIType] = {
     SHAPE_DICT: OpenAPIType.OBJECT,
     SHAPE_DEFAULTDICT: OpenAPIType.OBJECT,
 }
-TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
+TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     str: Schema(type=OpenAPIType.STRING),
     bool: Schema(type=OpenAPIType.BOOLEAN),
     int: Schema(type=OpenAPIType.INTEGER),
@@ -189,7 +191,7 @@ TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
 }
 
 
-PYDANTIC_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
+PYDANTIC_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "default": "default",
     "multiple_of": "multipleOf",
     "ge": "minimum",
@@ -205,7 +207,7 @@ PYDANTIC_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
     "description": "description",
 }
 
-EXTRA_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
+EXTRA_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "examples": "examples",
     "external_docs": "externalDocs",
     "content_encoding": "contentEncoding",

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from orjson import OPT_INDENT_2, dumps
@@ -21,19 +23,19 @@ class OpenAPIController(Controller):
     dumped_schema = ""
 
     @staticmethod
-    def schema_from_request(request: Request) -> "OpenAPI":
+    def schema_from_request(request: Request) -> OpenAPI:
         """Returns the openapi schema"""
         if not request.app.openapi_schema:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         return request.app.openapi_schema
 
     @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
-    def retrieve_schema_yaml(self, request: Request) -> "OpenAPI":
+    def retrieve_schema_yaml(self, request: Request) -> OpenAPI:
         """Returns the openapi schema"""
         return self.schema_from_request(request)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
-    def retrieve_schema_json(self, request: Request) -> "OpenAPI":
+    def retrieve_schema_json(self, request: Request) -> OpenAPI:
         """Returns the openapi schema"""
         return self.schema_from_request(request)
 

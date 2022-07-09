@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .asgi import ASGIRouteHandler, asgi
 from .base import BaseRouteHandler
 from .http import HTTPRouteHandler, delete, get, patch, post, put, route

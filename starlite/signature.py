@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from inspect import Parameter, Signature
 from typing import (
@@ -5,13 +7,9 @@ from typing import (
     AbstractSet,
     Any,
     ClassVar,
-    Dict,
     Generator,
     List,
-    Set,
-    Tuple,
     Type,
-    Union,
     cast,
 )
 
@@ -32,7 +30,7 @@ from starlite.utils.dependency import is_dependency_field
 from starlite.utils.typing import detect_optional_union
 
 if TYPE_CHECKING:
-    from pydantic.error_wrappers import ErrorDict
+    from pydantic.error_wrappers import ErrorDict  # noqa: TC004 (false-positive)
     from pydantic.typing import AnyCallable
     from starlette.datastructures import URL
 
@@ -44,16 +42,14 @@ class SignatureModel(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
+    field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
     has_kwargs: ClassVar[bool]
     # this is the factory instance used to construct the model
-    factory: ClassVar["SignatureModelFactory"]
+    factory: ClassVar[SignatureModelFactory]
 
     @classmethod
-    def parse_values_from_connection_kwargs(
-        cls, connection: Union[Request, WebSocket], **kwargs: Any
-    ) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: Request | WebSocket, **kwargs: Any) -> dict[str, Any]:
         """
         Given a dictionary of values extracted from the connection, create an instance of the given
         SignatureModel subclass and return the parsed values.
@@ -77,8 +73,8 @@ class SignatureModel(BaseModel):
 
     @classmethod
     def construct_exception(
-        cls, connection: Union[Request, WebSocket], exc: ValidationError
-    ) -> Union[InternalServerException, ValidationException]:
+        cls, connection: Request | WebSocket, exc: ValidationError
+    ) -> InternalServerException | ValidationException:
         """
         Distinguish between validation errors that arise from parameters and dependencies.
 
@@ -93,8 +89,8 @@ class SignatureModel(BaseModel):
         -------
         ValidationException | InternalServerException
         """
-        server_errors: List["ErrorDict"] = []
-        client_errors: List["ErrorDict"] = []
+        server_errors: list[ErrorDict] = []
+        client_errors: list[ErrorDict] = []
 
         for error in exc.errors():
             if cls.is_server_error(error):
@@ -110,12 +106,12 @@ class SignatureModel(BaseModel):
         return InternalServerException(detail=f"A dependency failed validation for {method} {url}", extra=server_errors)
 
     @classmethod
-    def is_server_error(cls, error: "ErrorDict") -> bool:
+    def is_server_error(cls, error: ErrorDict) -> bool:
         """Check whether given validation error is a server error"""
         return error["loc"][-1] in cls.factory.dependency_name_set
 
     @staticmethod
-    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, "URL"]:
+    def get_connection_method_and_url(connection: Request | WebSocket) -> tuple[str, URL]:
         """Extract method and URL from Request or WebSocket"""
         method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
         return method, connection.url
@@ -213,7 +209,7 @@ class SignatureModelFactory:
     SKIP_VALIDATION_NAMES = {"request", "socket"}
 
     def __init__(
-        self, fn: "AnyCallable", plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
+        self, fn: AnyCallable, plugins: list[PluginProtocol], provided_dependency_names: AbstractSet[str]
     ) -> None:
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
@@ -221,12 +217,12 @@ class SignatureModelFactory:
         self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
         self.plugins = plugins
         self.provided_dependency_names = provided_dependency_names
-        self.field_plugin_mappings: Dict[str, PluginMapping] = {}
-        self.field_definitions: Dict[str, Any] = {}
-        self.defaults: Dict[str, Any] = {}
+        self.field_plugin_mappings: dict[str, PluginMapping] = {}
+        self.field_definitions: dict[str, Any] = {}
+        self.defaults: dict[str, Any] = {}
         # this ends up being the total set of all identified deps. Might be provided, or not but
         # with default value.
-        self.dependency_name_set: Set[str] = set(provided_dependency_names)
+        self.dependency_name_set: set[str] = set(provided_dependency_names)
 
     def check_for_unprovided_dependency(self, parameter: SignatureParameter) -> None:
         """
@@ -300,7 +296,7 @@ class SignatureModelFactory:
         return pydantic_model
 
     @staticmethod
-    def field_definition_from_parameter(parameter: SignatureParameter) -> Tuple[Any, Any]:
+    def field_definition_from_parameter(parameter: SignatureParameter) -> tuple[Any, Any]:
         """
         Construct an `(<annotation>, <default>)` tuple, appropriate for `pydantic.create_model()`.
 
@@ -335,7 +331,7 @@ class SignatureModelFactory:
                 continue
             yield SignatureParameter(self.fn_name, name, parameter)
 
-    def model(self) -> Type[SignatureModel]:
+    def model(self) -> type[SignatureModel]:
         """
         Construct a `SignatureModel` type that represents the signature of `self.fn`
 
@@ -359,7 +355,7 @@ class SignatureModelFactory:
                 if plugin:
                     parameter.annotation = self.get_type_annotation_from_plugin(parameter, plugin)
                 self.field_definitions[parameter.name] = self.field_definition_from_parameter(parameter)
-            model: Type[SignatureModel] = create_model(
+            model: type[SignatureModel] = create_model(
                 self.fn_name + "_signature_model", __base__=SignatureModel, **self.field_definitions
             )
             model.return_annotation = self.signature.return_annotation
@@ -371,7 +367,7 @@ class SignatureModelFactory:
             raise ImproperlyConfiguredException(repr(e)) from e
 
 
-def get_signature_model(value: Any) -> Type[SignatureModel]:
+def get_signature_model(value: Any) -> type[SignatureModel]:
     """
     Helper function to retrieve and validate the signature model from a provider or handler
     """

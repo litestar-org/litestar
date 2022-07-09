@@ -1,4 +1,6 @@
 # pylint: disable=too-many-instance-attributes, too-many-arguments
+from __future__ import annotations
+
 from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass, ismethod
@@ -86,40 +88,40 @@ class HTTPRouteHandler(BaseRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]] = None,  # type: ignore
-        after_request: Optional[AfterRequestHandler] = None,
-        background_tasks: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        http_method: HttpMethod | Method | list[HttpMethod | Method] = None,  # type: ignore
+        after_request: AfterRequestHandler | None = None,
+        background_tasks: BackgroundTask | BackgroundTasks | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        opt: dict[str, Any] | None = None,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
         if isinstance(http_method, list):
-            self.http_method: Union[List[str], str] = [v.upper() for v in http_method]
+            self.http_method: list[str] | str = [v.upper() for v in http_method]
             if len(http_method) == 1:
                 self.http_method = http_method[0]
         else:
@@ -163,16 +165,16 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.summary = summary
         self.tags = tags
         # memoized attributes, defaulted to BaseRouteHandler.empty
-        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_after_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_before_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
+        self.resolved_headers: dict[str, ResponseHeader] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_response_class: type[Response] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_after_request: (
+            BeforeRequestHandler | None | type[BaseRouteHandler.empty]
+        ) = BaseRouteHandler.empty
+        self.resolved_before_request: (
+            BeforeRequestHandler | None | type[BaseRouteHandler.empty]
+        ) = BaseRouteHandler.empty
 
-    def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
+    def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """
         Replaces a function with itself
         """
@@ -180,7 +182,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.validate_handler_function()
         return self
 
-    def ownership_layers(self) -> Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None]:
+    def ownership_layers(self) -> Generator[HTTPRouteHandler | Controller | Router, None, None]:
         """
         Returns all the handler and then all owners up to the app level
 
@@ -190,7 +192,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None], super().ownership_layers()
         )
 
-    def resolve_response_class(self) -> Type[Response]:
+    def resolve_response_class(self) -> type[Response]:
         """
         Returns the closest custom Response class in the owner graph or the default Response class.
 
@@ -204,20 +206,20 @@ class HTTPRouteHandler(BaseRouteHandler):
                     break
         return cast(Type[Response], self.resolved_response_class)
 
-    def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
+    def resolve_response_headers(self) -> dict[str, ResponseHeader]:
         """
         Returns all header parameters in the scope of the handler function
 
         This method is memoized so the computation occurs only once.
         """
         if self.resolved_headers is BaseRouteHandler.empty:
-            headers: Dict[str, ResponseHeader] = {}
+            headers: dict[str, ResponseHeader] = {}
             for layer in reversed(list(self.ownership_layers())):
                 headers = {**headers, **(layer.response_headers or {})}
             self.resolved_headers = headers
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
-    def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
+    def resolve_before_request(self) -> BeforeRequestHandler | None:
         """
         Resolves the before_handler handler by starting from the route handler and moving up.
 
@@ -236,7 +238,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
 
-    def resolve_after_request(self) -> Optional[AfterRequestHandler]:
+    def resolve_after_request(self) -> AfterRequestHandler | None:
         """
         Resolves the after_request handler by starting from the route handler and moving up.
 
@@ -256,7 +258,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)
 
     @property
-    def http_methods(self) -> List[Method]:
+    def http_methods(self) -> list[Method]:
         """
         Returns a list of the RouteHandler's HttpMethod members
         """
@@ -291,9 +293,9 @@ class HTTPRouteHandler(BaseRouteHandler):
     def _get_response_from_data(
         self,
         headers: dict,
-        data: Union[StarletteResponse, StarliteType],
-        media_type: Union[MediaType, str],
-        app: "Starlite",
+        data: StarletteResponse | StarliteType,
+        media_type: MediaType | str,
+        app: Starlite,
     ) -> StarletteResponse:
         if isinstance(data, Redirect):
             return RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
@@ -318,7 +320,7 @@ class HTTPRouteHandler(BaseRouteHandler):
     @staticmethod
     async def _process_after_request_hook(
         response: StarletteResponse,
-        after_request: Optional[AfterRequestHandler] = None,
+        after_request: AfterRequestHandler | None = None,
     ) -> StarletteResponse:
         if after_request:
             if is_async_callable(after_request):
@@ -326,7 +328,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             return await run_sync(after_request, response)  # type: ignore[arg-type]
         return response
 
-    async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
+    async def to_response(self, data: Any, app: "Starlite", plugins: list[PluginProtocol]) -> StarletteResponse:
         """
         Given a data kwarg, determine its type and return the appropriate response
         """
@@ -363,33 +365,33 @@ class get(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         super().__init__(
             http_method=HttpMethod.GET,
@@ -425,33 +427,33 @@ class post(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         super().__init__(
             http_method=HttpMethod.POST,
@@ -487,33 +489,33 @@ class put(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         super().__init__(
             http_method=HttpMethod.PUT,
@@ -549,33 +551,33 @@ class patch(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         super().__init__(
             http_method=HttpMethod.PATCH,
@@ -611,33 +613,33 @@ class delete(HTTPRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
-        response_class: Optional[Type[Response]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
-        status_code: Optional[int] = None,
-        cache: Union[bool, int] = False,
-        cache_key_builder: Optional[CacheKeyBuilder] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        after_request: AfterRequestHandler | None = None,
+        before_request: BeforeRequestHandler | None = None,
+        media_type: MediaType | str = MediaType.JSON,
+        response_class: type[Response] | None = None,
+        response_headers: dict[str, ResponseHeader] | None = None,
+        status_code: int | None = None,
+        cache: bool | int = False,
+        cache_key_builder: CacheKeyBuilder | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        middleware: list[Middleware] | None = None,
         # sync only
         sync_to_thread: bool = False,
         # OpenAPI related attributes
-        content_encoding: Optional[str] = None,
-        content_media_type: Optional[str] = None,
+        content_encoding: str | None = None,
+        content_media_type: str | None = None,
         deprecated: bool = False,
-        description: Optional[str] = None,
+        description: str | None = None,
         include_in_schema: bool = True,
-        operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
-        response_description: Optional[str] = None,
-        summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        operation_id: str | None = None,
+        raises: list[type[HTTPException]] | None = None,
+        response_description: str | None = None,
+        summary: str | None = None,
+        tags: list[str] | None = None,
     ):
         super().__init__(
             http_method=HttpMethod.DELETE,

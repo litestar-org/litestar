@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, Union
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -35,7 +37,7 @@ class AuthenticationResult(BaseModel):
 class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
-    def __init__(self, app: "ASGIApp"):
+    def __init__(self, app: ASGIApp):
         super().__init__(app)
         self.app = app
 
@@ -56,7 +58,7 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
         return None
 
     @staticmethod
-    def create_error_response(exc: Union[NotAuthorizedException, PermissionDeniedException]) -> Response:
+    def create_error_response(exc: NotAuthorizedException | PermissionDeniedException) -> Response:
         """Creates an Error response from the given exceptions, defaults to a JSON response"""
         return Response(
             media_type=MediaType.JSON,
@@ -77,9 +79,7 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
 
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):
-    def __init__(
-        self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], ExceptionHandler]
-    ):
+    def __init__(self, app: ASGIApp, debug: bool, exception_handlers: dict[int | Type[Exception], ExceptionHandler]):
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
@@ -106,7 +106,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
                 reason = repr(exc)
                 await send({"type": "websocket.close", "code": status_code, "reason": reason})
 
-    def default_http_exception_handler(self, request: Request, exc: Exception) -> "StarletteResponse":
+    def default_http_exception_handler(self, request: Request, exc: Exception) -> StarletteResponse:
         """Default handler for exceptions subclassed from HTTPException"""
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:

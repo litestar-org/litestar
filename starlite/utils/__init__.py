@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .helpers import is_async_callable
 from .model import convert_dataclass_to_model, create_parsed_model_field
 from .sequence import find_index, unique

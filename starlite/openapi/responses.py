@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from http import HTTPStatus
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Iterator, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.header import Header
 from openapi_schema_pydantic.v3.v3_1_0.media_type import (
@@ -26,7 +28,7 @@ if TYPE_CHECKING:
 
 
 def create_success_response(
-    route_handler: "HTTPRouteHandler",
+    route_handler: HTTPRouteHandler,
     generate_examples: bool,
 ) -> Response:
     """
@@ -34,7 +36,7 @@ def create_success_response(
     """
 
     signature = Signature.from_callable(cast(AnyCallable, route_handler.fn))
-    default_descriptions: Dict[Any, str] = {
+    default_descriptions: dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",
         File: "File Download",
@@ -115,11 +117,11 @@ def create_success_response(
     return response
 
 
-def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tuple[str, Response]]:
+def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, Response]]:
     """
     Creates the schema for error responses, if any
     """
-    grouped_exceptions: Dict[int, List[Type[HTTPException]]] = {}
+    grouped_exceptions: dict[int, list[type[HTTPException]]] = {}
     for exc in exceptions:
         if not grouped_exceptions.get(exc.status_code):
             grouped_exceptions[exc.status_code] = []
@@ -152,14 +154,14 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 
 
 def create_responses(
-    route_handler: "HTTPRouteHandler",
+    route_handler: HTTPRouteHandler,
     raises_validation_error: bool,
     generate_examples: bool,
-) -> Optional["Responses"]:
+) -> Responses | None:
     """
     Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None
     """
-    responses: "Responses" = {
+    responses: Responses = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
             generate_examples=generate_examples,

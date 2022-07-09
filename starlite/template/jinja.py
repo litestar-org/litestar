@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, List, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
@@ -17,7 +19,7 @@ except ImportError as exc:  # pragma: no cover
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
     """Template engine using the jinja templating library"""
 
-    def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
+    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
         super().__init__(directory)
         loader = FileSystemLoader(searchpath=directory)
         self.engine = Environment(loader=loader, autoescape=True)

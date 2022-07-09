@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, cast
+from typing import Any, Optional, cast
 
 from starlite.cache.base import CacheBackendProtocol
 
@@ -22,7 +24,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
         expiration: datetime
 
     def __init__(self) -> None:
-        self._store: Dict[str, Any] = {}
+        self._store: dict[str, Any] = {}
 
     def get(self, key: str) -> Any:
         """

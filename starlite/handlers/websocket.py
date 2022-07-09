@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from inspect import Signature
 from typing import TYPE_CHECKING, cast
 
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
+    def __call__(self, fn: AsyncAnyCallable) -> WebsocketRouteHandler:
         """
         Replaces a function with itself
         """

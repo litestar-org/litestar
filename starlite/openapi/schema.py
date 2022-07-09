@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import is_dataclass
 from decimal import Decimal
 from enum import Enum, EnumMeta
-from typing import Any, List, Optional, Type, Union
+from typing import Any
 
 from openapi_schema_pydantic.util import PydanticSchema
 from openapi_schema_pydantic.v3.v3_1_0.example import Example
@@ -56,7 +58,7 @@ class ExampleFactory(ModelFactory[BaseModel]):
 
 
 def create_numerical_constrained_field_schema(
-    field_type: Union[Type[ConstrainedFloat], Type[ConstrainedInt], Type[ConstrainedDecimal]]
+    field_type: type[ConstrainedFloat] | type[ConstrainedInt] | type[ConstrainedDecimal],
 ) -> Schema:
     """
     Create Schema from Constrained Int/Float/Decimal field
@@ -75,7 +77,7 @@ def create_numerical_constrained_field_schema(
     return schema
 
 
-def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr], Type[ConstrainedBytes]]) -> Schema:
+def create_string_constrained_field_schema(field_type: type[ConstrainedStr] | type[ConstrainedBytes]) -> Schema:
     """
     Create Schema from Constrained Str/Bytes field
     """
@@ -92,8 +94,8 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
 
 
 def create_collection_constrained_field_schema(
-    field_type: Union[Type[ConstrainedList], Type[ConstrainedSet]],
-    sub_fields: Optional[List[ModelField]],
+    field_type: type[ConstrainedList] | type[ConstrainedSet],
+    sub_fields: list[ModelField] | None,
 ) -> Schema:
     """
     Create Schema from Constrained List/Set field
@@ -118,16 +120,16 @@ def create_collection_constrained_field_schema(
 
 
 def create_constrained_field_schema(
-    field_type: Union[
-        Type[ConstrainedSet],
-        Type[ConstrainedList],
-        Type[ConstrainedStr],
-        Type[ConstrainedBytes],
-        Type[ConstrainedFloat],
-        Type[ConstrainedInt],
-        Type[ConstrainedDecimal],
-    ],
-    sub_fields: Optional[List[ModelField]],
+    field_type: (
+        type[ConstrainedSet]
+        | type[ConstrainedList]
+        | type[ConstrainedStr]
+        | type[ConstrainedBytes]
+        | type[ConstrainedFloat]
+        | type[ConstrainedInt]
+        | type[ConstrainedDecimal]
+    ),
+    sub_fields: list[ModelField] | None,
 ) -> Schema:
     """
     Create Schema for Pydantic Constrained fields (created using constr(), conint() etc. or by subclassing Constrained*)
@@ -169,14 +171,14 @@ def get_schema_for_field_type(field: ModelField) -> Schema:
     if is_dataclass(field_type):
         return PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
     if isinstance(field_type, EnumMeta):
-        enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
+        enum_values: list[str | int] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
 
 
-def create_examples_for_field(field: ModelField) -> List[Example]:
+def create_examples_for_field(field: ModelField) -> list[Example]:
     """
     Use the pydantic-factories package to create an example value for the given schema
     """

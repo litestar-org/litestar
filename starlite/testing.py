@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
@@ -53,7 +55,7 @@ __all__ = [
 
 
 class RequestEncoder(RequestEncodingMixin):
-    def multipart_encode(self, data: Dict[str, Any]) -> Tuple[bytes, str]:
+    def multipart_encode(self, data: dict[str, Any]) -> tuple[bytes, str]:
         class ForceMultipartDict(dict):
             # code borrowed from here:
             # https://github.com/encode/starlette/blob/d222b87cb4601ecda5d642ab504a14974d364db4/tests/test_formparsers.py#L14
@@ -62,7 +64,7 @@ class RequestEncoder(RequestEncodingMixin):
 
         return self._encode_files(ForceMultipartDict(), data)  # type: ignore
 
-    def url_encode(self, data: Dict[str, Any]) -> bytes:
+    def url_encode(self, data: dict[str, Any]) -> bytes:
         return self._encode_params(data).encode("utf-8")  # type: ignore
 
 
@@ -79,7 +81,7 @@ class TestClient(StarletteTestClient):
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: str = "asyncio",
-        backend_options: Optional[Dict[str, Any]] = None,
+        backend_options: dict[str, Any] | None = None,
     ):
         super().__init__(
             app=app,
@@ -111,32 +113,35 @@ class TestClient(StarletteTestClient):
 
 
 def create_test_client(
-    route_handlers: Union[
-        Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"],
-        List[Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"]],
-    ],
+    route_handlers: (
+        Type[Controller]
+        | BaseRouteHandler
+        | Router
+        | AnyCallable
+        | list[Type[Controller] | BaseRouteHandler | Router | AnyCallable]
+    ),
     *,
-    after_request: Optional["AfterRequestHandler"] = None,
-    allowed_hosts: Optional[List[str]] = None,
+    after_request: AfterRequestHandler | None = None,
+    allowed_hosts: list[str] | None = None,
     backend: str = "asyncio",
-    backend_options: Optional[Dict[str, Any]] = None,
+    backend_options: dict[str, Any] | None = None,
     base_url: str = "http://testserver",
-    before_request: Optional["BeforeRequestHandler"] = None,
-    cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
-    cors_config: Optional["CORSConfig"] = None,
-    dependencies: Optional[Dict[str, "Provide"]] = None,
-    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]] = None,
-    guards: Optional[List["Guard"]] = None,
-    gzip_config: Optional["GZIPConfig"] = None,
-    middleware: Optional[List["Middleware"]] = None,
-    on_shutdown: Optional[List["LifeCycleHandler"]] = None,
-    on_startup: Optional[List["LifeCycleHandler"]] = None,
-    openapi_config: Optional["OpenAPIConfig"] = None,
-    plugins: Optional[List["PluginProtocol"]] = None,
+    before_request: BeforeRequestHandler | None = None,
+    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    cors_config: CORSConfig | None = None,
+    dependencies: dict[str, Provide] | None = None,
+    exception_handlers: dict[int | Type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    gzip_config: GZIPConfig | None = None,
+    middleware: list[Middleware] | None = None,
+    on_shutdown: list[LifeCycleHandler] | None = None,
+    on_startup: list[LifeCycleHandler] | None = None,
+    openapi_config: OpenAPIConfig | None = None,
+    plugins: list[PluginProtocol] | None = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
-    static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
-    template_config: Optional["TemplateConfig"] = None,
+    static_files_config: StaticFilesConfig | list[StaticFilesConfig] | None = None,
+    template_config: TemplateConfig | None = None,
 ) -> TestClient:
     """Create a TestClient"""
     return TestClient(
@@ -169,13 +174,13 @@ def create_test_client(
 
 def create_test_request(
     http_method: HttpMethod = HttpMethod.GET,
-    app: Optional[Starlite] = None,
-    content: Optional[Union[Dict[str, Any], BaseModel]] = None,
-    cookie: Optional[str] = None,
-    headers: Optional[Dict[str, str]] = None,
+    app: Starlite | None = None,
+    content: dict[str, Any] | BaseModel | None = None,
+    cookie: str | None = None,
+    headers: dict[str, str] | None = None,
     path: str = "",
     port: int = 3000,
-    query: Optional[Dict[str, Union[str, List[str]]]] = None,
+    query: dict[str, str | list[str]] | None = None,
     request_media_type: RequestEncodingType = RequestEncodingType.JSON,
     root_path: str = "/",
     scheme: str = "http",
@@ -185,7 +190,7 @@ def create_test_request(
 
     class App:
         state = State()
-        plugins: List[Any] = []
+        plugins: list[Any] = []
 
     scope = dict(
         type="http",

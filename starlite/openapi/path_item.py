@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.operation import Operation
@@ -15,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from starlite.routes import HTTPRoute
 
 
-def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
+def create_path_item(route: HTTPRoute, create_examples: bool) -> PathItem:
     """
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """

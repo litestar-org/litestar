@@ -1,16 +1,7 @@
+from __future__ import annotations
+
 from copy import copy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    List,
-    Optional,
-    Set,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Set, Type, Union, cast
 
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
@@ -53,14 +44,14 @@ class BaseRouteHandler:
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
-        dependencies: Optional[Dict[str, "Provide"]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        middleware: Optional[List[Middleware]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        path: str | None | list[str] | None = None,
+        dependencies: dict[str, Provide] | None = None,
+        guards: list[Guard] | None = None,
+        opt: dict[str, Any] | None = None,
+        middleware: list[Middleware] | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
     ):
-        self.paths: List[str] = (
+        self.paths: list[str] = (
             [normalize_path(p) for p in path]
             if path and isinstance(path, list)
             else [normalize_path(path or "/")]  # type: ignore
@@ -68,21 +59,21 @@ class BaseRouteHandler:
         self.dependencies = dependencies
         self.guards = guards
         self.middleware = middleware
-        self.opt: Dict[str, Any] = opt or {}
-        self.fn: Optional["AnyCallable"] = None
-        self.owner: Optional[Union["Controller", "Router"]] = None
-        self.signature_model: Optional[Type["SignatureModel"]] = None
+        self.opt: dict[str, Any] = opt or {}
+        self.fn: AnyCallable | None = None
+        self.owner: Controller | Router | None = None
+        self.signature_model: type[SignatureModel] | None = None
         self.exception_handlers = exception_handlers
-        self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_exception_handlers: Union[
-            Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
+        self.resolved_dependencies: dict[str, Provide] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_dependency_name_set: set[str] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_guards: list[Guard] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_middleware: list[Middleware] | type[BaseRouteHandler.empty] = BaseRouteHandler.empty
+        self.resolved_exception_handlers: (
+            dict[int | type[Exception], ExceptionHandler] | type[BaseRouteHandler.empty]
+        ) = BaseRouteHandler.empty
 
     @property
-    def dependency_name_set(self) -> Set[str]:
+    def dependency_name_set(self) -> set[str]:
         """
         The set of all dependency names provided in the handler's ownership layers.
 
@@ -96,7 +87,7 @@ class BaseRouteHandler:
             self.resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
         return cast(Set[str], self.resolved_dependency_name_set)
 
-    def ownership_layers(self) -> Generator[Union["BaseRouteHandler", "Controller", "Router"], None, None]:
+    def ownership_layers(self) -> Generator[BaseRouteHandler | Controller | Router, None, None]:
         """
         Returns all the handler and then all owners up to the app level
 
@@ -108,10 +99,10 @@ class BaseRouteHandler:
             cur = cur.owner
             yield value
 
-    def resolve_guards(self) -> List[Guard]:
+    def resolve_guards(self) -> list[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
         if self.resolved_guards is BaseRouteHandler.empty:
-            resolved_guards: List[Guard] = []
+            resolved_guards: list[Guard] = []
             for layer in self.ownership_layers():
                 if layer.guards:
                     resolved_guards.extend(layer.guards)
@@ -119,14 +110,14 @@ class BaseRouteHandler:
             self.resolved_guards = list(reversed(resolved_guards))
         return cast(List[Guard], self.resolved_guards)
 
-    def resolve_dependencies(self) -> Dict[str, Provide]:
+    def resolve_dependencies(self) -> dict[str, Provide]:
         """
         Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
         """
         if not self.signature_model:
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self.resolved_dependencies is BaseRouteHandler.empty:
-            dependencies: Dict[str, Provide] = {}
+            dependencies: dict[str, Provide] = {}
             for layer in self.ownership_layers():
                 for key, value in (layer.dependencies or {}).items():
                     if key not in dependencies:
@@ -135,7 +126,7 @@ class BaseRouteHandler:
             self.resolved_dependencies = dependencies
         return cast(Dict[str, Provide], self.resolved_dependencies)
 
-    def resolve_middleware(self) -> List[Middleware]:
+    def resolve_middleware(self) -> list[Middleware]:
         """
         Builds the middleware stack for the RouteHandler and returns it.
 
@@ -149,21 +140,21 @@ class BaseRouteHandler:
             self.resolved_middleware = resolved_middleware
         return cast(List[Middleware], self.resolved_middleware)
 
-    def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
+    def resolve_exception_handlers(self) -> dict[int | type[Exception], ExceptionHandler]:
         """
         Resolves the exception_handlers by starting from the route handler and moving up.
 
         This method is memoized so the computation occurs only once.
         """
         if self.resolved_exception_handlers is BaseRouteHandler.empty:
-            exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler] = {}
+            exception_handlers: dict[int | type[Exception], ExceptionHandler] = {}
             for layer in reversed(list(self.ownership_layers())):
                 exception_handlers = {**exception_handlers, **(layer.exception_handlers or {})}
             self.resolved_exception_handlers = exception_handlers
         return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
 
     @staticmethod
-    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
+    def validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:
         """
         Validates that a given provider has not been already defined under a different key
         """

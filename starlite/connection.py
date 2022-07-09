@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from orjson import loads
 from starlette.requests import Request as StarletteRequest
@@ -17,7 +19,7 @@ Auth = TypeVar("Auth")
 
 class Request(StarletteRequest, Generic[User, Auth]):
     @property
-    def app(self) -> "Starlite":
+    def app(self) -> Starlite:
         return cast("Starlite", self.scope["app"])
 
     @property
@@ -33,7 +35,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
         return cast(Auth, self.scope["auth"])
 
     @property
-    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+    def query_params(self) -> dict[str, Any]:  # type: ignore[override]
         return parse_query_params(self)
 
     @property
@@ -56,7 +58,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):
     @property
-    def app(self) -> "Starlite":
+    def app(self) -> Starlite:
         return cast("Starlite", self.scope["app"])
 
     @property
@@ -72,5 +74,5 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
         return cast(Auth, self.scope["auth"])
 
     @property
-    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+    def query_params(self) -> dict[str, Any]:  # type: ignore[override]
         return parse_query_params(self)

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, Set, cast
 
 from starlette.routing import Router as StarletteRouter
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -20,20 +22,20 @@ class StarliteASGIRouter(StarletteRouter):
 
     def __init__(
         self,
-        app: "Starlite",
-        on_shutdown: List["LifeCycleHandler"],
-        on_startup: List["LifeCycleHandler"],
+        app: Starlite,
+        on_shutdown: list[LifeCycleHandler],
+        on_startup: list[LifeCycleHandler],
     ):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def traverse_route_map(self, path: str, scope: Scope) -> Tuple[Dict[str, Any], List[str]]:
+    def traverse_route_map(self, path: str, scope: Scope) -> tuple[dict[str, Any], list[str]]:
         """
         Traverses the application route mapping and retrieves the correct node for the request url.
 
         Raises NotFoundException if no correlating node is found
         """
-        path_params: List[str] = []
+        path_params: list[str] = []
         cur = self.app.route_map
         components = ["/", *[component for component in path.split("/") if component]]
         for component in components:
@@ -53,7 +55,7 @@ class StarliteASGIRouter(StarletteRouter):
             raise NotFoundException()
         return cur, path_params
 
-    def parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
+    def parse_scope_to_route(self, scope: Scope) -> tuple[dict[str, ASGIApp], bool]:
         """
         Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
         """
@@ -62,8 +64,8 @@ class StarliteASGIRouter(StarletteRouter):
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
-            cur: Dict[str, Any] = self.app.route_map[path]
-            path_params: List[str] = []
+            cur: dict[str, Any] = self.app.route_map[path]
+            path_params: list[str] = []
         else:
             cur, path_params = self.traverse_route_map(path=path, scope=scope)
         scope["path_params"] = (
@@ -74,7 +76,7 @@ class StarliteASGIRouter(StarletteRouter):
         return asgi_handlers, is_asgi
 
     @staticmethod
-    def resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
+    def resolve_asgi_app(scope: Scope, asgi_handlers: dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
         """
         Given a scope, retrieves the correct ASGI App for the route
         """

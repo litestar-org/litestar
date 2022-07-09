@@ -1,4 +1,6 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import Any, NamedTuple, Set, cast
 
 from pydantic.fields import ModelField, Undefined
 from typing_extensions import Type
@@ -27,17 +29,17 @@ class Dependency:
 
     __slots__ = ("key", "provide", "dependencies")
 
-    def __init__(self, key: str, provide: Provide, dependencies: List["Dependency"]) -> None:
+    def __init__(self, key: str, provide: Provide, dependencies: list[Dependency]) -> None:
         self.key = key
         self.provide = provide
         self.dependencies = dependencies
 
 
-def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterDefinition]) -> Set[ParameterDefinition]:
+def merge_parameter_sets(first: set[ParameterDefinition], second: set[ParameterDefinition]) -> set[ParameterDefinition]:
     """
     Given two sets of parameter definitions, coming from different dependencies for example, merge them into a single set
     """
-    result: Set[ParameterDefinition] = first.intersection(second)
+    result: set[ParameterDefinition] = first.intersection(second)
     difference = first.symmetric_difference(second)
     for param in difference:
         # add the param if it's either required or no-other param in difference is the same but required
@@ -65,13 +67,13 @@ class KwargsModel:
     def __init__(
         self,
         *,
-        expected_dependencies: Set[Dependency],
-        expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
-        expected_cookie_params: Set[ParameterDefinition],
-        expected_header_params: Set[ParameterDefinition],
-        expected_path_params: Set[ParameterDefinition],
-        expected_query_params: Set[ParameterDefinition],
-        expected_reserved_kwargs: Set[ReservedKwargs],
+        expected_dependencies: set[Dependency],
+        expected_form_data: tuple[RequestEncodingType, ModelField] | None,
+        expected_cookie_params: set[ParameterDefinition],
+        expected_header_params: set[ParameterDefinition],
+        expected_path_params: set[ParameterDefinition],
+        expected_query_params: set[ParameterDefinition],
+        expected_reserved_kwargs: set[ReservedKwargs],
     ) -> None:
         self.expected_dependencies = expected_dependencies
         self.expected_form_data = expected_form_data
@@ -82,7 +84,7 @@ class KwargsModel:
         self.expected_reserved_kwargs = expected_reserved_kwargs
 
     @classmethod
-    def create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
+    def create_dependency_graph(cls, key: str, dependencies: dict[str, Provide]) -> Dependency:
         """
         Creates a graph like structure of dependencies, with each dependency including its own dependencies as a list.
         """
@@ -96,8 +98,8 @@ class KwargsModel:
 
     @classmethod
     def create_for_signature_model(
-        cls, signature_model: Type[SignatureModel], dependencies: Dict[str, Provide], path_parameters: Set[str]
-    ) -> "KwargsModel":
+        cls, signature_model: Type[SignatureModel], dependencies: dict[str, Provide], path_parameters: set[str]
+    ) -> KwargsModel:
         """
         This function pre-determines what parameters are required for a given combination of route + route handler.
 
@@ -109,15 +111,15 @@ class KwargsModel:
         expected_reserved_kwargs = {
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
         }
-        expected_dependencies: Set[Dependency] = {
+        expected_dependencies: set[Dependency] = {
             cls.create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
             if key in signature_model.__fields__
         }
-        expected_path_parameters: Set[ParameterDefinition] = set()
-        expected_header_parameters: Set[ParameterDefinition] = set()
-        expected_cookie_parameters: Set[ParameterDefinition] = set()
-        expected_query_parameters: Set[ParameterDefinition] = set()
+        expected_path_parameters: set[ParameterDefinition] = set()
+        expected_header_parameters: set[ParameterDefinition] = set()
+        expected_cookie_parameters: set[ParameterDefinition] = set()
+        expected_query_parameters: set[ParameterDefinition] = set()
 
         ignored_keys = {*RESERVED_KWARGS, *[dependency.key for dependency in expected_dependencies]}
         fields = filter(lambda keys: keys[0] not in ignored_keys, signature_model.__fields__.items())
@@ -193,8 +195,8 @@ class KwargsModel:
     @classmethod
     def validate_dependency_data(
         cls,
-        expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
-        dependency_kwargs_model: "KwargsModel",
+        expected_form_data: tuple[RequestEncodingType, ModelField] | None,
+        dependency_kwargs_model: KwargsModel,
     ) -> None:
         """
         Validates that the 'data' kwarg is compatible across dependencies
@@ -215,7 +217,7 @@ class KwargsModel:
 
     @classmethod
     def validate_raw_kwargs(
-        cls, path_parameters: Set[str], dependencies: Dict[str, Provide], model_fields: Dict[str, ModelField]
+        cls, path_parameters: set[str], dependencies: dict[str, Provide], model_fields: dict[str, ModelField]
     ) -> None:
         """
         Validates that there are no ambiguous kwargs, that is, kwargs declared using the same key in different places
@@ -248,11 +250,11 @@ class KwargsModel:
                 f"{', '.join(used_reserved_kwargs)}"
             )
 
-    def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
+    def to_kwargs(self, connection: WebSocket | Request) -> dict[str, Any]:
         """
         Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is sync.
         """
-        reserved_kwargs: Dict[str, Any] = {}
+        reserved_kwargs: dict[str, Any] = {}
         if self.expected_reserved_kwargs:
             if "state" in self.expected_reserved_kwargs:
                 reserved_kwargs["state"] = connection.app.state.copy()
@@ -307,9 +309,7 @@ class KwargsModel:
             return parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
         return await request.json()
 
-    async def resolve_dependency(
-        self, dependency: Dependency, connection: Union[WebSocket, Request], **kwargs: Any
-    ) -> Any:
+    async def resolve_dependency(self, dependency: Dependency, connection: WebSocket | Request, **kwargs: Any) -> Any:
         """
         Recursively resolve a dependency graph
         """
