@@ -42,6 +42,7 @@ pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
+brotli = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -59,7 +60,8 @@ tox = "*"
 requests = "*"
 
 [tool.poetry.extras]
-testing = ["requests"]
+testing = ["requests","brotli"]
+brotli = ["brotli"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -83,8 +85,10 @@ disable = [
     "super-init-not-called",
     "too-few-public-methods",
     "duplicate-code",
+    "logging-fstring-interpolation",
 ]
 enable = "useless-suppression"
+extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.REPORTS]
 reports = "no"

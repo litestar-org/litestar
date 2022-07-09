@@ -50,7 +50,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
         """
-        Handles the SQLAlchemy String types, including Blob and Binaric types
+        Handles the SQLAlchemy String types, including Blob and Binary types
         """
         if column_type.length is not None:
             return constr(max_length=column_type.length)
