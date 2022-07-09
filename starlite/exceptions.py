@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from http import HTTPStatus
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import (
@@ -54,13 +52,13 @@ class MissingDependencyException(StarLiteException, ImportError):
 
 class HTTPException(StarLiteException, StarletteHTTPException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
-    extra: dict[str, Any] | list[Any] | None = None
+    extra: Optional[Union[Dict[str, Any], List[Any]]] = None
 
     def __init__(  # pylint: disable=super-init-not-called
         self,
-        detail: str | None = None,
-        status_code: int | None = None,
-        extra: dict[str, Any] | list[Any] | None = None,
+        detail: Optional[str] = None,
+        status_code: Optional[int] = None,
+        extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ):
         if status_code:
             self.status_code = status_code
