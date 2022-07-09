@@ -27,51 +27,13 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def traverse_route_map(self, path: str, scope: Scope) -> Tuple[Dict[str, Any], List[str]]:
-        """
-        Traverses the application route mapping and retrieves the correct node for the request url.
-
-        Raises NotFoundException if no correlating node is found
-        """
-        path_params: List[str] = []
-        cur = self.app.route_map
-        components = ["/", *[component for component in path.split("/") if component]]
-        for component in components:
-            components_set = cast(Set[str], cur["_components"])
-            if component in components_set:
-                cur = cast(Dict[str, Any], cur[component])
-                continue
-            if "*" in components_set:
-                path_params.append(component)
-                cur = cast(Dict[str, Any], cur["*"])
-                continue
-            if cur.get("static_path"):
-                static_path = cast(str, cur["static_path"])
-                if static_path != "/":
-                    scope["path"] = scope["path"].replace(static_path, "")
-                continue
-            raise NotFoundException()
-        return cur, path_params
-
     def parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
         """
         Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
+        
+        Raises NotFoundException if no correlating node is found for the scope's path
         """
-
-        path = cast(str, scope["path"]).strip()
-        if path != "/" and path.endswith("/"):
-            path = path.rstrip("/")
-        if path in self.app.plain_routes:
-            cur: Dict[str, Any] = self.app.route_map[path]
-            path_params: List[str] = []
-        else:
-            cur, path_params = self.traverse_route_map(path=path, scope=scope)
-        scope["path_params"] = (
-            parse_path_params(cur["_path_parameters"], path_params) if cur["_path_parameters"] else {}
-        )
-        asgi_handlers = cast(Dict[str, ASGIApp], cur["_asgi_handlers"])
-        is_asgi = cast(bool, cur["_is_asgi"])
-        return asgi_handlers, is_asgi
+        return self.app.route_map.parse_scope_to_route(scope, parse_path_params)
 
     @staticmethod
     def resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:

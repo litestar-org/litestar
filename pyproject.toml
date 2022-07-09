@@ -42,6 +42,7 @@ pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
+maturin = "^0.12.20"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -60,6 +61,10 @@ requests = "*"
 
 [tool.poetry.extras]
 testing = ["requests"]
+
+# [tool.poetry.build]
+# generate-setup-file = false
+# script = "build.py"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

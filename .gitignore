@@ -11,6 +11,7 @@ dist/
 node_modules/
 results/
 site/
+target/
 
 # files
 *.iml

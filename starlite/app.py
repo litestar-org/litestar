@@ -12,6 +12,8 @@ from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
+from rust_backend import RouteMap as RouteMapInit
+
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
     CacheConfig,
@@ -30,6 +32,7 @@ from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
+from starlite.route_map import RouteMap
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -64,11 +67,9 @@ class Starlite(Router):
         "debug",
         "gzip_config",
         "openapi_schema",
-        "plain_routes",
         "plugins",
         "route_map",
         "state",
-        "static_paths",
         "template_engine",
     )
 
@@ -102,12 +103,10 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.debug = debug
         self.gzip_config = gzip_config
-        self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
-        self.route_map: Dict[str, Any] = {}
         self.routes: List[BaseRoute] = []
+        self.route_map: RouteMap = RouteMapInit()
         self.state = State()
-        self.static_paths = set()
 
         super().__init__(
             dependencies=dependencies,
@@ -131,7 +130,7 @@ class Starlite(Router):
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 path = normalize_path(config.path)
-                self.static_paths.add(path)
+                self.route_map.add_static_path(path)
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
@@ -230,12 +229,8 @@ class Starlite(Router):
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
         """
-        if "_components" not in self.route_map:
-            self.route_map["_components"] = set()
-        for route in self.routes:
-            node = self.add_node_to_route_map(route)
-            if node["_path_parameters"] != route.path_parameters:
-                raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
+        self.route_map.add_routes(self, HTTPRoute, WebSocketRoute, ASGIRoute)
+      
 
     def build_route_middleware_stack(
         self,
