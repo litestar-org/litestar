@@ -23,6 +23,10 @@ repos:
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.1.0
+    hooks:
+      - id: codespell
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -48,6 +52,7 @@ repos:
             "flake8-mutable",
             "flake8-print",
             "flake8-simplify",
+            "flake8-type-checking",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1

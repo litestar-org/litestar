@@ -1,17 +1,18 @@
-from typing import Dict
-
-from starlette.types import ASGIApp, Receive, Scope, Send
+from typing import TYPE_CHECKING, Dict
 
 from starlite import MiddlewareProtocol, Request, get
 from starlite.testing import create_test_client
 
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Receive, Scope, Send
+
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: "ASGIApp"):
         super().__init__(app)
         self.app = app
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         scope["state"]["main"] = 1
         await self.app(scope, receive, send)
 

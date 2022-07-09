@@ -1,16 +1,18 @@
 from inspect import Signature
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic.typing import AnyCallable
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import AsyncAnyCallable
 from starlite.utils import is_async_callable
+
+if TYPE_CHECKING:
+    from starlite.types import AsyncAnyCallable
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    def __call__(self, fn: AsyncAnyCallable) -> "WebsocketRouteHandler":
+    def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
         """
         Replaces a function with itself
         """

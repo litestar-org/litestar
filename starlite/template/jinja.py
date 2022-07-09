@@ -1,9 +1,10 @@
-from typing import List, Union
-
-from pydantic import DirectoryPath
+from typing import TYPE_CHECKING, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
+
+if TYPE_CHECKING:
+    from pydantic import DirectoryPath
 
 try:
     from jinja2 import Environment, FileSystemLoader
@@ -16,7 +17,7 @@ except ImportError as exc:  # pragma: no cover
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
     """Template engine using the jinja templating library"""
 
-    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+    def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
         super().__init__(directory)
         loader = FileSystemLoader(searchpath=directory)
         self.engine = Environment(loader=loader, autoescape=True)

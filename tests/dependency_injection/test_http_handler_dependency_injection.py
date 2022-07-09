@@ -1,11 +1,13 @@
 from asyncio import sleep
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import Controller, Provide, get
-from starlite.connection import Request
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlite.connection import Request
 
 
 def router_first_dependency() -> bool:
@@ -22,7 +24,7 @@ def controller_first_dependency(headers: Dict[str, Any]) -> dict:
     return dict()
 
 
-async def controller_second_dependency(request: Request) -> dict:
+async def controller_second_dependency(request: "Request") -> dict:
     assert request
     await sleep(0.1)
     return dict()

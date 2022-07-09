@@ -1,23 +1,26 @@
 from functools import partial
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from anyio.to_thread import run_sync
 from pydantic.fields import Undefined
-from pydantic.typing import AnyCallable
-from typing_extensions import Type
 
-from starlite.signature import SignatureModel
 from starlite.utils import is_async_callable
+
+if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
+    from typing_extensions import Type
+
+    from starlite.signature import SignatureModel
 
 
 class Provide:
     __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread", "is_coroutine")
 
-    def __init__(self, dependency: AnyCallable, use_cache: bool = False, sync_to_thread: bool = False):
+    def __init__(self, dependency: "AnyCallable", use_cache: bool = False, sync_to_thread: bool = False):
         self.dependency = dependency
         self.use_cache = use_cache
         self.value: Any = Undefined
-        self.signature_model: Optional[Type[SignatureModel]] = None
+        self.signature_model: Optional["Type[SignatureModel]"] = None
         self.sync_to_thread = sync_to_thread
         self.is_coroutine = is_async_callable(dependency)
 

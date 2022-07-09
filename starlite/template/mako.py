@@ -1,9 +1,10 @@
-from typing import List, Union
-
-from pydantic import DirectoryPath
+from typing import TYPE_CHECKING, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
+
+if TYPE_CHECKING:
+    from pydantic import DirectoryPath
 
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
@@ -16,7 +17,7 @@ except ImportError as exc:  # pragma: no cover
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
     """Template engine using the mako templating library"""
 
-    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+    def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
         super().__init__(directory)
         self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
 

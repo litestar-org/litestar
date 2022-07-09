@@ -48,7 +48,7 @@ def info(request: Request) -> Template:
 
 The `name` kwarg passed to the `Template` class is the filename for the given template. Starlite will search all the
 directories specifies for this file until it finds it or an exception will be raised. The `context` kwarg is a
-dictionary specifing context data that is passed to the engine.
+dictionary specifying context data that is passed to the engine.
 
 ## Defining a Custom Template Engine
 
@@ -67,7 +67,7 @@ class TemplateEngineProtocol(Protocol[T]):
         ...
 ```
 
-Once you have your custom engine you can regiter it as you would the built-in engines.
+Once you have your custom engine you can register it as you would the built-in engines.
 
 ## Modifying the Template Engine Instance
 

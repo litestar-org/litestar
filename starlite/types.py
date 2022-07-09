@@ -20,7 +20,6 @@ from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
-from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Literal, Protocol, Type, runtime_checkable
 
 from starlite.exceptions import HTTPException
@@ -33,11 +32,13 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:  # pragma: no cover
-    from starlite.connection import Request
-    from starlite.controller import Controller
-    from starlite.datastructures import State
-    from starlite.handlers import BaseRouteHandler
-    from starlite.router import Router
+    from starlette.types import ASGIApp, Receive, Scope, Send
+
+    from starlite.connection import Request  # noqa: TC004
+    from starlite.controller import Controller  # noqa: TC004
+    from starlite.datastructures import State  # noqa: TC004
+    from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.router import Router  # noqa: TC004
 else:
     Request = Any
     WebSocket = Any
@@ -86,10 +87,10 @@ CacheKeyBuilder = Callable[[Request], str]
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: ASGIApp):  # pragma: no cover
+    def __init__(self, app: "ASGIApp"):  # pragma: no cover
         ...
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:  # pragma: no cover
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
         ...
 
 

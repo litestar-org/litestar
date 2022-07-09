@@ -29,7 +29,6 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr
 from typing_extensions import Type
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
-from starlite.connection import Request
 from starlite.openapi.controller import OpenAPIController
 from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder
@@ -39,6 +38,7 @@ if TYPE_CHECKING:
     IntStr = Union[int, str]
     AbstractSetIntStr = AbstractSet[IntStr]
     MappingIntStrAny = Mapping[IntStr, Any]
+    from starlite.connection import Request
 
 
 class CORSConfig(BaseModel):
@@ -84,28 +84,18 @@ class CompressionConfig(BaseModel):
         Returns:
             Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
         """
-        # if include is None:
-        #     include = set()
-        # if exclude is None:
-        #     exclude = set()
         brotli_keys = set(
             {"minimum_size", "brotli_quality", "brotli_mode", "brotli_lgwin", "brotli_lgblock", "brotli_gzip_fallback"}
         )
         gzip_keys = set({"minimum_size", "gzip_compress_level"})
         if self.backend == CompressionBackend.GZIP:
-            included_keys = gzip_keys
+            kwargs["include"] = gzip_keys
         elif self.backend == CompressionBackend.BROTLI:
-            included_keys = brotli_keys
+            kwargs["include"] = brotli_keys
         else:
-            included_keys = brotli_keys.union(gzip_keys)
-        return super().dict(
-            include=included_keys,
-            # by_alias=by_alias,
-            # skip_defaults=skip_defaults,
-            # exclude_unset=exclude_unset,
-            # exclude_defaults=exclude_defaults,
-            # exclude_none=exclude_none,
-        )
+            kwargs["include"] = brotli_keys.union(gzip_keys)
+
+        return super().dict(*args, **kwargs)
 
 
 class OpenAPIConfig(BaseModel):
@@ -162,7 +152,7 @@ class TemplateConfig(BaseModel):
     engine_callback: Optional[Callable[[Any], Any]]
 
 
-def default_cache_key_builder(request: Request) -> str:
+def default_cache_key_builder(request: "Request") -> str:
     """
     Given a request object, returns a cache key by combining the path with the sorted query params
     """
