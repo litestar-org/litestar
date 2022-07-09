@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, AbstractSet, Any, List, Optional, Type, cast
 import pytest
 from pydantic import BaseModel, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
-from pydantic.typing import AnyCallable
 from starlette.datastructures import URL
 from starlette.status import HTTP_204_NO_CONTENT
 
@@ -12,18 +11,20 @@ from starlite import ImproperlyConfiguredException, Provide, get
 from starlite.connection import WebSocket
 from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import Dependency
-from starlite.plugins.base import PluginProtocol
 from starlite.signature import SignatureModel, SignatureModelFactory
 from starlite.testing import create_test_client, create_test_request
 from tests.plugins.test_base import AModel, APlugin
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
+    from pydantic.typing import AnyCallable
+
+    from starlite.plugins.base import PluginProtocol
 
 
 def make_signature_model(
-    fn: AnyCallable,
-    plugins: Optional[List[PluginProtocol]] = None,
+    fn: "AnyCallable",
+    plugins: Optional[List["PluginProtocol"]] = None,
     provided_dependency_names: Optional[AbstractSet[str]] = None,
 ) -> Type[SignatureModel]:
     return SignatureModelFactory(

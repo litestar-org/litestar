@@ -1,15 +1,16 @@
 from inspect import getmro
-from typing import Dict, Optional, Type, Union
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite.types import ExceptionHandler
+if TYPE_CHECKING:
+    from starlite.types import ExceptionHandler
 
 
 def get_exception_handler(
-    exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler], exc: Exception
-) -> Optional[ExceptionHandler]:
+    exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"], exc: Exception
+) -> Optional["ExceptionHandler"]:
     """
     Given a dictionary that maps exceptions and status codes to handler functions,
     and an exception, returns the appropriate handler if existing.

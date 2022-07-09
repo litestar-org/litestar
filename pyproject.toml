@@ -85,6 +85,7 @@ disable = [
     "super-init-not-called",
     "too-few-public-methods",
     "duplicate-code",
+    "logging-fstring-interpolation",
 ]
 enable = "useless-suppression"
 extension-pkg-whitelist = "pydantic"

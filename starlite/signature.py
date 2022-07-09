@@ -17,9 +17,7 @@ from typing import (
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, Undefined
-from pydantic.typing import AnyCallable
 from pydantic_factories import ModelFactory
-from starlette.datastructures import URL
 from typing_extensions import get_args
 
 from starlite.connection import Request, WebSocket
@@ -35,6 +33,8 @@ from starlite.utils.typing import detect_optional_union
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
+    from pydantic.typing import AnyCallable
+    from starlette.datastructures import URL
 
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
@@ -115,7 +115,7 @@ class SignatureModel(BaseModel):
         return error["loc"][-1] in cls.factory.dependency_name_set
 
     @staticmethod
-    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, URL]:
+    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, "URL"]:
         """Extract method and URL from Request or WebSocket"""
         method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
         return method, connection.url
@@ -213,7 +213,7 @@ class SignatureModelFactory:
     SKIP_VALIDATION_NAMES = {"request", "socket"}
 
     def __init__(
-        self, fn: AnyCallable, plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
+        self, fn: "AnyCallable", plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
     ) -> None:
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
