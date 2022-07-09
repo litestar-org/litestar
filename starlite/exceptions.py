@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import (
@@ -25,7 +25,7 @@ class StarLiteException(Exception):
 
 
 class MissingDependencyException(StarLiteException, ImportError):
-    def __init__(self, feature: str, extras: tuple[str, ...]) -> None:
+    def __init__(self, feature: str, extras: Tuple[str, ...]) -> None:
         self.feature = feature
         self.extras = extras
 

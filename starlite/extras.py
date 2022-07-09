@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import dataclasses
 from types import TracebackType
+from typing import Tuple
 
 from starlite.exceptions import MissingDependencyException
 
@@ -9,7 +8,7 @@ from starlite.exceptions import MissingDependencyException
 @dataclasses.dataclass
 class Feature:
     name: str
-    available_in_extras: tuple[str, ...]
+    available_in_extras: Tuple[str, ...]
 
     def __enter__(self) -> None:
         return None
