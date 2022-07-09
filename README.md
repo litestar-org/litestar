@@ -14,9 +14,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-25-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -220,6 +218,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/slavugan"><img src="https://avatars.githubusercontent.com/u/8457612?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Slava</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=slavugan" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Harry-Lees"><img src="https://avatars.githubusercontent.com/u/52263746?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Harry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Harry-Lees" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/cofin"><img src="https://avatars.githubusercontent.com/u/204685?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Cody Fincher</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=cofin" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=cofin" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://www.patreon.com/cclauss"><img src="https://avatars.githubusercontent.com/u/3709715?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Christian Clauss</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=cclauss" title="Documentation">📖</a></td>
   </tr>
 </table>
 
