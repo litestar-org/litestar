@@ -1,11 +1,10 @@
-from typing import Optional
+from typing import Optional, Type
 from uuid import uuid4
 
 import pytest
 from pydantic import UUID4
 from pydantic.fields import FieldInfo
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from typing_extensions import Type
 
 from starlite import Parameter, get
 from starlite.testing import create_test_client

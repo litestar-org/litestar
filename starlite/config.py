@@ -9,6 +9,7 @@ from typing import (
     Mapping,
     Optional,
     Tuple,
+    Type,
     Union,
 )
 from urllib.parse import urlencode
@@ -26,7 +27,6 @@ from openapi_schema_pydantic.v3.v3_1_0.security_requirement import SecurityRequi
 from openapi_schema_pydantic.v3.v3_1_0.server import Server
 from openapi_schema_pydantic.v3.v3_1_0.tag import Tag
 from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
-from typing_extensions import Type
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
 from starlite.openapi.controller import OpenAPIController

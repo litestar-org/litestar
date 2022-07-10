@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
 
 from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
@@ -9,7 +9,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (

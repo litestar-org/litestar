@@ -256,3 +256,7 @@
 
 - Improve path param validation during registration @danesolberg
 - Fix route handler exception resolution
+
+[1.5.4]
+
+- Add Brotli compression middleware by @cofin

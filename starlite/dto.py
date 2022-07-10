@@ -1,10 +1,21 @@
 from dataclasses import asdict, is_dataclass
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
-from typing_extensions import ClassVar, Type
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value

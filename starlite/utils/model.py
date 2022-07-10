@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, Type, cast
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic_factories.utils import create_model_from_dataclass
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pydantic.fields import ModelField
 
 

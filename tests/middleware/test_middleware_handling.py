@@ -23,8 +23,9 @@ from starlite import (
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
+    from typing import Type
+
     from _pytest.logging import LogCaptureFixture
-    from typing_extensions import Type
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,7 @@ from starlite.signature import SignatureModel, SignatureModelFactory
 from starlite.testing import create_test_client, create_test_request
 from tests.plugins.test_base import AModel, APlugin
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pydantic.error_wrappers import ErrorDict
     from pydantic.typing import AnyCallable
 
