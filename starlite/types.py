@@ -7,6 +7,7 @@ from typing import (
     Generic,
     Optional,
     Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -20,7 +21,7 @@ from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
-from typing_extensions import Literal, Protocol, Type, runtime_checkable
+from typing_extensions import Literal, Protocol, runtime_checkable
 
 from starlite.exceptions import HTTPException
 from starlite.response import Response

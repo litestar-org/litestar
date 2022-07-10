@@ -1,7 +1,6 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Union, cast
+from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Union, cast
 
 from pydantic.fields import ModelField, Undefined
-from typing_extensions import Type
 
 from starlite.connection import Request, WebSocket
 from starlite.constants import RESERVED_KWARGS

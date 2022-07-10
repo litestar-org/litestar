@@ -1,17 +1,16 @@
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON, ModelField
 from starlette.datastructures import FormData, UploadFile
-from typing_extensions import Type
 
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ValidationException
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlette.requests import HTTPConnection
 
 _true_values = {"True", "true"}

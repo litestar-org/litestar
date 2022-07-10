@@ -1,6 +1,7 @@
+from typing import Type
+
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from typing_extensions import Type
 
 from starlite import (
     Controller,

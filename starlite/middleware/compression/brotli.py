@@ -9,7 +9,7 @@ from starlite.config import BrotliMode
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 

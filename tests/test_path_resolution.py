@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Type
 from uuid import uuid4
 
 import pytest
@@ -9,7 +9,6 @@ from starlette.status import (
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
-from typing_extensions import Type
 
 from starlite import (
     Controller,

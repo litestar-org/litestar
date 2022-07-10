@@ -19,7 +19,7 @@ from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.utils.model import create_parsed_model_field
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler

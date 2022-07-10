@@ -1,9 +1,8 @@
-from typing import Optional
+from typing import Optional, Type
 
 import pytest
 from pydantic.fields import FieldInfo
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from typing_extensions import Type
 
 from starlite import Parameter, get
 from starlite.testing import create_test_client

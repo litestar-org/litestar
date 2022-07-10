@@ -5,7 +5,7 @@ import pytest
 from starlite import ImproperlyConfiguredException, asgi
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlette.types import Receive, Scope, Send
 
 

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List, Union
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pydantic import DirectoryPath
 
 try:

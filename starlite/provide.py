@@ -6,9 +6,10 @@ from pydantic.fields import Undefined
 
 from starlite.utils import is_async_callable
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Type
+
     from pydantic.typing import AnyCallable
-    from typing_extensions import Type
 
     from starlite.signature import SignatureModel
 

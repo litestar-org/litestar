@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from starlite.types import ExceptionHandler
 
 

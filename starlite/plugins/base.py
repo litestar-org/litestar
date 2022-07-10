@@ -6,13 +6,14 @@ from typing import (
     NamedTuple,
     Optional,
     Tuple,
+    Type,
     TypeVar,
     Union,
 )
 
-from typing_extensions import Protocol, Type, get_args, runtime_checkable
+from typing_extensions import Protocol, get_args, runtime_checkable
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from pydantic import BaseModel
 
 ModelT = TypeVar("ModelT")

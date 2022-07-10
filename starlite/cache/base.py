@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Awaitable, overload
 
-from typing_extensions import Awaitable, Protocol, overload, runtime_checkable
+from typing_extensions import Protocol, runtime_checkable
 
 
 @runtime_checkable

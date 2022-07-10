@@ -30,8 +30,8 @@ from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
-if TYPE_CHECKING:
-    from typing_extensions import AsyncGenerator
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import AsyncGenerator
 
 
 @pytest.mark.asyncio

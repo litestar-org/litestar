@@ -5,9 +5,10 @@ from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:  # pragma: no cover
+    from typing import Type
+
     from starlette.middleware import Middleware
     from starlette.middleware.base import BaseHTTPMiddleware
-    from typing_extensions import Type
 
     from starlite.provide import Provide
     from starlite.response import Response

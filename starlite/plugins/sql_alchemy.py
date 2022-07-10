@@ -31,8 +31,8 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise MissingDependencyException("sqlalchemy is not installed") from exc
 
-if TYPE_CHECKING:
-    from typing_extensions import Type
+if TYPE_CHECKING:  # pragma: no cover
+    from typing import Type
 
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):

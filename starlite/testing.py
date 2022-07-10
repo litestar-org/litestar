@@ -11,8 +11,9 @@ from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
 
 if TYPE_CHECKING:
+    from typing import Type
+
     from pydantic.typing import AnyCallable
-    from typing_extensions import Type
 
     from starlite.config import (
         CacheConfig,
