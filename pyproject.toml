@@ -42,33 +42,18 @@ pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 
-Jinja2 = { version = "*", optional = true }
-Mako = { version = "*", optional = true }
+brotli = { version = "*", optional = true }
 freezegun = { version = "*", optional = true }
 hypothesis = { extras = ["cli"], version = "*", optional = true }
-mkdocs-material = { version = "^8.2.0", optional = true }
+jinja2 = { version = "*", optional = true }
+mako = { version = "*", optional = true }
+mkdocs-material = { version = "*", optional = true }
 pre-commit = { version = "*", optional = true }
 pytest = { version = "*", optional = true }
 pytest-asyncio = { version = "*", optional = true }
 pytest-cov = { version = "*", optional = true }
 pytest-mock = { version = "*", optional = true }
 requests = { version = "*", optional = true }
-brotli = { version = "*", optional = true }
-
-[tool.poetry.dev-dependencies]
-hypothesis = { extras = ["cli"], version = "*" }
-mkdocs-material = "*"
-pytest = "*"
-pytest-asyncio = "*"
-pytest-cov = "*"
-uvicorn = "*"
-sqlalchemy = {extras = ["mypy"], version = "*"}
-Jinja2 = "*"
-Mako = "*"
-freezegun = "*"
-pytest-mock = "*"
-tox = "*"
-requests = "*"
 sqlalchemy = { extras = ["mypy"], version = "*", optional = true }
 tox = { version = "*", optional = true }
 uvicorn = { version = "*", optional = true }
@@ -77,8 +62,9 @@ uvicorn = { version = "*", optional = true }
 testing = ["requests","brotli"]
 brotli = ["brotli"]
 test = [
-    "Jinja2",
-    "Mako",
+    "brotli",
+    "jinja2",
+    "mako",
     "freezegun",
     "hypothesis",
     "pytest",
@@ -152,7 +138,7 @@ source = [
 ]
 
 [tool.coverage.report]
-fail_under = 97
+fail_under = 96
 
 [tool.coverage.xml]
 output = "./coverage.xml"
