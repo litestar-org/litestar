@@ -114,8 +114,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self.http_method = http_method.value if isinstance(http_method, HttpMethod) else http_method
         if status_code:
             self.status_code = status_code
-        elif isinstance(self.http_method, list):
-            self.status_code = HTTP_200_OK
         elif self.http_method == HttpMethod.POST:
             self.status_code = HTTP_201_CREATED
         elif self.http_method == HttpMethod.DELETE:

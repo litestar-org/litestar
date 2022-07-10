@@ -5,9 +5,9 @@ from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
-    from pydantic.fields import FieldInfo
     from typing import Type
 
+    from pydantic.fields import FieldInfo
     from starlette.middleware import Middleware
     from starlette.middleware.base import BaseHTTPMiddleware
 

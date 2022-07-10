@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Union, cast
 
 from pydantic.fields import FieldInfo, ModelField, Undefined
-from pydantic.fields import ModelField, Undefined
 
 from starlite.connection import Request, WebSocket
 from starlite.constants import RESERVED_KWARGS
@@ -196,14 +195,15 @@ class KwargsModel:
         ):
             layer_field_info = layered_parameters[field_name]
             signature_field_info = model_field.field_info
+
+            field_info = layer_field_info
             # allow users to manually override Parameter definition using Parameter
             if signature_field_info.extra.get("is_parameter"):
                 field_info = signature_field_info
-            else:
-                field_info = layer_field_info
+
             field_info.default = (
                 signature_field_info.default
-                if signature_field_info.default is not Undefined
+                if signature_field_info.default not in [Undefined, Ellipsis]
                 else layer_field_info.default
             )
 

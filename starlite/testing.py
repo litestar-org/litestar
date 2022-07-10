@@ -12,9 +12,9 @@ from starlite.datastructures import State
 from starlite.enums import HttpMethod, RequestEncodingType
 
 if TYPE_CHECKING:
-    from pydantic.fields import FieldInfo
     from typing import Type
 
+    from pydantic.fields import FieldInfo
     from pydantic.typing import AnyCallable
 
     from starlite.config import (

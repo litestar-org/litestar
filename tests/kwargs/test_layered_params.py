@@ -107,3 +107,39 @@ def test_layered_parameters_validation(parameter: str) -> None:
 
         assert response.status_code == HTTP_400_BAD_REQUEST
         assert f"Missing required parameter {parameter}" in response.json()["detail"]
+
+
+def test_layered_parameters_defaults_and_overrides() -> None:
+    class MyController(Controller):
+        path = "/controller"
+        parameters = {"controller1": Parameter(int, default=50), "controller2": Parameter(str, query="controller3")}
+
+        @get("/{local:int}")
+        def my_handler(
+            self,
+            local: float,
+            controller1: int,
+            controller2: str = Parameter(str, query="controller4"),
+            app1: str = Parameter(default="moishe"),
+        ) -> dict:
+            assert app1 == "moishe"
+            assert controller2 == "jeronimo"
+            assert controller1 == 50
+            return {"message": "ok"}
+
+    router = Router(
+        path="/router",
+        route_handlers=[MyController],
+    )
+
+    with create_test_client(
+        route_handlers=router,
+        parameters={
+            "app1": Parameter(str, default="haim"),
+        },
+    ) as client:
+        query = {"controller4": "jeronimo"}
+
+        response = client.get("/router/controller/1", params=query)
+        assert response.json() == {"message": "ok"}
+        assert response.status_code == HTTP_200_OK
