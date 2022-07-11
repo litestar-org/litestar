@@ -324,21 +324,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "maturin"
-version = "0.12.20"
-description = "Build and publish crates with pyo3, rust-cpython and cffi bindings as well as rust binaries as python packages"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
-
-[package.extras]
-zig = ["ziglang (>=0.9.0,<0.10.0)"]
-patchelf = ["patchelf"]
-
-[[package]]
 name = "mergedeep"
 version = "1.3.4"
 description = "A deep merge function for 🐍."
@@ -806,7 +791,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1208,20 +1193,6 @@ markupsafe = [
     {file = "MarkupSafe-2.1.1-cp39-cp39-win32.whl", hash = "sha256:d4306c36ca495956b6d568d276ac11fdd9c30a36f1b6eb928070dc5360b22e1c"},
     {file = "MarkupSafe-2.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:46d00d6cfecdde84d40e572d63735ef81423ad31184100411e6e3388d405e247"},
     {file = "MarkupSafe-2.1.1.tar.gz", hash = "sha256:7f91197cc9e48f989d12e4e6fbc46495c446636dfc81b9ccf50bb0ec74b91d4b"},
-]
-maturin = [
-    {file = "maturin-0.12.20-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:d4ced017aa26dd88ce228a21e8f049b7c6f9b40c873e90fb7bec60f49b93fe55"},
-    {file = "maturin-0.12.20-py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:83e7b4bcb3f30523bd951d858fc6508fef85e33840e3c8947a0b36c3dd73532a"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_12_i686.manylinux2010_i686.musllinux_1_1_i686.whl", hash = "sha256:3ea8b7976d2ed35ca6d799ead19667afef9a50f806a7f090721cea7513cb6166"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:ac3b6ae80adfd2ddb581d78ac695abfeb1e222bf122f0f8cb04ab2bae47046b1"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:79a26abbbbdb78958894837663e18e39c36635bcc0674ed40217b3519c488115"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.musllinux_1_1_armv7l.whl", hash = "sha256:6e2e1cd499599e70db72512fe1bf03b6e362af572051c8a8a255282c17800cfb"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.musllinux_1_1_ppc64le.whl", hash = "sha256:7ee333b400d0ac6055c89bd82817e7f1360502f9f5089a196470e5f063af6afc"},
-    {file = "maturin-0.12.20-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:41fc10a85f9e32bbf301004179d96f316f41dfebb01770c19420fe783acd6612"},
-    {file = "maturin-0.12.20-py3-none-win32.whl", hash = "sha256:cb2a82d019585f4ca5a49bf56cded757a13e960617b334d601b837b78f84b960"},
-    {file = "maturin-0.12.20-py3-none-win_amd64.whl", hash = "sha256:b170594180ddb6144b943a02f57b649deb7d580251c14f2f41546d5e0c876e04"},
-    {file = "maturin-0.12.20-py3-none-win_arm64.whl", hash = "sha256:b6b671c50dfa01094c9327ddb713ea3d4a24034552e898479503eb0e924b12ef"},
-    {file = "maturin-0.12.20.tar.gz", hash = "sha256:62ef15831f14330aa426c2ccc475c5b8d473bb52731e478e0cb9ab37e137d758"},
 ]
 mergedeep = [
     {file = "mergedeep-1.3.4-py3-none-any.whl", hash = "sha256:70775750742b25c0d8f36c55aed03d24c3384d17c951b3175d898bd778ef0307"},
