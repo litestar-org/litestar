@@ -5,8 +5,9 @@ from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 
 from starlite import Dependency, ImproperlyConfiguredException, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite.enums import ParamType
 from starlite.openapi.enums import OpenAPIType
-from starlite.openapi.parameters import create_parameters
+from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.signature import SignatureModelFactory
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
@@ -17,7 +18,7 @@ def test_create_parameters() -> None:
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person")
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
-    parameters = create_parameters(
+    parameters = create_parameter_for_handler(
         route_handler=route_handler,
         handler_fields=SignatureModelFactory(fn=cast(Callable, route_handler.fn), plugins=[], dependency_names=set())
         .create_signature_model()
@@ -28,37 +29,37 @@ def test_create_parameters() -> None:
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
     assert service_id.name == "service_id"
-    assert service_id.param_in == "path"
+    assert service_id.param_in == ParamType.PATH
     assert service_id.param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert service_id.required
     assert service_id.param_schema.examples  # type: ignore
-    assert page.param_in == "query"
+    assert page.param_in == ParamType.QUERY
     assert page.name == "page"
     assert page.param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert page.required
     assert page.param_schema.examples  # type: ignore
-    assert page_size.param_in == "query"
+    assert page_size.param_in == ParamType.QUERY
     assert page_size.name == "pageSize"
     assert page_size.param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert page_size.required
     assert page_size.description == "Page Size Description"
     assert page_size.param_schema.examples[0].value == 1  # type: ignore
-    assert name.param_in == "query"
+    assert name.param_in == ParamType.QUERY
     assert name.name == "name"
     assert len(name.param_schema.oneOf) == 3  # type: ignore
     assert not name.required
     assert name.param_schema.examples  # type: ignore
-    assert from_date.param_in == "query"
+    assert from_date.param_in == ParamType.QUERY
     assert from_date.name == "from_date"
     assert len(from_date.param_schema.oneOf) == 4  # type: ignore
     assert not from_date.required
     assert from_date.param_schema.examples  # type: ignore
-    assert to_date.param_in == "query"
+    assert to_date.param_in == ParamType.QUERY
     assert to_date.name == "to_date"
     assert len(to_date.param_schema.oneOf) == 4  # type: ignore
     assert not to_date.required
     assert to_date.param_schema.examples  # type: ignore
-    assert gender.param_in == "query"
+    assert gender.param_in == ParamType.QUERY
     assert gender.name == "gender"
     assert gender.param_schema.dict(exclude_none=True) == {  # type: ignore
         "oneOf": [
@@ -69,11 +70,11 @@ def test_create_parameters() -> None:
         "examples": [{"value": "M"}, {"value": ["M", "O"]}],
     }
     assert not gender.required
-    assert secret_header.param_in == "header"
+    assert secret_header.param_in == ParamType.HEADER
     assert secret_header.param_schema.type == OpenAPIType.STRING  # type: ignore
     assert secret_header.required
     assert secret_header.param_schema.examples  # type: ignore
-    assert cookie_value.param_in == "cookie"
+    assert cookie_value.param_in == ParamType.COOKIE
     assert cookie_value.param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert cookie_value.required
     assert cookie_value.param_schema.examples  # type: ignore

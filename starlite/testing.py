@@ -9,7 +9,7 @@ from starlite import MissingDependencyException
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.datastructures import State
-from starlite.enums import HttpMethod, RequestEncodingType
+from starlite.enums import HttpMethod, ParamType, RequestEncodingType
 
 if TYPE_CHECKING:
     from typing import Type
@@ -206,7 +206,7 @@ def create_test_request(
     if query:
         scope["query_string"] = urlencode(query, doseq=True)
     if cookie:
-        headers["cookie"] = cookie
+        headers[ParamType.COOKIE] = cookie
     body = None
     if content:
         if isinstance(content, BaseModel):

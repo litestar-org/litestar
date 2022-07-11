@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from pydantic.typing import AnyCallable
 from starlette.routing import get_name
 
-from starlite.openapi.parameters import create_parameters
+from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
 from starlite.openapi.utils import extract_tags_from_route_handler
@@ -25,7 +25,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
         if route_handler.include_in_schema:
             handler_fields = cast(BaseModel, route_handler.signature_model).__fields__
             parameters = (
-                create_parameters(
+                create_parameter_for_handler(
                     route_handler=route_handler,
                     handler_fields=handler_fields,
                     path_parameters=route.path_parameters,

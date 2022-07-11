@@ -3,7 +3,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Unio
 from pydantic.fields import FieldInfo, ModelField, Undefined
 
 from starlite.connection import Request, WebSocket
-from starlite.constants import RESERVED_KWARGS
+from starlite.constants import EXTRA_KEY_REQUIRED, RESERVED_KWARGS
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
@@ -115,20 +115,20 @@ class KwargsModel:
         Creates a ParameterDefition for the given pydantic FieldInfo instance and inserts it into the correct parameter set
         """
         extra = field_info.extra
-        is_required = extra.get("required", True)
+        is_required = extra.get(EXTRA_KEY_REQUIRED, True)
         default_value = field_info.default if field_info.default is not Undefined else None
 
-        field_alias = extra.get("query") or field_name
+        field_alias = extra.get(ParamType.QUERY) or field_name
         param_type = ParamType.QUERY
 
         if field_name in path_parameters:
             field_alias = field_name
             param_type = ParamType.PATH
-        elif extra.get("header"):
-            field_alias = extra["header"]
+        elif extra.get(ParamType.HEADER):
+            field_alias = extra[ParamType.HEADER]
             param_type = ParamType.HEADER
-        elif extra.get("cookie"):
-            field_alias = extra["cookie"]
+        elif extra.get(ParamType.COOKIE):
+            field_alias = extra[ParamType.COOKIE]
             param_type = ParamType.COOKIE
 
         return ParameterDefinition(
@@ -299,7 +299,9 @@ class KwargsModel:
         aliased_parameters = {
             k
             for k, f in model_fields.items()
-            if f.field_info.extra.get("query") or f.field_info.extra.get("header") or f.field_info.extra.get("cookie")
+            if f.field_info.extra.get(ParamType.QUERY)
+            or f.field_info.extra.get(ParamType.HEADER)
+            or f.field_info.extra.get(ParamType.COOKIE)
         }
         dependency_keys = set(dependencies.keys())
 
