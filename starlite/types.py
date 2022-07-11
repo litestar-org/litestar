@@ -32,7 +32,7 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.connection import Request  # noqa: TC004

@@ -28,10 +28,10 @@ try:
     )
     from sqlalchemy.orm import DeclarativeMeta, Mapper
     from sqlalchemy.sql.type_api import TypeEngine
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("sqlalchemy is not installed") from exc
+except ImportError as e:
+    raise MissingDependencyException("sqlalchemy is not installed") from e
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import Type
 
 
@@ -251,8 +251,10 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             try:
                 provider = self.providers_map[column_type_class]
                 return provider(column_type)
-            except KeyError as e:
-                raise ImproperlyConfiguredException("Unsupported Column type, please extend the provider table.") from e
+            except KeyError as exc:
+                raise ImproperlyConfiguredException(
+                    "Unsupported Column type, please extend the provider table."
+                ) from exc
         return type(column_type)
 
     @staticmethod

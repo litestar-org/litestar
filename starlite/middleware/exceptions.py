@@ -11,7 +11,7 @@ from starlite.response import Response
 from starlite.types import ExceptionHandler, MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import Type
 
     from starlette.responses import Response as StarletteResponse

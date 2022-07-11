@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from starlette.middleware.gzip import GZipMiddleware as StarletteGzipMiddleware
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp
 
 

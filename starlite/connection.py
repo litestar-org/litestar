@@ -8,7 +8,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_query_params
 from starlite.types import Method
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.app import Starlite
 
 User = TypeVar("User")

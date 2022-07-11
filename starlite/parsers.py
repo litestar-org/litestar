@@ -10,7 +10,7 @@ from starlette.datastructures import FormData, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ValidationException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.requests import HTTPConnection
 
 _true_values = {"True", "true"}

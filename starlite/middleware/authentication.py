@@ -9,7 +9,7 @@ from starlite.exceptions import NotAuthorizedException, PermissionDeniedExceptio
 from starlite.response import Response
 from starlite.types import MiddlewareProtocol
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
 

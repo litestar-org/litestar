@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Optional
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import PYDANTIC_FIELD_SHAPE_MAP
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import Union
 
     from pydantic.fields import ModelField

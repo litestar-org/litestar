@@ -5,6 +5,7 @@ from orjson import dumps
 from pydantic import BaseModel
 from starlette.testclient import TestClient as StarletteTestClient
 
+from starlite import MissingDependencyException
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.datastructures import State
@@ -40,12 +41,11 @@ if TYPE_CHECKING:
 
 try:
     from requests.models import RequestEncodingMixin
-except ImportError:  # pragma: no cover
-    from starlite.exceptions import MissingDependencyException
-
+except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    )
+    ) from e
+
 __all__ = [
     "TestClient",
     "create_test_client",

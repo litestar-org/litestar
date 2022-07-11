@@ -11,7 +11,7 @@ from starlette.status import HTTP_204_NO_CONTENT
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.template import TemplateEngineProtocol
 
 
