@@ -120,9 +120,21 @@ def create_parameter_for_handler(
     Create a list of path/query/header Parameter models for the given PathHandler
     """
     parameters = ParameterCollection(route_handler=route_handler)
-
     dependencies = route_handler.resolve_dependencies()
-    for field_name, model_field in handler_fields.items():
+    layered_parameters = route_handler.resolve_layered_parameters()
+
+    for field_name, model_field in filter(lambda items: items[0] not in RESERVED_KWARGS, layered_parameters.items()):
+        parameters.add(
+            create_parameter(
+                model_field=model_field,
+                parameter_name=field_name,
+                path_parameters=path_parameters,
+                generate_examples=generate_examples,
+            )
+        )
+    for field_name, model_field in filter(
+        lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
+    ):
         extra = model_field.field_info.extra
         if extra.get("is_dependency") and field_name not in dependencies:
             # never document explicit dependencies
@@ -133,8 +145,7 @@ def create_parameter_for_handler(
                 route_handler, dependency_fields, path_parameters, generate_examples
             ):
                 parameters.add(parameter)
-            continue
-        if field_name not in RESERVED_KWARGS:
+        else:
             parameters.add(
                 create_parameter(
                     model_field=model_field,

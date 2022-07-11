@@ -145,7 +145,7 @@ class KwargsModel:
         signature_model: Type[SignatureModel],
         dependencies: Dict[str, Provide],
         path_parameters: Set[str],
-        layered_parameters: Dict[str, FieldInfo],
+        layered_parameters: Dict[str, ModelField],
     ) -> "KwargsModel":
         """
         This function pre-determines what parameters are required for a given combination of route + route handler.
@@ -153,7 +153,10 @@ class KwargsModel:
         """
 
         cls.validate_raw_kwargs(
-            path_parameters=path_parameters, dependencies=dependencies, model_fields=signature_model.__fields__
+            path_parameters=path_parameters,
+            dependencies=dependencies,
+            model_fields=signature_model.__fields__,
+            layered_parameters=layered_parameters,
         )
         expected_reserved_kwargs = {
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
@@ -169,13 +172,13 @@ class KwargsModel:
         param_definitions = {
             *(
                 cls.create_parameter_definition(
-                    allow_none=False,
-                    field_name=parameter_name,
-                    field_info=field_info,
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=model_field.field_info,
                     path_parameters=path_parameters,
                 )
-                for parameter_name, field_info in layered_parameters.items()
-                if parameter_name not in ignored_keys and parameter_name not in signature_model.__fields__
+                for field_name, model_field in layered_parameters.items()
+                if field_name not in ignored_keys and field_name not in signature_model.__fields__
             ),
             *(
                 cls.create_parameter_definition(
@@ -193,7 +196,7 @@ class KwargsModel:
             lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
             signature_model.__fields__.items(),
         ):
-            layer_field_info = layered_parameters[field_name]
+            layer_field_info = layered_parameters[field_name].field_info
             signature_field_info = model_field.field_info
 
             field_info = layer_field_info
@@ -291,24 +294,32 @@ class KwargsModel:
 
     @classmethod
     def validate_raw_kwargs(
-        cls, path_parameters: Set[str], dependencies: Dict[str, Provide], model_fields: Dict[str, ModelField]
+        cls,
+        path_parameters: Set[str],
+        dependencies: Dict[str, Provide],
+        model_fields: Dict[str, ModelField],
+        layered_parameters: Dict[str, ModelField],
     ) -> None:
         """
         Validates that there are no ambiguous kwargs, that is, kwargs declared using the same key in different places
         """
-        aliased_parameters = {
-            k
-            for k, f in model_fields.items()
-            if f.field_info.extra.get(ParamType.QUERY)
-            or f.field_info.extra.get(ParamType.HEADER)
-            or f.field_info.extra.get(ParamType.COOKIE)
-        }
         dependency_keys = set(dependencies.keys())
+
+        parameter_names = {
+            *(
+                k
+                for k, f in model_fields.items()
+                if f.field_info.extra.get(ParamType.QUERY)
+                or f.field_info.extra.get(ParamType.HEADER)
+                or f.field_info.extra.get(ParamType.COOKIE)
+            ),
+            *list(layered_parameters.keys()),
+        }
 
         for intersection in [
             path_parameters.intersection(dependency_keys)
-            or path_parameters.intersection(aliased_parameters)
-            or dependency_keys.intersection(aliased_parameters)
+            or path_parameters.intersection(parameter_names)
+            or dependency_keys.intersection(parameter_names)
         ]:
             if intersection:
                 raise ImproperlyConfiguredException(
@@ -316,12 +327,11 @@ class KwargsModel:
                     f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 )
 
-        used_reserved_kwargs = {*aliased_parameters, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
+        used_reserved_kwargs = {*parameter_names, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
         if used_reserved_kwargs:
             raise ImproperlyConfiguredException(
-                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter "
-                f"arguments. The following kwargs have been used by dependencies or aliased parameters: "
-                f"{', '.join(used_reserved_kwargs)}"
+                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
+                f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )
 
     def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:

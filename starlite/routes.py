@@ -26,7 +26,6 @@ from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:
-    from pydantic.fields import FieldInfo
     from starlette.types import Receive, Scope, Send
 
     from starlite.response import Response
@@ -116,15 +115,11 @@ class BaseRoute:
                 raise ImproperlyConfiguredException(f"Duplicate parameter '{param_name}' detected in '{self.path}'.")
             path_parameters.add(param_name)
 
-        layered_parameters: Dict[str, "FieldInfo"] = {}
-        for layer in route_handler.ownership_layers:
-            layered_parameters.update(getattr(layer, "parameters", None) or {})
-
         return KwargsModel.create_for_signature_model(
             signature_model=signature_model,
             dependencies=dependencies,
             path_parameters=path_parameters,
-            layered_parameters=layered_parameters,
+            layered_parameters=route_handler.resolve_layered_parameters(),
         )
 
 

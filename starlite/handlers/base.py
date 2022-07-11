@@ -14,8 +14,10 @@ from typing import (
 )
 
 from anyio.to_thread import run_sync
-from pydantic import validate_arguments
+from pydantic import BaseConfig, Extra, validate_arguments
+from pydantic.fields import FieldInfo, ModelField, Undefined
 
+from starlite.constants import EXTRA_KEY_REQUIRED
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.types import ExceptionHandler, Guard, Middleware
@@ -30,6 +32,10 @@ if TYPE_CHECKING:
     from starlite.signature import SignatureModel
 
 T = TypeVar("T", bound="BaseRouteHandler")
+
+
+class ParameterConfig(BaseConfig):
+    extra = Extra.allow
 
 
 class BaseRouteHandler(Generic[T]):
@@ -50,6 +56,7 @@ class BaseRouteHandler(Generic[T]):
         "resolved_exception_handlers",
         "resolved_guards",
         "resolved_middleware",
+        "resolved_layered_parameters",
         "signature_model",
     )
 
@@ -82,6 +89,9 @@ class BaseRouteHandler(Generic[T]):
         ] = BaseRouteHandler.empty
         self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_layered_parameters: Union[
+            Dict[str, "ModelField"], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
         self.signature_model: Optional[Type["SignatureModel"]] = None
 
     @property
@@ -114,6 +124,32 @@ class BaseRouteHandler(Generic[T]):
             cur = cur.owner
 
         return list(reversed(layers))
+
+    def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
+        """Returns all parameters declared above the handler, transforming them into pydantic ModelField instances"""
+        if self.resolved_layered_parameters is BaseRouteHandler.empty:
+            self.resolved_layered_parameters = {}
+            parameters: Dict[str, FieldInfo] = {}
+            for layer in self.ownership_layers:
+                parameters.update(getattr(layer, "parameters", None) or {})
+
+            for key, parameter in parameters.items():
+                is_required = parameter.extra[EXTRA_KEY_REQUIRED]
+                value_type = parameter.extra["value_type"]
+                if value_type is Undefined:
+                    value_type = Any
+                default_value = parameter.default
+                if default_value is Undefined:
+                    default_value = ... if is_required else None
+                self.resolved_layered_parameters[key] = ModelField(
+                    name=key,
+                    type_=value_type,
+                    field_info=parameter,
+                    default=default_value,
+                    model_config=ParameterConfig,
+                    class_validators=None,
+                )
+        return cast(Dict[str, "ModelField"], self.resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
