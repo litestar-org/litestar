@@ -4,7 +4,7 @@ from starlite import Starlite, Template, TemplateConfig, get
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     import pathlib
 
 

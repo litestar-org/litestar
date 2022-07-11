@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING, List, Union
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pydantic import DirectoryPath
 
 try:
     from jinja2 import Environment, FileSystemLoader
     from jinja2 import Template as JinjaTemplate
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("jinja2 is not installed") from exc
+except ImportError as e:
+    raise MissingDependencyException("jinja2 is not installed") from e
 
 
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
@@ -26,5 +26,5 @@ class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
         """Loads the template with the name and returns it."""
         try:
             return self.engine.get_template(name=name)
-        except JinjaTemplateNotFound as e:
-            raise TemplateNotFound(template_name=name) from e
+        except JinjaTemplateNotFound as exc:
+            raise TemplateNotFound(template_name=name) from exc

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import Type
 
     from starlette.middleware import Middleware

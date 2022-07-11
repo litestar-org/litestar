@@ -47,7 +47,7 @@ from starlite.types import (
 )
 from starlite.utils import is_async_callable
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.controller import Controller
     from starlite.router import Router

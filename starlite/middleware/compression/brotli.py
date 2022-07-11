@@ -9,13 +9,13 @@ from starlite.config import BrotliMode
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
 try:
     import brotli
-except ImportError as e:  # pragma: no cover
+except ImportError as e:
     raise MissingDependencyException("brotli is not installed") from e
 
 

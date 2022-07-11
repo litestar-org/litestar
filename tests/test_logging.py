@@ -6,7 +6,7 @@ from starlite import Starlite
 from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
 

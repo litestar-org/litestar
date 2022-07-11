@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Dict
 from starlite import MiddlewareProtocol, Request, get
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
 

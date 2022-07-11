@@ -15,7 +15,7 @@ from starlite.exceptions import PermissionDeniedException
 from starlite.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.requests import HTTPConnection
 
 

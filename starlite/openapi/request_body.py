@@ -8,7 +8,7 @@ from openapi_schema_pydantic.v3.v3_1_0.request_body import RequestBody
 from starlite.enums import RequestEncodingType
 from starlite.openapi.schema import create_schema, update_schema_with_field_info
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
 

@@ -13,7 +13,7 @@ from typing import (
 
 from typing_extensions import Protocol, get_args, runtime_checkable
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pydantic import BaseModel
 
 ModelT = TypeVar("ModelT")
