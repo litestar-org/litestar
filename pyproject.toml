@@ -26,7 +26,10 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = [
+    "CHANGELOG.md",
+    { path = "extensions/**", format = "sdist" },
+]
 packages = [
     { include = "starlite" },
 ]
