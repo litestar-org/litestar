@@ -19,3 +19,5 @@ target/
 .DS_Store
 .python-version
 coverage.*
+*.so
+*.egg-info/

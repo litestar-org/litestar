@@ -87,6 +87,7 @@ repos:
             pyyaml,
             starlette,
             sqlalchemy,
+            setuptools_rust,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.961"

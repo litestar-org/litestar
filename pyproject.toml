@@ -57,17 +57,17 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
-maturin = "^0.12.20"
+setuptools_rust = "*"
 
 [tool.poetry.extras]
 testing = ["requests"]
 
-# [tool.poetry.build]
-# generate-setup-file = false
-# script = "build.py"
+[tool.poetry.build]
+generate-setup-file = true
+script = "build.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "setuptools-rust"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
