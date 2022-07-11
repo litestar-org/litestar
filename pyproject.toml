@@ -54,7 +54,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
-sqlalchemy = {extras = ["mypy"], version = "*"}
+sqlalchemy = { extras = ["mypy"], version = "*" }
 Jinja2 = "*"
 Mako = "*"
 freezegun = "*"
@@ -64,7 +64,7 @@ requests = "*"
 setuptools_rust = "*"
 
 [tool.poetry.extras]
-testing = ["requests","brotli"]
+testing = ["requests", "brotli"]
 brotli = ["brotli"]
 
 [tool.poetry.build]
@@ -119,6 +119,14 @@ good-names = "_,i,e,fn"
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    'pragma: no cover',
+    'if TYPE_CHECKING:',
+    'except ImportError as e:',
+    '\.\.\.'
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

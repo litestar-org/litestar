@@ -8,7 +8,7 @@ from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.parsers import parse_path_params
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.types import LifeCycleHandler
 

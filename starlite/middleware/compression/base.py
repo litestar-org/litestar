@@ -4,7 +4,7 @@ from starlite.config import CompressionBackend, CompressionConfig
 from starlite.types import MiddlewareProtocol
 from starlite.utils import import_string
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
 

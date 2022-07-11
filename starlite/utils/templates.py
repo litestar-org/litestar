@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.config import TemplateConfig
     from starlite.template import TemplateEngineProtocol
 

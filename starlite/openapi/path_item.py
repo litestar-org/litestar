@@ -11,7 +11,7 @@ from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
 from starlite.openapi.utils import extract_tags_from_route_handler
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.routes import HTTPRoute
 
 

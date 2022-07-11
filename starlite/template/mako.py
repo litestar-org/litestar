@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING, List, Union
 from starlite.exceptions import MissingDependencyException, TemplateNotFound
 from starlite.template.base import TemplateEngineProtocol
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pydantic import DirectoryPath
 
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
     from mako.lookup import TemplateLookup
     from mako.template import Template as MakoTemplate
-except ImportError as exc:  # pragma: no cover
-    raise MissingDependencyException("mako is not installed") from exc
+except ImportError as e:
+    raise MissingDependencyException("mako is not installed") from e
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
@@ -25,5 +25,5 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         """Loads the template with the name and returns it."""
         try:
             return self.engine.get_template(name)
-        except MakoTemplateNotFound as e:
-            raise TemplateNotFound(template_name=name) from e
+        except MakoTemplateNotFound as exc:
+            raise TemplateNotFound(template_name=name) from exc

@@ -20,7 +20,7 @@ from starlite.provide import Provide
 from starlite.types import ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable, normalize_path
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
     from starlette.requests import HTTPConnection
 

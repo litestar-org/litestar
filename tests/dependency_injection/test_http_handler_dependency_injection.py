@@ -6,7 +6,7 @@ from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import Controller, Provide, get
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlite.connection import Request
 
 

@@ -18,7 +18,7 @@ from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from starlette.requests import HTTPConnection
 
 

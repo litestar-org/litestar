@@ -30,7 +30,7 @@ from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from typing import AsyncGenerator
 
 

@@ -8,7 +8,7 @@ from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 
 
