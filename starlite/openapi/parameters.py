@@ -1,10 +1,15 @@
+from copy import copy
 from typing import TYPE_CHECKING, Any, Dict, List, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
 from pydantic import BaseModel
 from pydantic.fields import Undefined
 
-from starlite.constants import EXTRA_KEY_REQUIRED, RESERVED_KWARGS
+from starlite.constants import (
+    EXTRA_KEY_IS_PARAMETER,
+    EXTRA_KEY_REQUIRED,
+    RESERVED_KWARGS,
+)
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
@@ -123,15 +128,6 @@ def create_parameter_for_handler(
     dependencies = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()
 
-    for field_name, model_field in filter(lambda items: items[0] not in RESERVED_KWARGS, layered_parameters.items()):
-        parameters.add(
-            create_parameter(
-                model_field=model_field,
-                parameter_name=field_name,
-                path_parameters=path_parameters,
-                generate_examples=generate_examples,
-            )
-        )
     for field_name, model_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
     ):
@@ -154,4 +150,49 @@ def create_parameter_for_handler(
                     generate_examples=generate_examples,
                 )
             )
+    for field_name, model_field in filter(
+        lambda items: items[0] not in RESERVED_KWARGS and items[0] not in handler_fields, layered_parameters.items()
+    ):
+        parameters.add(
+            create_parameter(
+                model_field=model_field,
+                parameter_name=field_name,
+                path_parameters=path_parameters,
+                generate_examples=generate_examples,
+            )
+        )
+    for field_name, signature_model_filed in filter(
+        lambda items: items[0] not in RESERVED_KWARGS and items[0] in layered_parameters, handler_fields.items()
+    ):
+
+        layer_field_info = layered_parameters[field_name].field_info
+        signature_field_info = signature_model_filed.field_info
+
+        field_info = layer_field_info
+        # allow users to manually override Parameter definition using Parameter
+        if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
+            field_info = signature_field_info
+
+        field_info.default = (
+            signature_field_info.default
+            if signature_field_info.default not in [Undefined, Ellipsis]
+            else layer_field_info.default
+        )
+
+        model_field = copy(signature_model_filed)
+        model_field.field_info = field_info
+
+        extra = field_info.extra
+        parameter_name = (
+            extra.get(ParamType.QUERY) or extra.get(ParamType.HEADER) or extra.get(ParamType.COOKIE) or field_name
+        )
+
+        parameters.add(
+            create_parameter(
+                model_field=model_field,
+                parameter_name=parameter_name,
+                path_parameters=path_parameters,
+                generate_examples=generate_examples,
+            )
+        )
     return parameters.list()

@@ -3,7 +3,11 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Unio
 from pydantic.fields import FieldInfo, ModelField, Undefined
 
 from starlite.connection import Request, WebSocket
-from starlite.constants import EXTRA_KEY_REQUIRED, RESERVED_KWARGS
+from starlite.constants import (
+    EXTRA_KEY_IS_PARAMETER,
+    EXTRA_KEY_REQUIRED,
+    RESERVED_KWARGS,
+)
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
@@ -201,7 +205,7 @@ class KwargsModel:
 
             field_info = layer_field_info
             # allow users to manually override Parameter definition using Parameter
-            if signature_field_info.extra.get("is_parameter"):
+            if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
                 field_info = signature_field_info
 
             field_info.default = (

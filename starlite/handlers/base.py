@@ -17,7 +17,7 @@ from anyio.to_thread import run_sync
 from pydantic import BaseConfig, Extra, validate_arguments
 from pydantic.fields import FieldInfo, ModelField, Undefined
 
-from starlite.constants import EXTRA_KEY_REQUIRED
+from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.types import ExceptionHandler, Guard, Middleware
@@ -135,12 +135,10 @@ class BaseRouteHandler(Generic[T]):
 
             for key, parameter in parameters.items():
                 is_required = parameter.extra[EXTRA_KEY_REQUIRED]
-                value_type = parameter.extra["value_type"]
+                value_type = parameter.extra[EXTRA_KEY_VALUE_TYPE]
                 if value_type is Undefined:
                     value_type = Any
-                default_value = parameter.default
-                if default_value is Undefined:
-                    default_value = ... if is_required else None
+                default_value = parameter.default if parameter.default is not Undefined else ...
                 self.resolved_layered_parameters[key] = ModelField(
                     name=key,
                     type_=value_type,
@@ -148,6 +146,7 @@ class BaseRouteHandler(Generic[T]):
                     default=default_value,
                     model_config=ParameterConfig,
                     class_validators=None,
+                    required=is_required,
                 )
         return cast(Dict[str, "ModelField"], self.resolved_layered_parameters)
 
