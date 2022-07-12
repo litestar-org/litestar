@@ -15,14 +15,17 @@ def get_user(user_id: int) -> User:
 
 In the above there are two components:
 
-1. The path parameter is defined inside the `path` kwarg passed to the _@get_ decorator in the form `{parameter_name:parameter_type}`. This definition of the path parameter is based on
+1. The path parameter is defined inside the `path` kwarg passed to the _@get_ decorator in the
+   form `{parameter_name:parameter_type}`. This definition of the path parameter is based on
    the [Starlette path parameter](https://www.starlette.io/routing/#path-parameters)
-   mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types, Starlite
+   mechanism. Yet, in difference to Starlette, which allows defining path parameters without defining their types,
+   Starlite
    enforces this typing, with the following types supported: `int`, `float`, `str`, `uuid`.
 2. The `get_user` function defines a parameter with the same name as defined in the `path` kwarg. This ensures that
    the value of the path parameter will be injected into the function when it's called.
 
-The types do not need to match 1:1 - as long as parameter inside the function declaration is typed with a "higher" type to which the lower type can be coerced, this is fine. For example, consider this:
+The types do not need to match 1:1 - as long as parameter inside the function declaration is typed with a "higher" type
+to which the lower type can be coerced, this is fine. For example, consider this:
 
 ```python
 from datetime import datetime
@@ -39,7 +42,9 @@ def get_orders(from_date: datetime) -> List[Order]:
 ```
 
 The parameter defined inside the `path` kwarg is typed as `int`, because the value passed from the frontend will be a
-timestamp in milliseconds without any decimals. The parameter in the function declaration though is typed as `datetime.datetime`. This works because the int value will be passed to a pydantic model representing the function signature, which will coerce the int
+timestamp in milliseconds without any decimals. The parameter in the function declaration though is typed
+as `datetime.datetime`. This works because the int value will be passed to a pydantic model representing the function
+signature, which will coerce the int
 into a datetime. Thus, when the function is called it will be called with a datetime typed parameter.
 
 <!-- prettier-ignore -->
@@ -74,7 +79,8 @@ def get_product_version(
     ...
 ```
 
-In the above example, `Parameter` is used to restrict the value of `version` to a range between 1 and 10, and then set the `title`,
+In the above example, `Parameter` is used to restrict the value of `version` to a range between 1 and 10, and then set
+the `title`,
 `description`, `examples` and `externalDocs` sections of the OpenAPI schema.
 
 ## Query Parameters
@@ -103,7 +109,8 @@ def get_orders(
 
 The above is a rather classic example of a paginated "GET" request:
 
-1. _page_ is a required query parameter of type `int`. It has no default value and as such has to be provided or a ValidationException will be raised.
+1. _page_ is a required query parameter of type `int`. It has no default value and as such has to be provided or a
+   ValidationException will be raised.
 2. _page_size_ is a required query parameter of type `int` as well, but it has a default value - so it can be omitted in
    the request.
 3. _brands_ is an optional list of strings with a default `None` value.
@@ -138,7 +145,8 @@ def get_orders(
     ...
 ```
 
-This doesn't look so good, and tools such as PyLint will complain. The solution here is to use [the Parameter function](#the-parameter-function):
+This doesn't look so good, and tools such as PyLint will complain. The solution here is to
+use [the Parameter function](#the-parameter-function):
 
 ```python
 from datetime import datetime
@@ -160,11 +168,13 @@ def get_orders(
     ...
 ```
 
-As you can see, specifying the "query" kwarg allows us to remap from one key to another. Furthermore, we can use Parameter for extended validation and documentation, as is done for `page_size`.
+As you can see, specifying the "query" kwarg allows us to remap from one key to another. Furthermore, we can use
+Parameter for extended validation and documentation, as is done for `page_size`.
 
 ## Header and Cookie Parameters
 
-Unlike _Query_ parameters, _Header_ and _Cookie_ parameters have to be declared using [the Parameter function](#the-parameter-function), for example:
+Unlike _Query_ parameters, _Header_ and _Cookie_ parameters have to be declared
+using [the Parameter function](#the-parameter-function), for example:
 
 ```python
 from pydantic import UUID4
@@ -198,13 +208,16 @@ async def get_user(
     ...
 ```
 
-As you can see in the above, header parameters are declared using the `header` kwargs and cookie parameters using the `cookie` kwarg. Aside form this difference they work the same as query parameters.
+As you can see in the above, header parameters are declared using the `header` kwargs and cookie parameters using
+the `cookie` kwarg. Aside form this difference they work the same as query parameters.
 
 ## The Parameter Function
 
 `Parameter` is a wrapper on top of the
-pydantic [Field function](https://pydantic-docs.helpmanual.io/usage/schema/#field-customization) that extends it with a set of Starlite specific kwargs. As such, you can use
-most of the kwargs of _Field_ with Parameter and have the same parsing and validation. The additional kwargs accepted by `Parameter` are passed to the resulting pydantic `FieldInfo` as an `extra`
+pydantic [Field function](https://pydantic-docs.helpmanual.io/usage/schema/#field-customization) that extends it with a
+set of Starlite specific kwargs. As such, you can use
+most of the kwargs of _Field_ with Parameter and have the same parsing and validation. The additional kwargs accepted
+by `Parameter` are passed to the resulting pydantic `FieldInfo` as an `extra`
 dictionary and have no effect on the working of pydantic itself.
 
 `Parameter` accepts the following optional kwargs:
@@ -243,3 +256,70 @@ dictionary and have no effect on the working of pydantic itself.
   specification.
 - `regex`: A string representing a regex against which the given string will be matched. Equivalent to `pattern` in the
   OpenAPI specification.
+
+## Layered Parameters
+
+Starlite has a "layered" architecture, which is also evident in that one can declare parameters not only in individual
+route handlers - as in the above example, but on different layers of the application:
+
+```python
+from starlite import Starlite, Controller, Router, Parameter
+
+
+class MyController(Controller):
+    path = "/controller"
+    parameters = {
+        "controller_param": Parameter(int, lt=100),
+    }
+
+    @get("/{path_param:int}")
+    def my_handler(
+        self,
+        path_param: int,
+        local_param: str,
+        router_param: str,
+        controller_param: int = Parameter(int, lt=50),
+    ) -> dict:
+        ...
+
+
+router = Router(
+    path="/router",
+    route_handlers=[MyController],
+    parameters={
+        "router_param": Parameter(
+            str, regex="^[a-zA-Z]$", header="MyHeader", required=False
+        ),
+    },
+)
+
+app = Starlite(
+    route_handlers=[router],
+    parameters={
+        "app_param": Parameter(str, cookie="special-cookie"),
+    },
+)
+```
+
+In the above we declare parameters on the app, router and controller levels in addition to those declared in the route
+handler. Lets look at these closer:
+
+`app_param` is a cookie param with the key `special-cookie`. We type it as `str` by passing this as a arg to
+the `Parameter` function. This is required for us to get typing in the OpenAPI docs. Additionally, this parameter is
+assumed to be required because it is not explicitly declared as `required=False`. This is important because the route
+handler function does not declare a parameter called `app_param` at all, but it will still require this param to be sent
+as part of the request of validation will fail.
+
+`router_param` is a header param with the key `MyHeader`. Because its declared as `required=False`, it will not fail
+validation if not present unless explicitly declared by a route handler - and in this case it is. Thus it is actually
+required for the router handler function that declares it as an `str` and not an `Optional[str]`. If a string value is
+provided, it will be tested against the provided regex.
+
+`controller_param` is a query param with the key `controller_param`. It has an `lt=100` defined on the controller, which
+means the provided value must be less than 100. Yet the route handler redeclares it with an `lt=50`, which means for the
+route handler this value must be less than 50.
+
+Finally `local_param` is a route handler local query parameter, and `path_param` is a path parameter.
+
+**Note**: You cannot declare path parameters in different application layers. The reason for this is to ensure
+simplicity - otherwise parameter resolution becomes very difficult to do correctly.
