@@ -12,6 +12,7 @@ node_modules/
 results/
 site/
 target/
+/build/
 
 # files
 *.iml
