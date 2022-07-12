@@ -43,12 +43,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "matchit"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dfc802da7b1cf80aefffa0c7b2f77247c8b32206cc83c270b61264f5b360a80"
-
-[[package]]
 name = "once_cell"
 version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -167,7 +161,6 @@ dependencies = [
 name = "rust_backend"
 version = "0.1.0"
 dependencies = [
- "matchit",
  "pyo3",
 ]
 

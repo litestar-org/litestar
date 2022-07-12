@@ -10,4 +10,3 @@ path = "./starlite/extensions/rust/lib.rs"
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
-matchit = "0.6.0"
