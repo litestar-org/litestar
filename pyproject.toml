@@ -42,7 +42,6 @@ pyyaml = "*"
 starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
-maturin = "^0.12.20"
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -58,6 +57,7 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+maturin = "^0.12.20"
 
 [tool.poetry.extras]
 testing = ["requests"]
