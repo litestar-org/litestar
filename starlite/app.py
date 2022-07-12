@@ -12,8 +12,6 @@ from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
 from typing_extensions import Type
 
-from rust_backend import RouteMap as RouteMapInit
-
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
     CacheConfig,
@@ -24,7 +22,6 @@ from starlite.config import (
     TemplateConfig,
 )
 from starlite.datastructures import State
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware import ExceptionHandlerMiddleware
@@ -35,6 +32,7 @@ from starlite.response import Response
 from starlite.route_map import RouteMap
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.rust_backend import RouteMap as RouteMapInit
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
     AfterRequestHandler,
@@ -230,7 +228,6 @@ class Starlite(Router):
         Create a map of the app's routes. This map is used in the asgi router to route requests.
         """
         self.route_map.add_routes(self, HTTPRoute, WebSocketRoute, ASGIRoute)
-      
 
     def build_route_middleware_stack(
         self,
