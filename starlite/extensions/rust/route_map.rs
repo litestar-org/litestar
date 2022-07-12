@@ -29,7 +29,7 @@ struct Node {
     children: HashMap<String, Node>,
     path_parameters: Option<Vec<HashMap<String, Py<PyAny>>>>,
     asgi_handlers: Option<HashMap<String, Py<PyAny>>>,
-    is_asgi: Option<bool>,
+    is_asgi: bool,
     static_path: Option<String>,
 }
 
@@ -41,7 +41,7 @@ impl Node {
             children: HashMap::new(),
             path_parameters: None,
             asgi_handlers: None,
-            is_asgi: None,
+            is_asgi: false,
             static_path: None,
         }
     }
@@ -59,9 +59,9 @@ impl Node {
         if let Some(ref path_parameters) = self.path_parameters {
             dict.set_item("path_parameters", path_parameters)?;
         }
-        if let Some(is_asgi) = self.is_asgi {
-            dict.set_item("is_asgi", is_asgi)?;
-        }
+
+        dict.set_item("is_asgi", self.is_asgi)?;
+
         if let Some(ref static_path) = self.static_path {
             dict.set_item("static_path", static_path)?;
         }
@@ -205,9 +205,9 @@ impl RouteMap {
         scope.set_item("path_params", parse_path_params.call1(args)?)?;
 
         let asgi_handlers = cur.asgi_handlers.clone().unwrap_or_default();
-        let is_asgi = cur.is_asgi.unwrap_or(false);
+        let is_asgi = cur.is_asgi;
 
-        if cur.asgi_handlers.is_none() && cur.is_asgi.is_none() {
+        if cur.asgi_handlers.is_none() {
             Err(NotFoundException::new_err(""))
         } else {
             Ok((asgi_handlers, is_asgi))
@@ -267,13 +267,9 @@ impl RouteMap {
             cur.asgi_handlers = Some(HashMap::new());
         }
 
-        if cur.is_asgi.is_none() {
-            cur.is_asgi = Some(false);
-        }
-
         if static_paths.contains(&path[..]) {
             cur.static_path = Some(path);
-            cur.is_asgi = Some(true);
+            cur.is_asgi = true;
         }
 
         let asgi_handlers = cur.asgi_handlers.as_mut().unwrap();
@@ -310,7 +306,7 @@ impl RouteMap {
             generate_single_route_handler_stack!("websocket");
         } else if route.is_instance(asgi_route)? {
             generate_single_route_handler_stack!("asgi");
-            cur.is_asgi = Some(true);
+            cur.is_asgi = true;
         }
 
         Ok(())
