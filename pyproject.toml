@@ -67,7 +67,7 @@ testing = ["requests"]
 
 [tool.poetry.build]
 generate-setup-file = true
-script = "build.py"
+script = "poetry_build.py"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools-rust"]
