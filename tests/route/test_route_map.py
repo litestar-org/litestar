@@ -18,7 +18,7 @@ RouteMapTestCase = Tuple[str, str, Set[str]]
 
 def is_path_in_route_map(route_map: Dict[str, Any], path: str, path_params: Set[str]) -> bool:
     if not path_params:
-        return True if path in route_map else False
+        return path in route_map
     components = ["/", *[component for component in param_pat.sub("*", path).split("/") if component]]
     cur_node = route_map
     for component in components:
@@ -37,12 +37,13 @@ def route_test_paths(draw: DrawFn) -> List[RouteMapTestCase]:
         request_path = param_pat.sub("1", router_path)
         return (router_path, request_path, params)
 
-    unique_key = lambda record: record[1]
     parameter_names = ["a", "b", "c", "d", "e"]
     param_st = st.sets(st.sampled_from(parameter_names), min_size=0, max_size=3)
     components_st = st.lists(st.text(alphabet=ascii_letters, min_size=1, max_size=4), min_size=1, max_size=3)
     path_st = st.builds(build_record, components_st, param_st)
-    return cast(List[RouteMapTestCase], draw(st.lists(path_st, min_size=10, max_size=10, unique_by=unique_key)))
+    return cast(
+        List[RouteMapTestCase], draw(st.lists(path_st, min_size=10, max_size=10, unique_by=lambda record: record[1]))
+    )
 
 
 def test_route_map_starts_empty() -> None:
