@@ -10,6 +10,7 @@ def build(setup_kwargs: Dict[str, Any]) -> None:
     setup_kwargs["rust_extensions"] = [
         RustExtension("starlite.rust_backend", path="extensions/rust/Cargo.toml", binding=Binding.PyO3)
     ]
+    setup_kwargs["zip_safe"] = False
 
 
 if __name__ == "__main__":
