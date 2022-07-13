@@ -260,3 +260,7 @@
 [1.5.4]
 
 - Add Brotli compression middleware by @cofin
+
+[1.6.0]
+
+- Add support for layered parameters
