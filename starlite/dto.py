@@ -120,12 +120,47 @@ class DTOFactory:
         Note: Although the value generated is a pydantic factory, because it is being generated programmatically,
         it's currently not possible to extend editor auto-complete for the DTO properties - it will be typed as a
         Pydantic BaseModel, but no attributes will be inferred in the editor.
+
+        Args:
+            name (str): This becomes the name of the generated pydantic model.
+            source (type[T]): A type that is either a subclass of `BaseModel`, a `dataclass` or any other type with a
+                plugin registered.
+            exclude (list[str] | None): Names of attributes on `source`. Named Attributes will not have a field
+                generated on the resultant pydantic model.
+            field_mapping (dict[str, str | tuple[str, Any]] | None): Keys are names of attributes on `source`. Values
+                are either a `str` to rename an attribute, or tuple `(str, Any)` to remap both name and type of the
+                attribute.
+            field_definitions (dict[str, tuple[Any, Any]] | None): Add fields to the model that don't exist on `source`.
+                These are passed as kwargs to `pydantic.create_model()`.
+
+        Returns:
+            Type[DTO[T]]
+
+        Raises:
+            ImproperlyConfiguredException: If `source` is not a pydantic model, or dataclass, and there is no plugin
+            registered for its type.
         """
-        fields: Dict[str, ModelField]
+        field_definitions = field_definitions or {}
         exclude = exclude or []
         field_mapping = field_mapping or {}
-        field_definitions = field_definitions or {}
-        plugin = None
+        fields, plugin = self._get_fields_from_source(source)
+        field_definitions = self._populate_field_definitions(exclude, field_definitions, field_mapping, fields)
+        dto = cast(Type[DTO[T]], create_model(name, __base__=DTO, **field_definitions))  # type:ignore[call-overload]
+        dto.dto_source_model = source
+        dto.dto_source_plugin = plugin
+        dto.dto_field_mapping = {}
+        for key, value in field_mapping.items():
+            if not isinstance(value, str):
+                value = value[0]
+            dto.dto_field_mapping[value] = key
+        return dto
+
+    def _get_fields_from_source(self, source: Type[T]) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
+        """
+        Converts a `BaseModel` subclass, `dataclass` or any other type that has a plugin registered into a mapping of
+        `str` to `ModelField`.
+        """
+        plugin: Optional[PluginProtocol] = None
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
@@ -139,31 +174,46 @@ class DTOFactory:
                 )
             model = plugin.to_pydantic_model_class(model_class=source)
             fields = model.__fields__
+        return fields, plugin
+
+    def _populate_field_definitions(
+        self,
+        exclude: List[str],
+        field_definitions: Dict[str, Tuple[Any, Any]],
+        field_mapping: Dict[str, Union[str, Tuple[str, Any]]],
+        fields: Dict[str, ModelField],
+    ) -> Dict[str, Tuple[Any, Any]]:
+        """
+        Populates `field_definitions`, ignoring fields in `exclude`, and remapping fields in `field_mapping`.
+        """
         for field_name, model_field in fields.items():
-            if field_name not in exclude:
-                field_type = get_field_type(model_field=model_field)
-                if field_name in field_mapping:
-                    mapping = field_mapping[field_name]
-                    if isinstance(mapping, tuple):
-                        field_name, field_type = mapping
-                    else:
-                        field_name = mapping
-                    if model_field.field_info.default not in (Undefined, None, ...):
-                        field_definitions[field_name] = (field_type, model_field.default)
-                    elif model_field.required or not model_field.allow_none:
-                        field_definitions[field_name] = (field_type, ...)
-                    else:
-                        field_definitions[field_name] = (field_type, None)
+            if field_name in exclude:
+                continue
+            field_type = get_field_type(model_field=model_field)
+            if field_name in field_mapping:
+                field_name, field_type = self._remap_field(field_mapping, field_name, field_type)
+                if model_field.field_info.default not in (Undefined, None, ...):
+                    field_definitions[field_name] = (field_type, model_field.default)
+                elif model_field.required or not model_field.allow_none:
+                    field_definitions[field_name] = (field_type, ...)
                 else:
-                    # prevents losing Optional
-                    field_type = Optional[field_type] if model_field.allow_none else field_type
-                    field_definitions[field_name] = (field_type, model_field.field_info)
-        dto = cast(Type[DTO[T]], create_model(name, __base__=DTO, **field_definitions))  # type: ignore
-        dto.dto_source_model = source
-        dto.dto_source_plugin = plugin
-        dto.dto_field_mapping = {}
-        for key, value in field_mapping.items():
-            if not isinstance(value, str):
-                value = value[0]
-            dto.dto_field_mapping[value] = key
-        return dto
+                    field_definitions[field_name] = (field_type, None)
+            else:
+                # prevents losing Optional
+                field_type = Optional[field_type] if model_field.allow_none else field_type
+                field_definitions[field_name] = (field_type, model_field.field_info)
+        return field_definitions
+
+    @staticmethod
+    def _remap_field(
+        field_mapping: Dict[str, Union[str, Tuple[str, Any]]], field_name: str, field_type: Any
+    ) -> Tuple[str, Any]:
+        """
+        Returns tuple of field name and field type remapped according to entry in `field_mapping`.
+        """
+        mapping = field_mapping[field_name]
+        if isinstance(mapping, tuple):
+            field_name, field_type = mapping
+        else:
+            field_name = mapping
+        return field_name, field_type
