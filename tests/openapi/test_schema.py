@@ -7,6 +7,8 @@ from pydantic.fields import FieldInfo
 
 from starlite import Controller, MediaType, Parameter, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite.constants import EXTRA_KEY_REQUIRED
+from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
@@ -79,12 +81,12 @@ def test_dependency_schema_generation() -> None:
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
         handler = client.app.openapi_schema.paths["/test/{path_param}"]  # type: ignore
-        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}  # type: ignore
+        data = {param.name: {"in": param.param_in, EXTRA_KEY_REQUIRED: param.required} for param in handler.get.parameters}  # type: ignore
         assert data == {
-            "path_param": {"in": "path", "required": True},
-            "header_param": {"in": "header", "required": False},
-            "query_param": {"in": "query", "required": True},
-            "handler_param": {"in": "query", "required": True},
+            "path_param": {"in": ParamType.PATH, EXTRA_KEY_REQUIRED: True},
+            "header_param": {"in": ParamType.HEADER, EXTRA_KEY_REQUIRED: False},
+            "query_param": {"in": ParamType.QUERY, EXTRA_KEY_REQUIRED: True},
+            "handler_param": {"in": ParamType.QUERY, EXTRA_KEY_REQUIRED: True},
         }
 
 

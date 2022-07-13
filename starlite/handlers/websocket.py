@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from starlite.types import AsyncAnyCallable
 
 
-class WebsocketRouteHandler(BaseRouteHandler):
+class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
         """
         Replaces a function with itself
