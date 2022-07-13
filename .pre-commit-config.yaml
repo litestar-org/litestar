@@ -10,7 +10,7 @@ repos:
         exclude: "\\.idea/(.)*"
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.36.0
+    rev: v2.37.1
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
