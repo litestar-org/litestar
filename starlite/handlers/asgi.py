@@ -10,7 +10,7 @@ from starlite.types import ExceptionHandler, Guard
 from starlite.utils import is_async_callable
 
 
-class ASGIRouteHandler(BaseRouteHandler):
+class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,

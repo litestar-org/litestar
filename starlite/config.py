@@ -1,12 +1,10 @@
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
-    AbstractSet,
     Any,
     Callable,
     Dict,
     List,
-    Mapping,
     Optional,
     Tuple,
     Type,
@@ -34,10 +32,6 @@ from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:
-    DictStrAny = Dict[str, Any]
-    IntStr = Union[int, str]
-    AbstractSetIntStr = AbstractSet[IntStr]
-    MappingIntStrAny = Mapping[IntStr, Any]
     from starlite.connection import Request
 
 
@@ -120,7 +114,7 @@ class CompressionConfig(BaseModel):
                 raise ValueError(f"{v} is not a valid compression optimization mode") from e
         return v
 
-    def dict(self, *args, **kwargs) -> "DictStrAny":  # type: ignore[no-untyped-def]
+    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # type: ignore[no-untyped-def]
         """Returns a dictionary representation of the CompressionConfig.
 
         Returns:

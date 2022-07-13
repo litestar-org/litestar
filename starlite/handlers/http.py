@@ -2,17 +2,7 @@
 from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass, ismethod
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    List,
-    Optional,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
@@ -49,11 +39,9 @@ from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
-    from starlite.controller import Controller
-    from starlite.router import Router
 
 
-class HTTPRouteHandler(BaseRouteHandler):
+class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
         "after_request",
         "background_tasks",
@@ -126,8 +114,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.http_method = http_method.value if isinstance(http_method, HttpMethod) else http_method
         if status_code:
             self.status_code = status_code
-        elif isinstance(self.http_method, list):
-            self.status_code = HTTP_200_OK
         elif self.http_method == HttpMethod.POST:
             self.status_code = HTTP_201_CREATED
         elif self.http_method == HttpMethod.DELETE:
@@ -166,7 +152,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_after_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+            Optional[AfterRequestHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_before_request: Union[
             Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
@@ -180,16 +166,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.validate_handler_function()
         return self
 
-    def ownership_layers(self) -> Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None]:
-        """
-        Returns all the handler and then all owners up to the app level
-
-        handler -> ... -> App
-        """
-        return cast(
-            Generator[Union["HTTPRouteHandler", "Controller", "Router"], None, None], super().ownership_layers()
-        )
-
     def resolve_response_class(self) -> Type[Response]:
         """
         Returns the closest custom Response class in the owner graph or the default Response class.
@@ -198,10 +174,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self.resolved_response_class is BaseRouteHandler.empty:
             self.resolved_response_class = Response
-            for layer in self.ownership_layers():
+            for layer in self.ownership_layers:
                 if layer.response_class is not None:
                     self.resolved_response_class = layer.response_class
-                    break
         return cast(Type[Response], self.resolved_response_class)
 
     def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
@@ -211,10 +186,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once.
         """
         if self.resolved_headers is BaseRouteHandler.empty:
-            headers: Dict[str, ResponseHeader] = {}
-            for layer in reversed(list(self.ownership_layers())):
-                headers = {**headers, **(layer.response_headers or {})}
-            self.resolved_headers = headers
+            self.resolved_headers = {}
+            for layer in self.ownership_layers:
+                self.resolved_headers.update(layer.response_headers or {})
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
     def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
@@ -225,13 +199,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_before_request is BaseRouteHandler.empty:
-            for layer in self.ownership_layers():
+            self.resolved_before_request = None
+            for layer in self.ownership_layers:
                 if layer.before_request:
                     self.resolved_before_request = layer.before_request
-                    break
-            if self.resolved_before_request is BaseRouteHandler.empty:
-                self.resolved_before_request = None
-            elif ismethod(self.resolved_before_request):
+            if self.resolved_before_request is not None and ismethod(self.resolved_before_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_before_request = self.resolved_before_request.__func__
         return self.resolved_before_request
@@ -244,13 +216,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_after_request is BaseRouteHandler.empty:
-            for layer in self.ownership_layers():
+            self.resolved_after_request = None
+            for layer in self.ownership_layers:
                 if layer.after_request:
-                    self.resolved_after_request = layer.after_request  # type: ignore
-                    break
-            if self.resolved_after_request is BaseRouteHandler.empty:
-                self.resolved_after_request = None
-            elif ismethod(self.resolved_after_request):
+                    self.resolved_after_request = layer.after_request
+            if self.resolved_after_request is not None and ismethod(self.resolved_after_request):
                 # python automatically binds class variables, which we do not want in this case.
                 self.resolved_after_request = self.resolved_after_request.__func__
         return cast(Optional[AfterRequestHandler], self.resolved_after_request)

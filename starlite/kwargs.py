@@ -1,10 +1,14 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Union, cast
 
-from pydantic.fields import ModelField, Undefined
+from pydantic.fields import FieldInfo, ModelField, Undefined
 
 from starlite.connection import Request, WebSocket
-from starlite.constants import RESERVED_KWARGS
-from starlite.enums import RequestEncodingType
+from starlite.constants import (
+    EXTRA_KEY_IS_PARAMETER,
+    EXTRA_KEY_REQUIRED,
+    RESERVED_KWARGS,
+)
+from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
 from starlite.provide import Provide
@@ -13,6 +17,7 @@ from starlite.types import ReservedKwargs
 
 
 class ParameterDefinition(NamedTuple):
+    param_type: ParamType
     field_name: str
     field_alias: str
     is_required: bool
@@ -47,11 +52,12 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 
 class KwargsModel:
     """
-    This class is used to model the required kwargs for a given handler and its dependencies. This done during
-    application bootstrap, to reduce the computation required during run-time.
+    This class is used to model the required kwargs for a given handler and its dependencies.
+    This is done once and is cached during application bootstrap, ensuring minimal runtime overhead.
     """
 
     __slots__ = (
+        "has_kwargs",
         "expected_cookie_params",
         "expected_dependencies",
         "expected_form_data",
@@ -64,21 +70,30 @@ class KwargsModel:
     def __init__(
         self,
         *,
+        expected_cookie_params: Set[ParameterDefinition],
         expected_dependencies: Set[Dependency],
         expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
-        expected_cookie_params: Set[ParameterDefinition],
         expected_header_params: Set[ParameterDefinition],
         expected_path_params: Set[ParameterDefinition],
         expected_query_params: Set[ParameterDefinition],
         expected_reserved_kwargs: Set[ReservedKwargs],
     ) -> None:
+        self.expected_cookie_params = expected_cookie_params
         self.expected_dependencies = expected_dependencies
         self.expected_form_data = expected_form_data
-        self.expected_cookie_params = expected_cookie_params
         self.expected_header_params = expected_header_params
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
+        self.has_kwargs = (
+            expected_cookie_params
+            or expected_dependencies
+            or expected_form_data
+            or expected_header_params
+            or expected_path_params
+            or expected_query_params
+            or expected_reserved_kwargs
+        )
 
     @classmethod
     def create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
@@ -93,59 +108,125 @@ class KwargsModel:
             dependencies=[cls.create_dependency_graph(key=k, dependencies=dependencies) for k in sub_dependency_keys],
         )
 
+    @staticmethod
+    def create_parameter_definition(
+        allow_none: bool,
+        field_info: FieldInfo,
+        field_name: str,
+        path_parameters: Set[str],
+    ) -> ParameterDefinition:
+        """
+        Creates a ParameterDefition for the given pydantic FieldInfo instance and inserts it into the correct parameter set
+        """
+        extra = field_info.extra
+        is_required = extra.get(EXTRA_KEY_REQUIRED, True)
+        default_value = field_info.default if field_info.default is not Undefined else None
+
+        field_alias = extra.get(ParamType.QUERY) or field_name
+        param_type = ParamType.QUERY
+
+        if field_name in path_parameters:
+            field_alias = field_name
+            param_type = ParamType.PATH
+        elif extra.get(ParamType.HEADER):
+            field_alias = extra[ParamType.HEADER]
+            param_type = ParamType.HEADER
+        elif extra.get(ParamType.COOKIE):
+            field_alias = extra[ParamType.COOKIE]
+            param_type = ParamType.COOKIE
+
+        return ParameterDefinition(
+            param_type=param_type,
+            field_name=field_name,
+            field_alias=field_alias,
+            default_value=default_value,
+            is_required=is_required and (default_value is None and not allow_none),
+        )
+
     @classmethod
     def create_for_signature_model(
-        cls, signature_model: Type[SignatureModel], dependencies: Dict[str, Provide], path_parameters: Set[str]
+        cls,
+        signature_model: Type[SignatureModel],
+        dependencies: Dict[str, Provide],
+        path_parameters: Set[str],
+        layered_parameters: Dict[str, ModelField],
     ) -> "KwargsModel":
         """
         This function pre-determines what parameters are required for a given combination of route + route handler.
-
-        This function executes for each Route+RouteHandler during the application bootstrap process.
+        It is executed during the application bootstrap process.
         """
+
         cls.validate_raw_kwargs(
-            path_parameters=path_parameters, dependencies=dependencies, model_fields=signature_model.__fields__
+            path_parameters=path_parameters,
+            dependencies=dependencies,
+            model_fields=signature_model.__fields__,
+            layered_parameters=layered_parameters,
         )
         expected_reserved_kwargs = {
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
         }
-        expected_dependencies: Set[Dependency] = {
+        expected_dependencies = {
             cls.create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
             if key in signature_model.__fields__
         }
-        expected_path_parameters: Set[ParameterDefinition] = set()
-        expected_header_parameters: Set[ParameterDefinition] = set()
-        expected_cookie_parameters: Set[ParameterDefinition] = set()
-        expected_query_parameters: Set[ParameterDefinition] = set()
 
-        ignored_keys = {*RESERVED_KWARGS, *[dependency.key for dependency in expected_dependencies]}
-        fields = filter(lambda keys: keys[0] not in ignored_keys, signature_model.__fields__.items())
+        ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
 
-        for field_name, model_field in fields:
-            model_info = model_field.field_info
-            extra_keys = set(model_info.extra)
-            default = model_field.default if model_field.default is not Undefined else None
-            is_required = model_info.extra.get("required", True)
-            if field_name in path_parameters:
-                parameter_set = expected_path_parameters
-                field_alias = field_name
-            elif "header" in extra_keys and model_info.extra["header"]:
-                parameter_set = expected_header_parameters
-                field_alias = model_info.extra["header"]
-            elif "cookie" in extra_keys and model_info.extra["cookie"]:
-                parameter_set = expected_cookie_parameters
-                field_alias = model_info.extra["cookie"]
-            else:
-                parameter_set = expected_query_parameters
-                field_alias = model_info.extra.get("query") or field_name
-            parameter_set.add(
-                ParameterDefinition(
+        param_definitions = {
+            *(
+                cls.create_parameter_definition(
+                    allow_none=model_field.allow_none,
                     field_name=field_name,
-                    field_alias=field_alias,
-                    default_value=default,
-                    is_required=is_required and default is None and not model_field.allow_none,
+                    field_info=model_field.field_info,
+                    path_parameters=path_parameters,
+                )
+                for field_name, model_field in layered_parameters.items()
+                if field_name not in ignored_keys and field_name not in signature_model.__fields__
+            ),
+            *(
+                cls.create_parameter_definition(
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=model_field.field_info,
+                    path_parameters=path_parameters,
+                )
+                for field_name, model_field in signature_model.__fields__.items()
+                if field_name not in ignored_keys and field_name not in layered_parameters
+            ),
+        }
+
+        for field_name, model_field in filter(
+            lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
+            signature_model.__fields__.items(),
+        ):
+            layer_field_info = layered_parameters[field_name].field_info
+            signature_field_info = model_field.field_info
+
+            field_info = layer_field_info
+            # allow users to manually override Parameter definition using Parameter
+            if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
+                field_info = signature_field_info
+
+            field_info.default = (
+                signature_field_info.default
+                if signature_field_info.default not in [Undefined, Ellipsis]
+                else layer_field_info.default
+            )
+
+            param_definitions.add(
+                cls.create_parameter_definition(
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=field_info,
+                    path_parameters=path_parameters,
                 )
             )
+
+        expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
+        expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
+        expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}
+        expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
 
         expected_form_data = None
         data_model_field = signature_model.__fields__.get("data")
@@ -156,11 +237,13 @@ class KwargsModel:
                 RequestEncodingType.URL_ENCODED,
             ]:
                 expected_form_data = (media_type, data_model_field)
+
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
                 signature_model=get_signature_model(dependency.provide),
                 dependencies=dependencies,
                 path_parameters=path_parameters,
+                layered_parameters=layered_parameters,
             )
             expected_path_parameters = merge_parameter_sets(
                 expected_path_parameters, dependency_kwargs_model.expected_path_params
@@ -179,6 +262,7 @@ class KwargsModel:
                     expected_form_data=expected_form_data, dependency_kwargs_model=dependency_kwargs_model
                 )
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
+
         return KwargsModel(
             expected_form_data=expected_form_data,
             expected_dependencies=expected_dependencies,
@@ -214,22 +298,32 @@ class KwargsModel:
 
     @classmethod
     def validate_raw_kwargs(
-        cls, path_parameters: Set[str], dependencies: Dict[str, Provide], model_fields: Dict[str, ModelField]
+        cls,
+        path_parameters: Set[str],
+        dependencies: Dict[str, Provide],
+        model_fields: Dict[str, ModelField],
+        layered_parameters: Dict[str, ModelField],
     ) -> None:
         """
         Validates that there are no ambiguous kwargs, that is, kwargs declared using the same key in different places
         """
-        aliased_parameters = {
-            k
-            for k, f in model_fields.items()
-            if f.field_info.extra.get("query") or f.field_info.extra.get("header") or f.field_info.extra.get("cookie")
-        }
         dependency_keys = set(dependencies.keys())
+
+        parameter_names = {
+            *(
+                k
+                for k, f in model_fields.items()
+                if f.field_info.extra.get(ParamType.QUERY)
+                or f.field_info.extra.get(ParamType.HEADER)
+                or f.field_info.extra.get(ParamType.COOKIE)
+            ),
+            *list(layered_parameters.keys()),
+        }
 
         for intersection in [
             path_parameters.intersection(dependency_keys)
-            or path_parameters.intersection(aliased_parameters)
-            or dependency_keys.intersection(aliased_parameters)
+            or path_parameters.intersection(parameter_names)
+            or dependency_keys.intersection(parameter_names)
         ]:
             if intersection:
                 raise ImproperlyConfiguredException(
@@ -237,14 +331,11 @@ class KwargsModel:
                     f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
                 )
 
-        used_reserved_kwargs = {*aliased_parameters, *path_parameters, *dependency_keys}.intersection(
-            set(RESERVED_KWARGS)
-        )
+        used_reserved_kwargs = {*parameter_names, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
         if used_reserved_kwargs:
             raise ImproperlyConfiguredException(
-                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter "
-                f"arguments. The following kwargs have been used by dependencies or aliased parameters: "
-                f"{', '.join(used_reserved_kwargs)}"
+                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
+                f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )
 
     def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
@@ -269,28 +360,28 @@ class KwargsModel:
                 reserved_kwargs["data"] = self.get_request_data(request=cast(Request, connection))
         try:
             path_params = {
-                field_name: connection.path_params[field_alias]
-                if is_required
-                else connection.path_params.get(field_alias, default)
-                for field_name, field_alias, is_required, default in self.expected_path_params
+                param.field_name: connection.path_params[param.field_alias]
+                if param.is_required
+                else connection.path_params.get(param.field_alias, param.default_value)
+                for param in self.expected_path_params
             }
             query_params = {
-                field_name: connection.query_params[field_alias]
-                if is_required
-                else connection.query_params.get(field_alias, default)
-                for field_name, field_alias, is_required, default in self.expected_query_params
+                param.field_name: connection.query_params[param.field_alias]
+                if param.is_required
+                else connection.query_params.get(param.field_alias, param.default_value)
+                for param in self.expected_query_params
             }
             header_params = {
-                field_name: connection.headers[field_alias]
-                if is_required
-                else connection.headers.get(field_alias, default)
-                for field_name, field_alias, is_required, default in self.expected_header_params
+                param.field_name: connection.headers[param.field_alias]
+                if param.is_required
+                else connection.headers.get(param.field_alias, param.default_value)
+                for param in self.expected_header_params
             }
             cookie_params = {
-                field_name: connection.cookies[field_alias]
-                if is_required
-                else connection.cookies.get(field_alias, default)
-                for field_name, field_alias, is_required, default in self.expected_cookie_params
+                param.field_name: connection.cookies[param.field_alias]
+                if param.is_required
+                else connection.cookies.get(param.field_alias, param.default_value)
+                for param in self.expected_cookie_params
             }
             return {**reserved_kwargs, **path_params, **query_params, **header_params, **cookie_params}
         except KeyError as e:
@@ -310,7 +401,7 @@ class KwargsModel:
         self, dependency: Dependency, connection: Union[WebSocket, Request], **kwargs: Any
     ) -> Any:
         """
-        Recursively resolve a dependency graph
+        Recursively resolves a dependency graph
         """
         signature_model = get_signature_model(dependency.provide)
         for sub_dependency in dependency.dependencies:

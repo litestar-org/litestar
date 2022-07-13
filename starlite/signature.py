@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from inspect import Parameter, Signature
 from typing import (
     TYPE_CHECKING,
-    AbstractSet,
     Any,
     ClassVar,
     Dict,
@@ -44,11 +42,9 @@ class SignatureModel(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
+    dependency_name_set: ClassVar[Set[str]]
     field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
-    has_kwargs: ClassVar[bool]
-    # this is the factory instance used to construct the model
-    factory: ClassVar["SignatureModelFactory"]
 
     @classmethod
     def parse_values_from_connection_kwargs(
@@ -112,7 +108,7 @@ class SignatureModel(BaseModel):
     @classmethod
     def is_server_error(cls, error: "ErrorDict") -> bool:
         """Check whether given validation error is a server error"""
-        return error["loc"][-1] in cls.factory.dependency_name_set
+        return error["loc"][-1] in cls.dependency_name_set
 
     @staticmethod
     def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, "URL"]:
@@ -121,7 +117,6 @@ class SignatureModel(BaseModel):
         return method, connection.url
 
 
-@dataclass
 class SignatureParameter:
     """
     Represents the parameters of a callable for purpose of signature model generation.
@@ -136,16 +131,16 @@ class SignatureParameter:
     """
 
     __slots__ = (
-        "name",
         "annotation",
-        "optional",
         "default",
+        "name",
+        "optional",
     )
 
-    name: str
     annotation: Any
-    optional: bool
     default: Any
+    name: str
+    optional: bool
 
     def __init__(self, fn_name: str, parameter_name: str, parameter: Parameter) -> None:
         if parameter.annotation is Signature.empty:
@@ -153,10 +148,10 @@ class SignatureParameter:
                 f"Kwarg {parameter_name} of {fn_name} does not have a type annotation. If it "
                 f"should receive any value, use the 'Any' type."
             )
-        self.name = parameter_name
         self.annotation = parameter.annotation
-        self.optional = detect_optional_union(parameter.annotation)
         self.default = parameter.default
+        self.name = parameter_name
+        self.optional = detect_optional_union(parameter.annotation)
 
     @property
     def default_defined(self) -> bool:
@@ -180,7 +175,7 @@ class SignatureModelFactory:
     ----------
     fn : AnyCallable
     plugins : list[PluginProtocol]
-    provided_dependency_names : AbstractSet[str]
+    dependency_names : Set[str]
 
     The following attributes are populated after the `model()` method has been called to generate
     the `SignatureModel` subclass.
@@ -198,35 +193,29 @@ class SignatureModelFactory:
     """
 
     __slots__ = (
-        "signature",
-        "fn_name",
-        "plugins",
-        "provided_dependency_names",
-        "field_plugin_mappings",
-        "field_definitions",
         "defaults",
         "dependency_name_set",
+        "field_definitions",
+        "field_plugin_mappings",
+        "fn_name",
+        "plugins",
+        "signature",
     )
     # names of fn params not included in signature model.
     SKIP_NAMES = {"self", "cls"}
     # names of params always typed `Any`.
     SKIP_VALIDATION_NAMES = {"request", "socket"}
 
-    def __init__(
-        self, fn: "AnyCallable", plugins: List[PluginProtocol], provided_dependency_names: AbstractSet[str]
-    ) -> None:
+    def __init__(self, fn: "AnyCallable", plugins: List[PluginProtocol], dependency_names: Set[str]) -> None:
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
         self.signature = Signature.from_callable(fn)
         self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
         self.plugins = plugins
-        self.provided_dependency_names = provided_dependency_names
         self.field_plugin_mappings: Dict[str, PluginMapping] = {}
         self.field_definitions: Dict[str, Any] = {}
         self.defaults: Dict[str, Any] = {}
-        # this ends up being the total set of all identified deps. Might be provided, or not but
-        # with default value.
-        self.dependency_name_set: Set[str] = set(provided_dependency_names)
+        self.dependency_name_set = dependency_names
 
     def check_for_unprovided_dependency(self, parameter: SignatureParameter) -> None:
         """
@@ -249,7 +238,7 @@ class SignatureModelFactory:
         field_info: FieldInfo = parameter.default
         if field_info.default is not Undefined:
             return
-        if parameter.name not in self.provided_dependency_names:
+        if parameter.name not in self.dependency_name_set:
             raise ImproperlyConfiguredException(
                 f"Explicit dependency '{parameter.name}' for '{self.fn_name}' has no default value, "
                 f"or provided dependency."
@@ -267,7 +256,7 @@ class SignatureModelFactory:
         if is_dependency_field(parameter.default):
             self.dependency_name_set.add(parameter.name)
 
-    def record_default(self, parameter: SignatureParameter) -> None:
+    def set_field_default(self, parameter: SignatureParameter) -> None:
         """
         If `parameter` has defined default, map it to the parameter name in `self.defaults`.
 
@@ -300,7 +289,7 @@ class SignatureModelFactory:
         return pydantic_model
 
     @staticmethod
-    def field_definition_from_parameter(parameter: SignatureParameter) -> Tuple[Any, Any]:
+    def create_field_definition_from_parameter(parameter: SignatureParameter) -> Tuple[Any, Any]:
         """
         Construct an `(<annotation>, <default>)` tuple, appropriate for `pydantic.create_model()`.
 
@@ -335,9 +324,9 @@ class SignatureModelFactory:
                 continue
             yield SignatureParameter(self.fn_name, name, parameter)
 
-    def model(self) -> Type[SignatureModel]:
+    def create_signature_model(self) -> Type[SignatureModel]:
         """
-        Construct a `SignatureModel` type that represents the signature of `self.fn`
+        Constructs a `SignatureModel` type that represents the signature of `self.fn`
 
         Returns
         -------
@@ -347,7 +336,7 @@ class SignatureModelFactory:
             for parameter in self.signature_parameters:
                 self.check_for_unprovided_dependency(parameter)
                 self.collect_dependency_names(parameter)
-                self.record_default(parameter)
+                self.set_field_default(parameter)
                 if parameter.name in self.SKIP_VALIDATION_NAMES:
                     # pydantic has issues with none-pydantic classes that receive generics
                     self.field_definitions[parameter.name] = (Any, ...)
@@ -358,17 +347,16 @@ class SignatureModelFactory:
                 plugin = get_plugin_for_value(value=parameter.annotation, plugins=self.plugins)
                 if plugin:
                     parameter.annotation = self.get_type_annotation_from_plugin(parameter, plugin)
-                self.field_definitions[parameter.name] = self.field_definition_from_parameter(parameter)
+                self.field_definitions[parameter.name] = self.create_field_definition_from_parameter(parameter)
             model: Type[SignatureModel] = create_model(
                 self.fn_name + "_signature_model", __base__=SignatureModel, **self.field_definitions
             )
             model.return_annotation = self.signature.return_annotation
             model.field_plugin_mappings = self.field_plugin_mappings
-            model.has_kwargs = bool(model.__fields__)
-            model.factory = self
+            model.dependency_name_set = self.dependency_name_set
             return model
         except TypeError as e:
-            raise ImproperlyConfiguredException(repr(e)) from e
+            raise ImproperlyConfiguredException from e
 
 
 def get_signature_model(value: Any) -> Type[SignatureModel]:

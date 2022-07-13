@@ -12,6 +12,7 @@ from starlite.enums import RequestEncodingType
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
+    value_type: Any = Undefined,
     *,
     header: Optional[str] = None,
     cookie: Optional[str] = None,
@@ -39,7 +40,7 @@ def Parameter(
     Creates a pydantic FieldInfo instance with an extra kwargs,
     used for both parameter parsing and OpenAPI schema generation.
     """
-    extra: Dict[str, Any] = {}
+    extra: Dict[str, Any] = dict(is_parameter=True)
     extra.update(header=header)
     extra.update(cookie=cookie)
     extra.update(query=query)
@@ -47,6 +48,7 @@ def Parameter(
     extra.update(examples=examples)
     extra.update(external_docs=external_docs)
     extra.update(content_encoding=content_encoding)
+    extra.update(value_type=value_type)
     return Field(
         default,
         alias="",

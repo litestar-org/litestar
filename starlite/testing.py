@@ -9,11 +9,12 @@ from starlite import MissingDependencyException
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.datastructures import State
-from starlite.enums import HttpMethod, RequestEncodingType
+from starlite.enums import HttpMethod, ParamType, RequestEncodingType
 
 if TYPE_CHECKING:
     from typing import Type
 
+    from pydantic.fields import FieldInfo
     from pydantic.typing import AnyCallable
 
     from starlite.config import (
@@ -133,6 +134,7 @@ def create_test_client(
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,
     on_startup: Optional[List["LifeCycleHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
+    parameters: Optional[Dict[str, "FieldInfo"]] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",
@@ -155,6 +157,7 @@ def create_test_client(
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             openapi_config=openapi_config,
+            parameters=parameters,
             plugins=plugins,
             route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
@@ -203,7 +206,7 @@ def create_test_request(
     if query:
         scope["query_string"] = urlencode(query, doseq=True)
     if cookie:
-        headers["cookie"] = cookie
+        headers[ParamType.COOKIE] = cookie
     body = None
     if content:
         if isinstance(content, BaseModel):

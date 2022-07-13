@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import TYPE_CHECKING, AbstractSet, Any, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Set, Type, cast
 
 import pytest
 from pydantic import BaseModel, ValidationError
@@ -25,41 +25,42 @@ if TYPE_CHECKING:
 def make_signature_model(
     fn: "AnyCallable",
     plugins: Optional[List["PluginProtocol"]] = None,
-    provided_dependency_names: Optional[AbstractSet[str]] = None,
+    provided_dependency_names: Optional[Set[str]] = None,
 ) -> Type[SignatureModel]:
     return SignatureModelFactory(
-        fn=fn, plugins=plugins or [], provided_dependency_names=provided_dependency_names or set()
-    ).model()
+        fn=fn, plugins=plugins or [], dependency_names=provided_dependency_names or set()
+    ).create_signature_model()
 
 
-class TestParseValuesFromConnectionKwargs:
-    def test_with_plugin(self) -> None:
-        def fn(a: AModel, b: int) -> None:
-            pass
+def test_parses_values_from_connection_kwargs_with_plugin() -> None:
+    def fn(a: AModel, b: int) -> None:
+        pass
 
-        model = make_signature_model(fn, plugins=[APlugin()])
-        arbitary_a = {"name": 1}
-        result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitary_a, b=1)
-        assert result == {"a": AModel(name="1"), "b": 1}
+    model = make_signature_model(fn, plugins=[APlugin()])
+    arbitary_a = {"name": 1}
+    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitary_a, b=1)
+    assert result == {"a": AModel(name="1"), "b": 1}
 
-    def test_without_plugin(self) -> None:
-        class MyModel(BaseModel):
-            name: str
 
-        def fn(a: MyModel) -> None:
-            pass
+def test_parses_values_from_connection_kwargs_without_plugin() -> None:
+    class MyModel(BaseModel):
+        name: str
 
-        model = make_signature_model(fn)
-        result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a={"name": "my name"})
-        assert result == {"a": MyModel(name="my name")}
+    def fn(a: MyModel) -> None:
+        pass
 
-    def test_raises(self) -> None:
-        def fn(a: int) -> None:
-            pass
+    model = make_signature_model(fn)
+    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a={"name": "my name"})
+    assert result == {"a": MyModel(name="my name")}
 
-        model = make_signature_model(fn)
-        with pytest.raises(ValidationException):
-            model.parse_values_from_connection_kwargs(connection=create_test_request(), a="not an int")
+
+def test_parses_values_from_connection_kwargs_raises() -> None:
+    def fn(a: int) -> None:
+        pass
+
+    model = make_signature_model(fn)
+    with pytest.raises(ValidationException):
+        model.parse_values_from_connection_kwargs(connection=create_test_request(), a="not an int")
 
 
 def test_resolve_field_value() -> None:
@@ -122,7 +123,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = SignatureModelFactory(my_fn.fn, [], set()).model()  # type: ignore[arg-type]
+    model = SignatureModelFactory(my_fn.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
     fields = model.__fields__
     assert fields["a"].type_ == int
     assert fields["a"].required
@@ -144,7 +145,7 @@ def test_create_signature_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        SignatureModelFactory(my_fn.fn, [], set()).model()  # type: ignore[arg-type]
+        SignatureModelFactory(my_fn.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -152,13 +153,15 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
     async def health_check() -> None:
         return
 
-    signature_model_type = SignatureModelFactory(health_check.fn, [], set()).model()  # type:ignore[arg-type]
+    signature_model_type = SignatureModelFactory(
+        health_check.fn, [], set()  # type:ignore[arg-type]
+    ).create_signature_model()
     assert signature_model_type().dict() == {}
 
 
 def test_create_function_signature_model_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        SignatureModelFactory(lru_cache(maxsize=0)(lambda x: x), [], set()).model().dict()  # type: ignore
+        SignatureModelFactory(lru_cache(maxsize=0)(lambda x: x), [], set()).create_signature_model().dict()  # type: ignore
 
 
 def test_dependency_validation_failure_raises_500() -> None:
