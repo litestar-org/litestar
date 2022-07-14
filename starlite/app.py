@@ -30,7 +30,6 @@ from starlite.route_map import RouteMap
 from starlite.route_map_rs import RouteMap as RouteMapInit
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from starlite.rust_backend import RouteMap as RouteMapInit
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
     AfterRequestHandler,

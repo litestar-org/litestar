@@ -9,7 +9,7 @@ class RouteMap:
     def __init__(self, starlite: Any):
         pass
 
-    def add_routes(self, routes: Collection[BaseRoute]) -> None:
+    def add_routes(self) -> None:
         """
         Add routes to the map
         """

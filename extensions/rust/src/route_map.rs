@@ -250,6 +250,10 @@ struct ConfigureNodeView<'rm> {
 
 impl<'rm> ConfigureNodeView<'rm> {
     /// Set required attributes and route handlers on route_map tree node.
+    ///
+    /// Note: This method does not use `&self` because it needs to
+    /// immutably access other members of `self` while passing a &mut Node
+    /// that is mutably borrowed from self.map as a parameter
     fn configure_route_map_node(
         &mut self,
         route: &PyAny,
@@ -469,5 +473,53 @@ impl RouteMap {
     /// Removes a path from the plain route set
     pub fn remove_plain_route(&mut self, path: &str) -> bool {
         self.plain_routes.remove(path)
+    }
+
+    /// Given a scope object, and a reference to Starlite's parser function `parse_path_params`,
+    /// retrieves the asgi_handlers and is_asgi values from correct trie node.
+    ///
+    /// Raises `NotFoundException` if no correlating node is found for the scope's path
+    pub fn parse_scope_to_route(
+        &self,
+        scope: &PyAny,
+    ) -> PyResult<(&HashMap<String, Py<PyAny>>, bool)> {
+        let py = scope.py();
+
+        let mut path = scope
+            .get_item("path")?
+            .extract::<&str>()?
+            .trim()
+            .to_string();
+
+        if &path[..] != "/" && path.ends_with('/') {
+            path = path.strip_suffix('/').unwrap().to_string();
+        }
+
+        let cur: &Node;
+        let path_params: Vec<&str>;
+        if self.is_plain_route(&path)? {
+            cur = self.map.children.get(&path).unwrap();
+            path_params = vec![];
+        } else {
+            (cur, path_params) = self.traverse_to_node(&path, scope)?;
+        }
+
+        let args = match cur.path_parameters {
+            Some(ref path_parameter_defs) => (path_parameter_defs.clone(), path_params),
+            None => (Vec::<HashMap<String, Py<PyAny>>>::new(), path_params),
+        };
+        scope.set_item(
+            "path_params",
+            self.ctx.parse_path_params.as_ref(py).call1(args)?,
+        )?;
+
+        if cur.asgi_handlers.is_none() {
+            Err(NotFoundException::new_err(""))
+        } else {
+            let asgi_handlers = cur.asgi_handlers.as_ref().unwrap();
+            let is_asgi = cur.is_asgi;
+
+            Ok((asgi_handlers, is_asgi))
+        }
     }
 }
