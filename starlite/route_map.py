@@ -1,27 +1,30 @@
-from typing import Any, Callable, Collection, Dict, List, Tuple
+# A proxy for a Rust extension class that implements the interface below
+# The Rust implementation is located at ./starlite/extensions/rust
+from typing import Any, Dict
 
 from starlite.routes import BaseRoute
 from starlette.types import ASGIApp, Scope
 
 class RouteMap:
-    def __init__(self):
+    def __init__(self, starlite: Any):
         pass
 
-    def add_routes(self, routes: Collection[BaseRoute]) -> None:
+    def add_routes(self) -> None:
         """
         Add routes to the map
         """
         pass
        
-    def parse_scope_to_route(self, scope: Scope, parse_path_params: Callable[[List[Dict[str, Any]], List[str]], Dict[str, Any]]) -> Tuple[Dict[str, ASGIApp], bool]:
+    def resolve_asgi_app(scope: Scope) -> ASGIApp:
         """
-        Given a scope object, retrieve the asgi_handlers and is_asgi values from correct trie node.
-        
-        Raises NotFoundException if no correlating node is found for the scope's path
+        Given a scope, retrieves the correct ASGI App for the route
         """
         pass
 
     def traverse_to_dict(self, path: str) -> Dict[str, Any]:
+        """
+        Given a path, traverses the route map to find the corresponding trie node and returns it as a Dict
+        """
         pass
 
     def add_static_path(self, path: str) -> None:

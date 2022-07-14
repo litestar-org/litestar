@@ -27,34 +27,12 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
-        """
-        Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
-        
-        Raises NotFoundException if no correlating node is found for the scope's path
-        """
-        return self.app.route_map.parse_scope_to_route(scope, parse_path_params)
-
-    @staticmethod
-    def resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
-        """
-        Given a scope, retrieves the correct ASGI App for the route
-        """
-        if is_asgi:
-            return asgi_handlers[ScopeType.ASGI]
-        if scope["type"] == ScopeType.HTTP:
-            if scope["method"] not in asgi_handlers:
-                raise MethodNotAllowedException()
-            return asgi_handlers[scope["method"]]
-        return asgi_handlers[ScopeType.WEBSOCKET]
-
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
         The main entry point to the Router class.
         """
         try:
-            asgi_handlers, is_asgi = self.parse_scope_to_route(scope=scope)
-            asgi_handler = self.resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
+            asgi_handler = self.app.route_map.resolve_asgi_app(scope)
         except KeyError as e:
             raise NotFoundException() from e
         await asgi_handler(scope, receive, send)

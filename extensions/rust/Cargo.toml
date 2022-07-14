@@ -1,10 +1,10 @@
 [package]
-name = "rust_backend"
+name = "route_map_rs"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "rust_backend"
+name = "route_map_rs"
 crate-type = ["cdylib"]
 
 [dependencies]

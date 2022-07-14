@@ -30,9 +30,9 @@ from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.route_map import RouteMap
+from starlite.route_map_rs import RouteMap as RouteMapInit
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from starlite.rust_backend import RouteMap as RouteMapInit
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
     AfterRequestHandler,
@@ -103,7 +103,7 @@ class Starlite(Router):
         self.gzip_config = gzip_config
         self.plugins = plugins or []
         self.routes: List[BaseRoute] = []
-        self.route_map: RouteMap = RouteMapInit()
+        self.route_map: RouteMap = RouteMapInit(self)
         self.state = State()
 
         super().__init__(
@@ -227,7 +227,7 @@ class Starlite(Router):
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
         """
-        self.route_map.add_routes(self, HTTPRoute, WebSocketRoute, ASGIRoute)
+        self.route_map.add_routes()
 
     def build_route_middleware_stack(
         self,

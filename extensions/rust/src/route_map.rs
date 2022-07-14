@@ -4,22 +4,23 @@ use std::collections::{hash_map, HashMap, HashSet};
 
 use pyo3::{
     prelude::*,
-    types::{PyDict, PyTuple, PyType},
+    types::{PyDict, PyFunction, PyTuple, PyType},
 };
 
-pyo3::import_exception!(starlite, ImproperlyConfiguredException);
-pyo3::import_exception!(starlite, NotFoundException);
+pyo3::import_exception!(starlite.exceptions, ImproperlyConfiguredException);
+pyo3::import_exception!(starlite.exceptions, MethodNotAllowedException);
+pyo3::import_exception!(starlite.exceptions, NotFoundException);
 
-/// A context object that stores instance and type data that is needed globally in the trie
-struct StarliteContext<'py> {
-    /// The Starlite instance
-    starlite: &'py PyAny,
+/// A context object that stores Python handles that are needed in the trie
+struct StarliteContext {
     /// HTTPRoute
-    http_route: &'py PyType,
+    http_route: Py<PyType>,
     /// WebSocketRoute
-    web_socket_route: &'py PyType,
+    web_socket_route: Py<PyType>,
     /// ASGIRoute
-    asgi_route: &'py PyType,
+    asgi_route: Py<PyType>,
+    /// starlite.parsers.parse_path_params
+    parse_path_params: Py<PyFunction>,
 }
 
 /// A node for the trie
@@ -82,24 +83,45 @@ pub struct RouteMap {
     map: Node,
     static_paths: HashSet<String>,
     plain_routes: HashSet<String>,
+    starlite: Py<PyAny>,
+    ctx: StarliteContext,
 }
 
-impl Default for RouteMap {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
+// The functions below are available to Python code
 #[pymethods]
 impl RouteMap {
     /// Creates an empty `RouteMap`
     #[new]
-    pub fn new() -> Self {
-        RouteMap {
+    pub fn new(starlite: Py<PyAny>) -> PyResult<Self> {
+        macro_rules! get_attr_and_downcast {
+            ($module:ident, $attr:expr, $downcast_ty:ty) => {{
+                $module.getattr($attr)?.downcast::<$downcast_ty>()?.into()
+            }};
+        }
+
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+
+        let parsers = py.import("starlite.parsers")?;
+        let parse_path_params = get_attr_and_downcast!(parsers, "parse_path_params", PyFunction);
+
+        let routes = py.import("starlite.routes")?;
+        let http_route = get_attr_and_downcast!(routes, "HTTPRoute", PyType);
+        let web_socket_route = get_attr_and_downcast!(routes, "WebSocketRoute", PyType);
+        let asgi_route = get_attr_and_downcast!(routes, "ASGIRoute", PyType);
+
+        Ok(RouteMap {
             map: Node::new(),
             plain_routes: HashSet::new(),
             static_paths: HashSet::new(),
-        }
+            starlite,
+            ctx: StarliteContext {
+                http_route,
+                web_socket_route,
+                asgi_route,
+                parse_path_params,
+            },
+        })
     }
 
     /// Adds a new static path by path name
@@ -135,28 +157,22 @@ impl RouteMap {
     }
 
     /// Add routes to the map
-    pub fn add_routes(
-        &mut self,
-        starlite: &PyAny,
-        http_route: &PyType,
-        web_socket_route: &PyType,
-        asgi_route: &PyType,
-    ) -> PyResult<()> {
-        let py = starlite.py();
-        let ctx = StarliteContext {
-            starlite,
-            http_route,
-            web_socket_route,
-            asgi_route,
-        };
+    pub fn add_routes(&mut self) -> PyResult<()> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
 
-        let routes: Vec<&PyAny> = starlite.getattr("routes")?.extract()?;
+        let starlite = self.starlite.as_ref(py);
+
+        let routes: Vec<Py<PyAny>> = starlite.getattr("routes")?.extract()?;
+
         for route in routes {
+            let route = route.as_ref(py);
+
             let path: String = route.getattr("path")?.extract()?;
             let path_parameters: Vec<HashMap<String, Py<PyAny>>> =
                 route.getattr("path_parameters")?.extract()?;
 
-            let cur = self.add_node_to_route_map(&ctx, route, path, &path_parameters[..])?;
+            let cur = self.add_node_to_route_map(route, path, &path_parameters[..])?;
 
             let cur_path_parameters = cur.path_parameters.as_ref().unwrap();
 
@@ -170,47 +186,23 @@ impl RouteMap {
         Ok(())
     }
 
-    /// Given a scope object, and a reference to Starlite's parser function `parse_path_params`,
-    /// retrieves the asgi_handlers and is_asgi values from correct trie node.
-    ///
-    /// Raises `NotFoundException` if no correlating node is found for the scope's path
-    pub fn parse_scope_to_route(
-        &self,
-        scope: &PyAny,
-        parse_path_params: &PyAny,
-    ) -> PyResult<(HashMap<String, Py<PyAny>>, bool)> {
-        let mut path = scope
-            .get_item("path")?
-            .extract::<&str>()?
-            .trim()
-            .to_string();
+    // Given a scope, retrieves the correct ASGI App for the route
+    pub fn resolve_asgi_app(&self, scope: &PyAny) -> PyResult<Py<PyAny>> {
+        let (asgi_handlers, is_asgi) = self.parse_scope_to_route(scope)?;
 
-        if &path[..] != "/" && path.ends_with('/') {
-            path = path.strip_suffix('/').unwrap().to_string();
-        }
-
-        let cur: &Node;
-        let path_params: Vec<&str>;
-        if self.is_plain_route(&path)? {
-            cur = self.map.children.get(&path).unwrap();
-            path_params = vec![];
+        if is_asgi {
+            Ok(asgi_handlers.get("asgi").unwrap().clone())
         } else {
-            (cur, path_params) = self.traverse_to_node(&path, scope)?;
-        }
-
-        let args = match cur.path_parameters {
-            Some(ref path_parameter_defs) => (path_parameter_defs.clone(), path_params),
-            None => (Vec::<HashMap<String, Py<PyAny>>>::new(), path_params),
-        };
-        scope.set_item("path_params", parse_path_params.call1(args)?)?;
-
-        let asgi_handlers = cur.asgi_handlers.clone().unwrap_or_default();
-        let is_asgi = cur.is_asgi;
-
-        if cur.asgi_handlers.is_none() {
-            Err(NotFoundException::new_err(""))
-        } else {
-            Ok((asgi_handlers, is_asgi))
+            let scope_type: &str = scope.get_item("type")?.extract()?;
+            if scope_type == "http" {
+                let method: &str = scope.get_item("method")?.extract()?;
+                match asgi_handlers.get(method) {
+                    Some(handler) => Ok(handler.clone()),
+                    None => Err(MethodNotAllowedException::new_err("")),
+                }
+            } else {
+                Ok(asgi_handlers.get("websocket").unwrap().clone())
+            }
         }
     }
 
@@ -241,9 +233,15 @@ impl RouteMap {
     }
 }
 
+// The functions below are not available to Python
 impl RouteMap {
     /// Set required attributes and route handlers on route_map tree node.
+    ///
+    /// Note: This method does not use `&self` because it needs to
+    /// immutably access other members of `self` while passing a &mut Node
+    /// that is mutably borrowed from self.map as a parameter
     fn configure_route_map_node(
+        starlite: &Py<PyAny>,
         ctx: &StarliteContext,
         route: &PyAny,
         cur: &mut Node,
@@ -252,11 +250,12 @@ impl RouteMap {
         static_paths: &HashSet<String>,
     ) -> PyResult<()> {
         let py = route.py();
+
         let StarliteContext {
-            starlite,
             http_route,
             web_socket_route,
             asgi_route,
+            ..
         } = ctx;
 
         if cur.path_parameters.is_none() {
@@ -277,6 +276,7 @@ impl RouteMap {
         macro_rules! build_route_middleware_stack {
             ($route:ident, $route_handler:ident) => {{
                 starlite.call_method(
+                    py,
                     "build_route_middleware_stack",
                     ($route, $route_handler),
                     None,
@@ -292,7 +292,7 @@ impl RouteMap {
             };
         }
 
-        if route.is_instance(http_route)? {
+        if route.is_instance(http_route.as_ref(py))? {
             let route_handler_map: HashMap<String, &PyAny> =
                 route.getattr("route_handler_map")?.extract()?;
 
@@ -302,9 +302,9 @@ impl RouteMap {
                 let middleware_stack = build_route_middleware_stack!(route, route_handler);
                 asgi_handlers.insert(method, middleware_stack.to_object(py));
             }
-        } else if route.is_instance(web_socket_route)? {
+        } else if route.is_instance(web_socket_route.as_ref(py))? {
             generate_single_route_handler_stack!("websocket");
-        } else if route.is_instance(asgi_route)? {
+        } else if route.is_instance(asgi_route.as_ref(py))? {
             generate_single_route_handler_stack!("asgi");
             cur.is_asgi = true;
         }
@@ -319,7 +319,6 @@ impl RouteMap {
     /// segment under the previous segment's node (see prefix tree / trie).
     fn add_node_to_route_map(
         &mut self,
-        ctx: &StarliteContext,
         route: &PyAny,
         mut path: String,
         path_parameters: &[HashMap<String, Py<PyAny>>],
@@ -358,7 +357,8 @@ impl RouteMap {
         }
 
         Self::configure_route_map_node(
-            ctx,
+            &self.starlite,
+            &self.ctx,
             route,
             cur_node,
             path,
@@ -402,5 +402,53 @@ impl RouteMap {
         }
 
         Ok((cur, path_params))
+    }
+
+    /// Given a scope object, and a reference to Starlite's parser function `parse_path_params`,
+    /// retrieves the asgi_handlers and is_asgi values from correct trie node.
+    ///
+    /// Raises `NotFoundException` if no correlating node is found for the scope's path
+    pub fn parse_scope_to_route(
+        &self,
+        scope: &PyAny,
+    ) -> PyResult<(&HashMap<String, Py<PyAny>>, bool)> {
+        let py = scope.py();
+
+        let mut path = scope
+            .get_item("path")?
+            .extract::<&str>()?
+            .trim()
+            .to_string();
+
+        if &path[..] != "/" && path.ends_with('/') {
+            path = path.strip_suffix('/').unwrap().to_string();
+        }
+
+        let cur: &Node;
+        let path_params: Vec<&str>;
+        if self.is_plain_route(&path)? {
+            cur = self.map.children.get(&path).unwrap();
+            path_params = vec![];
+        } else {
+            (cur, path_params) = self.traverse_to_node(&path, scope)?;
+        }
+
+        let args = match cur.path_parameters {
+            Some(ref path_parameter_defs) => (path_parameter_defs.clone(), path_params),
+            None => (Vec::<HashMap<String, Py<PyAny>>>::new(), path_params),
+        };
+        scope.set_item(
+            "path_params",
+            self.ctx.parse_path_params.as_ref(py).call1(args)?,
+        )?;
+
+        if cur.asgi_handlers.is_none() {
+            Err(NotFoundException::new_err(""))
+        } else {
+            let asgi_handlers = cur.asgi_handlers.as_ref().unwrap();
+            let is_asgi = cur.is_asgi;
+
+            Ok((asgi_handlers, is_asgi))
+        }
     }
 }
