@@ -7,12 +7,12 @@
 .venv/
 .vscode/
 __pycache__/
+build/
 dist/
 node_modules/
 results/
 site/
 target/
-/build/
 
 # files
 *.iml
