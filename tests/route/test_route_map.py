@@ -25,7 +25,10 @@ def is_path_in_route_map(route_map: Dict[str, Any], path: str, path_params: Set[
         if component not in cur_node:
             return False
         cur_node = cur_node[component]
-    return True
+    route_params = {param["full"] for param in cur_node.get("_path_parameters", [])}
+    if path_params == route_params:
+        return True
+    return False
 
 
 @st.composite
@@ -35,7 +38,7 @@ def route_test_paths(draw: DrawFn) -> List[RouteMapTestCase]:
         shuffle(segments)
         router_path = "/" + "/".join(segments)
         request_path = param_pat.sub("1", router_path)
-        return (router_path, request_path, params)
+        return (router_path, request_path, {f"{p}:int" for p in params})
 
     parameter_names = ["a", "b", "c", "d", "e"]
     param_st = st.sets(st.sampled_from(parameter_names), min_size=0, max_size=3)
