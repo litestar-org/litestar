@@ -92,15 +92,12 @@ pub struct RouteMap {
 impl RouteMap {
     /// Creates an empty `RouteMap`
     #[new]
-    pub fn new(starlite: Py<PyAny>) -> PyResult<Self> {
+    pub fn new(py: Python, starlite: Py<PyAny>) -> PyResult<Self> {
         macro_rules! get_attr_and_downcast {
             ($module:ident, $attr:expr, $downcast_ty:ty) => {{
                 $module.getattr($attr)?.downcast::<$downcast_ty>()?.into()
             }};
         }
-
-        let gil = Python::acquire_gil();
-        let py = gil.python();
 
         let parsers = py.import("starlite.parsers")?;
         let parse_path_params = get_attr_and_downcast!(parsers, "parse_path_params", PyFunction);
@@ -157,10 +154,7 @@ impl RouteMap {
     }
 
     /// Add routes to the map
-    pub fn add_routes(&mut self) -> PyResult<()> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
-
+    pub fn add_routes(&mut self, py: Python) -> PyResult<()> {
         let starlite = self.starlite.as_ref(py);
 
         let routes: Vec<Py<PyAny>> = starlite.getattr("routes")?.extract()?;
