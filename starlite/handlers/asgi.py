@@ -15,9 +15,10 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
     def __init__(
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
+        *,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
     ):
         super().__init__(path=path, guards=guards, opt=opt, exception_handlers=exception_handlers)
 

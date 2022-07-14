@@ -35,6 +35,7 @@ from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
     AfterRequestHandler,
+    AfterResponseHandler,
     BeforeRequestHandler,
     ControllerRouterHandler,
     ExceptionHandler,
@@ -77,15 +78,16 @@ class Starlite(Router):
         self,
         *,
         after_request: Optional[AfterRequestHandler] = None,
+        after_response: Optional[AfterResponseHandler] = None,
         allowed_hosts: Optional[List[str]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+        compression_config: Optional[CompressionConfig] = None,
         cors_config: Optional[CORSConfig] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
-        compression_config: Optional[CompressionConfig] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
@@ -112,6 +114,7 @@ class Starlite(Router):
 
         super().__init__(
             after_request=after_request,
+            after_response=after_response,
             before_request=before_request,
             dependencies=dependencies,
             exception_handlers=exception_handlers,

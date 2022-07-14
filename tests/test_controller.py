@@ -1,19 +1,9 @@
-from typing import Type
+from typing import Type, Union
 
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
-from starlite import (
-    Controller,
-    HttpMethod,
-    HTTPRouteHandler,
-    delete,
-    get,
-    patch,
-    post,
-    put,
-    websocket,
-)
+from starlite import Controller, HttpMethod, delete, get, patch, post, put, websocket
 from starlite.connection import WebSocket
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
@@ -30,7 +20,9 @@ from tests import Person, PersonFactory
     ],
 )
 def test_controller_http_method(
-    decorator: Type[HTTPRouteHandler], http_method: HttpMethod, expected_status_code: int
+    decorator: Union[Type[get], Type[post], Type[put], Type[patch], Type[delete]],
+    http_method: HttpMethod,
+    expected_status_code: int,
 ) -> None:
     test_path = "/person"
     person_instance = PersonFactory.build()
