@@ -122,35 +122,33 @@ impl RouteMap {
     }
 
     /// Adds a new static path by path name
-    pub fn add_static_path(&mut self, path: &str) -> PyResult<()> {
+    pub fn add_static_path(&mut self, path: &str) {
         self.static_paths.insert(path.to_string());
-        Ok(())
     }
 
     /// Checks if a given path refers to a static path
-    pub fn is_static_path(&self, path: &str) -> PyResult<bool> {
-        Ok(self.static_paths.contains(path))
+    pub fn is_static_path(&self, path: &str) -> bool {
+        self.static_paths.contains(path)
     }
 
     /// Removes a path from the static path set
-    pub fn remove_static_path(&mut self, path: &str) -> PyResult<bool> {
-        Ok(self.static_paths.remove(path))
+    pub fn remove_static_path(&mut self, path: &str) -> bool {
+        self.static_paths.remove(path)
     }
 
     /// Adds a new plain route by path name
-    pub fn add_plain_route(&mut self, path: &str) -> PyResult<()> {
+    pub fn add_plain_route(&mut self, path: &str) {
         self.plain_routes.insert(path.to_string());
-        Ok(())
     }
 
     /// Checks if a given path refers to a plain route
-    pub fn is_plain_route(&self, path: &str) -> PyResult<bool> {
-        Ok(self.plain_routes.contains(path))
+    pub fn is_plain_route(&self, path: &str) -> bool {
+        self.plain_routes.contains(path)
     }
 
     /// Removes a path from the plain route set
-    pub fn remove_plain_route(&mut self, path: &str) -> PyResult<bool> {
-        Ok(self.plain_routes.remove(path))
+    pub fn remove_plain_route(&mut self, path: &str) -> bool {
+        self.plain_routes.remove(path)
     }
 
     /// Add routes to the map
@@ -205,7 +203,7 @@ impl RouteMap {
     pub fn traverse_to_dict(&self, path: &str) -> PyResult<Py<PyDict>> {
         let mut cur = &self.map;
 
-        if self.is_plain_route(path)? {
+        if self.is_plain_route(path) {
             cur = cur.children.get(path).unwrap();
         } else {
             let components = get_base_components(path);
@@ -321,7 +319,7 @@ impl RouteMap {
 
         let mut cur_node;
 
-        if !path_parameters.is_empty() || self.is_static_path(&path[..])? {
+        if !path_parameters.is_empty() || self.is_static_path(&path[..]) {
             for param_definition in path_parameters {
                 let param_definition_full =
                     param_definition.get("full").unwrap().extract::<&str>(py)?;
@@ -346,7 +344,7 @@ impl RouteMap {
             if let hash_map::Entry::Vacant(e) = self.map.children.entry(path.clone()) {
                 e.insert(Node::new());
             }
-            self.add_plain_route(&path[..])?;
+            self.add_plain_route(&path[..]);
             cur_node = self.map.children.get_mut(&path[..]).unwrap();
         }
 
@@ -420,7 +418,7 @@ impl RouteMap {
 
         let cur: &Node;
         let path_params: Vec<&str>;
-        if self.is_plain_route(&path)? {
+        if self.is_plain_route(&path) {
             cur = self.map.children.get(&path).unwrap();
             path_params = vec![];
         } else {
