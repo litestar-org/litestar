@@ -55,7 +55,7 @@ nav:
       - usage/10-plugins.md
       - usage/11-data-transfer-objects.md
       - usage/12-openapi.md
-      - usage/13-request-lifecycle-hooks.md
+      - usage/13-lifecycle-hooks.md
       - usage/14-testing.md
       - usage/15-templating.md
       - usage/16-caching.md

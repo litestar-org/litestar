@@ -26,9 +26,6 @@ def test_route_handler_validation_http_method() -> None:
     with pytest.raises(ValidationError):
         HTTPRouteHandler(http_method="deleze")  # type: ignore
 
-    with pytest.raises(ImproperlyConfiguredException):
-        HTTPRouteHandler(http_method=None)  # type: ignore
-
     # also when passing an empty list
     with pytest.raises(ImproperlyConfiguredException):
         route(http_method=[], status_code=HTTP_200_OK)

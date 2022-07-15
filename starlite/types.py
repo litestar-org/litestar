@@ -81,6 +81,7 @@ AfterRequestHandler = Union[
     Callable[[StarletteResponse], StarletteResponse],
     Callable[[StarletteResponse], Awaitable[StarletteResponse]],
 ]
+AfterResponseHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]

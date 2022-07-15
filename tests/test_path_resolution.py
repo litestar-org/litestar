@@ -11,7 +11,6 @@ from starlette.status import (
 
 from starlite import (
     Controller,
-    HTTPRouteHandler,
     ImproperlyConfiguredException,
     MediaType,
     delete,
@@ -86,7 +85,7 @@ def test_path_parsing_with_ambiguous_paths() -> None:
     ],
 )
 def test_root_route_handler(
-    decorator: Type[HTTPRouteHandler], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
+    decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
 ) -> None:
     person_instance = PersonFactory.build()
 

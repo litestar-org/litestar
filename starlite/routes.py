@@ -172,6 +172,12 @@ class HTTPRoute(BaseRoute):
                     route_handler=route_handler,
                 )
         await response(scope, receive, send)
+        after_response_handler = route_handler.resolve_after_response()
+        if after_response_handler:
+            if is_async_callable(after_response_handler):
+                await after_response_handler(request)  # type: ignore
+            else:
+                await run_sync(after_response_handler, request)
 
     async def call_handler(
         self, scope: "Scope", request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
