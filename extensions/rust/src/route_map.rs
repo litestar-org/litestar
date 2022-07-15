@@ -212,23 +212,47 @@ impl RouteMap {
     }
 }
 
-// The functions below are not available to Python
-impl RouteMap {
+/// A struct containing values borrowed from a RouteMap instance
+/// that are required to run `configure_route_map_node`.
+///
+/// These are extracted into a struct to allow for clearer passing
+/// of parameters, making it more obvious which parts are directly
+/// borrowed from the RouteMap, and which are not.
+///
+/// Creating a method (that takes a &mut self) of RouteMap that takes a
+/// `cur_node: &mut Node` is not currently possible, since `cur_node` is mutably borrowed from `self.map`
+/// and passed into this method that takes a `&mut self`, so the compiler doesn't know that
+/// we won't get another `&mut Node` to the same `Node`.
+/// Instead, we just have a struct that stores all the references we'll need and use that.
+///
+/// Reference: https://smallcultfollowing.com/babysteps/blog/2018/11/01/after-nll-interprocedural-conflicts
+struct ConfigureNodeView<'rm> {
+    starlite: &'rm Py<PyAny>,
+    ctx: &'rm StarliteContext,
+    static_paths: &'rm HashSet<String>,
+    cur_node: &'rm mut Node,
+}
+
+impl<'rm> ConfigureNodeView<'rm> {
     /// Set required attributes and route handlers on route_map tree node.
     ///
     /// Note: This method does not use `&self` because it needs to
     /// immutably access other members of `self` while passing a &mut Node
     /// that is mutably borrowed from self.map as a parameter
     fn configure_route_map_node(
-        starlite: &Py<PyAny>,
-        ctx: &StarliteContext,
+        &mut self,
         route: &PyAny,
-        cur: &mut Node,
         path: String,
         path_parameters: &[HashMap<String, Py<PyAny>>],
-        static_paths: &HashSet<String>,
     ) -> PyResult<()> {
         let py = route.py();
+
+        let ConfigureNodeView {
+            starlite,
+            ctx,
+            static_paths,
+            cur_node: cur,
+        } = self;
 
         let StarliteContext {
             http_route,
@@ -290,7 +314,10 @@ impl RouteMap {
 
         Ok(())
     }
+}
 
+// The functions below are not available to Python
+impl RouteMap {
     /// Adds a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
     ///
     /// Inserts non-parameter paths ('plain routes') off the tree's root node.
@@ -335,15 +362,13 @@ impl RouteMap {
             cur_node = self.map.children.get_mut(&path[..]).unwrap();
         }
 
-        Self::configure_route_map_node(
-            &self.starlite,
-            &self.ctx,
-            route,
+        ConfigureNodeView {
+            starlite: &self.starlite,
+            ctx: &self.ctx,
+            static_paths: &self.static_paths,
             cur_node,
-            path,
-            path_parameters,
-            &self.static_paths,
-        )?;
+        }
+        .configure_route_map_node(route, path, path_parameters)?;
 
         Ok(cur_node)
     }
