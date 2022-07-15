@@ -151,11 +151,11 @@ impl RouteMap {
             let path_parameters: Vec<HashMap<String, Py<PyAny>>> =
                 route.getattr("path_parameters")?.extract()?;
 
-            let cur = self.add_node_to_route_map(route, path, &path_parameters[..])?;
+            let cur_node = self.add_node_to_route_map(route, path, &path_parameters[..])?;
 
-            let cur_path_parameters = cur.path_parameters.as_ref().unwrap();
+            let cur_node_path_parameters = cur_node.path_parameters.as_ref().unwrap();
 
-            if !path_parameters_eq(cur_path_parameters, &path_parameters, py)? {
+            if !path_parameters_eq(cur_node_path_parameters, &path_parameters, py)? {
                 return Err(ImproperlyConfiguredException::new_err(
                     "Should not use routes with conflicting path parameters",
                 ));
@@ -188,27 +188,27 @@ impl RouteMap {
     /// Given a path, traverses the route map to find the corresponding trie node
     /// and converts it to a `PyDict` before returning
     pub fn traverse_to_dict(&self, py: Python, path: &str) -> PyResult<Py<PyDict>> {
-        let mut cur = &self.map;
+        let mut cur_node = &self.map;
 
         if self.is_plain_route(path) {
-            cur = cur.children.get(path).unwrap();
+            cur_node = cur_node.children.get(path).unwrap();
         } else {
             let components = get_base_components(path);
             for component in components {
-                let components_set = &cur.components;
+                let components_set = &cur_node.components;
                 if components_set.contains(component) {
-                    cur = cur.children.get(component).unwrap();
+                    cur_node = cur_node.children.get(component).unwrap();
                     continue;
                 }
                 if components_set.contains("*") {
-                    cur = cur.children.get("*").unwrap();
+                    cur_node = cur_node.children.get("*").unwrap();
                     continue;
                 }
                 return Err(NotFoundException::new_err(""));
             }
         }
 
-        cur.into_py(py)
+        cur_node.into_py(py)
     }
 }
 
@@ -220,7 +220,7 @@ impl RouteMap {
 /// borrowed from the RouteMap, and which are not.
 ///
 /// Creating a method (that takes a &mut self) of RouteMap that takes a
-/// `cur_node: &mut Node` is not currently possible, since `cur_node` is mutably borrowed from `self.map`
+/// `cur_node: &mut Node` is not cur_noderently possible, since `cur_node` is mutably borrowed from `self.map`
 /// and passed into this method that takes a `&mut self`, so the compiler doesn't know that
 /// we won't get another `&mut Node` to the same `Node`.
 /// Instead, we just have a struct that stores all the references we'll need and use that.
@@ -247,7 +247,7 @@ impl<'rm> ConfigureNodeView<'rm> {
             starlite,
             ctx,
             static_paths,
-            cur_node: cur,
+            cur_node,
         } = self;
 
         let StarliteContext {
@@ -257,20 +257,20 @@ impl<'rm> ConfigureNodeView<'rm> {
             ..
         } = ctx;
 
-        if cur.path_parameters.is_none() {
-            cur.path_parameters = Some(path_parameters.to_vec());
+        if cur_node.path_parameters.is_none() {
+            cur_node.path_parameters = Some(path_parameters.to_vec());
         }
 
-        if cur.asgi_handlers.is_none() {
-            cur.asgi_handlers = Some(HashMap::new());
+        if cur_node.asgi_handlers.is_none() {
+            cur_node.asgi_handlers = Some(HashMap::new());
         }
 
         if static_paths.contains(&path[..]) {
-            cur.static_path = Some(path);
-            cur.is_asgi = true;
+            cur_node.static_path = Some(path);
+            cur_node.is_asgi = true;
         }
 
-        let asgi_handlers = cur.asgi_handlers.as_mut().unwrap();
+        let asgi_handlers = cur_node.asgi_handlers.as_mut().unwrap();
 
         macro_rules! build_route_middleware_stack {
             ($route:ident, $route_handler:ident) => {{
@@ -305,7 +305,7 @@ impl<'rm> ConfigureNodeView<'rm> {
             generate_single_route_handler_stack!("websocket");
         } else if route.is_instance(asgi_route.as_ref(py))? {
             generate_single_route_handler_stack!("asgi");
-            cur.is_asgi = true;
+            cur_node.is_asgi = true;
         }
 
         Ok(())
@@ -377,21 +377,21 @@ impl RouteMap {
         scope: &PyAny,
     ) -> PyResult<(&'s Node, Vec<&'p str>)> {
         let mut path_params = vec![];
-        let mut cur = &self.map;
+        let mut cur_node = &self.map;
 
         let components = get_base_components(path);
         for component in components {
-            let components_set = &cur.components;
+            let components_set = &cur_node.components;
             if components_set.contains(component) {
-                cur = cur.children.get(component).unwrap();
+                cur_node = cur_node.children.get(component).unwrap();
                 continue;
             }
             if components_set.contains("*") {
                 path_params.push(component);
-                cur = cur.children.get("*").unwrap();
+                cur_node = cur_node.children.get("*").unwrap();
                 continue;
             }
-            if let Some(ref static_path) = cur.static_path {
+            if let Some(ref static_path) = cur_node.static_path {
                 if static_path != "/" {
                     let scope_path: &str = scope.get_item("path")?.extract()?;
                     scope.set_item("path", scope_path.replace(static_path, ""))?;
@@ -401,7 +401,7 @@ impl RouteMap {
             return Err(NotFoundException::new_err(""));
         }
 
-        Ok((cur, path_params))
+        Ok((cur_node, path_params))
     }
 
     /// Given a scope object, and a reference to Starlite's parser function `parse_path_params`,
@@ -424,16 +424,16 @@ impl RouteMap {
             path = path.strip_suffix('/').unwrap().to_string();
         }
 
-        let cur: &Node;
+        let cur_node: &Node;
         let path_params: Vec<&str>;
         if self.is_plain_route(&path) {
-            cur = self.map.children.get(&path).unwrap();
+            cur_node = self.map.children.get(&path).unwrap();
             path_params = vec![];
         } else {
-            (cur, path_params) = self.traverse_to_node(&path, scope)?;
+            (cur_node, path_params) = self.traverse_to_node(&path, scope)?;
         }
 
-        let args = match cur.path_parameters {
+        let args = match cur_node.path_parameters {
             Some(ref path_parameter_defs) => (path_parameter_defs.clone(), path_params),
             None => (Vec::<HashMap<String, Py<PyAny>>>::new(), path_params),
         };
@@ -442,11 +442,11 @@ impl RouteMap {
             self.ctx.parse_path_params.as_ref(py).call1(args)?,
         )?;
 
-        if cur.asgi_handlers.is_none() {
+        if cur_node.asgi_handlers.is_none() {
             Err(NotFoundException::new_err(""))
         } else {
-            let asgi_handlers = cur.asgi_handlers.as_ref().unwrap();
-            let is_asgi = cur.is_asgi;
+            let asgi_handlers = cur_node.asgi_handlers.as_ref().unwrap();
+            let is_asgi = cur_node.is_asgi;
 
             Ok((asgi_handlers, is_asgi))
         }
