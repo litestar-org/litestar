@@ -264,3 +264,7 @@
 [1.6.0]
 
 - Add support for layered parameters
+
+[1.6.1]
+
+- Add `after_response` hook
