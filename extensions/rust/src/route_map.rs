@@ -137,11 +137,7 @@ impl RouteMap {
     }
 
     /// Add routes to the map
-    pub fn add_routes(&mut self, py: Python) -> PyResult<()> {
-        let starlite = self.starlite.as_ref(py);
-
-        let routes: Vec<Py<PyAny>> = starlite.getattr("routes")?.extract()?;
-
+    pub fn add_routes(&mut self, py: Python, routes: Vec<Py<PyAny>>) -> PyResult<()> {
         for route in routes {
             let route = route.as_ref(py);
 

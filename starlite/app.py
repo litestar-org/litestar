@@ -227,7 +227,7 @@ class Starlite(Router):
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
         """
-        self.route_map.add_routes()
+        self.route_map.add_routes(self.routes)
 
     def build_route_middleware_stack(
         self,

@@ -1,6 +1,6 @@
 # A proxy for a Rust extension class that implements the interface below
 # The Rust implementation is located at ./starlite/extensions/rust
-from typing import Any, Dict
+from typing import Any, Collection, Dict
 
 from starlite.routes import BaseRoute
 from starlette.types import ASGIApp, Scope
@@ -9,7 +9,7 @@ class RouteMap:
     def __init__(self, starlite: Any):
         pass
 
-    def add_routes(self) -> None:
+    def add_routes(self, routes: Collection[BaseRoute]) -> None:
         """
         Add routes to the map
         """
