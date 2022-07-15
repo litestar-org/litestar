@@ -7,7 +7,7 @@ request-response cycle.
 
 The `before_request` hook runs immediately before calling the route handler function. It accepts either a sync or async
 function that receives the `starlite.connection.Request` instance as its sole parameter. While the handler function
-doeds not need to return a value, if it does return a value other than `None`, then the route handler will not be called
+does not need to return a value, if it does return a value other than `None`, then the route handler will not be called
 and this value will instead be used for the response. Thus, the `before_request` handler allows bypassing the route
 handler selectively.
 

@@ -133,14 +133,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             exception_handlers=exception_handlers,
         )
         self.after_request = after_request
-        self.before_request = before_request
         self.after_response = after_response
         self.background_tasks = background_tasks
+        self.before_request = before_request
+        self.cache = cache
+        self.cache_key_builder = cache_key_builder
         self.media_type = media_type
         self.response_class = response_class
         self.response_headers = response_headers
-        self.cache = cache
-        self.cache_key_builder = cache_key_builder
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
         self.content_encoding = content_encoding
@@ -154,17 +154,17 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.summary = summary
         self.tags = tags
         # memoized attributes, defaulted to BaseRouteHandler.empty
-        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_after_request: Union[
             Optional[AfterRequestHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_before_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_after_response: Union[
             Optional[AfterResponseHandler], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
+        self.resolved_before_request: Union[
+            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
+        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
 
     def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
         """
@@ -283,7 +283,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if "data" in signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    def get_response_from_data(
+    def _get_response_from_data(
         self,
         headers: dict,
         data: Union[StarletteResponse, StarliteType],
@@ -313,7 +313,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             )
         return cast(StarletteResponse, data)
 
-    async def process_after_request_hook(
+    async def _process_after_request_hook(
         self,
         response: StarletteResponse,
     ) -> StarletteResponse:
@@ -337,7 +337,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         headers = {k: v.value for k, v in self.resolve_response_headers().items()}
         response: StarletteResponse
         if isinstance(data, (StarletteResponse, StarliteType)):
-            response = self.get_response_from_data(headers=headers, data=data, media_type=media_type, app=app)
+            response = self._get_response_from_data(headers=headers, data=data, media_type=media_type, app=app)
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
@@ -353,7 +353,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 media_type=media_type,
                 background=self.background_tasks,
             )
-        return await self.process_after_request_hook(response)
+        return await self._process_after_request_hook(response)
 
 
 route = HTTPRouteHandler

@@ -212,7 +212,7 @@ class BaseRouteHandler(Generic[T]):
 
     def validate_handler_function(self) -> None:
         """
-        Validates the route handler function once it's set by inspecting its return annotations
+        Validates the route handler function once set by inspecting its return annotations
         """
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
