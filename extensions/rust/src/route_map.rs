@@ -136,21 +136,6 @@ impl RouteMap {
         self.static_paths.remove(path)
     }
 
-    /// Adds a new plain route by path name
-    pub fn add_plain_route(&mut self, path: &str) {
-        self.plain_routes.insert(path.to_string());
-    }
-
-    /// Checks if a given path refers to a plain route
-    pub fn is_plain_route(&self, path: &str) -> bool {
-        self.plain_routes.contains(path)
-    }
-
-    /// Removes a path from the plain route set
-    pub fn remove_plain_route(&mut self, path: &str) -> bool {
-        self.plain_routes.remove(path)
-    }
-
     /// Add routes to the map
     pub fn add_routes(&mut self, py: Python) -> PyResult<()> {
         let starlite = self.starlite.as_ref(py);
@@ -442,5 +427,20 @@ impl RouteMap {
 
             Ok((asgi_handlers, is_asgi))
         }
+    }
+
+    /// Adds a new plain route by path name
+    pub fn add_plain_route(&mut self, path: &str) {
+        self.plain_routes.insert(path.to_string());
+    }
+
+    /// Checks if a given path refers to a plain route
+    pub fn is_plain_route(&self, path: &str) -> bool {
+        self.plain_routes.contains(path)
+    }
+
+    /// Removes a path from the plain route set
+    pub fn remove_plain_route(&mut self, path: &str) -> bool {
+        self.plain_routes.remove(path)
     }
 }

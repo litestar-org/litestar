@@ -45,21 +45,3 @@ class RouteMap:
         """
         pass
 
-    def add_plain_route(self, path: str) -> None:
-        """
-        Adds a new plain route by path name
-        """
-        pass
-
-    def is_plain_route(self, path: str) -> bool:
-        """
-        Checks if a given path refers to a plain route
-        """
-        pass
-
-    def remove_plain_route(self, path: str) -> bool:
-        """
-        Removes a path from the plain route set
-        """
-        pass
-
