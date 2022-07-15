@@ -235,10 +235,6 @@ struct ConfigureNodeView<'rm> {
 
 impl<'rm> ConfigureNodeView<'rm> {
     /// Set required attributes and route handlers on route_map tree node.
-    ///
-    /// Note: This method does not use `&self` because it needs to
-    /// immutably access other members of `self` while passing a &mut Node
-    /// that is mutably borrowed from self.map as a parameter
     fn configure_route_map_node(
         &mut self,
         route: &PyAny,
