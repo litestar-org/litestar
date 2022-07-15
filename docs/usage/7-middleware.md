@@ -57,7 +57,7 @@ It's important to note here two things:
 
 ### Modifying Responses using the MiddlewareProtocol
 
-While Starlite exposes a special life-cycle hook called [After Request](13-request-lifecycle-hooks.md#After Request),
+While Starlite exposes a special life-cycle hook called [After Request](13-lifecycle-hooks.md#After Request),
 which is in most cases the correct place to modify a response. Sometimes its desirable to do this using middleware. To
 do this, you will need to wrap the `send` function, for example:
 

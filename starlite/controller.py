@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHandler,
+        AfterResponseHandler,
         BeforeRequestHandler,
         ExceptionHandler,
         Guard,
@@ -31,6 +32,7 @@ class Controller:
 
     __slots__ = (
         "after_request",
+        "after_response",
         "before_request",
         "dependencies",
         "exception_handlers",
@@ -45,6 +47,7 @@ class Controller:
     )
 
     after_request: Optional["AfterRequestHandler"]
+    after_response: Optional["AfterResponseHandler"]
     before_request: Optional["BeforeRequestHandler"]
     dependencies: Optional[Dict[str, "Provide"]]
     exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]

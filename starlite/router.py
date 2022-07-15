@@ -20,6 +20,7 @@ from starlite.response import Response
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
+    AfterResponseHandler,
     BeforeRequestHandler,
     ControllerRouterHandler,
     ExceptionHandler,
@@ -34,6 +35,7 @@ class Router:
     __slots__ = (
         "after_request",
         "before_request",
+        "after_response",
         "dependencies",
         "exception_handlers",
         "guards",
@@ -52,6 +54,7 @@ class Router:
         self,
         *,
         after_request: Optional[AfterRequestHandler] = None,
+        after_response: Optional[AfterResponseHandler] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
@@ -65,6 +68,7 @@ class Router:
         tags: Optional[List[str]] = None,
     ):
         self.after_request = after_request
+        self.after_response = after_response
         self.before_request = before_request
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers

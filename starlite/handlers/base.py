@@ -64,11 +64,12 @@ class BaseRouteHandler(Generic[T]):
     def __init__(
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
+        *,
         dependencies: Optional[Dict[str, "Provide"]] = None,
-        guards: Optional[List[Guard]] = None,
-        opt: Optional[Dict[str, Any]] = None,
-        middleware: Optional[List[Middleware]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        guards: Optional[List[Guard]] = None,
+        middleware: Optional[List[Middleware]] = None,
+        opt: Optional[Dict[str, Any]] = None,
     ):
         self.paths: List[str] = (
             [normalize_path(p) for p in path]
@@ -211,7 +212,7 @@ class BaseRouteHandler(Generic[T]):
 
     def validate_handler_function(self) -> None:
         """
-        Validates the route handler function once it's set by inspecting its return annotations
+        Validates the route handler function once set by inspecting its return annotations
         """
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
