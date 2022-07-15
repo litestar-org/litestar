@@ -46,19 +46,25 @@ impl Node {
             static_path: None,
         }
     }
+}
 
+impl IntoPy<PyResult<Py<PyDict>>> for &Node {
     /// Converts the Rust representation to a PyDict representation
-    pub fn as_pydict(&self) -> PyResult<Py<PyDict>> {
-        let gil = Python::acquire_gil();
-        let dict = PyDict::new(gil.python());
+    fn into_py(self, py: Python) -> PyResult<Py<PyDict>> {
+        let dict = PyDict::new(py);
 
-        dict.set_item("components", self.components.clone())?;
-        if let Some(ref asgi_handlers) = self.asgi_handlers {
-            dict.set_item("asgi_handlers", asgi_handlers)?;
+        dict.set_item("components", &self.components)?;
+
+        for (component, node) in &self.children {
+            dict.set_item(component, node.into_py(py)?)?;
         }
 
         if let Some(ref path_parameters) = self.path_parameters {
             dict.set_item("path_parameters", path_parameters)?;
+        }
+
+        if let Some(ref asgi_handlers) = self.asgi_handlers {
+            dict.set_item("asgi_handlers", asgi_handlers)?;
         }
 
         dict.set_item("is_asgi", self.is_asgi)?;
@@ -181,7 +187,7 @@ impl RouteMap {
 
     /// Given a path, traverses the route map to find the corresponding trie node
     /// and converts it to a `PyDict` before returning
-    pub fn traverse_to_dict(&self, path: &str) -> PyResult<Py<PyDict>> {
+    pub fn traverse_to_dict(&self, py: Python, path: &str) -> PyResult<Py<PyDict>> {
         let mut cur = &self.map;
 
         if self.is_plain_route(path) {
@@ -202,7 +208,7 @@ impl RouteMap {
             }
         }
 
-        cur.as_pydict()
+        cur.into_py(py)
     }
 }
 
