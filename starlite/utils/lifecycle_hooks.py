@@ -38,16 +38,16 @@ ResponseType = TypeVar("ResponseType", bound="StarletteResponse")
 
 class LifecycleHook(Generic[HandlerType, ReceiveType, ReturnType]):
     def __init__(self, fn: HandlerType) -> None:
-        self._wrapped = [fn]  # wrap in list to prevent implicit binding
-        self._fn_is_async = is_async_callable(fn)
+        self.wrapped = [fn]  # wrap in list to prevent implicit binding
+        self.fn_is_async = is_async_callable(fn)
 
     @property
     def hook(self) -> Callable[..., Any]:
         """The lifecycle hook"""
-        return self._wrapped[0]
+        return self.wrapped[0]
 
     async def __call__(self, arg: ReceiveType) -> ReturnType:
-        if self._fn_is_async:
+        if self.fn_is_async:
             return await self.hook(arg)  # type:ignore[no-any-return]
         return await run_sync(self.hook, arg)
 
