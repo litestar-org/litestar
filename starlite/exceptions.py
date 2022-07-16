@@ -14,34 +14,41 @@ from starlette.status import (
 
 
 class StarLiteException(Exception):
-    def __init__(self, detail: str = ""):
+    def __init__(self, *args: Any, detail: str = "", **kwargs: Dict[str, Any]):
         self.detail = detail
-        super().__init__()
+        super().__init__(*(str(arg) for arg in args if arg), detail, **kwargs)
 
     def __repr__(self) -> str:
         if self.detail:
             return f"{self.__class__.__name__} - {self.detail}"
         return self.__class__.__name__
 
+    def __str__(self) -> str:
+        return " ".join(self.args).strip()
+
 
 class MissingDependencyException(StarLiteException, ImportError):
     pass
 
 
-class HTTPException(StarLiteException, StarletteHTTPException):
+class HTTPException(StarletteHTTPException, StarLiteException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
     extra: Optional[Union[Dict[str, Any], List[Any]]] = None
 
-    def __init__(  # pylint: disable=super-init-not-called
+    def __init__(
         self,
+        *args: Any,
         detail: Optional[str] = None,
         status_code: Optional[int] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
+        **kwargs: Dict[str, Any],
     ):
-        if status_code:
-            self.status_code = status_code
-        self.detail = detail or HTTPStatus(self.status_code).phrase
+        if not detail:
+            detail = args[0] if len(args) > 0 else HTTPStatus(status_code or self.status_code).phrase
         self.extra = extra
+        super().__init__(status_code or self.status_code, *args, **kwargs)  # type: ignore
+        self.detail = detail
+        self.args = (f"{self.status_code}: {self.detail}", *args)
 
     def __repr__(self) -> str:
         return f"{self.status_code} - {self.__class__.__name__} - {self.detail}"
@@ -80,5 +87,5 @@ class ServiceUnavailableException(HTTPException):
 
 
 class TemplateNotFound(InternalServerException):
-    def __init__(self, template_name: str):
-        super().__init__(detail=f"Template {template_name} not found.")
+    def __init__(self, *args: Any, template_name: str, **kwargs: Dict[str, Any]):
+        super().__init__(*args, detail=f"Template {template_name} not found.", **kwargs)  # type: ignore

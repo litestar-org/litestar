@@ -14,13 +14,24 @@ from starlite.exceptions import (
 
 
 @given(detail=st.one_of(st.none(), st.text()))
-def test_starlite_exception(detail: Optional[str]) -> None:
+def test_starlite_exception_repr(detail: Optional[str]) -> None:
     result = StarLiteException(detail=detail)  # type: ignore
     assert result.detail == detail
     if detail:
         assert result.__repr__() == f"{result.__class__.__name__} - {result.detail}"
     else:
         assert result.__repr__() == result.__class__.__name__
+
+
+def test_starlite_exception_str() -> None:
+    result = StarLiteException("an unknown exception occurred")
+    assert str(result) == "an unknown exception occurred"
+
+    result = StarLiteException(detail="an unknown exception occurred")
+    assert str(result) == "an unknown exception occurred"
+
+    result = StarLiteException(200, detail="an unknown exception occurred")
+    assert str(result) == "200 an unknown exception occurred"
 
 
 @given(status_code=st.integers(min_value=400, max_value=404), detail=st.one_of(st.none(), st.text()))
@@ -30,6 +41,7 @@ def test_http_exception(status_code: int, detail: Optional[str]) -> None:
     assert isinstance(result, StarLiteException)
     assert isinstance(result, StarletteHTTPException)
     assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
+    assert str(result) == f"{result.status_code}: {result.detail}".strip()
 
 
 @given(detail=st.one_of(st.none(), st.text()))
