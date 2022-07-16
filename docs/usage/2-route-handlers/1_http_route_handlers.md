@@ -42,9 +42,13 @@ Additionally, you can pass the following optional kwargs:
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
 - `guards`: A list of [guards](../9-guards.md).
-- `before_request`: A sync or async function to execute before a `Request` is passed to the route handler. If this
-  function returns a value, the request will not reach the route handler, and instead this value will be used.
-- `after_request`: A sync or async function to execute before the `Response` is returned. This function receives the
+- `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the
+  controller. If the callable returns a value, the request will not reach the route handler, and instead this value
+  will be used.
+- `after_request`: a sync or async callable to execute before the `Response` is returned. The callable receives the
+  `Response` object and it must return a `Response` object.
+- `after_response`: a sync or async callable executed after the `Response` is returned. The callable receives the
+  original `Request` object, and should return `None`.
   `Respose` object and it must return a `Response` object.
 - `background_tasks`: A callable wrapped in an instance of `starlette.background.BackgroundTask` or a sequence
   of `BackgroundTask` instances wrapped in `starlette.background.BackgroundTasks`. The callable(s) will be called after
