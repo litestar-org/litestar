@@ -206,7 +206,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         layer: Union["HTTPRouteHandler", "Controller", "Router", "Starlite"],
         key: Literal["after_request", "after_response", "before_request"],
     ) -> Optional[LifecycleHook]:
-        return getattr(layer, f"_{key}", getattr(layer, key))  # type:ignore[no-any-return]
+        optional_hook = getattr(layer, f"_{key}", getattr(layer, key))
+        return cast(Optional[LifecycleHook], optional_hook)
 
     def resolve_before_request(self) -> Optional[LifecycleHook]:
         """
@@ -221,7 +222,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 hook = self._get_lifecycle_hook_from_layer(layer, "before_request")
                 if hook:
                     self.resolved_before_request = hook
-        return self.resolved_before_request  # type:ignore[return-value]
+        return cast(Optional[LifecycleHook], self.resolved_before_request)
 
     def resolve_after_request(self) -> Optional[LifecycleHook]:
         """
@@ -236,7 +237,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 hook = self._get_lifecycle_hook_from_layer(layer, "after_request")
                 if hook:
                     self.resolved_after_request = hook
-        return self.resolved_after_request  # type:ignore[return-value]
+        return cast(Optional[LifecycleHook], self.resolved_after_request)
 
     def resolve_after_response(self) -> Optional[LifecycleHook]:
         """
@@ -251,7 +252,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 hook = self._get_lifecycle_hook_from_layer(layer, "after_response")
                 if hook:
                     self.resolved_after_response = hook
-        return self.resolved_after_response  # type:ignore[return-value]
+        return cast(Optional[LifecycleHook], self.resolved_after_response)
 
     @property
     def http_methods(self) -> List[Method]:
