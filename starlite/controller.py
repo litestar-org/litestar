@@ -3,11 +3,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import ensure_unbound, normalize_path
-from starlite.utils.lifecycle_hooks import (
-    AfterRequestHook,
-    AfterResponseHook,
-    BeforeRequestHook,
-)
+from starlite.utils.lifecycle_hooks import LifecycleHook
 
 if TYPE_CHECKING:
     from typing import Type
@@ -75,9 +71,9 @@ class Controller:
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner
-        self._after_request = AfterRequestHook(ensure_unbound(self.after_request)) if self.after_request else None
-        self._after_response = AfterResponseHook(ensure_unbound(self.after_response)) if self.after_response else None
-        self._before_request = BeforeRequestHook(ensure_unbound(self.before_request)) if self.before_request else None
+        self._after_request = LifecycleHook(ensure_unbound(self.after_request)) if self.after_request else None
+        self._after_response = LifecycleHook(ensure_unbound(self.after_response)) if self.after_response else None
+        self._before_request = LifecycleHook(ensure_unbound(self.before_request)) if self.before_request else None
 
     def get_route_handlers(self) -> List[BaseRouteHandler]:
         """
