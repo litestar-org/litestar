@@ -29,6 +29,7 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import find_index, join_paths, normalize_path, unique
+from starlite.utils.lifecycle_hooks import LifecycleHook
 
 
 class Router:
@@ -67,9 +68,9 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):
-        self.after_request = after_request
-        self.after_response = after_response
-        self.before_request = before_request
+        self.after_request = LifecycleHook(after_request) if after_request else None
+        self.after_response = LifecycleHook(after_response) if after_response else None
+        self.before_request = LifecycleHook(before_request) if before_request else None
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
