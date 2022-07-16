@@ -10,12 +10,7 @@ class LifecycleHook:
         self.wrapped = [handler]  # wrap in list to prevent implicit binding
         self.is_async_handler = is_async_callable(handler)
 
-    @property
-    def hook(self) -> Callable[..., Any]:
-        """The lifecycle hook"""
-        return self.wrapped[0]
-
     async def __call__(self, *args: Any) -> Any:
         if self.is_async_handler:
-            return await self.hook(*args)
-        return await run_sync(self.hook, *args)
+            return await self.wrapped[0](*args)
+        return await run_sync(self.wrapped[0], *args)
