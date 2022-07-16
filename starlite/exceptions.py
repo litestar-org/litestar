@@ -16,12 +16,15 @@ from starlette.status import (
 class StarLiteException(Exception):
     def __init__(self, *args: Any, detail: str = "", **kwargs: Dict[str, Any]):
         self.detail = detail
-        super().__init__(*args, **kwargs)
+        super().__init__(*(str(arg) for arg in args if arg), detail, **kwargs)
 
     def __repr__(self) -> str:
         if self.detail:
             return f"{self.__class__.__name__} - {self.detail}"
         return self.__class__.__name__
+
+    def __str__(self) -> str:
+        return " ".join(self.args).strip()
 
 
 class MissingDependencyException(StarLiteException, ImportError):
@@ -45,6 +48,7 @@ class HTTPException(StarletteHTTPException, StarLiteException):
         self.extra = extra
         super().__init__(status_code or self.status_code, *args, **kwargs)  # type: ignore
         self.detail = detail
+        self.args = (f"{self.status_code}: {self.detail}", *args)
 
     def __repr__(self) -> str:
         return f"{self.status_code} - {self.__class__.__name__} - {self.detail}"
