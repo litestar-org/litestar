@@ -11,7 +11,6 @@ from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from typing_extensions import Literal
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import File, Redirect, StarliteType, Stream, Template
@@ -36,12 +35,15 @@ from starlite.types import (
     Middleware,
     ResponseHeader,
 )
-from starlite.utils.lifecycle_hooks import LifecycleHook
+from starlite.utils.lifecycle_hooks import (
+    AfterRequestHook,
+    AfterResponseHook,
+    BeforeRequestHook,
+    get_lifecycle_hook_from_layer,
+)
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
-    from starlite.controller import Controller
-    from starlite.router import Router
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
@@ -134,10 +136,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             middleware=middleware,
             exception_handlers=exception_handlers,
         )
-        self.after_request = LifecycleHook(after_request) if after_request else None
-        self.after_response = LifecycleHook(after_response) if after_response else None
+        self.after_request = AfterRequestHook(after_request) if after_request else None
+        self.after_response = AfterResponseHook(after_response) if after_response else None
         self.background_tasks = background_tasks
-        self.before_request = LifecycleHook(before_request) if before_request else None
+        self.before_request = BeforeRequestHook(before_request) if before_request else None
         self.cache = cache
         self.cache_key_builder = cache_key_builder
         self.media_type = media_type
@@ -157,13 +159,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.tags = tags
         # memoized attributes, defaulted to BaseRouteHandler.empty
         self.resolved_after_request: Union[
-            Optional[LifecycleHook], Type[BaseRouteHandler.empty]
+            Optional[AfterRequestHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_after_response: Union[
-            Optional[LifecycleHook], Type[BaseRouteHandler.empty]
+            Optional[AfterResponseHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_before_request: Union[
-            Optional[LifecycleHook], Type[BaseRouteHandler.empty]
+            Optional[BeforeRequestHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
@@ -201,14 +203,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 self.resolved_headers.update(layer.response_headers or {})
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
-    @staticmethod
-    def _get_lifecycle_hook_from_layer(
-        layer: Union["HTTPRouteHandler", "Controller", "Router", "Starlite"],
-        key: Literal["after_request", "after_response", "before_request"],
-    ) -> Optional[LifecycleHook]:
-        return getattr(layer, f"_{key}", getattr(layer, key))  # type:ignore[no-any-return]
-
-    def resolve_before_request(self) -> Optional[LifecycleHook]:
+    def resolve_before_request(self) -> Optional[BeforeRequestHook]:
         """
         Resolves the before_handler handler by starting from the route handler and moving up.
 
@@ -218,12 +213,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if self.resolved_before_request is BaseRouteHandler.empty:
             self.resolved_before_request = None
             for layer in self.ownership_layers:
-                hook = self._get_lifecycle_hook_from_layer(layer, "before_request")
+                hook = get_lifecycle_hook_from_layer(layer, "before_request")
                 if hook:
                     self.resolved_before_request = hook
         return self.resolved_before_request  # type:ignore[return-value]
 
-    def resolve_after_request(self) -> Optional[LifecycleHook]:
+    def resolve_after_request(self) -> Optional[AfterRequestHook]:
         """
         Resolves the after_request handler by starting from the route handler and moving up.
 
@@ -233,12 +228,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if self.resolved_after_request is BaseRouteHandler.empty:
             self.resolved_after_request = None
             for layer in self.ownership_layers:
-                hook = self._get_lifecycle_hook_from_layer(layer, "after_request")
+                hook = get_lifecycle_hook_from_layer(layer, "after_request")
                 if hook:
                     self.resolved_after_request = hook
         return self.resolved_after_request  # type:ignore[return-value]
 
-    def resolve_after_response(self) -> Optional[LifecycleHook]:
+    def resolve_after_response(self) -> Optional[AfterResponseHook]:
         """
         Resolves the after_response handler by starting from the route handler and moving up.
 
@@ -248,7 +243,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if self.resolved_after_response is BaseRouteHandler.empty:
             self.resolved_after_response = None
             for layer in self.ownership_layers:
-                hook = self._get_lifecycle_hook_from_layer(layer, "after_response")
+                hook = get_lifecycle_hook_from_layer(layer, "after_response")
                 if hook:
                     self.resolved_after_response = hook
         return self.resolved_after_response  # type:ignore[return-value]
