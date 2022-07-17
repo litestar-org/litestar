@@ -1,6 +1,5 @@
 import pytest
 from tortoise import Tortoise, fields
-from tortoise.contrib.pydantic import pydantic_model_creator
 from tortoise.models import Model
 
 # Models are taken from the tortoise-orm docs: https://tortoise.github.io/examples/pydantic.html#main-py
@@ -77,6 +76,8 @@ async def test_plugin_integration() -> None:
     await event2.participants.add(team1, team2)
     await event3.participants.add(team1, team3)
 
-    pydantic_model = pydantic_model_creator(Tournament)
-    result = await pydantic_model.from_tortoise_orm(tournament)
-    assert result
+    await tournament.select_related("events")
+    for event in tournament.events:
+        await event.fetch_related("address")
+        await event.fetch_related("team")
+    assert tournament

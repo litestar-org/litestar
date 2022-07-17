@@ -1,4 +1,6 @@
+import asyncio
 from dataclasses import asdict, is_dataclass
+from inspect import isawaitable
 from typing import (
     Any,
     ClassVar,
@@ -51,12 +53,39 @@ class DTO(GenericModel, Generic[T]):
         Given an instance of the source model, create an instance of the given DTO subclass
         """
         if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
-            values = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            if isawaitable(result):
+                loop = asyncio.get_event_loop()
+                values = loop.run_until_complete(result)
+            else:
+                values = cast(Dict[str, Any], cls.dto_source_plugin.to_dict(model_instance=model_instance))
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
         else:
             values = asdict(model_instance)
         for dto_key, original_key in cls.dto_field_mapping.items():
+
+            value = values.pop(original_key)
+            values[dto_key] = value
+        return cls(**values)
+
+    @classmethod
+    async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
+        """
+        Given an instance of the source model, create an instance of the given DTO subclass
+        """
+        if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
+            result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            if isawaitable(result):
+                values = await result
+            else:
+                values = cast(Dict[str, Any], result)
+        elif isinstance(model_instance, BaseModel):
+            values = model_instance.dict()
+        else:
+            values = asdict(model_instance)
+        for dto_key, original_key in cls.dto_field_mapping.items():
+
             value = values.pop(original_key)
             values[dto_key] = value
         return cls(**values)

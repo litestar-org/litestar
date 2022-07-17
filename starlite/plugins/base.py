@@ -1,6 +1,7 @@
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
     Dict,
     List,
     NamedTuple,
@@ -40,7 +41,7 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
         This class is passed in as the 'model_class' kwarg.
         """
 
-    def to_dict(self, model_instance: ModelT) -> Dict[str, Any]:
+    def to_dict(self, model_instance: ModelT) -> Union[Dict[str, Any], Awaitable[Dict[str, Any]]]:
         """
         Given an instance of a model supported by the plugin, return a dictionary of serializable values.
         """

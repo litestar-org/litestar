@@ -37,14 +37,13 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         return model_class().update_from_dict(pydantic_model_instance.dict())
 
-    def to_dict(self, model_instance: Model) -> Dict[str, Any]:
+    async def to_dict(self, model_instance: Model) -> Dict[str, Any]:
         """
         Given an instance of a model supported by the plugin, return a dictionary of serializable values.
         """
-        fields: Dict[str, Any] = {}
-        for field_name, value in model_instance:
-            fields[field_name] = value
-        return fields
+        pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
+        data = await pydantic_model_class.from_tortoise_orm(model_instance)
+        return cast(Dict[str, Any], data.to_dict())
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
         """
