@@ -43,6 +43,9 @@ starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+opentelemetry-api = { version = "*", optional = true }
+opentelemetry-sdk = { version = "*", optional = true }
+opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 hypothesis = { extras = ["cli"], version = "*" }
@@ -60,8 +63,9 @@ tox = "*"
 requests = "*"
 
 [tool.poetry.extras]
-testing = ["requests", "brotli"]
+testing = ["requests", "brotli", "opentelemetry-sdk","opentelemetry-api","opentelemetry-instrumentation-asgi"]
 brotli = ["brotli"]
+opentelemetry = ["opentelemetry-sdk","opentelemetry-api","opentelemetry-instrumentation-asgi"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -88,7 +92,7 @@ disable = [
     "logging-fstring-interpolation",
 ]
 enable = "useless-suppression"
-extension-pkg-whitelist = "pydantic"
+extension-pkg-whitelist = "pydantic,opentelemetry"
 
 [tool.pylint.REPORTS]
 reports = "no"

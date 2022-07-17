@@ -134,6 +134,57 @@ class CompressionConfig(BaseModel):
         return super().dict(*args, **kwargs)
 
 
+class InstrumentationBackend(str, Enum):
+    """InstrumentationBackend is an enum that defines the available compression backends."""
+
+    OPENTELEMETRY = "opentelemetry"
+
+
+class InstrumentationConfig(BaseModel):
+    """Class containing the application instrumentation configuration."""
+
+    backend: Union[InstrumentationBackend, str] = InstrumentationBackend.OPENTELEMETRY
+    excluded_urls: Optional[str] = None
+    server_request_hook: Optional[Callable[[Any, dict], None]] = None
+    client_request_hook: Optional[Callable[[Any, dict], None]] = None
+    client_response_hook: Optional[Callable[[Any, dict], None]] = None
+    tracer_provider: Optional[str] = None
+
+    @validator("backend", pre=True, always=True)
+    def backend_must_be_supported(  # pylint: disable=no-self-argument
+        cls, v: Union[InstrumentationBackend, str]
+    ) -> InstrumentationBackend:
+        """Instrumentation Backend Validation
+
+        Args:
+            v (InstrumentationBackend|str): Holds the selected instrumentation backend
+
+        Raises:
+            ValueError: Value is not a valid instrumentation backend
+
+        Returns:
+            _type_: InstrumentationBackend
+        """
+        if isinstance(v, str):
+            try:
+                v = InstrumentationBackend[v.upper()]
+            except KeyError as e:
+                raise ValueError(f"{v} is not a valid instrumentation backend") from e
+        return v
+
+    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # type: ignore[no-untyped-def]
+        """Returns a dictionary representation of the InstrumentationConfig.
+
+        Returns:
+            Dict[str, Any]: dictionary representation of the selected InstrumentationConfig.  Only columns for the selected backend are included
+        """
+        opentelemetry_keys = set({"excluded_urls"})
+        if self.backend == InstrumentationBackend.OPENTELEMETRY:
+            kwargs["include"] = opentelemetry_keys
+
+        return super().dict(*args, **kwargs)
+
+
 class OpenAPIConfig(BaseModel):
     """Class containing Settings and Schema Properties"""
 

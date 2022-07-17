@@ -16,6 +16,7 @@ from starlite.config import (
     CacheConfig,
     CompressionConfig,
     CORSConfig,
+    InstrumentationConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -26,6 +27,7 @@ from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
+from starlite.middleware.instrumentation.base import InstrumentationMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -64,6 +66,7 @@ class Starlite(Router):
         "cors_config",
         "debug",
         "compression_config",
+        "instrumentation_config",
         "openapi_schema",
         "plain_routes",
         "plugins",
@@ -83,6 +86,7 @@ class Starlite(Router):
         before_request: Optional[BeforeRequestHandler] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
         compression_config: Optional[CompressionConfig] = None,
+        instrumentation_config: Optional[InstrumentationConfig] = None,
         cors_config: Optional[CORSConfig] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -105,6 +109,7 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.debug = debug
         self.compression_config = compression_config
+        self.instrumentation_config = instrumentation_config
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: Dict[str, Any] = {}
@@ -146,9 +151,11 @@ class Starlite(Router):
         """
         Creates an ASGIApp that wraps the ASGI router inside an exception handler.
 
-        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
+        If CORS, Compression, or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
         asgi_handler: ASGIApp = self.asgi_router
+        if self.instrumentation_config:
+            asgi_handler = InstrumentationMiddleware(app=asgi_handler, config=self.instrumentation_config)
         if self.compression_config:
             asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:
