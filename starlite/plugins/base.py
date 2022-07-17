@@ -21,17 +21,15 @@ ModelT = TypeVar("ModelT")
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
-    def to_pydantic_model_class(
-        self, model_class: Type[ModelT], **kwargs: Any
-    ) -> Type["BaseModel"]:  # pragma: no cover
-        """
-        Given a model_class T, convert it to a subclass of the pydantic BaseModel
-        """
-
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         """
         Given a value of indeterminate type, determine if this value is supported by the plugin.
+        """
+
+    def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type["BaseModel"]:
+        """
+        Given a model_class T, convert it to a subclass of the pydantic BaseModel
         """
 
     def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: "BaseModel") -> ModelT:
@@ -76,8 +74,8 @@ class PluginMapping(NamedTuple):
         Also can accept list or tuple of values.
         """
 
-        def get_instance(value: "BaseModel") -> Any:
-            return self.plugin.from_pydantic_model_instance(self.model_class, pydantic_model_instance=value)
+        def get_instance(model: "BaseModel") -> Any:
+            return self.plugin.from_pydantic_model_instance(self.model_class, pydantic_model_instance=model)
 
         if isinstance(value, (list, tuple)):
             return [get_instance(item) for item in value]
