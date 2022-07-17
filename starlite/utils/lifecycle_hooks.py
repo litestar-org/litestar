@@ -1,39 +1,46 @@
 from functools import partial
-from typing import Any, Callable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 from anyio.to_thread import run_sync
+from typing_extensions import Literal  # noqa: TC002
 
 from .helpers import is_async_callable
 
+if TYPE_CHECKING:
 
-class LifecycleHook:
-    """
-    Container for assignment of lifecycle hook handlers to instances.
+    from starlite.handlers.base import BaseRouteHandler
 
-    A callable assigned to a class is implicitly converted to a bound method on an instance:
+_ReturnValue = TypeVar("_ReturnValue")
 
-        >>> def a_callable(): ...
-        ...
-        >>> class C:
-        ...   callable = a_callable
-        ...
-        >>> C().callable()
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-        TypeError: a_callable() takes 0 positional arguments but 1 was given
 
-    `LifecycleHook` supports the pattern of storing handlers as attributes of the application layers, and caching
-    resolved handlers on `HTTPRouteHandler` instances.
+class LifecycleHook(Generic[_ReturnValue]):
+    def __init__(
+        self,
+        route_handler: "BaseRouteHandler",
+        method_key: Union[Literal["before_request"], Literal["after_request"], Literal["after_response"]],
+    ) -> None:
+        self.hook: Optional[Tuple[Callable[..., Awaitable[_ReturnValue]]]] = None
+        for layer in route_handler.ownership_layers:
+            layer_hook = getattr(layer, method_key, None)
+            if layer_hook:
+                # wrap in list to prevent implicit binding
+                if is_async_callable(layer_hook):
+                    self.hook = (layer_hook,)
+                else:
+                    self.hook = (partial(run_sync, layer_hook),)  # type: ignore[assignment]
 
-    Additionally, it pre-computes whether the handler function is async, simplifying calling the handler during the
-    request/response cycle.
-    """
-
-    def __init__(self, handler: Callable[..., Any]) -> None:
-        if is_async_callable(handler):
-            self.wrapped = [handler]  # wrap in list to prevent implicit binding
-        else:
-            self.wrapped = [partial(run_sync, handler)]
-
-    async def __call__(self, *args: Any) -> Any:
-        return await self.wrapped[0](*args)
+    async def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> Optional[_ReturnValue]:
+        if self.hook:
+            return await self.hook[0](*args, **kwargs)
+        return None
