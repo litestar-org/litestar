@@ -52,6 +52,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = { extras = ["mypy"], version = "*" }
+tortoise-orm = { extras = ["asyncpg"], version = "*" }
 Jinja2 = "*"
 Mako = "*"
 freezegun = "*"
