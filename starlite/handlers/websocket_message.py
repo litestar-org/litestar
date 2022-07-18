@@ -1,22 +1,19 @@
 from inspect import Signature
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, validate_arguments
 
-from starlite.connection import WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.provide import Provide
-from starlite.types import ExceptionHandler, Guard, Middleware
+from starlite.types import (
+    AfterDisconnectHandler,
+    AfterMessageHandler,
+    BeforeAcceptHandler,
+    BeforeMessageHandler,
+    ExceptionHandler,
+    Guard,
+    Middleware,
+)
 from starlite.utils import is_async_callable
 
 from .base import BaseRouteHandler
@@ -53,10 +50,10 @@ class WSMessageHandler(BaseRouteHandler):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        before_accept: Optional[Callable[[WebSocket], WebSocket]] = None,
-        after_disconnect: Optional[Callable[[WebSocket], WebSocket]] = None,
-        before_message: Optional[Callable[[Any], Any]] = None,
-        after_message: Optional[Callable[[Any], Any]] = None,
+        before_accept: BeforeAcceptHandler = None,
+        after_disconnect: AfterDisconnectHandler = None,
+        before_message: BeforeMessageHandler = None,
+        after_message: AfterMessageHandler = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,

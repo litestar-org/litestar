@@ -35,18 +35,30 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
-    from starlite.connection import Request  # noqa: TC004
+    from starlite.connection import Request, WebSocket  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import State  # noqa: TC004
+    from starlite.enums import HttpMethod  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.handlers import (  # noqa: TC004
+        ASGIRouteHandler,
+        HTTPRouteHandler,
+        WebsocketRouteHandler,
+        WSMessageHandler,
+    )
     from starlite.router import Router  # noqa: TC004
 else:
-    Request = Any
-    WebSocket = Any
+    ASGIRouteHandler = Any
     BaseRouteHandler = Any
     Controller = Any
+    HTTPRouteHandler = Any
+    HttpMethod = Any
+    Request = Any
     Router = Any
     State = Any
+    WSMessageHandler = Any
+    WebSocket = Any
+    WebsocketRouteHandler = Any
 
 T = TypeVar("T", bound=BaseModel)
 H = TypeVar("H", bound=HTTPConnection)
@@ -82,6 +94,11 @@ AfterRequestHandler = Union[
     Callable[[StarletteResponse], Awaitable[StarletteResponse]],
 ]
 AfterResponseHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
+BeforeAcceptHandler = Optional[Callable[[WebSocket], WebSocket]]
+AfterDisconnectHandler = Optional[Callable[[WebSocket], WebSocket]]
+# TODO: semantics and types of these TBD
+BeforeMessageHandler = Optional[Callable[[Any], Any]]
+AfterMessageHandler = Optional[Callable[[Any], Any]]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]
@@ -120,3 +137,6 @@ class ResponseHeader(Header):
 
 
 Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
+RouteHandlerMapValues = Union[
+    WebsocketRouteHandler, WSMessageHandler, ASGIRouteHandler, Dict[HttpMethod, HTTPRouteHandler]
+]
