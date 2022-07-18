@@ -268,3 +268,8 @@
 [1.6.1]
 
 - Add `after_response` hook
+
+[1.6.2]
+
+- Update error handling
+- Remove `exrex` from second hand dependencies
