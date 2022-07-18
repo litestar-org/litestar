@@ -324,10 +324,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
-                if isinstance(data, (list, tuple)):
-                    data = [plugin.to_dict(datum) for datum in data]
+                if is_async_callable(plugin.to_dict):
+                    if isinstance(data, (list, tuple)):
+                        data = [await plugin.to_dict(datum) for datum in data]
+                    else:
+                        data = await plugin.to_dict(data)
                 else:
-                    data = plugin.to_dict(data)
+                    if isinstance(data, (list, tuple)):
+                        data = [plugin.to_dict(datum) for datum in data]
+                    else:
+                        data = plugin.to_dict(data)
             response_class = self.resolve_response_class()
             response = response_class(
                 headers=headers,

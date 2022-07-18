@@ -4,7 +4,7 @@ from starlite import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:
-    from tortoise import Model
+    from tortoise import Model, ModelMeta
     from tortoise.contrib.pydantic import PydanticModel as TortoisePydanticModel
     from tortoise.contrib.pydantic import pydantic_model_creator
 except ImportError as e:
@@ -26,7 +26,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         Given a value of indeterminate type, determine if this value is supported by the plugin.
         """
-        return isinstance(value, Model)
+        return isinstance(value, (Model, ModelMeta))
 
     def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
         """
@@ -43,7 +43,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
-        return cast(Dict[str, Any], data.to_dict())
+        return data.dict()
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
         """
