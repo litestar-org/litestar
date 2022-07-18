@@ -23,6 +23,11 @@ def test_partial() -> None:
 
 
 def test_partial_superclass() -> None:
+    """
+    Test that Partial returns the correct annotations
+    for nested models.
+    """
+
     class Parent(BaseModel):
         foo: int
 
@@ -38,3 +43,19 @@ def test_partial_superclass() -> None:
         "foo": Optional[int],
         "bar": Optional[int],
     }
+
+
+def test_partial_basemodel() -> None:
+    """
+    Test that Partial returns no annotations for classes
+    that don't inherit from BaseModel.
+    """
+
+    class Foo:
+        bar: int
+
+    # The type checker will raise a warning that Foo is not a BaseModel
+    # but we want to test for runtime behaviour in case someone passes in
+    # a class that doesn't inherit from BaseModel anyway.
+    partial = Partial[Foo]  # type: ignore
+    assert partial.__annotations__ == {}  # type: ignore
