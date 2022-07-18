@@ -1,7 +1,9 @@
 from typing import Optional
 
 from pydantic import BaseModel
+from pytest import raises
 
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Partial
 from tests import Person
 
@@ -57,5 +59,5 @@ def test_partial_basemodel() -> None:
     # The type checker will raise a warning that Foo is not a BaseModel
     # but we want to test for runtime behaviour in case someone passes in
     # a class that doesn't inherit from BaseModel anyway.
-    partial = Partial[Foo]  # type: ignore
-    assert partial.__annotations__ == {}  # type: ignore
+    with raises(ImproperlyConfiguredException):
+        Partial[Foo]  # type: ignore
