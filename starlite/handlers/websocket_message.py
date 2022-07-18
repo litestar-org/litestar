@@ -114,9 +114,9 @@ class WSMessageHandler(BaseRouteHandler):
         if "data" not in signature.parameters:
             raise ImproperlyConfiguredException("The 'data' kwarg must be specified for ws_messge handlers")
         if "request" in signature.parameters:
-            raise ImproperlyConfiguredException("The 'request' kwarg is not supported with ws_message handlers")
+            raise ImproperlyConfiguredException("The 'request' kwarg is not supported with wsmessage handlers")
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 
-ws_message = WSMessageHandler
+wsmessage = WSMessageHandler
