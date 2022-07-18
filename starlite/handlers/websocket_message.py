@@ -34,17 +34,12 @@ class WSMessageHandler(BaseRouteHandler):
 
     Handlers must specify the `data` kwarg with the type that messages should be coerced to.
 
-    Handlers may specify the `socket` kwarg, however any method on the socket that results
-    in `receive()` being called are not allowed to be called.
-
-    As many properties of the `HTTPRouteHandler` are supported, however they wrap the
-    socket connection, not each message.
-
-    A second set of properties that wrap the message are available.
-
-    Thinking
-    --------
-    - should I just use after_request and before_request as after_disconnect and before_accept?
+    TODO:
+      - explore prevention of nested iteration over the open socket.
+      - consider each of the HTTPRouteHandler args hooks, features etc and consider how they should apply to this.
+      - consider where lifecycle hooks should exist (include `before_disconnect`)
+      - consider using after_request and before_request as after_disconnect and before_accept. ATM I think should be
+      distinct hooks.
     """
 
     __slots__ = (
