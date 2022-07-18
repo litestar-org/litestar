@@ -11,6 +11,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    get_type_hints,
 )
 
 from openapi_schema_pydantic.v3.v3_1_0.header import Header
@@ -109,7 +110,7 @@ class Partial(Generic[T]):
             # until we find a BaseModel.
             for obj in item.mro():
                 if issubclass(obj, BaseModel):
-                    for field_name, field_type in obj.__annotations__.items():
+                    for field_name, field_type in get_type_hints(obj).items():
                         # we modify the field annotations to make it optional
                         if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
                             field_definitions[field_name] = (Optional[field_type], None)
