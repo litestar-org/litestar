@@ -1,8 +1,17 @@
 from inspect import Signature
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from pydantic import BaseModel, validate_arguments
-from pydantic.typing import AnyCallable
 
 from starlite.connection import WebSocket
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
@@ -11,6 +20,9 @@ from starlite.types import ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable
 
 from .base import BaseRouteHandler
+
+if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
 
 T_model = TypeVar("T_model", bound=BaseModel)
 
@@ -70,7 +82,7 @@ class WSMessageHandler(BaseRouteHandler):
             path=path,
         )
 
-    def __call__(self, fn: AnyCallable) -> "WSMessageHandler":
+    def __call__(self, fn: "AnyCallable") -> "WSMessageHandler":
         """
         Replaces a function with itself
         """

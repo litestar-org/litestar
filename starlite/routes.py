@@ -25,8 +25,6 @@ from starlite.handlers import (
     WSMessageHandler,
 )
 from starlite.kwargs import KwargsModel
-from starlite.signature import get_signature_model
-from starlite.response import Response
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
 from starlite.utils import is_async_callable, normalize_path
@@ -362,7 +360,7 @@ class WSMessageRoute(BaseRoute):
             handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
         )
 
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         Holds the websocket connection and feeds parsed/validated messages into the handler.
 

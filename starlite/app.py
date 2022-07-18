@@ -10,7 +10,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.types import ASGIApp, Receive, Scope, Send
-from typing_extensions import Type
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
@@ -24,10 +23,7 @@ from starlite.config import (
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
-from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.handlers.websocket import WebsocketRouteHandler
-from starlite.handlers.websocket_message import WSMessageHandler
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.openapi.path_item import create_path_item
@@ -60,6 +56,7 @@ from starlite.utils.templates import create_template_engine
 if TYPE_CHECKING:
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
+    from starlite.handlers.websocket_message import WSMessageHandler
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 DEFAULT_CACHE_CONFIG = CacheConfig()
@@ -255,7 +252,7 @@ class Starlite(Router):
     def build_route_middleware_stack(
         self,
         route: Union[HTTPRoute, WebSocketRoute, WSMessageRoute, ASGIRoute],
-        route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", WSMessageHandler, ASGIRouteHandler],
+        route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", "WSMessageHandler", ASGIRouteHandler],
     ) -> ASGIApp:
         """Constructs a middleware stack that serves as the point of entry for each route"""
 
