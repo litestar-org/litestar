@@ -24,7 +24,7 @@ from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from typing_extensions import Literal, Protocol, runtime_checkable
 
-from starlite.exceptions import HTTPException
+from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.response import Response
 
 try:
@@ -104,6 +104,8 @@ class Partial(Generic[T]):
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
+        if not issubclass(item, BaseModel):
+            raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
         if not cls._models.get(item):
             field_definitions: Dict[str, Tuple[Any, None]] = {}
             # traverse the object's mro and get all annotations
