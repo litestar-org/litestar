@@ -45,16 +45,16 @@ requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
-hypothesis = { extras = ["cli"], version = "*" }
+hypothesis = "*"
 mkdocs-material = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = { extras = ["mypy"], version = "*" }
-tortoise-orm = { extras = ["asyncpg"], version = "*" }
-Jinja2 = "*"
-Mako = "*"
+tortoise-orm = "*"
+jinja2 = "*"
+mako = "*"
 freezegun = "*"
 pytest-mock = "*"
 tox = "*"

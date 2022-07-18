@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class TortoiseORMPlugin(PluginProtocol[Model]):
     def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[TortoisePydanticModel]:
         """
-        Given a model_class T, convert it to a subclass of the pydantic BaseModel
+        Given a tortoitse model_class instance, convert it to a subclass of the tortoise TortoisePydanticModel
         """
         return cast(Type[TortoisePydanticModel], pydantic_model_creator(model_class, **kwargs))
 
@@ -30,7 +30,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
         """
-        Given an instance of a pydantic model created using a plugin's 'to_pydantic_model_class',
+        Given an instance of a pydantic model created using the plugin's 'to_pydantic_model_class',
         return an instance of the class from which that pydantic model has been created.
 
         This class is passed in as the 'model_class' kwarg.
