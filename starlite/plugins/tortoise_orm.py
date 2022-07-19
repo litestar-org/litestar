@@ -43,7 +43,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
-        return data.dict()
+        return cast(Dict[str, Any], data.dict())
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
         """

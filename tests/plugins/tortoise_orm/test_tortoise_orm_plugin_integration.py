@@ -1,18 +1,17 @@
 from datetime import datetime
-from typing import List
+from typing import List, cast
 
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from tortoise import Tortoise, fields
 from tortoise.models import Model
 
-# Models are taken from the tortoise-orm docs: https://tortoise.github.io/examples/pydantic.html#main-py
 from starlite import get, post
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from starlite.testing import create_test_client
 
 
-class Tournament(Model):
+class Tournament(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -23,7 +22,7 @@ class Tournament(Model):
         ordering = ["name"]
 
 
-class Event(Model):
+class Event(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -39,7 +38,7 @@ class Event(Model):
         ordering = ["name"]
 
 
-class Address(Model):
+class Address(Model):  # type: ignore[misc]
     city = fields.CharField(max_length=64)
     street = fields.CharField(max_length=128)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -52,7 +51,7 @@ class Address(Model):
         ordering = ["city"]
 
 
-class Team(Model):
+class Team(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -91,13 +90,13 @@ async def cleanup() -> None:
 @get("/tournaments")
 async def get_tournaments() -> List[Tournament]:
     tournaments = await Tournament.all()
-    return tournaments
+    return cast(List[Tournament], tournaments)
 
 
 @get("/tournaments/{tournament_id:int}")
 async def get_tournament(tournament_id: int) -> Tournament:
     tournament = await Tournament.filter(id=tournament_id).first()
-    return tournament
+    return cast(Tournament, tournament)
 
 
 @post("/tournaments")

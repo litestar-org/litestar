@@ -326,9 +326,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             if plugin:
                 if is_async_callable(plugin.to_dict):
                     if isinstance(data, (list, tuple)):
-                        data = [await plugin.to_dict(datum) for datum in data]
+                        data = [await plugin.to_dict(datum) for datum in data]  # type: ignore
                     else:
-                        data = await plugin.to_dict(data)
+                        data = await plugin.to_dict(data)  # type: ignore
                 else:
                     if isinstance(data, (list, tuple)):
                         data = [plugin.to_dict(datum) for datum in data]

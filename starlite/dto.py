@@ -2,6 +2,7 @@ from dataclasses import asdict, is_dataclass
 from inspect import isawaitable
 from typing import (
     Any,
+    Awaitable,
     ClassVar,
     Dict,
     Generic,
@@ -20,7 +21,7 @@ from pydantic.generics import GenericModel
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
-from starlite.utils import convert_dataclass_to_model
+from starlite.utils import convert_dataclass_to_model, is_async_callable
 
 
 def get_field_type(model_field: ModelField) -> Any:
@@ -47,42 +48,44 @@ class DTO(GenericModel, Generic[T]):
     dto_source_plugin: ClassVar[Optional[PluginProtocol]] = None
 
     @classmethod
-    def from_model_instance(cls, model_instance: T) -> "DTO[T]":
-        """
-        Given an instance of the source model, create an instance of the given DTO subclass
-        """
-        if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
-            values = cls.dto_source_plugin.to_dict(model_instance=model_instance)
-        elif isinstance(model_instance, BaseModel):
-            values = model_instance.dict()
-        else:
-            values = asdict(model_instance)
+    def _from_value_mapping(cls, mapping: Dict[str, Any]) -> "DTO[T]":
         for dto_key, original_key in cls.dto_field_mapping.items():
-
-            value = values.pop(original_key)
-            values[dto_key] = value
-        return cls(**values)
+            value = mapping.pop(original_key)
+            mapping[dto_key] = value
+        return cls(**mapping)
 
     @classmethod
-    async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
+    def from_model_instance(cls, model_instance: T) -> "DTO[T]":
         """
         Given an instance of the source model, create an instance of the given DTO subclass
         """
         if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
             result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
             if isawaitable(result):
-                values = await result
-            else:
-                values = cast(Dict[str, Any], result)
+                raise ImproperlyConfiguredException(
+                    f"plugin {type(cls.dto_source_plugin).__name__} to_dict method is async. "
+                    f"Use 'DTO.from_model_instance_async instead'",
+                )
+            values = cast(Dict[str, Any], result)
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
         else:
             values = asdict(model_instance)
-        for dto_key, original_key in cls.dto_field_mapping.items():
+        return cls._from_value_mapping(mapping=values)
 
-            value = values.pop(original_key)
-            values[dto_key] = value
-        return cls(**values)
+    @classmethod
+    async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
+        """
+        Given an instance of the source model, create an instance of the given DTO subclass asyncrounesouly
+        """
+        if (
+            cls.dto_source_plugin is not None
+            and cls.dto_source_plugin.is_plugin_supported_type(model_instance)
+            and is_async_callable(cls.dto_source_plugin.to_dict)
+        ):
+            values = await cast(Awaitable[Dict[str, Any]], cls.dto_source_plugin.to_dict(model_instance=model_instance))
+            return cls._from_value_mapping(mapping=values)
+        return cls.from_model_instance(model_instance=model_instance)
 
     def to_model_instance(self) -> T:
         """
