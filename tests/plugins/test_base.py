@@ -70,4 +70,4 @@ class APlugin(DummyPlugin[AModel]):
 )
 def test_plugin_mapping_value_to_model_instance(input: Any, output: Any) -> None:
     mapping = PluginMapping(plugin=APlugin(), model_class=AModel)
-    assert mapping.value_to_model_instance(input) == output
+    assert mapping.get_model_instance_for_value(input) == output

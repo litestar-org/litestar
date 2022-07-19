@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, cast
 
 import pytest
@@ -15,7 +14,7 @@ class Tournament(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
-
+    optional = fields.TextField(null=True)
     events: fields.ReverseRelation["Event"]
 
     class Meta:
@@ -101,7 +100,9 @@ async def get_tournament(tournament_id: int) -> Tournament:
 
 @post("/tournaments")
 async def create_tournament(data: Tournament) -> Tournament:
+    assert isinstance(data, Tournament)
     await data.save()
+    await data.refresh_from_db()
     return data
 
 
@@ -162,8 +163,6 @@ async def test_creating_a_tortoise_model() -> None:
             "/tournaments",
             json={
                 "name": "my tournament",
-                "created_at": datetime.now().isoformat(),
-                "id": 100,
             },
         )
         assert response.status_code == HTTP_201_CREATED

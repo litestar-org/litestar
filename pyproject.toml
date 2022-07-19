@@ -87,6 +87,7 @@ disable = [
     "too-few-public-methods",
     "duplicate-code",
     "logging-fstring-interpolation",
+    "ungrouped-imports",
 ]
 enable = "useless-suppression"
 extension-pkg-whitelist = "pydantic"

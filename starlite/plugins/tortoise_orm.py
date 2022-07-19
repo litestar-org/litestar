@@ -1,12 +1,14 @@
-from typing import TYPE_CHECKING, Any, Dict, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type, cast
+
+from tortoise.fields import ReverseRelation
+from tortoise.fields.relational import RelationalField
 
 from starlite import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:
     from tortoise import Model, ModelMeta
-    from tortoise.contrib.pydantic import PydanticModel as TortoisePydanticModel
-    from tortoise.contrib.pydantic import pydantic_model_creator
+    from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
@@ -15,11 +17,51 @@ if TYPE_CHECKING:
 
 
 class TortoiseORMPlugin(PluginProtocol[Model]):
-    def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[TortoisePydanticModel]:
+    _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
+    _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
+
+    def _create_pydantic_model(self, model_class: Type[Model], **kwargs: Dict[str, Any]) -> Type[PydanticModel]:
         """
-        Given a tortoitse model_class instance, convert it to a subclass of the tortoise TortoisePydanticModel
+        Takes a tortoitse model_class instance and convert it to a subclass of the tortoise PydanticModel.
+        It fixes some issues with the result of the tortoise model creator.
         """
-        return cast(Type[TortoisePydanticModel], pydantic_model_creator(model_class, **kwargs))
+        pydantic_model = cast(Type[PydanticModel], pydantic_model_creator(model_class, **kwargs))
+        for (
+            field_name,
+            tortoise_model_field,
+        ) in model_class._meta.fields_map.items():  # pylint: disable=protected-access
+            if field_name in pydantic_model.__fields__:
+                if not tortoise_model_field.required:
+                    pydantic_model.__fields__[field_name].required = False
+                if tortoise_model_field.null:
+                    pydantic_model.__fields__[field_name].allow_none = True
+        return pydantic_model
+
+    def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[PydanticModel]:
+        """
+        Given a tortoitse model_class instance, convert it to a subclass of the tortoise PydanticModel
+
+        Since incoming request body's cannot and should not include values for
+        related fields, pk fields and read only fields in tortoise-orm, we generate two different kinds of pydantic models here:
+        - the first is a regular pydantic model, and the othre is for the "data" kwarg only, which is further sanitized.
+
+        This function uses memoization to ensure we don't recompute unnecessarily.
+        """
+        if kwargs.pop("parameter_name", None) == "data":
+            if model_class not in self._data_models_map:
+                fields_to_exclude: List[str] = []
+                for (
+                    field_name,
+                    tortoise_model_field,
+                ) in model_class._meta.fields_map.items():  # pylint: disable=protected-access
+                    if isinstance(tortoise_model_field, (RelationalField, ReverseRelation)) or tortoise_model_field.pk:
+                        fields_to_exclude.append(field_name)
+                kwargs.update(exclude=tuple(fields_to_exclude), exclude_readonly=True)
+                self._data_models_map[model_class] = self._create_pydantic_model(model_class=model_class, **kwargs)
+            return self._data_models_map[model_class]
+        if model_class not in self._models_map:
+            self._models_map[model_class] = self._create_pydantic_model(model_class=model_class, **kwargs)
+        return self._models_map[model_class]
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
@@ -37,7 +79,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         return model_class().update_from_dict(pydantic_model_instance.dict())
 
-    async def to_dict(self, model_instance: Model) -> Dict[str, Any]:
+    async def to_dict(self, model_instance: Model) -> Dict[str, Any]:  # pylint: disable=invalid-overridden-method
         """
         Given an instance of a model supported by the plugin, return a dictionary of serializable values.
         """
