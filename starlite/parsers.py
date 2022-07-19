@@ -1,17 +1,6 @@
 from contextlib import suppress
 from functools import reduce
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -43,7 +32,7 @@ def _query_param_reducer(acc: Dict[str, List[str]], cur: Tuple[str, str]) -> Dic
     if param is None:
         acc[key] = [value]
     else:
-        acc[key].append(value)  # type: ignore
+        acc[key].append(value)
     return acc
 
 

@@ -1,16 +1,14 @@
-from array import array
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Union, cast
 
-
 from pydantic.fields import (
-    FieldInfo,
-    SHAPE_LIST,
-    SHAPE_SET,
-    SHAPE_SEQUENCE,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
     SHAPE_DEQUE,
     SHAPE_FROZENSET,
+    SHAPE_LIST,
+    SHAPE_SEQUENCE,
+    SHAPE_SET,
+    SHAPE_TUPLE,
+    SHAPE_TUPLE_ELLIPSIS,
+    FieldInfo,
     ModelField,
     Undefined,
 )
@@ -28,6 +26,17 @@ from starlite.provide import Provide
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import ReservedKwargs
 
+# Shapes corresponding to sequences
+SEQ_SHAPES = {
+    SHAPE_LIST,
+    SHAPE_SET,
+    SHAPE_SEQUENCE,
+    SHAPE_TUPLE,
+    SHAPE_TUPLE_ELLIPSIS,
+    SHAPE_DEQUE,
+    SHAPE_FROZENSET,
+}
+
 
 class ParameterDefinition(NamedTuple):
     param_type: ParamType
@@ -35,7 +44,7 @@ class ParameterDefinition(NamedTuple):
     field_alias: str
     is_required: bool
     default_value: Any
-    is_array: bool
+    is_sequence: bool
 
 
 class Dependency:
@@ -64,18 +73,6 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
     return result
 
 
-def is_array(model_field: ModelField):
-    return model_field.shape in [
-        SHAPE_LIST,
-        SHAPE_SET,
-        SHAPE_SEQUENCE,
-        SHAPE_TUPLE,
-        SHAPE_TUPLE_ELLIPSIS,
-        SHAPE_DEQUE,
-        SHAPE_FROZENSET,
-    ]
-
-
 class KwargsModel:
     """
     This class is used to model the required kwargs for a given handler and its dependencies.
@@ -91,7 +88,7 @@ class KwargsModel:
         "expected_path_params",
         "expected_query_params",
         "expected_reserved_kwargs",
-        "array_query_parameter_names",
+        "sequence_query_parameter_names",
     )
 
     def __init__(
@@ -104,7 +101,7 @@ class KwargsModel:
         expected_path_params: Set[ParameterDefinition],
         expected_query_params: Set[ParameterDefinition],
         expected_reserved_kwargs: Set[ReservedKwargs],
-        array_query_parameter_names: Set[str],
+        sequence_query_parameter_names: Set[str],
     ) -> None:
         self.expected_cookie_params = expected_cookie_params
         self.expected_dependencies = expected_dependencies
@@ -113,7 +110,7 @@ class KwargsModel:
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
-        self.array_query_parameter_names = array_query_parameter_names
+        self.sequence_query_parameter_names = sequence_query_parameter_names
         self.has_kwargs = (
             expected_cookie_params
             or expected_dependencies
@@ -139,7 +136,7 @@ class KwargsModel:
 
     @staticmethod
     def create_parameter_definition(
-        allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_array: bool
+        allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_sequence: bool
     ) -> ParameterDefinition:
         """
         Creates a ParameterDefition for the given pydantic FieldInfo instance and inserts it into the correct parameter set
@@ -167,7 +164,7 @@ class KwargsModel:
             field_alias=field_alias,
             default_value=default_value,
             is_required=is_required and (default_value is None and not allow_none),
-            is_array=is_array,
+            is_sequence=is_sequence,
         )
 
     @classmethod
@@ -207,7 +204,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_array=is_array(model_field),
+                    is_sequence=model_field.shape in SEQ_SHAPES,
                 )
                 for field_name, model_field in layered_parameters.items()
                 if field_name not in ignored_keys and field_name not in signature_model.__fields__
@@ -218,7 +215,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_array=is_array(model_field),
+                    is_sequence=model_field.shape in SEQ_SHAPES,
                 )
                 for field_name, model_field in signature_model.__fields__.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
@@ -249,7 +246,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=field_info,
                     path_parameters=path_parameters,
-                    is_array=is_array(model_field),
+                    is_sequence=model_field.shape in SEQ_SHAPES,
                 )
             )
 
@@ -257,9 +254,9 @@ class KwargsModel:
         expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
         expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
-        array_query_parameter_names = set(
-            p.field_alias for p in param_definitions if p.param_type == ParamType.QUERY and p.is_array
-        )
+        sequence_query_parameter_names = {
+            p.field_alias for p in param_definitions if p.param_type == ParamType.QUERY and p.is_sequence
+        }
 
         expected_form_data = None
         data_model_field = signature_model.__fields__.get("data")
@@ -304,7 +301,7 @@ class KwargsModel:
             expected_cookie_params=expected_cookie_parameters,
             expected_header_params=expected_header_parameters,
             expected_reserved_kwargs=cast(Set[ReservedKwargs], expected_reserved_kwargs),
-            array_query_parameter_names=array_query_parameter_names,
+            sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
     @classmethod
@@ -372,15 +369,19 @@ class KwargsModel:
                 f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )
 
+    def _sequence_or_scalar_param(self, key: str, value: List[str]) -> Union[str, List[str]]:
+        """
+        Returns the first element of 'value' if we expect it to be a scalar value (appears in self.sequence_query_parameter_names)
+        and it contains only a single element.
+        """
+        return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
+
     def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
         """
         Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is sync.
         """
         reserved_kwargs: Dict[str, Any] = {}
-        connection_query_params = {
-            k: v[0] if k not in self.array_query_parameter_names and len(v) == 1 else v
-            for k, v in connection.query_params.items()
-        }
+        connection_query_params = {k: self._sequence_or_scalar_param(k, v) for k, v in connection.query_params.items()}
         if self.expected_reserved_kwargs:
             if "state" in self.expected_reserved_kwargs:
                 reserved_kwargs["state"] = connection.app.state.copy()

@@ -1,5 +1,16 @@
 from datetime import datetime
-from typing import Any, Deque, Dict, FrozenSet, List, MutableSequence, Optional, Set, Tuple, Union
+from typing import (
+    Any,
+    Deque,
+    Dict,
+    FrozenSet,
+    List,
+    MutableSequence,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 from urllib.parse import urlencode
 
 import pytest
