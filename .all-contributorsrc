@@ -238,6 +238,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "josepdaniel",
+      "name": "josepdaniel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36941460?v=4",
+      "profile": "https://github.com/josepdaniel",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
