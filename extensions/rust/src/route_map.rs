@@ -1,4 +1,4 @@
-use crate::util::{get_base_components, path_parameters_eq};
+use crate::util::{build_route_middleware_stack, get_base_components, path_parameters_eq};
 
 use std::collections::{hash_map, HashMap, HashSet};
 
@@ -12,15 +12,21 @@ pyo3::import_exception!(starlite.exceptions, MethodNotAllowedException);
 pyo3::import_exception!(starlite.exceptions, NotFoundException);
 
 /// A context object that stores Python handles that are needed in the trie
-struct StarliteContext {
+pub struct StarliteContext {
     /// HTTPRoute
-    http_route: Py<PyType>,
+    pub http_route: Py<PyType>,
     /// WebSocketRoute
-    web_socket_route: Py<PyType>,
+    pub web_socket_route: Py<PyType>,
     /// ASGIRoute
-    asgi_route: Py<PyType>,
+    pub asgi_route: Py<PyType>,
+    /// ExceptionHandlerMiddleware
+    pub exception_handler_middleware: Py<PyType>,
+    /// StarletteMiddleware
+    pub starlette_middleware: Py<PyType>,
     /// starlite.parsers.parse_path_params
-    parse_path_params: Py<PyFunction>,
+    pub parse_path_params: Py<PyFunction>,
+    /// starlite instance.debug
+    pub debug: bool,
 }
 
 /// A node for the trie
@@ -89,7 +95,6 @@ pub struct RouteMap {
     map: Node,
     static_paths: HashSet<String>,
     plain_routes: HashSet<String>,
-    starlite: Py<PyAny>,
     ctx: StarliteContext,
 }
 
@@ -98,7 +103,7 @@ pub struct RouteMap {
 impl RouteMap {
     /// Creates an empty `RouteMap`
     #[new]
-    pub fn new(py: Python, starlite: Py<PyAny>) -> PyResult<Self> {
+    pub fn new(py: Python, debug: bool) -> PyResult<Self> {
         macro_rules! get_attr_and_downcast {
             ($module:ident, $attr:expr, $downcast_ty:ty) => {{
                 $module.getattr($attr)?.downcast::<$downcast_ty>()?.into()
@@ -113,16 +118,26 @@ impl RouteMap {
         let web_socket_route = get_attr_and_downcast!(routes, "WebSocketRoute", PyType);
         let asgi_route = get_attr_and_downcast!(routes, "ASGIRoute", PyType);
 
+        let middleware = py.import("starlite.middleware")?;
+        let exception_handler_middleware =
+            get_attr_and_downcast!(middleware, "ExceptionHandlerMiddleware", PyType);
+
+        let starlette_middleware = py.import("starlette.middleware")?;
+        let starlette_middleware =
+            get_attr_and_downcast!(starlette_middleware, "Middleware", PyType);
+
         Ok(RouteMap {
             map: Node::new(),
             plain_routes: HashSet::new(),
             static_paths: HashSet::new(),
-            starlite,
             ctx: StarliteContext {
                 http_route,
                 web_socket_route,
                 asgi_route,
+                exception_handler_middleware,
+                starlette_middleware,
                 parse_path_params,
+                debug,
             },
         })
     }
@@ -228,7 +243,6 @@ impl RouteMap {
 ///
 /// Reference: https://smallcultfollowing.com/babysteps/blog/2018/11/01/after-nll-interprocedural-conflicts
 struct ConfigureNodeView<'rm> {
-    starlite: &'rm Py<PyAny>,
     ctx: &'rm StarliteContext,
     static_paths: &'rm HashSet<String>,
     cur_node: &'rm mut Node,
@@ -245,7 +259,6 @@ impl<'rm> ConfigureNodeView<'rm> {
         let py = route.py();
 
         let ConfigureNodeView {
-            starlite,
             ctx,
             static_paths,
             cur_node,
@@ -273,21 +286,11 @@ impl<'rm> ConfigureNodeView<'rm> {
 
         let asgi_handlers = cur_node.asgi_handlers.as_mut().unwrap();
 
-        macro_rules! build_route_middleware_stack {
-            ($route:ident, $route_handler:ident) => {{
-                starlite.call_method(
-                    py,
-                    "build_route_middleware_stack",
-                    ($route, $route_handler),
-                    None,
-                )?
-            }};
-        }
-
         macro_rules! generate_single_route_handler_stack {
             ($handler_type:expr) => {
                 let route_handler = route.getattr("route_handler")?;
-                let middleware_stack = build_route_middleware_stack!(route, route_handler);
+                let middleware_stack =
+                    build_route_middleware_stack(py, &ctx, route, route_handler)?;
                 asgi_handlers.insert($handler_type.to_string(), middleware_stack.to_object(py));
             };
         }
@@ -299,7 +302,8 @@ impl<'rm> ConfigureNodeView<'rm> {
             for (method, handler_mapping) in route_handler_map.into_iter() {
                 let handler_mapping = handler_mapping.downcast::<PyTuple>()?;
                 let route_handler = handler_mapping.get_item(0)?;
-                let middleware_stack = build_route_middleware_stack!(route, route_handler);
+                let middleware_stack =
+                    build_route_middleware_stack(py, &ctx, route, route_handler)?;
                 asgi_handlers.insert(method, middleware_stack.to_object(py));
             }
         } else if route.is_instance(web_socket_route.as_ref(py))? {
@@ -360,7 +364,6 @@ impl RouteMap {
         }
 
         ConfigureNodeView {
-            starlite: &self.starlite,
             ctx: &self.ctx,
             static_paths: &self.static_paths,
             cur_node,

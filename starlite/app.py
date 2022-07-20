@@ -103,7 +103,7 @@ class Starlite(Router):
         self.gzip_config = gzip_config
         self.plugins = plugins or []
         self.routes: List[BaseRoute] = []
-        self.route_map: RouteMap = RouteMapInit(self)
+        self.route_map: RouteMap = RouteMapInit(self.debug)
         self.state = State()
 
         super().__init__(
