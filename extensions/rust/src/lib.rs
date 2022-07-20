@@ -1,6 +1,8 @@
 //! A route mapping data structure for use in Starlite
 
 mod route_map;
+#[cfg(test)]
+mod test;
 mod util;
 
 use crate::route_map::RouteMap;
