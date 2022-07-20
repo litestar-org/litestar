@@ -125,8 +125,9 @@ def get_recursive_handler_parameters(
     generate_examples: bool,
 ) -> List[Parameter]:
     """Create and return parameters for a handler. If the provided field is not a dependency,
-    a normal parameter is created and returned as a list, otherwise a recursive call
-    may be triggered by the parent call function"""
+    a normal parameter is created and returned as a list, otherwise
+    `create_parameter_for_handler()` is called to generate parameters for the dependency."""
+
     if field_name not in dependencies:
         return [
             create_parameter(
