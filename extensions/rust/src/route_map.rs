@@ -325,7 +325,7 @@ impl RouteMap {
         route: &PyAny,
         mut path: String,
         path_parameters: &[HashMap<String, Py<PyAny>>],
-    ) -> PyResult<&mut Node> {
+    ) -> PyResult<&Node> {
         let py = route.py();
 
         let mut cur_node;
