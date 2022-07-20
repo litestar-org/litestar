@@ -23,7 +23,7 @@ from tests.openapi.utils import (
     field_type=st.sampled_from(constrained_collection),
 )
 def test_create_collection_constrained_field_schema(field_type: Any) -> None:
-    schema = create_collection_constrained_field_schema(field_type=field_type, sub_fields=None)
+    schema = create_collection_constrained_field_schema(field_type=field_type, sub_fields=None, plugins=[])
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore
     assert schema.minItems == field_type.min_items
@@ -36,6 +36,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
         schema = create_collection_constrained_field_schema(
             field_type=pydantic_fn(field_type, min_items=1, max_items=10),  # type: ignore
             sub_fields=create_parsed_model_field(field_type).sub_fields,
+            plugins=[],
         )
         assert schema.type == OpenAPIType.ARRAY
         expected = {
@@ -77,5 +78,5 @@ def test_create_numerical_constrained_field_schema(field_type: Any) -> None:
 
 @given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))
 def test_create_constrained_field_schema(field_type: Any) -> None:
-    schema = create_constrained_field_schema(field_type=field_type, sub_fields=None)
+    schema = create_constrained_field_schema(field_type=field_type, sub_fields=None, plugins=[])
     assert schema

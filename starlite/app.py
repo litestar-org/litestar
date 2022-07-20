@@ -322,6 +322,6 @@ class Starlite(Router):
                 and (route.path_format or "/") not in openapi_schema.paths
             ):
                 openapi_schema.paths[route.path_format or "/"] = create_path_item(
-                    route=route, create_examples=openapi_config.create_examples
+                    route=route, create_examples=openapi_config.create_examples, plugins=self.plugins
                 )
         return cast(OpenAPI, construct_open_api_with_schema_class(openapi_schema))

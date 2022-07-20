@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, List, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.operation import Operation
 from openapi_schema_pydantic.v3.v3_1_0.path_item import PathItem
@@ -12,10 +12,11 @@ from starlite.openapi.responses import create_responses
 from starlite.openapi.utils import extract_tags_from_route_handler
 
 if TYPE_CHECKING:
+    from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
 
 
-def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
+def create_path_item(route: "HTTPRoute", create_examples: bool, plugins: List["PluginProtocol"]) -> PathItem:
     """
     Create a PathItem model for the given route parsing all http_methods into Operation Models
     """
@@ -37,7 +38,9 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
             handler_name = get_name(cast(AnyCallable, route_handler.fn)).replace("_", " ").title()
             request_body = None
             if "data" in handler_fields:
-                request_body = create_request_body(field=handler_fields["data"], generate_examples=create_examples)
+                request_body = create_request_body(
+                    field=handler_fields["data"], generate_examples=create_examples, plugins=plugins
+                )
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
                 tags=extract_tags_from_route_handler(route_handler),
@@ -48,6 +51,7 @@ def create_path_item(route: "HTTPRoute", create_examples: bool) -> PathItem:
                     route_handler=route_handler,
                     raises_validation_error=raises_validation_error,
                     generate_examples=create_examples,
+                    plugins=plugins,
                 ),
                 requestBody=request_body,
                 parameters=parameters,  # type: ignore[arg-type]

@@ -47,7 +47,8 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
         This function uses memoization to ensure we don't recompute unnecessarily.
         """
-        if kwargs.pop("parameter_name", None) == "data":
+        parameter_name = kwargs.pop("parameter_name", None)
+        if parameter_name == "data":
             if model_class not in self._data_models_map:
                 fields_to_exclude: List[str] = []
                 for (
@@ -56,10 +57,13 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
                 ) in model_class._meta.fields_map.items():  # pylint: disable=protected-access
                     if isinstance(tortoise_model_field, (RelationalField, ReverseRelation)) or tortoise_model_field.pk:
                         fields_to_exclude.append(field_name)
-                kwargs.update(exclude=tuple(fields_to_exclude), exclude_readonly=True)
+                kwargs.update(
+                    exclude=tuple(fields_to_exclude), exclude_readonly=True, name=f"{model_class.__name__}RequestBody"
+                )
                 self._data_models_map[model_class] = self._create_pydantic_model(model_class=model_class, **kwargs)
             return self._data_models_map[model_class]
         if model_class not in self._models_map:
+            kwargs.update(name=model_class.__name__)
             self._models_map[model_class] = self._create_pydantic_model(model_class=model_class, **kwargs)
         return self._models_map[model_class]
 
