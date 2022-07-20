@@ -116,7 +116,7 @@ def create_parameter(
     )
 
 
-def _get_unlayered_params(
+def get_recursive_handler_parameters(
     field_name: str,
     model_field: "ModelField",
     dependencies: Dict[str, "Provide"],
@@ -124,6 +124,9 @@ def _get_unlayered_params(
     path_parameters: List[Dict[str, Any]],
     generate_examples: bool,
 ) -> List[Parameter]:
+    """Create and return parameters for a handler. If the provided field is not a dependency,
+    a normal parameter is created and returned as a list, otherwise a recursive call
+    may be triggered by the parent call function"""
     if field_name not in dependencies:
         return [
             create_parameter(
@@ -137,13 +140,16 @@ def _get_unlayered_params(
     return create_parameter_for_handler(route_handler, dependency_fields, path_parameters, generate_examples)
 
 
-def _get_layered_param(
+def get_layered_parameter(
     field_name: str,
     signature_model_field: "ModelField",
     layered_parameters: Dict[str, "ModelField"],
     path_parameters: List[Dict[str, Any]],
     generate_examples: bool,
 ) -> Parameter:
+    """Create a layered parameter for a given signature model field.
+    Layer info is extracted from the provided `layered_parameters` dict
+    and set as the field's `field_info` attribute."""
     layer_field_info = layered_parameters[field_name].field_info
     signature_field_info = signature_model_field.field_info
 
@@ -194,7 +200,7 @@ def create_parameter_for_handler(
         if extra.get("is_dependency") and field_name not in dependencies:
             # never document explicit dependencies
             continue
-        for parameter in _get_unlayered_params(
+        for parameter in get_recursive_handler_parameters(
             field_name=field_name,
             model_field=model_field,
             dependencies=dependencies,
@@ -215,13 +221,13 @@ def create_parameter_for_handler(
                 generate_examples=generate_examples,
             )
         )
-    for field_name, signature_model_filed in filter(
+    for field_name, signature_model_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] in layered_parameters, handler_fields.items()
     ):
         parameters.add(
-            _get_layered_param(
+            get_layered_parameter(
                 field_name=field_name,
-                signature_model_field=signature_model_filed,
+                signature_model_field=signature_model_field,
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
                 generate_examples=generate_examples,
