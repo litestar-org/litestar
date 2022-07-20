@@ -17,9 +17,7 @@ _true_values = {"True", "true"}
 _false_values = {"False", "false"}
 
 
-def _query_param_reducer(
-    acc: Dict[str, Union[str, List[str]]], cur: Tuple[str, str]
-) -> Dict[str, Union[str, List[str]]]:
+def _query_param_reducer(acc: Dict[str, List[str]], cur: Tuple[str, str]) -> Dict[str, List[str]]:
     """
     Reducer function - acc is a dictionary, cur is a tuple of key + value
 
@@ -32,11 +30,9 @@ def _query_param_reducer(
         value = False  # type: ignore
     param = acc.get(key)
     if param is None:
-        acc[key] = value
-    elif isinstance(param, str):
-        acc[key] = [param, value]
+        acc[key] = [value]
     else:
-        acc[key].append(value)  # type: ignore
+        acc[key].append(value)
     return acc
 
 
