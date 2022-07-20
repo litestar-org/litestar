@@ -219,11 +219,12 @@ impl RouteMap {
 /// of parameters, making it more obvious which parts are directly
 /// borrowed from the RouteMap, and which are not.
 ///
-/// Creating a method (that takes a &mut self) of RouteMap that takes a
-/// `cur_node: &mut Node` is not cur_noderently possible, since `cur_node` is mutably borrowed from `self.map`
+/// Creating a method (that takes a ref to self) of RouteMap that takes a
+/// `cur_node: &mut Node` is not currently possible, since `cur_node` is mutably borrowed from `self.map`
 /// and passed into this method that takes a `&mut self`, so the compiler doesn't know that
-/// we won't get another `&mut Node` to the same `Node`.
-/// Instead, we just have a struct that stores all the references we'll need and use that.
+/// we won't get another `&mut Node` or `&Node` to the same `Node`.
+/// Instead, we just have a struct that stores all the references we'll need and disjointly
+/// borrow from the RouteMap to create it and use that.
 ///
 /// Reference: https://smallcultfollowing.com/babysteps/blog/2018/11/01/after-nll-interprocedural-conflicts
 struct ConfigureNodeView<'rm> {
