@@ -13,6 +13,7 @@ node_modules/
 results/
 site/
 target/
+.scannerwork/
 
 # files
 *.iml
