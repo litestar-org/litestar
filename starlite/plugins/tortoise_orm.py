@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Type, cast
 
+from pydantic_factories.utils import is_pydantic_model
 from tortoise.fields import ReverseRelation
 from tortoise.fields.relational import RelationalField
 
@@ -31,6 +32,14 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
             tortoise_model_field,
         ) in model_class._meta.fields_map.items():  # pylint: disable=protected-access
             if field_name in pydantic_model.__fields__:
+                if (
+                    is_pydantic_model(pydantic_model.__fields__[field_name].type_)
+                    and "." in pydantic_model.__fields__[field_name].type_.__name__
+                ):
+                    sub_model_name = pydantic_model.__fields__[field_name].type_.__name__.split(".")[-2]
+                    pydantic_model.__fields__[field_name].type_ = cast(
+                        Type[PydanticModel], pydantic_model_creator(model_class, name=sub_model_name)
+                    )
                 if not tortoise_model_field.required:
                     pydantic_model.__fields__[field_name].required = False
                 if tortoise_model_field.null:

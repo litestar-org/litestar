@@ -1,3 +1,7 @@
+from typing import AsyncGenerator, Callable
+
+import pytest
+
 from starlite import Starlite
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from tests.plugins.tortoise_orm import (
@@ -9,11 +13,18 @@ from tests.plugins.tortoise_orm import (
 )
 
 
-def test_tortoise_orm_plugin_openapi_spec_generation() -> None:
+@pytest.mark.asyncio
+@pytest.fixture()
+async def scaffold_tortoise() -> AsyncGenerator:
+    await init_tortoise()
+    yield
+    await cleanup()
+
+
+@pytest.mark.asyncio
+async def test_tortoise_orm_plugin_openapi_spec_generation(scaffold_tortoise: Callable) -> None:
     app = Starlite(
         route_handlers=[create_tournament, get_tournament, get_tournaments],
-        on_startup=[init_tortoise],
-        on_shutdown=[cleanup],
         plugins=[TortoiseORMPlugin()],
     )
     schema = app.openapi_schema
@@ -45,6 +56,7 @@ def test_tortoise_orm_plugin_openapi_spec_generation() -> None:
             "name": {"type": "string", "title": "Name"},
             "created_at": {"type": "string", "schema_format": "date-time", "title": "Created At", "readOnly": True},
             "optional": {"type": "string", "title": "Optional"},
+            "events": {"items": {"ref": "#/components/schemas/Event"}, "type": "array", "title": "Events"},
         },
         "additionalProperties": False,
         "type": "object",
