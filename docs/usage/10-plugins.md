@@ -8,12 +8,9 @@ to return an instance or list of instances of a model, and have it serialized co
 
 ## Builtin Plugins
 
-Currently, Starlite includes a single plugin `starlite.plugins.sql_alchemy.SQLAlchemyPlugin`, with other plugins being
-planned / discussed - see the pinned issues in github for the current state of these.
-
 ### SQLAlchemyPlugin
 
-To use the `SQLAlchemyPlugin` simply import it and pass it to the `Starlite` constructor:
+To use the `SQLAlchemyPlugin` import it and pass it to the `Starlite` constructor:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
@@ -26,8 +23,7 @@ app = Starlite(route_handlers=[...], plugins=[SQLAlchemyPlugin()])
 !!! note
     The `SQLAlchemyPlugin` _will not_ create a DB connection, a `sessionmaker` or anything of this kind. This
     you will need to implement on your own according to the pattern of your choice, or using a 3rd party solution of some
-    sort. The reason for this is that SQL Alchemy is very flexible and allows you to interact with it in various ways.
-    We cannot decide upon the pattern that will fit your architecture in advance, and hence it is left to the user to decide.
+    sort.
 
 You can now use SQL alchemy declarative classes as route handler parameters or return values:
 
@@ -63,7 +59,7 @@ def get_companies() -> List[Company]:
     The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
     because this style does not use classes, and is very hard to convert to pydantic correctly.
 
-### Handling of Relationships
+#### Handling of Relationships
 
 The SQL Alchemy plugin handles relationship by traversing and recursively converting the related tables into pydantic models.
 This approach, while powerful, poses some difficulties. For example, consider these two tables:
@@ -98,6 +94,104 @@ will include a circular reference. To avoid this, the plugin sets relationships 
 
 Additionally, all relationships are defined as `Optional` in the pydantic model, following the assumption you might not
 send complete data structures using the API.
+
+### Tortoise ORM Plugin
+
+To use the `TortoiseORMPlguin` import it and pass it to the `Starlite` constructor:
+
+```python
+from typing import List, cast
+
+from tortoise import Model, Tortoise, fields
+
+from starlite import Starlite, get, post
+from starlite.plugins.tortoise_orm import TortoiseORMPlugin
+
+
+class Tournament(Model):
+    id = fields.IntField(pk=True)
+    name = fields.TextField()
+    created_at = fields.DatetimeField(auto_now_add=True)
+    optional = fields.TextField(null=True)
+    events: fields.ReverseRelation["Event"]
+
+    class Meta:
+        ordering = ["name"]
+
+
+class Event(Model):
+    id = fields.IntField(pk=True)
+    name = fields.TextField()
+    created_at = fields.DatetimeField(auto_now_add=True)
+    tournament: fields.ForeignKeyNullableRelation[Tournament] = fields.ForeignKeyField(
+        "models.Tournament", related_name="events", null=True
+    )
+    participants: fields.ManyToManyRelation["Team"] = fields.ManyToManyField(
+        "models.Team", related_name="events", through="event_team"
+    )
+    address: fields.OneToOneNullableRelation["Address"]
+
+    class Meta:
+        ordering = ["name"]
+
+
+class Address(Model):
+    city = fields.CharField(max_length=64)
+    street = fields.CharField(max_length=128)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    event: fields.OneToOneRelation[Event] = fields.OneToOneField(
+        "models.Event", on_delete=fields.CASCADE, related_name="address", pk=True
+    )
+
+    class Meta:
+        ordering = ["city"]
+
+
+class Team(Model):
+    id = fields.IntField(pk=True)
+    name = fields.TextField()
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    events: fields.ManyToManyRelation[Event]
+
+    class Meta:
+        ordering = ["name"]
+
+
+async def init_tortoise() -> None:
+    await Tortoise.init(db_url="sqlite://:memory:", modules={"models": [__name__]})
+    await Tortoise.generate_schemas()
+
+
+@get("/tournaments")
+async def get_tournaments() -> List[Tournament]:
+    tournaments = await Tournament.all()
+    return cast(List[Tournament], tournaments)
+
+
+@get("/tournaments/{tournament_id:int}")
+async def get_tournament(tournament_id: int) -> Tournament:
+    tournament = await Tournament.filter(id=tournament_id).first()
+    return cast(Tournament, tournament)
+
+
+@post("/tournaments")
+async def create_tournament(data: Tournament) -> Tournament:
+    assert isinstance(data, Tournament)
+    await data.save()
+    await data.refresh_from_db()
+    return data
+
+
+app = Starlite(
+    route_handlers=[get_tournament, get_tournaments, create_tournament],
+    on_startup=[init_tortoise],
+    plugins=[TortoiseORMPlugin()],
+)
+```
+
+With the plugin in place, you can use any Tortoise model as type in route handelrs.
 
 ## Creating Plugins
 
