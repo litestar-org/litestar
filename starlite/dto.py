@@ -18,6 +18,7 @@ from typing import (
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
+from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
@@ -218,7 +219,9 @@ class DTOFactory:
             field_type = get_field_type(model_field=model_field)
             if field_name in field_mapping:
                 field_name, field_type = self._remap_field(field_mapping, field_name, field_type)
-                if model_field.field_info.default not in (Undefined, None, ...):
+                if ModelFactory.is_constrained_field(field_type):
+                    field_definitions[field_name] = (field_type, ...)
+                elif model_field.field_info.default not in (Undefined, None, ...):
                     field_definitions[field_name] = (field_type, model_field.default)
                 elif model_field.required or not model_field.allow_none:
                     field_definitions[field_name] = (field_type, ...)
@@ -227,7 +230,10 @@ class DTOFactory:
             else:
                 # prevents losing Optional
                 field_type = Optional[field_type] if model_field.allow_none else field_type
-                field_definitions[field_name] = (field_type, model_field.field_info)
+                if ModelFactory.is_constrained_field(field_type):
+                    field_definitions[field_name] = (field_type, ...)
+                else:
+                    field_definitions[field_name] = (field_type, model_field.field_info)
         return field_definitions
 
     @staticmethod

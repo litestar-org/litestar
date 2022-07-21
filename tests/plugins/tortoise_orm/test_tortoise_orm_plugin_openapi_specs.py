@@ -1,24 +1,14 @@
-from typing import AsyncGenerator, Callable
+from typing import Callable
 
 import pytest
 
 from starlite import Starlite
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from tests.plugins.tortoise_orm import (
-    cleanup,
     create_tournament,
     get_tournament,
     get_tournaments,
-    init_tortoise,
 )
-
-
-@pytest.mark.asyncio
-@pytest.fixture()
-async def scaffold_tortoise() -> AsyncGenerator:
-    await init_tortoise()
-    yield
-    await cleanup()
 
 
 @pytest.mark.asyncio
