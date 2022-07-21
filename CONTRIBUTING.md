@@ -49,7 +49,7 @@ the local environment in each of the tox environments.
 
 #### run pre-commit only
 
-`$ poetry run -e lint`
+`$ poetry run tox -e lint`
 
 ---
 
