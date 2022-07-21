@@ -178,7 +178,7 @@ def test_path_order() -> None:
 
 
 def test_conflicting_paths() -> None:
-    @get(path=["/lmno/{a:int}/{b:int}", "/lmno/{c:int}/{d:int}"], media_type=MediaType.TEXT)
+    @get(path=["/path/{a:int}/{b:int}", "/path/{c:int}/{d:int}"], media_type=MediaType.TEXT)
     def handler_fn(a: int = 0, b: int = 0, c: int = 0, d: int = 0) -> None:
         ...
 

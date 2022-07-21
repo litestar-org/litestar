@@ -53,16 +53,23 @@ dictionary specifying context data that is passed to the engine.
 ## Defining a Custom Template Engine
 
 If you wish to use another templating engine, you can easily do so by
-implemnting `starlite.template.TemplateEngineProtocol`. This class accepts a generic argument `T` which should be the
+implementing `starlite.template.TemplateEngineProtocol`. This class accepts a generic argument `T` which should be the
 template class, and it specifies two methods:
 
 ```python
-class TemplateEngineProtocol(Protocol[T]):
+from typing import Protocol, Union, List
+from pydantic import DirectoryPath
+
+# the template class of the respective library
+from my_lib import MyTemplate
+
+
+class TemplateEngineProtocol(Protocol[MyTemplate]):
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         """Builds a template engine."""
         ...
 
-    def get_template(self, name: str) -> T:
+    def get_template(self, name: str) -> MyTemplate:
         """Loads the template with name and returns it."""
         ...
 ```

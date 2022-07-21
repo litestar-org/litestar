@@ -27,7 +27,7 @@ def create_path_parameter_schema(
     """Create a path parameter from the given path_param definition"""
     field.sub_fields = None
     field.outer_type_ = path_parameter["type"]
-    return create_schema(field=field, generate_examples=generate_examples)
+    return create_schema(field=field, generate_examples=generate_examples, plugins=[])
 
 
 class ParameterCollection:
@@ -104,7 +104,7 @@ def create_parameter(
         parameter_name = extra.get(ParamType.QUERY) or parameter_name
 
     if not schema:
-        schema = create_schema(field=model_field, generate_examples=generate_examples)
+        schema = create_schema(field=model_field, generate_examples=generate_examples, plugins=[])
 
     return Parameter(
         name=parameter_name,
