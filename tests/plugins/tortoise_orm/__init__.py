@@ -37,9 +37,7 @@ class Address(Model):  # type: ignore[misc]
     street = fields.CharField(max_length=128)
     created_at = fields.DatetimeField(auto_now_add=True)
 
-    event: fields.OneToOneRelation[Event] = fields.OneToOneField(
-        "models.Event", on_delete=fields.CASCADE, related_name="address", pk=True
-    )
+    event: fields.OneToOneRelation[Event] = fields.OneToOneField("models.Event", related_name="address", pk=True)
 
     class Meta:
         ordering = ["city"]

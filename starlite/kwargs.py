@@ -139,7 +139,7 @@ class KwargsModel:
         allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_sequence: bool
     ) -> ParameterDefinition:
         """
-        Creates a ParameterDefition for the given pydantic FieldInfo instance and inserts it into the correct parameter set
+        Creates a ParameterDefinition for the given pydantic FieldInfo instance and inserts it into the correct parameter set
         """
         extra = field_info.extra
         is_required = extra.get(EXTRA_KEY_REQUIRED, True)

@@ -40,6 +40,7 @@ from starlite.types import (
     Middleware,
     ResponseHeader,
 )
+from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite

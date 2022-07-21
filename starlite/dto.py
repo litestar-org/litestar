@@ -76,7 +76,7 @@ class DTO(GenericModel, Generic[T]):
     @classmethod
     async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
         """
-        Given an instance of the source model, create an instance of the given DTO subclass asyncrounesouly
+        Given an instance of the source model, create an instance of the given DTO subclass asynchronously
         """
         if (
             cls.dto_source_plugin is not None

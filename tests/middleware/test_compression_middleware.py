@@ -22,12 +22,12 @@ logger = logging.getLogger(__name__)
 
 @get(path="/")
 def handler() -> PlainTextResponse:
-    return PlainTextResponse("_starlite_" * 4000, status_code=200)
+    return PlainTextResponse("_starlite_" * 4000)
 
 
 @get(path="/no-compression")
 def no_compress_handler() -> PlainTextResponse:
-    return PlainTextResponse("_starlite_", status_code=200)
+    return PlainTextResponse("_starlite_")
 
 
 async def streaming_iter(content: bytes, count: int) -> Any:
@@ -37,7 +37,7 @@ async def streaming_iter(content: bytes, count: int) -> Any:
 
 def test_no_compression_backend() -> None:
     try:
-        client = create_test_client(route_handlers=[handler], compression_config=None)
+        client = create_test_client(route_handlers=[handler])
     except Exception as exc:
         assert isinstance(exc, ValueError)
         assert "No compression backend specified" in str(exc)

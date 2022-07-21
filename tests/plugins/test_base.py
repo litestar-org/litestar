@@ -61,13 +61,13 @@ class APlugin(DummyPlugin[AModel]):
 
 
 @pytest.mark.parametrize(
-    ["input", "output"],
+    ["input_value", "output_value"],
     [
         [APydanticModel(name="my name"), AModel(name="my name")],
         [[APydanticModel(name="1"), APydanticModel(name="2")], [AModel(name="1"), AModel(name="2")]],
         [(APydanticModel(name="1"), APydanticModel(name="2")), [AModel(name="1"), AModel(name="2")]],
     ],
 )
-def test_plugin_mapping_value_to_model_instance(input: Any, output: Any) -> None:
+def test_plugin_mapping_value_to_model_instance(input_value: Any, output_value: Any) -> None:
     mapping = PluginMapping(plugin=APlugin(), model_class=AModel)
-    assert mapping.get_model_instance_for_value(input) == output
+    assert mapping.get_model_instance_for_value(input_value) == output_value

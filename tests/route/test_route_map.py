@@ -38,10 +38,10 @@ def route_test_paths(draw: DrawFn) -> List[RouteMapTestCase]:
         shuffle(segments)
         router_path = "/" + "/".join(segments)
         request_path = param_pat.sub("1", router_path)
-        return (router_path, request_path, {f"{p}:int" for p in params})
+        return router_path, request_path, {f"{p}:int" for p in params}
 
     parameter_names = ["a", "b", "c", "d", "e"]
-    param_st = st.sets(st.sampled_from(parameter_names), min_size=0, max_size=3)
+    param_st = st.sets(st.sampled_from(parameter_names), max_size=3)
     components_st = st.lists(st.text(alphabet=ascii_letters, min_size=1, max_size=4), min_size=1, max_size=3)
     path_st = st.builds(build_record, components_st, param_st)
     return cast(

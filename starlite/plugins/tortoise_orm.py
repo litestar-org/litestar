@@ -21,9 +21,10 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
 
-    def _create_pydantic_model(self, model_class: Type[Model], **kwargs: Dict[str, Any]) -> Type[PydanticModel]:
+    @staticmethod
+    def _create_pydantic_model(model_class: Type[Model], **kwargs: Dict[str, Any]) -> Type[PydanticModel]:
         """
-        Takes a tortoitse model_class instance and convert it to a subclass of the tortoise PydanticModel.
+        Takes a tortoise model_class instance and convert it to a subclass of the tortoise PydanticModel.
         It fixes some issues with the result of the tortoise model creator.
         """
         pydantic_model = cast(Type[PydanticModel], pydantic_model_creator(model_class, **kwargs))
@@ -48,11 +49,11 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[PydanticModel]:
         """
-        Given a tortoitse model_class instance, convert it to a subclass of the tortoise PydanticModel
+        Given a tortoise model_class instance, convert it to a subclass of the tortoise PydanticModel
 
         Since incoming request body's cannot and should not include values for
         related fields, pk fields and read only fields in tortoise-orm, we generate two different kinds of pydantic models here:
-        - the first is a regular pydantic model, and the othre is for the "data" kwarg only, which is further sanitized.
+        - the first is a regular pydantic model, and the other is for the "data" kwarg only, which is further sanitized.
 
         This function uses memoization to ensure we don't recompute unnecessarily.
         """

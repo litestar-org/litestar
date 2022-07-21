@@ -53,10 +53,10 @@ async def test_to_response_async_await() -> None:
 
 
 async def slow_numbers(minimum: int, maximum: int) -> Any:
-    yield ("<html><body><ul>")
+    yield "<html><body><ul>"
     for number in range(minimum, maximum + 1):
         yield "<li>%d</li>" % number
-    yield ("</ul></body></html>")
+    yield "</ul></body></html>"
 
 
 generator = slow_numbers(1, 10)
