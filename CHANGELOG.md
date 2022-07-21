@@ -273,3 +273,7 @@
 
 - Update error handling
 - Remove `exrex` from second hand dependencies
+
+[1.7.0]
+
+- Add `TortoiseORMPlugin`
