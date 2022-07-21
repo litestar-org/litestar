@@ -263,7 +263,7 @@ Starlite has a "layered" architecture, which is also evident in that one can dec
 route handlers - as in the above example, but on different layers of the application:
 
 ```python
-from starlite import Starlite, Controller, Router, Parameter
+from starlite import Starlite, Controller, Router, Parameter, get
 
 
 class MyController(Controller):
@@ -316,7 +316,7 @@ required for the router handler function that declares it as an `str` and not an
 provided, it will be tested against the provided regex.
 
 `controller_param` is a query param with the key `controller_param`. It has an `lt=100` defined on the controller, which
-means the provided value must be less than 100. Yet the route handler redeclares it with an `lt=50`, which means for the
+means the provided value must be less than 100. Yet the route handler re-declares it with an `lt=50`, which means for the
 route handler this value must be less than 50.
 
 Finally `local_param` is a route handler local query parameter, and `path_param` is a path parameter.

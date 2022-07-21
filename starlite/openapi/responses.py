@@ -23,11 +23,11 @@ if TYPE_CHECKING:
     from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler
+    from starlite.plugins.base import PluginProtocol
 
 
 def create_success_response(
-    route_handler: "HTTPRouteHandler",
-    generate_examples: bool,
+    route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["PluginProtocol"]
 ) -> Response:
     """
     Creates the schema for a success response
@@ -52,7 +52,7 @@ def create_success_response(
             route_handler.media_type = MediaType.HTML
 
         as_parsed_model_field = create_parsed_model_field(return_annotation)
-        schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples)
+        schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples, plugins=plugins)
         schema.contentEncoding = route_handler.content_encoding
         schema.contentMediaType = route_handler.content_media_type
         response = Response(
@@ -108,7 +108,7 @@ def create_success_response(
         for attribute_name, attribute_value in value.dict(exclude_none=True).items():
             if attribute_name == "value":
                 model_field = create_parsed_model_field(type(attribute_value))
-                header.param_schema = create_schema(field=model_field, generate_examples=False)
+                header.param_schema = create_schema(field=model_field, generate_examples=False, plugins=plugins)
             else:
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
@@ -155,6 +155,7 @@ def create_responses(
     route_handler: "HTTPRouteHandler",
     raises_validation_error: bool,
     generate_examples: bool,
+    plugins: List["PluginProtocol"],
 ) -> Optional["Responses"]:
     """
     Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None
@@ -163,6 +164,7 @@ def create_responses(
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
             generate_examples=generate_examples,
+            plugins=plugins,
         )
     }
     exceptions = route_handler.raises or []

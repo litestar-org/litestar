@@ -153,7 +153,7 @@ class MyClassDTO(BaseModel):
 
 ## Add New Fields
 
-You add fields that do not exist in the original model by passing in a `field_defintions` dictionary. This dictionary
+You add fields that do not exist in the original model by passing in a `field_definitions` dictionary. This dictionary
 should have field names as keys, and a tuple following the format supported by the [pydantic create_model helper](https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation):
 
 1. For required fields use a tuple of type + ellipsis, for example `(str, ...)`.
@@ -200,7 +200,6 @@ from sqlalchemy.orm import declarative_base
 from starlite import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
-
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
 Base = declarative_base()
@@ -229,6 +228,7 @@ When you have an instance of a DTO model, you can convert it into a model instan
 from starlite import get
 
 
+@get()
 def create_company(data: CompanyDTO) -> Company:
     company_instance = data.to_model_instance()
     ...

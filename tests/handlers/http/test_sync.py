@@ -12,7 +12,7 @@ def sync_handler() -> str:
     "handler",
     [
         get("/", media_type=MediaType.TEXT, sync_to_thread=True)(sync_handler),
-        get("/", media_type=MediaType.TEXT, sync_to_thread=False)(sync_handler),
+        get("/", media_type=MediaType.TEXT)(sync_handler),
     ],
 )
 def test_sync_to_thread(handler: HTTPRouteHandler) -> None:

@@ -354,7 +354,7 @@ from starlite import get, Response
 
 @get(path="/")
 def my_route_handler() -> Response:
-    return Response(...)
+    return Response(..., media_type=..., status_code=...)
 ```
 
 <!-- prettier-ignore -->

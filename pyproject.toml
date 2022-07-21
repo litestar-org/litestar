@@ -45,15 +45,16 @@ requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
-hypothesis = { extras = ["cli"], version = "*" }
+hypothesis = "*"
 mkdocs-material = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = { extras = ["mypy"], version = "*" }
-Jinja2 = "*"
-Mako = "*"
+tortoise-orm = "*"
+jinja2 = "*"
+mako = "*"
 freezegun = "*"
 pytest-mock = "*"
 tox = "*"
@@ -86,6 +87,7 @@ disable = [
     "too-few-public-methods",
     "duplicate-code",
     "logging-fstring-interpolation",
+    "ungrouped-imports",
 ]
 enable = "useless-suppression"
 extension-pkg-whitelist = "pydantic"
@@ -122,3 +124,6 @@ exclude_lines = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.pycln]
+all = true

@@ -98,7 +98,7 @@ Aside from `path` and `route_handlers` which are required kwargs, you can also p
   `Response` object and it must return a `Response` object.
 - `after_response`: a sync or async callable executed after the `Response` is returned. The callable receives the
   original `Request` object, and should return `None`.
-  `Respose` object and it must return a `Response` object.
+  `Response` object and it must return a `Response` object.
 - `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
   See [exception-handlers](17-exceptions#exception-handling).

@@ -10,7 +10,7 @@ def test_create_path_item() -> None:
     app = Starlite(route_handlers=[PersonController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     route = cast(HTTPRoute, app.routes[index])
-    schema = create_path_item(route=route, create_examples=True)
+    schema = create_path_item(route=route, create_examples=True, plugins=[])
     assert schema.delete
     assert schema.delete.operationId == "Delete Person"
     assert schema.get

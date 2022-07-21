@@ -1,12 +1,12 @@
 from starlette.status import HTTP_201_CREATED
 
-from starlite import Body, RequestEncodingType, post
+from starlite import Body, post
 from starlite.testing import create_test_client
 from tests.kwargs import Form
 
 
 def test_request_body_json() -> None:
-    body = Body(media_type=RequestEncodingType.JSON)
+    body = Body()
 
     test_path = "/test"
     data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()

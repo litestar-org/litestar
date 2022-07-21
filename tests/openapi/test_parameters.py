@@ -9,7 +9,6 @@ from openapi_schema_pydantic.v3.v3_1_0.parameter import (  # noqa: TC002
 from starlite import Controller, Dependency, ImproperlyConfiguredException
 from starlite import Parameter as StarliteParameter
 from starlite import Provide, Router, Starlite, get
-from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import ParamType
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameter_for_handler
@@ -121,7 +120,7 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
     def handler(a: ADep, b: BDep, c: float, d: float) -> str:
         return "OK"
 
-    app = Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
+    app = Starlite(route_handlers=[handler])
     open_api_path_item = cast(OpenAPI, app.openapi_schema).paths["/test"]  # type: ignore
     open_api_parameters = open_api_path_item.get.parameters  # type: ignore
     assert len(open_api_parameters) == 2  # type: ignore
@@ -140,7 +139,7 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
         return "OK"
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler], openapi_config=DEFAULT_OPENAPI_CONFIG)
+        Starlite(route_handlers=[handler])
 
 
 def test_dependency_params_in_docs_if_dependency_provided() -> None:

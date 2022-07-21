@@ -1,7 +1,7 @@
 from dataclasses import is_dataclass
 from decimal import Decimal
 from enum import Enum, EnumMeta
-from typing import Any, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from openapi_schema_pydantic.util import PydanticSchema
 from openapi_schema_pydantic.v3.v3_1_0.example import Example
@@ -28,6 +28,9 @@ from starlite.openapi.constants import (
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
+
+if TYPE_CHECKING:
+    from starlite.plugins.base import PluginProtocol
 
 
 def normalize_example_value(value: Any) -> Any:
@@ -94,6 +97,7 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
 def create_collection_constrained_field_schema(
     field_type: Union[Type[ConstrainedList], Type[ConstrainedSet]],
     sub_fields: Optional[List[ModelField]],
+    plugins: List["PluginProtocol"],
 ) -> Schema:
     """
     Create Schema from Constrained List/Set field
@@ -106,14 +110,14 @@ def create_collection_constrained_field_schema(
     if issubclass(field_type, ConstrainedSet):
         schema.uniqueItems = True
     if sub_fields:
-        items = [create_schema(field=sub_field, generate_examples=False) for sub_field in sub_fields]
+        items = [create_schema(field=sub_field, generate_examples=False, plugins=plugins) for sub_field in sub_fields]
         if len(items) > 1:
             schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
         else:
             schema.items = items[0]
     else:
         parsed_model_field = create_parsed_model_field(field_type.item_type)
-        schema.items = create_schema(field=parsed_model_field, generate_examples=False)
+        schema.items = create_schema(field=parsed_model_field, generate_examples=False, plugins=plugins)
     return schema
 
 
@@ -128,6 +132,7 @@ def create_constrained_field_schema(
         Type[ConstrainedDecimal],
     ],
     sub_fields: Optional[List[ModelField]],
+    plugins: List["PluginProtocol"],
 ) -> Schema:
     """
     Create Schema for Pydantic Constrained fields (created using constr(), conint() etc. or by subclassing Constrained*)
@@ -136,7 +141,7 @@ def create_constrained_field_schema(
         return create_numerical_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, (ConstrainedStr, ConstrainedBytes)):
         return create_string_constrained_field_schema(field_type=field_type)
-    return create_collection_constrained_field_schema(field_type=field_type, sub_fields=sub_fields)
+    return create_collection_constrained_field_schema(field_type=field_type, sub_fields=sub_fields, plugins=plugins)
 
 
 def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Schema:
@@ -157,7 +162,7 @@ def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Sche
     return schema
 
 
-def get_schema_for_field_type(field: ModelField) -> Schema:
+def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]) -> Schema:
     """
     Get or create a Schema object for the given field type
     """
@@ -172,6 +177,9 @@ def get_schema_for_field_type(field: ModelField) -> Schema:
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
+    if any(plugin.is_plugin_supported_type(field_type) for plugin in plugins):
+        plugin = [plugin for plugin in plugins if plugin.is_plugin_supported_type(field_type)][0]
+        return PydanticSchema(schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name))
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
 
@@ -184,7 +192,9 @@ def create_examples_for_field(field: ModelField) -> List[Example]:
     return [Example(description=f"Example {field.name} value", value=value)]
 
 
-def create_schema(field: ModelField, generate_examples: bool, ignore_optional: bool = False) -> Schema:
+def create_schema(
+    field: ModelField, generate_examples: bool, plugins: List["PluginProtocol"], ignore_optional: bool = False
+) -> Schema:
     """
     Create a Schema model for a given ModelField and if needed - recursively traverse its sub_fields as well.
     """
@@ -194,6 +204,7 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
             field=field,
             generate_examples=False,
             ignore_optional=True,
+            plugins=plugins,
         )
         schema = Schema(
             oneOf=[
@@ -203,25 +214,37 @@ def create_schema(field: ModelField, generate_examples: bool, ignore_optional: b
         )
     elif is_union(field):
         schema = Schema(
-            oneOf=[create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields or []]
+            oneOf=[
+                create_schema(field=sub_field, generate_examples=False, plugins=plugins)
+                for sub_field in field.sub_fields or []
+            ]
         )
     elif ModelFactory.is_constrained_field(field.type_):
         # constrained fields are those created using the pydantic functions constr, conint, conlist etc.
         # or subclasses of the Constrained* pydantic classes by other means
         field.outer_type_ = field.type_
-        schema = create_constrained_field_schema(field_type=field.outer_type_, sub_fields=field.sub_fields)
+        schema = create_constrained_field_schema(
+            field_type=field.outer_type_, sub_fields=field.sub_fields, plugins=plugins
+        )
     elif field.sub_fields:
         openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
-            items = [create_schema(field=sub_field, generate_examples=False) for sub_field in field.sub_fields]
+            items = [
+                create_schema(
+                    field=sub_field,
+                    generate_examples=False,
+                    plugins=plugins,
+                )
+                for sub_field in field.sub_fields
+            ]
             if len(items) > 1:
                 schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
             else:
                 schema.items = items[0]
     else:
         # value is not a complex typing - hence we can try and get the value schema directly
-        schema = get_schema_for_field_type(field=field)
+        schema = get_schema_for_field_type(field=field, plugins=plugins)
     if not ignore_optional:
         schema = update_schema_with_field_info(schema=schema, field_info=field.field_info)
     if not schema.examples and generate_examples:

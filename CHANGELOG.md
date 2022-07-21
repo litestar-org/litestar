@@ -231,7 +231,7 @@
 [1.4.2]
 
 - fix `status_code` missing from exception OpenAPI documentation @timwedde
-- fix exceptioin `extra` being mistyped in OpenAPI documentation
+- fix exception `extra` being mistyped in OpenAPI documentation
 
 [1.5.0]
 

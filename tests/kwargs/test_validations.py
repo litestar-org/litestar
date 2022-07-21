@@ -107,7 +107,7 @@ def multi_part_dependency(data: Dict[str, Any] = Body(media_type=RequestEncoding
     return data
 
 
-def json_dependency(data: Dict[str, Any] = Body(media_type=RequestEncodingType.JSON)) -> Dict[str, Any]:
+def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
     assert data
     return data
 
@@ -144,8 +144,8 @@ def test_dependency_data_kwarg_validation_success_scenarios(handler: HTTPRouteHa
 @pytest.mark.parametrize(
     "body, dependency",
     [
-        [Body(media_type=RequestEncodingType.JSON), url_encoded_dependency],
-        [Body(media_type=RequestEncodingType.JSON), multi_part_dependency],
+        [Body(), url_encoded_dependency],
+        [Body(), multi_part_dependency],
         [Body(media_type=RequestEncodingType.URL_ENCODED), json_dependency],
         [Body(media_type=RequestEncodingType.URL_ENCODED), multi_part_dependency],
         [Body(media_type=RequestEncodingType.MULTI_PART), json_dependency],

@@ -37,8 +37,8 @@ def test_parses_values_from_connection_kwargs_with_plugin() -> None:
         pass
 
     model = make_signature_model(fn, plugins=[APlugin()])
-    arbitary_a = {"name": 1}
-    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitary_a, b=1)
+    arbitrary_a = {"name": 1}
+    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitrary_a, b=1)
     assert result == {"a": AModel(name="1"), "b": 1}
 
 
