@@ -5,11 +5,13 @@ from hypothesis import strategies as st
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
+from starlite.enums import MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
     StarLiteException,
     ValidationException,
+    utils,
 )
 
 
@@ -57,3 +59,27 @@ def test_validation_exception() -> None:
     assert result.__repr__() == f"{HTTP_400_BAD_REQUEST} - {result.__class__.__name__} - {result.detail}"
     assert isinstance(result, HTTPException)
     assert isinstance(result, ValueError)
+
+
+def test_create_exception_response_utility_starlite_http_exception() -> None:
+    exc = HTTPException(detail="starlite http exception", status_code=HTTP_400_BAD_REQUEST, extra=["any"])
+    response = utils.create_exception_response(exc)
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.media_type == MediaType.JSON
+    assert response.body == b'{"detail":"starlite http exception","extra":["any"],"status_code":400}'
+
+
+def test_create_exception_response_utility_starlette_http_exception() -> None:
+    exc = StarletteHTTPException(detail="starlette http exception", status_code=HTTP_400_BAD_REQUEST)
+    response = utils.create_exception_response(exc)
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.media_type == MediaType.JSON
+    assert response.body == b'{"detail":"starlette http exception","status_code":400}'
+
+
+def test_create_exception_response_utility_non_http_exception() -> None:
+    exc = RuntimeError("yikes")
+    response = utils.create_exception_response(exc)
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert response.media_type == MediaType.JSON
+    assert response.body == b'{"detail":"RuntimeError(\'yikes\')","status_code":500}'

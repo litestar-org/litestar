@@ -90,7 +90,7 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
     with create_test_client(route_handlers=[invalid_template_name_handler], template_config=template_config) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template invalid.html not found.", "extra": None, "status_code": 500}
+        assert response.json() == {"detail": "Template invalid.html not found.", "status_code": 500}
 
 
 def test_no_context(template_dir: pathlib.Path, template_config: TemplateConfig) -> None:

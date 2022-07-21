@@ -35,11 +35,7 @@ def test_default_handle_http_exception_handling_extra_none() -> None:
         HTTPException(detail="starlite_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": None,
-        "status_code": 500,
-    }
+    assert json.loads(response.body) == {"detail": "starlite_exception", "status_code": 500}
 
 
 def test_default_handle_starlite_http_exception_handling() -> None:
@@ -48,11 +44,7 @@ def test_default_handle_starlite_http_exception_handling() -> None:
         HTTPException(detail="starlite_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert json.loads(response.body) == {
-        "detail": "starlite_exception",
-        "extra": None,
-        "status_code": 500,
-    }
+    assert json.loads(response.body) == {"detail": "starlite_exception", "status_code": 500}
 
 
 def test_default_handle_starlite_http_exception_extra_list() -> None:
@@ -87,6 +79,7 @@ def test_default_handle_python_http_exception_handling() -> None:
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
         "detail": repr(AttributeError("oops")),
+        "status_code": HTTP_500_INTERNAL_SERVER_ERROR,
     }
 
 
