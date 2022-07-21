@@ -1,4 +1,5 @@
 import sys
+import warnings
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Type, cast
 
@@ -85,8 +86,10 @@ async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable)
 
     tournament = Tournament(name="abc", id=1, created_at=datetime.now())
 
-    with pytest.raises(ImproperlyConfiguredException):
-        DTO.from_model_instance(tournament)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        with pytest.raises(ImproperlyConfiguredException):
+            DTO.from_model_instance(tournament)
 
     dto_instance = await DTO.from_model_instance_async(tournament)
     assert dto_instance.name == "abc"  # type: ignore
