@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
 
-from orjson import loads
+from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.requests import Request as StarletteRequest
 from starlette.websockets import WebSocket as StarletteWebSocket
+from starlette.websockets import WebSocketState
 
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
 from starlite.types import Method
 
@@ -74,3 +75,32 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
         return parse_query_params(self)
+
+    async def receive_json(self, mode: str = "text") -> Any:
+        """
+        Exact copy of the `starlette` method, but using `orjson.loads()`.
+        """
+        if mode not in {"text", "binary"}:
+            raise InternalServerException('The "mode" argument should be "text" or "binary".')
+        if self.application_state != WebSocketState.CONNECTED:
+            raise InternalServerException('WebSocket is not connected. Need to call "accept" first.')
+        message = await self.receive()
+        self._raise_on_disconnect(message)
+
+        if mode == "text":
+            text = message["text"]
+        else:
+            text = message["bytes"].decode("utf-8")
+        return loads(text)
+
+    async def send_json(self, data: Any, mode: str = "text") -> None:
+        """
+        Exact copy of the `starlette` method, but using `orjson.dumps()`.
+        """
+        if mode not in {"text", "binary"}:
+            raise InternalServerException('The "mode" argument should be "text" or "binary".')
+        binary = dumps(data, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+        if mode == "text":
+            await self.send({"type": "websocket.send", "text": binary.decode("utf-8")})
+        else:
+            await self.send({"type": "websocket.send", "bytes": binary})
