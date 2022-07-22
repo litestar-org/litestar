@@ -1,4 +1,3 @@
-import copy
 from typing import TYPE_CHECKING
 
 from orjson import OPT_INDENT_2, dumps
@@ -48,9 +47,9 @@ class OpenAPIController(Controller):
             # This works flawlessly as the main blocker for Swagger support for OpenAPI 3.1 is JSON schema support
             # Since we use the YAML format this is not an issue for us and we can do this trick to get support right now
             # We use deepcopy to avoid changing the actual schema on the request. Since this is a cached call the effect is minimal
-            schema = copy.deepcopy(schema)
-            schema.openapi = "3.0.3"
-            self.dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
+            schema_copy = schema.copy()
+            schema_copy.openapi = "3.0.3"
+            self.dumped_schema = dumps(schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
         head = f"""
