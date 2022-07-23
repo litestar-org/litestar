@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
 
-from openapi_schema_pydantic.util import construct_open_api_with_schema_class
-from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from pydantic import validate_arguments
 from pydantic.fields import FieldInfo  # noqa: TC002
 from pydantic.typing import AnyCallable
@@ -25,7 +23,6 @@ from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
-from starlite.openapi.path_item import create_path_item
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
@@ -49,6 +46,8 @@ from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
+    from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
+
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
 
@@ -127,9 +126,9 @@ class Starlite(Router):
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
         self.asgi_handler = self.create_asgi_handler()
-        self.openapi_schema: Optional[OpenAPI] = None
+        self.openapi_schema: Optional["OpenAPI"] = None
         if openapi_config:
-            self.openapi_schema = self.create_openapi_schema_model(openapi_config=openapi_config)
+            self.openapi_schema = openapi_config.create_openapi_schema_model(self)
             self.register(openapi_config.openapi_controller)
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
@@ -301,20 +300,3 @@ class Starlite(Router):
                     plugins=self.plugins,
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
-
-    def create_openapi_schema_model(self, openapi_config: OpenAPIConfig) -> OpenAPI:
-        """
-        Updates the OpenAPI schema with all paths registered on the root router
-        """
-        openapi_schema = openapi_config.to_openapi_schema()
-        openapi_schema.paths = {}
-        for route in self.routes:
-            if (
-                isinstance(route, HTTPRoute)
-                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
-                and (route.path_format or "/") not in openapi_schema.paths
-            ):
-                openapi_schema.paths[route.path_format or "/"] = create_path_item(
-                    route=route, create_examples=openapi_config.create_examples, plugins=self.plugins
-                )
-        return cast(OpenAPI, construct_open_api_with_schema_class(openapi_schema))
