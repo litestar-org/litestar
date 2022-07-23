@@ -14,11 +14,12 @@ if TYPE_CHECKING:
 
 class OpenAPIController(Controller):
     path = "/schema"
-    styles = """
-        body { margin: 0; padding: 0 }
-    """
+    style = "body { margin: 0; padding: 0 }"
     redoc_version = "next"
-    dumped_schema = ""
+    swagger_ui_version = "4.13.0"
+
+    # internal
+    _dumped_schema = ""
 
     @staticmethod
     def schema_from_request(request: Request) -> "OpenAPI":
@@ -41,7 +42,7 @@ class OpenAPIController(Controller):
     def swagger_ui(self, request: Request) -> str:
         """Endpoint that serves SwaggerUI"""
         schema = self.schema_from_request(request)
-        if self.dumped_schema == "":
+        if self._dumped_schema == "":
             # Note: Fix for Swagger rejection OpenAPI >=3.1
             # We force the version to be lower to get the default JS bundle to accept it
             # This works flawlessly as the main blocker for Swagger support for OpenAPI 3.1 is JSON schema support
@@ -49,7 +50,7 @@ class OpenAPIController(Controller):
             # We use deepcopy to avoid changing the actual schema on the request. Since this is a cached call the effect is minimal
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
-            self.dumped_schema = dumps(schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
+            self._dumped_schema = dumps(schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
         head = f"""
@@ -57,21 +58,19 @@ class OpenAPIController(Controller):
             <title>{schema.info.title}</title>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui.css" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js"></script>
-            <style>
-                {self.styles}
-            </style>
+            <link href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui.css" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-bundle.js" crossorigin></script>
+            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-standalone-preset.js" crossorigin></script>
+            <style>{self.style}</style>
           </head>
         """
         body = f"""
           <body>
-            <div id='swagger-container'></div>
-            <script>
+            <div id='swagger-container'/>
+            <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: JSON.parse({self.dumped_schema}),
+                spec: JSON.parse({self._dumped_schema}),
                 dom_id: '#swagger-container',
-                layout: 'BaseLayout',
                 deepLinking: true,
                 showExtensions: true,
                 showCommonExtensions: true,
@@ -91,12 +90,12 @@ class OpenAPIController(Controller):
             </html>
         """
 
-    @get(media_type=MediaType.HTML, include_in_schema=False)
+    @get(path=["/", "/redoc"], media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
         schema = self.schema_from_request(request)
-        if self.dumped_schema == "":
-            self.dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
+        if self._dumped_schema == "":
+            self._dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
         head = f"""
@@ -105,9 +104,9 @@ class OpenAPIController(Controller):
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/redoc@{self.redoc_version}/bundles/redoc.standalone.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/redoc@{self.redoc_version}/bundles/redoc.standalone.js" crossorigin></script>
             <style>
-                {self.styles}
+                {self.style}
             </style>
           </head>
         """
@@ -116,7 +115,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    JSON.parse({self.dumped_schema}),
+                    JSON.parse({self._dumped_schema}),
                     undefined,
                     document.getElementById('redoc-container')
                 )
