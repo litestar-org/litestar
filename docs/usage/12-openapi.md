@@ -111,20 +111,21 @@ def my_route_handler(request: Request) -> None:
 
 ### The OpenAPI Controller
 
-Starlite includes a pre-configured controller called `OpenAPIController` which exposes three endpoints:
+Starlite includes a pre-configured controller called `OpenAPIController` which exposes the following endpoints:
 
-1. `/schema/openapi.yaml`, allowing for download of the OpenAPI schema as YAML, using the `application/vnd.oai.openapi`
-   Content-Type.
-2. `/schema/openapi.json`, allowing for download of the OpenAPI schema as JSON, using
-   the `application/vnd.oai.openapi+json` Content-Type.
-3. `/schema`, which serves a [Redoc](https://github.com/Redocly/redoc) UI static website for the OpenAPI docs.
+- `/schema/openapi.yaml`: allowing for download of the OpenAPI schema as YAML, using the `application/vnd.oai.openapi`
+  Content-Type.
+- `/schema/openapi.json`: allowing for download of the OpenAPI schema as JSON, using
+  the `application/vnd.oai.openapi+json` Content-Type.
+- `/schema` and `/schema/redoc`: both of which serve a [Redoc](https://github.com/Redocly/redoc) static website for the OpenAPI docs.
+- `/schema/swagger`: which serves a [Swagger-UI](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/) static website for the OpenAPI docs.
 
 <!-- prettier-ignore -->
 !!! important
     prior to version 0.3.0 there was only a single download endpoint by default and its path was `/schema`
     prior to version 0.8.0, the Redoc UI was found at `/schema/redoc` and has since been moved to `/schema` for ease of use.
 
-If you would like to modify the endpoints, add new endpoints, change the styling of Redoc etc., you can subclass the
+If you would like to modify the base path, add new endpoints, change the styling of the page etc., you can subclass the
 `OpenAPIController` and then pass your subclass to the `OpenAPIConfig`.
 
 For example, lets say we wanted to change the base path from "/schema" to "/api-docs":
@@ -136,6 +137,13 @@ from starlite import OpenAPIController
 class MyOpenAPIController(OpenAPIController):
     path = "/api-docs"
 ```
+
+The following extra attributes are defined on this controller and are customizable:
+
+- `style`: base css for the page.
+- `favicon_url`: url pointing at `.ico` file to use as a favicon.
+- `redoc_version`: version of redoc to use.
+- `swagger_ui_version`: version of Swagger-UI to use.
 
 We would then use the subclassed controller like so:
 
