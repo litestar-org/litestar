@@ -153,7 +153,7 @@ class MyClassDTO(BaseModel):
 
 ## Add New Fields
 
-You add fields that do not exist in the original model by passing in a `field_defintions` dictionary. This dictionary
+You add fields that do not exist in the original model by passing in a `field_definitions` dictionary. This dictionary
 should have field names as keys, and a tuple following the format supported by the [pydantic create_model helper](https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation):
 
 1. For required fields use a tuple of type + ellipsis, for example `(str, ...)`.
@@ -187,6 +187,57 @@ class MyClassDTO(BaseModel):
     third: str
 ```
 
+## Partial DTOs
+
+For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to partially modify a resource. In these cases, DTOs can be wrapped with Partial. `Partial` can only be used on pydantic models.
+
+```python
+from pydantic import BaseModel
+from starlite.types import Partial
+
+
+class CompanyDTO(BaseModel):
+    id: int
+    name: str
+    worth: float
+
+
+PartialCompanyDTO = Partial[CompanyDTO]
+```
+
+The created `PartialCompanyDTO` is equivalent to the following declaration:
+
+```python
+from pydantic import BaseModel
+
+
+class PartialCompanyDTO(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    worth: Optional[float]
+```
+
+`Partial` can also be used inline when creating routes.
+
+```python
+from pydantic import UUID4
+from starlite.controller import Controller
+from starlite.handlers import patch
+from starlite.types import Partial
+
+from my_app.orders.models import UserOrder
+
+
+class UserOrderController(Controller):
+    path = "/user"
+
+    @patch(path="/{order_id:uuid}")
+    async def update_user_order(
+        self, order_id: UUID4, data: Partial[UserOrder]
+    ) -> UserOrder:
+        ...
+```
+
 ## DTO Methods
 
 ### from_model_instance
@@ -199,7 +250,6 @@ from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import declarative_base
 from starlite import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
@@ -229,6 +279,7 @@ When you have an instance of a DTO model, you can convert it into a model instan
 from starlite import get
 
 
+@get()
 def create_company(data: CompanyDTO) -> Company:
     company_instance = data.to_model_instance()
     ...

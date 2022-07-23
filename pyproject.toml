@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.6.2"
+version = "1.7.1"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -48,15 +48,16 @@ opentelemetry-sdk = { version = "*", optional = true }
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
-hypothesis = { extras = ["cli"], version = "*" }
+hypothesis = "*"
 mkdocs-material = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 uvicorn = "*"
 sqlalchemy = { extras = ["mypy"], version = "*" }
-Jinja2 = "*"
-Mako = "*"
+tortoise-orm = "*"
+jinja2 = "*"
+mako = "*"
 freezegun = "*"
 pytest-mock = "*"
 tox = "*"
@@ -90,6 +91,7 @@ disable = [
     "too-few-public-methods",
     "duplicate-code",
     "logging-fstring-interpolation",
+    "ungrouped-imports",
 ]
 enable = "useless-suppression"
 extension-pkg-whitelist = "pydantic,opentelemetry"
@@ -126,3 +128,6 @@ exclude_lines = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.pycln]
+all = true

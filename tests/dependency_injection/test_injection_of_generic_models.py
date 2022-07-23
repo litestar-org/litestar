@@ -15,7 +15,7 @@ class Store(GenericModel, Generic[T]):
 
     model: Type[T]
 
-    def get(self, id: str) -> Optional[T]:
+    def get(self, value_id: str) -> Optional[T]:
         raise NotImplementedError
 
 
@@ -26,7 +26,7 @@ class Item(BaseModel):
 class DictStore(Store[Item]):
     """In-memory store implementation"""
 
-    def get(self, id: str) -> Optional[T]:
+    def get(self, value_id: str) -> Optional[T]:
         return None
 
 

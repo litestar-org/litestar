@@ -216,7 +216,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/52263746?v=4",
       "profile": "https://github.com/Harry-Lees",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -246,6 +247,15 @@
       "profile": "https://github.com/josepdaniel",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "devtud",
+      "name": "devtud",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6808024?v=4",
+      "profile": "https://github.com/devtud",
+      "contributions": [
+        "bug"
       ]
     }
   ],

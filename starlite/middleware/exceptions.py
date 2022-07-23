@@ -5,9 +5,8 @@ from starlette.middleware.errors import ServerErrorMiddleware
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.connection import Request
-from starlite.enums import MediaType, ScopeType
-from starlite.exceptions import HTTPException
-from starlite.response import Response
+from starlite.enums import ScopeType
+from starlite.exceptions.utils import create_exception_response
 from starlite.types import ExceptionHandler, MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
 
@@ -55,14 +54,4 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
             # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
             server_middleware = ServerErrorMiddleware(app=self)
             return server_middleware.debug_response(request=request, exc=exc)
-        if isinstance(exc, HTTPException):
-            content = {"detail": exc.detail, "extra": exc.extra, "status_code": exc.status_code}
-        elif isinstance(exc, StarletteHTTPException):
-            content = {"detail": exc.detail, "status_code": exc.status_code}
-        else:
-            content = {"detail": repr(exc)}
-        return Response(
-            media_type=MediaType.JSON,
-            content=content,
-            status_code=status_code,
-        )
+        return create_exception_response(exc)

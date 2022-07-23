@@ -16,7 +16,7 @@ def test_handler_raise_for_no_template_engine() -> None:
     with create_test_client(route_handlers=[invalid_path]) as client:
         response = client.request("GET", "/")
         assert response.status_code == 500
-        assert response.json() == {"detail": "Template engine is not configured", "extra": None, "status_code": 500}
+        assert response.json() == {"detail": "Template engine is not configured", "status_code": 500}
 
 
 def test_engine_passed_to_callback(template_dir: "pathlib.Path") -> None:

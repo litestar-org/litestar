@@ -1,6 +1,8 @@
 from dataclasses import asdict, is_dataclass
+from inspect import isawaitable
 from typing import (
     Any,
+    Awaitable,
     ClassVar,
     Dict,
     Generic,
@@ -16,10 +18,11 @@ from typing import (
 from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
+from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
-from starlite.utils import convert_dataclass_to_model
+from starlite.utils import convert_dataclass_to_model, is_async_callable
 
 
 def get_field_type(model_field: ModelField) -> Any:
@@ -46,20 +49,44 @@ class DTO(GenericModel, Generic[T]):
     dto_source_plugin: ClassVar[Optional[PluginProtocol]] = None
 
     @classmethod
+    def _from_value_mapping(cls, mapping: Dict[str, Any]) -> "DTO[T]":
+        for dto_key, original_key in cls.dto_field_mapping.items():
+            value = mapping.pop(original_key)
+            mapping[dto_key] = value
+        return cls(**mapping)
+
+    @classmethod
     def from_model_instance(cls, model_instance: T) -> "DTO[T]":
         """
         Given an instance of the source model, create an instance of the given DTO subclass
         """
         if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
-            values = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            if isawaitable(result):
+                raise ImproperlyConfiguredException(
+                    f"plugin {type(cls.dto_source_plugin).__name__} to_dict method is async. "
+                    f"Use 'DTO.from_model_instance_async instead'",
+                )
+            values = cast(Dict[str, Any], result)
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
         else:
             values = asdict(model_instance)
-        for dto_key, original_key in cls.dto_field_mapping.items():
-            value = values.pop(original_key)
-            values[dto_key] = value
-        return cls(**values)
+        return cls._from_value_mapping(mapping=values)
+
+    @classmethod
+    async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
+        """
+        Given an instance of the source model, create an instance of the given DTO subclass asynchronously
+        """
+        if (
+            cls.dto_source_plugin is not None
+            and cls.dto_source_plugin.is_plugin_supported_type(model_instance)
+            and is_async_callable(cls.dto_source_plugin.to_dict)
+        ):
+            values = await cast(Awaitable[Dict[str, Any]], cls.dto_source_plugin.to_dict(model_instance=model_instance))
+            return cls._from_value_mapping(mapping=values)
+        return cls.from_model_instance(model_instance=model_instance)
 
     def to_model_instance(self) -> T:
         """
@@ -192,7 +219,9 @@ class DTOFactory:
             field_type = get_field_type(model_field=model_field)
             if field_name in field_mapping:
                 field_name, field_type = self._remap_field(field_mapping, field_name, field_type)
-                if model_field.field_info.default not in (Undefined, None, ...):
+                if ModelFactory.is_constrained_field(field_type):
+                    field_definitions[field_name] = (field_type, ...)
+                elif model_field.field_info.default not in (Undefined, None, ...):
                     field_definitions[field_name] = (field_type, model_field.default)
                 elif model_field.required or not model_field.allow_none:
                     field_definitions[field_name] = (field_type, ...)
@@ -201,7 +230,10 @@ class DTOFactory:
             else:
                 # prevents losing Optional
                 field_type = Optional[field_type] if model_field.allow_none else field_type
-                field_definitions[field_name] = (field_type, model_field.field_info)
+                if ModelFactory.is_constrained_field(field_type):
+                    field_definitions[field_name] = (field_type, ...)
+                else:
+                    field_definitions[field_name] = (field_type, model_field.field_info)
         return field_definitions
 
     @staticmethod

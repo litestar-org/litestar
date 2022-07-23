@@ -56,11 +56,13 @@ Aside from the `path` class variable, you can also set the following optional cl
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
-- `before_request`: a sync or async function to execute before a `Request` is passed to a route handler (method) on the
-  controller. If this function returns a value, the request will not reach the route handler, and instead this value
+- `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the
+  controller. If the callable returns a value, the request will not reach the route handler, and instead this value
   will be used.
-- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
-  `Respose` object and it must return a `Response` object.
+- `after_request`: a sync or async callable to execute before the `Response` is returned. The callable receives the
+  `Response` object and it must return a `Response` object.
+- `after_response`: a sync or async callable executed after the `Response` is returned. The callable receives the
+  original `Request` object, and should return `None`.
 - `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
   See [exception-handlers](17-exceptions#exception-handling).
@@ -89,11 +91,14 @@ Aside from `path` and `route_handlers` which are required kwargs, you can also p
   See [using-custom-responses](5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](5-responses.md#response-headers).
-- `before_request`: a sync or async function to execute before a `Request` is passed to a route handler (function or
-  controller method) on the router. If this function returns a value, the request will not reach the route handler,
-  and instead this value will be used.
-- `after_request`: a sync or async function to execute before the `Response` is returned. This function receives the
-  `Respose` object and it must return a `Response` object.
+- `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the
+  controller. If the callable returns a value, the request will not reach the route handler, and instead this value
+  will be used.
+- `after_request`: a sync or async callable to execute before the `Response` is returned. The callable receives the
+  `Response` object and it must return a `Response` object.
+- `after_response`: a sync or async callable executed after the `Response` is returned. The callable receives the
+  original `Request` object, and should return `None`.
+  `Response` object and it must return a `Response` object.
 - `tags`: a list of `str`, which correlate to the [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
   See [exception-handlers](17-exceptions#exception-handling).

@@ -57,7 +57,7 @@ async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
 
 In difference to the other route handlers, the `asgi` route handler accepts only 3 kwargs that **must** be defined:
 
-- `scope`, a mapping of values describing the asgi connection. It always includes a `type` key, with the values being
+- `scope`, a mapping of values describing the ASGI connection. It always includes a `type` key, with the values being
   either `http` or `websocket`, and a `path` key. If the type is `http`, the scope dictionary will also include
   a `method` key with the value being one of `DELETE, GET, POST, PATCH, PUT, HEAD`.
 - `receive`, an injected function by which the ASGI application receives messages.

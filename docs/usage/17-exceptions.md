@@ -43,7 +43,7 @@ Starlite also offers several pre-configured **exception subclasses** with pre-se
 - `InternalServerException`: status code 500.
 - `ServiceUnavailableException`: status code 503.
 
-When a value fails `pydantic` validaton, the result will be a `ValidationException` with the `extra` key set to the
+When a value fails `pydantic` validation, the result will be a `ValidationException` with the `extra` key set to the
 pydantic validation errors. Thus this data will be made available for the API consumers by default.
 
 ## Exception Handling
@@ -165,3 +165,61 @@ Because of the above structure, the exceptions raised by the ASGI Router itself,
 and `405 Method Not Allowed` are handled only by exception handlers defined on the app layer. Thus if you want to affect
 these exceptions, you will need to pass the exception handlers for them to the Starlite constructor and cannot use other
 layers for this purpose.
+
+### Examples
+
+#### Logging Exception Handler
+
+<!-- prettier-ignore -->
+!!! note
+    `starlite.exceptions.utils.create_exception_response()` is used internally to produce default error responses if no
+    handler has been registered to a route. This is available as part of the public API of Starlite so that you can
+    apply it wherever necessary to ensure consistent error responses across your application.
+
+```python
+# app/core/exceptions.py
+
+import logging
+
+from starlette.responses import Response
+from starlite.exceptions.utils import create_exception_response
+from starlite.types import Request
+
+logger = logging.getLogger(__name__)
+
+
+def logging_exception_handler(request: Request, exc: Exception) -> Response:
+    """
+    Logs exception and returns appropriate response.
+
+    Parameters
+    ----------
+    request : Request
+        The request that caused the exception.
+    exc :
+        The exception caught by the Starlite exception handling middleware and passed to the
+        callback.
+
+    Returns
+    -------
+    Response
+    """
+    logger.error("Application Exception", exc_info=exc)
+    return create_exception_response(exc)
+```
+
+Then, register it to your application, router, controller or handler, e.g.:
+
+```python
+# app/main.py
+
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite import Starlite
+
+from app.core.exceptions import logging_exception_handler
+
+app = Starlite(
+    ...,
+    exception_handlers={HTTP_500_INTERNAL_SERVER_ERROR: logging_exception_handler},
+)
+```

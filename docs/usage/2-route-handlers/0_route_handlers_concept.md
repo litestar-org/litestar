@@ -123,9 +123,9 @@ def my_request_handler(
 
 Starlite enforces strict type annotations. Functions decorated by a route handler **must** have all their kwargs and
 return value type annotated. If a type annotation is missing, an `ImproperlyConfiguredException` will be raised during
-the application bootup process.
+the application boot-up process.
 
-There are several reasons for why this limitation is enforeced:
+There are several reasons for why this limitation is enforced:
 
 1. to ensure best practices
 2. to ensure consistent OpenAPI schema generation

@@ -31,6 +31,7 @@ def test_create_responses() -> None:
                     route_handler=route_handler,
                     raises_validation_error=True,
                     generate_examples=True,
+                    plugins=[],
                 )
                 assert responses
                 assert str(route_handler.status_code) in responses
@@ -40,6 +41,7 @@ def test_create_responses() -> None:
         route_handler=PetController.get_pets_or_owners,
         raises_validation_error=False,
         generate_examples=True,
+        plugins=[],
     )
     assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
@@ -110,7 +112,7 @@ def test_create_success_response_with_headers() -> None:
     def handler() -> list:
         pass
 
-    response = create_success_response(handler, True)
+    response = create_success_response(handler, True, plugins=[])
     assert response.description == "test"
     assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"  # type: ignore
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
@@ -123,7 +125,7 @@ def test_create_success_response_with_stream() -> None:
     def handler() -> Stream:
         pass
 
-    response = create_success_response(handler, True)
+    response = create_success_response(handler, True, plugins=[])
     assert response.description == "Stream Response"
 
 
@@ -132,7 +134,7 @@ def test_create_success_response_redirect() -> None:
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
 
-    response = create_success_response(redirect_handler, True)
+    response = create_success_response(redirect_handler, True, plugins=[])
     assert response.description == "Redirect Response"
     assert response.headers["location"].param_schema.type == OpenAPIType.STRING  # type: ignore
     assert response.headers["location"].description  # type: ignore
@@ -143,7 +145,7 @@ def test_create_success_response_file_data() -> None:
     def file_handler() -> File:
         ...
 
-    response = create_success_response(file_handler, True)
+    response = create_success_response(file_handler, True, plugins=[])
     assert response.description == "File Download"
     assert response.headers["content-length"].param_schema.type == OpenAPIType.STRING  # type: ignore
     assert response.headers["content-length"].description  # type: ignore
@@ -158,6 +160,6 @@ def test_create_success_response_template() -> None:
     def template_handler() -> Template:
         ...
 
-    response = create_success_response(template_handler, True)
+    response = create_success_response(template_handler, True, plugins=[])
     assert response.description == "Request fulfilled, document follows"
     assert response.content[MediaType.HTML]  # type: ignore

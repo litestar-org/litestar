@@ -1,10 +1,9 @@
 # pylint: disable=too-many-instance-attributes
 from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass, ismethod
+from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
-from anyio.to_thread import run_sync
 from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.background import BackgroundTask, BackgroundTasks
@@ -22,6 +21,11 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.handlers.base import BaseRouteHandler
+from starlite.lifecycle_hooks import (
+    AfterRequestHook,
+    AfterResponseHook,
+    BeforeRequestHook,
+)
 from starlite.plugins import PluginProtocol, get_plugin_for_value
 from starlite.provide import Provide
 from starlite.response import Response, TemplateResponse
@@ -155,13 +159,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.tags = tags
         # memoized attributes, defaulted to BaseRouteHandler.empty
         self.resolved_after_request: Union[
-            Optional[AfterRequestHandler], Type[BaseRouteHandler.empty]
+            Optional[AfterRequestHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_after_response: Union[
-            Optional[AfterResponseHandler], Type[BaseRouteHandler.empty]
+            Optional[AfterResponseHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_before_request: Union[
-            Optional[BeforeRequestHandler], Type[BaseRouteHandler.empty]
+            Optional[BeforeRequestHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
@@ -199,7 +203,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 self.resolved_headers.update(layer.response_headers or {})
         return cast(Dict[str, ResponseHeader], self.resolved_headers)
 
-    def resolve_before_request(self) -> Optional[BeforeRequestHandler]:
+    def resolve_before_request(self) -> Optional[BeforeRequestHook]:
         """
         Resolves the before_handler handler by starting from the route handler and moving up.
 
@@ -207,16 +211,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_before_request is BaseRouteHandler.empty:
-            self.resolved_before_request = None
-            for layer in self.ownership_layers:
-                if layer.before_request:
-                    self.resolved_before_request = layer.before_request
-            if self.resolved_before_request is not None and ismethod(self.resolved_before_request):
-                # python automatically binds class variables, which we do not want in this case.
-                self.resolved_before_request = self.resolved_before_request.__func__
-        return self.resolved_before_request
+            self.resolved_before_request = BeforeRequestHook.resolve_for_handler(self, "before_request")
+        return cast(Optional[BeforeRequestHook], self.resolved_before_request)
 
-    def resolve_after_request(self) -> Optional[AfterRequestHandler]:
+    def resolve_after_request(self) -> Optional[AfterRequestHook]:
         """
         Resolves the after_request handler by starting from the route handler and moving up.
 
@@ -224,16 +222,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_after_request is BaseRouteHandler.empty:
-            self.resolved_after_request = None
-            for layer in self.ownership_layers:
-                if layer.after_request:
-                    self.resolved_after_request = layer.after_request
-            if self.resolved_after_request is not None and ismethod(self.resolved_after_request):
-                # python automatically binds class variables, which we do not want in this case.
-                self.resolved_after_request = self.resolved_after_request.__func__
-        return cast(Optional[AfterRequestHandler], self.resolved_after_request)
+            self.resolved_after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
+        return cast(Optional[AfterRequestHook], self.resolved_after_request)
 
-    def resolve_after_response(self) -> Optional[AfterResponseHandler]:
+    def resolve_after_response(self) -> Optional[AfterResponseHook]:
         """
         Resolves the after_response handler by starting from the route handler and moving up.
 
@@ -241,14 +233,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once
         """
         if self.resolved_after_response is BaseRouteHandler.empty:
-            self.resolved_after_response = None
-            for layer in self.ownership_layers:
-                if layer.after_response:
-                    self.resolved_after_response = layer.after_response
-            if self.resolved_after_response is not None and ismethod(self.resolved_after_response):
-                # python automatically binds class variables, which we do not want in this case.
-                self.resolved_after_response = self.resolved_after_response.__func__
-        return cast(Optional[AfterResponseHandler], self.resolved_after_response)
+            self.resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
+        return cast(Optional[AfterResponseHook], self.resolved_after_response)
 
     @property
     def http_methods(self) -> List[Method]:
@@ -322,9 +308,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         after_request = self.resolve_after_request()
         if after_request:
-            if is_async_callable(after_request):
-                return cast(StarletteResponse, await after_request(response))  # type: ignore
-            return cast(StarletteResponse, await run_sync(after_request, response))
+            return await after_request(response)
         return response
 
     async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
@@ -341,10 +325,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
-                if isinstance(data, (list, tuple)):
-                    data = [plugin.to_dict(datum) for datum in data]
+                if is_async_callable(plugin.to_dict):
+                    if isinstance(data, (list, tuple)):
+                        data = [await plugin.to_dict(datum) for datum in data]  # type: ignore
+                    else:
+                        data = await plugin.to_dict(data)  # type: ignore
                 else:
-                    data = plugin.to_dict(data)
+                    if isinstance(data, (list, tuple)):
+                        data = [plugin.to_dict(datum) for datum in data]
+                    else:
+                        data = plugin.to_dict(data)
             response_class = self.resolve_response_class()
             response = response_class(
                 headers=headers,

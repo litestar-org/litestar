@@ -174,10 +174,7 @@ class HTTPRoute(BaseRoute):
         await response(scope, receive, send)
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
-            if is_async_callable(after_response_handler):
-                await after_response_handler(request)  # type: ignore
-            else:
-                await run_sync(after_response_handler, request)
+            await after_response_handler(request)
 
     async def call_handler(
         self, scope: "Scope", request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
@@ -193,10 +190,7 @@ class HTTPRoute(BaseRoute):
         before_request_handler = route_handler.resolve_before_request()
         # run the before_request hook handler
         if before_request_handler:
-            if is_async_callable(before_request_handler):
-                response_data = await before_request_handler(request)
-            else:
-                response_data = await run_sync(before_request_handler, request)
+            response_data = await before_request_handler(request)
         if not response_data:
             response_data = await self.get_response_data(
                 route_handler=route_handler, parameter_model=parameter_model, request=request

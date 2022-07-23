@@ -8,5 +8,5 @@ def test_create_request_body() -> None:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.signature_model.__fields__
             if "data" in handler_fields:
-                request_body = create_request_body(field=handler_fields["data"], generate_examples=True)
+                request_body = create_request_body(field=handler_fields["data"], generate_examples=True, plugins=[])
                 assert request_body

@@ -17,5 +17,5 @@ you contribute substantially.
 As stated above, not only code is considered a contribution - any and all assistance and involvement is welcome. Still,
 this being a coding project fundamentally, coding contributions are integral. The easiest way to begin contributing is
 to checkout the open issues - and reach out on our discord server or Matrix space. Please make sure to consult the `CONTRIBUTING.md`
-file at the project's repository root for concerte instructions on how to setup a development environment and how to
+file at the project's repository root for concrete instructions on how to setup a development environment and how to
 submit a pull request.

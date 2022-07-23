@@ -69,7 +69,7 @@ class SignatureModel(BaseModel):
         """
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
-        return mapping.value_to_model_instance(value) if mapping else value
+        return mapping.get_model_instance_for_value(value) if mapping else value
 
     @classmethod
     def construct_exception(
@@ -283,7 +283,7 @@ class SignatureModelFactory:
         type_args = get_args(parameter.annotation)
         type_value = type_args[0] if type_args else parameter.annotation
         self.field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
-        pydantic_model = plugin.to_pydantic_model_class(model_class=type_value)
+        pydantic_model = plugin.to_pydantic_model_class(model_class=type_value, parameter_name=parameter.name)
         if type_args:
             return List[pydantic_model]  # type:ignore[valid-type]
         return pydantic_model

@@ -231,7 +231,7 @@
 [1.4.2]
 
 - fix `status_code` missing from exception OpenAPI documentation @timwedde
-- fix exceptioin `extra` being mistyped in OpenAPI documentation
+- fix exception `extra` being mistyped in OpenAPI documentation
 
 [1.5.0]
 
@@ -273,3 +273,12 @@
 
 - Update error handling
 - Remove `exrex` from second hand dependencies
+
+[1.7.0]
+
+- Add `TortoiseORMPlugin`
+
+[1.7.1]
+
+- Add `Swagger-UI` support @timwedde
+- Add orjson support to websockets

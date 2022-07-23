@@ -120,10 +120,15 @@ class CompressionConfig(BaseModel):
         Returns:
             Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
         """
-        brotli_keys = set(
-            {"minimum_size", "brotli_quality", "brotli_mode", "brotli_lgwin", "brotli_lgblock", "brotli_gzip_fallback"}
-        )
-        gzip_keys = set({"minimum_size", "gzip_compress_level"})
+        brotli_keys = {
+            "minimum_size",
+            "brotli_quality",
+            "brotli_mode",
+            "brotli_lgwin",
+            "brotli_lgblock",
+            "brotli_gzip_fallback",
+        }
+        gzip_keys = {"minimum_size", "gzip_compress_level"}
         if self.backend == CompressionBackend.GZIP:
             kwargs["include"] = gzip_keys
         elif self.backend == CompressionBackend.BROTLI:

@@ -39,7 +39,7 @@ def test_queue_logger(caplog: "LogCaptureFixture") -> None:
         assert "Testing now!" in caplog.text
 
 
-def test_logger_statup(caplog: "LogCaptureFixture") -> None:
+def test_logger_startup(caplog: "LogCaptureFixture") -> None:
     with TestClient(app=Starlite(route_handlers=[], on_startup=[LoggingConfig().configure])) as client, caplog.at_level(
         logging.INFO
     ):
