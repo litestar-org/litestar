@@ -277,3 +277,8 @@
 [1.7.0]
 
 - Add `TortoiseORMPlugin`
+
+[1.7.1]
+
+- Add `Swagger-UI` support @timwedde
+- Add orjson support to websockets
