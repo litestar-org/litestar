@@ -141,6 +141,7 @@ class MyOpenAPIController(OpenAPIController):
 The following extra attributes are defined on this controller and are customizable:
 
 - `style`: base css for the page.
+- `favicon_url`: url pointing at `.ico` file to use as a favicon.
 - `redoc_version`: version of redoc to use.
 - `swagger_ui_version`: version of Swagger-UI to use.
 
