@@ -187,6 +187,57 @@ class MyClassDTO(BaseModel):
     third: str
 ```
 
+## Partial DTOs
+
+For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to partially modify a resource. In these cases, DTOs can be wrapped with Partial. `Partial` can only be used on pydantic models.
+
+```python
+from pydantic import BaseModel
+from starlite.types import Partial
+
+
+class CompanyDTO(BaseModel):
+    id: int
+    name: str
+    worth: float
+
+
+PartialCompanyDTO = Partial[CompanyDTO]
+```
+
+The created `PartialCompanyDTO` is equivalent to the following declaration:
+
+```python
+from pydantic import BaseModel
+
+
+class PartialCompanyDTO(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    worth: Optional[float]
+```
+
+`Partial` can also be used inline when creating routes.
+
+```python
+from pydantic import UUID4
+from starlite.controller import Controller
+from starlite.handlers import patch
+from starlite.types import Partial
+
+from my_app.orders.models import UserOrder
+
+
+class UserOrderController(Controller):
+    path = "/user"
+
+    @patch(path="/{order_id:uuid}")
+    async def update_user_order(
+        self, order_id: UUID4, data: Partial[UserOrder]
+    ) -> UserOrder:
+        ...
+```
+
 ## DTO Methods
 
 ### from_model_instance
