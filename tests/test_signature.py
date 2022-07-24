@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, List, Optional, Set, Type, cast
+from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel, ValidationError
@@ -7,9 +8,13 @@ from pydantic.error_wrappers import ErrorWrapper
 from starlette.datastructures import URL
 from starlette.status import HTTP_204_NO_CONTENT
 
-from starlite import ImproperlyConfiguredException, Provide, get
+from starlite import Provide, get
 from starlite.connection import WebSocket
-from starlite.exceptions import InternalServerException, ValidationException
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    InternalServerException,
+    ValidationException,
+)
 from starlite.params import Dependency
 from starlite.signature import SignatureModel, SignatureModelFactory
 from starlite.testing import create_test_client, create_test_request
@@ -216,3 +221,21 @@ def test_client_error_precedence_over_server_error() -> None:
         "extra": [{"loc": ["param"], "msg": "value is not a valid integer", "type": "type_error.integer"}],
         "status_code": 400,
     }
+
+
+def test_create_signature_model_error_message(monkeypatch: Any) -> None:
+    monkeypatch.setattr(
+        SignatureModelFactory, "check_for_unprovided_dependency", MagicMock(side_effect=TypeError("a type error"))
+    )
+
+    @get()
+    def get_handler(p: int) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException) as e:
+        SignatureModelFactory(get_handler.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
+
+    assert (
+        str(e)
+        == "<ExceptionInfo 500 - ImproperlyConfiguredException - Error creating signature model for 'get_handler': 'a type error' tblen=2>"
+    )
