@@ -39,6 +39,7 @@ Aside from `title` and `version`, both of which are **required** kwargs, you can
 - `summary`: Summary text.
 - `tags`: A list of `Tag` model instances.
 - `terms_of_service`: A url to a page containing the terms of service.
+- `use_handler_docstrings`: Operation description will be drawn from route handler docstring if not otherwise provided.
 - `webhooks`: A string keyed dictionary of `PathItem` model instances.
 
 <!-- prettier-ignore -->
