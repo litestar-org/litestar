@@ -356,7 +356,7 @@ class SignatureModelFactory:
             model.dependency_name_set = self.dependency_name_set
             return model
         except TypeError as e:
-            raise ImproperlyConfiguredException from e
+            raise ImproperlyConfiguredException(f"Error creating signature model for '{self.fn_name}': '{e}'") from e
 
 
 def get_signature_model(value: Any) -> Type[SignatureModel]:
