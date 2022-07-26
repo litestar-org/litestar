@@ -319,7 +319,7 @@ typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "hypothesis"
-version = "6.54.1"
+version = "6.54.2"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -331,11 +331,11 @@ exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
-all = ["black (>=19.10b0)", "click (>=7.0)", "django (>=2.2)", "dpcontracts (>=0.4)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "importlib-metadata (>=3.6)", "backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.1)"]
+all = ["black (>=19.10b0)", "click (>=7.0)", "django (>=3.2)", "dpcontracts (>=0.4)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "importlib-metadata (>=3.6)", "backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.1)"]
 cli = ["click (>=7.0)", "black (>=19.10b0)", "rich (>=9.0.0)"]
 codemods = ["libcst (>=0.3.16)"]
 dateutil = ["python-dateutil (>=1.4)"]
-django = ["django (>=2.2)"]
+django = ["django (>=3.2)"]
 dpcontracts = ["dpcontracts (>=0.4)"]
 ghostwriter = ["black (>=19.10b0)"]
 lark = ["lark-parser (>=0.6.5)"]
@@ -942,6 +942,30 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "semantic-version"
+version = "2.10.0"
+description = "A library implementing the 'SemVer' scheme."
+category = "dev"
+optional = false
+python-versions = ">=2.7"
+
+[package.extras]
+dev = ["Django (>=1.11)", "nose2", "tox", "check-manifest", "coverage", "flake8", "wheel", "zest.releaser", "readme-renderer (<25.0)", "colorama (<=0.4.1)"]
+doc = ["sphinx", "sphinx-rtd-theme"]
+
+[[package]]
+name = "setuptools-rust"
+version = "1.5.0"
+description = "Setuptools Rust extension plugin"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+semantic-version = ">=2.8.2,<3"
+typing-extensions = ">=3.7.4.3"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -1222,7 +1246,7 @@ testing = ["requests", "brotli", "picologging"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "13d761961e9091b121c73fd2ffd6097738fb27fdb34fb89f7561b15db47a5b13"
+content-hash = "65f9bc0e4c589648f18dc17c073344653369c58885abb4f0066e57c978f00875"
 
 [metadata.files]
 aiosqlite = [
@@ -1505,8 +1529,8 @@ h11 = [
     {file = "h11-0.13.0.tar.gz", hash = "sha256:70813c1135087a248a4d38cc0e1a0181ffab2188141a93eaf567940c3957ff06"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.54.1-py3-none-any.whl", hash = "sha256:b60b59d36e76626a38cf893d70d0c3c39c5fa02c6c5895966ff5fead8fb9ff0a"},
-    {file = "hypothesis-6.54.1.tar.gz", hash = "sha256:de63c34309181875e71d0f5d1c1051c9320a1fe0517ea6733af8cedf818191f4"},
+    {file = "hypothesis-6.54.2-py3-none-any.whl", hash = "sha256:7c3211d2557f8947fbd9f6cded93c2b793e5b756d4433dc52a93d9f8d0bdc46d"},
+    {file = "hypothesis-6.54.2.tar.gz", hash = "sha256:db40e3f296ab940e59e5bbb1794e5b2f9682b601c559b3f68fc294518ba6cff7"},
 ]
 identify = [
     {file = "identify-2.5.3-py2.py3-none-any.whl", hash = "sha256:25851c8c1370effb22aaa3c987b30449e9ff0cece408f810ae6ce408fdd20893"},
@@ -1881,6 +1905,14 @@ redis = [
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
+]
+semantic-version = [
+    {file = "semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177"},
+    {file = "semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c"},
+]
+setuptools-rust = [
+    {file = "setuptools-rust-1.5.0.tar.gz", hash = "sha256:0b8aeb814afe0e9d7c31569ec0936d1f5201993530639244fa973e1742005671"},
+    {file = "setuptools_rust-1.5.0-py3-none-any.whl", hash = "sha256:3ca6ed10aac903af0d824eeb63041c241642465372fb773375d9a594e73b3236"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

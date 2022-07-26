@@ -26,7 +26,10 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = [
+    { path = "extensions/**", format = "sdist" },
+    { path = "Cargo.*", format = "sdist" },
+]
 packages = [
     { include = "starlite" },
 ]
@@ -61,6 +64,7 @@ pytest-mock = "*"
 tox = "*"
 requests = "*"
 piccolo = "*"
+setuptools_rust = "*"
 pre-commit = "*"
 redis = "*"
 picologging = "*"
@@ -72,8 +76,12 @@ testing = ["requests", "brotli", "picologging"]
 brotli = ["brotli"]
 picologging = ["picologging"]
 
+[tool.poetry.build]
+generate-setup-file = true
+script = "build.py"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "setuptools-rust"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

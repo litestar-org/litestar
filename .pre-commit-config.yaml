@@ -27,6 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        args: [-L, crate]
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -46,6 +47,13 @@ repos:
     hooks:
       - id: markdownlint
         args: [--disable=MD013, --disable=MD033, --disable=MD050]
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+        name: "cargo-fmt"
+      - id: cargo-check
+      - id: clippy
   - repo: https://github.com/hadialqattan/pycln
     rev: v2.1.1
     hooks:
@@ -95,6 +103,7 @@ repos:
             piccolo,
             brotli,
           ]
+        args: [--no-strict-imports]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
     hooks:
@@ -103,6 +112,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            setuptools_rust,
             orjson,
             piccolo,
             pydantic,
