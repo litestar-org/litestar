@@ -95,7 +95,6 @@ repos:
             sqlalchemy,
             setuptools_rust,
             tortoise_orm,
-            setuptools_rust,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"

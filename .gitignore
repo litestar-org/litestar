@@ -14,7 +14,7 @@ results/
 site/
 target/
 .scannerwork/
-target/
+
 
 # files
 *.iml
