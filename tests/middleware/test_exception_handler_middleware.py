@@ -92,4 +92,6 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
         return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR, media_type=MediaType.JSON)
 
     app = Starlite(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
-    assert app.route_map["/"]["_asgi_handlers"]["GET"].exception_handlers == {Exception: exception_handler}
+    assert app.route_map.traverse_to_dict("/")["asgi_handlers"]["GET"].exception_handlers == {
+        Exception: exception_handler
+    }

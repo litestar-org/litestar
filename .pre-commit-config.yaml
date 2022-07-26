@@ -27,6 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        args: [-L, crate]
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -51,6 +52,12 @@ repos:
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+      - id: cargo-check
+      - id: clippy
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
@@ -89,6 +96,7 @@ repos:
             sqlalchemy,
             starlette,
           ]
+        args: [--no-strict-imports]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
     hooks:
@@ -97,6 +105,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            setuptools_rust,
             orjson,
             piccolo,
             pydantic,

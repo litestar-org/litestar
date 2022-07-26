@@ -14,6 +14,12 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+      - uses: actions-rs/toolchain@v1
+        name: Install Rust toolchain
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt, clippy
       - uses: pre-commit/action@v3.0.0
   test:
     needs: validate
@@ -31,6 +37,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v3
@@ -38,16 +48,25 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --extras="brotli"
+        run: poetry install --no-interaction --extras="brotli"
       - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+        run: echo "PYTHONPATH=$PWD:$PWD/.venv/lib/python${{ matrix.python-version }}/site-packages/" >> $GITHUB_ENV
       - name: Test
         run: poetry run pytest
         if: matrix.python-version != '3.10'
       - name: Test with Coverage
         run: poetry run pytest --cov=. --cov-report=xml
         if: matrix.python-version == '3.10'
+      - uses: actions-rs/toolchain@v1
+        name: Install Rust toolchain
+        with:
+          toolchain: stable
+          profile: minimal
+      - uses: actions-rs/cargo@v1
+        name: Run cargo test
+        with:
+          command: test
+          args: --no-default-features --features auto-initialize
       - uses: actions/upload-artifact@v3
         with:
           name: coverage-xml
