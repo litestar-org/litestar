@@ -38,8 +38,18 @@ extra_css:
 nav:
   - Overview: index.md
   - Usage:
-      - usage/0-the-starlite-app.md
-      - usage/1-routers-and-controllers.md
+      - The Starlite App:
+          - usage/0-the-starlite-app/0-the-starlite-app.md
+          - usage/0-the-starlite-app/1-startup-and-shutdown.md
+          - usage/0-the-starlite-app/2-using-application-state.md
+          - usage/0-the-starlite-app/3-static-files.md
+          - usage/0-the-starlite-app/4-logging.md
+      - Routing:
+          - usage/1-routing/0-routing.md
+          - usage/1-routing/1-registering-routes.md
+          - usage/1-routing/2-routers.md
+          - usage/1-routing/3-controllers.md
+          - usage/1-routing/4-registering-components-multiple-times.md
       - Route Handlers:
           - usage/2-route-handlers/0_route_handlers_concept.md
           - usage/2-route-handlers/1_http_route_handlers.md
