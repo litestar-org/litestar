@@ -80,7 +80,7 @@ Starlite also offers a helper function called `create_test_client` which first c
 a test client using it. There are multiple use cases for this helper - when you need to check generic logic that is
 decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
 
-You can pass to this helper all the kwargs accepted by the [starlite constructor](0-the-starlite-app.md), with
+You can pass to this helper all the kwargs accepted by the [starlite constructor](0-the-starlite-app/0-the-starlite-app.md), with
 the `route_handlers` kwarg being **required**. Yet unlike the Starlite app, which expects `route_handlers` to be a list,
 here you can also pass individual values.
 
