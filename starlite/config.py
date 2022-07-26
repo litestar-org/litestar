@@ -9,9 +9,11 @@ from typing import (
     Tuple,
     Type,
     Union,
+    cast,
 )
 from urllib.parse import urlencode
 
+from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
 from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
     ExternalDocumentation,
@@ -28,10 +30,13 @@ from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
 from starlite.openapi.controller import OpenAPIController
+from starlite.openapi.path_item import create_path_item
+from starlite.routes import HTTPRoute
 from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:
+    from starlite.app import Starlite
     from starlite.connection import Request
 
 
@@ -156,6 +161,7 @@ class OpenAPIConfig(BaseModel):
     summary: Optional[str] = None
     tags: Optional[List[Tag]] = None
     terms_of_service: Optional[AnyUrl] = None
+    use_handler_docstrings: bool = False
     webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
 
     def to_openapi_schema(self) -> OpenAPI:
@@ -176,6 +182,32 @@ class OpenAPIConfig(BaseModel):
                 termsOfService=self.terms_of_service,
             ),
         )
+
+    def create_openapi_schema_model(self, app: "Starlite") -> OpenAPI:
+        """
+        Creates `OpenAPI` instance for the given `router`.
+
+        Args:
+            app (Starlite)
+
+        Returns:
+            OpenAPI
+        """
+        schema = self.to_openapi_schema()
+        schema.paths = {}
+        for route in app.routes:
+            if (
+                isinstance(route, HTTPRoute)
+                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
+                and (route.path_format or "/") not in schema.paths
+            ):
+                schema.paths[route.path_format or "/"] = create_path_item(
+                    route=route,
+                    create_examples=self.create_examples,
+                    plugins=app.plugins,
+                    use_handler_docstrings=self.use_handler_docstrings,
+                )
+        return cast(OpenAPI, construct_open_api_with_schema_class(schema))
 
 
 class StaticFilesConfig(BaseModel):

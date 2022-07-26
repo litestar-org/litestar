@@ -282,3 +282,8 @@
 
 - Add `Swagger-UI` support @timwedde
 - Add orjson support to websockets
+
+[1.7.2]
+
+- Allow `Partial` to annotate fields of nested classes @Harry-Lees
+- Add `OpenAPIConfig.use_handler_docstring` param

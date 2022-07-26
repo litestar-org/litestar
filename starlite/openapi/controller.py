@@ -56,9 +56,10 @@ class OpenAPIController(Controller):
         schema = self.schema_from_request(request)
         # Note: Fix for Swagger rejection OpenAPI >=3.1
         # We force the version to be lower to get the default JS bundle to accept it
-        # This works flawlessly as the main blocker for Swagger support for OpenAPI 3.1 is JSON schema support
-        # Since we use the YAML format this is not an issue for us and we can do this trick to get support right now
-        # We use deepcopy to avoid changing the actual schema on the request. Since this is a cached call the effect is minimal
+        # This works flawlessly as the main blocker for Swagger support for OpenAPI 3.1 is JSON schema support.
+        # Since we use the YAML format this is not an issue for us, and we can do this trick to get support right now.
+        # We use deepcopy to avoid changing the actual schema on the request. Since this is a cached call the effect is
+        # minimal.
         if self._dumped_modified_schema == "":
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
