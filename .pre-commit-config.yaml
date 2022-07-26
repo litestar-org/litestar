@@ -27,6 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        args: [-L, crate]
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -42,7 +43,18 @@ repos:
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.1 # Possible releases: https://github.com/hadialqattan/pycln/releases
+    rev: v2.1.1
+    hooks:
+      - id: pycln
+        args: [--config=pyproject.toml]
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+      - id: cargo-check
+      - id: clippy
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.1
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -77,6 +89,7 @@ repos:
             jinja2,
             mako,
           ]
+        args: [--no-strict-imports]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
     hooks:
@@ -85,6 +98,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            setuptools_rust,
             openapi_schema_pydantic,
             orjson,
             pydantic,

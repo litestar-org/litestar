@@ -3,19 +3,24 @@
 .idea/
 .mypy_cache/
 .pytest_cache/
+.scannerwork/
 .tox/
 .venv/
 .vscode/
 __pycache__/
+build/
 dist/
 node_modules/
 results/
 site/
-.scannerwork/
+target/
 
 # files
+**/*.so
 *.iml
-.coverage
+*.egg-info
 .DS_Store
+.coverage
 .python-version
 coverage.*
+setup.py

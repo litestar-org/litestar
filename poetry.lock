@@ -715,6 +715,30 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "semantic-version"
+version = "2.10.0"
+description = "A library implementing the 'SemVer' scheme."
+category = "dev"
+optional = false
+python-versions = ">=2.7"
+
+[package.extras]
+dev = ["Django (>=1.11)", "nose2", "tox", "check-manifest", "coverage", "flake8", "wheel", "zest.releaser", "readme-renderer (<25.0)", "colorama (<=0.4.1)"]
+doc = ["sphinx", "sphinx-rtd-theme"]
+
+[[package]]
+name = "setuptools-rust"
+version = "1.4.1"
+description = "Setuptools Rust extension plugin"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+semantic-version = ">=2.8.2,<3"
+typing-extensions = ">=3.7.4.3"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -961,7 +985,7 @@ testing = ["requests", "brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "72e6c7b1555edb643142b3947703034d724d0e8eb66c48e0c571cf8e05d2c364"
+content-hash = "4c5b7a0ad554ea04e6b9f7d0017b9b3884b1c150112fffecd4863a8d758c52ca"
 
 [metadata.files]
 aiosqlite = [
@@ -1508,6 +1532,14 @@ pyyaml-env-tag = [
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
+]
+semantic-version = [
+    {file = "semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177"},
+    {file = "semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c"},
+]
+setuptools-rust = [
+    {file = "setuptools-rust-1.4.1.tar.gz", hash = "sha256:18ff850831f58ee21d5783825c99fad632da21e47645e9427fd7dec048029e76"},
+    {file = "setuptools_rust-1.4.1-py3-none-any.whl", hash = "sha256:12b5350d75008f2d4b64a991aba0358bb7ef45502bad086990b019a760afec67"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
