@@ -8,8 +8,9 @@ name = "route_map_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.16.5", features = ["auto-initialize"] }
+pyo3 = { version = "0.16.5" }
 
 [features]
 extension-module = ["pyo3/extension-module"]
+auto-initialize = ["pyo3/auto-initialize"]
 default = ["extension-module"]
