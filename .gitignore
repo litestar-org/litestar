@@ -7,11 +7,14 @@
 .venv/
 .vscode/
 __pycache__/
+build/
 dist/
 node_modules/
 results/
 site/
+target/
 .scannerwork/
+
 
 # files
 *.iml
@@ -19,3 +22,5 @@ site/
 .DS_Store
 .python-version
 coverage.*
+*.so
+*.egg-info/

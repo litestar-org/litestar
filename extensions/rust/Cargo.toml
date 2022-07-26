@@ -1,0 +1,15 @@
+[package]
+name = "route_map_rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "route_map_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.16.5", features = ["auto-initialize"] }
+
+[features]
+extension-module = ["pyo3/extension-module"]
+default = ["extension-module"]
