@@ -26,7 +26,10 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = [
+    "CHANGELOG.md",
+    { path = "extensions/**", format = "sdist" },
+]
 packages = [
     { include = "starlite" },
 ]
@@ -59,13 +62,18 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+setuptools_rust = "*"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]
 brotli = ["brotli"]
 
+[tool.poetry.build]
+generate-setup-file = true
+script = "poetry_build.py"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "setuptools-rust"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

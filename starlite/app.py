@@ -19,7 +19,6 @@ from starlite.config import (
     TemplateConfig,
 )
 from starlite.datastructures import State
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware import ExceptionHandlerMiddleware
@@ -27,6 +26,8 @@ from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
+from starlite.route_map import RouteMap
+from starlite.route_map_rs import RouteMap as RouteMapInit
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -64,11 +65,9 @@ class Starlite(Router):
         "debug",
         "compression_config",
         "openapi_schema",
-        "plain_routes",
         "plugins",
         "route_map",
         "state",
-        "static_paths",
         "template_engine",
     )
 
@@ -106,10 +105,9 @@ class Starlite(Router):
         self.compression_config = compression_config
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
-        self.route_map: Dict[str, Any] = {}
         self.routes: List[BaseRoute] = []
+        self.route_map: RouteMap = RouteMapInit(self.debug)
         self.state = State()
-        self.static_paths = set()
 
         super().__init__(
             after_request=after_request,
@@ -135,7 +133,7 @@ class Starlite(Router):
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 path = normalize_path(config.path)
-                self.static_paths.add(path)
+                self.route_map.add_static_path(path)
                 static_files = StaticFiles(html=config.html_mode, check_dir=False)
                 static_files.all_directories = config.directories  # type: ignore
                 self.register(asgi(path=path)(static_files))
@@ -234,12 +232,7 @@ class Starlite(Router):
         """
         Create a map of the app's routes. This map is used in the asgi router to route requests.
         """
-        if "_components" not in self.route_map:
-            self.route_map["_components"] = set()
-        for route in self.routes:
-            node = self.add_node_to_route_map(route)
-            if node["_path_parameters"] != route.path_parameters:
-                raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
+        self.route_map.add_routes(self.routes)
 
     def build_route_middleware_stack(
         self,
