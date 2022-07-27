@@ -10,7 +10,7 @@ use crate::route_map::RouteMap;
 use pyo3::prelude::*;
 
 #[pymodule]
-fn route_map_rs(_py: Python, m: &PyModule) -> PyResult<()> {
+fn route_map(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<RouteMap>()?;
     Ok(())
 }

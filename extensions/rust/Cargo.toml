@@ -1,10 +1,10 @@
 [package]
-name = "route_map_rs"
+name = "route_map"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "route_map_rs"
+name = "route_map"
 crate-type = ["cdylib"]
 
 [dependencies]
