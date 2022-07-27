@@ -1,14 +1,13 @@
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, cast
+from typing import TYPE_CHECKING, List
 
 from starlette.routing import Router as StarletteRouter
-from starlette.types import ASGIApp, Receive, Scope, Send
 
-from starlite.enums import ScopeType
-from starlite.exceptions import MethodNotAllowedException, NotFoundException
-from starlite.parsers import parse_path_params
+from starlite.exceptions import NotFoundException
 
 if TYPE_CHECKING:
+    from starlette.types import Receive, Scope, Send
+
     from starlite.app import Starlite
     from starlite.types import LifeCycleHandler
 
@@ -27,7 +26,7 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         The main entry point to the Router class.
         """
