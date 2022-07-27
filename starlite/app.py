@@ -65,6 +65,7 @@ class Starlite(Router):
         "debug",
         "compression_config",
         "openapi_schema",
+        "plain_routes",
         "plugins",
         "route_map",
         "state",
