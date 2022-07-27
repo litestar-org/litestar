@@ -105,27 +105,28 @@ impl RouteMap {
     #[new]
     #[args(debug = false)]
     pub fn new(py: Python, debug: bool) -> PyResult<Self> {
-        macro_rules! get_attr_and_downcast {
-            ($module:ident, $attr:expr, $downcast_ty:ty) => {{
-                $module.getattr($attr)?.downcast::<$downcast_ty>()?.into()
-            }};
+        fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
+        where
+            for<'py> T: PyTryFrom<'py>,
+            for<'py> &'py T: Into<Py<T>>,
+        {
+            Ok(module.getattr(attr)?.downcast::<T>()?.into())
         }
 
         let parsers = py.import("starlite.parsers")?;
-        let parse_path_params = get_attr_and_downcast!(parsers, "parse_path_params", PyFunction);
+        let parse_path_params = get_attr_and_downcast(parsers, "parse_path_params")?;
 
         let routes = py.import("starlite.routes")?;
-        let http_route = get_attr_and_downcast!(routes, "HTTPRoute", PyType);
-        let web_socket_route = get_attr_and_downcast!(routes, "WebSocketRoute", PyType);
-        let asgi_route = get_attr_and_downcast!(routes, "ASGIRoute", PyType);
+        let http_route = get_attr_and_downcast(routes, "HTTPRoute")?;
+        let web_socket_route = get_attr_and_downcast(routes, "WebSocketRoute")?;
+        let asgi_route = get_attr_and_downcast(routes, "ASGIRoute")?;
 
         let middleware = py.import("starlite.middleware")?;
         let exception_handler_middleware =
-            get_attr_and_downcast!(middleware, "ExceptionHandlerMiddleware", PyType);
+            get_attr_and_downcast(middleware, "ExceptionHandlerMiddleware")?;
 
         let starlette_middleware = py.import("starlette.middleware")?;
-        let starlette_middleware =
-            get_attr_and_downcast!(starlette_middleware, "Middleware", PyType);
+        let starlette_middleware = get_attr_and_downcast(starlette_middleware, "Middleware")?;
 
         Ok(RouteMap {
             map: Node::new(),
