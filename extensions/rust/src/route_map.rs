@@ -103,6 +103,7 @@ pub struct RouteMap {
 impl RouteMap {
     /// Creates an empty `RouteMap`
     #[new]
+    #[args(debug = false)]
     pub fn new(py: Python, debug: bool) -> PyResult<Self> {
         macro_rules! get_attr_and_downcast {
             ($module:ident, $attr:expr, $downcast_ty:ty) => {{
@@ -180,7 +181,7 @@ impl RouteMap {
         Ok(())
     }
 
-    // Given a scope, retrieves the correct ASGI App for the route
+    /// Given a scope, retrieves the correct ASGI App for the route
     pub fn resolve_asgi_app(&self, scope: &PyAny) -> PyResult<Py<PyAny>> {
         let (asgi_handlers, is_asgi) = self.parse_scope_to_route(scope)?;
 
