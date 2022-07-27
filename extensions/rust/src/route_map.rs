@@ -292,14 +292,12 @@ impl<'rm> ConfigureNodeView<'rm> {
 
         let asgi_handlers = cur_node.asgi_handlers.as_mut().unwrap();
 
-        macro_rules! generate_single_route_handler_stack {
-            ($handler_type:expr) => {
-                let route_handler = route.getattr("route_handler")?;
-                let middleware_stack =
-                    build_route_middleware_stack(py, &ctx, route, route_handler)?;
-                asgi_handlers.insert($handler_type.to_string(), middleware_stack.to_object(py));
-            };
-        }
+        let mut generate_single_route_handler_stack = |handler_type: &str| -> PyResult<()> {
+            let route_handler = route.getattr("route_handler")?;
+            let middleware_stack = build_route_middleware_stack(py, &ctx, route, route_handler)?;
+            asgi_handlers.insert(handler_type.to_string(), middleware_stack.into());
+            Ok(())
+        };
 
         if route.is_instance(http_route.as_ref(py))? {
             let route_handler_map: HashMap<String, &PyAny> =
@@ -313,9 +311,9 @@ impl<'rm> ConfigureNodeView<'rm> {
                 asgi_handlers.insert(method, middleware_stack.to_object(py));
             }
         } else if route.is_instance(web_socket_route.as_ref(py))? {
-            generate_single_route_handler_stack!("websocket");
+            generate_single_route_handler_stack("websocket")?;
         } else if route.is_instance(asgi_route.as_ref(py))? {
-            generate_single_route_handler_stack!("asgi");
+            generate_single_route_handler_stack("asgi")?;
             cur_node.is_asgi = true;
         }
 
