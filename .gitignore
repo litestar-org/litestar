@@ -19,3 +19,4 @@ site/
 .DS_Store
 .python-version
 coverage.*
+**/*.so

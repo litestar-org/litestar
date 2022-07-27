@@ -10,7 +10,7 @@ repos:
         exclude: "\\.idea/(.)*"
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.2
+    rev: v2.37.3
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
@@ -27,6 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
+        args: [-L, crate]
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -41,11 +42,11 @@ repos:
       - id: bandit
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
-  - repo: https://github.com/hadialqattan/pycln
-    rev: v2.0.4 # Possible releases: https://github.com/hadialqattan/pycln/releases
-    hooks:
-      - id: pycln
-        args: [--config=pyproject.toml]
+  #  - repo: https://github.com/hadialqattan/pycln
+  #    rev: v2.0.4 # Possible releases: https://github.com/hadialqattan/pycln/releases
+  #    hooks:
+  #      - id: pycln
+  #        args: [--config=pyproject.toml]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
@@ -92,7 +93,9 @@ repos:
             pyyaml,
             starlette,
             sqlalchemy,
+            setuptools_rust,
             tortoise_orm,
+            cython,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"

@@ -26,10 +26,17 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = ["CHANGELOG.md", {path = "starlite/**/*.so", format = "wheel"}]
+exclude = ["starlite/**/*.py"]
 packages = [
     { include = "starlite" },
 ]
+
+[tool.poetry.build]
+# The allows us to build C extensions (using Cython). Unstable feature
+# https://github.com/python-poetry/poetry/issues/2740#issuecomment-666551481
+script = "build.py"
+generate-setup-file = false
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
@@ -59,6 +66,7 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+cython = "*"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]
