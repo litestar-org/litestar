@@ -1,3 +1,7 @@
+# Python type stubs for the route_map module
+#
+# The implementation of this module is located at `extensions/rust/` in the root of the repository
+
 from typing import Any, Dict, Sequence
 
 from starlette.types import ASGIApp, Scope
