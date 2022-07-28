@@ -27,7 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-        exclude: "extensions"
+        args: [-L, crate]
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
