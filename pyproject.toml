@@ -26,10 +26,14 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md", {path = "starlite/**/*.so", format = "wheel"}]
-exclude = ["starlite/**/*.py"]
 packages = [
     { include = "starlite" },
+]
+include = [
+    "CHANGELOG.md",
+    {path = "starlite/**/*.so", format = "wheel"},
+    "starlite/**/*.py",
+    "py.typed"
 ]
 
 [tool.poetry.build]

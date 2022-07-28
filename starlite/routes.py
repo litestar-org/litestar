@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from uuid import UUID
 
 from anyio.to_thread import run_sync
-from pydantic import validate_arguments
 from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
@@ -49,7 +48,6 @@ class BaseRoute:
         "scope_type",
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -131,7 +129,6 @@ class HTTPRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -288,7 +285,6 @@ class WebSocketRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,
@@ -334,7 +330,6 @@ class ASGIRoute(BaseRoute):
         # see: https://stackoverflow.com/questions/472000/usage-of-slots
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         *,

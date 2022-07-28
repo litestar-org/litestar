@@ -11,6 +11,12 @@ from typing import List
 
 # enable clang compiler optimizations
 CLANG_COMPILE_ARGS = ["-O2"]
+BUILD_TARGETS = [
+    "starlite/routes.py",
+    "starlite/response.py",
+    "starlite/parsers.py",
+    "starlite/signature.py",
+]
 
 
 def build() -> None:
@@ -25,8 +31,8 @@ def build() -> None:
 
         extension_modules: List[Extension] = []
 
-        for filename in Path("starlite").rglob("*.py"):
-            module_path = str(filename.with_suffix("")).replace("/", ".")
+        for filename in BUILD_TARGETS:
+            module_path = filename.removesuffix(".py").replace("/", ".")
             extension_module = Extension(
                 name=module_path, sources=[str(filename)], extra_compile_args=CLANG_COMPILE_ARGS
             )

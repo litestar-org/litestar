@@ -11,7 +11,7 @@ def test_parse_query_params() -> None:
         "polluting": False,
     }
     request = create_test_request(query=query)  # type: ignore
-    result = parse_query_params(connection=request)
+    result = parse_query_params(request)
     assert result == {
         "value": ["10"],
         "veggies": ["tomato", "potato", "aubergine"],
