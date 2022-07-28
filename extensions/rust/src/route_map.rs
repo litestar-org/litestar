@@ -1,6 +1,6 @@
 use crate::util::{build_route_middleware_stack, get_base_components, path_parameters_eq};
 
-use std::collections::{hash_map, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
 use pyo3::{
     prelude::*,
@@ -103,28 +103,30 @@ pub struct RouteMap {
 impl RouteMap {
     /// Creates an empty `RouteMap`
     #[new]
+    #[args(debug = false)]
     pub fn new(py: Python, debug: bool) -> PyResult<Self> {
-        macro_rules! get_attr_and_downcast {
-            ($module:ident, $attr:expr, $downcast_ty:ty) => {{
-                $module.getattr($attr)?.downcast::<$downcast_ty>()?.into()
-            }};
+        fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
+        where
+            for<'py> T: PyTryFrom<'py>,
+            for<'py> &'py T: Into<Py<T>>,
+        {
+            Ok(module.getattr(attr)?.downcast::<T>()?.into())
         }
 
         let parsers = py.import("starlite.parsers")?;
-        let parse_path_params = get_attr_and_downcast!(parsers, "parse_path_params", PyFunction);
+        let parse_path_params = get_attr_and_downcast(parsers, "parse_path_params")?;
 
         let routes = py.import("starlite.routes")?;
-        let http_route = get_attr_and_downcast!(routes, "HTTPRoute", PyType);
-        let web_socket_route = get_attr_and_downcast!(routes, "WebSocketRoute", PyType);
-        let asgi_route = get_attr_and_downcast!(routes, "ASGIRoute", PyType);
+        let http_route = get_attr_and_downcast(routes, "HTTPRoute")?;
+        let web_socket_route = get_attr_and_downcast(routes, "WebSocketRoute")?;
+        let asgi_route = get_attr_and_downcast(routes, "ASGIRoute")?;
 
         let middleware = py.import("starlite.middleware")?;
         let exception_handler_middleware =
-            get_attr_and_downcast!(middleware, "ExceptionHandlerMiddleware", PyType);
+            get_attr_and_downcast(middleware, "ExceptionHandlerMiddleware")?;
 
         let starlette_middleware = py.import("starlette.middleware")?;
-        let starlette_middleware =
-            get_attr_and_downcast!(starlette_middleware, "Middleware", PyType);
+        let starlette_middleware = get_attr_and_downcast(starlette_middleware, "Middleware")?;
 
         Ok(RouteMap {
             map: Node::new(),
@@ -180,7 +182,7 @@ impl RouteMap {
         Ok(())
     }
 
-    // Given a scope, retrieves the correct ASGI App for the route
+    /// Given a scope, retrieves the correct ASGI App for the route
     pub fn resolve_asgi_app(&self, scope: &PyAny) -> PyResult<Py<PyAny>> {
         let (asgi_handlers, is_asgi) = self.parse_scope_to_route(scope)?;
 
@@ -290,14 +292,12 @@ impl<'rm> ConfigureNodeView<'rm> {
 
         let asgi_handlers = cur_node.asgi_handlers.as_mut().unwrap();
 
-        macro_rules! generate_single_route_handler_stack {
-            ($handler_type:expr) => {
-                let route_handler = route.getattr("route_handler")?;
-                let middleware_stack =
-                    build_route_middleware_stack(py, &ctx, route, route_handler)?;
-                asgi_handlers.insert($handler_type.to_string(), middleware_stack.to_object(py));
-            };
-        }
+        let mut generate_single_route_handler_stack = |handler_type: &str| -> PyResult<()> {
+            let route_handler = route.getattr("route_handler")?;
+            let middleware_stack = build_route_middleware_stack(py, &ctx, route, route_handler)?;
+            asgi_handlers.insert(handler_type.to_string(), middleware_stack);
+            Ok(())
+        };
 
         if route.is_instance(http_route.as_ref(py))? {
             let route_handler_map: HashMap<String, &PyAny> =
@@ -308,12 +308,12 @@ impl<'rm> ConfigureNodeView<'rm> {
                 let route_handler = handler_mapping.get_item(0)?;
                 let middleware_stack =
                     build_route_middleware_stack(py, &ctx, route, route_handler)?;
-                asgi_handlers.insert(method, middleware_stack.to_object(py));
+                asgi_handlers.insert(method, middleware_stack);
             }
         } else if route.is_instance(web_socket_route.as_ref(py))? {
-            generate_single_route_handler_stack!("websocket");
+            generate_single_route_handler_stack("websocket")?;
         } else if route.is_instance(asgi_route.as_ref(py))? {
-            generate_single_route_handler_stack!("asgi");
+            generate_single_route_handler_stack("asgi")?;
             cur_node.is_asgi = true;
         }
 
@@ -354,17 +354,18 @@ impl RouteMap {
                 let component_set = &mut cur_node.components;
                 component_set.insert(component.to_string());
 
-                if let hash_map::Entry::Vacant(e) = cur_node.children.entry(component.to_string()) {
-                    e.insert(Node::new());
-                }
-                cur_node = cur_node.children.get_mut(component).unwrap();
+                cur_node = cur_node
+                    .children
+                    .entry(component.to_string())
+                    .or_insert_with(Node::new);
             }
         } else {
-            if let hash_map::Entry::Vacant(e) = self.map.children.entry(path.clone()) {
-                e.insert(Node::new());
-            }
             self.add_plain_route(&path[..]);
-            cur_node = self.map.children.get_mut(&path[..]).unwrap();
+            cur_node = self
+                .map
+                .children
+                .entry(path.clone())
+                .or_insert_with(Node::new);
         }
 
         ConfigureNodeView {

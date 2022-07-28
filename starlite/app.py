@@ -24,7 +24,7 @@ from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.route_map_rs import RouteMap as RouteMapInit
+from starlite.route_map import RouteMap
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -47,7 +47,6 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.route_map import RouteMap
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 DEFAULT_CACHE_CONFIG = CacheConfig()
@@ -105,7 +104,7 @@ class Starlite(Router):
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.routes: List[BaseRoute] = []
-        self.route_map: "RouteMap" = RouteMapInit(self.debug)
+        self.route_map = RouteMap(self.debug)
         self.state = State()
 
         super().__init__(
