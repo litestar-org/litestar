@@ -69,7 +69,7 @@ testing = ["requests", "brotli"]
 brotli = ["brotli"]
 
 [tool.poetry.build]
-generate-setup-file = false
+generate-setup-file = true
 script = "build.py"
 
 [build-system]

@@ -7,10 +7,9 @@ def build(setup_kwargs: Dict[str, Any]) -> None:
     """
     Add rust_extensions to the setup dict
     """
-    setup_kwargs["rust_extensions"] = [
-        RustExtension("starlite.route_map", path="extensions/rust/Cargo.toml", debug=False)
-    ]
-    setup_kwargs["zip_safe"] = False
+    setup_kwargs.update(
+        rust_extensions=[RustExtension("starlite.route_map", path="./Cargo.toml", debug=False)], zip_safe=False
+    )
 
 
 if __name__ == "__main__":
