@@ -27,7 +27,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-        args: [-L, crate]
+        exclude: "extensions"
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -42,11 +42,17 @@ repos:
       - id: bandit
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
-  #  - repo: https://github.com/hadialqattan/pycln
-  #    rev: v2.0.4 # Possible releases: https://github.com/hadialqattan/pycln/releases
-  #    hooks:
-  #      - id: pycln
-  #        args: [--config=pyproject.toml]
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+      - id: cargo-check
+      - id: clippy
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.1
+    hooks:
+      - id: pycln
+        args: [--config=pyproject.toml]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
@@ -86,6 +92,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            setuptools_rust,
             openapi_schema_pydantic,
             orjson,
             pydantic,
@@ -93,7 +100,6 @@ repos:
             pyyaml,
             starlette,
             sqlalchemy,
-            setuptools_rust,
             tortoise_orm,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
