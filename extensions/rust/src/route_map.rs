@@ -295,7 +295,7 @@ impl<'rm> ConfigureNodeView<'rm> {
         let mut generate_single_route_handler_stack = |handler_type: &str| -> PyResult<()> {
             let route_handler = route.getattr("route_handler")?;
             let middleware_stack = build_route_middleware_stack(py, &ctx, route, route_handler)?;
-            asgi_handlers.insert(handler_type.to_string(), middleware_stack.into());
+            asgi_handlers.insert(handler_type.to_string(), middleware_stack);
             Ok(())
         };
 
@@ -308,7 +308,7 @@ impl<'rm> ConfigureNodeView<'rm> {
                 let route_handler = handler_mapping.get_item(0)?;
                 let middleware_stack =
                     build_route_middleware_stack(py, &ctx, route, route_handler)?;
-                asgi_handlers.insert(method, middleware_stack.to_object(py));
+                asgi_handlers.insert(method, middleware_stack);
             }
         } else if route.is_instance(web_socket_route.as_ref(py))? {
             generate_single_route_handler_stack("websocket")?;
