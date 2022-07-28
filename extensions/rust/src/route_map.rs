@@ -1,6 +1,6 @@
 use crate::util::{build_route_middleware_stack, get_base_components, path_parameters_eq};
 
-use std::collections::{hash_map, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
 use pyo3::{
     prelude::*,
@@ -354,17 +354,18 @@ impl RouteMap {
                 let component_set = &mut cur_node.components;
                 component_set.insert(component.to_string());
 
-                if let hash_map::Entry::Vacant(e) = cur_node.children.entry(component.to_string()) {
-                    e.insert(Node::new());
-                }
-                cur_node = cur_node.children.get_mut(component).unwrap();
+                cur_node = cur_node
+                    .children
+                    .entry(component.to_string())
+                    .or_insert_with(Node::new);
             }
         } else {
-            if let hash_map::Entry::Vacant(e) = self.map.children.entry(path.clone()) {
-                e.insert(Node::new());
-            }
             self.add_plain_route(&path[..]);
-            cur_node = self.map.children.get_mut(&path[..]).unwrap();
+            cur_node = self
+                .map
+                .children
+                .entry(path.clone())
+                .or_insert_with(Node::new);
         }
 
         ConfigureNodeView {
