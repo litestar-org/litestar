@@ -27,7 +27,6 @@ classifiers = [
     "Typing :: Typed",
 ]
 include = [
-    "CHANGELOG.md",
     { path = "extensions/**", format = "sdist" },
 ]
 packages = [
@@ -74,7 +73,7 @@ generate-setup-file = true
 script = "build.py"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "cython", "setuptools-rust"]
+requires = ["poetry-core>=1.0.0", "setuptools-rust"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

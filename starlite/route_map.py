@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from starlite.routes import BaseRoute
 
 
-class RouteMap:
+class RouteMap:  # pragma: no cover
     def __init__(self, debug: bool = False):
         """
         Create a new RouteMap
