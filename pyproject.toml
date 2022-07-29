@@ -70,7 +70,7 @@ brotli = ["brotli"]
 
 [tool.poetry.build]
 generate-setup-file = true
-script = "poetry_build.py"
+script = "build.py"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools-rust"]

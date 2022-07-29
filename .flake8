@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 120
 max-complexity = 12
-ignore = E501, C408, B008, B009, W503, SIM119, C417, B023
+ignore = E501, C408, B008, B009, W503, SIM119, C417, B023, TC006
 type-checking-pydantic-enabled = true
 type-checking-fastapi-enabled = true
 classmethod-decorators =
