@@ -130,3 +130,11 @@ fn wrap_in_exception_handler(
 
     exception_handler_middleware.call(py, (), Some(args))
 }
+
+pub fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
+where
+    for<'py> T: PyTryFrom<'py>,
+    for<'py> &'py T: Into<Py<T>>,
+{
+    Ok(module.getattr(attr)?.downcast::<T>()?.into())
+}
