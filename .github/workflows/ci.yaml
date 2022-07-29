@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.10"
       - uses: actions-rs/toolchain@v1
-        name: Install latest nightly
+        name: Install Rust toolchain
         with:
           toolchain: stable
           profile: minimal
@@ -37,6 +37,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v3
@@ -47,7 +51,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --extras="brotli"
       - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+        run: echo "PYTHONPATH=$PWD:$PWD/.venv/lib/python${{ matrix.python-version }}/site-packages/" >> $GITHUB_ENV
       - name: Test
         run: poetry run pytest
         if: matrix.python-version != '3.10'
