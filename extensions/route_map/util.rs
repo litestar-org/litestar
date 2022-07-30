@@ -131,6 +131,7 @@ fn wrap_in_exception_handler(
     exception_handler_middleware.call(py, (), Some(args))
 }
 
+/// Gets a particular attribute from a module and converts it into Python type T
 pub fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
 where
     for<'py> T: PyTryFrom<'py>,
