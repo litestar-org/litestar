@@ -1,6 +1,6 @@
 from typing import List
 
-from starlite import Starlite, get, post, delete
+from starlite import Starlite, delete, get, post
 from starlite.routes import BaseRoute  # noqa: TC001
 
 path = "/test/{val:int}"
@@ -11,9 +11,11 @@ paths = [path]
 def handler_fn_get(val: int) -> None:
     ...
 
+
 @post(path=path)
 def handler_fn_post(val: int) -> None:
     ...
+
 
 @delete(path=path)
 def handler_fn_delete(val: int) -> None:

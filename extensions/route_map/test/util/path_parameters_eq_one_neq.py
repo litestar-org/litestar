@@ -1,12 +1,3 @@
+parameter1 = {"name": "val", "type": int, "full": "val:int"}
 
-parameter1 = {
-    "name": "val",
-    "type": type(0),
-    "full": "val:int"
-}
-
-parameter2 = {
-    "name": "val",
-    "type": type(''),
-    "full": "val:str"
-}
+parameter2 = {"name": "val", "type": str, "full": "val:str"}
