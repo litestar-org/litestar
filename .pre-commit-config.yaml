@@ -66,24 +66,24 @@ repos:
             "flake8-simplify",
             "flake8-type-checking",
           ]
-  - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.14.1
-    hooks:
-      - id: slotscheck
-        exclude: "^(?!starlite/)"
-        additional_dependencies:
-          [
-            openapi_schema_pydantic,
-            orjson,
-            pydantic,
-            pydantic_factories,
-            pyyaml,
-            starlette,
-            sqlalchemy,
-            requests,
-            jinja2,
-            mako,
-          ]
+  #  - repo: https://github.com/ariebovenberg/slotscheck
+  #    rev: v0.14.1
+  #    hooks:
+  #      - id: slotscheck
+  #        exclude: "^(?!starlite/)"
+  #        additional_dependencies:
+  #          [
+  #            openapi_schema_pydantic,
+  #            orjson,
+  #            pydantic,
+  #            pydantic_factories,
+  #            pyyaml,
+  #            starlette,
+  #            sqlalchemy,
+  #            requests,
+  #            jinja2,
+  #            mako,
+  #          ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
     hooks:

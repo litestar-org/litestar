@@ -27,7 +27,6 @@ classifiers = [
     "Typing :: Typed",
 ]
 include = [
-    "CHANGELOG.md",
     { path = "extensions/**", format = "sdist" },
 ]
 packages = [
@@ -63,6 +62,7 @@ pytest-mock = "*"
 tox = "*"
 requests = "*"
 setuptools_rust = "*"
+Cython = "^0.29.32"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]
@@ -133,5 +133,5 @@ exclude_lines = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 
-#[tool.pycln]
-#all = true
+[tool.pycln]
+all = true
