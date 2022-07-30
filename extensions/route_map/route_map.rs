@@ -32,7 +32,7 @@ pub struct StarliteContext {
 }
 
 /// A node for the trie
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Node {
     pub components: HashSet<String>,
     pub children: HashMap<String, Node>,
@@ -45,14 +45,7 @@ pub struct Node {
 impl Node {
     /// Creates a new trie node
     pub fn new() -> Self {
-        Self {
-            components: HashSet::new(),
-            children: HashMap::new(),
-            path_parameters: None,
-            asgi_handlers: None,
-            is_asgi: false,
-            static_path: None,
-        }
+        Default::default()
     }
 }
 
