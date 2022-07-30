@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 path = "extensions/route_map/lib.rs"
 
 [dependencies]
-pyo3 = { version = "*" }
+pyo3 = { version = "0.16.5" }
 
 [features]
 extension-module = ["pyo3/extension-module"]

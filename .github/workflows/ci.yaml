@@ -59,7 +59,7 @@ jobs:
         run: poetry run pytest --cov=. --cov-report=xml
         if: matrix.python-version == '3.10'
       - uses: actions-rs/toolchain@v1
-        name: Install latest nightly
+        name: Install Rust toolchain
         with:
           toolchain: stable
           profile: minimal
