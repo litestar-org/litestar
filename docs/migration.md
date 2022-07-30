@@ -6,7 +6,7 @@ part **inter-compatible**. So what does need to be changed?
 ### LifeCycle
 
 If you use the **Starlette/FastAPI `lifecycle` kwarg** with an **`AsyncContextManager`** to bootstrap your application, you will
-need to convert it to use the **`on_startup` and `on_shutdown` [hooks](usage/0-the-starlite-app.md#startup-and-shutdown)**. Otherwise, using lifecycle management is identical.
+need to convert it to use the **`on_startup` and `on_shutdown` [hooks](usage/0-the-starlite-app/1-startup-and-shutdown.md)**. Otherwise, using lifecycle management is identical.
 
 ### Routing Decorators
 
@@ -14,12 +14,11 @@ Starlite does not include any decorator as part of the `Router` or `Starlite` in
 using [route handlers](usage/2-route-handlers/1_http_route_handlers.md)** – in standalone functions or Controller methods. You then have to
 register them with the app, either by first **registering them on a router** and then **registering the router on the app**, or
 by **registering them directly on the app**. See
-the [registering routes](usage/1-routers-and-controllers.md#registering-routes) part of the documentation for details.
+the [registering routes](usage/1-routing/1-registering-routes.md) part of the documentation for details.
 
 ### Routing Classes
 
-As discussed in the [relation to starlette routing](usage/1-routers-and-controllers.md#relation-to-starlette-routing)
-section of the documentation, Starlite **does not extend the Starlette routing classes** and instead implements its own
+Starlite **does not extend the Starlette routing classes** and instead implements its own
 versions of these. You will **need to use the Starlite `Router` classes** instead of their equivalents from the other
 frameworks. There are some **differences** from the **Starlite class** to those from the other frameworks:
 

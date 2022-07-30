@@ -170,6 +170,6 @@ has a different design, different project goals and a completely different codeb
 
 <br />
 
-[Continue reading](usage/0-the-starlite-app.md){ .md-button }
+[Continue reading](usage/0-the-starlite-app/0-the-starlite-app.md){ .md-button }
 
 <br />
