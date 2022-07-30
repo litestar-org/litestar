@@ -94,7 +94,7 @@ disable = [
     "ungrouped-imports",
 ]
 enable = "useless-suppression"
-extension-pkg-whitelist = "pydantic"
+extension-pkg-allow-list = ["pydantic","orjson","picologging"]
 
 [tool.pylint.REPORTS]
 reports = "no"
@@ -114,6 +114,16 @@ ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
 good-names = "_,i,e,fn"
+# Regular expression which should only match function or class names that do
+# not require a docstring.
+no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test)$"
+
+
+[tool.pylint.LOGGING]
+# Logging modules to check that the string format arguments are in logging
+# function parameter format
+logging-modules=["logging","picologging"]
+
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
