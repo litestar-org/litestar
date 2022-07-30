@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
 import picologging
