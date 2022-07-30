@@ -48,4 +48,4 @@ def test_logger_startup(caplog: "LogCaptureFixture") -> None:
         client.options("/")
         logger = logging.getLogger()
         handlers = logger.handlers
-        assert isinstance(handlers[0].handlers[0], Union[logging.StreamHandler, picologging.StreamHandler])  # type: ignore
+        assert isinstance(handlers[0].handlers[0], logging.StreamHandler) or isinstance(handlers[0].handlers[0], picologging.StreamHandler)  # type: ignore
