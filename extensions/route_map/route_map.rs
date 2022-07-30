@@ -1,4 +1,6 @@
-use crate::util::{build_route_middleware_stack, get_base_components, path_parameters_eq};
+use crate::util::{
+    build_route_middleware_stack, get_attr_and_downcast, get_base_components, path_parameters_eq,
+};
 
 use std::collections::{HashMap, HashSet};
 
@@ -30,27 +32,20 @@ pub struct StarliteContext {
 }
 
 /// A node for the trie
-#[derive(Debug, Clone)]
-struct Node {
-    components: HashSet<String>,
-    children: HashMap<String, Node>,
-    path_parameters: Option<Vec<HashMap<String, Py<PyAny>>>>,
-    asgi_handlers: Option<HashMap<String, Py<PyAny>>>,
-    is_asgi: bool,
-    static_path: Option<String>,
+#[derive(Debug, Clone, Default)]
+pub struct Node {
+    pub components: HashSet<String>,
+    pub children: HashMap<String, Node>,
+    pub path_parameters: Option<Vec<HashMap<String, Py<PyAny>>>>,
+    pub asgi_handlers: Option<HashMap<String, Py<PyAny>>>,
+    pub is_asgi: bool,
+    pub static_path: Option<String>,
 }
 
 impl Node {
     /// Creates a new trie node
     pub fn new() -> Self {
-        Self {
-            components: HashSet::new(),
-            children: HashMap::new(),
-            path_parameters: None,
-            asgi_handlers: None,
-            is_asgi: false,
-            static_path: None,
-        }
+        Default::default()
     }
 }
 
@@ -92,10 +87,10 @@ impl IntoPy<PyResult<Py<PyDict>>> for &Node {
 /// Given a scope containing a path, can retrieve handlers using `parse_scope_to_route`.
 #[pyclass]
 pub struct RouteMap {
-    map: Node,
-    static_paths: HashSet<String>,
-    plain_routes: HashSet<String>,
-    ctx: StarliteContext,
+    pub map: Node,
+    pub static_paths: HashSet<String>,
+    pub plain_routes: HashSet<String>,
+    pub ctx: StarliteContext,
 }
 
 // The functions below are available to Python code
@@ -105,14 +100,6 @@ impl RouteMap {
     #[new]
     #[args(debug = false)]
     pub fn new(py: Python, debug: bool) -> PyResult<Self> {
-        fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
-        where
-            for<'py> T: PyTryFrom<'py>,
-            for<'py> &'py T: Into<Py<T>>,
-        {
-            Ok(module.getattr(attr)?.downcast::<T>()?.into())
-        }
-
         let parsers = py.import("starlite.parsers")?;
         let parse_path_params = get_attr_and_downcast(parsers, "parse_path_params")?;
 
