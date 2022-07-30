@@ -1,10 +1,18 @@
 from logging import config
-from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
+
+try:
+    from picologging import Logger, StreamHandler
+    from picologging import getLogger as _getLogger
+    from picologging.handlers import QueueHandler, QueueListener
+except ImportError:
+    from logging import Logger, StreamHandler
+    from logging import getLogger as _getLogger
+    from logging.handlers import QueueHandler, QueueListener
 
 
 def _resolve_handlers(handlers: List[Any]) -> List[Any]:
@@ -15,7 +23,7 @@ def _resolve_handlers(handlers: List[Any]) -> List[Any]:
     return [handlers[i] for i in range(len(handlers))]
 
 
-class QueueListenerHandler(QueueHandler):
+class QueueListenerHandler(QueueHandler):  # type: ignore
     """
     Configures queue listener and handler to support non-blocking logging configuration.
     """
@@ -39,7 +47,7 @@ class LoggingConfig(BaseModel):
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
     handlers: Dict[str, Dict[str, Any]] = {
-        "console": {"class": "logging.StreamHandler", "level": "DEBUG", "formatter": "standard"},
+        "console": {"class": StreamHandler.__qualname__, "level": "DEBUG", "formatter": "standard"},
         "queue_listener": {"class": "starlite.QueueListenerHandler", "handlers": ["cfg://handlers.console"]},
     }
     loggers: Dict[str, Dict[str, Any]] = {
@@ -51,6 +59,15 @@ class LoggingConfig(BaseModel):
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
 
     def configure(self) -> None:
-        """Configure logging by converting 'self' to dict and passing it to logging.config.dictConfig"""
-
+        """Configured logger with the given configuration."""
         config.dictConfig(self.dict(exclude_none=True))
+
+
+def getLogger(name: str) -> Logger:
+    """Helper method to return the configured logger
+
+    Returns:
+        Logger: Returns a configured logger or picologging instance.
+    """
+
+    return _getLogger(name)

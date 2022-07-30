@@ -43,6 +43,7 @@ starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+picologging = { version = "*", optional = true }
 
 
 [tool.poetry.dev-dependencies]
@@ -60,13 +61,12 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
-picologger = { version = "*", optional = true }
-rich = { version = "*", optional = true }
 
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]
 brotli = ["brotli"]
+picologging = ["picologging"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
