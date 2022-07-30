@@ -48,7 +48,6 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --extras="brotli"
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD:$PWD/.venv/lib/python${{ matrix.python-version }}/site-packages/" >> $GITHUB_ENV
