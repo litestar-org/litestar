@@ -14,6 +14,7 @@ pyo3::import_exception!(starlite.exceptions, MethodNotAllowedException);
 pyo3::import_exception!(starlite.exceptions, NotFoundException);
 
 /// A context object that stores Python handles that are needed in the trie
+#[derive(Debug)]
 pub struct StarliteContext {
     /// HTTPRoute
     pub http_route: Py<PyType>,
@@ -86,6 +87,7 @@ impl IntoPy<PyResult<Py<PyDict>>> for &Node {
 /// Routes can be added using `add_routes`.
 /// Given a scope containing a path, can retrieve handlers using `parse_scope_to_route`.
 #[pyclass]
+#[derive(Debug)]
 pub struct RouteMap {
     pub map: Node,
     pub static_paths: HashSet<String>,
@@ -147,10 +149,8 @@ impl RouteMap {
     }
 
     /// Add routes to the map
-    pub fn add_routes(&mut self, py: Python, routes: Vec<Py<PyAny>>) -> PyResult<()> {
+    pub fn add_routes(&mut self, py: Python, routes: Vec<&PyAny>) -> PyResult<()> {
         for route in routes {
-            let route = route.as_ref(py);
-
             let path: String = route.getattr("path")?.extract()?;
             let path_parameters: Vec<HashMap<String, Py<PyAny>>> =
                 route.getattr("path_parameters")?.extract()?;
@@ -213,6 +213,10 @@ impl RouteMap {
         }
 
         cur_node.into_py(py)
+    }
+
+    fn __repr__(&self) -> String {
+        format!("{:#?}", self)
     }
 }
 
@@ -460,5 +464,97 @@ impl RouteMap {
 
             Ok((asgi_handlers, is_asgi))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use pyo3::types::PyDict;
+
+    fn make_route<'a>(py: Python<'a>, path: &str, method: &str) -> PyResult<&'a PyAny> {
+        let locals = PyDict::new(py);
+        locals.set_item("path", path)?;
+        locals.set_item("method", method)?;
+        py.run(
+            r#"
+import starlite
+from starlite.signature import SignatureModelFactory
+from starlite.routes import HTTPRoute
+
+annotation = getattr(starlite, method)
+
+@annotation(path)
+def handler() -> None:
+  ...
+
+
+handler.signature_model = SignatureModelFactory(
+    fn=handler.fn,
+    plugins=[],
+    dependency_names=handler.dependency_name_set,
+).create_signature_model()
+
+route = HTTPRoute(path=path, route_handlers=[handler])
+route.create_handler_map()
+"#,
+            None,
+            Some(locals),
+        )?;
+        Ok(locals.get_item("route").unwrap())
+    }
+
+    #[test]
+    fn simple_route() -> PyResult<()> {
+        Python::with_gil(|py| -> PyResult<()> {
+            let mut route_map = RouteMap::new(py, true.into())?;
+            let routes = vec![
+                make_route(py, "/", "get")?,
+                make_route(py, "/", "post")?,
+                make_route(py, "/a", "get")?,
+            ];
+            route_map.add_routes(py, routes)?;
+
+            assert!(route_map.is_plain_route("/"));
+            assert_eq!(
+                route_map.plain_routes,
+                HashSet::from([String::from("/"), String::from("/a")])
+            );
+            assert!(!route_map.is_static_path("/"));
+            assert_eq!(route_map.static_paths, HashSet::new());
+
+            assert_eq!(route_map.map.components, HashSet::new());
+            assert!(route_map.map.path_parameters.is_none());
+            assert!(route_map.map.asgi_handlers.is_none());
+            assert!(!route_map.map.is_asgi);
+            assert!(route_map.map.static_path.is_none());
+            assert_eq!(route_map.map.children.len(), 2);
+
+            let root_node = &route_map.map.children["/"];
+            assert_eq!(root_node.components, HashSet::new());
+            assert_eq!(root_node.path_parameters.as_ref().unwrap().len(), 0);
+            assert!(!root_node.is_asgi);
+            assert!(root_node.static_path.is_none());
+
+            let asgi_handlers = root_node.asgi_handlers.as_ref().unwrap();
+            assert_eq!(asgi_handlers.len(), 2);
+            assert!(asgi_handlers.contains_key("GET"));
+            assert!(asgi_handlers.contains_key("POST"));
+
+            let a_node = &route_map.map.children["/a"];
+            assert_eq!(a_node.components, HashSet::new());
+            assert_eq!(a_node.path_parameters.as_ref().unwrap().len(), 0);
+            assert!(!a_node.is_asgi);
+            assert!(a_node.static_path.is_none());
+
+            let asgi_handlers = a_node.asgi_handlers.as_ref().unwrap();
+            assert_eq!(asgi_handlers.len(), 1);
+            assert!(asgi_handlers.contains_key("GET"));
+
+            Ok(())
+        })?;
+
+        Ok(())
     }
 }
