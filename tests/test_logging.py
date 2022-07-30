@@ -1,6 +1,8 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 from unittest.mock import Mock, patch
+
+import picologging
 
 from starlite import Starlite
 from starlite.logging import LoggingConfig
@@ -46,4 +48,4 @@ def test_logger_startup(caplog: "LogCaptureFixture") -> None:
         client.options("/")
         logger = logging.getLogger()
         handlers = logger.handlers
-        assert isinstance(handlers[0].handlers[0], logging.StreamHandler)  # type: ignore
+        assert isinstance(handlers[0].handlers[0], Union[logging.StreamHandler, picologging.StreamHandler])  # type: ignore

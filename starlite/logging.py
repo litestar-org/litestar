@@ -47,7 +47,11 @@ class LoggingConfig(BaseModel):
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
     handlers: Dict[str, Dict[str, Any]] = {
-        "console": {"class": StreamHandler.__qualname__, "level": "DEBUG", "formatter": "standard"},
+        "console": {
+            "class": f"{StreamHandler.__module__}.{StreamHandler.__qualname__}",
+            "level": "DEBUG",
+            "formatter": "standard",
+        },
         "queue_listener": {"class": "starlite.QueueListenerHandler", "handlers": ["cfg://handlers.console"]},
     }
     loggers: Dict[str, Dict[str, Any]] = {
