@@ -479,11 +479,11 @@ mod tests {
         locals.set_item("method", method)?;
         py.run(
             r#"
-import starlite
-from starlite.signature import SignatureModelFactory
+from starlite.handlers import http
 from starlite.routes import HTTPRoute
+from starlite.signature import SignatureModelFactory
 
-annotation = getattr(starlite, method)
+annotation = getattr(http, method)
 
 @annotation(path)
 def handler() -> None:
@@ -517,6 +517,7 @@ route.create_handler_map()
             route_map.add_routes(py, routes)?;
 
             assert!(route_map.is_plain_route("/"));
+            assert!(route_map.is_plain_route("/a"));
             assert_eq!(
                 route_map.plain_routes,
                 HashSet::from([String::from("/"), String::from("/a")])
