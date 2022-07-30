@@ -64,7 +64,7 @@ requests = "*"
 
 
 [tool.poetry.extras]
-testing = ["requests", "brotli"]
+testing = ["requests", "brotli", "picologging"]
 brotli = ["brotli"]
 picologging = ["picologging"]
 
