@@ -2,8 +2,6 @@ from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
 from typing import Any, List
 
-from starlite.logging import resolve_handlers
-
 
 class QueueListenerHandler(QueueHandler):
     """
@@ -17,3 +15,11 @@ class QueueListenerHandler(QueueHandler):
             self.queue, *self.handlers, respect_handler_level=respect_handler_level
         )
         self._listener.start()
+
+
+def resolve_handlers(handlers: List[Any]) -> List[Any]:
+    """
+    Converts list of string of handlers to the object of respective handler.
+    Indexing the list performs the evaluation of the object.
+    """
+    return [handlers[i] for i in range(len(handlers))]

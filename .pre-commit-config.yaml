@@ -76,6 +76,7 @@ repos:
             requests,
             jinja2,
             mako,
+            picologging,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
@@ -93,6 +94,7 @@ repos:
             starlette,
             sqlalchemy,
             tortoise_orm,
+            picologging,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"
@@ -109,4 +111,5 @@ repos:
             starlette,
             sqlalchemy,
             types-freezegun,
+            picologging,
           ]

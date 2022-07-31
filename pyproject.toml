@@ -116,7 +116,7 @@ ignored-argument-names = "args|kwargs|_|__"
 good-names = "_,i,e,fn"
 # Regular expression which should only match function or class names that do
 # not require a docstring.
-no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test)$"
+no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test|^_.*)$"
 
 
 [tool.pylint.LOGGING]

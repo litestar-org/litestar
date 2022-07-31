@@ -2,8 +2,6 @@ import logging
 from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
-import picologging
-
 from starlite import Starlite
 from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
@@ -48,4 +46,4 @@ def test_logger_startup(caplog: "LogCaptureFixture") -> None:
         client.options("/")
         logger = logging.getLogger()
         handlers = logger.handlers
-        assert isinstance(handlers[0].handlers[0], logging.StreamHandler) or isinstance(handlers[0].handlers[0], picologging.StreamHandler)  # type: ignore # noqa: SIM101
+        assert isinstance(handlers[0].handlers[0], logging.StreamHandler)  # type: ignore

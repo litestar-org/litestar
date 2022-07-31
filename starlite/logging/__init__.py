@@ -18,7 +18,7 @@ class LoggingConfig(BaseModel):
     }
     handlers: Dict[str, Dict[str, Any]] = {
         "console": {
-            "class": "starlite.logging.StreamHandler",
+            "class": "logging.StreamHandler",
             "level": "DEBUG",
             "formatter": "standard",
         },
@@ -34,15 +34,7 @@ class LoggingConfig(BaseModel):
 
     def configure(self) -> None:
         """Configured logger with the given configuration."""
-        config.dictConfig(self.dict(exclude_none=True, exclude={"backend"}))
+        config.dictConfig(self.dict(exclude_none=True))
 
 
-def resolve_handlers(handlers: List[Any]) -> List[Any]:
-    """
-    Converts list of string of handlers to the object of respective handler.
-    Indexing the list performs the evaluation of the object.
-    """
-    return [handlers[i] for i in range(len(handlers))]
-
-
-__all__ = ["QueueListenerHandler", "LoggingConfig", "resolve_handlers"]
+__all__ = ["LoggingConfig", "QueueListenerHandler"]
