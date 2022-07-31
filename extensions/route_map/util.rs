@@ -5,12 +5,12 @@ use pyo3::{
     types::{IntoPyDict, PyDict, PyTuple, PyType},
 };
 
-use crate::route_map::StarliteContext;
+use crate::StarliteContext;
 
 /// Splits a path on '/' and adds all of the 'components' to a new Vec.
 /// '/' itself is the first component by default since a leading slash
 /// is required by convention
-pub fn get_base_components(path: &str) -> Vec<&str> {
+pub(crate) fn get_base_components(path: &str) -> Vec<&str> {
     let path_split = path.split('/');
 
     let mut components = Vec::<&str>::with_capacity(path_split.size_hint().0 + 1);
@@ -26,7 +26,7 @@ pub fn get_base_components(path: &str) -> Vec<&str> {
 /// Given two HashMap slices representing lists of path parameter definition objects,
 /// returns whether they are equal. This is just implementing PartialEq, for this type,
 /// but with a normal function because a Python instance is required
-pub fn path_parameters_eq(
+pub(crate) fn path_parameters_eq(
     a: &[HashMap<String, Py<PyAny>>],
     b: &[HashMap<String, Py<PyAny>>],
     py: Python,
@@ -46,7 +46,7 @@ pub fn path_parameters_eq(
 }
 
 /// Constructs a middleware stack that serves as the point of entry for each route
-pub fn build_route_middleware_stack(
+pub(crate) fn build_route_middleware_stack(
     py: Python,
     ctx: &StarliteContext,
     route: &PyAny,
@@ -132,7 +132,7 @@ fn wrap_in_exception_handler(
 }
 
 /// Gets a particular attribute from a module and converts it into Python type T
-pub fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
+pub(crate) fn get_attr_and_downcast<T>(module: &PyAny, attr: &str) -> PyResult<Py<T>>
 where
     for<'py> T: PyTryFrom<'py>,
     for<'py> &'py T: Into<Py<T>>,
