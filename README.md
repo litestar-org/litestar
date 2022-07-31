@@ -14,7 +14,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-28-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -222,6 +222,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/josepdaniel"><img src="https://avatars.githubusercontent.com/u/36941460?v=4?s=100" width="100px;" alt=""/><br /><sub><b>josepdaniel</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=josepdaniel" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/devtud"><img src="https://avatars.githubusercontent.com/u/6808024?v=4?s=100" width="100px;" alt=""/><br /><sub><b>devtud</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3Adevtud" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/nramos0"><img src="https://avatars.githubusercontent.com/u/35410160?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nicholas Ramos</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=nramos0" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://twitter.com/seladb"><img src="https://avatars.githubusercontent.com/u/9059541?v=4?s=100" width="100px;" alt=""/><br /><sub><b>seladb</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=seladb" title="Documentation">📖</a></td>
   </tr>
 </table>
 
