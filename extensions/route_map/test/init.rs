@@ -6,7 +6,7 @@ use super::make_route;
 #[test]
 fn init_empty() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
-        let mut route_map = RouteMap::new(py, false.into())?;
+        let mut route_map = RouteMap::new(py, false)?;
 
         route_map.add_routes(py, vec![])?;
 
@@ -26,7 +26,7 @@ fn init_empty() -> PyResult<()> {
 #[test]
 fn init_one_route() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
-        let mut route_map = RouteMap::new(py, false.into())?;
+        let mut route_map = RouteMap::new(py, false)?;
 
         let routes = vec![make_route(py, "/test", "get")?];
 
@@ -59,9 +59,22 @@ fn init_one_route() -> PyResult<()> {
 }
 
 #[test]
+fn init_one_deep_path() {
+    Python::with_gil(|py| {
+        let mut route_map = RouteMap::new(py, false).unwrap();
+        let mut path = vec!["a"; 50_000].join("/");
+        // Ensure path has a placeholder
+        path.insert_str(0, "/{x:str}/");
+        let routes = vec![make_route(py, &path, "get").unwrap()];
+
+        route_map.add_routes(py, routes).unwrap();
+    });
+}
+
+#[test]
 fn init_one_route_with_path() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
-        let mut route_map = RouteMap::new(py, false.into())?;
+        let mut route_map = RouteMap::new(py, false)?;
 
         let routes = vec![make_route(py, "/articles/{id:str}", "get")?];
 

@@ -232,6 +232,17 @@ impl RouteMap {
     }
 }
 
+impl Drop for RouteMap {
+    fn drop(&mut self) {
+        // Avoid recursively dropping nodes, possibly leading to stack overflow, instead, steal their children
+        let mut stack = Vec::new();
+        stack.extend(self.map.children.drain().map(|(_, node)| node));
+        while let Some(mut node) = stack.pop() {
+            stack.extend(node.children.drain().map(|(_, node)| node));
+        }
+    }
+}
+
 /// A struct containing values borrowed from a RouteMap instance
 /// that are required to run `configure_route_map_node`.
 ///
