@@ -1,7 +1,7 @@
 use crate::RouteMap;
 use pyo3::prelude::*;
 
-use crate::get_routes;
+use super::make_route;
 
 #[test]
 fn init_empty() -> PyResult<()> {
@@ -28,7 +28,7 @@ fn init_one_route() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
         let mut route_map = RouteMap::new(py, false.into())?;
 
-        let routes = get_routes!(py, "./init_one_route.py");
+        let routes = vec![make_route(py, "/test", "get")?];
 
         route_map.add_routes(py, routes)?;
 
@@ -63,7 +63,7 @@ fn init_one_route_with_path() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
         let mut route_map = RouteMap::new(py, false.into())?;
 
-        let routes = get_routes!(py, "./init_one_route_with_path.py");
+        let routes = vec![make_route(py, "/articles/{id:str}", "get")?];
 
         route_map.add_routes(py, routes)?;
 
