@@ -46,6 +46,7 @@ repos:
     rev: v1.0
     hooks:
       - id: fmt
+        name: "cargo-fmt"
       - id: cargo-check
       - id: clippy
   - repo: https://github.com/hadialqattan/pycln
