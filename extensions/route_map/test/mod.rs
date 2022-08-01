@@ -1,23 +1,42 @@
-use crate::RouteMap;
+use crate::{wrappers, HandlerType, Node, RouteMap};
 use pyo3::prelude::*;
-use std::collections::HashSet;
+use pyo3::types::PyList;
+use std::collections::{HashMap, HashSet};
+use std::fmt::Debug;
+use std::hash::Hash;
+use std::ptr;
 
 mod init;
 
-fn make_route<'a>(py: Python<'a>, path: &str, method: &str) -> PyResult<&'a PyAny> {
+fn node_empty(node: &Node) -> bool {
+    node.children.is_empty() && node.placeholder_child.is_none() && node.handler_group.is_none()
+}
+
+fn assert_keys_eq<K, EK, V>(map: &HashMap<K, V>, expected_keys: &[EK])
+where
+    K: Debug + Clone + Eq + Hash,
+    EK: Clone + Into<K>,
+{
+    let actual_keys: HashSet<K> = map.keys().cloned().collect();
+    let expected_keys: HashSet<K> = expected_keys.iter().cloned().map(Into::into).collect();
+
+    assert_eq!(actual_keys, expected_keys);
+}
+
+fn make_route<'a>(py: Python<'a>, path: &str, method: &str) -> PyResult<wrappers::Route<'a>> {
     let module = PyModule::from_code(
         py,
         include_str!("create_route.py"),
         "create_route.py",
         "create_route",
     )?;
-    module.call_method1("http_route", (path, method))
+    module.call_method1("http_route", (path, method))?.extract()
 }
 
 #[test]
 fn simple_route() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
-        let mut route_map = RouteMap::new(py, true.into())?;
+        let mut route_map = RouteMap::new(py, true)?;
         let routes = vec![
             make_route(py, "/", "get")?,
             make_route(py, "/", "post")?,
@@ -25,43 +44,49 @@ fn simple_route() -> PyResult<()> {
         ];
         route_map.add_routes(py, routes)?;
 
-        assert!(route_map.is_plain_route("/"));
-        assert!(route_map.is_plain_route("/a"));
-        assert_eq!(
-            route_map.plain_routes,
-            HashSet::from([String::from("/"), String::from("/a")])
+        assert_keys_eq(&route_map.plain_routes, &["/", "/a"]);
+        assert!(route_map.static_paths.is_empty());
+        assert!(node_empty(&route_map.root));
+
+        let base_handlers = &route_map.plain_routes["/"];
+        assert_keys_eq(
+            &base_handlers.asgi_handlers,
+            &[HandlerType::HttpGet, HandlerType::HttpPost],
         );
-        assert!(!route_map.is_static_path("/"));
-        assert_eq!(route_map.static_paths, HashSet::new());
+        assert!(base_handlers.static_path.is_none());
+        assert!(!base_handlers.is_asgi);
+        assert!(base_handlers
+            .path_parameters
+            .as_ref(py)
+            .eq(PyList::empty(py))
+            .unwrap());
 
-        assert_eq!(route_map.map.components, HashSet::new());
-        assert!(route_map.map.path_parameters.is_none());
-        assert!(route_map.map.asgi_handlers.is_none());
-        assert!(!route_map.map.is_asgi);
-        assert!(route_map.map.static_path.is_none());
-        assert_eq!(route_map.map.children.len(), 2);
+        let a_handlers = &route_map.plain_routes["/a"];
+        assert_keys_eq(&a_handlers.asgi_handlers, &[HandlerType::HttpGet]);
+        assert!(a_handlers.static_path.is_none());
+        assert!(!a_handlers.is_asgi);
+        assert!(a_handlers
+            .path_parameters
+            .as_ref(py)
+            .eq(PyList::empty(py))
+            .unwrap());
 
-        let root_node = &route_map.map.children["/"];
-        assert_eq!(root_node.components, HashSet::new());
-        assert_eq!(root_node.path_parameters.as_ref().unwrap().len(), 0);
-        assert!(!root_node.is_asgi);
-        assert!(root_node.static_path.is_none());
-
-        let asgi_handlers = root_node.asgi_handlers.as_ref().unwrap();
-        assert_eq!(asgi_handlers.len(), 2);
-        assert!(asgi_handlers.contains_key("GET"));
-        assert!(asgi_handlers.contains_key("POST"));
-
-        let a_node = &route_map.map.children["/a"];
-        assert_eq!(a_node.components, HashSet::new());
-        assert_eq!(a_node.path_parameters.as_ref().unwrap().len(), 0);
-        assert!(!a_node.is_asgi);
-        assert!(a_node.static_path.is_none());
-
-        let asgi_handlers = a_node.asgi_handlers.as_ref().unwrap();
-        assert_eq!(asgi_handlers.len(), 1);
-        assert!(asgi_handlers.contains_key("GET"));
+        assert!(ptr::eq(
+            route_map.find_handler_group("/").unwrap().handler_group,
+            base_handlers
+        ));
 
         Ok(())
     })
+}
+
+#[test]
+fn plain_route_normalize() {
+    Python::with_gil(|py| {
+        let mut route_map = RouteMap::new(py, true).unwrap();
+        let route = make_route(py, "/a/b", "get").unwrap();
+        route_map.add_route(py, route).unwrap();
+
+        route_map.find_handler_group("/a/b/").unwrap();
+    });
 }

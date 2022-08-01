@@ -1,5 +1,7 @@
-use crate::RouteMap;
+use crate::test::{assert_keys_eq, node_empty};
+use crate::{HandlerType, RouteMap};
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 
 use super::make_route;
 
@@ -8,16 +10,11 @@ fn init_empty() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
         let mut route_map = RouteMap::new(py, false)?;
 
-        route_map.add_routes(py, vec![])?;
+        route_map.add_routes(py, Vec::new())?;
 
-        let map = &route_map.map;
-
-        assert!(map.components.is_empty());
-        assert!(map.children.is_empty());
-        assert!(map.path_parameters.is_none());
-        assert!(map.asgi_handlers.is_none());
-        assert!(!map.is_asgi);
-        assert!(map.static_path.is_none());
+        assert!(node_empty(&route_map.root));
+        assert!(route_map.static_paths.is_empty());
+        assert!(route_map.plain_routes.is_empty());
 
         Ok(())
     })
@@ -28,31 +25,26 @@ fn init_one_route() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
         let mut route_map = RouteMap::new(py, false)?;
 
-        let routes = vec![make_route(py, "/test", "get")?];
+        let route = make_route(py, "/test", "get")?;
 
-        route_map.add_routes(py, routes)?;
+        route_map.add_route(py, route)?;
 
-        let map = &route_map.map;
+        assert!(node_empty(&route_map.root));
+        assert!(route_map.static_paths.is_empty());
 
-        assert!(map.components.is_empty());
+        assert_keys_eq(&route_map.plain_routes, &["/test"]);
 
-        assert!(!map.children.is_empty());
-        assert_eq!(map.children.len(), 1);
-        assert!(map.children.contains_key("/test"));
-
-        {
-            let map = map.children.get("/test").unwrap();
-            assert!(map.path_parameters.is_some());
-            assert!(map.asgi_handlers.is_some());
-            if let Some(asgi_handlers) = map.asgi_handlers.as_ref() {
-                assert!(asgi_handlers.contains_key("GET"));
-            }
-        }
-
-        assert!(map.path_parameters.is_none());
-        assert!(map.asgi_handlers.is_none());
-        assert!(!map.is_asgi);
-        assert!(map.static_path.is_none());
+        let handler_group = &route_map.plain_routes["/test"];
+        assert!(!handler_group.is_asgi);
+        assert!(handler_group.static_path.is_none());
+        assert!(handler_group
+            .asgi_handlers
+            .contains_key(&HandlerType::HttpGet));
+        assert!(handler_group
+            .path_parameters
+            .as_ref(py)
+            .eq(PyList::empty(py))
+            .unwrap());
 
         Ok(())
     })
@@ -65,9 +57,10 @@ fn init_one_deep_path() {
         let mut path = vec!["a"; 50_000].join("/");
         // Ensure path has a placeholder
         path.insert_str(0, "/{x:str}/");
-        let routes = vec![make_route(py, &path, "get").unwrap()];
+        let route = make_route(py, &path, "get").unwrap();
 
-        route_map.add_routes(py, routes).unwrap();
+        route_map.add_route(py, route).unwrap();
+        drop(route_map);
     });
 }
 
@@ -76,59 +69,33 @@ fn init_one_route_with_path() -> PyResult<()> {
     Python::with_gil(|py| -> PyResult<()> {
         let mut route_map = RouteMap::new(py, false)?;
 
-        let routes = vec![make_route(py, "/articles/{id:str}", "get")?];
+        let route = make_route(py, "/articles/{id:str}", "get")?;
 
-        route_map.add_routes(py, routes)?;
+        route_map.add_route(py, route)?;
 
-        let map = &route_map.map;
+        assert!(route_map.static_paths.is_empty());
+        assert!(route_map.plain_routes.is_empty());
 
-        assert_eq!(map.components.len(), 1);
-        assert!(map.components.contains("/"));
+        let node = &route_map.root;
+        assert!(node.handler_group.is_none());
+        assert!(node.placeholder_child.is_none());
+        assert_keys_eq(&node.children, &["articles"]);
 
-        assert_eq!(map.children.len(), 1);
-        assert!(map.children.contains_key("/"));
+        let node = &node.children["articles"];
+        assert!(node.handler_group.is_none());
+        assert!(node.children.is_empty());
 
-        // '/'
-        {
-            let map = map.children.get("/").unwrap();
+        let node = node.placeholder_child.as_deref().unwrap();
+        assert!(node.children.is_empty());
+        assert!(node.placeholder_child.is_none());
 
-            assert_eq!(map.components.len(), 1);
-            assert!(map.components.contains("articles"));
-
-            assert_eq!(map.children.len(), 1);
-            assert!(map.children.contains_key("articles"));
-
-            // 'articles'
-            {
-                let map = map.children.get("articles").unwrap();
-
-                assert_eq!(map.components.len(), 1);
-                assert!(map.components.contains("*"));
-
-                assert_eq!(map.children.len(), 1);
-                assert!(map.children.contains_key("*"));
-
-                // '*'
-                {
-                    let map = map.children.get("*").unwrap();
-
-                    assert!(map.components.is_empty());
-
-                    assert!(map.children.is_empty());
-
-                    assert!(map.asgi_handlers.is_some());
-
-                    if let Some(asgi_handlers) = map.asgi_handlers.as_ref() {
-                        assert!(asgi_handlers.contains_key("GET"));
-                    }
-                }
-            }
-        }
-
-        assert!(map.path_parameters.is_none());
-        assert!(map.asgi_handlers.is_none());
-        assert!(!map.is_asgi);
-        assert!(map.static_path.is_none());
+        let handler_group = node.handler_group.as_ref().unwrap();
+        assert!(!handler_group.is_asgi);
+        assert!(handler_group.static_path.is_none());
+        assert!(handler_group
+            .asgi_handlers
+            .contains_key(&HandlerType::HttpGet));
+        assert_eq!(handler_group.path_parameters.as_ref(py).len().unwrap(), 1);
 
         Ok(())
     })
