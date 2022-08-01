@@ -1,3 +1,4 @@
+import re
 from typing import Sequence
 
 
@@ -9,10 +10,8 @@ def normalize_path(path: str) -> str:
         return path
     if not path.startswith("/"):
         path = "/" + path
-    if path.endswith("/"):
-        path = path[: len(path) - 1]
-    while "//" in path:
-        path = path.replace("//", "/")
+    path = path.rstrip("/")
+    path = re.sub("//+", "/", path)
     return path
 
 
