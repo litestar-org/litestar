@@ -47,8 +47,9 @@ class StarliteASGIRouter(StarletteRouter):
                 continue
             if cur.get("static_path"):
                 static_path = cast(str, cur["static_path"])
-                if static_path != "/":
-                    scope["path"] = scope["path"].replace(static_path, "")
+                if static_path != "/" and scope["path"].startswith(static_path):
+                    start_idx = len(static_path)
+                    scope["path"] = scope["path"][start_idx:]
                 break
             raise NotFoundException()
         return cur, path_params

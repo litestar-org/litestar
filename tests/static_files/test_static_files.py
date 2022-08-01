@@ -52,3 +52,15 @@ def test_path_inside_static(tmpdir: Any) -> None:
     app = Starlite(route_handlers=[], static_files_config=static_files_config)
     with pytest.raises(ImproperlyConfiguredException):
         app.register(handler)
+
+
+def test_static_substring_of_self(tmpdir: Any) -> None:
+    path = tmpdir.mkdir("static_part").mkdir("static")
+    path = path.join("test.txt")
+    path.write("content")
+
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
+    with create_test_client([], static_files_config=static_files_config) as client:
+        response = client.get("/static/static_part/static/test.txt")
+        assert response.status_code == 200
+        assert response.text == "content"
