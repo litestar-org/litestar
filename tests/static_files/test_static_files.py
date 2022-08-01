@@ -3,6 +3,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from starlite import ImproperlyConfiguredException, Starlite, get
 from starlite.config import StaticFilesConfig
 from starlite.testing import create_test_client
 
@@ -34,3 +35,20 @@ def test_config_validation(tmpdir: Any) -> None:
 
     with pytest.raises(ValidationError):
         StaticFilesConfig(path="", directories=[tmpdir])
+
+
+def test_path_inside_static(tmpdir: Any) -> None:
+    path = tmpdir.join("test.txt")
+    path.write("content")
+
+    @get("/static/strange/{f:str}")
+    def handler(f: str) -> str:
+        return f
+
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[handler], static_files_config=static_files_config)
+
+    app = Starlite(route_handlers=[], static_files_config=static_files_config)
+    with pytest.raises(ImproperlyConfiguredException):
+        app.register(handler)
