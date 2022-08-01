@@ -20,7 +20,15 @@ def test_join_url_fragments(base: str, fragment: str, expected: str) -> None:
 
 @pytest.mark.parametrize(
     "base,expected",
-    [("/path", "/path"), ("path/", "/path"), ("path", "/path"), ("path////path", "/path/path"), ("path//", "/path")],
+    [
+        ("", ""),
+        ("/path", "/path"),
+        ("path/", "/path"),
+        ("path", "/path"),
+        ("path////path", "/path/path"),
+        ("path//", "/path"),
+        ("///", "/"),
+    ],
 )
 def test_normalize_path(base: str, expected: str) -> None:
     assert normalize_path(base) == expected
