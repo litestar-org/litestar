@@ -58,7 +58,7 @@ Additionally, you can pass the following optional kwargs:
   event loop. This has an effect only for sync handler functions.
   See [using sync handler functions](#using-sync-handler-functions).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
-  See [exception-handlers](../17-exceptions#exception-handling).
+  See [exception-handlers](../../17-exceptions#exception-handling).
 
 And the following kwargs, which affect [OpenAPI schema generation](../12-openapi.md#route-handler-configuration)
 
