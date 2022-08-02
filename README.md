@@ -2,7 +2,7 @@
 <img alt="Starlite logo" src="./docs/images/SVG/starlite-banner.svg" width="100%" height="auto">
 <!-- markdownlint-restore -->
 
-<center>
+<div align="center">
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
@@ -25,7 +25,7 @@
 
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
 
-</center>
+</div>
 
 # Starlite
 
