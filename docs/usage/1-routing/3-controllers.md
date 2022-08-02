@@ -56,7 +56,7 @@ Aside from the `path` class variable see above, you can also also define the fol
 - `after_response`: A [after response lifecycle hook handler](../13-lifecycle-hooks.md#after-response).
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
-- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
+- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
 - `middleware`: A list of middlewares. See [middleware](../7-middleware.md).
 - `parameters`: A mapping of parameters definition that will be available on all sub route handlers. See [layered parameters](../3-parameters.md#layered-parameters).
