@@ -55,7 +55,12 @@ nav:
           - usage/2-route-handlers/1_http_route_handlers.md
           - usage/2-route-handlers/2_websocket_route_handlers.md
           - usage/2-route-handlers/3_asgi_route_handlers.md
-      - usage/3-parameters.md
+      - Parameters:
+          - usage/3-parameters/0-path-parameters.md
+          - usage/3-parameters/1-query-parameters.md
+          - usage/3-parameters/2-header-and-cookie-parameters.md
+          - usage/3-parameters/3-the-parameter-function.md
+          - usage/3-parameters/4-layered-parameters.md
       - usage/4-request-body.md
       - usage/5-responses.md
       - usage/6-dependency-injection.md
