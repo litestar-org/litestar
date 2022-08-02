@@ -59,7 +59,7 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
-pre-commit = "^2.20.0"
+pre-commit = "*"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]

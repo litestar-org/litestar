@@ -14,8 +14,7 @@ To contribute code changes or update the documentation, please follow these step
 ## Code Contribution Guidelines
 
 1. if you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
-   is mandatory and tests should be well
-   written.
+   is mandatory and tests should be well written.
 2. All public functions and methods should be documented with a doc string. The project uses
    the [google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
    Private methods should have a doc string explaining what they do, but do not require an elaborate doc string.

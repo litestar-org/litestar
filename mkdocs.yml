@@ -20,14 +20,17 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
+    - navigation.instant
     - navigation.tracking
-    - navigation.expand
-    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.integrate
     - search.suggest
     - search.highlight
     - search.share
   plugins:
-    - search
+    - search:
+        lang: en
     - social:
         cards_color:
           fill: "#1d2433"
