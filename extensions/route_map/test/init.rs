@@ -1,5 +1,5 @@
 use crate::test::{assert_keys_eq, node_empty};
-use crate::{HandlerType, RouteMap};
+use crate::{HandlerGroup, HandlerType, RouteMap};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
 
@@ -35,16 +35,16 @@ fn init_one_route() -> PyResult<()> {
         assert_keys_eq(&route_map.plain_routes, &["/test"]);
 
         let handler_group = &route_map.plain_routes["/test"];
-        assert!(!handler_group.is_asgi);
-        assert!(handler_group.static_path.is_none());
-        assert!(handler_group
-            .asgi_handlers
-            .contains_key(&HandlerType::HttpGet));
-        assert!(handler_group
-            .path_parameters
-            .as_ref(py)
-            .eq(PyList::empty(py))
-            .unwrap());
+        match handler_group {
+            HandlerGroup::NonAsgi {
+                path_parameters,
+                asgi_handlers,
+            } => {
+                assert_keys_eq(asgi_handlers, &[HandlerType::HttpGet]);
+                assert!(path_parameters.as_ref(py).eq(PyList::empty(py)).unwrap());
+            }
+            _ => panic!("Expected NonAsgi handler group"),
+        }
 
         Ok(())
     })
@@ -90,12 +90,16 @@ fn init_one_route_with_path() -> PyResult<()> {
         assert!(node.placeholder_child.is_none());
 
         let handler_group = node.handler_group.as_ref().unwrap();
-        assert!(!handler_group.is_asgi);
-        assert!(handler_group.static_path.is_none());
-        assert!(handler_group
-            .asgi_handlers
-            .contains_key(&HandlerType::HttpGet));
-        assert_eq!(handler_group.path_parameters.as_ref(py).len().unwrap(), 1);
+        match handler_group {
+            HandlerGroup::NonAsgi {
+                path_parameters,
+                asgi_handlers,
+            } => {
+                assert_keys_eq(asgi_handlers, &[HandlerType::HttpGet]);
+                assert_eq!(path_parameters.as_ref(py).len().unwrap(), 1);
+            }
+            _ => panic!("expected NonAsgi Handler Group"),
+        }
 
         Ok(())
     })

@@ -9,9 +9,10 @@ mod wrappers;
 use crate::util::{get_attr_and_downcast, get_base_components};
 
 use std::collections::{HashMap, HashSet};
-use std::mem;
+use std::{fmt, mem};
 
 use crate::search::FindResult;
+use pyo3::types::PyList;
 use pyo3::{exceptions::PyTypeError, prelude::*};
 
 type ASGIApp = PyAny;
@@ -23,27 +24,106 @@ fn route_map(_py: Python, m: &PyModule) -> PyResult<()> {
 }
 
 #[derive(Debug, Clone)]
-struct HandlerGroup {
-    is_asgi: bool,
-    static_path: Option<String>,
-    path_parameters: Py<PyAny>,
-    asgi_handlers: HashMap<HandlerType, Py<ASGIApp>>,
+enum HandlerGroup {
+    Static {
+        path: String,
+        handler: Py<ASGIApp>,
+    },
+    Asgi {
+        path_parameters: Py<PyAny>,
+        handler: Py<ASGIApp>,
+    },
+    NonAsgi {
+        path_parameters: Py<PyAny>,
+        asgi_handlers: HashMap<HandlerType, Py<ASGIApp>>,
+    },
 }
 
 impl HandlerGroup {
-    fn new(params: Py<PyAny>) -> Self {
-        Self {
-            path_parameters: params,
-            asgi_handlers: Default::default(),
-            is_asgi: false,
-            static_path: None,
+    fn websocket(path_parameters: Py<PyAny>, handler: Py<ASGIApp>) -> Self {
+        Self::NonAsgi {
+            path_parameters,
+            asgi_handlers: HashMap::from([(HandlerType::Websocket, handler)]),
+        }
+    }
+
+    fn path_parameters<'a>(&'a self, py: Python<'a>) -> &'a PyAny {
+        match self {
+            Self::Static { .. } => PyList::empty(py),
+            Self::Asgi {
+                path_parameters, ..
+            } => path_parameters.as_ref(py),
+            Self::NonAsgi {
+                path_parameters, ..
+            } => path_parameters.as_ref(py),
+        }
+    }
+
+    fn static_path(&self) -> Option<&str> {
+        match self {
+            Self::Static { path, .. } => Some(path),
+            _ => None,
+        }
+    }
+
+    fn merge(&mut self, py: Python<'_>, other: Self, path: &str) -> PyResult<&mut Self> {
+        match (&mut *self, other) {
+            (Self::Static { .. }, Self::Static { .. }) => Ok(self),
+            (Self::Static { .. }, _) | (_, Self::Static { .. }) => {
+                Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                    "Cannot have configured routes below a static path at {path}"
+                )))
+            }
+            (
+                Self::Asgi {
+                    path_parameters: lhs_params,
+                    handler: lhs_handler,
+                },
+                Self::Asgi {
+                    path_parameters: rhs_params,
+                    handler: rhs_handler,
+                },
+            ) => {
+                if !lhs_params.as_ref(py).eq(rhs_params.as_ref(py))? {
+                    return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                        "Should not use routes with conflicting path parameters at {path}"
+                    )));
+                }
+                *lhs_handler = rhs_handler;
+                Ok(self)
+            }
+            (Self::Asgi { .. }, _) | (_, Self::Asgi { .. }) => {
+                Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                    "ASGI route conflict at {path}. ASGI route handlers handle all methods."
+                )))
+            }
+            (
+                Self::NonAsgi {
+                    path_parameters: lhs_params,
+                    asgi_handlers: lhs_handlers,
+                },
+                Self::NonAsgi {
+                    path_parameters: rhs_params,
+                    asgi_handlers: rhs_handlers,
+                },
+            ) => {
+                if !lhs_params.as_ref(py).eq(rhs_params.as_ref(py))? {
+                    return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                        "Should not use routes with conflicting path parameters at {path}"
+                    )));
+                }
+
+                for (ty, handler) in rhs_handlers {
+                    lhs_handlers.insert(ty, handler);
+                }
+                Ok(self)
+            }
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum HandlerType {
-    Asgi,
     Websocket,
     // HTTP methods taken from starlite.types.Method
     HttpGet,
@@ -66,6 +146,22 @@ impl HandlerType {
             "HEAD" => Self::HttpHead,
             _ => Self::HttpOther(String::from(method)),
         }
+    }
+}
+
+impl fmt::Display for HandlerType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            HandlerType::Websocket => "WEBSOCKET",
+            HandlerType::HttpGet => "GET",
+            HandlerType::HttpPost => "POST",
+            HandlerType::HttpDelete => "DELETE",
+            HandlerType::HttpPatch => "PATCH",
+            HandlerType::HttpPut => "PUT",
+            HandlerType::HttpHead => "HEAD",
+            HandlerType::HttpOther(s) => s,
+        };
+        f.write_str(s)
     }
 }
 
@@ -138,55 +234,68 @@ impl RouteMap {
     #[pyo3(text_signature = "($self, route)")]
     fn add_route<'a>(&mut self, py: Python<'a>, route: wrappers::Route<'a>) -> PyResult<()> {
         let path = route.path()?;
-        let path_parameters = route.path_parameters()?;
+        let path_parameters: &PyAny = route.path_parameters()?;
         let is_static = self.static_paths.contains(path);
 
-        let handler_group = search::find_insert_handler_group(
-            &mut self.root,
-            &mut self.plain_routes,
-            path,
-            path_parameters,
-            is_static,
-        )?;
-
-        if path_parameters.ne(&handler_group.path_parameters)? {
-            return Err(wrappers::ImproperlyConfiguredException::new_err(
-                "Routes with conflicting path parameters",
-            ));
-        }
-        if is_static {
-            handler_group.is_asgi = true;
-            handler_group.static_path = Some(String::from(path));
-        }
-
-        if route.is_http(&self.ctx)? {
+        let new_handler_group = if is_static {
+            if !route.is_asgi(&self.ctx)? {
+                return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                    "Static route handlers must be asgi handlers at {path}"
+                )));
+            }
+            if path_parameters.is_true()? {
+                return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                    "Static routes may not have path parameters at {path}"
+                )));
+            }
+            HandlerGroup::Static {
+                path: String::from(path),
+                handler: self
+                    .ctx
+                    .build_middleware_stack(py, route, route.handler()?)?,
+            }
+        } else if route.is_http(&self.ctx)? {
+            let mut asgi_handlers = HashMap::new();
             for item in route.http_handlers()? {
                 let (method, handler) = item?;
-                // TODO: Check for existing?
-                handler_group.asgi_handlers.insert(
+                asgi_handlers.insert(
                     HandlerType::from_http_method(method),
                     self.ctx.build_middleware_stack(py, route, handler)?,
                 );
             }
+            HandlerGroup::NonAsgi {
+                path_parameters: path_parameters.into(),
+                asgi_handlers,
+            }
         } else if route.is_asgi(&self.ctx)? {
-            handler_group.is_asgi = true;
-            handler_group.asgi_handlers.insert(
-                HandlerType::Asgi,
-                self.ctx
+            HandlerGroup::Asgi {
+                path_parameters: path_parameters.into(),
+                handler: self
+                    .ctx
                     .build_middleware_stack(py, route, route.handler()?)?,
-            );
+            }
         } else if route.is_websocket(&self.ctx)? {
-            handler_group.asgi_handlers.insert(
-                HandlerType::Websocket,
+            HandlerGroup::websocket(
+                path_parameters.into(),
                 self.ctx
                     .build_middleware_stack(py, route, route.handler()?)?,
-            );
+            )
         } else {
             return Err(PyTypeError::new_err(format!(
                 "Unknown route type {}",
                 route.type_name()?,
             )));
-        }
+        };
+
+        search::find_insert_handler_group(
+            &mut self.root,
+            &mut self.plain_routes,
+            path,
+            path_parameters,
+            is_static,
+            new_handler_group,
+        )?;
+
         Ok(())
     }
 
@@ -197,39 +306,37 @@ impl RouteMap {
             param_values,
             changed_path,
         } = self.find_handler_group(scope.path()?)?;
-        let HandlerGroup {
-            is_asgi,
-            path_parameters,
-            asgi_handlers,
-            ..
-        } = handler_group;
-
         if let Some(path) = &changed_path {
             scope.set_path(path)?;
         }
 
         let parsed_parameters =
             self.ctx
-                .parse_path_parameters(py, path_parameters.as_ref(py), &param_values)?;
+                .parse_path_parameters(py, handler_group.path_parameters(py), &param_values)?;
         scope.set_path_params(parsed_parameters)?;
 
-        let mut make_err: fn() -> PyErr = || wrappers::NotFoundException::new_err(());
-        let handler_type = if *is_asgi {
-            HandlerType::Asgi
-        } else {
-            let scope_type = scope.ty()?;
-            if scope_type == "http" {
-                make_err = || wrappers::MethodNotAllowedException::new_err(());
-                HandlerType::from_http_method(scope.method()?)
-            } else {
-                // TODO: Is it correct to assume any non http scope _must_ be for a websocket?
-                HandlerType::Websocket
+        let asgi_app = match handler_group {
+            HandlerGroup::Static { handler, .. } => handler.clone_ref(py),
+            HandlerGroup::Asgi { handler, .. } => handler.clone_ref(py),
+            HandlerGroup::NonAsgi { asgi_handlers, .. } => {
+                let scope_type = scope.ty()?;
+                let make_err: fn() -> PyErr;
+                let handler_type = if scope_type == "http" {
+                    make_err = || wrappers::MethodNotAllowedException::new_err(());
+                    HandlerType::from_http_method(scope.method()?)
+                } else {
+                    make_err = || wrappers::NotFoundException::new_err(());
+                    // TODO: Is it correct to assume any non http scope _must_ be for a websocket?
+                    HandlerType::Websocket
+                };
+
+                asgi_handlers
+                    .get(&handler_type)
+                    .ok_or_else(make_err)?
+                    .clone_ref(py)
             }
         };
-        asgi_handlers
-            .get(&handler_type)
-            .map(|handler: &Py<_>| handler.clone_ref(py))
-            .ok_or_else(make_err)
+        Ok(asgi_app)
     }
 
     fn __repr__(&self) -> String {

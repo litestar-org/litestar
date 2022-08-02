@@ -1,4 +1,4 @@
-use crate::{wrappers, HandlerType, Node, RouteMap};
+use crate::{wrappers, HandlerGroup, HandlerType, Node, RouteMap};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
 use std::collections::{HashMap, HashSet};
@@ -49,31 +49,39 @@ fn simple_route() -> PyResult<()> {
         assert!(node_empty(&route_map.root));
 
         let base_handlers = &route_map.plain_routes["/"];
-        assert_keys_eq(
-            &base_handlers.asgi_handlers,
-            &[HandlerType::HttpGet, HandlerType::HttpPost],
-        );
-        assert!(base_handlers.static_path.is_none());
-        assert!(!base_handlers.is_asgi);
-        assert!(base_handlers
-            .path_parameters
-            .as_ref(py)
-            .eq(PyList::empty(py))
-            .unwrap());
+        match base_handlers {
+            HandlerGroup::NonAsgi {
+                path_parameters,
+                asgi_handlers,
+            } => {
+                assert_keys_eq(
+                    &asgi_handlers,
+                    &[HandlerType::HttpGet, HandlerType::HttpPost],
+                );
+                assert!(path_parameters.as_ref(py).eq(PyList::empty(py)).unwrap());
+            }
+            _ => panic!("Expected non asgi handler"),
+        }
 
         let a_handlers = &route_map.plain_routes["/a"];
-        assert_keys_eq(&a_handlers.asgi_handlers, &[HandlerType::HttpGet]);
-        assert!(a_handlers.static_path.is_none());
-        assert!(!a_handlers.is_asgi);
-        assert!(a_handlers
-            .path_parameters
-            .as_ref(py)
-            .eq(PyList::empty(py))
-            .unwrap());
+        match a_handlers {
+            HandlerGroup::NonAsgi {
+                path_parameters,
+                asgi_handlers,
+            } => {
+                assert_keys_eq(&asgi_handlers, &[HandlerType::HttpGet]);
+                assert!(path_parameters.as_ref(py).eq(PyList::empty(py)).unwrap());
+            }
+            _ => panic!("Expected non asgi handler"),
+        }
 
         assert!(ptr::eq(
             route_map.find_handler_group("/").unwrap().handler_group,
             base_handlers
+        ));
+        assert!(ptr::eq(
+            route_map.find_handler_group("/a").unwrap().handler_group,
+            a_handlers
         ));
 
         Ok(())

@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
 use std::borrow::Cow;
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 use crate::util::normalize_path;
@@ -11,7 +12,9 @@ pub(crate) fn find_insert_handler_group<'a>(
     path: &str,
     path_parameters: &PyAny,
     is_static: bool,
+    handler_group: HandlerGroup,
 ) -> PyResult<&'a mut HandlerGroup> {
+    let py = path_parameters.py();
     let path_parameters_vec: Vec<wrappers::PathParameter<'_>> = path_parameters.extract()?;
     let handler_group: &mut HandlerGroup = if !path_parameters_vec.is_empty() || is_static {
         let param_set = util::param_set(&path_parameters_vec)?;
@@ -32,12 +35,15 @@ pub(crate) fn find_insert_handler_group<'a>(
             };
         }
         // Found where the handlers should be, get it, or add a new one
-        node.handler_group
-            .get_or_insert_with(|| HandlerGroup::new(path_parameters.into()))
+        match node.handler_group {
+            Some(ref mut existing) => existing.merge(py, handler_group, path)?,
+            None => node.handler_group.insert(handler_group),
+        }
     } else {
-        plain_routes
-            .entry(String::from(path))
-            .or_insert_with(|| HandlerGroup::new(path_parameters.into()))
+        match plain_routes.entry(String::from(path)) {
+            Entry::Occupied(entry) => entry.into_mut().merge(py, handler_group, path)?,
+            Entry::Vacant(entry) => entry.insert(handler_group),
+        }
     };
     Ok(handler_group)
 }
@@ -62,10 +68,10 @@ impl RouteMap {
                         param_values.push(String::from(component));
                         continue;
                     }
-                    let static_path = node
+                    let static_path: Option<&str> = node
                         .handler_group
                         .as_ref()
-                        .and_then(|handler_group| handler_group.static_path.as_deref());
+                        .and_then(|handler_group| handler_group.static_path());
                     if let Some(static_path) = static_path {
                         if static_path != "/" {
                             path = Cow::Owned(path.replace(static_path, ""));
