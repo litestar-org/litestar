@@ -92,13 +92,17 @@ def encode_jwt_token(user_id: UUID, expiration: timedelta = DEFAULT_TIME_DELTA) 
 
 We can now create our authentication middleware:
 
-```python title="my_app/security/authentication_middleware.py"
+```python
 from typing import cast
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from starlette.requests import HTTPConnection
-from starlite import AbstractAuthenticationMiddleware, AuthenticationResult, NotAuthorizedException
+from starlite import (
+    AbstractAuthenticationMiddleware,
+    AuthenticationResult,
+    NotAuthorizedException,
+)
 
 from app.db.models import User
 from app.security.jwt import decode_jwt_token
@@ -107,7 +111,9 @@ API_KEY_HEADER = "X-API-KEY"
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:
+    async def authenticate_request(
+        self, request: HTTPConnection
+    ) -> AuthenticationResult:
         """
         Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
 
@@ -121,10 +127,12 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         # decode the token, the result is a 'Token' model instance
         token = decode_jwt_token(encoded_token=auth_header)
 
-        engine = cast(AsyncEngine, request.app.state.postgres_connection)
+        engine = cast("AsyncEngine", request.app.state.postgres_connection)
         async with AsyncSession(engine) as async_session:
             async with async_session.begin():
-                user = await async_session.execute(select(User).where(User.id == token.sub))
+                user = await async_session.execute(
+                    select(User).where(User.id == token.sub)
+                )
         if not user:
             raise NotAuthorizedException()
         return AuthenticationResult(user=user, auth=token)

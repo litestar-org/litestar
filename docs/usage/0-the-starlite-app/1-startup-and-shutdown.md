@@ -35,13 +35,13 @@ def get_postgres_connection(state: State) -> AsyncEngine:
         state.postgres_connection = create_async_engine(
             settings.POSTGRES_CONNECTION_STRING
         )
-    return cast(AsyncEngine, state.postgres_connection)
+    return cast("AsyncEngine", state.postgres_connection)
 
 
 async def close_postgres_connection(state: State) -> None:
     """Closes the postgres connection stored in the application State object"""
     if state.postgres_connection:
-        await cast(AsyncEngine, state.postgres_connection).engine.dispose()
+        await cast("AsyncEngine", state.postgres_connection).engine.dispose()
     return None
 
 

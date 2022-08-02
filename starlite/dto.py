@@ -1,8 +1,8 @@
 from dataclasses import asdict, is_dataclass
 from inspect import isawaitable
 from typing import (
+    TYPE_CHECKING,
     Any,
-    Awaitable,
     ClassVar,
     Dict,
     Generic,
@@ -23,6 +23,9 @@ from pydantic_factories import ModelFactory
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
 from starlite.utils import convert_dataclass_to_model, is_async_callable
+
+if TYPE_CHECKING:
+    from typing import Awaitable
 
 
 def get_field_type(model_field: ModelField) -> Any:
@@ -67,7 +70,7 @@ class DTO(GenericModel, Generic[T]):
                     f"plugin {type(cls.dto_source_plugin).__name__} to_dict method is async. "
                     f"Use 'DTO.from_model_instance_async instead'",
                 )
-            values = cast(Dict[str, Any], result)
+            values = cast("Dict[str, Any]", result)
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
         else:
@@ -84,7 +87,9 @@ class DTO(GenericModel, Generic[T]):
             and cls.dto_source_plugin.is_plugin_supported_type(model_instance)
             and is_async_callable(cls.dto_source_plugin.to_dict)
         ):
-            values = await cast(Awaitable[Dict[str, Any]], cls.dto_source_plugin.to_dict(model_instance=model_instance))
+            values = await cast(
+                "Awaitable[Dict[str, Any]]", cls.dto_source_plugin.to_dict(model_instance=model_instance)
+            )
             return cls._from_value_mapping(mapping=values)
         return cls.from_model_instance(model_instance=model_instance)
 
@@ -99,9 +104,9 @@ class DTO(GenericModel, Generic[T]):
         if self.dto_source_plugin is not None and self.dto_source_plugin.is_plugin_supported_type(
             self.dto_source_model
         ):
-            return cast(T, self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values))
+            return cast("T", self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values))
         # we are dealing with a pydantic model or dataclass
-        return cast(T, self.dto_source_model(**values))
+        return cast("T", self.dto_source_model(**values))
 
 
 class DTOFactory:
@@ -172,7 +177,7 @@ class DTOFactory:
         field_mapping = field_mapping or {}
         fields, plugin = self._get_fields_from_source(source)
         field_definitions = self._populate_field_definitions(exclude, field_definitions, field_mapping, fields)
-        dto = cast(Type[DTO[T]], create_model(name, __base__=DTO, **field_definitions))  # type:ignore[call-overload]
+        dto = cast("Type[DTO[T]]", create_model(name, __base__=DTO, **field_definitions))  # type:ignore[call-overload]
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
         dto.dto_field_mapping = {}

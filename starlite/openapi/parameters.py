@@ -2,7 +2,6 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Dict, List, cast
 
 from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
-from pydantic import BaseModel
 from pydantic.fields import Undefined
 
 from starlite.constants import (
@@ -16,6 +15,7 @@ from starlite.openapi.schema import create_schema
 
 if TYPE_CHECKING:
     from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
+    from pydantic import BaseModel
     from pydantic.fields import ModelField
 
     from starlite.handlers import BaseRouteHandler
@@ -80,7 +80,7 @@ def create_parameter(
     Creates an OpenAPI Parameter instance
     """
     schema = None
-    is_required = cast(bool, model_field.required) if model_field.required is not Undefined else False
+    is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
     extra = model_field.field_info.extra
 
     if any(path_param["name"] == parameter_name for path_param in path_parameters):
@@ -137,7 +137,7 @@ def get_recursive_handler_parameters(
                 generate_examples=generate_examples,
             )
         ]
-    dependency_fields = cast(BaseModel, dependencies[field_name].signature_model).__fields__
+    dependency_fields = cast("BaseModel", dependencies[field_name].signature_model).__fields__
     return create_parameter_for_handler(route_handler, dependency_fields, path_parameters, generate_examples)
 
 

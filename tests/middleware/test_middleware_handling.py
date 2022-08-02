@@ -7,7 +7,6 @@ from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite import (
     Controller,
@@ -26,16 +25,17 @@ if TYPE_CHECKING:
     from typing import Type
 
     from _pytest.logging import LogCaptureFixture
+    from starlette.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 
 
 class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp) -> None:
+    def __init__(self, app: "ASGIApp") -> None:
         super().__init__(app)
         self.app = app
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == "http":
             request: Request = Request(scope=scope, receive=receive)
             body = await request.json()
@@ -106,7 +106,7 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast(ASGIApp, cur.app)  # type: ignore
+            cur = cast("ASGIApp", cur.app)  # type: ignore
         else:
             unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
@@ -124,7 +124,7 @@ def test_trusted_hosts_middleware() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast(ASGIApp, cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 4
@@ -150,10 +150,10 @@ def test_middleware_call_order() -> None:
 
     def create_test_middleware(middleware_id: int) -> "Type[MiddlewareProtocol]":
         class TestMiddleware(MiddlewareProtocol):
-            def __init__(self, app: ASGIApp):
+            def __init__(self, app: "ASGIApp"):
                 self.app = app
 
-            async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+            async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
                 results.append(middleware_id)
                 await self.app(scope, receive, send)
 

@@ -121,7 +121,7 @@ class Partial(Generic[T]):
                 else:
                     break
             cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
-        return cast(Type[T], cls._models.get(item))
+        return cast("Type[T]", cls._models.get(item))
 
 
 class ResponseHeader(Header):

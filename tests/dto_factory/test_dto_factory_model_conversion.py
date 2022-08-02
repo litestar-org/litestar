@@ -64,7 +64,7 @@ def test_conversion_from_model_instance(
             pets=None,
         )
     else:
-        model_instance = cast(Type[Pet], model)(  # type: ignore[call-arg]
+        model_instance = cast("Type[Pet]", model)(  # type: ignore[call-arg]
             id=1,
             species=Species.MONKEY,
             name="Mike",

@@ -45,7 +45,7 @@ def route_test_paths(draw: DrawFn) -> List[RouteMapTestCase]:
     components_st = st.lists(st.text(alphabet=ascii_letters, min_size=1, max_size=4), min_size=1, max_size=3)
     path_st = st.builds(build_record, components_st, param_st)
     return cast(
-        List[RouteMapTestCase], draw(st.lists(path_st, min_size=10, max_size=10, unique_by=lambda record: record[1]))
+        "List[RouteMapTestCase]", draw(st.lists(path_st, min_size=10, max_size=10, unique_by=lambda record: record[1]))
     )
 
 

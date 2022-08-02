@@ -207,7 +207,7 @@ class OpenAPIConfig(BaseModel):
                     plugins=app.plugins,
                     use_handler_docstrings=self.use_handler_docstrings,
                 )
-        return cast(OpenAPI, construct_open_api_with_schema_class(schema))
+        return cast("OpenAPI", construct_open_api_with_schema_class(schema))
 
 
 class StaticFilesConfig(BaseModel):

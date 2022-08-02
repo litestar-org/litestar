@@ -165,15 +165,15 @@ async def init_tortoise() -> None:
 
 
 @get("/tournaments")
-async def get_tournaments() -> List[Tournament]:
+async def get_tournaments() -> list[Tournament]:
     tournaments = await Tournament.all()
-    return cast(List[Tournament], tournaments)
+    return cast("list[Tournament]", tournaments)
 
 
 @get("/tournaments/{tournament_id:int}")
 async def get_tournament(tournament_id: int) -> Tournament:
     tournament = await Tournament.filter(id=tournament_id).first()
-    return cast(Tournament, tournament)
+    return cast("Tournament", tournament)
 
 
 @post("/tournaments")

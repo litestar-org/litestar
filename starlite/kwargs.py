@@ -1,4 +1,16 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from pydantic.fields import (
     SHAPE_DEQUE,
@@ -13,7 +25,6 @@ from pydantic.fields import (
     Undefined,
 )
 
-from starlite.connection import Request, WebSocket
 from starlite.constants import (
     EXTRA_KEY_IS_PARAMETER,
     EXTRA_KEY_REQUIRED,
@@ -24,7 +35,10 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.parsers import parse_form_data
 from starlite.provide import Provide
 from starlite.signature import SignatureModel, get_signature_model
-from starlite.types import ReservedKwargs
+
+if TYPE_CHECKING:
+    from starlite.connection import Request, WebSocket
+    from starlite.types import ReservedKwargs
 
 # Shapes corresponding to sequences
 SEQ_SHAPES = {
@@ -100,7 +114,7 @@ class KwargsModel:
         expected_header_params: Set[ParameterDefinition],
         expected_path_params: Set[ParameterDefinition],
         expected_query_params: Set[ParameterDefinition],
-        expected_reserved_kwargs: Set[ReservedKwargs],
+        expected_reserved_kwargs: Set["ReservedKwargs"],
         sequence_query_parameter_names: Set[str],
     ) -> None:
         self.expected_cookie_params = expected_cookie_params
@@ -300,7 +314,7 @@ class KwargsModel:
             expected_query_params=expected_query_parameters,
             expected_cookie_params=expected_cookie_parameters,
             expected_header_params=expected_header_parameters,
-            expected_reserved_kwargs=cast(Set[ReservedKwargs], expected_reserved_kwargs),
+            expected_reserved_kwargs=cast("Set[ReservedKwargs]", expected_reserved_kwargs),
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
@@ -376,7 +390,7 @@ class KwargsModel:
         """
         return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 
-    def to_kwargs(self, connection: Union[WebSocket, Request]) -> Dict[str, Any]:
+    def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """
         Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is sync.
         """
@@ -396,7 +410,7 @@ class KwargsModel:
             if "socket" in self.expected_reserved_kwargs:
                 reserved_kwargs["socket"] = connection
             if "data" in self.expected_reserved_kwargs:
-                reserved_kwargs["data"] = self.get_request_data(request=cast(Request, connection))
+                reserved_kwargs["data"] = self.get_request_data(request=cast("Request", connection))
         try:
             path_params = {
                 param.field_name: connection.path_params[param.field_alias]
@@ -426,7 +440,7 @@ class KwargsModel:
         except KeyError as e:
             raise ValidationException(f"Missing required parameter {e.args[0]} for url {connection.url}") from e
 
-    async def get_request_data(self, request: Request) -> Any:
+    async def get_request_data(self, request: "Request") -> Any:
         """
         Retrieves the data - either json data or form data - from the request
         """
@@ -437,7 +451,7 @@ class KwargsModel:
         return await request.json()
 
     async def resolve_dependency(
-        self, dependency: Dependency, connection: Union[WebSocket, Request], **kwargs: Any
+        self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any
     ) -> Any:
         """
         Recursively resolves a dependency graph

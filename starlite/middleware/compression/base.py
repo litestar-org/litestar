@@ -30,11 +30,11 @@ class CompressionMiddleware(MiddlewareProtocol):
         return self._handler
 
 
-def _load_compression_middleware(app: "ASGIApp", config: CompressionConfig) -> MiddlewareProtocol:
+def _load_compression_middleware(app: "ASGIApp", config: CompressionConfig) -> "MiddlewareProtocol":
     if config.backend == CompressionBackend.GZIP:
         handler = import_string("starlite.middleware.compression.gzip.GZipMiddleware")
     elif config.backend == CompressionBackend.BROTLI:
         handler = import_string("starlite.middleware.compression.brotli.BrotliMiddleware")
     else:
         raise ValueError("Unknown compression backend")
-    return cast(MiddlewareProtocol, handler(app=app, **config.dict()))
+    return cast("MiddlewareProtocol", handler(app=app, **config.dict()))

@@ -206,7 +206,7 @@ consider a scenario where we want to inject a DB connection into a dependency.
 
 Our top level dependency will look something like this:
 
-```python title="my_app/postgres.py"
+```python
 from typing import cast
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
@@ -214,11 +214,12 @@ from starlite.datastructures import State
 
 from app.config import settings
 
+
 def get_postgres_connection(state: State) -> AsyncEngine:
     """Returns the Postgres connection. If it doesn't exist, creates it and saves it in a State object"""
     if not hasattr(state, "postgres_connection"):
         state.postgres_connection = create_async_engine(settings.DATABASE_URI)
-    return cast(AsyncEngine, state.postgres_connection)
+    return cast("AsyncEngine", state.postgres_connection)
 ```
 
 We will place it as a the top level dependency:

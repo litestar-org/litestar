@@ -4,7 +4,6 @@ import yaml
 from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
-from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT
 
@@ -12,6 +11,8 @@ from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
+    from starlette.background import BackgroundTask
+
     from starlite.template import TemplateEngineProtocol
 
 
@@ -21,7 +22,7 @@ class Response(StarletteResponse):
         content: Any,
         status_code: int,
         media_type: Union[MediaType, OpenAPIMediaType, str],
-        background: Optional[BackgroundTask] = None,
+        background: Optional["BackgroundTask"] = None,
         headers: Optional[Dict[str, str]] = None,
     ):
         super().__init__(
@@ -29,7 +30,7 @@ class Response(StarletteResponse):
             status_code=status_code,
             headers=headers or {},
             media_type=media_type,
-            background=cast(BackgroundTask, background),
+            background=cast("BackgroundTask", background),
         )
 
     @staticmethod
@@ -55,7 +56,7 @@ class Response(StarletteResponse):
                 content_dict = content.dict(by_alias=True, exclude_none=True)
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
                     encoded = yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
-                    return cast(bytes, encoded)
+                    return cast("bytes", encoded)
                 return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
             return super().render(content)
         except (AttributeError, ValueError, TypeError) as e:
@@ -69,7 +70,7 @@ class TemplateResponse(Response):
         template_name: str,
         template_engine: "TemplateEngineProtocol",
         status_code: int,
-        background: Optional[BackgroundTask] = None,
+        background: Optional["BackgroundTask"] = None,
         headers: Optional[Dict[str, str]] = None,
     ):
         context = context or {}

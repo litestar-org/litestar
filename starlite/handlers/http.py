@@ -5,7 +5,6 @@ from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.typing import AnyCallable
 from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -43,6 +42,8 @@ from starlite.types import (
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
+
     from starlite.app import Starlite
 
 
@@ -170,7 +171,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
 
-    def __call__(self, fn: AnyCallable) -> "HTTPRouteHandler":
+    def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
         """
         Replaces a function with itself
         """
@@ -189,9 +190,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             for layer in self.ownership_layers:
                 if layer.response_class is not None:
                     self.resolved_response_class = layer.response_class
-        return cast(Type[Response], self.resolved_response_class)
+        return cast("Type[Response]", self.resolved_response_class)
 
-    def resolve_response_headers(self) -> Dict[str, ResponseHeader]:
+    def resolve_response_headers(self) -> Dict[str, "ResponseHeader"]:
         """
         Returns all header parameters in the scope of the handler function
 
@@ -201,9 +202,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self.resolved_headers = {}
             for layer in self.ownership_layers:
                 self.resolved_headers.update(layer.response_headers or {})
-        return cast(Dict[str, ResponseHeader], self.resolved_headers)
+        return cast("Dict[str, ResponseHeader]", self.resolved_headers)
 
-    def resolve_before_request(self) -> Optional[BeforeRequestHook]:
+    def resolve_before_request(self) -> Optional["BeforeRequestHook"]:
         """
         Resolves the before_handler handler by starting from the route handler and moving up.
 
@@ -212,9 +213,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         if self.resolved_before_request is BaseRouteHandler.empty:
             self.resolved_before_request = BeforeRequestHook.resolve_for_handler(self, "before_request")
-        return cast(Optional[BeforeRequestHook], self.resolved_before_request)
+        return cast("Optional[BeforeRequestHook]", self.resolved_before_request)
 
-    def resolve_after_request(self) -> Optional[AfterRequestHook]:
+    def resolve_after_request(self) -> Optional["AfterRequestHook"]:
         """
         Resolves the after_request handler by starting from the route handler and moving up.
 
@@ -223,9 +224,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         if self.resolved_after_request is BaseRouteHandler.empty:
             self.resolved_after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
-        return cast(Optional[AfterRequestHook], self.resolved_after_request)
+        return cast("Optional[AfterRequestHook]", self.resolved_after_request)
 
-    def resolve_after_response(self) -> Optional[AfterResponseHook]:
+    def resolve_after_response(self) -> Optional["AfterResponseHook"]:
         """
         Resolves the after_response handler by starting from the route handler and moving up.
 
@@ -234,21 +235,21 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         if self.resolved_after_response is BaseRouteHandler.empty:
             self.resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
-        return cast(Optional[AfterResponseHook], self.resolved_after_response)
+        return cast("Optional[AfterResponseHook]", self.resolved_after_response)
 
     @property
-    def http_methods(self) -> List[Method]:
+    def http_methods(self) -> List["Method"]:
         """
         Returns a list of the RouteHandler's HttpMethod members
         """
-        return cast(List[Method], self.http_method if isinstance(self.http_method, list) else [self.http_method])
+        return cast("List[Method]", self.http_method if isinstance(self.http_method, list) else [self.http_method])
 
     def validate_handler_function(self) -> None:
         """
         Validates the route handler function once it is set by inspecting its return annotations
         """
         super().validate_handler_function()
-        signature = Signature.from_callable(cast(AnyCallable, self.fn))
+        signature = Signature.from_callable(cast("AnyCallable", self.fn))
         return_annotation = signature.return_annotation
         if return_annotation is Signature.empty:
             raise ValidationException(
@@ -297,7 +298,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 status_code=self.status_code,
                 headers=headers,
             )
-        return cast(StarletteResponse, data)
+        return cast("StarletteResponse", data)
 
     async def _process_after_request_hook(
         self,
