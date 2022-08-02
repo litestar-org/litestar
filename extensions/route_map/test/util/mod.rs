@@ -96,3 +96,29 @@ fn path_parameters_eq_one_neq() -> PyResult<()> {
         Ok(())
     })
 }
+
+#[test]
+fn path_parameters_eq_len_neq() -> PyResult<()> {
+    Python::with_gil(|py| -> PyResult<()> {
+        let locals = PyDict::new(py);
+        py.run(
+            include_str!("./path_parameters_eq_len_neq.py"),
+            None,
+            Some(locals),
+        )?;
+        let path_parameters_a = locals
+            .get_item("parameters_a")
+            .unwrap()
+            .extract::<Vec<_>>()?;
+        let path_parameters_b = locals
+            .get_item("parameters_b")
+            .unwrap()
+            .extract::<Vec<_>>()?;
+
+        let eq = path_parameters_eq(&path_parameters_a[..], &path_parameters_b[..], py)?;
+
+        assert!(!eq);
+
+        Ok(())
+    })
+}
