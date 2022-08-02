@@ -92,6 +92,7 @@ Let's say we have a model called `Wallet`, which we'll assume we persist in a DB
 ```python title="my_app/models.py"
 from pydantic import BaseModel, UUID4
 
+
 class Wallet(BaseModel):
     id: UUID4
     currency: str
@@ -149,7 +150,7 @@ from my_app.dependencies import get_wallet_by_id
 
 class WalletController(Controller):
     path = "/wallet"
-    dependencies = { "wallet": Provide(get_wallet_by_id) }
+    dependencies = {"wallet": Provide(get_wallet_by_id)}
 
     # ...
 ```
@@ -298,11 +299,17 @@ route due to the way we infer the source of data for handler and dependency func
 To resolve this, simply mark the function parameter as a dependency with the `Dependency` function.
 
 ```python
+from typing import Optional, NamedTuple
 from starlite import Dependency
 
 
+class LimitOffset(NamedTuple):
+    limit: int
+    offset: int
+
+
 class Repository:
-    def __init__(self, limit_offset: LimitOffset | None = Dependency()) -> None:
+    def __init__(self, limit_offset: Optional[LimitOffset] = Dependency()) -> None:
         # we know what to do if `limit_offset` is provided or not
         ...
 ```

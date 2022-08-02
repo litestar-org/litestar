@@ -11,7 +11,7 @@ from tests.plugins.tortoise_orm import (
 )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_tortoise_orm_plugin_openapi_spec_generation(scaffold_tortoise: Callable) -> None:
     app = Starlite(
         route_handlers=[create_tournament, get_tournament, get_tournaments],

@@ -8,7 +8,7 @@ from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
 
-@pytest.fixture
+@pytest.fixture()
 def route() -> HTTPRoute:
     app = Starlite(route_handlers=[PersonController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")

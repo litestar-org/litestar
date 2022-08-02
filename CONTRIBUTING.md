@@ -1,4 +1,4 @@
-# Contributing
+# Guidelines
 
 To contribute code changes or update the documentation, please follow these steps:
 
@@ -60,8 +60,8 @@ against different python versions. To achieve this you can use the `tox` config 
 3. In root directory of library, create .python-version file in root.
 4. Restart shell.
 5. Remove any existing poetry environment: `$ poetry env remove python`
-6. Tell poetry to use system python <sup>1</sup>: `$ poetry env use system`
-7. `$ poetry install`
+6. Tell poetry to use system python: `$ poetry env use system`
+7. Install the dependencies `$ poetry install --extra testing`
 
 ### Tox Commands
 

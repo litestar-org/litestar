@@ -65,8 +65,10 @@ used:
 !!! note
     When using the `route` decorator with multiple http methods, the default status code is `200`.
 
-    Also note that the default for `delete` is no content because by default it is assumed that delete operations return no
-    data. This though might not be the case in your implementation - so take care of setting it as you see fit.
+<!-- prettier-ignore -->
+!!! note
+    The default for `delete` is `No Content` because by default it is assumed that delete operations return no data.
+    This though might not be the case in your implementation - so take care of setting it as you see fit.
 
 <!-- prettier-ignore -->
 !!! tip

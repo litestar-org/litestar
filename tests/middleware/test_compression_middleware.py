@@ -166,7 +166,7 @@ def test_brotli_regular_response() -> None:
         assert int(response.headers["Content-Length"]) < 40000
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "iterator",
     [

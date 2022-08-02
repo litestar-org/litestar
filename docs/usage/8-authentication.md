@@ -175,7 +175,8 @@ from my_app.security.jwt import Token
 def my_route_handler(request: Request[User, Token]) -> None:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 ```
 
 Or for a websocket route:
@@ -191,7 +192,8 @@ from my_app.security.jwt import Token
 async def my_route_handler(socket: WebSocket[User, Token]) -> None:
     user = socket.user  # correctly typed as User
     auth = socket.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 ```
 
 And of course use the same kind of mechanism for dependencies:
@@ -208,7 +210,8 @@ from my_app.security.jwt import Token
 async def my_dependency(request: Request[User, Token]) -> Any:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 
 
 my_router = Router(

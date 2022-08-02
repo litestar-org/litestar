@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 
 
-@pytest.fixture
+@pytest.fixture()
 def handler() -> HTTPRouteHandler:
     @get("/handler", tags=["handler"])
     def _handler() -> Any:
@@ -17,7 +17,7 @@ def handler() -> HTTPRouteHandler:
     return _handler
 
 
-@pytest.fixture
+@pytest.fixture()
 def controller() -> Type[Controller]:
     class _Controller(Controller):
         path = "/controller"
@@ -30,17 +30,17 @@ def controller() -> Type[Controller]:
     return _Controller
 
 
-@pytest.fixture
+@pytest.fixture()
 def router(controller: Type[Controller]) -> Router:
     return Router(path="/router", route_handlers=[controller], tags=["router"])
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(handler: HTTPRouteHandler, controller: Type[Controller], router: Router) -> Starlite:
     return Starlite(route_handlers=[handler, controller, router])
 
 
-@pytest.fixture
+@pytest.fixture()
 def openapi_schema(app: Starlite) -> "OpenAPI":
     return cast("OpenAPI", app.openapi_schema)
 

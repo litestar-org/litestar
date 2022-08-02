@@ -27,22 +27,19 @@ app = Starlite(route_handlers=[...], plugins=[SQLAlchemyPlugin()])
 
 You can now use SQL alchemy declarative classes as route handler parameters or return values:
 
-```python title="my_app/company/models/company.py"
+```python
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import declarative_base
+from starlite import post, get
 
 Base = declarative_base()
+
 
 class Company(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     worth = Column(Float)
-```
 
-```python title="my_app/company/endpoints.py"
-from starlite import post, get
-
-from my_app.company.models import Company
 
 @post(path="/companies")
 def create_company(data: Company) -> Company:
@@ -50,7 +47,7 @@ def create_company(data: Company) -> Company:
 
 
 @get(path="/companies")
-def get_companies() -> List[Company]:
+def get_companies() -> list[Company]:
     ...
 ```
 
@@ -100,7 +97,7 @@ send complete data structures using the API.
 To use the `TortoiseORMPlguin` import it and pass it to the `Starlite` constructor:
 
 ```python
-from typing import List, cast
+from typing import cast
 
 from tortoise import Model, Tortoise, fields
 
@@ -233,7 +230,7 @@ class MyPlugin:
 
     def from_pydantic_model_instance(
         self, model_class: Type[MyClass], pydantic_model_instance: BaseModel
-    ) -> T:
+    ) -> MyClass:
         """
         Given an instance of a pydantic model created using a plugin's 'to_pydantic_model_class',
         return an instance of the class from which that pydantic model has been created.

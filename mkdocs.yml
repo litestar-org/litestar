@@ -39,7 +39,11 @@ theme:
 extra_css:
   - css/extra.css
 nav:
-  - Overview: index.md
+  - Overview:
+      - index.md
+      - Project Governance: governance.md
+      - Contribution Guide: contributing.md
+      - License: license.md
   - Usage:
       - The Starlite App:
           - usage/0-the-starlite-app/0-the-starlite-app.md
@@ -79,8 +83,6 @@ nav:
       - usage/16-caching.md
       - usage/17-exceptions.md
   - migration.md
-  - governance-and-contribution.md
-  - license.md
 extra:
   social:
     - icon: fontawesome/brands/discord

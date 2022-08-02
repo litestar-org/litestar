@@ -54,13 +54,13 @@ interactive web user interface. If your app is running locally on port 8000 you 
 [ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema). The ReDoc page will show and document all your routes,
 DTOs, and any metadata attached to your controllers mentioned above.
 
-#### Disable Schema Generation
+### Disable Schema Generation
 
 If you wish to disable schema generation and not include the schema endpoints in your API, simply pass `None` as the
 value for `openapi_config`:
 
 ```python title="my_app/main.py"
-from starlite import Starlite, OpenAPIConfig
+from starlite import Starlite
 
 app = Starlite(
     route_handlers=[...], openapi_config=None
@@ -105,9 +105,9 @@ from starlite import Request, get
 
 
 @get(path="/")
-def my_route_handler(request: Request) -> None:
+def my_route_handler(request: Request) -> dict:
     schema = request.app.openapi_schema
-    ...
+    return schema.dict()
 ```
 
 ### The OpenAPI Controller

@@ -13,7 +13,7 @@ from tests.plugins.tortoise_orm import (
 )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_serializing_single_tortoise_model_instance() -> None:
     with create_test_client(
         route_handlers=[get_tournament],
@@ -35,7 +35,7 @@ async def test_serializing_single_tortoise_model_instance() -> None:
         assert len(db_tournament.events.related_objects) == len(data["events"])
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_serializing_list_of_tortoise_models() -> None:
     with create_test_client(
         route_handlers=[get_tournaments],
@@ -58,7 +58,7 @@ async def test_serializing_list_of_tortoise_models() -> None:
         assert len(db_tournament.events.related_objects) == len(serialized_tournament["events"])
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_creating_a_tortoise_model() -> None:
     with create_test_client(
         route_handlers=[create_tournament],

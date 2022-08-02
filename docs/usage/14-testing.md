@@ -4,8 +4,8 @@ Testing is a first class citizen in Starlite, which offers several powerful test
 
 <!-- prettier-ignore -->
 !!! important
-    Testing utils rely on extra dependencies. So make sure to install them, e.g.:
-    `pip install starlite[testing]` or `poetry install starlite --extras testing`
+Testing utils rely on extra dependencies. So make sure to install them, e.g.:
+`pip install starlite[testing]` or `poetry install starlite --extras testing`
 
 ## Test Client
 
@@ -34,6 +34,7 @@ from starlette.status import HTTP_200_OK
 from starlite.testing import TestClient
 
 from my_app.main import app
+
 
 def test_health_check():
     with TestClient(app=app) as client:
@@ -71,8 +72,10 @@ def test_health_check(test_client: TestClient):
         assert response.text == "healthy"
 ```
 
+<!-- prettier-ignore -->
 !!! important
-Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's `on_startup` and `on_shutdown`.
+    Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
+    `on_startup` and `on_shutdown`.
 
 ## Creating a Test App
 
@@ -80,7 +83,8 @@ Starlite also offers a helper function called `create_test_client` which first c
 a test client using it. There are multiple use cases for this helper - when you need to check generic logic that is
 decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
 
-You can pass to this helper all the kwargs accepted by the [starlite constructor](0-the-starlite-app/0-the-starlite-app.md), with
+You can pass to this helper all the kwargs accepted by
+the [starlite constructor](0-the-starlite-app/0-the-starlite-app.md), with
 the `route_handlers` kwarg being **required**. Yet unlike the Starlite app, which expects `route_handlers` to be a list,
 here you can also pass individual values.
 
@@ -118,18 +122,16 @@ def test_health_check():
 
 ## Using pydantic-factories
 
-Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an easy and powerful way to generate mock data from pydantic models and dataclasses.
+Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an easy
+and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
 
 ```python title="main.py"
 from typing import Protocol, runtime_checkable
 
-import pytest
 from pydantic import BaseModel
-from starlette.status import HTTP_200_OK
-from starlite import Provide, get
-from starlite.testing import  create_test_client
+from starlite import get
 
 
 class Item(BaseModel):
@@ -149,8 +151,16 @@ def get_item(service: Service) -> Item:
 
 We could test the `/item` route like so:
 
-```python title="main.py"
-@pytest.fixture
+```python title="tests/conftest.py"
+import pytest
+
+from starlette.status import HTTP_200_OK
+from starlite import Provide, create_test_client
+
+from my_app.main import Service, Item, get_item
+
+
+@pytest.fixture()
 def item():
     return Item(name="Chair")
 
@@ -160,16 +170,15 @@ def test_get_item(item: Item):
         def get_one(self) -> Item:
             return item
 
-    with create_test_client(
-        route_handlers=get_item,
-        dependencies={"service": Provide(lambda: MyService()),
-    }) as client:
+    with create_test_client(route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}) as client:
         response = client.get("/item")
         assert response.status_code == HTTP_200_OK
         assert response.json() == item.dict()
 ```
 
-While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's where [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library comes in. It generates mock data for pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
+While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
+where [pydantic-factories](https://github.com/Goldziher/pydantic-factories) library comes in. It generates mock data for
+pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
 ```python title="main.py"
 from typing import Protocol, runtime_checkable
@@ -179,7 +188,8 @@ from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 from starlette.status import HTTP_200_OK
 from starlite import Provide, get
-from starlite.testing import  create_test_client
+from starlite.testing import create_test_client
+
 
 class Item(BaseModel):
     name: str
@@ -200,7 +210,7 @@ class ItemFactory(ModelFactory[Item]):
     __model__ = Item
 
 
-@pytest.fixture
+@pytest.fixture()
 def item():
     return ItemFactory.build()
 
@@ -210,10 +220,7 @@ def test_get_item(item: Item):
         def get_one(self) -> Item:
             return item
 
-    with create_test_client(
-        route_handlers=get_item,
-        dependencies={"service": Provide(lambda: MyService()),
-    }) as client:
+    with create_test_client(route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}) as client:
         response = client.get("/item")
         assert response.status_code == HTTP_200_OK
         assert response.json() == item.dict()
@@ -221,8 +228,8 @@ def test_get_item(item: Item):
 
 ## Creating a Test Request
 
-Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for this
-helper is when you need to test logic that expects to receive a request object.
+Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for
+this helper is when you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples
 from the [guards](9-guards.md) documentation:
@@ -231,7 +238,7 @@ from the [guards](9-guards.md) documentation:
 from starlite import Request, RouteHandler, NotAuthorizedException
 
 
-def secret_token_guard(request: Request[User], route_handler: RouteHandler) -> None:
+def secret_token_guard(request: Request, route_handler: RouteHandler) -> None:
     if route_handler.opt.get("secret") and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]:
         raise NotAuthorizedException()
 ```
@@ -257,7 +264,7 @@ We could thus test the guard function like so:
 import pytest
 
 from starlite import NotAuthorizedException, HttpMethod
-from starlite.testing import  create_test_request
+from starlite.testing import create_test_request
 
 from my_app.guards import secret_token_guard
 from my_app.secret import secret_endpoint
