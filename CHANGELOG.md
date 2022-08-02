@@ -287,3 +287,7 @@
 
 - Allow `Partial` to annotate fields of nested classes @Harry-Lees
 - Add `OpenAPIConfig.use_handler_docstring` param
+
+[1.7.3]
+
+- Fix to routes being allowed under static paths and improvements to path resolution @Dr-Emann

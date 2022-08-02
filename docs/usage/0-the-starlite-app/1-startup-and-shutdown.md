@@ -19,12 +19,22 @@ from typing import cast
 
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from starlite import Starlite, State
+from pydantic import BaseSettings
+
+
+class AppSettings(BaseSettings):
+    POSTGRES_CONNECTION_STRING: str
+
+
+settings = AppSettings()
 
 
 def get_postgres_connection(state: State) -> AsyncEngine:
     """Returns the Postgres connection. If it doesn't exist, creates it and saves it in on the application state object"""
     if not state.postgres_connection:
-        state.postgres_connection = create_async_engine(settings.DATABASE_URI)
+        state.postgres_connection = create_async_engine(
+            settings.POSTGRES_CONNECTION_STRING
+        )
     return cast(AsyncEngine, state.postgres_connection)
 
 

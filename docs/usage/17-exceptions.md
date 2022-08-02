@@ -177,13 +177,12 @@ layers for this purpose.
     apply it wherever necessary to ensure consistent error responses across your application.
 
 ```python
-# app/core/exceptions.py
-
 import logging
-
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.responses import Response
 from starlite.exceptions.utils import create_exception_response
 from starlite.types import Request
+from starlite import Starlite
 
 logger = logging.getLogger(__name__)
 
@@ -206,17 +205,7 @@ def logging_exception_handler(request: Request, exc: Exception) -> Response:
     """
     logger.error("Application Exception", exc_info=exc)
     return create_exception_response(exc)
-```
 
-Then, register it to your application, router, controller or handler, e.g.:
-
-```python
-# app/main.py
-
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite import Starlite
-
-from app.core.exceptions import logging_exception_handler
 
 app = Starlite(
     ...,

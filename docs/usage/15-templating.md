@@ -61,15 +61,15 @@ from typing import Protocol, Union, List
 from pydantic import DirectoryPath
 
 # the template class of the respective library
-from my_lib import MyTemplate
+from some_lib import SomeTemplate
 
 
-class TemplateEngineProtocol(Protocol[MyTemplate]):
+class TemplateEngineProtocol(Protocol[SomeTemplate]):
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
         """Builds a template engine."""
         ...
 
-    def get_template(self, name: str) -> MyTemplate:
+    def get_template(self, name: str) -> SomeTemplate:
         """Loads the template with name and returns it."""
         ...
 ```
@@ -82,6 +82,10 @@ Once you have your custom engine you can register it as you would the built-in e
 template engine instance. For example:
 
 ```python
+from starlite import TemplateConfig
+from starlite.template.jinja import JinjaTemplateEngine
+
+
 def engine_callback(jinja_engine: JinjaTemplateEngine) -> JinjaTemplateEngine:
     jinja_engine.engine.globals["key"] = "value"
     return jinja_engine

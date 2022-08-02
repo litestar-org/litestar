@@ -58,7 +58,7 @@ Additionally, you can pass the following optional kwargs:
   event loop. This has an effect only for sync handler functions.
   See [using sync handler functions](#using-sync-handler-functions).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
-  See [exception-handlers](../../17-exceptions#exception-handling).
+  See [exception-handlers](../17-exceptions#exception-handling).
 
 And the following kwargs, which affect [OpenAPI schema generation](../12-openapi.md#route-handler-configuration)
 
@@ -91,15 +91,16 @@ verb, which correlates with their name:
 These are used exactly like `route` with the sole exception that you cannot configure the `http_method` kwarg:
 
 ```python
-from typing import List
-
 from starlite import Partial, delete, get, patch, post, put
+from pydantic import BaseModel
 
-from my_app.models import Resource
+
+class Resource(BaseModel):
+    ...
 
 
 @get(path="/resources")
-def list_resources() -> List[Resource]:
+def list_resources() -> list[Resource]:
     ...
 
 

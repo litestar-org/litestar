@@ -131,7 +131,7 @@ If you would like to modify the base path, add new endpoints, change the styling
 
 For example, lets say we wanted to change the base path from "/schema" to "/api-docs":
 
-```python title="my_app/openapi.py"
+```python
 from starlite import OpenAPIController
 
 
@@ -149,9 +149,12 @@ The following extra attributes are defined on this controller and are customizab
 We would then use the subclassed controller like so:
 
 ```python
-from starlite import Starlite, OpenAPIConfig
+from starlite import Starlite, OpenAPIConfig, OpenAPIController
 
-from my_app.openapi import MyOpenAPIController
+
+class MyOpenAPIController(OpenAPIController):
+    path = "/api-docs"
+
 
 app = Starlite(
     route_handlers=[...],
