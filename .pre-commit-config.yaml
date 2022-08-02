@@ -42,7 +42,7 @@ repos:
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.1 # Possible releases: https://github.com/hadialqattan/pycln/releases
+    rev: v2.1.1
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
