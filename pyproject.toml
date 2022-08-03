@@ -28,6 +28,7 @@ classifiers = [
 ]
 include = [
     { path = "extensions/**", format = "sdist" },
+    { path = "Cargo.*", format = "sdist" },
 ]
 packages = [
     { include = "starlite" },
