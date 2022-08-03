@@ -117,14 +117,15 @@ class OpenAPIController(Controller):
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
             <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/styles.min.css">
             <script src="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/web-components.min.js" crossorigin></script>
+            <style>{self.style}</style>
           </head>
         """
         body = f"""
           <body>
             <elements-api
-            apiDescriptionUrl="{self.path}/openapi.json"
-            router="hash"
-            layout="sidebar"
+                apiDescriptionUrl="{self.path}/openapi.json"
+                router="hash"
+                layout="sidebar"
             />
           </body>
         """
