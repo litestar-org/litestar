@@ -120,6 +120,7 @@ Starlite includes a pre-configured controller called `OpenAPIController` which e
   the `application/vnd.oai.openapi+json` Content-Type.
 - `/schema` and `/schema/redoc`: both of which serve a [Redoc](https://github.com/Redocly/redoc) static website for the OpenAPI docs.
 - `/schema/swagger`: which serves a [Swagger-UI](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/) static website for the OpenAPI docs.
+- `/schema/elements`: which serves a [Stoplight Elements](https://github.com/stoplightio/elements) static website for the OpenAPI docs.
 
 <!-- prettier-ignore -->
 !!! important
@@ -145,6 +146,7 @@ The following extra attributes are defined on this controller and are customizab
 - `favicon_url`: url pointing at `.ico` file to use as a favicon.
 - `redoc_version`: version of redoc to use.
 - `swagger_ui_version`: version of Swagger-UI to use.
+- `stoplight_elements_version`: version of Stoplight Elements to use.
 
 We would then use the subclassed controller like so:
 
@@ -158,6 +160,6 @@ class MyOpenAPIController(OpenAPIController):
 
 app = Starlite(
     route_handlers=[...],
-    openapi_config=OpenAPIConfig(openapI_controller=MyOpenAPIController),
+    openapi_config=OpenAPIConfig(openapi_controller=MyOpenAPIController),
 )
 ```

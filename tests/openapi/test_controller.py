@@ -20,3 +20,10 @@ def test_openapi_swagger() -> None:
         response = client.get("/schema/swagger")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
+
+
+def test_openapi_stoplight_elements() -> None:
+    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+        response = client.get("/schema/elements/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"].startswith(MediaType.HTML.value)

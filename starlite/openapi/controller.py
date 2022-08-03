@@ -18,6 +18,7 @@ class OpenAPIController(Controller):
     style = "body { margin: 0; padding: 0 }"
     redoc_version = "next"
     swagger_ui_version = "4.13.0"
+    stoplight_elements_version = "7.6.3"
     favicon_url = ""
 
     # internal
@@ -94,6 +95,38 @@ class OpenAPIController(Controller):
                 ],
             }})
             </script>
+          </body>
+        """
+        return f"""
+        <!DOCTYPE html>
+            <html>
+                {head}
+                {body}
+            </html>
+        """
+        
+        
+    @get(path="/elements/", media_type=MediaType.HTML, include_in_schema=False)
+    def stoplight_elements(self, request: Request) -> str:
+        """Endpoint that serves Stoplight Elements OpenAPI UI"""
+        schema = self.schema_from_request(request)            
+        head = f"""
+          <head>
+            <title>{schema.info.title}</title>
+            {self.favicon}
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/styles.min.css">
+            <script src="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/web-components.min.js" crossorigin></script>
+          </head>
+        """
+        body = f"""
+          <body>
+            <elements-api
+            apiDescriptionUrl="{self.path}/openapi.json" 
+            router="hash"
+            layout="sidebar"
+            />
           </body>
         """
         return f"""
