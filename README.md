@@ -61,6 +61,7 @@ pip install starlite
 - Automatic OpenAPI 3.1 schema generation
 - Support for [Redoc](https://github.com/Redocly/redoc)
 - Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
+- Support for [Stoplight Elements](https://github.com/stoplightio/elements)
 - Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Relation to Starlette and FastAPI
@@ -143,9 +144,9 @@ class UserController(Controller):
         ...
 ```
 
-### ReDoc and Swagger-UI API Documentation
+### ReDoc, Swagger-UI and Stoplight Elements API Documentation
 
-While running Starlite, you can view the generated OpenAPI documentation using both a [ReDoc](https://redoc.ly/) site and a [Swagger-UI](https://swagger.io/tools/swagger-ui/) site.
+While running Starlite, you can view the generated OpenAPI documentation using a [ReDoc](https://redoc.ly/) site, a [Swagger-UI](https://swagger.io/tools/swagger-ui/) as well as a [Stoplight Elements](https://github.com/stoplightio/elements) site.
 
 ### Data Parsing, Type Hints and Pydantic
 
