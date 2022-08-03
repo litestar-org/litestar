@@ -275,6 +275,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "aedify-swi",
+      "name": "Simon Wienhöfer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66629131?v=4",
+      "profile": "https://github.com/aedify-swi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
