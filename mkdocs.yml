@@ -97,6 +97,8 @@ nav:
       - usage/16-caching.md
       - usage/17-exceptions.md
   - migration.md
+  - Reference:
+      - app: reference/app.md
 extra:
   social:
     - icon: fontawesome/brands/discord
@@ -113,3 +115,18 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
+plugins:
+  - search:
+      lang: en
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            heading_level: 3
+            show_root_heading: true
+            show_source: false
+            docstring_style: google
+            separate_signature: true
+            show_if_no_docstring: true
+watch:
+  - starlite
