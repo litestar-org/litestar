@@ -104,12 +104,11 @@ class OpenAPIController(Controller):
                 {body}
             </html>
         """
-        
-        
+
     @get(path="/elements/", media_type=MediaType.HTML, include_in_schema=False)
     def stoplight_elements(self, request: Request) -> str:
         """Endpoint that serves Stoplight Elements OpenAPI UI"""
-        schema = self.schema_from_request(request)            
+        schema = self.schema_from_request(request)
         head = f"""
           <head>
             <title>{schema.info.title}</title>
@@ -123,7 +122,7 @@ class OpenAPIController(Controller):
         body = f"""
           <body>
             <elements-api
-            apiDescriptionUrl="{self.path}/openapi.json" 
+            apiDescriptionUrl="{self.path}/openapi.json"
             router="hash"
             layout="sidebar"
             />
