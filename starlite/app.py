@@ -55,6 +55,43 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 
 class Starlite(Router):
+    """
+    The Starlite application.
+
+    `Starlite` is the root level of the app - it has the base path of "/" and all root level
+    Controllers, Routers and Route Handlers should be registered on it.
+    Args:
+        after_request (AfterRequestHandler | None, optional): A sync or async function executed before a request
+            is passed to any route handler. If this function returns a value, the request will not reach the route
+            handler, and instead this value will be used.
+        after_response (AfterResponseHandler | None, optional): Sync or async function called after the response has been
+            awaited. It receives the `Request` object and should not return any values.
+        allowed_hosts (list[str] | None): A list of allowed hosts - enables `AllowedHostsMiddleware`.
+        before_request (BeforeRequestHandler | None, optional): Sync or async function called immediately before calling
+            the route handler. Receives the `starlite.connection.Request` instance and any non-`None` return value is
+            used for the response, bypassing the route handler.
+        cache_config (CacheConfig, optional): Configures caching behavior of the application.
+        compression_config (CompressionConfig | None, optional): Configures compression behaviour of the application.
+        cors_config (CORSConfig | None, optional): If set this enables the CORSMiddleware.
+        debug (bool, optional): If True, app errors rendered as HTML with a stack trace. **This option should not be
+            used in production.**
+        dependencies (dict[str, Provide] | None, optional): mapping of dependency providers.
+        exception_handlers (dict[int | type[Exception], ExceptionHandler], optional): handler functions mapped to status
+            codes and/or exception types.
+        guards (list[Guard] | None, optional): A list of [Guard]() callables.
+        middleware (list[Middleware] | None, optional): List of [starlite.types.Middleware]().
+        on_shutdown (list[LifeCycleHandler] | None, optional):
+        on_startup (list[LifeCycleHandler] | None, optional):
+        openapi_config (OpenAPIConfig | None, optional):
+        parameters (dict[str, FieldInfo] | None, optional):
+        plugins (list[PluginProtocol] | None, optional):
+        response_class (type[Response] | None, optional):
+        response_headers (dict[str, ResponseHeader] | None, optional):
+        route_handlers (list[ControllerRouterHandler]):
+        static_files_config (StaticFilesConfig | list[StaticFilesConfig] | None, optional):
+        template_config (TemplateConfig | None, optional):
+    """
+
     __slots__ = (
         "allowed_hosts",
         "asgi_handler",
