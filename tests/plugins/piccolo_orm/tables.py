@@ -1,3 +1,7 @@
+"""
+This file was copied from: https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables.py
+"""
+
 from enum import Enum
 
 from piccolo.columns.column_types import (

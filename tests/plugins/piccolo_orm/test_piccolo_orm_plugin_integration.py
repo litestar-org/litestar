@@ -1,44 +1,29 @@
-from typing import Callable, List, cast
+from typing import Callable
 
 import pytest
 from orjson import dumps
 from piccolo.testing.model_builder import ModelBuilder
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from starlite import get, post
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 from starlite.testing import create_test_client
 
+from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
 from .tables import Band, Concert, Manager, RecordingStudio, Venue
-
-
-@post("/concert")
-async def create_concert(data: Concert) -> Concert:
-    await data.save()
-    await data.refresh()
-    return data
-
-
-@get("/studio")
-def retrieve_studio() -> RecordingStudio:
-    return cast("RecordingStudio", ModelBuilder.build_sync(RecordingStudio, persist=False))
-
-
-@get("/venues")
-def retrieve_venues() -> List[Venue]:
-    return cast("List[Venue]", [ModelBuilder.build_sync(Venue, persist=False) for _ in range(3)])
 
 
 def test_serializing_single_piccolo_table(scaffold_piccolo: Callable) -> None:
     with create_test_client(route_handlers=[retrieve_studio], plugins=[PiccoloORMPlugin()]) as client:
         response = client.get("/studio")
         assert response.status_code == HTTP_200_OK
+        assert str(RecordingStudio(**response.json()).querystring) == str(studio.querystring)
 
 
 def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None:
     with create_test_client(route_handlers=[retrieve_venues], plugins=[PiccoloORMPlugin()]) as client:
         response = client.get("/venues")
         assert response.status_code == HTTP_200_OK
+        assert [str(Venue(**value).querystring) for value in response.json()] == [str(v.querystring) for v in venues]
 
 
 @pytest.mark.asyncio()

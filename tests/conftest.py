@@ -25,6 +25,7 @@ async def scaffold_tortoise() -> AsyncGenerator:
 async def scaffold_piccolo() -> AsyncGenerator:
     os.environ["PICCOLO_CONF"] = "tests.piccolo_conf"
     TABLES = Finder().get_table_classes()
+    await drop_db_tables(*TABLES)
     await create_db_tables(*TABLES)
     yield
     await drop_db_tables(*TABLES)
