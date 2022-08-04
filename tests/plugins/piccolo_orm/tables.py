@@ -1,5 +1,6 @@
 """
-Contents of this file were adapted from: https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables.py
+The contents of this file were adapted from:
+https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables.py
 """
 
 from piccolo.columns.column_types import JSON, JSONB, ForeignKey, Integer, Varchar

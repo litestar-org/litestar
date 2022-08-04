@@ -18,10 +18,10 @@ target/
 
 # files
 **/*.so
+**/*.sqlite
 *.iml
 .DS_Store
 .coverage
 .python-version
 coverage.*
 setup.py
-**/*.sqlite

@@ -7,7 +7,7 @@ try:
     from piccolo.table import Table, TableMetaclass
     from piccolo.utils.pydantic import create_pydantic_model
 except ImportError as e:
-    raise MissingDependencyException("tortoise-orm is not installed") from e
+    raise MissingDependencyException("piccolo orm is not installed") from e
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -19,10 +19,10 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
 
     def to_pydantic_model_class(self, model_class: Type[Table], **kwargs: Any) -> Type["BaseModel"]:
         """
-        Given a tortoise model_class instance, convert it to a subclass of the tortoise "BaseModel"
+        Given a piccolo model_class instance, convert it to a subclass of the piccolo "BaseModel"
 
         Since incoming request body's cannot and should not include values for
-        related fields, pk fields and read only fields in tortoise-orm, we generate two different kinds of pydantic models here:
+        related fields, pk fields and read only fields in piccolo-orm, we generate two different kinds of pydantic models here:
         - the first is a regular pydantic model, and the other is for the "data" kwarg only, which is further sanitized.
 
         This function uses memoization to ensure we don't recompute unnecessarily.

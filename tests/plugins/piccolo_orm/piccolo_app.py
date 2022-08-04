@@ -1,5 +1,6 @@
 """
-File is adapted from: https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/piccolo_app.py
+The contents of this file were adapted from:
+https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/piccolo_app.py
 """
 
 import os
