@@ -78,7 +78,7 @@ repos:
         exclude: "^(?!starlite/)"
         additional_dependencies:
           [
-            openapi_schema_pydantic,
+            pydantic_openapi_schema,
             orjson,
             pydantic,
             pydantic_factories,
@@ -97,7 +97,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
-            openapi_schema_pydantic,
+            pydantic_openapi_schema,
             orjson,
             pydantic,
             pydantic_factories,
@@ -115,7 +115,7 @@ repos:
             orjson,
             types-PyYAML,
             types-requests,
-            openapi_schema_pydantic,
+            pydantic_openapi_schema,
             pydantic,
             pydantic_factories,
             starlette,

@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
 import yaml
-from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
+from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT
 

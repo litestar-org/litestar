@@ -9,7 +9,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 
 if TYPE_CHECKING:
-    from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
+    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
 
 class OpenAPIController(Controller):

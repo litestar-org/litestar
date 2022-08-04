@@ -293,3 +293,9 @@
 [1.7.3]
 
 - Fix to routes being allowed under static paths and improvements to path resolution @Dr-Emann
+
+[1.8.0]
+
+- Breaking: Replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic)
+  with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
+- [Stoplights Elements](https://stoplight.io/open-source/elements) OpenAPI support @aedify-swi

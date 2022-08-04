@@ -14,9 +14,9 @@ from typing import (
     get_type_hints,
 )
 
-from openapi_schema_pydantic.v3.v3_1_0.header import Header
 from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
+from pydantic_openapi_schema.v3_1_0.header import Header
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware

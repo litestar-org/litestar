@@ -3,9 +3,6 @@ from decimal import Decimal
 from enum import Enum, EnumMeta
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
-from openapi_schema_pydantic.util import PydanticSchema
-from openapi_schema_pydantic.v3.v3_1_0.example import Example
-from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic import (
     BaseModel,
     ConstrainedBytes,
@@ -19,6 +16,9 @@ from pydantic import (
 from pydantic.fields import FieldInfo, ModelField, Undefined
 from pydantic_factories import ModelFactory
 from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
+from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
+from pydantic_openapi_schema.v3_1_0.example import Example
+from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
@@ -170,16 +170,18 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
     if field_type in TYPE_MAP:
         return TYPE_MAP[field_type].copy()
     if is_pydantic_model(field_type):
-        return PydanticSchema(schema_class=field_type)
+        return OpenAPI310PydanticSchema(schema_class=field_type)
     if is_dataclass(field_type):
-        return PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
+        return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
     if isinstance(field_type, EnumMeta):
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
     if any(plugin.is_plugin_supported_type(field_type) for plugin in plugins):
         plugin = [plugin for plugin in plugins if plugin.is_plugin_supported_type(field_type)][0]
-        return PydanticSchema(schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name))
+        return OpenAPI310PydanticSchema(
+            schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name)
+        )
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
 

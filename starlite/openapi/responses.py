@@ -2,12 +2,12 @@ from http import HTTPStatus
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
-from openapi_schema_pydantic.v3.v3_1_0.header import Header
-from openapi_schema_pydantic.v3.v3_1_0.media_type import (
+from pydantic_openapi_schema.v3_1_0.header import Header
+from pydantic_openapi_schema.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
 )
-from openapi_schema_pydantic.v3.v3_1_0.response import Response
-from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
+from pydantic_openapi_schema.v3_1_0.response import Response
+from pydantic_openapi_schema.v3_1_0.schema import Schema
 from starlette.routing import get_name
 
 from starlite.datastructures import File, Redirect, Stream, Template
@@ -19,8 +19,8 @@ from starlite.openapi.utils import pascal_case_to_text
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
-    from openapi_schema_pydantic.v3.v3_1_0.responses import Responses
     from pydantic.typing import AnyCallable
+    from pydantic_openapi_schema.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol

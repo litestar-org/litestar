@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.7.3"
+version = "1.8.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -33,7 +33,6 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
@@ -43,6 +42,7 @@ starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+pydantic-openapi-schema = "*"
 
 [tool.poetry.dev-dependencies]
 hypothesis = "*"

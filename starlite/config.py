@@ -9,24 +9,21 @@ from typing import (
     Tuple,
     Type,
     Union,
-    cast,
 )
 from urllib.parse import urlencode
 
-from openapi_schema_pydantic.util import construct_open_api_with_schema_class
-from openapi_schema_pydantic.v3.v3_1_0.contact import Contact
-from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
-    ExternalDocumentation,
-)
-from openapi_schema_pydantic.v3.v3_1_0.info import Info
-from openapi_schema_pydantic.v3.v3_1_0.license import License
-from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
-from openapi_schema_pydantic.v3.v3_1_0.path_item import PathItem
-from openapi_schema_pydantic.v3.v3_1_0.reference import Reference
-from openapi_schema_pydantic.v3.v3_1_0.security_requirement import SecurityRequirement
-from openapi_schema_pydantic.v3.v3_1_0.server import Server
-from openapi_schema_pydantic.v3.v3_1_0.tag import Tag
 from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
+from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
+from pydantic_openapi_schema.v3_1_0.contact import Contact
+from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
+from pydantic_openapi_schema.v3_1_0.info import Info
+from pydantic_openapi_schema.v3_1_0.license import License
+from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+from pydantic_openapi_schema.v3_1_0.path_item import PathItem
+from pydantic_openapi_schema.v3_1_0.reference import Reference
+from pydantic_openapi_schema.v3_1_0.security_requirement import SecurityRequirement
+from pydantic_openapi_schema.v3_1_0.server import Server
+from pydantic_openapi_schema.v3_1_0.tag import Tag
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
 from starlite.openapi.controller import OpenAPIController
@@ -207,7 +204,7 @@ class OpenAPIConfig(BaseModel):
                     plugins=app.plugins,
                     use_handler_docstrings=self.use_handler_docstrings,
                 )
-        return cast("OpenAPI", construct_open_api_with_schema_class(schema))
+        return construct_open_api_with_schema_class(schema)
 
 
 class StaticFilesConfig(BaseModel):

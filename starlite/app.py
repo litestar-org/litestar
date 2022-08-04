@@ -43,8 +43,8 @@ from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
-    from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
     from pydantic.typing import AnyCallable
+    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
     from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.handlers.base import BaseRouteHandler

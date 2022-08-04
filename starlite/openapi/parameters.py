@@ -1,8 +1,8 @@
 from copy import copy
 from typing import TYPE_CHECKING, Any, Dict, List, cast
 
-from openapi_schema_pydantic.v3.v3_1_0.parameter import Parameter
 from pydantic.fields import Undefined
+from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
 from starlite.constants import (
     EXTRA_KEY_IS_PARAMETER,
@@ -14,9 +14,9 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
 
 if TYPE_CHECKING:
-    from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
     from pydantic import BaseModel
     from pydantic.fields import ModelField
+    from pydantic_openapi_schema.v3_1_0.schema import Schema
 
     from starlite.handlers import BaseRouteHandler
     from starlite.provide import Provide

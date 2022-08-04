@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional, cast
 
-from openapi_schema_pydantic.v3.v3_1_0.operation import Operation
-from openapi_schema_pydantic.v3.v3_1_0.path_item import PathItem
+from pydantic_openapi_schema.v3_1_0.operation import Operation
+from pydantic_openapi_schema.v3_1_0.path_item import PathItem
 from starlette.routing import get_name
 
 from starlite.openapi.parameters import create_parameter_for_handler

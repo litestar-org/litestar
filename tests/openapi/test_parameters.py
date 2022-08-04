@@ -15,10 +15,8 @@ from tests.openapi.utils import PersonController
 if TYPE_CHECKING:
     from typing import Callable
 
-    from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
-    from openapi_schema_pydantic.v3.v3_1_0.parameter import (
-        Parameter as OpenAPIParameter,
-    )
+    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from pydantic_openapi_schema.v3_1_0.parameter import Parameter as OpenAPIParameter
 
 
 def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:

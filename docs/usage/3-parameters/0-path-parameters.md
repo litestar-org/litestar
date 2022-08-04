@@ -68,8 +68,8 @@ If you want to add validation or enhance the OpenAPI documentation generated for
 so using the [Parameter function](./3-the-parameter-function.md):
 
 ```python
-from openapi_schema_pydantic.v3.v3_1_0.example import Example
-from openapi_schema_pydantic.v3.v3_1_0.external_documentation import (
+from pydantic_openapi_schema.v3_1_0.example import Example
+from pydantic_openapi_schema.v3_1_0.external_documentation import (
     ExternalDocumentation,
 )
 from starlite import get, Parameter
