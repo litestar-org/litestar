@@ -21,8 +21,8 @@ pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The `DTOFactory` class supports [plugins](10-plugins.md), for example, this is how it could be used with an SQL Alchemy
-declarative class:
+The `DTOFactory` class supports [plugins](10-plugins/0-plugins-intro.md), for example, this is how it could be used with an SQL Alchemy
+declarative class using the [SQLAlchemyPlugin](10-plugins/1-sql-alchemy-plugin.md):
 
 ```python
 from sqlalchemy import Column, Float, Integer, String

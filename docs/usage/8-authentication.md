@@ -93,10 +93,10 @@ def encode_jwt_token(user_id: UUID, expiration: timedelta = DEFAULT_TIME_DELTA) 
 We can now create our authentication middleware:
 
 ```python
-from typing import cast
+from typing import cast, TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import HTTPConnection
 from starlite import (
     AbstractAuthenticationMiddleware,
@@ -106,6 +106,9 @@ from starlite import (
 
 from app.db.models import User
 from app.security.jwt import decode_jwt_token
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncEngine
 
 API_KEY_HEADER = "X-API-KEY"
 

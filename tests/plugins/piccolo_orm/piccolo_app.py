@@ -5,16 +5,7 @@ File is adapted from: https://github.com/piccolo-orm/piccolo/blob/master/tests/e
 import os
 
 from piccolo.conf.apps import AppConfig
-from plugins.piccolo_orm.tables import (
-    Band,
-    Concert,
-    Manager,
-    Poster,
-    RecordingStudio,
-    Shirt,
-    Ticket,
-    Venue,
-)
+from plugins.piccolo_orm.tables import Band, Concert, Manager, RecordingStudio, Venue
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,9 +16,6 @@ APP_CONFIG = AppConfig(
         Band,
         Venue,
         Concert,
-        Ticket,
-        Poster,
-        Shirt,
         RecordingStudio,
     ],
     migrations_folder_path=os.path.join(CURRENT_DIRECTORY, "piccolo_migrations"),
