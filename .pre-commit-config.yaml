@@ -78,16 +78,16 @@ repos:
         exclude: "^(?!starlite/)"
         additional_dependencies:
           [
-            pydantic_openapi_schema,
+            jinja2,
+            mako,
             orjson,
             pydantic,
             pydantic_factories,
+            pydantic_openapi_schema,
             pyyaml,
-            starlette,
-            sqlalchemy,
             requests,
-            jinja2,
-            mako,
+            sqlalchemy,
+            starlette,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
@@ -97,13 +97,14 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
-            pydantic_openapi_schema,
             orjson,
+            piccolo,
             pydantic,
             pydantic_factories,
+            pydantic_openapi_schema,
             pyyaml,
-            starlette,
             sqlalchemy,
+            starlette,
             tortoise_orm,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -113,12 +114,13 @@ repos:
         additional_dependencies:
           [
             orjson,
-            types-PyYAML,
-            types-requests,
-            pydantic_openapi_schema,
+            piccolo,
             pydantic,
             pydantic_factories,
-            starlette,
+            pydantic_openapi_schema,
             sqlalchemy,
+            starlette,
+            types-PyYAML,
             types-freezegun,
+            types-requests,
           ]

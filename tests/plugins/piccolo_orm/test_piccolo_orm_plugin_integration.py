@@ -1,40 +1,60 @@
-import uuid
-from datetime import date
+from typing import Callable, List, cast
 
+import pytest
 from orjson import dumps
+from piccolo.testing.model_builder import ModelBuilder
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from .tables import Concert, RecordingStudio, Band, Manager, Venue
 from starlite import get, post
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 from starlite.testing import create_test_client
 
+from .tables import Band, Concert, Manager, RecordingStudio, Venue
+
+
 @post("/concert")
 async def create_concert(data: Concert) -> Concert:
-    concert = await Concert.objects().create(**data.to_dict())
-    return concert
+    await data.save()
+    await data.refresh()
+    return data
+
 
 @get("/studio")
 def retrieve_studio() -> RecordingStudio:
-    return RecordingStudio(records=500, facilities_b={
-        "rooms": 10
-    })
+    return cast("RecordingStudio", ModelBuilder.build_sync(RecordingStudio, persist=False))
 
 
-def test_serializing_single_piccolo_table() -> None:
+@get("/venues")
+def retrieve_venues() -> List[Venue]:
+    return cast("List[Venue]", [ModelBuilder.build_sync(Venue, persist=False) for _ in range(3)])
+
+
+def test_serializing_single_piccolo_table(scaffold_piccolo: Callable) -> None:
     with create_test_client(route_handlers=[retrieve_studio], plugins=[PiccoloORMPlugin()]) as client:
         response = client.get("/studio")
         assert response.status_code == HTTP_200_OK
 
 
-def test_create_piccolo_table_instance(scaffold_piccolo) -> None:
-    manager = Manager(touring=True, name="Carlos Batista")
-    band_1 = Band(label_id=uuid.uuid4(), date_signed=date.today(), name="The Lemmings", manager=manager, popularity=40)
-    band_2 = Band(label_id=uuid.uuid4(), date_signed=date.today(), name="The Cats", manager=manager, popularity=50)
-    venue = Venue(name="The Pit", capacity=1000)
-    concert = Concert(band_1=band_1, band_2=band_2,venue=venue, net_profit=1000)
-    concert.duration = concert.duration.microseconds
+def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None:
+    with create_test_client(route_handlers=[retrieve_venues], plugins=[PiccoloORMPlugin()]) as client:
+        response = client.get("/venues")
+        assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.asyncio()
+async def test_create_piccolo_table_instance(scaffold_piccolo: Callable) -> None:
+    manager = await ModelBuilder.build(Manager)
+    band_1 = await ModelBuilder.build(Band, defaults={Band.manager: manager})
+    band_2 = await ModelBuilder.build(Band, defaults={Band.manager: manager})
+    venue = await ModelBuilder.build(Venue)
+    concert = ModelBuilder.build_sync(
+        Concert, persist=False, defaults={Concert.band_1: band_1, Concert.band_2: band_2, Concert.venue: venue}
+    )
 
     with create_test_client(route_handlers=[create_concert], plugins=[PiccoloORMPlugin()]) as client:
-        response = client.post("/concert", data=dumps(concert.to_dict()))
+        data = concert.to_dict()
+        data["band_1"] = band_1.id  # type: ignore[attr-defined]
+        data["band_2"] = band_2.id  # type: ignore[attr-defined]
+        data["venue"] = venue.id  # type: ignore[attr-defined]
+        response = client.post("/concert", data=dumps(data))
         assert response.status_code == HTTP_201_CREATED

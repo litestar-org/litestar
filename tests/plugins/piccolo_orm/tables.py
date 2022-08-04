@@ -1,25 +1,12 @@
-"""
-File is copied from https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables_detailed.py
-"""
-from datetime import timedelta
 from enum import Enum
 
-from piccolo.columns import (
+from piccolo.columns.column_types import (
     JSON,
     JSONB,
-    UUID,
-    BigInt,
-    Boolean,
-    Bytea,
-    Date,
     ForeignKey,
     Integer,
-    Interval,
     Numeric,
-    SmallInt,
     Text,
-    Timestamp,
-    Timestamptz,
     Varchar,
 )
 from piccolo.columns.readable import Readable
@@ -31,7 +18,6 @@ from piccolo.table import Table
 
 class Manager(Table):
     name = Varchar(length=50)
-    touring = Boolean()
 
     @classmethod
     def get_readable(cls) -> Readable:
@@ -39,11 +25,13 @@ class Manager(Table):
 
 
 class Band(Table):
-    label_id = UUID()
-    date_signed = Date()
     name = Varchar(length=50)
     manager = ForeignKey(Manager)
     popularity = Integer()
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
 
 
 ###############################################################################
@@ -52,7 +40,11 @@ class Band(Table):
 
 class Venue(Table):
     name = Varchar(length=100)
-    capacity = Integer()
+    capacity = Integer(secret=True)
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
 
 
 class Concert(Table):
@@ -60,15 +52,22 @@ class Concert(Table):
     band_2 = ForeignKey(Band)
     venue = ForeignKey(Venue)
 
-    duration = Interval(default=timedelta(weeks=5, days=3))
-    net_profit = SmallInt(default=-32768)
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(
+            template="%s and %s at %s, capacity %s",
+            columns=[
+                cls.band_1.name,
+                cls.band_2.name,
+                cls.venue.name,
+                cls.venue.capacity,
+            ],
+        )
 
 
 class Ticket(Table):
     concert = ForeignKey(Concert)
     price = Numeric(digits=(5, 2))
-    purchase_time = Timestamp()
-    purchase_time_tz = Timestamptz()
 
 
 class Poster(Table, tags=["special"]):
@@ -76,7 +75,6 @@ class Poster(Table, tags=["special"]):
     Has tags for tests which need it.
     """
 
-    image = Bytea(default=b"\xbd\x78\xd8")
     content = Text()
 
 
@@ -98,6 +96,5 @@ class RecordingStudio(Table):
     Used for testing JSON and JSONB columns.
     """
 
-    facilities = JSON(default={"amplifier": False, "microphone": True})
+    facilities = JSON()
     facilities_b = JSONB()
-    records = BigInt(default=9223372036854775807)

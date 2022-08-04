@@ -1,14 +1,9 @@
-import datetime
-from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Dict, Type, Union
-
-from pydantic.types import UUID, Json
+from typing import TYPE_CHECKING, Any, Dict, Type
 
 from starlite import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:
-    from piccolo.columns import column_types
     from piccolo.table import Table, TableMetaclass
     from piccolo.utils.pydantic import create_pydantic_model
 except ImportError as e:
@@ -16,33 +11,6 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
-
-COLUMN_TYPE_MAP: Dict[Type[column_types.Column], Type[Any]] = {
-    column_types.Float: float,
-    column_types.Integer: int,
-    column_types.Secret: str,
-    column_types.Varchar: str,
-    column_types.Text: str,
-    column_types.UUID: UUID,
-    column_types.Serial: int,
-    column_types.BigInt: int,
-    column_types.SmallInt: int,
-    column_types.BigSerial: int,
-    column_types.Timestamp: datetime.datetime,
-    column_types.Timestamptz: datetime.datetime,
-    column_types.Date: datetime.date,
-    column_types.Time: datetime.time,
-    column_types.Interval: datetime.timedelta,
-    column_types.Boolean: bool,
-    column_types.Numeric: Decimal,
-    column_types.Decimal: Decimal,
-    column_types.Real: float,
-    column_types.DoublePrecision: float,
-    column_types.JSON: Union[dict, list, Json],
-    column_types.JSONB: Union[dict, list, Json],
-    column_types.Bytea: bytes,
-    column_types.Blob: bytes,
-}
 
 
 class PiccoloORMPlugin(PluginProtocol[Table]):
@@ -68,7 +36,7 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
             return self._data_models_map[model_class]
         if model_class not in self._models_map:
             self._models_map[model_class] = create_pydantic_model(
-                table=model_class, model_name=model_class.__name__, include_default_columns=True
+                table=model_class, model_name=model_class.__name__, nested=True, include_default_columns=True
             )
         return self._models_map[model_class]
 
@@ -100,7 +68,7 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
         """
         instance = model_class()
         for column in instance.all_columns():
-            meta = column._meta  
+            meta = column._meta  # pylint: disable=protected-access
             if meta.name in kwargs:
                 setattr(instance, meta.name, kwargs[meta.name])
         return instance

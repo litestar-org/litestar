@@ -1,7 +1,10 @@
+import os
 import pathlib
 from typing import AsyncGenerator
 
 import pytest
+from piccolo.conf.apps import Finder
+from piccolo.table import create_db_tables, drop_db_tables
 
 from tests.plugins.tortoise_orm import cleanup, init_tortoise
 
@@ -18,23 +21,10 @@ async def scaffold_tortoise() -> AsyncGenerator:
     await cleanup()
 
 
-from piccolo.engine.finder import engine_finder
-
-
-@pytest.mark.asyncio
 @pytest.fixture()
-async def scaffold_piccolo():
-    for table in [
-        "ticket",
-        "concert",
-        "venue",
-        "band",
-        "manager",
-        "poster",
-        "migration",
-        "musician",
-        "recording_studio",
-        "shirt",
-    ]:
-        engine = engine_finder()
-        await engine._run_in_new_connection(f"DROP TABLE IF EXISTS {table}")
+async def scaffold_piccolo() -> AsyncGenerator:
+    os.environ["PICCOLO_CONF"] = "tests.piccolo_conf"
+    TABLES = Finder().get_table_classes()
+    await create_db_tables(*TABLES)
+    yield
+    await drop_db_tables(*TABLES)
