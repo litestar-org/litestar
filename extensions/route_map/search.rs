@@ -6,17 +6,17 @@ use std::collections::HashMap;
 use crate::util::normalize_path;
 use crate::{get_base_components, util, wrappers, HandlerGroup, Node, RouteMap};
 
-pub(crate) fn find_insert_handler_group<'a>(
-    root: &'a mut Node,
-    plain_routes: &'a mut HashMap<String, HandlerGroup>,
+pub(crate) fn find_insert_handler_group(
+    root: &mut Node,
+    plain_routes: &mut HashMap<String, HandlerGroup>,
     path: &str,
     path_parameters: &PyAny,
     is_static: bool,
     handler_group: HandlerGroup,
-) -> PyResult<&'a mut HandlerGroup> {
+) -> PyResult<()> {
     let py = path_parameters.py();
-    let path_parameters_vec: Vec<wrappers::PathParameter<'_>> = path_parameters.extract()?;
-    let handler_group: &mut HandlerGroup = if !path_parameters_vec.is_empty() || is_static {
+    let path_parameters_vec: Vec<wrappers::PathParameter> = path_parameters.extract()?;
+    if !path_parameters_vec.is_empty() || is_static {
         let param_set = util::param_set(&path_parameters_vec)?;
         let mut node = root;
         for s in get_base_components(path) {
@@ -45,19 +45,18 @@ pub(crate) fn find_insert_handler_group<'a>(
             Entry::Vacant(entry) => entry.insert(handler_group),
         }
     };
-    Ok(handler_group)
+    Ok(())
 }
 
 impl RouteMap {
-    pub(crate) fn find_handler_group<'a>(&'a self, full_path: &'a str) -> PyResult<FindResult<'a>> {
+    pub(crate) fn find_handler_group(&self, full_path: &str) -> PyResult<FindResult> {
         let mut path = normalize_path(full_path);
         let mut param_values = Vec::new();
         let mut node = &self.root;
 
-        let handler_group: &HandlerGroup =
-            if let Some(handler_group) = self.plain_routes.get(path.as_ref()) {
-                handler_group
-            } else {
+        let handler_group: &HandlerGroup = match self.plain_routes.get(path.as_ref()) {
+            Some(handler_group) => handler_group,
+            None => {
                 for component in get_base_components(&path) {
                     if let Some(child) = node.children.get(component) {
                         node = child;
@@ -71,7 +70,7 @@ impl RouteMap {
                     let static_path: Option<&str> = node
                         .handler_group
                         .as_ref()
-                        .and_then(|handler_group| handler_group.static_path());
+                        .and_then(HandlerGroup::static_path);
                     if let Some(static_path) = static_path {
                         if static_path != "/" {
                             path = Cow::Owned(path.replace(static_path, ""));
@@ -84,7 +83,8 @@ impl RouteMap {
                 node.handler_group
                     .as_ref()
                     .ok_or_else(|| wrappers::NotFoundException::new_err(()))?
-            };
+            }
+        };
         let changed_path = if path != full_path {
             Some(path.into_owned())
         } else {

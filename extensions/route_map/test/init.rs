@@ -1,4 +1,4 @@
-use crate::test::{assert_keys_eq, node_empty};
+use crate::test::assert_keys_eq;
 use crate::{HandlerGroup, HandlerType, RouteMap};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
@@ -12,7 +12,7 @@ fn init_empty() -> PyResult<()> {
 
         route_map.add_routes(py, Vec::new())?;
 
-        assert!(node_empty(&route_map.root));
+        assert!(route_map.root.is_empty());
         assert!(route_map.static_paths.is_empty());
         assert!(route_map.plain_routes.is_empty());
 
@@ -29,7 +29,7 @@ fn init_one_route() -> PyResult<()> {
 
         route_map.add_route(py, route)?;
 
-        assert!(node_empty(&route_map.root));
+        assert!(route_map.root.is_empty());
         assert!(route_map.static_paths.is_empty());
 
         assert_keys_eq(&route_map.plain_routes, &["/test"]);
@@ -60,7 +60,7 @@ fn init_one_deep_path() {
         let route = make_route(py, &path, "get").unwrap();
 
         route_map.add_route(py, route).unwrap();
-        drop(route_map);
+        // Make sure we don't stack overflow on RouteMap::drop() here
     });
 }
 

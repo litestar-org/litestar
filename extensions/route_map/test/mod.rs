@@ -8,8 +8,10 @@ use std::ptr;
 
 mod init;
 
-fn node_empty(node: &Node) -> bool {
-    node.children.is_empty() && node.placeholder_child.is_none() && node.handler_group.is_none()
+impl Node {
+    fn is_empty(&self) -> bool {
+        self.children.is_empty() && self.placeholder_child.is_none() && self.handler_group.is_none()
+    }
 }
 
 fn assert_keys_eq<K, EK, V>(map: &HashMap<K, V>, expected_keys: &[EK])
@@ -46,7 +48,7 @@ fn simple_route() -> PyResult<()> {
 
         assert_keys_eq(&route_map.plain_routes, &["/", "/a"]);
         assert!(route_map.static_paths.is_empty());
-        assert!(node_empty(&route_map.root));
+        assert!(route_map.root.is_empty());
 
         let base_handlers = &route_map.plain_routes["/"];
         match base_handlers {

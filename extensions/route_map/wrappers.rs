@@ -1,4 +1,4 @@
-use crate::get_attr_and_downcast;
+use crate::{get_attr_and_downcast, HandlerType};
 use pyo3::types::{PyDict, PyList, PyMapping};
 use pyo3::{
     intern,
@@ -30,7 +30,7 @@ pub(crate) struct StarliteContext {
 }
 
 impl StarliteContext {
-    pub(crate) fn fetch(py: Python<'_>, debug: bool) -> PyResult<Self> {
+    pub(crate) fn fetch(py: Python, debug: bool) -> PyResult<Self> {
         let parsers = py.import("starlite.parsers")?;
         let parse_path_params = get_attr_and_downcast(parsers, "parse_path_params")?;
 
@@ -87,10 +87,10 @@ impl StarliteContext {
     }
 
     /// Constructs a middleware stack that serves as the point of entry for each route
-    pub(crate) fn build_middleware_stack<'a>(
-        &'a self,
-        py: Python<'a>,
-        route: Route<'_>,
+    pub(crate) fn build_middleware_stack(
+        &self,
+        py: Python,
+        route: Route,
         route_handler: &PyAny,
     ) -> PyResult<Py<PyAny>> {
         let starlette_middleware = self.starlette_middleware.as_ref(py);
@@ -134,25 +134,43 @@ impl StarliteContext {
 pub(crate) struct Scope<'a>(&'a PyMapping);
 
 impl<'a> Scope<'a> {
-    pub(crate) fn path(&self) -> PyResult<&'a str> {
+    pub(crate) fn path(self) -> PyResult<&'a str> {
         self.0.get_item(intern!(self.0.py(), "path"))?.extract()
     }
 
-    pub(crate) fn set_path(&self, new_path: &str) -> PyResult<()> {
+    pub(crate) fn set_path(self, new_path: &str) -> PyResult<()> {
         self.0.set_item(intern!(self.0.py(), "path"), new_path)
     }
 
-    pub(crate) fn set_path_params(&self, path_params: &PyAny) -> PyResult<()> {
+    pub(crate) fn set_path_params(self, path_params: &PyAny) -> PyResult<()> {
         self.0
             .set_item(intern!(self.0.py(), "path_params"), path_params)
     }
 
-    pub(crate) fn ty(&self) -> PyResult<&'a str> {
-        self.0.get_item(intern!(self.0.py(), "type"))?.extract()
+    pub(crate) fn ty(self) -> PyResult<ScopeType> {
+        let s: &str = self.0.get_item(intern!(self.0.py(), "type"))?.extract()?;
+        Ok(ScopeType::from_str(s))
     }
 
-    pub(crate) fn method(&self) -> PyResult<&'a str> {
+    pub(crate) fn method(self) -> PyResult<&'a str> {
         self.0.get_item(intern!(self.0.py(), "method"))?.extract()
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub(crate) enum ScopeType {
+    Http,
+    Websocket,
+    Other,
+}
+
+impl ScopeType {
+    fn from_str(s: &str) -> Self {
+        match s {
+            "http" => Self::Http,
+            "websocket" => Self::Websocket,
+            _ => Self::Other,
+        }
     }
 }
 
@@ -160,50 +178,51 @@ impl<'a> Scope<'a> {
 pub(crate) struct Route<'a>(&'a PyAny);
 
 impl<'a> Route<'a> {
-    pub(crate) fn path(&self) -> PyResult<&'a str> {
+    pub(crate) fn path(self) -> PyResult<&'a str> {
         self.0.getattr(intern!(self.0.py(), "path"))?.extract()
     }
 
-    pub(crate) fn path_parameters(&self) -> PyResult<&'a PyAny> {
+    pub(crate) fn path_parameters(self) -> PyResult<&'a PyAny> {
         self.0.getattr(intern!(self.0.py(), "path_parameters"))
     }
 
-    pub(crate) fn handle_fn(&self) -> PyResult<&'a PyAny> {
+    pub(crate) fn handle_fn(self) -> PyResult<&'a PyAny> {
         self.0.getattr(intern!(self.0.py(), "handle"))
     }
 
-    pub(crate) fn handler(&self) -> PyResult<&'a PyAny> {
+    pub(crate) fn handler(self) -> PyResult<&'a PyAny> {
         self.0.getattr(intern!(self.0.py(), "route_handler"))
     }
 
     pub(crate) fn http_handlers(
-        &self,
-    ) -> PyResult<impl Iterator<Item = PyResult<(&'a str, &'a PyAny)>>> {
+        self,
+    ) -> PyResult<impl Iterator<Item = PyResult<(HandlerType, &'a PyAny)>>> {
         let mapping: &PyDict = self
             .0
             .getattr(intern!(self.0.py(), "route_handler_map"))?
             .downcast()?;
         let iter = mapping.iter();
-        Ok(iter.map(|item| -> PyResult<(&'a str, &'a PyAny)> {
-            let name: &str = item.0.extract()?;
+        Ok(iter.map(|item| -> PyResult<(HandlerType, &'a PyAny)> {
+            let method: &str = item.0.extract()?;
+            let handler_type = HandlerType::from_http_method(method);
             let handler = item.1.get_item(0)?;
-            Ok((name, handler))
+            Ok((handler_type, handler))
         }))
     }
 
-    pub(crate) fn is_http(&self, ctx: &StarliteContext) -> PyResult<bool> {
+    pub(crate) fn is_http(self, ctx: &StarliteContext) -> PyResult<bool> {
         self.0.is_instance(ctx.http_route.as_ref(self.0.py()))
     }
 
-    pub(crate) fn is_websocket(&self, ctx: &StarliteContext) -> PyResult<bool> {
+    pub(crate) fn is_websocket(self, ctx: &StarliteContext) -> PyResult<bool> {
         self.0.is_instance(ctx.web_socket_route.as_ref(self.0.py()))
     }
 
-    pub(crate) fn is_asgi(&self, ctx: &StarliteContext) -> PyResult<bool> {
+    pub(crate) fn is_asgi(self, ctx: &StarliteContext) -> PyResult<bool> {
         self.0.is_instance(ctx.asgi_route.as_ref(self.0.py()))
     }
 
-    pub(crate) fn type_name(&self) -> PyResult<&'a str> {
+    pub(crate) fn type_name(self) -> PyResult<&'a str> {
         self.0.get_type().name()
     }
 }
@@ -212,7 +231,7 @@ impl<'a> Route<'a> {
 pub(crate) struct PathParameter<'a>(&'a PyAny);
 
 impl<'a> PathParameter<'a> {
-    pub(crate) fn full(&self) -> PyResult<&'a str> {
+    pub(crate) fn full(self) -> PyResult<&'a str> {
         let full = self.0.get_item(intern!(self.0.py(), "full"))?;
         full.extract()
     }

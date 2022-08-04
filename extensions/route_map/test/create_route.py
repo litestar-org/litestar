@@ -1,3 +1,4 @@
+from builtins import Exception
 from typing import Any, Callable
 
 from starlite import BaseRoute, HTTPRouteHandler, Starlite
@@ -12,5 +13,7 @@ def http_route(path: str, method: str) -> BaseRoute:
         ...
 
     app = Starlite(route_handlers=[handler_fn])
-    route = app.routes[0]
-    return route
+    for app_route in app.routes:
+        if app_route.path == path:
+            return app_route
+    raise Exception(f"No route found with path {path}")
