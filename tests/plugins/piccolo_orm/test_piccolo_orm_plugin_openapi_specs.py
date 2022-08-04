@@ -1,11 +1,10 @@
-from plugins.piccolo_orm.endpoints import (
+from starlite import Starlite
+from starlite.plugins.piccolo_orm import PiccoloORMPlugin
+from tests.plugins.piccolo_orm.endpoints import (
     create_concert,
     retrieve_studio,
     retrieve_venues,
 )
-
-from starlite import Starlite
-from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 
 
 def test_piccolo_orm_plugin_openapi_spec_generation() -> None:

@@ -5,7 +5,14 @@ File is adapted from: https://github.com/piccolo-orm/piccolo/blob/master/tests/e
 import os
 
 from piccolo.conf.apps import AppConfig
-from plugins.piccolo_orm.tables import Band, Concert, Manager, RecordingStudio, Venue
+
+from tests.plugins.piccolo_orm.tables import (
+    Band,
+    Concert,
+    Manager,
+    RecordingStudio,
+    Venue,
+)
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
