@@ -98,7 +98,18 @@ nav:
       - usage/17-exceptions.md
   - migration.md
   - Reference:
-      - app: reference/app.md
+      - reference/app.md
+      - reference/config.md
+      - reference/connection.md
+      - reference/controller.md
+      - reference/datastructures.md
+      - reference/exceptions.md
+      - reference/enums.md
+      - reference/handlers.md
+      - reference/logging.md
+      - reference/params.md
+      - reference/router.md
+      - reference/types.md
 extra:
   social:
     - icon: fontawesome/brands/discord
