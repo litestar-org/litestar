@@ -1,4 +1,4 @@
-# `starlite.app`
+# starlite.app
 
 ::: starlite.app.Starlite
     options:
