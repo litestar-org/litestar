@@ -6,7 +6,7 @@ Starlite supports extension through plugins, which allow for the following:
 2. Automatic OpenAPI schema creation for 3rd party classes.
 
 In other words, plugins allow for the parsing and validation of incoming data using non-pydantic classes, while still
-retaining the type safety, parsing and validation of pydantic. Additionally they allow for seamless serialization and
+retaining the type safety, parsing and validation of pydantic. Additionally, they allow for seamless serialization and
 schema generation.
 
 ## Creating Plugins

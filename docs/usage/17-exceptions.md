@@ -21,7 +21,7 @@ optional kwargs:
 
 - `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
 - `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
-- `extra`: Either a dictionary or a list of of arbitrary values.
+- `extra`: Either a dictionary or a list of arbitrary values.
 
 The default exception handler will serialize `HTTPExceptions` into a json response with the following structure:
 
@@ -44,7 +44,7 @@ Starlite also offers several pre-configured **exception subclasses** with pre-se
 - `ServiceUnavailableException`: status code 503.
 
 When a value fails `pydantic` validation, the result will be a `ValidationException` with the `extra` key set to the
-pydantic validation errors. Thus this data will be made available for the API consumers by default.
+pydantic validation errors. Thus, this data will be made available for the API consumers by default.
 
 ## Exception Handling
 
@@ -162,7 +162,7 @@ exceptions are handled correctly:
 </figure>
 
 Because of the above structure, the exceptions raised by the ASGI Router itself, namely `404 Not Found`
-and `405 Method Not Allowed` are handled only by exception handlers defined on the app layer. Thus if you want to affect
+and `405 Method Not Allowed` are handled only by exception handlers defined on the app layer. Thus, if you want to affect
 these exceptions, you will need to pass the exception handlers for them to the Starlite constructor and cannot use other
 layers for this purpose.
 

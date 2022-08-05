@@ -16,7 +16,7 @@ To contribute code changes or update the documentation, please follow these step
 1. if you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
    is mandatory and tests should be well written.
 2. All public functions and methods should be documented with a doc string. The project uses
-   the [google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
+   the [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
    Private methods should have a doc string explaining what they do, but do not require an elaborate doc string.
 
 ## Project Documentation
@@ -75,7 +75,7 @@ against different python versions. To achieve this you can use the `tox` config 
 1. Update changelog.md
 2. Increment the version in pyproject.toml.
 3. Commit and push.
-4. In github go to the releases tab
+4. In GitHub go to the releases tab
 5. Pick "draft a new release"
 6. Give it a title and a tag, both vX.X.X
 7. Fill in the release description, you can let GitHub do it for you and then edit as needed.

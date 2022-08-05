@@ -382,4 +382,4 @@ def my_route_handler() -> None:
 ```
 
 You can declare response headers on all layers of the app - individual route handlers, controllers, routers and the app
-itself. This works like [dependencies](6-dependency-injection.md) - that is, lower levels override higher levels.
+itself. This works like [dependencies](6-dependency-injection/0-dependency-injection-intro.md) - that is, lower levels override higher levels.

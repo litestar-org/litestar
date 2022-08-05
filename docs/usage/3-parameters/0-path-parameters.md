@@ -19,8 +19,7 @@ def get_user(user_id: int) -> User:
 
 In the above there are two components:
 
-1. The path parameter is defined in the `path` parameter passed the `@get` decorator in the. The parameter has a
-   declared type - which is required.
+1. The path parameter is defined in the `@get` decorator, which declares both the parameter's name (`user_id`) and type (`int`).
 2. The decorated function `get_user` defines a parameter with the same name as the parameter defined in the `path`
    kwarg.
 
@@ -29,7 +28,7 @@ it's called.
 
 ## Supported Path Parameter Types
 
-Currently the following types are supported: `int`, `float`, `str`, `uuid`.
+Currently, the following types are supported: `int`, `float`, `str`, `uuid`.
 
 The types declared in the path parameter and the function do not need to match 1:1 - as long as parameter inside the
 function declaration is typed with a "higher" type to which the lower type can be coerced, this is fine. For example,
@@ -59,7 +58,7 @@ datetime typed parameter.
 <!-- prettier-ignore -->
 !!! note
     You only need to define the parameter in the function declaration if it's actually used inside the function. If the
-    path parameter is part of the path, but the function doesn't use it, its fine to omit it. It will still be validated
+    path parameter is part of the path, but the function doesn't use it, it's fine to omit it. It will still be validated
     and added to the openapi schema correctly.
 
 ## Extra Validation and Documentation for Path Params

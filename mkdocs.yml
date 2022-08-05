@@ -68,9 +68,19 @@ nav:
           - usage/3-parameters/2-header-and-cookie-parameters.md
           - usage/3-parameters/3-the-parameter-function.md
           - usage/3-parameters/4-layered-parameters.md
-      - usage/4-request-body.md
+      - Request Data:
+          - usage/4-request-data/0-request-data.md
+          - usage/4-request-data/1-the-body-function.md
+          - usage/4-request-data/2-url-encoded-form-data.md
+          - usage/4-request-data/3-multipart-form-data.md
       - usage/5-responses.md
-      - usage/6-dependency-injection.md
+      - Dependency Injection:
+          - usage/6-dependency-injection/0-dependency-injection-intro.md
+          - usage/6-dependency-injection/1-dependency-kwargs.md
+          - usage/6-dependency-injection/2-overriding-dependencies.md
+          - usage/6-dependency-injection/3-the-provide-class.md
+          - usage/6-dependency-injection/4-dependencies-in-dependencies.md
+          - usage/6-dependency-injection/5-the-dependency-function.md
       - usage/7-middleware.md
       - usage/8-authentication.md
       - usage/9-guards.md

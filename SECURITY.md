@@ -2,4 +2,4 @@
 
 ## Reporting a Vulnerability
 
-To report a vulnerability either create an issue on github or tag "@maintainer" on our discord server
+To report a vulnerability either create an issue on GitHub or tag "@maintainer" on our discord server

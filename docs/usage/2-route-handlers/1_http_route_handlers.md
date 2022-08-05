@@ -39,7 +39,7 @@ Additionally, you can pass the following optional kwargs:
   See [using-custom-responses](../5-responses.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](../5-responses.md#response-headers).
-- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
 - `guards`: A list of [guards](../9-guards.md).
 - `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the

@@ -123,7 +123,8 @@ You can pass the following kwargs to CORSConfig:
   response. Defaults to 600.
 
 <!-- prettier-ignore -->
-!!! note The asterisks symbol in the above kwargs means "match any".
+!!! note
+    The asterisks symbol in the above kwargs means "match any".
 
 You can read more about this middleware in the [starlette docs](https://www.starlette.io/middleware/#corsmiddleware).
 
@@ -145,7 +146,7 @@ You can use `*` to match any subdomains, as in the above.
 
 ### Compression
 
-HTML responses can optionally be compressed. Starlite has built in support for gzip and brotli. Gzip support is provided through the built in Starlette classes, and brotli support can be added by installing the `brotli` extras.
+HTML responses can optionally be compressed. Starlite has built in support for gzip and brotli. Gzip support is provided through the built-in Starlette classes, and brotli support can be added by installing the `brotli` extras.
 
 You can enable either backend by passing an instance of `starlite.config.CompressionConfig` into the `compression_config` application parameter.
 
@@ -258,5 +259,5 @@ When an exception is raised by a route handler or dependency and is then transfo
 an [exception handler](17-exceptions#exception-handling), middlewares are still applied to it. The one limitation on
 this though are the two exceptions that can be raised by the ASGI router - `404 Not Found` and `405 Method Not Allowed`.
 These exceptions are raised before them middleware stack is called, and are only handled by exceptions handlers defined
-on the Starlite app instance itself. Thus if you need to modify the responses generated for these exceptions, you will
+on the Starlite app instance itself. Thus, if you need to modify the responses generated for these exceptions, you will
 need to define a custom exception handler on the app instance.

@@ -30,7 +30,7 @@ The Starlite constructor accepts the following additional kwargs:
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
 - `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the [CORSMiddleware](../7-middleware.md#built-in-middlewares).
 - `debug`: A boolean flag toggling debug mode on and off, if True, 404 errors will be rendered as HTML with a stack trace. This option should _not_ be used in production. Defaults to `False`.
-- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
 - `middleware`: A list of middlewares. See [middleware](../7-middleware.md).

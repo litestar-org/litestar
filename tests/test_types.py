@@ -56,7 +56,7 @@ def test_partial_basemodel() -> None:
     class Foo:
         bar: int
 
-    # The type checker will raise a warning that Foo is not a BaseModel
+    # The type checker will raise a warning that Foo is not a BaseModel,
     # but we want to test for runtime behaviour in case someone passes in
     # a class that doesn't inherit from BaseModel anyway.
     with pytest.raises(ImproperlyConfiguredException):
