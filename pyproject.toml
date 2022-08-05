@@ -61,6 +61,7 @@ tox = "*"
 requests = "*"
 piccolo = "*"
 pre-commit = "*"
+redis = "^4.3.4"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli"]
