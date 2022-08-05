@@ -41,7 +41,7 @@ app = Starlite(
 
 ## Handling of Relationships
 
-The SQL Alchemy plugin handles relationship by traversing and recursively converting the related tables into pydantic models.
+The SQLAlchemy plugin handles relationships by traversing and recursively converting the related tables into pydantic models.
 This approach, while powerful, poses some difficulties. For example, consider these two tables:
 
 ```python

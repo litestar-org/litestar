@@ -5,14 +5,14 @@ Starlite supports extension through plugins, which allow for the following:
 1. Serialization and deserialization of non-pydantic based 3rd party classes.
 2. Automatic OpenAPI schema creation for 3rd party classes.
 
-In other words, plugs allow for the parsing and validation of incoming data using non-pydantic classes, while still
+In other words, plugins allow for the parsing and validation of incoming data using non-pydantic classes, while still
 retaining the type safety, parsing and validation of pydantic. Additionally they allow for seamless serialization and
 schema generation.
 
 ## Creating Plugins
 
 A plugin is a class that implements the `starlite.plugins.base.PluginProtocol`. To create a plugin, subclass
-the `PluginProtocl` and pass to it the base class for which the plugin is for as a generic argument. You should then
+the `PluginProtocol` and pass to it the base class for which the plugin is for as a generic argument. You should then
 implement the following methods specified by the protocol:
 
 ```python

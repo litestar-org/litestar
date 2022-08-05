@@ -306,7 +306,7 @@ def create_company(data: CompanyDTO) -> Company:
     return data.to_model_instance()
 ```
 
-In the above `company_instance` is an instance of the SQL Alchemy class `Company`. It is correctly typed as Company
+In the above `company_instance` is an instance of the SQLAlchemy class `Company`. It is correctly typed as Company
 because the `DTO` class uses generic to store this data.
 
 <!-- prettier-ignore -->
