@@ -41,18 +41,18 @@ async def streaming_iter(content: bytes, count: int) -> Any:
 def test_no_compression_backend() -> None:
     try:
         client = create_test_client(route_handlers=[handler])
+        unpacked_middleware = []
+        cur = client.app.asgi_handler
+        while hasattr(cur, "app"):
+            unpacked_middleware.append(cur)
+            cur = cast("ASGIApp", cur.app)  # type: ignore
+        else:
+            unpacked_middleware.append(cur)
+        for middleware in unpacked_middleware:
+            assert not isinstance(middleware, (GZipMiddleware, BrotliMiddleware))
     except Exception as exc:
         assert isinstance(exc, ValueError)
         assert "No compression backend specified" in str(exc)
-    unpacked_middleware = []
-    cur = client.app.asgi_handler
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
-    else:
-        unpacked_middleware.append(cur)
-    for middleware in unpacked_middleware:
-        assert not isinstance(middleware, (GZipMiddleware, BrotliMiddleware))
 
 
 def test_gzip_middleware_from_enum() -> None:

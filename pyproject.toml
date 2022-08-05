@@ -59,6 +59,7 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+piccolo = "*"
 pre-commit = "*"
 
 [tool.poetry.extras]

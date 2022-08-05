@@ -74,7 +74,11 @@ nav:
       - usage/7-middleware.md
       - usage/8-authentication.md
       - usage/9-guards.md
-      - usage/10-plugins.md
+      - Plugins:
+          - usage/10-plugins/0-plugins-intro.md
+          - usage/10-plugins/1-sql-alchemy-plugin.md
+          - usage/10-plugins/2-tortoise-orm-plugin.md
+          - usage/10-plugins/3-piccolo-orm-plugin.md
       - usage/11-data-transfer-objects.md
       - usage/12-openapi.md
       - usage/13-lifecycle-hooks.md

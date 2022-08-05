@@ -159,10 +159,10 @@ as well as to validate and parse data. Thus typing is absolutely essential to th
 
 Furthermore, Starlite allows extending its support using plugins.
 
-### SQL Alchemy Support, Plugin System and DTOs
+### SQLAlchemy Support, Plugin System and DTOs
 
 Starlite has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
-features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQL Alchemy declarative classes
+features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes
 "natively", i.e. as type parameters that will be serialized/deserialized and to return them as values from route
 handlers.
 
