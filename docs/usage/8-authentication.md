@@ -23,7 +23,7 @@ async def authenticate_request(request: Request) -> AuthenticationResult:
 ### Example: Create a JWT Authentication Middleware
 
 For example, lets say we wanted to implement a JWT token based authentication. We start off by creating a user model. It
-can be implemented using pydantic, and ODM, ORM etc. For the sake of the example here lets say its a pydantic model:
+can be implemented using pydantic, and ODM, ORM etc. For the sake of the example here lets say it's a pydantic model:
 
 ```python
 import uuid
@@ -165,7 +165,7 @@ instance of `AuthenticationResult`. This is a pydantic model that has two attrib
 These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
 and `Request.auth` respectively, for HTTP route handlers, and `WebSocket.user` and `WebSocket.auth` for websocket route handlers.
 
-Building on the previous example, we would be able to access these in an http route handler in the following way:
+Building on the previous example, we would be able to access these in a http route handler in the following way:
 
 ```python
 from starlite import Request, get

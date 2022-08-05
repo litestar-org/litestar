@@ -39,7 +39,7 @@ with [route handlers](usage/2-route-handlers/1_http_route_handlers.md).
 ## Dependency Injection
 
 The Starlite dependency injection system is different from the one used by FastAPI. You can read about it in
-the [dependency injection](usage/6-dependency-injection.md) section of the documentation.
+the [dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md) section of the documentation.
 
 In FastAPI you declare dependencies either as a list of functions passed to the `Router` or `FastAPI` instances, or as a
 default function argument value wrapped in an instance of the `Depend` class.

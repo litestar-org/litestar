@@ -21,12 +21,6 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/context:python)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/alerts/)
 
-<!-- prettier-ignore-start -->
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- prettier-ignore-end -->
-
 [![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
 [![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlitespace:matrix.org)
 
@@ -39,7 +33,7 @@ Starlite is a light, opinionated and flexible ASGI API framework built on top
 of **[pydantic](https://github.com/samuelcolvin/pydantic)** and **[Starlette](https://github.com/encode/starlette)**.
 
 The Starlite framework supports **[plugins](usage/10-plugins/0-plugins-intro.md)**, ships
-with **[dependency injection](usage/6-dependency-injection.md)**, **[authentication](usage/8-authentication.md)**
+with **[dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md)**, **[authentication](usage/8-authentication.md)**
 , **[OpenAPI specifications-generation](usage/12-openapi.md)** – among other common API-framework components such
 as **[middleware](usage/7-middleware.md)** and **[guards](usage/9-guards.md)**.
 

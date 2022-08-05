@@ -50,12 +50,12 @@ while `retrieve_user_order` has the path `/user-order/{order_id:uuid}"`.
 !!! note
     If you do not declare a `path` class variable on the controller, it will default to the root path of "/".
 
-Aside from the `path` class variable see above, you can also also define the following class variables:
+Aside from the `path` class variable see above, you can also define the following class variables:
 
 - `after_request`: A [after request lifecycle hook handler](../13-lifecycle-hooks.md#after-request).
 - `after_response`: A [after response lifecycle hook handler](../13-lifecycle-hooks.md#after-response).
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
-- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
 - `middleware`: A list of middlewares. See [middleware](../7-middleware.md).

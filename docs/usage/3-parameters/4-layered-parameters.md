@@ -43,9 +43,9 @@ app = Starlite(
 ```
 
 In the above we declare parameters on the app, router and controller levels in addition to those declared in the route
-handler. Lets look at these closer.
+handler. Let's look at these closer.
 
-- `app_param` is a cookie param with the key `special-cookie`. We type it as `str` by passing this as a arg to
+- `app_param` is a cookie param with the key `special-cookie`. We type it as `str` by passing this as an arg to
   the `Parameter` function. This is required for us to get typing in the OpenAPI docs. Additionally, this parameter is
   assumed to be required because it is not explicitly declared as `required=False`. This is important because the route
   handler function does not declare a parameter called `app_param` at all, but it will still require this param to be
@@ -53,7 +53,7 @@ handler. Lets look at these closer.
   as part of the request of validation will fail.
 
 - `router_param` is a header param with the key `MyHeader`. Because its declared as `required=False`, it will not fail
-  validation if not present unless explicitly declared by a route handler - and in this case it is. Thus it is actually
+  validation if not present unless explicitly declared by a route handler - and in this case it is. Thus, it is actually
   required for the router handler function that declares it as an `str` and not an `Optional[str]`. If a string value is
   provided, it will be tested against the provided regex.
 

@@ -25,7 +25,7 @@ The `starlite.router.Router` constructor also accepts the following kwargs:
 - `after_request`: A [after request lifecycle hook handler](../13-lifecycle-hooks.md#after-request).
 - `after_response`: A [after response lifecycle hook handler](../13-lifecycle-hooks.md#after-response).
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
-- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection.md).
+- `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
 - `middleware`: A list of middlewares. See [middleware](../7-middleware.md).

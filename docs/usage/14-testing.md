@@ -4,8 +4,8 @@ Testing is a first class citizen in Starlite, which offers several powerful test
 
 <!-- prettier-ignore -->
 !!! important
-Testing utils rely on extra dependencies. So make sure to install them, e.g.:
-`pip install starlite[testing]` or `poetry install starlite --extras testing`
+    Testing utils rely on extra dependencies. So make sure to install them, e.g.:
+    `pip install starlite[testing]` or `poetry install starlite --extras testing`
 
 ## Test Client
 

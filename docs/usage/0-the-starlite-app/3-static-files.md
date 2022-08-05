@@ -24,6 +24,6 @@ Matching is done based on filename: Assumed we have a request that is trying to 
 the **directory for the base path** `/files` **will be searched** for the file `file.txt`. If it is found, the file will
 be sent over, otherwise a **404 response** will be sent.
 
-If `html_mode` is enabled and no specific file is requested, the application will fallback to serving `index.html`. If
+If `html_mode` is enabled and no specific file is requested, the application will fall back to serving `index.html`. If
 no file is found the application will look for a `404.html` file in order to render a response, otherwise a 404
 `NotFoundException` will be returned.
