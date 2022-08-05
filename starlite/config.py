@@ -12,7 +12,7 @@ from typing import (
 )
 from urllib.parse import urlencode
 
-from pydantic import AnyUrl, BaseModel, DirectoryPath, constr, validator
+from pydantic import AnyUrl, BaseConfig, BaseModel, DirectoryPath, constr, validator
 from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
 from pydantic_openapi_schema.v3_1_0.contact import Contact
 from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
@@ -144,6 +144,9 @@ class CompressionConfig(BaseModel):
 class OpenAPIConfig(BaseModel):
     """Class containing Settings and Schema Properties"""
 
+    class Config(BaseConfig):
+        copy_on_model_validation = False
+
     create_examples: bool = False
     openapi_controller: Type[OpenAPIController] = OpenAPIController
 
@@ -214,8 +217,9 @@ class StaticFilesConfig(BaseModel):
 
 
 class TemplateConfig(BaseModel):
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
+        copy_on_model_validation = False
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
     engine: Type[TemplateEngineProtocol]
@@ -232,8 +236,9 @@ def default_cache_key_builder(request: "Request") -> str:
 
 
 class CacheConfig(BaseModel):
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
+        copy_on_model_validation = False
 
     backend: CacheBackendProtocol = SimpleCacheBackend()
     expiration: int = 60  # value in seconds

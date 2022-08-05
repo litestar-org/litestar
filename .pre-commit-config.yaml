@@ -122,5 +122,6 @@ repos:
             starlette,
             types-PyYAML,
             types-freezegun,
+            types-redis,
             types-requests,
           ]
