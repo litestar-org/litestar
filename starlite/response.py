@@ -37,7 +37,7 @@ class Response(StarletteResponse, Generic[T]):
             media_type: A value for the response 'Content-Type' header.
             background: A background task to execute in parallel to the response. Defaults to None.
             headers: A string/string dictionary of response headers. Header keys are insensitive. Defaults to None.
-            cookies: A list of Cookie instance to be set under the response 'Set-Cookie' header. Defaults to None.
+            cookies: A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None.
         """
         super().__init__(
             content=content,

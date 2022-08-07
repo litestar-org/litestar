@@ -50,8 +50,11 @@ class Cookie(BaseModel):
 
 class StarliteType(BaseModel):
     background: Optional[BackgroundTask] = None
+    """A background task to execute in parallel to the response. Defaults to None."""
     headers: Dict[str, str] = {}
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -59,9 +62,16 @@ class StarliteType(BaseModel):
 
 
 class File(StarliteType):
+    """
+    Container type for returning File responses
+    """
+
     path: FilePath
+    """A path to the file to return"""
     filename: str
+    """The filename"""
     stat_result: Optional[os.stat_result] = None
+    """File statistics"""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -72,13 +82,29 @@ class File(StarliteType):
 
 
 class Redirect(StarliteType):
+    """
+    Container type for returning Redirect responses
+    """
+
     path: str
+    """Redirection path"""
 
 
 class Stream(StarliteType):
+    """
+    Container type for returning Stream responses
+    """
+
     iterator: Union[Iterator[Any], AsyncIterator[Any]]
+    """Iterator returning stream chunks"""
 
 
 class Template(StarliteType):
+    """
+    Container type for returning Template responses
+    """
+
     name: str
-    context: Optional[Dict[str, Any]]
+    """Path-like name for the template to be rendered, e.g. "index.html"."""
+    context: Optional[Dict[str, Any]] = None
+    """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
