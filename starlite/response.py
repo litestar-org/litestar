@@ -49,6 +49,7 @@ class Response(StarletteResponse, Generic[T]):
     def __init__(
         self,
         content: T,
+        *,
         status_code: int,
         media_type: Union[MediaType, OpenAPIMediaType, str],
         background: Optional[BackgroundTask] = None,

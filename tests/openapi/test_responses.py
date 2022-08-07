@@ -7,7 +7,16 @@ from starlette.status import (
     HTTP_406_NOT_ACCEPTABLE,
 )
 
-from starlite import File, MediaType, Redirect, Starlite, Stream, Template, get
+from starlite import (
+    File,
+    MediaType,
+    Redirect,
+    Response,
+    Starlite,
+    Stream,
+    Template,
+    get,
+)
 from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
@@ -20,6 +29,7 @@ from starlite.openapi.responses import (
     create_success_response,
 )
 from starlite.types import ResponseHeader
+from tests import Person
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
@@ -118,6 +128,15 @@ def test_create_success_response_with_headers() -> None:
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
     assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert response.headers["special-header"].description == "super-duper special"  # type: ignore
+
+
+def test_create_success_response_with_response_class() -> None:
+    @get(path="/test")
+    def handler() -> Response[Person]:
+        pass
+
+    response = create_success_response(handler, True, plugins=[])
+    assert response.content["application/json"].media_type_schema.schema_class is Person  # type: ignore
 
 
 def test_create_success_response_with_stream() -> None:
