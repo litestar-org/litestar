@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
@@ -26,11 +26,14 @@ class Cookie(BaseModel):
     samesite: Optional[Literal["lax", "strict", "none"]] = None
 
 
-class Response(StarletteResponse):
+T = TypeVar("T")
+
+
+class Response(StarletteResponse, Generic[T]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        content: Any,
+        content: T,
         status_code: int,
         media_type: Union[MediaType, OpenAPIMediaType, str],
         background: Optional[BackgroundTask] = None,
@@ -58,12 +61,11 @@ class Response(StarletteResponse):
             return value.dict()
         raise TypeError  # pragma: no cover
 
-    def render(self, content: Any) -> bytes:
+    def render(self, content: T) -> bytes:
         """Renders content into bytes"""
-        if self.status_code == HTTP_204_NO_CONTENT and content is None:
-            return b""
-
         try:
+            if self.status_code == HTTP_204_NO_CONTENT and content is None:
+                return b""  # type: ignore[unreachable]
             if self.media_type == MediaType.JSON:
                 return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
             if isinstance(content, OpenAPI):
