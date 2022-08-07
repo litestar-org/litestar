@@ -15,15 +15,30 @@ from starlite.template import TemplateEngineProtocol
 
 
 class Cookie(BaseModel):
+    """
+    Container class for defining a cookie using the 'Set-Cookie' header.
+
+    See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
+    """
+
     key: str
+    """case insensitive key for the cookie."""
     value: Optional[str] = None
+    """value for the cookie, if none given defaults to empty string."""
     max_age: Optional[int] = None
+    """maximal age before the cookie is invalidated."""
     expires: Optional[int] = None
-    path: Optional[str] = None
+    """expiration date as unix MS timestamp."""
+    path: str = "/"
+    """path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
     domain: Optional[str] = None
+    """domain for which the cookie is valid."""
     secure: Optional[bool] = None
+    """https is required for the cookie."""
     httponly: Optional[bool] = None
-    samesite: Optional[Literal["lax", "strict", "none"]] = None
+    """forbids javascript to access the cookie via 'Document.cookie'."""
+    samesite: Literal["lax", "strict", "none"] = "lax"
+    """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
 
 
 T = TypeVar("T")
@@ -40,6 +55,17 @@ class Response(StarletteResponse, Generic[T]):
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[List[Cookie]] = None,
     ):
+        """
+        The response class is used to return an HTTP response.
+
+        Args:
+            content: A value for the response body that will be rendered into bytes string.
+            status_code: A value for the response HTTP status code.
+            media_type: A value for the response 'Content-Type' header.
+            background: A background task to execute in parallel to the response. Defaults to None.
+            headers: A string/string dictionary of response headers. Header keys are insensitive. Defaults to None.
+            cookies: A list of Cookie instance to be set under the response 'Set-Cookie' header. Defaults to None.
+        """
         super().__init__(
             content=content,
             status_code=status_code,
@@ -55,17 +81,30 @@ class Response(StarletteResponse, Generic[T]):
         """
         Serializer hook for orjson to handle pydantic models.
 
-        This method can be overridden to extend json serialization
+        This method can be overridden to extend json serialization.
+
+        Args:
+            value: The value to be serialized
+
+        Returns:
+            A string keyed dictionary of json compatible values
         """
         if isinstance(value, BaseModel):
             return value.dict()
         raise TypeError  # pragma: no cover
 
-    def render(self, content: T) -> bytes:
-        """Renders content into bytes"""
+    def render(self, content: Any) -> bytes:
+        """
+        Handles the rendering of content T into a bytes string.
+        Args:
+            content: An arbitrary value of type T
+
+        Returns:
+            An encoded bytes string
+        """
         try:
-            if self.status_code == HTTP_204_NO_CONTENT and content is None:
-                return b""  # type: ignore[unreachable]
+            if content is None and self.status_code == HTTP_204_NO_CONTENT:
+                return b""
             if self.media_type == MediaType.JSON:
                 return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
             if isinstance(content, OpenAPI):
@@ -83,14 +122,26 @@ class TemplateResponse(Response):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        context: Optional[Dict[str, Any]],
         template_name: str,
         template_engine: TemplateEngineProtocol,
         status_code: int,
+        context: Optional[Dict[str, Any]] = None,
         background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[List[Cookie]] = None,
     ):
+        """
+        Handles the rendering of a given template into a bytes string.
+
+        Args:
+            template_name: Path-like name for the template to be rendered, e.g. "index.html".
+            template_engine: The template engine class to use to render the response.
+            status_code: A value for the response HTTP status code.
+            context: A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None.
+            background: A background task to execute in parallel to the response. Defaults to None.
+            headers: A string/string dictionary of response headers. Header keys are insensitive. Defaults to None.
+            cookies: A list of Cookie instance to be set under the response 'Set-Cookie' header. Defaults to None.
+        """
         context = context or {}
         template = template_engine.get_template(template_name)
         content = template.render(**context or {})
