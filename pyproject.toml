@@ -62,7 +62,7 @@ tox = "*"
 requests = "*"
 piccolo = "*"
 pre-commit = "*"
-redis = "^4.3.4"
+redis = "*"
 mkdocstrings = {version = "*", extras = ["python"]}
 black = "*"
 
