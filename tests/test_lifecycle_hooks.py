@@ -8,7 +8,7 @@ from starlite import Controller, HTTPRouteHandler, Router, Starlite
 from starlite.lifecycle_hooks import LifecycleHook
 
 
-@pytest.fixture
+@pytest.fixture()
 def sync_callable() -> Callable[[str], str]:
     def f(s: str) -> str:
         return f"sync callable: {s}"
@@ -16,12 +16,12 @@ def sync_callable() -> Callable[[str], str]:
     return f
 
 
-@pytest.fixture
+@pytest.fixture()
 def sync_hook(sync_callable: Callable[[str], str]) -> LifecycleHook:
     return LifecycleHook(sync_callable)
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_callable() -> Callable[[str], Awaitable[str]]:
     async def f(s: str) -> str:
         return f"async callable: {s}"
@@ -29,7 +29,7 @@ def async_callable() -> Callable[[str], Awaitable[str]]:
     return f
 
 
-@pytest.fixture
+@pytest.fixture()
 def async_hook(async_callable: Callable[[str], Awaitable[str]]) -> LifecycleHook:
     return LifecycleHook(async_callable)
 

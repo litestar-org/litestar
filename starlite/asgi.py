@@ -1,5 +1,5 @@
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, cast
 
 from starlette.routing import Router as StarletteRouter
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -9,6 +9,8 @@ from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.parsers import parse_path_params
 
 if TYPE_CHECKING:
+    from typing import Set
+
     from starlite.app import Starlite
     from starlite.types import LifeCycleHandler
 
@@ -37,19 +39,20 @@ class StarliteASGIRouter(StarletteRouter):
         cur = self.app.route_map
         components = ["/", *[component for component in path.split("/") if component]]
         for component in components:
-            components_set = cast(Set[str], cur["_components"])
+            components_set = cast("Set[str]", cur["_components"])
             if component in components_set:
-                cur = cast(Dict[str, Any], cur[component])
+                cur = cast("Dict[str, Any]", cur[component])
                 continue
             if "*" in components_set:
                 path_params.append(component)
-                cur = cast(Dict[str, Any], cur["*"])
+                cur = cast("Dict[str, Any]", cur["*"])
                 continue
             if cur.get("static_path"):
-                static_path = cast(str, cur["static_path"])
-                if static_path != "/":
-                    scope["path"] = scope["path"].replace(static_path, "")
-                continue
+                static_path = cast("str", cur["static_path"])
+                if static_path != "/" and scope["path"].startswith(static_path):
+                    start_idx = len(static_path)
+                    scope["path"] = scope["path"][start_idx:]
+                break
             raise NotFoundException()
         return cur, path_params
 
@@ -58,7 +61,7 @@ class StarliteASGIRouter(StarletteRouter):
         Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
         """
 
-        path = cast(str, scope["path"]).strip()
+        path = cast("str", scope["path"]).strip()
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
@@ -69,8 +72,8 @@ class StarliteASGIRouter(StarletteRouter):
         scope["path_params"] = (
             parse_path_params(cur["_path_parameters"], path_params) if cur["_path_parameters"] else {}
         )
-        asgi_handlers = cast(Dict[str, ASGIApp], cur["_asgi_handlers"])
-        is_asgi = cast(bool, cur["_is_asgi"])
+        asgi_handlers = cast("Dict[str, ASGIApp]", cur["_asgi_handlers"])
+        is_asgi = cast("bool", cur["_is_asgi"])
         return asgi_handlers, is_asgi
 
     @staticmethod

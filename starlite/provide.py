@@ -15,9 +15,19 @@ if TYPE_CHECKING:
 
 
 class Provide:
+    """
+    A wrapper class used for dependency injection
+
+    Args:
+        dependency (AnyCallable): callable to inject, can be a function, method or class.
+        use_cache (bool): cache the dependency return value. Defaults to False.
+        sync_to_thread (bool): run sync code in an async thread. Defaults to False.
+    """
+
     __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread", "is_coroutine")
 
     def __init__(self, dependency: "AnyCallable", use_cache: bool = False, sync_to_thread: bool = False):
+
         self.dependency = dependency
         self.use_cache = use_cache
         self.value: Any = Undefined

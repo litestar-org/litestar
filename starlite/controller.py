@@ -86,18 +86,18 @@ class Controller:
             if inspect.isfunction(hook_class_var):
                 setattr(self, hook_key, hook_class_var)
 
-    def get_route_handlers(self) -> List[BaseRouteHandler]:
+    def get_route_handlers(self) -> List["BaseRouteHandler"]:
         """
         Returns a list of route handlers defined on the controller
         """
-        route_handlers: List[BaseRouteHandler] = []
+        route_handlers: List["BaseRouteHandler"] = []
         route_handler_fields = [
             f_name
             for f_name in dir(self)
             if f_name not in dir(Controller) and isinstance(getattr(self, f_name), BaseRouteHandler)
         ]
         for f_name in route_handler_fields:
-            source_route_handler = cast(BaseRouteHandler, getattr(self, f_name))
+            source_route_handler = cast("BaseRouteHandler", getattr(self, f_name))
             route_handler = copy(source_route_handler)
             route_handler.owner = self
             route_handlers.append(route_handler)

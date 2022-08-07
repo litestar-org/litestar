@@ -26,7 +26,7 @@ def test_application_state_injection() -> None:
     def route_handler(state: State) -> str:
         assert state
         state.called = True  # this should not modify the app state
-        return cast(str, state.msg)  # this shows injection worked
+        return cast("str", state.msg)  # this shows injection worked
 
     with create_test_client(route_handler) as client:
         client.app.state.msg = "hello"

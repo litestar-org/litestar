@@ -1,9 +1,9 @@
 from typing import Generic, TypeVar
 
 import pytest
-from openapi_schema_pydantic.v3.v3_1_0.example import Example
-from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic.fields import FieldInfo
+from pydantic_openapi_schema.v3_1_0.example import Example
+from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite import Controller, MediaType, Parameter, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG

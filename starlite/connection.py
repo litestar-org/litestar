@@ -7,10 +7,10 @@ from starlette.websockets import WebSocketState
 
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
-from starlite.types import Method
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
+    from starlite.types import Method
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
@@ -25,21 +25,21 @@ class Request(StarletteRequest, Generic[User, Auth]):
     def user(self) -> User:
         if "user" not in self.scope:
             raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
-        return cast(User, self.scope["user"])
+        return cast("User", self.scope["user"])
 
     @property
     def auth(self) -> Auth:
         if "auth" not in self.scope:
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
-        return cast(Auth, self.scope["auth"])
+        return cast("Auth", self.scope["auth"])
 
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
         return parse_query_params(self)
 
     @property
-    def method(self) -> Method:
-        return cast(Method, self.scope["method"])
+    def method(self) -> "Method":
+        return cast("Method", self.scope["method"])
 
     async def json(self) -> Any:
         """
@@ -64,13 +64,13 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
     def user(self) -> User:
         if "user" not in self.scope:
             raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
-        return cast(User, self.scope["user"])
+        return cast("User", self.scope["user"])
 
     @property
     def auth(self) -> Auth:
         if "auth" not in self.scope:
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
-        return cast(Auth, self.scope["auth"])
+        return cast("Auth", self.scope["auth"])
 
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]

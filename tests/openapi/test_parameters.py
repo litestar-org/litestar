@@ -1,10 +1,6 @@
-from typing import Callable, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
-from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
-from openapi_schema_pydantic.v3.v3_1_0.parameter import (  # noqa: TC002
-    Parameter as OpenAPIParameter,
-)
 
 from starlite import Controller, Dependency, ImproperlyConfiguredException
 from starlite import Parameter as StarliteParameter
@@ -16,13 +12,19 @@ from starlite.signature import SignatureModelFactory
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
+if TYPE_CHECKING:
+    from typing import Callable
 
-def _create_parameters(app: Starlite, path: str) -> List[OpenAPIParameter]:
+    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from pydantic_openapi_schema.v3_1_0.parameter import Parameter as OpenAPIParameter
+
+
+def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
     handler_fields = (
-        SignatureModelFactory(fn=cast(Callable, route_handler.fn), plugins=[], dependency_names=set())
+        SignatureModelFactory(fn=cast("Callable", route_handler.fn), plugins=[], dependency_names=set())
         .create_signature_model()
         .__fields__
     )
@@ -121,7 +123,7 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
         return "OK"
 
     app = Starlite(route_handlers=[handler])
-    open_api_path_item = cast(OpenAPI, app.openapi_schema).paths["/test"]  # type: ignore
+    open_api_path_item = cast("OpenAPI", app.openapi_schema).paths["/test"]  # type: ignore
     open_api_parameters = open_api_path_item.get.parameters  # type: ignore
     assert len(open_api_parameters) == 2  # type: ignore
     assert {p.name for p in open_api_parameters} == {"query_param", "other_param"}  # type: ignore
@@ -151,7 +153,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
-    param_name_set = {p.name for p in cast(OpenAPI, app.openapi_schema).paths["/"].get.parameters}  # type: ignore
+    param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
     assert "dep" not in param_name_set
     assert "param" in param_name_set
 
@@ -162,7 +164,7 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
-    assert cast(OpenAPI, app.openapi_schema).paths["/"].get.parameters is None  # type: ignore
+    assert cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters is None  # type: ignore
 
 
 def test_non_dependency_in_doc_params_if_not_provided() -> None:
@@ -171,7 +173,7 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
         ...
 
     app = Starlite(route_handlers=[handler])
-    param_name_set = {p.name for p in cast(OpenAPI, app.openapi_schema).paths["/"].get.parameters}  # type: ignore
+    param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
     assert "param" in param_name_set
 
 

@@ -10,7 +10,7 @@ repos:
         exclude: "\\.idea/(.)*"
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.37.2
+    rev: v2.37.3
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
@@ -41,8 +41,13 @@ repos:
       - id: bandit
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.32.1
+    hooks:
+      - id: markdownlint
+        args: [--disable=MD013, --disable=MD033, --disable=MD050]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.0.4 # Possible releases: https://github.com/hadialqattan/pycln/releases
+    rev: v2.1.1
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -58,7 +63,14 @@ repos:
             "flake8-print",
             "flake8-simplify",
             "flake8-type-checking",
+            "flake8-pytest-style",
+            "flake8-implicit-str-concat",
+            "flake8-noqa",
           ]
+  - repo: https://github.com/johnfraney/flake8-markdown
+    rev: v0.3.0
+    hooks:
+      - id: flake8-markdown
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
     hooks:
@@ -66,10 +78,12 @@ repos:
         exclude: "^(?!starlite/)"
         additional_dependencies:
           [
-            openapi_schema_pydantic,
+            jinja2,
+            mako,
             orjson,
             pydantic,
             pydantic_factories,
+            pydantic_openapi_schema,
             pyyaml,
             starlette,
             sqlalchemy,
@@ -86,13 +100,14 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
-            openapi_schema_pydantic,
             orjson,
+            piccolo,
             pydantic,
             pydantic_factories,
+            pydantic_openapi_schema,
             pyyaml,
-            starlette,
             sqlalchemy,
+            starlette,
             tortoise_orm,
             picologging,
           ]
@@ -103,13 +118,15 @@ repos:
         additional_dependencies:
           [
             orjson,
-            types-PyYAML,
-            types-requests,
-            openapi_schema_pydantic,
+            piccolo,
             pydantic,
             pydantic_factories,
-            starlette,
+            pydantic_openapi_schema,
             sqlalchemy,
+            starlette,
+            types-PyYAML,
             types-freezegun,
+            types-redis,
+            types-requests,
             picologging,
           ]

@@ -148,7 +148,7 @@ def test_path_validation(handler_path: str, request_path: str, expected_status_c
         assert response.status_code == expected_status_code
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_http_route_raises_for_unsupported_method() -> None:
     @get()
     def my_get_handler() -> None:

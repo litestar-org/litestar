@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR  # noqa: TC002
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.enums import MediaType
 from starlite.response import Response

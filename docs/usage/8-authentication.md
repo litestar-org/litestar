@@ -23,7 +23,7 @@ async def authenticate_request(request: Request) -> AuthenticationResult:
 ### Example: Create a JWT Authentication Middleware
 
 For example, lets say we wanted to implement a JWT token based authentication. We start off by creating a user model. It
-can be implemented using pydantic, and ODM, ORM etc. For the sake of the example here lets say its a pydantic model:
+can be implemented using pydantic, and ODM, ORM etc. For the sake of the example here lets say it's a pydantic model:
 
 ```python
 import uuid
@@ -92,22 +92,31 @@ def encode_jwt_token(user_id: UUID, expiration: timedelta = DEFAULT_TIME_DELTA) 
 
 We can now create our authentication middleware:
 
-```python title="my_app/security/authentication_middleware.py"
-from typing import cast
+```python
+from typing import cast, TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import HTTPConnection
-from starlite import AbstractAuthenticationMiddleware, AuthenticationResult, NotAuthorizedException
+from starlite import (
+    AbstractAuthenticationMiddleware,
+    AuthenticationResult,
+    NotAuthorizedException,
+)
 
 from app.db.models import User
 from app.security.jwt import decode_jwt_token
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncEngine
 
 API_KEY_HEADER = "X-API-KEY"
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:
+    async def authenticate_request(
+        self, request: HTTPConnection
+    ) -> AuthenticationResult:
         """
         Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
 
@@ -121,10 +130,12 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         # decode the token, the result is a 'Token' model instance
         token = decode_jwt_token(encoded_token=auth_header)
 
-        engine = cast(AsyncEngine, request.app.state.postgres_connection)
+        engine = cast("AsyncEngine", request.app.state.postgres_connection)
         async with AsyncSession(engine) as async_session:
             async with async_session.begin():
-                user = await async_session.execute(select(User).where(User.id == token.sub))
+                user = await async_session.execute(
+                    select(User).where(User.id == token.sub)
+                )
         if not user:
             raise NotAuthorizedException()
         return AuthenticationResult(user=user, auth=token)
@@ -154,7 +165,7 @@ instance of `AuthenticationResult`. This is a pydantic model that has two attrib
 These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
 and `Request.auth` respectively, for HTTP route handlers, and `WebSocket.user` and `WebSocket.auth` for websocket route handlers.
 
-Building on the previous example, we would be able to access these in an http route handler in the following way:
+Building on the previous example, we would be able to access these in a http route handler in the following way:
 
 ```python
 from starlite import Request, get
@@ -167,7 +178,8 @@ from my_app.security.jwt import Token
 def my_route_handler(request: Request[User, Token]) -> None:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 ```
 
 Or for a websocket route:
@@ -183,7 +195,8 @@ from my_app.security.jwt import Token
 async def my_route_handler(socket: WebSocket[User, Token]) -> None:
     user = socket.user  # correctly typed as User
     auth = socket.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 ```
 
 And of course use the same kind of mechanism for dependencies:
@@ -200,7 +213,8 @@ from my_app.security.jwt import Token
 async def my_dependency(request: Request[User, Token]) -> Any:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
-    ...
+    assert isinstance(user, User)
+    assert isinstance(auth, Token)
 
 
 my_router = Router(

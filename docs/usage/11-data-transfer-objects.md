@@ -21,8 +21,8 @@ pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The `DTOFactory` class supports [plugins](10-plugins.md), for example, this is how it could be used with an SQL Alchemy
-declarative class:
+The `DTOFactory` class supports [plugins](10-plugins/0-plugins-intro.md), for example, this is how it could be used with an SQL Alchemy
+declarative class using the [SQLAlchemyPlugin](10-plugins/1-sql-alchemy-plugin.md):
 
 ```python
 from sqlalchemy import Column, Float, Integer, String
@@ -121,7 +121,7 @@ class MyClassDTO(BaseModel):
     third: int
 ```
 
-2. You can remap name and type. To do this use a tuple instead of a string for the object value:
+You can remap name and type. To do this use a tuple instead of a string for the object value:
 
 ```python
 from pydantic import BaseModel
@@ -208,6 +208,7 @@ PartialCompanyDTO = Partial[CompanyDTO]
 The created `PartialCompanyDTO` is equivalent to the following declaration:
 
 ```python
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -220,12 +221,16 @@ class PartialCompanyDTO(BaseModel):
 `Partial` can also be used inline when creating routes.
 
 ```python
-from pydantic import UUID4
+from pydantic import UUID4, BaseModel
 from starlite.controller import Controller
 from starlite.handlers import patch
 from starlite.types import Partial
 
-from my_app.orders.models import UserOrder
+
+class UserOrder(BaseModel):
+    order_id: UUID4
+    order_item_id: UUID4
+    notes: str
 
 
 class UserOrderController(Controller):
@@ -277,12 +282,28 @@ When you have an instance of a DTO model, you can convert it into a model instan
 
 ```python
 from starlite import get
+from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.orm import declarative_base
+from starlite import DTOFactory
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+
+dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+
+Base = declarative_base()
+
+
+class Company(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    worth = Column(Float)
+
+
+CompanyDTO = dto_factory("CompanyDTO", Company)
 
 
 @get()
 def create_company(data: CompanyDTO) -> Company:
-    company_instance = data.to_model_instance()
-    ...
+    return data.to_model_instance()
 ```
 
 In the above `company_instance` is an instance of the SQL Alchemy class `Company`. It is correctly typed as Company

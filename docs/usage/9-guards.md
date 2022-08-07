@@ -11,8 +11,9 @@ specifying it in the example.
 
 We begin by creating an `Enum` with two roles - `consumer` and `admin`:
 
-```python title="my_app/enums.py"
+```python
 from enum import Enum
+
 
 class UserRole(str, Enum):
     CONSUMER = "consumer"
@@ -21,10 +22,14 @@ class UserRole(str, Enum):
 
 Our `User` model will now look like this:
 
-```python title="my_app/models.py"
+```python
 from pydantic import BaseModel, UUID4
+from enum import Enum
 
-from my_app.enums import UserRole
+
+class UserRole(str, Enum):
+    CONSUMER = "consumer"
+    ADMIN = "admin"
 
 
 class User(BaseModel):
@@ -38,26 +43,33 @@ class User(BaseModel):
 ```
 
 Given that the User model has a "role" property we can use it to authorize a request. Let's create a guard that only
-allows admin users to access certain route handlers:
+allows admin users to access certain route handlers and then add it to a route handler function:
 
-```python title="my_app/guards.py"
+```python
 from starlite import Request, RouteHandler, NotAuthorizedException
+from pydantic import BaseModel, UUID4
+from starlite import post
+from enum import Enum
 
-from my_app.models import User
+
+class UserRole(str, Enum):
+    CONSUMER = "consumer"
+    ADMIN = "admin"
+
+
+class User(BaseModel):
+    id: UUID4
+    role: UserRole
+
+    @property
+    def is_admin(self) -> bool:
+        """Determines whether the user is an admin user"""
+        return self.role == UserRole.ADMIN
 
 
 def admin_user_guard(request: Request[User], _: RouteHandler) -> None:
     if not request.user.is_admin:
         raise NotAuthorizedException()
-```
-
-We can now use it, for example - lets say we have a route handler that allows users to create users:
-
-```python
-from starlite import post
-
-from my_app.guards import admin_user_guard
-from my_app.models import User
 
 
 @post(path="/user", guards=[admin_user_guard])
@@ -73,27 +85,26 @@ Guards can be declared on all levels of the app - the Starlite instance, routers
 handlers:
 
 ```python
-from starlite import Controller, Router, Starlite
+from starlite import Controller, Router, Starlite, Request, RouteHandler
 
-from my_app.guards import admin_user_guard
+
+def my_guard(request: Request, handler: RouteHandler) -> None:
+    ...
 
 
 # controller
 class UserController(Controller):
     path = "/user"
-    guards = [admin_user_guard]
+    guards = [my_guard]
 
     ...
 
 
 # router
-admin_router = Router(
-    path="admin", route_handlers=[UserController], guards=[admin_user_guard]
-)
+admin_router = Router(path="admin", route_handlers=[UserController], guards=[my_guard])
 
 # app
-
-app = Starlite(route_handlers=[admin_router], guards=[admin_user_guard])
+app = Starlite(route_handlers=[admin_router], guards=[my_guard])
 ```
 
 The deciding factor on where to place a guard is on the kind of access restriction that are required: do only specific
@@ -121,23 +132,17 @@ def my_route_handler() -> None:
 To illustrate this lets say we want to have an endpoint that is guarded by a "secret" token, to which end we create
 the following guard:
 
-```python title="my_app/guards.py"
-from starlite import Request, RouteHandler, NotAuthorizedException
-
-
-def secret_token_guard(request: Request[User], route_handler: RouteHandler) -> None:
-    if route_handler.opt.get("secret") and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]:
-        raise NotAuthorizedException()
-```
-
-We can now use this in our endpoint of choice like so:
-
 ```python
+from starlite import Request, RouteHandler, NotAuthorizedException, get
 from os import environ
 
-from starlite import get
 
-from my_app.guards import secret_token_guard
+def secret_token_guard(request: Request, route_handler: RouteHandler) -> None:
+    if (
+        route_handler.opt.get("secret")
+        and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
+    ):
+        raise NotAuthorizedException()
 
 
 @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})

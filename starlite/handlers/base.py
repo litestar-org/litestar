@@ -108,7 +108,7 @@ class BaseRouteHandler(Generic[T]):
         if self.resolved_dependency_name_set is BaseRouteHandler.empty:
             layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
             self.resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
-        return cast(Set[str], self.resolved_dependency_name_set)
+        return cast("Set[str]", self.resolved_dependency_name_set)
 
     @property
     def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
@@ -149,7 +149,7 @@ class BaseRouteHandler(Generic[T]):
                     class_validators=None,
                     required=is_required,
                 )
-        return cast(Dict[str, "ModelField"], self.resolved_layered_parameters)
+        return cast("Dict[str, ModelField]", self.resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
@@ -157,7 +157,7 @@ class BaseRouteHandler(Generic[T]):
             self.resolved_guards = []
             for layer in self.ownership_layers:
                 self.resolved_guards.extend(layer.guards or [])
-        return cast(List[Guard], self.resolved_guards)
+        return cast("List[Guard]", self.resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
@@ -171,9 +171,9 @@ class BaseRouteHandler(Generic[T]):
                 for key, value in (layer.dependencies or {}).items():
                     self.validate_dependency_is_unique(dependencies=self.resolved_dependencies, key=key, provider=value)
                     self.resolved_dependencies[key] = value
-        return cast(Dict[str, Provide], self.resolved_dependencies)
+        return cast("Dict[str, Provide]", self.resolved_dependencies)
 
-    def resolve_middleware(self) -> List[Middleware]:
+    def resolve_middleware(self) -> List["Middleware"]:
         """
         Builds the middleware stack for the RouteHandler and returns it.
 
@@ -184,7 +184,7 @@ class BaseRouteHandler(Generic[T]):
             for layer in self.ownership_layers:
                 self.resolved_middleware.extend(layer.middleware or [])
             self.resolved_middleware = list(reversed(self.resolved_middleware))
-        return cast(List[Middleware], self.resolved_middleware)
+        return cast("List[Middleware]", self.resolved_middleware)
 
     def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
         """
@@ -196,7 +196,7 @@ class BaseRouteHandler(Generic[T]):
             self.resolved_exception_handlers = {}
             for layer in self.ownership_layers:
                 self.resolved_exception_handlers.update(layer.exception_handlers or {})
-        return cast(Dict[Union[int, Type[Exception]], ExceptionHandler], self.resolved_exception_handlers)
+        return cast("Dict[Union[int, Type[Exception]], ExceptionHandler]", self.resolved_exception_handlers)
 
     @staticmethod
     def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
