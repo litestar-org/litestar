@@ -1,29 +1,41 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic import BaseModel
+from pydantic import BaseModel, validate_arguments
 from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT
+from typing_extensions import Literal
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.template import TemplateEngineProtocol
 
-if TYPE_CHECKING:
-    from starlette.background import BackgroundTask
 
-    from starlite.template import TemplateEngineProtocol
+class Cookie(BaseModel):
+    key: str
+    value: Optional[str] = None
+    max_age: Optional[int] = None
+    expires: Optional[int] = None
+    path: Optional[str] = None
+    domain: Optional[str] = None
+    secure: Optional[bool] = None
+    httponly: Optional[bool] = None
+    samesite: Optional[Literal["lax", "strict", "none"]] = None
 
 
 class Response(StarletteResponse):
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         content: Any,
         status_code: int,
         media_type: Union[MediaType, OpenAPIMediaType, str],
-        background: Optional["BackgroundTask"] = None,
+        background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[List[Cookie]] = None,
     ):
         super().__init__(
             content=content,
@@ -32,6 +44,8 @@ class Response(StarletteResponse):
             media_type=media_type,
             background=cast("BackgroundTask", background),
         )
+        for cookie in cookies or []:
+            self.set_cookie(**cookie.dict(exclude_none=True))
 
     @staticmethod
     def serializer(value: Any) -> Dict[str, Any]:
@@ -64,14 +78,16 @@ class Response(StarletteResponse):
 
 
 class TemplateResponse(Response):
+    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         context: Optional[Dict[str, Any]],
         template_name: str,
-        template_engine: "TemplateEngineProtocol",
+        template_engine: TemplateEngineProtocol,
         status_code: int,
-        background: Optional["BackgroundTask"] = None,
+        background: Optional[BackgroundTask] = None,
         headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[List[Cookie]] = None,
     ):
         context = context or {}
         template = template_engine.get_template(template_name)
@@ -82,4 +98,5 @@ class TemplateResponse(Response):
             headers=headers,
             media_type=MediaType.HTML,
             background=background,
+            cookies=cookies,
         )
