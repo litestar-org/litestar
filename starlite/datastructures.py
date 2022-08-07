@@ -1,9 +1,11 @@
 import os
 from copy import copy
-from typing import Any, AsyncIterator, Dict, Iterator, Optional, Union, cast
+from typing import Any, AsyncIterator, Dict, Iterator, List, Optional, Union, cast
 
-from pydantic import BaseModel, FilePath, validator
+from pydantic import BaseConfig, BaseModel, FilePath, validator
+from starlette.background import BackgroundTask
 from starlette.datastructures import State as StarletteStateClass
+from typing_extensions import Literal
 
 
 class State(StarletteStateClass):
@@ -19,9 +21,41 @@ class State(StarletteStateClass):
         return copy(self)
 
 
+class Cookie(BaseModel):
+    """
+    Container class for defining a cookie using the 'Set-Cookie' header.
+
+    See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
+    """
+
+    key: str
+    """case insensitive key for the cookie."""
+    value: Optional[str] = None
+    """value for the cookie, if none given defaults to empty string."""
+    max_age: Optional[int] = None
+    """maximal age before the cookie is invalidated."""
+    expires: Optional[int] = None
+    """expiration date as unix MS timestamp."""
+    path: str = "/"
+    """path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    domain: Optional[str] = None
+    """domain for which the cookie is valid."""
+    secure: Optional[bool] = None
+    """https is required for the cookie."""
+    httponly: Optional[bool] = None
+    """forbids javascript to access the cookie via 'Document.cookie'."""
+    samesite: Literal["lax", "strict", "none"] = "lax"
+    """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+
+
 class StarliteType(BaseModel):
-    class Config:
+    background: Optional[BackgroundTask] = None
+    headers: Dict[str, str] = {}
+    cookies: List[Cookie] = []
+
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
+        copy_on_model_validation = False
 
 
 class File(StarliteType):
@@ -42,9 +76,6 @@ class Redirect(StarliteType):
 
 
 class Stream(StarliteType):
-    class Config:
-        arbitrary_types_allowed = True
-
     iterator: Union[Iterator[Any], AsyncIterator[Any]]
 
 

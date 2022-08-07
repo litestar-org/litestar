@@ -15,6 +15,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, create_model
+from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
 from pydantic_openapi_schema.v3_1_0.header import Header
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -118,7 +119,7 @@ class Partial(Generic[T]):
 
 
 class ResponseHeader(Header):
-    value: Any = ...
+    value: Any = Undefined
 
 
 Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]

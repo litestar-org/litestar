@@ -1,4 +1,4 @@
-from starlite.datastructures import File, Redirect, State, Stream, Template
+from starlite.datastructures import Cookie, File, Redirect, State, Stream, Template
 
 from .app import Starlite
 from .config import (
@@ -65,11 +65,12 @@ __all__ = [
     "Body",
     "CORSConfig",
     "CacheConfig",
+    "CompressionConfig",
     "Controller",
+    "Cookie",
     "DTOFactory",
     "Dependency",
     "File",
-    "CompressionConfig",
     "HTTPException",
     "HTTPRoute",
     "HTTPRouteHandler",

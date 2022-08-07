@@ -60,6 +60,6 @@ Aside from the `path` class variable see above, you can also define the followin
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
 - `middleware`: A list of middlewares. See [middleware](../7-middleware.md).
 - `parameters`: A mapping of parameters definition that will be available on all sub route handlers. See [layered parameters](../3-parameters/4-layered-parameters.md).
-- `response_class`: A custom response class to be used as the app's default. See [using-custom-responses](../5-responses.md#using-custom-responses).
-- `response_headers`: A dictionary of `ResponseHeader` instances. See [response-headers](../5-responses.md#response-headers).
+- `response_class`: A custom response class to be used as the app's default. See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
+- `response_headers`: A dictionary of `ResponseHeader` instances. See [response-headers](../5-responses/0-responses-intro.md#response-headers).
 - `tags`: A list of tags to add to the openapi path definitions defined on the router. See [open-api](../12-openapi.md).

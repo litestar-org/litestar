@@ -7,39 +7,11 @@ from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT
-from typing_extensions import Literal
 
+from starlite.datastructures import Cookie
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.template import TemplateEngineProtocol
-
-
-class Cookie(BaseModel):
-    """
-    Container class for defining a cookie using the 'Set-Cookie' header.
-
-    See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
-    """
-
-    key: str
-    """case insensitive key for the cookie."""
-    value: Optional[str] = None
-    """value for the cookie, if none given defaults to empty string."""
-    max_age: Optional[int] = None
-    """maximal age before the cookie is invalidated."""
-    expires: Optional[int] = None
-    """expiration date as unix MS timestamp."""
-    path: str = "/"
-    """path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
-    domain: Optional[str] = None
-    """domain for which the cookie is valid."""
-    secure: Optional[bool] = None
-    """https is required for the cookie."""
-    httponly: Optional[bool] = None
-    """forbids javascript to access the cookie via 'Document.cookie'."""
-    samesite: Literal["lax", "strict", "none"] = "lax"
-    """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
-
 
 T = TypeVar("T")
 

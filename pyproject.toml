@@ -63,6 +63,7 @@ requests = "*"
 piccolo = "*"
 pre-commit = "*"
 redis = "*"
+picologging = "*"
 mkdocstrings = {version = "*", extras = ["python"]}
 black = "*"
 

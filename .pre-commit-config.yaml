@@ -91,6 +91,9 @@ repos:
             jinja2,
             mako,
             picologging,
+            tortoise_orm,
+            piccolo,
+            brotli,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"

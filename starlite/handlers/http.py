@@ -5,6 +5,7 @@ from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
+from pydantic.fields import Undefined
 from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -280,24 +281,43 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         Determines the correct response type to return given data
         """
-        if isinstance(data, Redirect):
-            return RedirectResponse(headers=headers, status_code=self.status_code, url=data.path)
-        if isinstance(data, File):
-            return FileResponse(media_type=media_type, headers=headers, **data.dict())
-        if isinstance(data, Stream):
-            return StreamingResponse(
-                content=data.iterator, status_code=self.status_code, media_type=media_type, headers=headers
-            )
-        if isinstance(data, Template):
-            if not app.template_engine:
-                raise ImproperlyConfiguredException("Template engine is not configured")
-            return TemplateResponse(
-                context=data.context,
-                template_name=data.name,
-                template_engine=app.template_engine,
-                status_code=self.status_code,
-                headers=headers,
-            )
+        if isinstance(data, (Redirect, File, Stream, Template)):
+            headers.update(data.headers)
+            if isinstance(data, Redirect):
+                response: "StarletteResponse" = RedirectResponse(
+                    headers=headers, status_code=self.status_code, url=data.path, background=data.background
+                )
+            elif isinstance(data, File):
+                response = FileResponse(
+                    background=data.background,
+                    filename=data.filename,
+                    headers=headers,
+                    media_type=media_type,
+                    path=data.path,
+                    stat_result=data.stat_result,
+                )
+            elif isinstance(data, Stream):
+                response = StreamingResponse(
+                    background=data.background,
+                    content=data.iterator,
+                    headers=headers,
+                    media_type=media_type,
+                    status_code=self.status_code,
+                )
+            else:
+                if not app.template_engine:
+                    raise ImproperlyConfiguredException("Template engine is not configured")
+                response = TemplateResponse(
+                    background=data.background,
+                    context=data.context,
+                    headers=headers,
+                    status_code=self.status_code,
+                    template_engine=app.template_engine,
+                    template_name=data.name,
+                )
+            for cookie in data.cookies:
+                response.set_cookie(**cookie.dict(exclude_none=True))
+            return response
         return cast("StarletteResponse", data)
 
     async def _process_after_request_hook(
@@ -319,7 +339,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if isawaitable(data):
             data = await data
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
-        headers = {k: v.value for k, v in self.resolve_response_headers().items()}
+        headers = {k: v.value for k, v in self.resolve_response_headers().items() if v.value is not Undefined}
         response: StarletteResponse
         if isinstance(data, (StarletteResponse, StarliteType)):
             response = self._get_response_from_data(headers=headers, data=data, media_type=media_type, app=app)

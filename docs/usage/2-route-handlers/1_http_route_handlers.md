@@ -32,13 +32,13 @@ a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`
 Additionally, you can pass the following optional kwargs:
 
 - `status_code`: the status code for a success response. If not
-  specified, [a default value will be used](../5-responses.md#status-codes).
+  specified, [a default value will be used](../5-responses/0-responses-intro.md#status-codes).
 - `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
-  response. Defaults to `MediaType.JSON`. See [media-type](../5-responses.md#media-type).
+  response. Defaults to `MediaType.JSON`. See [media-type](../5-responses/0-responses-intro.md#media-type).
 - `response_class`: A custom response class to be used as the app default.
-  See [using-custom-responses](../5-responses.md#using-custom-responses).
+  See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
-  See [response-headers](../5-responses.md#response-headers).
+  See [response-headers](../5-responses/0-responses-intro.md#response-headers).
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
 - `guards`: A list of [guards](../9-guards.md).
