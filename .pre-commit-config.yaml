@@ -85,9 +85,12 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pyyaml,
-            requests,
-            sqlalchemy,
             starlette,
+            sqlalchemy,
+            requests,
+            jinja2,
+            mako,
+            picologging,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
@@ -106,6 +109,7 @@ repos:
             sqlalchemy,
             starlette,
             tortoise_orm,
+            picologging,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"
@@ -124,4 +128,5 @@ repos:
             types-freezegun,
             types-redis,
             types-requests,
+            picologging,
           ]
