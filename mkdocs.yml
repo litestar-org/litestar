@@ -103,12 +103,20 @@ nav:
       - reference/connection.md
       - reference/controller.md
       - reference/datastructures.md
+      - reference/dto.md
       - reference/exceptions.md
       - reference/enums.md
       - reference/handlers.md
       - reference/logging.md
+      - reference/middleware.md
+      - reference/openapi.md
       - reference/params.md
+      - reference/plugins.md
+      - reference/provide.md
+      - reference/response.md
       - reference/router.md
+      - reference/template.md
+      - reference/testing.md
       - reference/types.md
 extra:
   social:
