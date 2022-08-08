@@ -48,14 +48,14 @@ class CORSConfig(BaseModel):
 
 
 class CompressionBackend(str, Enum):
-    """CompressionBackend is an enum that defines the available compression backends."""
+    """Enumerates available compression backends."""
 
     GZIP = "gzip"
     BROTLI = "brotli"
 
 
 class BrotliMode(str, Enum):
-    """BrotliMode is an enum that defines the available brotli compression optimization modes."""
+    """Enumerates the available brotli compression optimization modes."""
 
     GENERIC = "generic"
     TEXT = "text"
@@ -67,12 +67,31 @@ class CompressionConfig(BaseModel):
 
     backend: Union[CompressionBackend, str]
     minimum_size: int = 500
+    """Minimum response size (bytes) to enable compression, affects all backends."""
     gzip_compress_level: int = 9
+    """Range [0-9], see [official docs](https://docs.python.org/3/library/gzip.html)."""
     brotli_quality: int = 5
+    """
+    Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the quality, the slower
+    the compression.
+    """
     brotli_mode: Union[BrotliMode, str] = BrotliMode.TEXT
+    """
+    MODE_GENERIC, MODE_TEXT (for UTF-8 format text input, default) or MODE_FONT (for WOFF 2.0).
+    """
     brotli_lgwin: int = 22
+    """
+    Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.
+    """
     brotli_lgblock: int = 0
+    """
+    Base 2 logarithm of the maximum input block size. Range is 16 to 24. If set to 0, the value will be set based on the
+    quality. Defaults to 0.
+    """
     brotli_gzip_fallback: bool = True
+    """
+    Use GZIP if Brotli not supported.
+    """
 
     @validator("backend", pre=True, always=True)
     def backend_must_be_supported(  # pylint: disable=no-self-argument
@@ -142,30 +161,55 @@ class CompressionConfig(BaseModel):
 
 
 class OpenAPIConfig(BaseModel):
-    """Class containing Settings and Schema Properties"""
+    """
+    OpenAPI Settings and Schema Properties.
+    """
 
     class Config(BaseConfig):
         copy_on_model_validation = False
 
     create_examples: bool = False
+    """Generate examples with `pydantic - factories`"""
     openapi_controller: Type[OpenAPIController] = OpenAPIController
+    """Controller for generating OpenAPI routes. Must be subclass of [OpenAPIController][starlite.openapi.controller.OpenAPIController]"""
 
     title: str
+    """Title of API documentation"""
     version: str
+    """API version"""
     contact: Optional[Contact] = None
+    """`pydantic_openapi_schema.v3_10_0.Contact`"""
     description: Optional[str] = None
+    """API description text"""
     external_docs: Optional[ExternalDocumentation] = None
+    """`pydantic_openapi_schema.v3_10_0.external_documentation.ExternalDocumentation`"""
     license: Optional[License] = None
+    """`pydantic_openapi_schema.v3_10_0.license.License`"""
     security: Optional[List[SecurityRequirement]] = None
+    """`pydantic_openapi_schema.v3_10_0.security_requirement.SecurityRequirement`"""
     servers: List[Server] = [Server(url="/")]
+    """`pydantic_openapi_schema.v3_10_0.server.Server`"""
     summary: Optional[str] = None
+    """Summary text"""
     tags: Optional[List[Tag]] = None
+    """`pydantic_openapi_schema.v3_10_0.tag.Tag`"""
     terms_of_service: Optional[AnyUrl] = None
+    """URL to page that contains terms of service"""
     use_handler_docstrings: bool = False
+    """Draw operation description from route handler docstring if not otherwise provided."""
     webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
+    """
+    `pydantic_openapi_schema.v3_10_0.path_item.PathItem`
+    `pydantic_openapi_schema.v3_10_0.reference.Reference`
+    """
 
     def to_openapi_schema(self) -> OpenAPI:
-        """Generates an OpenAPI model"""
+        """
+        Generates an OpenAPI model
+
+        Returns:
+            pydantic_openapi_schema.v3_10_0.open_api.OpenAPI
+        """
         return OpenAPI(
             externalDocs=self.external_docs,
             security=self.security,
@@ -185,10 +229,10 @@ class OpenAPIConfig(BaseModel):
 
     def create_openapi_schema_model(self, app: "Starlite") -> OpenAPI:
         """
-        Creates `OpenAPI` instance for the given `router`.
+        Creates `OpenAPI` instance for the given `app`.
 
         Args:
-            app (Starlite)
+            app (Starlite): [Starlite][starlite.app.Starlite] instance.
 
         Returns:
             OpenAPI
@@ -229,6 +273,12 @@ class TemplateConfig(BaseModel):
 def default_cache_key_builder(request: "Request") -> str:
     """
     Given a request object, returns a cache key by combining the path with the sorted query params
+
+    Args:
+        request (Request): request used to generate cache key.
+
+    Returns:
+        str: combination of url path and query parameters
     """
     qp: List[Tuple[str, Any]] = list(request.query_params.items())
     qp.sort(key=lambda x: x[0])
@@ -241,5 +291,14 @@ class CacheConfig(BaseModel):
         copy_on_model_validation = False
 
     backend: CacheBackendProtocol = SimpleCacheBackend()
+    """
+    Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default
+    [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
+    """
     expiration: int = 60  # value in seconds
+    """Default cache expiration in seconds"""
     cache_key_builder: CacheKeyBuilder = default_cache_key_builder
+    """
+    [CacheKeyBuilder][starlite.types.CacheKeyBuilder],
+    [default_cache_key_builder][starlite.config.default_cache_key_builder] if not provided
+    """

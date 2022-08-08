@@ -28,6 +28,8 @@ The Starlite constructor accepts the following additional kwargs:
 - `after_response`: A [after response lifecycle hook handler](../13-lifecycle-hooks.md#after-response).
 - `allowed_hosts`: A list of allowed hosts. If set this enables the [AllowedHostsMiddleware](../7-middleware.md#built-in-middlewares).
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
+- `cache_config`: A [CacheConfig instance](../16-caching.md#configuring-caching). Allows specification of cache parameters such as backend, expiry, etc.
+- `compression_config`: A [CompressionConfig instance](../7-middleware.md#compression). Built in support for Gzip and Brotli compression.
 - `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the [CORSMiddleware](../7-middleware.md#built-in-middlewares).
 - `debug`: A boolean flag toggling debug mode on and off, if True, 404 errors will be rendered as HTML with a stack trace. This option should _not_ be used in production. Defaults to `False`.
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
