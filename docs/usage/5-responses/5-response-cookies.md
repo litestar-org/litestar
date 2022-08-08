@@ -1,6 +1,6 @@
 # Response Cookies
 
-Starlite allows you to define response headers by using the `response_cookies` kwarg. This kwarg is
+Starlite allows you to define response cookies by using the `response_cookies` kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers and the app
 itself:
 
@@ -112,5 +112,160 @@ following kwargs:
 ## Dynamic Cookies
 
 While the above scheme works great for static cookie values, it doesn't allow for dynamic cookies. Because cookies are
-fundamentally a type of response headers, we can utilize the same strategies we use for
+fundamentally a type of response header, we can utilize the same patterns we use for
 setting [dynamic headers](./4-response-headers.md#dynamic-headers) also here.
+
+### Setting Response Headers Using Annotated Responses
+
+We can simply return a response instance directly from the route handler and set the cookies list manually
+as you see fit, e.g.:
+
+```python
+from pydantic import BaseModel
+from starlite import Response, get
+from starlite.datastructures import Cookie
+from random import randint
+
+
+class Resource(BaseModel):
+    id: int
+    name: str
+
+
+@get(
+    "/resources",
+    response_cookies=[
+        Cookie(
+            key="Random-Header",
+            description="a random number in the range 1 - 100",
+            documentation_only=True,
+        )
+    ],
+)
+def retrieve_resource() -> Response[Resource]:
+    return Response(
+        Resource(
+            id=1,
+            name="my resource",
+        ),
+        cookies=[Cookie(key="Random-Header", value=str(randint(1, 100)))],
+    )
+```
+
+In the above we use the `response_cookies` kwarg to pass the `key` and `description` parameters for the `Random-Header`
+to the OpenAPI documentation, but we set the value dynamically in as part of
+the [annotated response](3-returning-responses.md#annotated-responses) we return. To this end we do not set a `value`
+for it and we designate it as `documentation_only=True`.
+
+### Setting Response Headers Using the After Request Hook
+
+An alternative pattern would be to use an [after request handler](../13-lifecycle-hooks.md#after-request). We can define
+the handler on different layers of the application as explained in the pertinent docs. We should take care to document
+the cookies on the corresponding layer:
+
+```python
+from pydantic import BaseModel
+from starlite import Router, Response, get
+from starlite.datastructures import Cookie
+from random import randint
+
+
+class Resource(BaseModel):
+    id: int
+    name: str
+
+
+@get("/resources")
+def retrieve_resource() -> Resource:
+    return Resource(
+        id=1,
+        name="my resource",
+    )
+
+
+def after_request_handler(response: Response) -> Response:
+    response.set_cookie(
+        **Cookie(key="Random-Header", value=str(randint(1, 100))).dict(
+            exclude_none=True
+        )
+    )
+    return response
+
+
+router = Router(
+    route_handlers=[retrieve_resource],
+    after_request=after_request_handler,
+    response_cookies=[
+        Cookie(
+            key="Random-Header",
+            description="a random number in the range 1 - 100",
+            documentation_only=True,
+        )
+    ],
+)
+
+# ...
+```
+
+In the above we set the cookie using an `after_request_handler` function on the router level. Because the
+handler function is applied on the router, we also set the documentation for it on the router.
+
+We can use this pattern to fine-tune the OpenAPI documentation more granularly by overriding cookie specification as
+required. For example, lets say we have a router level cookie being set and a local cookie with the same key but a
+different value range:
+
+```python
+from pydantic import BaseModel
+from starlite import Router, Response, get
+from starlite.datastructures import Cookie
+from random import randint
+
+
+class Resource(BaseModel):
+    id: int
+    name: str
+
+
+@get(
+    "/resources",
+    response_cookies=[
+        Cookie(
+            key="Random-Header",
+            description="a random number in the range 100 - 1000",
+            documentation_only=True,
+        )
+    ],
+)
+def retrieve_resource() -> Response[Resource]:
+    return Response(
+        Resource(
+            id=1,
+            name="my resource",
+        ),
+        cookies=[Cookie(key="Random-Header", value=str(randint(100, 1000)))],
+    )
+
+
+def after_request_handler(response: Response) -> Response:
+    response.set_cookie(
+        **Cookie(key="Random-Header", value=str(randint(1, 100))).dict(
+            exclude_none=True
+        )
+    )
+    return response
+
+
+router = Router(
+    route_handlers=[retrieve_resource],
+    after_request=after_request_handler,
+    response_cookies=[
+        Cookie(
+            key="Random-Header",
+            description="a random number in the range 1 - 100",
+            documentation_only=True,
+        )
+    ],
+)
+
+# ...
+```
