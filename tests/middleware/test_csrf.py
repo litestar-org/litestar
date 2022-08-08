@@ -32,17 +32,17 @@ def patch_handler() -> None:
     pass
 
 
-@pytest.fixture
+@pytest.fixture()
 def csrf_config() -> CSRFConfig:
     return CSRFConfig(secret="secret")
 
 
-def test_csrf_successful_flow(csrf_config):
+def test_csrf_successful_flow(csrf_config: CSRFConfig) -> None:
     client = create_test_client(route_handlers=[get_handler, post_handler], csrf_config=csrf_config)
 
     response = client.get("/")
 
-    csrf_token = response.cookies.get("csrftoken")
+    csrf_token = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
     assert csrf_token is not None
 
     set_cookie_header = response.headers.get("set-cookie")
@@ -61,14 +61,14 @@ def test_csrf_successful_flow(csrf_config):
     "method",
     ["POST", "PUT", "DELETE", "PATCH"],
 )
-def test_unsafe_method_fails_without_csrf_header(method, csrf_config):
+def test_unsafe_method_fails_without_csrf_header(method: str, csrf_config: CSRFConfig) -> None:
     client = create_test_client(
         route_handlers=[get_handler, post_handler, put_handler, delete_handler, patch_handler], csrf_config=csrf_config
     )
 
     response = client.get("/")
 
-    csrf_token = response.cookies.get("csrftoken")
+    csrf_token = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
     assert csrf_token is not None
 
     response = client.request(method, "/")
@@ -77,11 +77,11 @@ def test_unsafe_method_fails_without_csrf_header(method, csrf_config):
     assert response.text, "CSRF token verification failed"
 
 
-def test_invalid_csrf_token(csrf_config):
+def test_invalid_csrf_token(csrf_config: CSRFConfig) -> None:
     client = create_test_client(route_handlers=[get_handler, post_handler], csrf_config=csrf_config)
     response = client.get("/")
 
-    csrf_token = response.cookies.get("csrftoken")
+    csrf_token = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
     assert csrf_token is not None
 
     response = client.post("/", headers={"x-csrftoken": csrf_token + "invalid"})
@@ -90,7 +90,7 @@ def test_invalid_csrf_token(csrf_config):
     assert response.text, "CSRF token verification failed"
 
 
-def test_csrf_token_too_short(csrf_config):
+def test_csrf_token_too_short(csrf_config: CSRFConfig) -> None:
     client = create_test_client(route_handlers=[get_handler, post_handler], csrf_config=csrf_config)
     response = client.get("/")
 
@@ -102,7 +102,7 @@ def test_csrf_token_too_short(csrf_config):
     assert response.text, "CSRF token verification failed"
 
 
-def test_websocket_ignored(csrf_config):
+def test_websocket_ignored(csrf_config: CSRFConfig) -> None:
     @websocket(path="/")
     async def websocket_handler(socket: WebSocket) -> None:
         await socket.accept()
@@ -115,7 +115,7 @@ def test_websocket_ignored(csrf_config):
         assert response is not None
 
 
-def test_custom_csrf_config():
+def test_custom_csrf_config() -> None:
     csrf_config = CSRFConfig(
         secret="secret",
         cookie_name="custom-csrftoken",
@@ -132,7 +132,7 @@ def test_custom_csrf_config():
     )
 
     response = client.get("/")
-    csrf_token = response.cookies.get("custom-csrftoken")
+    csrf_token = response.cookies.get("custom-csrftoken")  # type: ignore[no-untyped-call]
     assert csrf_token is not None
 
     set_cookie_header = response.headers.get("set-cookie")

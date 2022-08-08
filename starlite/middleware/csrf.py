@@ -6,9 +6,9 @@ from typing import Optional
 
 from starlette.datastructures import MutableHeaders
 from starlette.responses import PlainTextResponse
-from starlette.types import ASGIApp, Message, Receive, Scope, Send
+from starlette.types import ASGIApp, Message, Receive, Scope, Send  # noqa: TC002
 
-from starlite.config import CSRFConfig
+from starlite.config import CSRFConfig  # noqa: TC001
 from starlite.connection import Request
 from starlite.types import MiddlewareProtocol
 
@@ -30,16 +30,16 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.app = app
         self.config = config
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
-        request = Request(scope=scope)
+        request: Request = Request(scope=scope)
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
-        my_send = send
+        send_f = send
 
         if request.method not in self.config.safe_methods:
             if not self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
@@ -48,12 +48,12 @@ class CSRFMiddleware(MiddlewareProtocol):
                 return
         else:
 
-            async def send_wrapper(message: Message):
+            async def send_wrapper(message: Message) -> None:
                 if csrf_cookie is None and message["type"] == "http.response.start":
                     message.setdefault("headers", [])
                     headers = MutableHeaders(scope=message)
                     if "set-cookie" not in headers:
-                        cookie = SimpleCookie()
+                        cookie: SimpleCookie = SimpleCookie()
                         cookie[self.config.cookie_name] = self._generate_csrf_token()
                         cookie[self.config.cookie_name]["path"] = self.config.cookie_path
                         cookie[self.config.cookie_name]["secure"] = self.config.cookie_secure
@@ -64,9 +64,9 @@ class CSRFMiddleware(MiddlewareProtocol):
                         headers.append("set-cookie", cookie.output(header="").strip())
                 await send(message)
 
-            my_send = send_wrapper
+            send_f = send_wrapper
 
-        await self.app(scope, receive, my_send)
+        await self.app(scope, receive, send_f)
 
     def _generate_csrf_hash(self, token: str) -> str:
         return hmac.new(self.config.secret.encode(), token.encode(), hashlib.sha256).hexdigest()
