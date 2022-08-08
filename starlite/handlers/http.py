@@ -5,7 +5,6 @@ from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import Undefined
 from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -275,7 +274,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if isawaitable(data):
             data = await data
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
-        headers = {k: v.value for k, v in self.resolve_response_headers().items() if v.value is not Undefined}
+        headers = {k: v.value for k, v in self.resolve_response_headers().items() if not v.documentation_only}
         cookies = self.resolve_response_cookies()
         response: StarletteResponse
         if isinstance(data, (StarletteResponse, Redirect, File, Stream, Template)):
@@ -349,10 +348,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 filtered_cookies.append(cookie)
         normalized_cookies: List[Dict[str, Any]] = []
         for cookie in filtered_cookies:
-            cookie_dict = cookie.dict(exclude_none=True)
-            if "description" in cookie_dict:
-                del cookie_dict["description"]
-            normalized_cookies.append(cookie_dict)
+            if not cookie.documentation_only:
+                cookie_dict = cookie.dict(exclude_none=True)
+                for excluded_key in ["description", "documentation_only"]:
+                    if excluded_key in cookie_dict:
+                        del cookie_dict[excluded_key]
+                normalized_cookies.append(cookie_dict)
         return normalized_cookies
 
     def _get_response_from_data(

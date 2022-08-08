@@ -66,7 +66,8 @@ The respective descriptions will be used for the OpenAPI documentation.
 ## Dynamic Headers
 
 The above detailed scheme works great for statically configured headers, but how would you go about handling dynamically
-setting headers? Starlite allows you to set headers dynamically in several ways.
+setting headers? Starlite allows you to set headers dynamically in several ways and below we will detail the two
+primary patterns.
 
 ### Setting Response Headers Using Annotated Responses
 
@@ -89,7 +90,7 @@ class Resource(BaseModel):
     "/resources",
     response_headers={
         "Random-Header": ResponseHeader(
-            description="a random number in the range 1 - 100"
+            description="a random number in the range 1 - 100", documentation_only=True
         )
     },
 )
@@ -105,7 +106,8 @@ def retrieve_resource() -> Response[Resource]:
 
 In the above we use the `response_headers` kwarg to pass the `name` and `description` parameters for the `Random-Header`
 to the OpenAPI documentation, but we set the value dynamically in as part of
-the [annotated response](3-returning-responses.md#annotated-responses) we return.
+the [annotated response](3-returning-responses.md#annotated-responses) we return. To this end we do not set a `value`
+for it and we designate it as `documentation_only=True`.
 
 ### Setting Response Headers Using the After Request Hook
 
@@ -174,7 +176,8 @@ class Resource(BaseModel):
     "/resources",
     response_headers={
         "Random-Header": ResponseHeader(
-            description="a random number in the range 100 - 1000"
+            description="a random number in the range 100 - 1000",
+            documentation_only=True,
         )
     },
 )
@@ -198,7 +201,7 @@ router = Router(
     after_request=after_request_handler,
     response_headers={
         "Random-Header": ResponseHeader(
-            description="a random number in the range 1 - 100"
+            description="a random number in the range 1 - 100", documentation_only=True
         )
     },
 )

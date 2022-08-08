@@ -146,7 +146,7 @@ def create_success_response(
             if attribute_name == "value":
                 model_field = create_parsed_model_field(type(attribute_value))
                 header.param_schema = create_schema(field=model_field, generate_examples=False, plugins=plugins)
-            else:
+            elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
     cookies = route_handler.resolve_response_cookies()
