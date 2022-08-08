@@ -14,6 +14,7 @@ from starlite.config import (
     CacheConfig,
     CompressionConfig,
     CORSConfig,
+    CSRFConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -22,7 +23,7 @@ from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.middleware import ExceptionHandlerMiddleware
+from starlite.middleware import ExceptionHandlerMiddleware, CSRFMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
@@ -61,6 +62,7 @@ class Starlite(Router):
         "asgi_router",
         "cache_config",
         "cors_config",
+        "csrf_config",
         "debug",
         "compression_config",
         "openapi_schema",
@@ -83,6 +85,7 @@ class Starlite(Router):
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
         compression_config: Optional[CompressionConfig] = None,
         cors_config: Optional[CORSConfig] = None,
+        csrf_config: Optional[CSRFConfig] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
@@ -102,6 +105,7 @@ class Starlite(Router):
         self.allowed_hosts = allowed_hosts
         self.cache_config = cache_config
         self.cors_config = cors_config
+        self.csrf_config = csrf_config
         self.debug = debug
         self.compression_config = compression_config
         self.plain_routes: Set[str] = set()
@@ -154,6 +158,8 @@ class Starlite(Router):
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
+        if self.csrf_config:
+            asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self.wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:

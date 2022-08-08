@@ -10,6 +10,7 @@ from typing import (
     Type,
     Union,
     cast,
+    Set,
 )
 from urllib.parse import urlencode
 
@@ -142,6 +143,20 @@ class CompressionConfig(BaseModel):
             kwargs["include"] = brotli_keys.union(gzip_keys)
 
         return super().dict(*args, **kwargs)
+
+
+class CSRFConfig(BaseModel):
+    """Class containing CSRF configuration."""
+
+    secret: str
+    cookie_name: str = "csrftoken"
+    cookie_path: str = "/"
+    header_name: str = "x-csrftoken"
+    cookie_secure: bool = False
+    cookie_httponly: bool = False
+    cookie_samesite: str = "Lax"
+    cookie_domain: Optional[str] = None
+    safe_methods: Set[str] = {"GET", "HEAD", "OPTIONS", "TRACE"}
 
 
 class OpenAPIConfig(BaseModel):
