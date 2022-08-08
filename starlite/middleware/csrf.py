@@ -1,14 +1,16 @@
-import hmac
 import hashlib
+import hmac
+import secrets
 from http.cookies import SimpleCookie
 from typing import Optional
-import secrets
+
 from starlette.datastructures import MutableHeaders
-from starlite.connection import Request
-from starlite.config import CSRFConfig
-from starlite.types import MiddlewareProtocol
 from starlette.responses import PlainTextResponse
-from starlette.types import ASGIApp, Receive, Scope, Send, Message
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+from starlite.config import CSRFConfig
+from starlite.connection import Request
+from starlite.types import MiddlewareProtocol
 
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
@@ -45,6 +47,7 @@ class CSRFMiddleware(MiddlewareProtocol):
                 await response(scope, receive, send)
                 return
         else:
+
             async def send_wrapper(message: Message):
                 if csrf_cookie is None and message["type"] == "http.response.start":
                     message.setdefault("headers", [])
@@ -97,6 +100,4 @@ class CSRFMiddleware(MiddlewareProtocol):
 
     @classmethod
     def _get_error_response(cls) -> PlainTextResponse:
-        return PlainTextResponse(
-            content="CSRF token verification failed", status_code=403
-        )
+        return PlainTextResponse(content="CSRF token verification failed", status_code=403)

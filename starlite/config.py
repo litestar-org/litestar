@@ -6,11 +6,11 @@ from typing import (
     Dict,
     List,
     Optional,
+    Set,
     Tuple,
     Type,
     Union,
     cast,
-    Set,
 )
 from urllib.parse import urlencode
 

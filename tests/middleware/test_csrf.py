@@ -1,6 +1,7 @@
 import pytest
 from starlette import status
-from starlite import get, post, delete, put, patch, websocket
+
+from starlite import delete, get, patch, post, put, websocket
 from starlite.config import CSRFConfig
 from starlite.connection import WebSocket
 from starlite.testing import create_test_client
@@ -61,7 +62,9 @@ def test_csrf_successful_flow(csrf_config):
     ["POST", "PUT", "DELETE", "PATCH"],
 )
 def test_unsafe_method_fails_without_csrf_header(method, csrf_config):
-    client = create_test_client(route_handlers=[get_handler, post_handler, put_handler, delete_handler, patch_handler], csrf_config=csrf_config)
+    client = create_test_client(
+        route_handlers=[get_handler, post_handler, put_handler, delete_handler, patch_handler], csrf_config=csrf_config
+    )
 
     response = client.get("/")
 
@@ -124,7 +127,9 @@ def test_custom_csrf_config():
         cookie_domain="test.com",
     )
 
-    client = create_test_client(base_url="http://test.com", route_handlers=[get_handler, post_handler], csrf_config=csrf_config)
+    client = create_test_client(
+        base_url="http://test.com", route_handlers=[get_handler, post_handler], csrf_config=csrf_config
+    )
 
     response = client.get("/")
     csrf_token = response.cookies.get("custom-csrftoken")

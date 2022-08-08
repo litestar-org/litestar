@@ -23,7 +23,7 @@ from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.middleware import ExceptionHandlerMiddleware, CSRFMiddleware
+from starlite.middleware import CSRFMiddleware, ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
