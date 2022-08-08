@@ -96,7 +96,6 @@ nav:
       - usage/15-templating.md
       - usage/16-caching.md
       - usage/17-exceptions.md
-  - migration.md
   - Reference:
       - reference/important.md
       - reference/app.md
@@ -120,6 +119,7 @@ nav:
       - reference/template.md
       - reference/testing.md
       - reference/types.md
+  - migration.md
 extra:
   social:
     - icon: fontawesome/brands/discord
