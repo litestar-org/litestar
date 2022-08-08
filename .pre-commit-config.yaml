@@ -84,25 +84,25 @@ repos:
     rev: v0.3.0
     hooks:
       - id: flake8-markdown
-  - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.14.1
-    hooks:
-      - id: slotscheck
-        exclude: "^(?!starlite/)"
-        additional_dependencies:
-          [
-            jinja2,
-            mako,
-            orjson,
-            pydantic,
-            pydantic_factories,
-            pydantic_openapi_schema,
-            pyyaml,
-            requests,
-            sqlalchemy,
-            starlette,
-          ]
-        args: [--no-strict-imports]
+  # - repo: https://github.com/ariebovenberg/slotscheck
+  #   rev: v0.14.1
+  #   hooks:
+  #     - id: slotscheck
+  #       exclude: "^(?!starlite/)"
+  #       additional_dependencies:
+  #         [
+  #           jinja2,
+  #           mako,
+  #           orjson,
+  #           pydantic,
+  #           pydantic_factories,
+  #           pydantic_openapi_schema,
+  #           pyyaml,
+  #           requests,
+  #           sqlalchemy,
+  #           starlette,
+  #         ]
+  #       args: [--no-strict-imports]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.14.5"
     hooks:
