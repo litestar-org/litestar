@@ -1,7 +1,5 @@
 # Custom Responses
 
-TODO (old text below)
-
 You can use a subclass of `starlite.responses.Response` and specify it as the response class using the `response_class`
 kwarg.
 
@@ -17,8 +15,15 @@ class MyDocument(Document):
     type = Keyword()
 ```
 
-It would be best if we had a generic response class that was able to handle all `Document` subclasses. Luckily,
-the `Document` model already comes with a `to_dict` method, which makes our lives a bit simpler:
+The `Document` class is not JSON serializable on its own, and as such we cannot simply return it from a route handler
+function and expect it to be serialized.
+
+We could of course convert it to a dictionary of values in the route handler, and then use it. But if we
+return `Document` subclasses in many route handlers, it makes sense to create a custom response to handle the
+serialization.
+
+We will therefore create a subclass of `starlite.response.Response` that implements a serializer method that is capable
+of handling `Document` subclasses:
 
 ```python
 from typing import Any, Dict

@@ -45,3 +45,18 @@ def handle_file_download() -> File:
         filename="repost.pdf",
     )
 ```
+
+## The File Class
+
+`File` is a container class used to generate file responses and their respective OpenAPI documentation. You can
+pass the following kwargs to it:
+
+- `path`: Path to the file to send, **required**.
+- `filename`: The filename to set in the response header.
+- `stat_result`: File system statistics.
+- `background`: A callable wrapped in an instance of `starlette.background.BackgroundTask` or a sequence
+  of `BackgroundTask` instances wrapped in `starlette.background.BackgroundTasks`. The callable(s) will be called after
+  the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
+  handler will not be executed.
+- `headers`: A string/string dictionary of response headers. Header keys are insensitive.
+- `cookies`: A list of `Cookie` instances. See [response-cookies](5-response-cookies.md).

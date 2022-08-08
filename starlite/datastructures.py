@@ -77,7 +77,7 @@ class File(BaseModel):
     cookies: List[Cookie] = []
     """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     path: FilePath
-    """A path to the file to return"""
+    """Path to the file to send"""
     filename: str
     """The filename"""
     stat_result: Optional[os.stat_result] = None
