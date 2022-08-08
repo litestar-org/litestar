@@ -1,19 +1,7 @@
 from http import HTTPStatus
 from http.cookies import SimpleCookie
 from inspect import Signature
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    cast,
-    get_args,
-    get_origin,
-)
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
 from pydantic_openapi_schema.v3_1_0 import Response
 from pydantic_openapi_schema.v3_1_0.header import Header
@@ -22,6 +10,7 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
 )
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from starlette.routing import get_name
+from typing_extensions import get_args, get_origin
 
 from starlite.datastructures import Cookie, File, Redirect, Stream, Template
 from starlite.enums import MediaType
