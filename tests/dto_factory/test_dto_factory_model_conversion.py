@@ -64,7 +64,7 @@ def test_conversion_from_model_instance(
             pets=None,
         )
     else:
-        model_instance = cast(Type[Pet], model)(  # type: ignore[call-arg]
+        model_instance = cast("Type[Pet]", model)(  # type: ignore[call-arg]
             id=1,
             species=Species.MONKEY,
             name="Mike",
@@ -80,7 +80,7 @@ def test_conversion_from_model_instance(
             assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable) -> None:
     DTO = DTOFactory(plugins=[TortoiseORMPlugin()])("TournamentDTO", Tournament)
 

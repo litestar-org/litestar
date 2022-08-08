@@ -1,6 +1,6 @@
 import yaml
-from openapi_schema_pydantic.util import construct_open_api_with_schema_class
 from orjson import loads
+from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
 from starlette.status import HTTP_200_OK
 
 from starlite.app import DEFAULT_OPENAPI_CONFIG

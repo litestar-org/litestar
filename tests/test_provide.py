@@ -48,14 +48,14 @@ async_partial = partial(async_fn, "why-three-and-one")
 sync_partial = partial(sync_fn, "why-three-and-one")
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_provide_default() -> None:
     provider = Provide(dependency=async_fn)
     value = await provider()
     assert value == "three-one"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_provide_cached() -> None:
     provider = Provide(dependency=async_fn, use_cache=True)
     assert provider.value is Undefined
@@ -68,7 +68,7 @@ async def test_provide_cached() -> None:
     assert value == third_value
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_run_in_thread() -> None:
     provider = Provide(dependency=sync_fn, sync_to_thread=True)
     value = await provider()
@@ -100,6 +100,6 @@ def test_provider_equality_check() -> None:
         (sync_partial, "why-three-and-one"),
     ],
 )
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_provide_for_callable(fn: Any, exp: Any) -> None:
     assert await Provide(fn)() == exp

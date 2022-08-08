@@ -1,30 +1,11 @@
-import random
 from datetime import datetime, timedelta
-from time import sleep
-from typing import Any
-from uuid import uuid4
 
-import pytest
 from freezegun import freeze_time
-from pydantic import ValidationError
 
-from starlite import CacheConfig, Request, Response, get
-from starlite.cache import SimpleCacheBackend
+from starlite import Request, get
 from starlite.testing import create_test_client
 
-
-async def slow_handler() -> dict:
-    output = {}
-    count = 0
-    while count < 1000:
-        output[str(count)] = random.random()
-        count += 1
-    return output
-
-
-def after_request_handler(response: Response) -> Response:
-    response.headers["unique-identifier"] = str(uuid4())
-    return response
+from . import after_request_handler, slow_handler
 
 
 def test_default_cache_response() -> None:
@@ -67,7 +48,7 @@ def test_default_expiration() -> None:
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
-def test_cache_key() -> None:
+def test_custom_cache_key() -> None:
     def custom_cache_key_builder(request: Request) -> str:
         return request.url.path + ":::cached"
 
@@ -76,46 +57,3 @@ def test_cache_key() -> None:
     ) as client:
         client.get("/cached")
         assert client.app.cache_config.backend.get("/cached:::cached")
-
-
-def test_async_handling() -> None:
-    class AsyncCacheBackend(SimpleCacheBackend):
-        async def set(self, key: str, value: Any, expiration: int) -> Any:  # type: ignore
-            super().set(key=key, value=value, expiration=expiration)
-
-        async def get(self, key: str) -> Any:
-            return super().get(key=key)
-
-    cache_config = CacheConfig(backend=AsyncCacheBackend())
-
-    with create_test_client(
-        route_handlers=[get("/cached-async", cache=True)(slow_handler)],
-        after_request=after_request_handler,
-        cache_config=cache_config,
-    ) as client:
-        first_response = client.get("/cached-async")
-        first_response_identifier = first_response.headers["unique-identifier"]
-        assert first_response_identifier
-        second_response = client.get("/cached-async")
-        assert second_response.headers["unique-identifier"] == first_response_identifier
-        assert first_response.json() == second_response.json()
-
-
-def test_config_validation() -> None:
-    class MyBackend:
-        def get(self) -> None:
-            ...
-
-        def set(self) -> None:
-            ...
-
-    with pytest.raises(ValidationError):
-        CacheConfig(backend=MyBackend)  # type: ignore[arg-type]
-
-
-def test_naive_cache_backend() -> None:
-    backend = SimpleCacheBackend()
-    backend.set("test", "1", 0.1)  # type: ignore
-    assert backend.get("test")
-    sleep(0.2)
-    assert not backend.get("test")

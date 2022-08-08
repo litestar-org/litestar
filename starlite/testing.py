@@ -165,7 +165,7 @@ def create_test_client(
             openapi_config=openapi_config,
             parameters=parameters,
             plugins=plugins,
-            route_handlers=cast(Any, route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+            route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
             template_config=template_config,
         ),

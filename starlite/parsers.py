@@ -1,6 +1,6 @@
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -11,6 +11,8 @@ from starlite.enums import RequestEncodingType
 from starlite.exceptions import ValidationException
 
 if TYPE_CHECKING:
+    from typing import Type
+
     from starlette.requests import HTTPConnection
 
 _true_values = {"True", "true"}
@@ -40,7 +42,7 @@ def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
     """
     Parses and normalize a given connection's query parameters into a regular dictionary
     """
-    qs = cast(Union[str, bytes], connection.scope.get("query_string", ""))
+    qs = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
     return reduce(
         _query_param_reducer,
         parse_qsl(qs if isinstance(qs, str) else qs.decode("latin-1"), keep_blank_values=True),
@@ -53,8 +55,8 @@ def _path_param_reducer(acc: Dict[str, Union[str, List[str]]], cur: Tuple[Dict[s
     Reducer function - acc is a dictionary, cur is a tuple of a param definition object + raw string value
     """
     param_definition, raw_param = cur
-    param_name = cast(str, param_definition["name"])
-    param_type = cast(Type, param_definition["type"])
+    param_name = cast("str", param_definition["name"])
+    param_type = cast("Type", param_definition["type"])
     acc[param_name] = param_type(raw_param)
     return acc
 

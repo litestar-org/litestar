@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from typing import AsyncGenerator
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_to_response_async_await() -> None:
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person) -> Person:
@@ -62,7 +62,7 @@ async def slow_numbers(minimum: int, maximum: int) -> Any:
 generator = slow_numbers(1, 10)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "expected_response",
     [
@@ -89,7 +89,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
         assert response is expected_response
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_to_response_returning_redirect_response() -> None:
     @get(path="/test", status_code=301)
     def test_function() -> Redirect:
@@ -103,7 +103,7 @@ async def test_to_response_returning_redirect_response() -> None:
         assert response.headers["location"] == "/somewhere-else"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_to_response_returning_file_response() -> None:
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
@@ -134,7 +134,7 @@ async def my_async_iterator() -> "AsyncGenerator[int, None]":
         yield count
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "iterator, should_raise", [[my_iterator(), False], [my_async_iterator(), False], [{"key": 1}, True]]
 )

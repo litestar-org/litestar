@@ -53,7 +53,7 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
 
 
 def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[PluginProtocol]:
-    """Helper function to returns a plugin to handle a given value, if any plugin supports it"""
+    """Helper function to return a plugin for handling the given value, if any plugin supports it"""
     if plugins:
         if value and isinstance(value, (list, tuple)):
             value = value[0]

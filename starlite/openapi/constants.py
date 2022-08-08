@@ -3,7 +3,6 @@ from datetime import date, datetime, time, timedelta
 from typing import Any, Dict, Pattern, Type, Union
 from uuid import UUID
 
-from openapi_schema_pydantic.v3.v3_1_0.schema import Schema
 from pydantic import (
     UUID1,
     UUID3,
@@ -51,6 +50,7 @@ from pydantic.fields import (
     SHAPE_TUPLE,
     SHAPE_TUPLE_ELLIPSIS,
 )
+from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 

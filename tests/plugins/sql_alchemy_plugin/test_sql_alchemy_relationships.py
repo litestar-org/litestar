@@ -25,4 +25,5 @@ def test_relationship() -> None:
 def test_table_name() -> None:
     pet_table = Pet
     user_table = User
-    assert pet_table.__tablename__ == "pet" and user_table.__tablename__ == "user"
+    assert pet_table.__tablename__ == "pet"
+    assert user_table.__tablename__ == "user"

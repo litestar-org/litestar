@@ -1,13 +1,13 @@
 from inspect import Signature
 from typing import TYPE_CHECKING, cast
 
-from pydantic.typing import AnyCallable
-
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
+
     from starlite.types import AsyncAnyCallable
 
 
@@ -25,7 +25,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Validates the route handler function once it's set by inspecting its return annotations
         """
         super().validate_handler_function()
-        signature = Signature.from_callable(cast(AnyCallable, self.fn))
+        signature = Signature.from_callable(cast("AnyCallable", self.fn))
 
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")

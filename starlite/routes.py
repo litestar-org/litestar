@@ -7,7 +7,6 @@ from uuid import UUID
 
 from anyio.to_thread import run_sync
 from pydantic import validate_arguments
-from pydantic.typing import AnyCallable
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from starlette.routing import get_name
@@ -16,19 +15,23 @@ from starlite.connection import Request, WebSocket
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import ASGIRouteHandler  # noqa: TC001
-from starlite.handlers import BaseRouteHandler  # noqa: TC001
-from starlite.handlers import HTTPRouteHandler  # noqa: TC001
-from starlite.handlers import WebsocketRouteHandler  # noqa: TC001
+from starlite.handlers import (
+    ASGIRouteHandler,
+    BaseRouteHandler,
+    HTTPRouteHandler,
+    WebsocketRouteHandler,
+)
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
-from starlite.types import AsyncAnyCallable, CacheKeyBuilder, Method
+from starlite.types import Method
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
     from starlette.types import Receive, Scope, Send
 
     from starlite.response import Response
+    from starlite.types import AsyncAnyCallable, CacheKeyBuilder
 
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -144,7 +147,7 @@ class HTTPRoute(BaseRoute):
             methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
             path=path,
             scope_type=ScopeType.HTTP,
-            handler_names=[get_name(cast(AnyCallable, route_handler.fn)) for route_handler in route_handlers],
+            handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -249,7 +252,7 @@ class HTTPRoute(BaseRoute):
         """
         cache_config = request.app.cache_config
         key_builder = cast(
-            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+            "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
         )
         cache_key = key_builder(request)
         if is_async_callable(cache_config.backend.get):
@@ -257,7 +260,7 @@ class HTTPRoute(BaseRoute):
         else:
             cached_value = cache_config.backend.get(cache_key)
         if cached_value:
-            return cast(StarletteResponse, pickle.loads(cached_value))  # nosec
+            return cast("StarletteResponse", pickle.loads(cached_value))  # nosec
         return None
 
     @staticmethod
@@ -269,7 +272,7 @@ class HTTPRoute(BaseRoute):
         """
         cache_config = request.app.cache_config
         key_builder = cast(
-            CacheKeyBuilder, route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+            "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
         )
         cache_key = key_builder(request)
         expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
@@ -300,7 +303,7 @@ class WebSocketRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.WEBSOCKET,
-            handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
+            handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -320,7 +323,7 @@ class WebSocketRoute(BaseRoute):
                 dependency=dependency, connection=web_socket, **kwargs
             )
         parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
-        fn = cast(AsyncAnyCallable, self.route_handler.fn)
+        fn = cast("AsyncAnyCallable", self.route_handler.fn)
         if isinstance(route_handler.owner, Controller):
             await fn(route_handler.owner, **parsed_kwargs)
         else:
@@ -345,7 +348,7 @@ class ASGIRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.ASGI,
-            handler_names=[get_name(cast(AnyCallable, route_handler.fn))],
+            handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -356,7 +359,7 @@ class ASGIRoute(BaseRoute):
         if self.route_handler.resolve_guards():
             connection = HTTPConnection(scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
-        fn = cast(AnyCallable, self.route_handler.fn)
+        fn = cast("AnyCallable", self.route_handler.fn)
         if isinstance(self.route_handler.owner, Controller):
             await fn(self.route_handler.owner, scope=scope, receive=receive, send=send)
         else:

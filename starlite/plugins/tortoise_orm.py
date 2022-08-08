@@ -22,12 +22,12 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
 
     @staticmethod
-    def _create_pydantic_model(model_class: Type[Model], **kwargs: Dict[str, Any]) -> Type[PydanticModel]:
+    def _create_pydantic_model(model_class: Type[Model], **kwargs: Dict[str, Any]) -> "Type[PydanticModel]":
         """
         Takes a tortoise model_class instance and convert it to a subclass of the tortoise PydanticModel.
         It fixes some issues with the result of the tortoise model creator.
         """
-        pydantic_model = cast(Type[PydanticModel], pydantic_model_creator(model_class, **kwargs))
+        pydantic_model = cast("Type[PydanticModel]", pydantic_model_creator(model_class, **kwargs))
         for (
             field_name,
             tortoise_model_field,
@@ -39,7 +39,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
                 ):
                     sub_model_name = pydantic_model.__fields__[field_name].type_.__name__.split(".")[-2]
                     pydantic_model.__fields__[field_name].type_ = cast(
-                        Type[PydanticModel], pydantic_model_creator(model_class, name=sub_model_name)
+                        "Type[PydanticModel]", pydantic_model_creator(model_class, name=sub_model_name)
                     )
                 if not tortoise_model_field.required:
                     pydantic_model.__fields__[field_name].required = False
@@ -99,7 +99,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
-        return cast(Dict[str, Any], data.dict())
+        return cast("Dict[str, Any]", data.dict())
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
         """

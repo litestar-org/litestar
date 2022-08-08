@@ -1,4 +1,6 @@
+<!-- markdownlint-disable -->
 <img alt="Starlite logo" src="./docs/images/SVG/starlite-banner.svg" width="100%" height="auto">
+<!-- markdownlint-restore -->
 
 <div align="center">
 
@@ -6,15 +8,18 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/context:python)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/alerts/)
+
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-29-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-30-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -27,33 +32,37 @@
 
 # Starlite
 
-Starlite is a light and flexible ASGI API framework. Using [Starlette](https://github.com/encode/starlette)
-and [pydantic](https://github.com/samuelcolvin/pydantic) as foundations.
+Starlite is a powerful, flexible and highly performant ASGI API framework built on top of [Starlette](https://github.com/encode/starlette)
+and [pydantic](https://github.com/samuelcolvin/pydantic).
 
 Check out the [Starlite documentation 📚](https://starlite-api.github.io/starlite/)
-
-## Core Features
-
-- 👉 Class based controllers
-- 👉 Decorators based configuration
-- 👉 Extended testing support
-- 👉 Extensive typing support including inference, validation and parsing
-- 👉 Full async (ASGI) support
-- 👉 Layered dependency injection
-- 👉 OpenAPI 3.1 schema generation with [Redoc](https://github.com/Redocly/redoc) UI
-- 👉 Route guards based authorization
-- 👉 Simple middleware and authentication
-- 👉 Support for pydantic models and pydantic dataclasses
-- 👉 Support for standard library dataclasses
-- 👉 Support for SQLAlchemy declarative classes
-- 👉 Plugin system to allow extending supported classes
-- 👉 Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Installation
 
 ```shell
 pip install starlite
 ```
+
+## Core Features
+
+- Both functional and OOP python support
+- Class based controllers
+- Extended testing support
+- Builtin Validation and Parsing using Pydantic
+- Dataclass Support
+- Dependency Injection
+- Layered Middleware
+- Layered Parameter declaration
+- Route Guards based Authorization
+- Life Cycle Hooks
+- Plugin System
+- SQLAlchemy Support (via plugin)
+- Tortoise-ORM Support (via plugin)
+- Automatic OpenAPI 3.1 schema generation
+- Support for [Redoc](https://github.com/Redocly/redoc)
+- Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
+- Support for [Stoplight Elements](https://github.com/stoplightio/elements)
+- Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 
 ## Relation to Starlette and FastAPI
 
@@ -62,14 +71,27 @@ selective pieces of Starlette while implementing its own routing and parsing log
 enforce a set of best practices and discourage misuse. This is done to promote simplicity and scalability - Starlite is
 simple to use, easy to learn, and unlike both Starlette and FastAPI - it keeps complexity low when scaling.
 
-Additionally, Starlite is [faster than both FastAPI and Starlette](https://github.com/Goldziher/api-performance-tests):
+### Performant
 
-![plain text requests processed](static/result-plaintext.png)
+Additionally, Starlite is very fast in comparison to other ASGI
+frameworks. In fact, the only framework that is faster
+in [our benchmarks](https://github.com/starlite-api/api-performance-tests) is _BlackSheep_, which is almost completely
+written in cython and does not work with pydantic out of the box as such:
+
+#### JSON Benchmarks
+
+<img alt="API JSON Benchmarks" src="https://github.com/starlite-api/api-performance-tests/raw/main/result-json.png">
+
+#### PlainText Benchmarks
+
+<img alt="API Plaintext Benchmarks" src="https://github.com/starlite-api/api-performance-tests/raw/main/result-plaintext.png">
 
 Legend:
 
 - a-: async, s-: sync
 - np: no params, pp: path param, qp: query param, mp: mixed params
+
+You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests).
 
 ### Class Based Controllers
 
@@ -122,10 +144,9 @@ class UserController(Controller):
         ...
 ```
 
-### ReDoc Automatic API Documentation
+### ReDoc, Swagger-UI and Stoplight Elements API Documentation
 
-While running Starlite, you can view the [ReDoc API Documentation Page](https://redoc.ly/) by accessing it at the default
-location of /schema or change the location using the [OpenAPIController](https://starlite-api.github.io/starlite/usage/12-openapi-and-redoc/#the-openapi-controller). If your app is running locally on port 8000 you can access the [ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema).
+While running Starlite, you can view the generated OpenAPI documentation using a [ReDoc](https://redoc.ly/) site, a [Swagger-UI](https://swagger.io/tools/swagger-ui/) as well as a [Stoplight Elements](https://github.com/stoplightio/elements) site.
 
 ### Data Parsing, Type Hints and Pydantic
 
@@ -138,14 +159,15 @@ as well as to validate and parse data. Thus typing is absolutely essential to th
 
 Furthermore, Starlite allows extending its support using plugins.
 
-### SQL Alchemy Support, Plugin System and DTOs
+### SQLAlchemy Support, Plugin System and DTOs
 
 Starlite has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
-features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQL Alchemy declarative classes
+features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes
 "natively", i.e. as type parameters that will be serialized/deserialized and to return them as values from route
 handlers.
 
-Starlite also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of plugins.
+Starlite also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of
+plugins.
 
 ### OpenAPI
 
@@ -175,7 +197,8 @@ Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_re
 
 ## Contributing
 
-Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
+Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
+or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.md).
 
@@ -225,6 +248,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://twitter.com/seladb"><img src="https://avatars.githubusercontent.com/u/9059541?v=4?s=100" width="100px;" alt=""/><br /><sub><b>seladb</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=seladb" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/aedify-swi"><img src="https://avatars.githubusercontent.com/u/66629131?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Simon Wienhöfer</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=aedify-swi" title="Code">💻</a></td>
   </tr>
 </table>
 
@@ -233,4 +257,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!

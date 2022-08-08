@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.7.2"
+version = "1.8.1"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -33,7 +33,6 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-openapi-schema-pydantic = "*"
 orjson = "*"
 pydantic = "*"
 pydantic-factories = "*"
@@ -43,6 +42,8 @@ starlette = "*"
 typing-extensions = "*"
 requests = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+pydantic-openapi-schema = "*"
+picologging = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 hypothesis = "*"
@@ -59,10 +60,14 @@ freezegun = "*"
 pytest-mock = "*"
 tox = "*"
 requests = "*"
+piccolo = "*"
+pre-commit = "*"
+redis = "^4.3.4"
 
 [tool.poetry.extras]
-testing = ["requests", "brotli"]
+testing = ["requests", "brotli", "picologging"]
 brotli = ["brotli"]
+picologging = ["picologging"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -90,7 +95,7 @@ disable = [
     "ungrouped-imports",
 ]
 enable = "useless-suppression"
-extension-pkg-whitelist = "pydantic"
+extension-pkg-allow-list = ["pydantic","orjson","picologging"]
 
 [tool.pylint.REPORTS]
 reports = "no"
@@ -110,6 +115,16 @@ ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
 good-names = "_,i,e,fn"
+# Regular expression which should only match function or class names that do
+# not require a docstring.
+no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test|^_.*)$"
+
+
+[tool.pylint.LOGGING]
+# Logging modules to check that the string format arguments are in logging
+# function parameter format
+logging-modules=["logging","picologging"]
+
 
 [tool.coverage.run]
 omit = ["*/tests/*"]

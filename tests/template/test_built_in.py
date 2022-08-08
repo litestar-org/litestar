@@ -35,7 +35,7 @@ def engine_test(request: Any) -> EngineTest:
     return request.param  # type:ignore[no-any-return]
 
 
-@pytest.fixture
+@pytest.fixture()
 def index_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRouteHandler:
     with open(template_dir / "index.html", "w") as f:
         f.write(engine_test.index_template)
@@ -47,7 +47,7 @@ def index_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRo
     return index_handler
 
 
-@pytest.fixture
+@pytest.fixture()
 def nested_path_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRouteHandler:
     nested_path = template_dir / "nested-dir"
     nested_path.mkdir()
@@ -61,7 +61,7 @@ def nested_path_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> 
     return nested_path_handler
 
 
-@pytest.fixture
+@pytest.fixture()
 def template_config(engine_test: EngineTest, template_dir: pathlib.Path) -> TemplateConfig:
     return TemplateConfig(engine=engine_test.engine, directory=template_dir)
 

@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, cast
 
 from starlite.cache.base import CacheBackendProtocol
+
+if TYPE_CHECKING:
+    from typing import Optional
 
 
 class SimpleCacheBackend(CacheBackendProtocol):
@@ -28,7 +31,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
         """
         Retrieve a value for a given key
         """
-        cache_obj = cast(Optional[SimpleCacheBackend.CacheObject], self._store.get(key))
+        cache_obj = cast("Optional[SimpleCacheBackend.CacheObject]", self._store.get(key))
         if cache_obj:
             if cache_obj.expiration >= datetime.now():
                 return cache_obj.value

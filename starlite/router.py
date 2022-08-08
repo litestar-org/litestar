@@ -1,13 +1,22 @@
 from inspect import isclass
-from typing import Any, Dict, ItemsView, List, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    ItemsView,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+)
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo  # noqa: TC002
+from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from starlite.controller import Controller
-from starlite.enums import HttpMethod
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -29,6 +38,9 @@ from starlite.types import (
     ResponseHeader,
 )
 from starlite.utils import find_index, join_paths, normalize_path, unique
+
+if TYPE_CHECKING:
+    from starlite.enums import HttpMethod
 
 
 class Router:
@@ -86,11 +98,11 @@ class Router:
             self.register(value=route_handler)
 
     @property
-    def route_handler_method_map(self) -> Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]]:
+    def route_handler_method_map(self) -> Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
         """
         Returns dictionary that maps paths (keys) to a list of route handler functions (values)
         """
-        route_map: Dict[str, Union[WebsocketRouteHandler, Dict[HttpMethod, HTTPRouteHandler]]] = {}
+        route_map: Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]] = {}
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 if not isinstance(route_map.get(route.path), dict):
@@ -99,13 +111,13 @@ class Router:
                     for method in route_handler.http_methods:
                         route_map[route.path][method] = route_handler  # type: ignore
             else:
-                route_map[route.path] = cast(WebSocketRoute, route).route_handler
+                route_map[route.path] = cast("WebSocketRoute", route).route_handler
         return route_map
 
     @staticmethod
     def map_route_handlers(
         value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict[HttpMethod, HTTPRouteHandler]]]:
+    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict["HttpMethod", HTTPRouteHandler]]]:
         """
         Maps route handlers to http methods
         """
@@ -129,7 +141,7 @@ class Router:
                         for http_method in route_handler.http_methods:
                             handlers_map[path][http_method] = route_handler
                     else:
-                        handlers_map[path] = cast(Union[WebsocketRouteHandler, ASGIRouteHandler], route_handler)
+                        handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
         return handlers_map.items()
 
     def validate_registration_value(
@@ -138,8 +150,8 @@ class Router:
         """
         Validates that the value passed to the register method is supported
         """
-        if isclass(value) and issubclass(cast(Type[Controller], value), Controller):
-            return cast(Type[Controller], value)(owner=self)
+        if isclass(value) and issubclass(cast("Type[Controller]", value), Controller):
+            return cast("Type[Controller]", value)(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):
             raise ImproperlyConfiguredException(
                 "Unsupported value passed to `Router.register`. "
@@ -152,7 +164,7 @@ class Router:
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
         value.owner = self
-        return cast(Union[Controller, BaseRouteHandler, "Router"], value)
+        return cast("Union[Controller, BaseRouteHandler, Router]", value)
 
     def register(self, value: ControllerRouterHandler) -> List[BaseRoute]:
         """
@@ -173,7 +185,9 @@ class Router:
                 self.routes.append(route)
             else:
                 existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
-                route_handlers = unique(list(cast(Dict[HttpMethod, HTTPRouteHandler], handler_or_method_map).values()))
+                route_handlers = unique(
+                    list(cast("Dict[HttpMethod, HTTPRouteHandler]", handler_or_method_map).values())
+                )
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers))
                     existing_route_index = find_index(

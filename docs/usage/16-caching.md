@@ -61,7 +61,7 @@ constructor. `CacheConfig` accepts 3 optional kwargs:
 Starlite comes with a single builtin cache backend called `SimpleCacheBackend`, which stores values in memory using a
 dictionary.
 
-This is fine for local development but is not a production grade solution. In a production environment its probably a
+This is fine for local development but is not a production grade solution. In a production environment it's probably a
 good idea to use a more robust solution for caching - using a database, disk storage, or an external service such as
 [Redis](https://github.com/redis/redis-py), [Memcached](https://pymemcache.readthedocs.io/en/latest/index.html)
 or [Etcd](https://pypi.org/project/python-etcd/).

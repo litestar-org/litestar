@@ -58,9 +58,7 @@ def test_layered_parameters_injected_correctly() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize(
-    "parameter", ["controller1", "controller3", "router1", "router3", "app4", "app2", "router3", "app4"]
-)
+@pytest.mark.parametrize("parameter", ["controller1", "controller3", "router1", "router3", "app4", "app2"])
 def test_layered_parameters_validation(parameter: str) -> None:
     class MyController(Controller):
         path = "/controller"

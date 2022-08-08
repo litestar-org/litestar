@@ -20,14 +20,17 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
+    - navigation.instant
     - navigation.tracking
-    - navigation.expand
-    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - toc.integrate
     - search.suggest
     - search.highlight
     - search.share
   plugins:
-    - search
+    - search:
+        lang: en
     - social:
         cards_color:
           fill: "#1d2433"
@@ -36,7 +39,11 @@ theme:
 extra_css:
   - css/extra.css
 nav:
-  - Overview: index.md
+  - Overview:
+      - index.md
+      - Project Governance: governance.md
+      - Contribution Guide: contributing.md
+      - License: license.md
   - Usage:
       - The Starlite App:
           - usage/0-the-starlite-app/0-the-starlite-app.md
@@ -55,14 +62,33 @@ nav:
           - usage/2-route-handlers/1_http_route_handlers.md
           - usage/2-route-handlers/2_websocket_route_handlers.md
           - usage/2-route-handlers/3_asgi_route_handlers.md
-      - usage/3-parameters.md
-      - usage/4-request-body.md
+      - Parameters:
+          - usage/3-parameters/0-path-parameters.md
+          - usage/3-parameters/1-query-parameters.md
+          - usage/3-parameters/2-header-and-cookie-parameters.md
+          - usage/3-parameters/3-the-parameter-function.md
+          - usage/3-parameters/4-layered-parameters.md
+      - Request Data:
+          - usage/4-request-data/0-request-data.md
+          - usage/4-request-data/1-the-body-function.md
+          - usage/4-request-data/2-url-encoded-form-data.md
+          - usage/4-request-data/3-multipart-form-data.md
       - usage/5-responses.md
-      - usage/6-dependency-injection.md
+      - Dependency Injection:
+          - usage/6-dependency-injection/0-dependency-injection-intro.md
+          - usage/6-dependency-injection/1-dependency-kwargs.md
+          - usage/6-dependency-injection/2-overriding-dependencies.md
+          - usage/6-dependency-injection/3-the-provide-class.md
+          - usage/6-dependency-injection/4-dependencies-in-dependencies.md
+          - usage/6-dependency-injection/5-the-dependency-function.md
       - usage/7-middleware.md
       - usage/8-authentication.md
       - usage/9-guards.md
-      - usage/10-plugins.md
+      - Plugins:
+          - usage/10-plugins/0-plugins-intro.md
+          - usage/10-plugins/1-sql-alchemy-plugin.md
+          - usage/10-plugins/2-tortoise-orm-plugin.md
+          - usage/10-plugins/3-piccolo-orm-plugin.md
       - usage/11-data-transfer-objects.md
       - usage/12-openapi.md
       - usage/13-lifecycle-hooks.md
@@ -71,8 +97,6 @@ nav:
       - usage/16-caching.md
       - usage/17-exceptions.md
   - migration.md
-  - governance-and-contribution.md
-  - license.md
 extra:
   social:
     - icon: fontawesome/brands/discord

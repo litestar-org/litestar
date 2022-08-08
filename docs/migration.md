@@ -3,12 +3,12 @@
 Migrating **from either Starlette or FastAPI** to Starlite is rather uncomplicated, because the frameworks are for the most
 part **inter-compatible**. So what does need to be changed?
 
-### LifeCycle
+## LifeCycle
 
 If you use the **Starlette/FastAPI `lifecycle` kwarg** with an **`AsyncContextManager`** to bootstrap your application, you will
 need to convert it to use the **`on_startup` and `on_shutdown` [hooks](usage/0-the-starlite-app/1-startup-and-shutdown.md)**. Otherwise, using lifecycle management is identical.
 
-### Routing Decorators
+## Routing Decorators
 
 Starlite does not include any decorator as part of the `Router` or `Starlite` instances. **All routes have to be declared
 using [route handlers](usage/2-route-handlers/1_http_route_handlers.md)** – in standalone functions or Controller methods. You then have to
@@ -16,7 +16,7 @@ register them with the app, either by first **registering them on a router** and
 by **registering them directly on the app**. See
 the [registering routes](usage/1-routing/1-registering-routes.md) part of the documentation for details.
 
-### Routing Classes
+## Routing Classes
 
 Starlite **does not extend the Starlette routing classes** and instead implements its own
 versions of these. You will **need to use the Starlite `Router` classes** instead of their equivalents from the other
@@ -36,10 +36,10 @@ with [route handlers](usage/2-route-handlers/1_http_route_handlers.md).
     unsupported. If your application relies on `Host` you will have to separate the logic into different microservices
     rather than use this kind of routing
 
-### Dependency Injection
+## Dependency Injection
 
 The Starlite dependency injection system is different from the one used by FastAPI. You can read about it in
-the [dependency injection](usage/6-dependency-injection.md) section of the documentation.
+the [dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md) section of the documentation.
 
 In FastAPI you declare dependencies either as a list of functions passed to the `Router` or `FastAPI` instances, or as a
 default function argument value wrapped in an instance of the `Depend` class.
@@ -47,13 +47,13 @@ default function argument value wrapped in an instance of the `Depend` class.
 In Starlite **dependencies are always declared using a dictionary** with a string key and the value wrapped in an instance of
 the `Provide` class.
 
-### Authentication
+## Authentication
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
 preferred way of handling this
 is [extending the Starlite AbstractAuthenticationMiddleware class](usage/8-authentication.md).
 
-### Third Party Packages
+## Third Party Packages
 
 Third party packages created for **Starlette** and **FastAPI** should be **generally compatible** with Starlite. The only
 **exceptions** are for packages that use the **FastAPI dependency injection** system as a basis - these will not work as such.

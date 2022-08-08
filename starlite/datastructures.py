@@ -34,7 +34,7 @@ class File(StarliteType):
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath"""
-        return value or os.stat(cast(str, values.get("path")))
+        return value or os.stat(cast("str", values.get("path")))
 
 
 class Redirect(StarliteType):

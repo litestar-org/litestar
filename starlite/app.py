@@ -1,13 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo  # noqa: TC002
-from pydantic.typing import AnyCallable
+from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
-from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
@@ -46,7 +44,9 @@ from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
-    from openapi_schema_pydantic.v3.v3_1_0.open_api import OpenAPI
+    from pydantic.typing import AnyCallable
+    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
@@ -145,13 +145,13 @@ class Starlite(Router):
                 self.register(asgi(path=path)(static_files))
         self.template_engine = create_template_engine(template_config)
 
-    def create_asgi_handler(self) -> ASGIApp:
+    def create_asgi_handler(self) -> "ASGIApp":
         """
         Creates an ASGIApp that wraps the ASGI router inside an exception handler.
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler: ASGIApp = self.asgi_router
+        asgi_handler: "ASGIApp" = self.asgi_router
         if self.compression_config:
             asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:
@@ -162,7 +162,7 @@ class Starlite(Router):
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self.wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         The application entry point.
         Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
@@ -175,8 +175,8 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, send)
 
     def wrap_in_exception_handler(
-        self, app: ASGIApp, exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
-    ) -> ASGIApp:
+        self, app: "ASGIApp", exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
+    ) -> "ASGIApp":
         """
         Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware
         """
@@ -199,11 +199,11 @@ class Starlite(Router):
             path = path.replace("{}", "*")
             components = ["/", *[component for component in path.split("/") if component]]
             for component in components:
-                components_set = cast(Set[str], cur_node["_components"])
+                components_set = cast("Set[str]", cur_node["_components"])
                 components_set.add(component)
                 if component not in cur_node:
                     cur_node[component] = {"_components": set()}
-                cur_node = cast(Dict[str, Any], cur_node[component])
+                cur_node = cast("Dict[str, Any]", cur_node[component])
                 if "static_path" in cur_node:
                     raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
         else:
@@ -229,7 +229,7 @@ class Starlite(Router):
                 raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
             node["static_path"] = route.path
             node["_is_asgi"] = True
-        asgi_handlers = cast(Dict[str, ASGIApp], node["_asgi_handlers"])
+        asgi_handlers = cast("Dict[str, ASGIApp]", node["_asgi_handlers"])
         if isinstance(route, HTTPRoute):
             for method, handler_mapping in route.route_handler_map.items():
                 handler, _ = handler_mapping
@@ -255,7 +255,7 @@ class Starlite(Router):
         self,
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
         route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", ASGIRouteHandler],
-    ) -> ASGIApp:
+    ) -> "ASGIApp":
         """Constructs a middleware stack that serves as the point of entry for each route"""
 
         # we wrap the route.handle method in the ExceptionHandlerMiddleware
@@ -285,7 +285,7 @@ class Starlite(Router):
             if isinstance(route, HTTPRoute):
                 route_handlers = route.route_handlers
             else:
-                route_handlers = [cast(Union[WebSocketRoute, ASGIRoute], route).route_handler]  # type: ignore
+                route_handlers = [cast("Union[WebSocketRoute, ASGIRoute]", route).route_handler]  # type: ignore
             for route_handler in route_handlers:
                 self.create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
@@ -306,7 +306,7 @@ class Starlite(Router):
         """
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
-                fn=cast(AnyCallable, route_handler.fn),
+                fn=cast("AnyCallable", route_handler.fn),
                 plugins=self.plugins,
                 dependency_names=route_handler.dependency_name_set,
             ).create_signature_model()
