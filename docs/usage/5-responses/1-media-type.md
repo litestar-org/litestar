@@ -1,6 +1,6 @@
 # Media Type
 
-You do not have to specify the `media_type` kwarg in the route handler function if the response is should be JSON. But
+You do not have to specify the `media_type` kwarg in the route handler function if the response should be JSON. But
 if you wish to return a response other than JSON, you should specify this value. You can use
 the `starlite.enums.MediaType` enum for this purpose:
 
@@ -13,7 +13,7 @@ def retrieve_resource() -> str:
     return "The rumbling rabbit ran around the rock"
 ```
 
-The value of the `media_type` kwarg affect both the serialization of response data and the generation of OpenAPI docs.
+The value of the `media_type` kwarg affects both the serialization of response data and the generation of OpenAPI docs.
 The above example will cause Starlite to serialize the response as a simple bytes string with a `Content-Type` header
 value of `text/plain`. It will also set the corresponding values in the OpenAPI documentation.
 

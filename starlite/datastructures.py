@@ -10,6 +10,14 @@ from typing_extensions import Literal
 
 
 class State(StarletteStateClass):
+    """
+    An object that can be used to store arbitrary state.
+
+    Used for `request.state` and `app.state`.
+
+    Allows attribute access using . notation.
+    """
+
     def __copy__(self) -> "State":
         """
         Returns a shallow copy of the given state object.
@@ -143,6 +151,10 @@ class Template(BaseModel):
 
 
 class ResponseHeader(Header):
+    """
+    Container type for a response header
+    """
+
     documentation_only: bool = False
     """defines the ResponseHeader instance as for OpenAPI documentation purpose only"""
     value: Any = None

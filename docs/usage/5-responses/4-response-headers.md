@@ -49,7 +49,7 @@ app = Starlite(
 )
 ```
 
-In the above example the response returned from `my_route_handler` will have a headers set from each layer of the
+In the above example the response returned from `my_route_handler` will have headers set from each layer of the
 application using the given key+value combinations. I.e. it will be a dictionary equal to this:
 
 ```json

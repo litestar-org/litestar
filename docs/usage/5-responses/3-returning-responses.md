@@ -51,4 +51,4 @@ def retrieve_resource() -> Response[Resource]:
 ```
 
 As you can see above, the `starlite.response.Response` class accepts a generic argument - in this case the pydantic
-model `Resource`. This allows Starlite to infer from the Response type the correct typing for OpenAPI generation.
+model `Resource`. This allows Starlite to infer from the `Response` type the correct typing for OpenAPI generation.
