@@ -20,6 +20,11 @@ pub(crate) fn find_insert_handler_group(
         let param_set = util::param_set(&path_parameters_vec)?;
         let mut node = root;
         for s in get_base_components(path) {
+            if let Some(HandlerGroup::Static { .. }) = node.handler_group {
+                return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                    "Cannot have configured routes below a static path at {path}"
+                )));
+            }
             // Could we just assume a path segment that starts and ends
             // with `{}` is a placeholder?
             let is_placeholder =
@@ -33,6 +38,13 @@ pub(crate) fn find_insert_handler_group(
                     .entry(String::from(s))
                     .or_insert_with(Node::default)
             };
+        }
+        if handler_group.static_path().is_some()
+            && (!node.children.is_empty() || node.placeholder_child.is_some())
+        {
+            return Err(wrappers::ImproperlyConfiguredException::new_err(format!(
+                "Cannot have configured routes below a static path at {path}"
+            )));
         }
         // Found where the handlers should be, get it, or add a new one
         match node.handler_group {
@@ -73,7 +85,9 @@ impl RouteMap {
                         .and_then(HandlerGroup::static_path);
                     if let Some(static_path) = static_path {
                         if static_path != "/" {
-                            path = Cow::Owned(path.replace(static_path, ""));
+                            if let Some(rest) = path.strip_prefix(static_path) {
+                                path = Cow::Owned(String::from(rest));
+                            }
                         }
                         break;
                     }
@@ -98,6 +112,7 @@ impl RouteMap {
     }
 }
 
+#[derive(Debug)]
 pub(crate) struct FindResult<'a> {
     pub(crate) handler_group: &'a HandlerGroup,
     pub(crate) param_values: Vec<String>,
