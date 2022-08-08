@@ -12,6 +12,7 @@ from starlite import (
     MediaType,
     Redirect,
     Response,
+    ResponseHeader,
     Starlite,
     Stream,
     Template,
@@ -28,7 +29,6 @@ from starlite.openapi.responses import (
     create_responses,
     create_success_response,
 )
-from starlite.types import ResponseHeader
 from tests import Person
 from tests.openapi.utils import PersonController, PetController, PetException
 

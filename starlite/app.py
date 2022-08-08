@@ -16,7 +16,7 @@ from starlite.config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from starlite.datastructures import State
+from starlite.datastructures import Cookie, ResponseHeader, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -37,7 +37,6 @@ from starlite.types import (
     Guard,
     LifeCycleHandler,
     Middleware,
-    ResponseHeader,
 )
 from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
@@ -136,6 +135,7 @@ class Starlite(Router):
         parameters: Optional[Dict[str, FieldInfo]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
@@ -164,6 +164,7 @@ class Starlite(Router):
             parameters=parameters,
             path="",
             response_class=response_class,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             route_handlers=route_handlers,
         )
@@ -330,6 +331,9 @@ class Starlite(Router):
                     route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_request()
+                    route_handler.resolve_after_response()
+                    route_handler.resolve_response_headers()
+                    route_handler.resolve_response_cookies()
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
             elif isinstance(route, WebSocketRoute):

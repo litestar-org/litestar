@@ -1,5 +1,4 @@
-from starlite import Controller, HttpMethod, Router, Starlite, get
-from starlite.types import ResponseHeader
+from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get
 
 router_first = ResponseHeader(value=1)
 router_second = ResponseHeader(value=2)
@@ -8,7 +7,6 @@ controller_second = ResponseHeader(value=4)
 app_first = ResponseHeader(value=5)
 app_second = ResponseHeader(value=6)
 local_first = ResponseHeader(value=7)
-local_second = ResponseHeader(value=8)
 
 test_path = "/test"
 

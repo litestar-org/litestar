@@ -15,9 +15,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, create_model
-from pydantic.fields import Undefined
 from pydantic.typing import AnyCallable
-from pydantic_openapi_schema.v3_1_0.header import Header
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -116,10 +114,6 @@ class Partial(Generic[T]):
                     break
             cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
         return cast("Type[T]", cls._models.get(item))
-
-
-class ResponseHeader(Header):
-    value: Any = Undefined
 
 
 Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]

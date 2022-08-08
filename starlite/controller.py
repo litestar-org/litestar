@@ -9,9 +9,8 @@ if TYPE_CHECKING:
     from typing import Type
 
     from pydantic.fields import FieldInfo
-    from starlette.middleware import Middleware
-    from starlette.middleware.base import BaseHTTPMiddleware
 
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.provide import Provide
     from starlite.response import Response
     from starlite.router import Router
@@ -21,8 +20,7 @@ if TYPE_CHECKING:
         BeforeRequestHandler,
         ExceptionHandler,
         Guard,
-        MiddlewareProtocol,
-        ResponseHeader,
+        Middleware,
     )
 
 
@@ -43,6 +41,7 @@ class Controller:
         "parameters",
         "path",
         "response_class",
+        "response_cookies",
         "response_headers",
         "tags",
     )
@@ -53,11 +52,12 @@ class Controller:
     dependencies: Optional[Dict[str, "Provide"]]
     exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]
     guards: Optional[List["Guard"]]
-    middleware: Optional[List[Union["Middleware", "Type[BaseHTTPMiddleware]", "Type[MiddlewareProtocol]"]]]
+    middleware: Optional[List["Middleware"]]
     owner: "Router"
     parameters: Optional[Dict[str, "FieldInfo"]]
     path: str
     response_class: Optional["Type[Response]"]
+    response_cookies: Optional[List["Cookie"]]
     response_headers: Optional[Dict[str, "ResponseHeader"]]
     tags: Optional[List[str]]
 

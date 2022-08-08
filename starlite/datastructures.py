@@ -3,6 +3,8 @@ from copy import copy
 from typing import Any, AsyncIterator, Dict, Iterator, List, Optional, Union, cast
 
 from pydantic import BaseConfig, BaseModel, FilePath, validator
+from pydantic.fields import Undefined
+from pydantic_openapi_schema.v3_1_0 import Header
 from starlette.background import BackgroundTask
 from starlette.datastructures import State as StarletteStateClass
 from typing_extensions import Literal
@@ -48,24 +50,21 @@ class Cookie(BaseModel):
     """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
 
 
-class StarliteType(BaseModel):
+class File(BaseModel):
+    """
+    Container type for returning File responses
+    """
+
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        copy_on_model_validation = False
+
     background: Optional[BackgroundTask] = None
     """A background task to execute in parallel to the response. Defaults to None."""
     headers: Dict[str, str] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
     """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-        copy_on_model_validation = False
-
-
-class File(StarliteType):
-    """
-    Container type for returning File responses
-    """
-
     path: FilePath
     """A path to the file to return"""
     filename: str
@@ -81,30 +80,64 @@ class File(StarliteType):
         return value or os.stat(cast("str", values.get("path")))
 
 
-class Redirect(StarliteType):
+class Redirect(BaseModel):
     """
     Container type for returning Redirect responses
     """
 
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        copy_on_model_validation = False
+
+    background: Optional[BackgroundTask] = None
+    """A background task to execute in parallel to the response. Defaults to None."""
+    headers: Dict[str, str] = {}
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
+    cookies: List[Cookie] = []
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     path: str
     """Redirection path"""
 
 
-class Stream(StarliteType):
+class Stream(BaseModel):
     """
     Container type for returning Stream responses
     """
 
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        copy_on_model_validation = False
+
+    background: Optional[BackgroundTask] = None
+    """A background task to execute in parallel to the response. Defaults to None."""
+    headers: Dict[str, str] = {}
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
+    cookies: List[Cookie] = []
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     iterator: Union[Iterator[Any], AsyncIterator[Any]]
     """Iterator returning stream chunks"""
 
 
-class Template(StarliteType):
+class Template(BaseModel):
     """
     Container type for returning Template responses
     """
 
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+        copy_on_model_validation = False
+
+    background: Optional[BackgroundTask] = None
+    """A background task to execute in parallel to the response. Defaults to None."""
+    headers: Dict[str, str] = {}
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
+    cookies: List[Cookie] = []
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
     context: Optional[Dict[str, Any]] = None
     """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
+
+
+class ResponseHeader(Header):
+    value: Any = Undefined

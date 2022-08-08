@@ -98,7 +98,12 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
 async def test_to_response_returning_redirect_response() -> None:
     background_task = BackgroundTask(lambda: "")
 
-    @get(path="/test", status_code=301, response_headers={"local-header": ResponseHeader(value="123")})
+    @get(
+        path="/test",
+        status_code=301,
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
     def test_function() -> Redirect:
         return Redirect(
             path="/somewhere-else",
@@ -115,7 +120,10 @@ async def test_to_response_returning_redirect_response() -> None:
         assert response.headers["location"] == "/somewhere-else"
         assert response.headers["local-header"] == "123"
         assert response.headers["file-header"] == "abc"
-        assert response.headers["set-cookie"] == "redirect-cookie=xyz; Path=/; SameSite=lax"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 2
+        assert cookies[0] == "redirect-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
 
 
@@ -125,7 +133,11 @@ async def test_to_response_returning_file_response() -> None:
     filename = Path(__file__).name
     background_task = BackgroundTask(lambda: "")
 
-    @get(path="/test", response_headers={"local-header": ResponseHeader(value="123")})
+    @get(
+        path="/test",
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
     def test_function() -> File:
         return File(
             path=current_file_path,
@@ -145,7 +157,10 @@ async def test_to_response_returning_file_response() -> None:
         assert response.filename == filename
         assert response.headers["local-header"] == "123"
         assert response.headers["file-header"] == "abc"
-        assert response.headers["set-cookie"] == "file-cookie=xyz; Path=/; SameSite=lax"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 3
+        assert cookies[0] == "file-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
 
 
@@ -171,7 +186,11 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
     if not should_raise:
         background_task = BackgroundTask(lambda: "")
 
-        @get(path="/test", response_headers={"local-header": ResponseHeader(value="123")})
+        @get(
+            path="/test",
+            response_headers={"local-header": ResponseHeader(value="123")},
+            response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+        )
         def test_function() -> Stream:
             return Stream(
                 iterator=iterator,
@@ -187,7 +206,10 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
             assert isinstance(response, StreamingResponse)
             assert response.headers["local-header"] == "123"
             assert response.headers["file-header"] == "abc"
-            assert response.headers["set-cookie"] == "streaming-cookie=xyz; Path=/; SameSite=lax"
+            cookies = response.headers.getlist("set-cookie")
+            assert len(cookies) == 3
+            assert cookies[0] == "streaming-cookie=xyz; Path=/; SameSite=lax"
+            assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
             assert response.background == background_task
     else:
         with pytest.raises(ValidationError):
@@ -198,7 +220,11 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
 async def func_to_response_template_response() -> None:
     background_task = BackgroundTask(lambda: "")
 
-    @get(path="/test", response_headers={"local-header": ResponseHeader(value="123")})
+    @get(
+        path="/test",
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
     def test_function() -> Template:
         return Template(
             name="test.template",
@@ -215,5 +241,8 @@ async def func_to_response_template_response() -> None:
         assert isinstance(response, TemplateResponse)
         assert response.headers["local-header"] == "123"
         assert response.headers["file-header"] == "abc"
-        assert response.headers["set-cookie"] == "template-cookie=xyz; Path=/; SameSite=lax"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 2
+        assert cookies[0] == "template-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task

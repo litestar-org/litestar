@@ -12,6 +12,7 @@ from starlite import (
     MediaType,
     Parameter,
     Partial,
+    ResponseHeader,
     State,
     delete,
     get,
@@ -19,7 +20,6 @@ from starlite import (
     post,
     put,
 )
-from starlite.types import ResponseHeader
 from tests import Person, Pet, VanillaDataClassPerson
 
 

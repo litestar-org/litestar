@@ -1,4 +1,12 @@
-from starlite.datastructures import Cookie, File, Redirect, State, Stream, Template
+from starlite.datastructures import (
+    Cookie,
+    File,
+    Redirect,
+    ResponseHeader,
+    State,
+    Stream,
+    Template,
+)
 
 from .app import Starlite
 from .config import (
@@ -54,7 +62,7 @@ from .provide import Provide
 from .response import Response
 from .router import Router
 from .routes import BaseRoute, HTTPRoute, WebSocketRoute
-from .types import MiddlewareProtocol, Partial, ResponseHeader
+from .types import MiddlewareProtocol, Partial
 
 __all__ = [
     "ASGIRouteHandler",

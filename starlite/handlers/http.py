@@ -13,7 +13,14 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import File, Redirect, StarliteType, Stream, Template
+from starlite.datastructures import (
+    Cookie,
+    File,
+    Redirect,
+    ResponseHeader,
+    Stream,
+    Template,
+)
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -38,7 +45,6 @@ from starlite.types import (
     Guard,
     Method,
     Middleware,
-    ResponseHeader,
 )
 from starlite.utils import is_async_callable
 
@@ -68,10 +74,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "resolved_after_request",
         "resolved_before_request",
         "resolved_after_response",
-        "resolved_headers",
+        "resolved_response_headers",
+        "resolved_response_cookies",
         "resolved_response_class",
         "response_class",
         "response_description",
+        "response_cookies",
         "response_headers",
         "status_code",
         "summary",
@@ -99,6 +107,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -146,6 +155,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.cache_key_builder = cache_key_builder
         self.media_type = media_type
         self.response_class = response_class
+        self.response_cookies = response_cookies
         self.response_headers = response_headers
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
@@ -169,7 +179,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.resolved_before_request: Union[
             Optional[BeforeRequestHook], Type[BaseRouteHandler.empty]
         ] = BaseRouteHandler.empty
-        self.resolved_headers: Union[Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        self.resolved_response_headers: Union[
+            Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]
+        ] = BaseRouteHandler.empty
+        self.resolved_response_cookies: Union[List[Cookie], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
         self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
@@ -199,11 +212,27 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self.resolved_headers is BaseRouteHandler.empty:
-            self.resolved_headers = {}
+        if self.resolved_response_headers is BaseRouteHandler.empty:
+            self.resolved_response_headers = {}
             for layer in self.ownership_layers:
-                self.resolved_headers.update(layer.response_headers or {})
-        return cast("Dict[str, ResponseHeader]", self.resolved_headers)
+                self.resolved_response_headers.update(layer.response_headers or {})
+        return cast("Dict[str, ResponseHeader]", self.resolved_response_headers)
+
+    def resolve_response_cookies(self) -> List[Cookie]:
+        """
+        Returns a list of Cookie instances. Filters the list to ensure each cookie key is unique.
+
+        This method is memoized so the computation occurs only once.
+        """
+        if self.resolved_response_cookies is BaseRouteHandler.empty:
+            self.resolved_response_cookies = []
+            cookies = []
+            for layer in self.ownership_layers:
+                cookies.extend(layer.response_cookies or [])
+            for cookie in reversed(cookies):
+                if not any(cookie.key == c.key for c in self.resolved_response_cookies):
+                    self.resolved_response_cookies.append(cookie)
+        return cast("List[Cookie]", self.resolved_response_cookies)
 
     def resolve_before_request(self) -> Optional["BeforeRequestHook"]:
         """
@@ -273,16 +302,21 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def _get_response_from_data(
         self,
-        headers: dict,
-        data: Union[StarletteResponse, StarliteType],
-        media_type: Union[MediaType, str],
         app: "Starlite",
+        cookies: List[Cookie],
+        data: Union[StarletteResponse, Redirect, File, Stream, Template],
+        headers: dict,
+        media_type: Union[MediaType, str],
     ) -> StarletteResponse:
         """
         Determines the correct response type to return given data
         """
         if isinstance(data, (Redirect, File, Stream, Template)):
             headers.update(data.headers)
+            normalized_cookies = [*data.cookies]
+            for cookie in cookies:
+                if not any(cookie.key == c.key for c in normalized_cookies):
+                    normalized_cookies.append(cookie)
             if isinstance(data, Redirect):
                 response: "StarletteResponse" = RedirectResponse(
                     headers=headers, status_code=self.status_code, url=data.path, background=data.background
@@ -315,10 +349,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     template_engine=app.template_engine,
                     template_name=data.name,
                 )
-            for cookie in data.cookies:
-                response.set_cookie(**cookie.dict(exclude_none=True))
-            return response
-        return cast("StarletteResponse", data)
+        else:
+            response = data
+            normalized_cookies = cookies
+
+        for cookie in normalized_cookies:
+            response.set_cookie(**cookie.dict(exclude_none=True))
+
+        return response
 
     async def _process_after_request_hook(
         self,
@@ -340,9 +378,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             data = await data
         media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
         headers = {k: v.value for k, v in self.resolve_response_headers().items() if v.value is not Undefined}
+        cookies = self.resolve_response_cookies()
         response: StarletteResponse
-        if isinstance(data, (StarletteResponse, StarliteType)):
-            response = self._get_response_from_data(headers=headers, data=data, media_type=media_type, app=app)
+        if isinstance(data, (StarletteResponse, Redirect, File, Stream, Template)):
+            response = self._get_response_from_data(
+                app=app,
+                cookies=cookies,
+                data=data,
+                headers=headers,
+                media_type=media_type,
+            )
         else:
             plugin = get_plugin_for_value(value=data, plugins=plugins)
             if plugin:
@@ -358,11 +403,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                         data = plugin.to_dict(data)
             response_class = self.resolve_response_class()
             response = response_class(
-                headers=headers,
-                status_code=self.status_code,
-                content=data,
-                media_type=media_type,
                 background=self.background_tasks,
+                content=data,
+                cookies=cookies,
+                headers=headers,
+                media_type=media_type,
+                status_code=self.status_code,
             )
         return await self._process_after_request_hook(response)
 
@@ -388,6 +434,7 @@ class get(HTTPRouteHandler):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -426,6 +473,7 @@ class get(HTTPRouteHandler):
             raises=raises,
             response_class=response_class,
             response_description=response_description,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -452,6 +500,7 @@ class post(HTTPRouteHandler):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -490,6 +539,7 @@ class post(HTTPRouteHandler):
             raises=raises,
             response_class=response_class,
             response_description=response_description,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -516,6 +566,7 @@ class put(HTTPRouteHandler):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -554,6 +605,7 @@ class put(HTTPRouteHandler):
             raises=raises,
             response_class=response_class,
             response_description=response_description,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -580,6 +632,7 @@ class patch(HTTPRouteHandler):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -618,6 +671,7 @@ class patch(HTTPRouteHandler):
             raises=raises,
             response_class=response_class,
             response_description=response_description,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -644,6 +698,7 @@ class delete(HTTPRouteHandler):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
@@ -682,6 +737,7 @@ class delete(HTTPRouteHandler):
             raises=raises,
             response_class=response_class,
             response_description=response_description,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,

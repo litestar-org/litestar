@@ -17,6 +17,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from starlite.controller import Controller
+from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -35,7 +36,6 @@ from starlite.types import (
     ExceptionHandler,
     Guard,
     MiddlewareProtocol,
-    ResponseHeader,
 )
 from starlite.utils import find_index, join_paths, normalize_path, unique
 
@@ -56,6 +56,7 @@ class Router:
         "parameters",
         "path",
         "response_class",
+        "response_cookies",
         "response_headers",
         "routes",
         "tags",
@@ -75,6 +76,7 @@ class Router:
         parameters: Optional[Dict[str, FieldInfo]] = None,
         path: str,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
@@ -90,6 +92,7 @@ class Router:
         self.parameters = parameters
         self.path = normalize_path(path)
         self.response_class = response_class
+        self.response_cookies = response_cookies
         self.response_headers = response_headers
         self.routes: List[BaseRoute] = []
         self.tags = tags

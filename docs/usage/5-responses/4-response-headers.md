@@ -5,7 +5,8 @@ available on all layers of the app - individual route handlers, controllers, rou
 itself:
 
 ```python
-from starlite import Starlite, ResponseHeader, Router, Controller, MediaType, get
+from starlite import Starlite, Router, Controller, MediaType, get
+from starlite.datastructures import ResponseHeader
 
 
 class MyController(Controller):
@@ -74,7 +75,8 @@ as you see fit, e.g.:
 
 ```python
 from pydantic import BaseModel
-from starlite import Response, ResponseHeader, get
+from starlite import Response, get
+from starlite.datastructures import ResponseHeader
 from random import randint
 
 
@@ -113,7 +115,8 @@ the headers on the corresponding layer:
 
 ```python
 from pydantic import BaseModel
-from starlite import Router, ResponseHeader, Response, get
+from starlite import Router, Response, get
+from starlite.datastructures import ResponseHeader
 from random import randint
 
 
@@ -157,7 +160,8 @@ different value range:
 
 ```python
 from pydantic import BaseModel
-from starlite import Router, ResponseHeader, Response, get
+from starlite import Router, Response, get
+from starlite.datastructures import ResponseHeader
 from random import randint
 
 
