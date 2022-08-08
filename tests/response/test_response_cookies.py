@@ -1,4 +1,5 @@
 from starlite import Controller, Cookie, HttpMethod, Router, Starlite, get
+from starlite.testing import create_test_client
 
 
 def test_response_cookies() -> None:
@@ -39,3 +40,16 @@ def test_response_cookies() -> None:
     assert response_cookies["third"] == router_second.value
     assert response_cookies["fourth"] == app_second.value
     assert "external" not in response_cookies
+
+
+def test_response_cookie_rendering() -> None:
+    @get(
+        "/",
+        response_cookies=[Cookie(key="test", value="123")],
+    )
+    def test_method() -> None:
+        return None
+
+    with create_test_client(test_method) as client:
+        response = client.get("/")
+        assert response.headers["Set-Cookie"] == "test=123; Path=/; SameSite=lax"
