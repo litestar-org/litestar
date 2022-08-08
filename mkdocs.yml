@@ -98,7 +98,9 @@ nav:
       - usage/17-exceptions.md
   - migration.md
   - Reference:
+      - reference/important.md
       - reference/app.md
+      - reference/cache.md
       - reference/config.md
       - reference/connection.md
       - reference/controller.md
@@ -142,10 +144,12 @@ plugins:
         python:
           options:
             heading_level: 3
+            members: []
             show_root_heading: true
             show_source: false
             docstring_style: google
             separate_signature: true
             show_if_no_docstring: true
+            line_length: 100
 watch:
   - starlite

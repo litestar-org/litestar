@@ -1,4 +1,6 @@
-# starlite.app
+# app
+
+::: starlite.app.DEFAULT_OPENAPI_CONFIG
 
 ::: starlite.app.Starlite
     options:

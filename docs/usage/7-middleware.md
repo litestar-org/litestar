@@ -176,7 +176,8 @@ You can enable brotli compression of responses by passing an instance of `starli
 
 You can configure the following additional brotli-specific values:
 
-- `brotli_quality`: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Defaults is `500`, i.e. half a kilobyte.
+- `minimum_size`: the minimum threshold for response size to enable compression. Smaller responses will not be compressed. Defaults is `500`, i.e. half a kilobyte.
+- `brotli_quality`: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the quality, the slower the compression.
 - `brotli_mode`: The compression mode can be MODE_GENERIC (default), MODE_TEXT (for UTF-8 format text input) or MODE_FONT (for WOFF 2.0).
 - `brotli_lgwin`: Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.
 - `brotli_lgblock`: Base 2 logarithm of the maximum input block size. Range is 16 to 24. If set to 0, the value will be set based on the quality. Defaults to 0.
