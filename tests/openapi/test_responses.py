@@ -8,6 +8,7 @@ from starlette.status import (
 )
 
 from starlite import (
+    Cookie,
     File,
     MediaType,
     Redirect,
@@ -128,6 +129,32 @@ def test_create_success_response_with_headers() -> None:
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
     assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER  # type: ignore
     assert response.headers["special-header"].description == "super-duper special"  # type: ignore
+
+
+def test_create_success_response_with_cookies() -> None:
+    @get(
+        path="/test",
+        response_cookies=[
+            Cookie(key="first-cookie", httponly=True, samesite="strict", description="the first cookie", secure=True),
+            Cookie(key="second-cookie", max_age=500, description="the second cookie"),
+        ],
+    )
+    def handler() -> list:
+        pass
+
+    response = create_success_response(handler, True, plugins=[])
+    assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True) == {  # type: ignore
+        "allOf": [
+            {
+                "description": "the second cookie",
+                "example": 'second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax',
+            },
+            {
+                "description": "the first cookie",
+                "example": 'first-cookie="<string>"; HttpOnly; Path=/; SameSite=strict; Secure',
+            },
+        ]
+    }
 
 
 def test_create_success_response_with_response_class() -> None:

@@ -41,6 +41,8 @@ from starlite.types import (
     AfterResponseHandler,
     BeforeRequestHandler,
     CacheKeyBuilder,
+    Empty,
+    EmptyType,
     ExceptionHandler,
     Guard,
     Method,
@@ -56,6 +58,12 @@ if TYPE_CHECKING:
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
+        "_resolved_after_request",
+        "_resolved_after_response",
+        "_resolved_before_request",
+        "_resolved_response_class",
+        "_resolved_response_cookies",
+        "_resolved_response_headers",
         "after_request",
         "after_response",
         "background_tasks",
@@ -71,15 +79,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "media_type",
         "operation_id",
         "raises",
-        "resolved_after_request",
-        "resolved_before_request",
-        "resolved_after_response",
-        "resolved_response_headers",
-        "resolved_response_cookies",
-        "resolved_response_class",
         "response_class",
-        "response_description",
         "response_cookies",
+        "response_description",
         "response_headers",
         "status_code",
         "summary",
@@ -169,28 +171,20 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
-        # memoized attributes, defaulted to BaseRouteHandler.empty
-        self.resolved_after_request: Union[
-            Optional[AfterRequestHook], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_after_response: Union[
-            Optional[AfterResponseHook], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_before_request: Union[
-            Optional[BeforeRequestHook], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_response_headers: Union[
-            Dict[str, ResponseHeader], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_response_cookies: Union[List[Cookie], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_response_class: Union[Type[Response], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
+        # memoized attributes, defaulted to Empty
+        self._resolved_after_request: Union[Optional[AfterRequestHook], EmptyType] = Empty
+        self._resolved_after_response: Union[Optional[AfterResponseHook], EmptyType] = Empty
+        self._resolved_before_request: Union[Optional[BeforeRequestHook], EmptyType] = Empty
+        self._resolved_response_headers: Union[Dict[str, ResponseHeader], EmptyType] = Empty
+        self._resolved_response_cookies: Union[List[Cookie], EmptyType] = Empty
+        self._resolved_response_class: Union[Type[Response], EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
         """
         Replaces a function with itself
         """
         self.fn = fn
-        self.validate_handler_function()
+        self._validate_handler_function()
         return self
 
     def resolve_response_class(self) -> Type[Response]:
@@ -199,12 +193,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self.resolved_response_class is BaseRouteHandler.empty:
-            self.resolved_response_class = Response
+        if self._resolved_response_class is Empty:
+            self._resolved_response_class = Response
             for layer in self.ownership_layers:
                 if layer.response_class is not None:
-                    self.resolved_response_class = layer.response_class
-        return cast("Type[Response]", self.resolved_response_class)
+                    self._resolved_response_class = layer.response_class
+        return cast("Type[Response]", self._resolved_response_class)
 
     def resolve_response_headers(self) -> Dict[str, "ResponseHeader"]:
         """
@@ -212,11 +206,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self.resolved_response_headers is BaseRouteHandler.empty:
-            self.resolved_response_headers = {}
+        if self._resolved_response_headers is Empty:
+            self._resolved_response_headers = {}
             for layer in self.ownership_layers:
-                self.resolved_response_headers.update(layer.response_headers or {})
-        return cast("Dict[str, ResponseHeader]", self.resolved_response_headers)
+                self._resolved_response_headers.update(layer.response_headers or {})
+        return cast("Dict[str, ResponseHeader]", self._resolved_response_headers)
 
     def resolve_response_cookies(self) -> List[Cookie]:
         """
@@ -224,15 +218,15 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self.resolved_response_cookies is BaseRouteHandler.empty:
-            self.resolved_response_cookies = []
+        if self._resolved_response_cookies is Empty:
+            self._resolved_response_cookies = []
             cookies = []
             for layer in self.ownership_layers:
                 cookies.extend(layer.response_cookies or [])
             for cookie in reversed(cookies):
-                if not any(cookie.key == c.key for c in self.resolved_response_cookies):
-                    self.resolved_response_cookies.append(cookie)
-        return cast("List[Cookie]", self.resolved_response_cookies)
+                if not any(cookie.key == c.key for c in self._resolved_response_cookies):
+                    self._resolved_response_cookies.append(cookie)
+        return cast("List[Cookie]", self._resolved_response_cookies)
 
     def resolve_before_request(self) -> Optional["BeforeRequestHook"]:
         """
@@ -241,9 +235,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once
         """
-        if self.resolved_before_request is BaseRouteHandler.empty:
-            self.resolved_before_request = BeforeRequestHook.resolve_for_handler(self, "before_request")
-        return cast("Optional[BeforeRequestHook]", self.resolved_before_request)
+        if self._resolved_before_request is Empty:
+            self._resolved_before_request = BeforeRequestHook.resolve_for_handler(self, "before_request")
+        return cast("Optional[BeforeRequestHook]", self._resolved_before_request)
 
     def resolve_after_request(self) -> Optional["AfterRequestHook"]:
         """
@@ -252,9 +246,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once
         """
-        if self.resolved_after_request is BaseRouteHandler.empty:
-            self.resolved_after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
-        return cast("Optional[AfterRequestHook]", self.resolved_after_request)
+        if self._resolved_after_request is Empty:
+            self._resolved_after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
+        return cast("Optional[AfterRequestHook]", self._resolved_after_request)
 
     def resolve_after_response(self) -> Optional["AfterResponseHook"]:
         """
@@ -263,9 +257,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once
         """
-        if self.resolved_after_response is BaseRouteHandler.empty:
-            self.resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
-        return cast("Optional[AfterResponseHook]", self.resolved_after_response)
+        if self._resolved_after_response is Empty:
+            self._resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
+        return cast("Optional[AfterResponseHook]", self._resolved_after_response)
 
     @property
     def http_methods(self) -> List["Method"]:
@@ -273,102 +267,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns a list of the RouteHandler's HttpMethod members
         """
         return cast("List[Method]", self.http_method if isinstance(self.http_method, list) else [self.http_method])
-
-    def validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it is set by inspecting its return annotations
-        """
-        super().validate_handler_function()
-        signature = Signature.from_callable(cast("AnyCallable", self.fn))
-        return_annotation = signature.return_annotation
-        if return_annotation is Signature.empty:
-            raise ValidationException(
-                "A return value of a route handler function should be type annotated."
-                "If your function doesn't return a value or returns None, annotate it as returning None."
-            )
-        if isclass(return_annotation):
-            with suppress(TypeError):
-                if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
-                    raise ValidationException(
-                        f"Redirect responses should have one of "
-                        f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
-                    )
-                if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
-                    self.media_type = MediaType.TEXT
-        if "socket" in signature.parameters:
-            raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-        if "data" in signature.parameters and "GET" in self.http_methods:
-            raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
-
-    def _get_response_from_data(
-        self,
-        app: "Starlite",
-        cookies: List[Cookie],
-        data: Union[StarletteResponse, Redirect, File, Stream, Template],
-        headers: dict,
-        media_type: Union[MediaType, str],
-    ) -> StarletteResponse:
-        """
-        Determines the correct response type to return given data
-        """
-        if isinstance(data, (Redirect, File, Stream, Template)):
-            headers.update(data.headers)
-            normalized_cookies = [*data.cookies]
-            for cookie in cookies:
-                if not any(cookie.key == c.key for c in normalized_cookies):
-                    normalized_cookies.append(cookie)
-            if isinstance(data, Redirect):
-                response: "StarletteResponse" = RedirectResponse(
-                    headers=headers, status_code=self.status_code, url=data.path, background=data.background
-                )
-            elif isinstance(data, File):
-                response = FileResponse(
-                    background=data.background,
-                    filename=data.filename,
-                    headers=headers,
-                    media_type=media_type,
-                    path=data.path,
-                    stat_result=data.stat_result,
-                )
-            elif isinstance(data, Stream):
-                response = StreamingResponse(
-                    background=data.background,
-                    content=data.iterator,
-                    headers=headers,
-                    media_type=media_type,
-                    status_code=self.status_code,
-                )
-            else:
-                if not app.template_engine:
-                    raise ImproperlyConfiguredException("Template engine is not configured")
-                response = TemplateResponse(
-                    background=data.background,
-                    context=data.context,
-                    headers=headers,
-                    status_code=self.status_code,
-                    template_engine=app.template_engine,
-                    template_name=data.name,
-                )
-        else:
-            response = data
-            normalized_cookies = cookies
-
-        for cookie in normalized_cookies:
-            response.set_cookie(**cookie.dict(exclude_none=True))
-
-        return response
-
-    async def _process_after_request_hook(
-        self,
-        response: StarletteResponse,
-    ) -> StarletteResponse:
-        """
-        Receives a response and handles after_request, if defined.
-        """
-        after_request = self.resolve_after_request()
-        if after_request:
-            return await after_request(response)
-        return response
 
     async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
         """
@@ -405,12 +303,127 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response = response_class(
                 background=self.background_tasks,
                 content=data,
-                cookies=cookies,
                 headers=headers,
                 media_type=media_type,
                 status_code=self.status_code,
             )
+            for cookie in self._normalize_cookies(cookies, []):
+                response.set_cookie(**cookie)
         return await self._process_after_request_hook(response)
+
+    def _validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once it is set by inspecting its return annotations
+        """
+        super()._validate_handler_function()
+        signature = Signature.from_callable(cast("AnyCallable", self.fn))
+        return_annotation = signature.return_annotation
+        if return_annotation is Signature.empty:
+            raise ValidationException(
+                "A return value of a route handler function should be type annotated."
+                "If your function doesn't return a value or returns None, annotate it as returning None."
+            )
+        if isclass(return_annotation):
+            with suppress(TypeError):
+                if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
+                    raise ValidationException(
+                        f"Redirect responses should have one of "
+                        f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+                    )
+                if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+                    self.media_type = MediaType.TEXT
+        if "socket" in signature.parameters:
+            raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+        if "data" in signature.parameters and "GET" in self.http_methods:
+            raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+
+    @staticmethod
+    def _normalize_cookies(local_cookies: List[Cookie], layered_cookies: List[Cookie]) -> List[Dict[str, Any]]:
+        """
+        Given two lists of cookies, ensures the uniqueness of cookies by key
+        and returns a normalized dict ready to be set on the response.
+        """
+        filtered_cookies = [*local_cookies]
+        for cookie in layered_cookies:
+            if not any(cookie.key == c.key for c in filtered_cookies):
+                filtered_cookies.append(cookie)
+        normalized_cookies: List[Dict[str, Any]] = []
+        for cookie in filtered_cookies:
+            cookie_dict = cookie.dict(exclude_none=True)
+            if "description" in cookie_dict:
+                del cookie_dict["description"]
+            normalized_cookies.append(cookie_dict)
+        return normalized_cookies
+
+    def _get_response_from_data(
+        self,
+        app: "Starlite",
+        cookies: List[Cookie],
+        data: Union[StarletteResponse, Redirect, File, Stream, Template],
+        headers: dict,
+        media_type: Union[MediaType, str],
+    ) -> StarletteResponse:
+        """
+        Determines the correct response type to return given data
+        """
+        if isinstance(data, (Redirect, File, Stream, Template)):
+            headers.update(data.headers)
+            normalized_cookies = self._normalize_cookies(data.cookies, cookies)
+            if isinstance(data, Redirect):
+                response: "StarletteResponse" = RedirectResponse(
+                    headers=headers, status_code=self.status_code, url=data.path, background=data.background
+                )
+            elif isinstance(data, File):
+                response = FileResponse(
+                    background=data.background,
+                    filename=data.filename,
+                    headers=headers,
+                    media_type=media_type,
+                    path=data.path,
+                    stat_result=data.stat_result,
+                )
+            elif isinstance(data, Stream):
+                response = StreamingResponse(
+                    background=data.background,
+                    content=data.iterator,
+                    headers=headers,
+                    media_type=media_type,
+                    status_code=self.status_code,
+                )
+            else:
+                if not app.template_engine:
+                    raise ImproperlyConfiguredException("Template engine is not configured")
+                response = TemplateResponse(
+                    background=data.background,
+                    context=data.context,
+                    headers=headers,
+                    status_code=self.status_code,
+                    template_engine=app.template_engine,
+                    template_name=data.name,
+                )
+        elif isinstance(data, Response):
+            response = data
+            normalized_cookies = self._normalize_cookies(data.cookies, cookies)
+        else:
+            response = data
+            normalized_cookies = self._normalize_cookies(cookies, [])
+
+        for cookie in normalized_cookies:
+            response.set_cookie(**cookie)
+
+        return response
+
+    async def _process_after_request_hook(
+        self,
+        response: StarletteResponse,
+    ) -> StarletteResponse:
+        """
+        Receives a response and handles after_request, if defined.
+        """
+        after_request = self.resolve_after_request()
+        if after_request:
+            return await after_request(response)
+        return response
 
 
 route = HTTPRouteHandler

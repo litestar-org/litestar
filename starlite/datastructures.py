@@ -48,6 +48,8 @@ class Cookie(BaseModel):
     """forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
     """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    description: Optional[str] = None
+    """description of the response cookie header for OpenAPI documentation"""
 
 
 class File(BaseModel):

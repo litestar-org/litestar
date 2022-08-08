@@ -117,3 +117,10 @@ class Partial(Generic[T]):
 
 
 Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
+
+
+class Empty:
+    """Placeholder"""
+
+
+EmptyType = Type[Empty]

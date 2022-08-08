@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from http.cookies import SimpleCookie
 from inspect import Signature
 from typing import (
     TYPE_CHECKING,
@@ -22,7 +23,7 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from starlette.routing import get_name
 
-from starlite.datastructures import File, Redirect, Stream, Template
+from starlite.datastructures import Cookie, File, Redirect, Stream, Template
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
@@ -32,11 +33,34 @@ from starlite.response import Response as StarliteResponse
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
+    from http.cookies import BaseCookie
+
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
+
+
+def create_cookie_schema(cookie: Cookie) -> Schema:
+    """
+    Given a Cookie instance, return its corresponding OpenAPI schema
+    Args:
+        cookie: Cookie
+
+    Returns:
+        Schema
+    """
+    base_cookie: "BaseCookie[str]" = SimpleCookie()
+    base_cookie[cookie.key] = "<string>"
+    cookie_dict = cookie.dict()
+    if cookie_dict["max_age"]:
+        base_cookie[cookie.key]["max-age"] = cookie_dict["max_age"]
+    for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
+        if cookie_dict[key]:
+            base_cookie[cookie.key][key] = cookie_dict[key]
+    value = base_cookie.output(header="").strip()
+    return Schema(description=cookie.description or "", example=value)
 
 
 def create_success_response(
@@ -125,6 +149,11 @@ def create_success_response(
             else:
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
+    cookies = route_handler.resolve_response_cookies()
+    if cookies:
+        response.headers["Set-Cookie"] = Header(
+            param_schema=Schema(allOf=[create_cookie_schema(cookie=cookie) for cookie in cookies])
+        )
     return response
 
 

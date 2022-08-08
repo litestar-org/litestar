@@ -46,8 +46,7 @@ class Response(StarletteResponse, Generic[T]):
             media_type=media_type,
             background=cast("BackgroundTask", background),
         )
-        for cookie in cookies or []:
-            self.set_cookie(**cookie.dict(exclude_none=True))
+        self.cookies = cookies or []
 
     @staticmethod
     def serializer(value: Any) -> Dict[str, Any]:
