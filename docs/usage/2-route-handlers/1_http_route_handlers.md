@@ -39,6 +39,7 @@ Additionally, you can pass the following optional kwargs:
   See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
 - `response_headers`: A dictionary of `ResponseHeader` instances.
   See [response-headers](../5-responses/0-responses-intro.md#response-headers).
+- `response_cookies`: A list of `Cookie` instances. See [response-cookies](../5-responses/5-response-cookies.md)
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
 - `guards`: A list of [guards](../9-guards.md).
