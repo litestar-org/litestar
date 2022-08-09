@@ -6,6 +6,7 @@ from typing import (
     Dict,
     List,
     Optional,
+    Set,
     Tuple,
     Type,
     Union,
@@ -24,13 +25,14 @@ from pydantic_openapi_schema.v3_1_0.reference import Reference
 from pydantic_openapi_schema.v3_1_0.security_requirement import SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.server import Server
 from pydantic_openapi_schema.v3_1_0.tag import Tag
+from typing_extensions import Literal
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.path_item import create_path_item
 from starlite.routes import HTTPRoute
 from starlite.template import TemplateEngineProtocol
-from starlite.types import CacheKeyBuilder
+from starlite.types import CacheKeyBuilder, Method
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -158,6 +160,29 @@ class CompressionConfig(BaseModel):
             kwargs["include"] = brotli_keys.union(gzip_keys)
 
         return super().dict(*args, **kwargs)
+
+
+class CSRFConfig(BaseModel):
+    """CSRF middleware configuration."""
+
+    secret: str
+    """A string that is used to create an HMAC to sign the CSRF token"""
+    cookie_name: str = "csrftoken"
+    """The CSRF cookie name"""
+    cookie_path: str = "/"
+    """The CSRF cookie path"""
+    header_name: str = "x-csrftoken"
+    """The header that will be expected in each request"""
+    cookie_secure: bool = False
+    """A boolean value indicating whether to set the `Secure` attribute on the cookie"""
+    cookie_httponly: bool = False
+    """A boolean value indicating whether to set the `HttpOnly` attribute on the cookie"""
+    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    """The value to set in the `SameSite` attribute of the cookie"""
+    cookie_domain: Optional[str] = None
+    """Specifies which hosts can receive the cookie"""
+    safe_methods: Set[Method] = {"GET", "HEAD"}
+    """A set of "safe methods" that can set the cookie"""
 
 
 class OpenAPIConfig(BaseModel):

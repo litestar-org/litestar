@@ -3,6 +3,7 @@ from starlite.middleware.authentication import (
     AuthenticationResult,
 )
 from starlite.middleware.compression import CompressionMiddleware
+from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "AuthenticationResult",
     "AbstractAuthenticationMiddleware",
     "CompressionMiddleware",
+    "CSRFMiddleware",
 ]
