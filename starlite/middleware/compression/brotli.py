@@ -52,7 +52,7 @@ class BrotliMiddleware:
         if scope["type"] == ScopeType.HTTP:
             headers = Headers(scope=scope)
             if ContentEncoding.BROTLI in headers.get("Accept-Encoding", ""):
-                brotli_responser = BrotliResponder(
+                brotli_responder = BrotliResponder(
                     app=self.app,
                     minimum_size=self.minimum_size,
                     quality=self.quality,
@@ -60,7 +60,7 @@ class BrotliMiddleware:
                     lgwin=self.lgwin,
                     lgblock=self.lgblock,
                 )
-                await brotli_responser(scope, receive, send)
+                await brotli_responder(scope, receive, send)
                 return
             if self.gzip_fallback and ContentEncoding.GZIP in headers.get("Accept-Encoding", ""):
                 gzip_responder = GZipResponder(self.app, self.minimum_size)

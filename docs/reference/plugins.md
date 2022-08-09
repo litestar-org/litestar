@@ -1,0 +1,3 @@
+# plugins
+
+::: starlite.plugins.PluginProtocol

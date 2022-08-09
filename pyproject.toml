@@ -63,6 +63,8 @@ requests = "*"
 piccolo = "*"
 pre-commit = "*"
 redis = "^4.3.4"
+mkdocstrings = {version = "*", extras = ["python"]}
+black = "*"
 
 [tool.poetry.extras]
 testing = ["requests", "brotli", "picologging"]

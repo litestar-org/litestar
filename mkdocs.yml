@@ -97,6 +97,29 @@ nav:
       - usage/16-caching.md
       - usage/17-exceptions.md
   - migration.md
+  - Reference:
+      - reference/important.md
+      - reference/app.md
+      - reference/cache.md
+      - reference/config.md
+      - reference/connection.md
+      - reference/controller.md
+      - reference/datastructures.md
+      - reference/dto.md
+      - reference/exceptions.md
+      - reference/enums.md
+      - reference/handlers.md
+      - reference/logging.md
+      - reference/middleware.md
+      - reference/openapi.md
+      - reference/params.md
+      - reference/plugins.md
+      - reference/provide.md
+      - reference/response.md
+      - reference/router.md
+      - reference/template.md
+      - reference/testing.md
+      - reference/types.md
 extra:
   social:
     - icon: fontawesome/brands/discord
@@ -113,3 +136,20 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
+plugins:
+  - search:
+      lang: en
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            heading_level: 3
+            members: []
+            show_root_heading: true
+            show_source: false
+            docstring_style: google
+            separate_signature: true
+            show_if_no_docstring: true
+            line_length: 100
+watch:
+  - starlite
