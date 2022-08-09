@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 
 class Controller:
+    """
+    The Starlite Controller class. Subclass this class to create 'view' like components and utilize OOP.
+    """
+
     __slots__ = (
         "after_request",
         "after_response",
