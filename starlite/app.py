@@ -99,6 +99,7 @@ class Starlite(Router):
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
+        tags: Optional[List[str]] = None,
     ):
         """
         The Starlite application.
@@ -106,30 +107,43 @@ class Starlite(Router):
         `Starlite` is the root level of the app - it has the base path of "/" and all root level
         Controllers, Routers and Route Handlers should be registered on it.
 
+        It inherits from the [Router][starlite.router.Router] class.
+
         Args:
-            after_request: A sync or async function executed before a request is passed to any route handler. If this function returns a value, the request will not reach the route handler, and instead this value will be used.
-            after_response: Sync or async function called after the response has been awaited. It receives the `Request` object and should not return any values.
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
             allowed_hosts: A list of allowed hosts - enables `AllowedHostsMiddleware`.
-            before_request: Sync or async function called immediately before calling the route handler. Receives the `starlite.connection.Request` instance and any non-`None` return value is used for the response, bypassing the route handler.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application.
             cors_config: If set this enables the `starlette.middleware.cores.CORSMiddleware`.
             debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: mapping of dependency providers.
-            exception_handlers: handler functions mapped to status codes and/or exception types.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
-            middleware: List of [Middleware][starlite.types.Middleware].
-            on_shutdown: List of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application shutdown.
-            on_startup: List of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application startup.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            on_shutdown: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application
+                shutdown.
+            on_startup: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application startup.
             openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
-            parameters: A mapping of parameter definitions available to all application paths. See [Parameter][starlite.params.Parameter].
+            parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
+                application paths.
             plugins: List of plugins.
-            response_class: A custom response class to be used as the app's default.
-            response_cookies: A list of [Cooke](starlite.datastructures.Cookie] instances.
-            response_headers: A dictionary of [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
-            route_handlers: Required list of route handlers.
+            response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            route_handlers: A required list of route handlers, which can include instances of
+                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
+                function decorated by the route handler decorators.
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
         self.allowed_hosts = allowed_hosts
         self.cache_config = cache_config
@@ -157,6 +171,7 @@ class Starlite(Router):
             response_cookies=response_cookies,
             response_headers=response_headers,
             route_handlers=route_handlers,
+            tags=tags,
         )
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
@@ -303,9 +318,15 @@ class Starlite(Router):
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """
-        Register a Controller, Route instance or RouteHandler on the app.
 
-        Calls Router.register() and then creates a signature model for all handlers.
+        Registers a route handler on the app. This method can be used to dynamically add endpoints to an application.
+
+        Args:
+            value: an instance of [Router][starlite.router.Router], a subclasses of
+        [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
+
+        Returns: None
+
         """
         routes = super().register(value=value)
         for route in routes:

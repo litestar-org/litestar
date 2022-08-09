@@ -81,6 +81,38 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):
+        """
+        The Starlite Router class.
+
+        A Router instance is used to group controller, routers and route handler functions under a shared path fragment.
+
+        Args:
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
+                application paths.
+            path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
+                with the router instance.
+            response_class: A custom subclass of [starlite.response.Response] to be used as the default for all route
+                handlers, controllers and other routers associated with the router instance.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            route_handlers: A required list of route handlers, which can include instances of
+                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
+                function decorated by the route handler decorators.
+            tags: A list of string tags that will be appended to the schema of all route handlers under the router.
+        """
         self.after_request = after_request
         self.after_response = after_response
         self.before_request = before_request

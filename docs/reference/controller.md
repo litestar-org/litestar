@@ -1,1 +1,3 @@
 # controller
+
+::: starlite.controller.Controller
