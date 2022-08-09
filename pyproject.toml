@@ -96,6 +96,7 @@ disable = [
     "duplicate-code",
     "logging-fstring-interpolation",
     "ungrouped-imports",
+    "too-many-lines",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic","orjson","picologging"]

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Generator
 
 import pytest
 from pydantic import ValidationError
-from starlette.background import BackgroundTask
 from starlette.responses import (
     FileResponse,
     HTMLResponse,
@@ -30,6 +29,7 @@ from starlite import (
     get,
     route,
 )
+from starlite.datastructures import BackgroundTask
 from starlite.response import TemplateResponse
 from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client

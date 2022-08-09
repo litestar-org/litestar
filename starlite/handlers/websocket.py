@@ -1,17 +1,53 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+
+from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
+from starlite.types import ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
 
+    from starlite.provide import Provide
     from starlite.types import AsyncAnyCallable
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
+    @validate_arguments(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        path: Union[Optional[str], Optional[List[str]]] = None,
+        *,
+        dependencies: Optional[Dict[str, "Provide"]] = None,
+        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        guards: Optional[List[Guard]] = None,
+        middleware: Optional[List[Middleware]] = None,
+        opt: Optional[Dict[str, Any]] = None,
+    ):
+        """
+        WebSocket Route Handler decorator. Use this decorator to decorate websocket handler functions.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+        """
+        super().__init__(
+            path,
+            dependencies=dependencies,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            middleware=middleware,
+            opt=opt,
+        )
+
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
         """
         Replaces a function with itself

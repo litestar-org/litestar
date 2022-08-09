@@ -1,12 +1,49 @@
 import os
 from copy import copy
-from typing import Any, AsyncIterator, Dict, Iterator, List, Optional, Union, cast
+from typing import (
+    Any,
+    AsyncIterator,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Union,
+    cast,
+)
 
 from pydantic import BaseConfig, BaseModel, FilePath, validator
 from pydantic_openapi_schema.v3_1_0 import Header
-from starlette.background import BackgroundTask
+from starlette.background import BackgroundTask as StarletteBackgroundTask
+from starlette.background import BackgroundTasks as StarletteBackgroundTasks
 from starlette.datastructures import State as StarletteStateClass
-from typing_extensions import Literal
+from typing_extensions import Literal, ParamSpec
+
+P = ParamSpec("P")
+
+
+class BackgroundTask(StarletteBackgroundTask):
+    def __init__(self, func: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
+        """
+        A container for a 'background' task function. Background tasks are called once a Response finishes.
+
+        Args:
+            func: A sync or async function to call as the background task.
+            *args: Args to pass to the func.
+            **kwargs: Kwargs to pass to the func
+        """
+        super().__init__(func, *args, **kwargs)
+
+
+class BackgroundTasks(StarletteBackgroundTasks):
+    def __init__(self, tasks: List[BackgroundTask]):
+        """
+        A container for multiple 'background' task functions. Background tasks are called once a Response finishes.
+
+        Args:
+            tasks: A list of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
+        """
+        super().__init__(tasks=tasks)
 
 
 class State(StarletteStateClass):
@@ -70,8 +107,12 @@ class File(BaseModel):
         arbitrary_types_allowed = True
         copy_on_model_validation = False
 
-    background: Optional[BackgroundTask] = None
-    """A background task to execute in parallel to the response. Defaults to None."""
+    background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
+    """
+        A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+        [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+        Defaults to None.
+    """
     headers: Dict[str, str] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
@@ -100,8 +141,12 @@ class Redirect(BaseModel):
         arbitrary_types_allowed = True
         copy_on_model_validation = False
 
-    background: Optional[BackgroundTask] = None
-    """A background task to execute in parallel to the response. Defaults to None."""
+    background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
+    """
+        A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+        [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+        Defaults to None.
+    """
     headers: Dict[str, str] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
@@ -119,8 +164,12 @@ class Stream(BaseModel):
         arbitrary_types_allowed = True
         copy_on_model_validation = False
 
-    background: Optional[BackgroundTask] = None
-    """A background task to execute in parallel to the response. Defaults to None."""
+    background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
+    """
+        A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+        [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+        Defaults to None.
+    """
     headers: Dict[str, str] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
@@ -138,8 +187,12 @@ class Template(BaseModel):
         arbitrary_types_allowed = True
         copy_on_model_validation = False
 
-    background: Optional[BackgroundTask] = None
-    """A background task to execute in parallel to the response. Defaults to None."""
+    background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
+    """
+        A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+        [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+        Defaults to None.
+    """
     headers: Dict[str, str] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
