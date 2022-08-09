@@ -50,7 +50,7 @@ def test_csrf_successful_flow(csrf_config: CSRFConfig) -> None:
     assert set_cookie_header.split("; ") == [
         f"csrftoken={csrf_token}",
         "Path=/",
-        "SameSite=Lax",
+        "SameSite=lax",
     ]
 
     response = client.post("/", headers={"x-csrftoken": csrf_token})
@@ -123,7 +123,7 @@ def test_custom_csrf_config() -> None:
         header_name="x-custom-csrftoken",
         cookie_secure=True,
         cookie_httponly=True,
-        cookie_samesite="None",
+        cookie_samesite="none",
         cookie_domain="test.com",
     )
 
@@ -142,7 +142,7 @@ def test_custom_csrf_config() -> None:
         "Domain=test.com",
         "HttpOnly",
         "Path=/custom",
-        "SameSite=None",
+        "SameSite=none",
         "Secure",
     ]
 

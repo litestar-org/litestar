@@ -5,11 +5,11 @@ from http.cookies import SimpleCookie
 from typing import Optional
 
 from starlette.datastructures import MutableHeaders
-from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send  # noqa: TC002
 
 from starlite.config import CSRFConfig  # noqa: TC001
 from starlite.connection import Request
+from starlite.exceptions import PermissionDeniedException
 from starlite.types import MiddlewareProtocol
 
 CSRF_SECRET_BYTES = 32
@@ -39,13 +39,11 @@ class CSRFMiddleware(MiddlewareProtocol):
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
-        send_f = send
+        send_callable_to_use = send
 
         if request.method not in self.config.safe_methods:
             if not self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
-                response = self._get_error_response()
-                await response(scope, receive, send)
-                return
+                raise PermissionDeniedException("CSRF token verification failed")
         else:
 
             async def send_wrapper(message: Message) -> None:
@@ -64,9 +62,9 @@ class CSRFMiddleware(MiddlewareProtocol):
                         headers.append("set-cookie", cookie.output(header="").strip())
                 await send(message)
 
-            send_f = send_wrapper
+            send_callable_to_use = send_wrapper
 
-        await self.app(scope, receive, send_f)
+        await self.app(scope, receive, send_callable_to_use)
 
     def _generate_csrf_hash(self, token: str) -> str:
         return hmac.new(self.config.secret.encode(), token.encode(), hashlib.sha256).hexdigest()
@@ -97,7 +95,3 @@ class CSRFMiddleware(MiddlewareProtocol):
             return secrets.compare_digest(decoded_request_token, decoded_cookie_token)
         except BadSignature:
             return False
-
-    @classmethod
-    def _get_error_response(cls) -> PlainTextResponse:
-        return PlainTextResponse(content="CSRF token verification failed", status_code=403)

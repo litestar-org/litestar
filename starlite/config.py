@@ -25,13 +25,14 @@ from pydantic_openapi_schema.v3_1_0.reference import Reference
 from pydantic_openapi_schema.v3_1_0.security_requirement import SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.server import Server
 from pydantic_openapi_schema.v3_1_0.tag import Tag
+from typing_extensions import Literal
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.path_item import create_path_item
 from starlite.routes import HTTPRoute
 from starlite.template import TemplateEngineProtocol
-from starlite.types import CacheKeyBuilder
+from starlite.types import CacheKeyBuilder, Method
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -170,9 +171,9 @@ class CSRFConfig(BaseModel):
     header_name: str = "x-csrftoken"
     cookie_secure: bool = False
     cookie_httponly: bool = False
-    cookie_samesite: str = "Lax"
+    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     cookie_domain: Optional[str] = None
-    safe_methods: Set[str] = {"GET", "HEAD", "OPTIONS", "TRACE"}
+    safe_methods: Set[Method] = {"GET", "HEAD"}
 
 
 class OpenAPIConfig(BaseModel):
