@@ -304,3 +304,8 @@
 
 - Add piccolo-orm plugin
 - Fix CacheConfig being broken due to pydantic validation bug
+
+[1.9.0]
+
+- Add support for [picologging](https://github.com/microsoft/picologging)
+- Update response headers, handling of cookies and handling of responses
