@@ -35,9 +35,12 @@ app = Starlite(on_startup=[my_app_logging_config.configure])
 
 ## Picologging integration
 
-[Picologging](https://github.com/microsoft/picologging) is a high performance logging library that is developed by Microsoft. Starlite can be easily configured to use this logging library by specifying the picologging classes within the `LoggingConfig`.
+[Picologging](https://github.com/microsoft/picologging) is a high performance logging library that is developed by
+Microsoft. Starlite can be easily configured to use this logging library by specifying the picologging classes within
+the `LoggingConfig`.
 
-Picologging is designed to be a drop in replacement to the standard logger, and the above example can be implemented by setting setting the StreamHandler and QueueListenerHandler class in the `LoggingConfig` as follows:
+Picologging is designed to be a drop in replacement to the standard logger, and the above example can be implemented by
+setting the StreamHandler and QueueListenerHandler class in the `LoggingConfig` as follows:
 
 ```python
 from starlite import Starlite, LoggingConfig

@@ -4,7 +4,7 @@ from pydantic_factories.utils import is_pydantic_model
 from tortoise.fields import ReverseRelation
 from tortoise.fields.relational import RelationalField
 
-from starlite import MissingDependencyException
+from starlite.exceptions import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:

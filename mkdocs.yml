@@ -73,7 +73,18 @@ nav:
           - usage/4-request-data/1-the-body-function.md
           - usage/4-request-data/2-url-encoded-form-data.md
           - usage/4-request-data/3-multipart-form-data.md
-      - usage/5-responses.md
+      - Returning Responses:
+          - usage/5-responses/0-responses-intro.md
+          - usage/5-responses/1-media-type.md
+          - usage/5-responses/2-status-codes.md
+          - usage/5-responses/3-returning-responses.md
+          - usage/5-responses/4-response-headers.md
+          - usage/5-responses/5-response-cookies.md
+          - usage/5-responses/6-redirect-responses.md
+          - usage/5-responses/7-file-responses.md
+          - usage/5-responses/8-streaming-responses.md
+          - usage/5-responses/9-template-responses.md
+          - usage/5-responses/10-custom-responses.md
       - Dependency Injection:
           - usage/6-dependency-injection/0-dependency-injection-intro.md
           - usage/6-dependency-injection/1-dependency-kwargs.md
@@ -96,7 +107,6 @@ nav:
       - usage/15-templating.md
       - usage/16-caching.md
       - usage/17-exceptions.md
-  - migration.md
   - Reference:
       - reference/important.md
       - reference/app.md
@@ -120,6 +130,7 @@ nav:
       - reference/template.md
       - reference/testing.md
       - reference/types.md
+  - migration.md
 extra:
   social:
     - icon: fontawesome/brands/discord

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, Type
 
-from starlite import MissingDependencyException
+from starlite.exceptions import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:

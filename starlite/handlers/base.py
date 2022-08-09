@@ -20,7 +20,7 @@ from pydantic.fields import FieldInfo, ModelField, Undefined
 from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
-from starlite.types import ExceptionHandler, Guard, Middleware
+from starlite.types import Empty, EmptyType, ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable, normalize_path
 
 if TYPE_CHECKING:
@@ -39,10 +39,14 @@ class ParameterConfig(BaseConfig):
 
 
 class BaseRouteHandler(Generic[T]):
-    class empty:
-        """Placeholder"""
 
     __slots__ = (
+        "_resolved_dependencies",
+        "_resolved_dependency_name_set",
+        "_resolved_exception_handlers",
+        "_resolved_guards",
+        "_resolved_layered_parameters",
+        "_resolved_middleware",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -51,12 +55,6 @@ class BaseRouteHandler(Generic[T]):
         "opt",
         "owner",
         "paths",
-        "resolved_dependencies",
-        "resolved_dependency_name_set",
-        "resolved_exception_handlers",
-        "resolved_guards",
-        "resolved_middleware",
-        "resolved_layered_parameters",
         "signature_model",
     )
 
@@ -83,17 +81,13 @@ class BaseRouteHandler(Generic[T]):
         self.middleware = middleware
         self.opt: Dict[str, Any] = opt or {}
         self.owner: Optional[Union["Controller", "Router"]] = None
-        self.resolved_dependencies: Union[Dict[str, Provide], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_dependency_name_set: Union[Set[str], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_exception_handlers: Union[
-            Dict[Union[int, Type[Exception]], ExceptionHandler], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
-        self.resolved_guards: Union[List[Guard], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_middleware: Union[List[Middleware], Type[BaseRouteHandler.empty]] = BaseRouteHandler.empty
-        self.resolved_layered_parameters: Union[
-            Dict[str, "ModelField"], Type[BaseRouteHandler.empty]
-        ] = BaseRouteHandler.empty
         self.signature_model: Optional[Type["SignatureModel"]] = None
+        self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
+        self._resolved_dependency_name_set: Union[Set[str], EmptyType] = Empty
+        self._resolved_exception_handlers: Union[Dict[Union[int, Type[Exception]], ExceptionHandler], EmptyType] = Empty
+        self._resolved_guards: Union[List[Guard], EmptyType] = Empty
+        self._resolved_middleware: Union[List[Middleware], EmptyType] = Empty
+        self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
 
     @property
     def dependency_name_set(self) -> Set[str]:
@@ -105,10 +99,10 @@ class BaseRouteHandler(Generic[T]):
         dependencies requires that the signature model is already generated and is performed in
         ``BaseRouteHandler.resolve_dependencies()``.
         """
-        if self.resolved_dependency_name_set is BaseRouteHandler.empty:
+        if self._resolved_dependency_name_set is Empty:
             layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
-            self.resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
-        return cast("Set[str]", self.resolved_dependency_name_set)
+            self._resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
+        return cast("Set[str]", self._resolved_dependency_name_set)
 
     @property
     def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
@@ -128,8 +122,8 @@ class BaseRouteHandler(Generic[T]):
 
     def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
         """Returns all parameters declared above the handler, transforming them into pydantic ModelField instances"""
-        if self.resolved_layered_parameters is BaseRouteHandler.empty:
-            self.resolved_layered_parameters = {}
+        if self._resolved_layered_parameters is Empty:
+            self._resolved_layered_parameters = {}
             parameters: Dict[str, FieldInfo] = {}
             for layer in self.ownership_layers:
                 parameters.update(getattr(layer, "parameters", None) or {})
@@ -140,7 +134,7 @@ class BaseRouteHandler(Generic[T]):
                 if value_type is Undefined:
                     value_type = Any
                 default_value = parameter.default if parameter.default is not Undefined else ...
-                self.resolved_layered_parameters[key] = ModelField(
+                self._resolved_layered_parameters[key] = ModelField(
                     name=key,
                     type_=value_type,
                     field_info=parameter,
@@ -149,15 +143,15 @@ class BaseRouteHandler(Generic[T]):
                     class_validators=None,
                     required=is_required,
                 )
-        return cast("Dict[str, ModelField]", self.resolved_layered_parameters)
+        return cast("Dict[str, ModelField]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
         """Returns all guards in the handlers scope, starting from highest to current layer"""
-        if self.resolved_guards is BaseRouteHandler.empty:
-            self.resolved_guards = []
+        if self._resolved_guards is Empty:
+            self._resolved_guards = []
             for layer in self.ownership_layers:
-                self.resolved_guards.extend(layer.guards or [])
-        return cast("List[Guard]", self.resolved_guards)
+                self._resolved_guards.extend(layer.guards or [])
+        return cast("List[Guard]", self._resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """
@@ -165,13 +159,15 @@ class BaseRouteHandler(Generic[T]):
         """
         if not self.signature_model:
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
-        if self.resolved_dependencies is BaseRouteHandler.empty:
-            self.resolved_dependencies = {}
+        if self._resolved_dependencies is Empty:
+            self._resolved_dependencies = {}
             for layer in self.ownership_layers:
                 for key, value in (layer.dependencies or {}).items():
-                    self.validate_dependency_is_unique(dependencies=self.resolved_dependencies, key=key, provider=value)
-                    self.resolved_dependencies[key] = value
-        return cast("Dict[str, Provide]", self.resolved_dependencies)
+                    self._validate_dependency_is_unique(
+                        dependencies=self._resolved_dependencies, key=key, provider=value
+                    )
+                    self._resolved_dependencies[key] = value
+        return cast("Dict[str, Provide]", self._resolved_dependencies)
 
     def resolve_middleware(self) -> List["Middleware"]:
         """
@@ -179,12 +175,12 @@ class BaseRouteHandler(Generic[T]):
 
         The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
         """
-        if self.resolved_middleware is BaseRouteHandler.empty:
-            self.resolved_middleware = []
+        if self._resolved_middleware is Empty:
+            self._resolved_middleware = []
             for layer in self.ownership_layers:
-                self.resolved_middleware.extend(layer.middleware or [])
-            self.resolved_middleware = list(reversed(self.resolved_middleware))
-        return cast("List[Middleware]", self.resolved_middleware)
+                self._resolved_middleware.extend(layer.middleware or [])
+            self._resolved_middleware = list(reversed(self._resolved_middleware))
+        return cast("List[Middleware]", self._resolved_middleware)
 
     def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
         """
@@ -192,30 +188,11 @@ class BaseRouteHandler(Generic[T]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self.resolved_exception_handlers is BaseRouteHandler.empty:
-            self.resolved_exception_handlers = {}
+        if self._resolved_exception_handlers is Empty:
+            self._resolved_exception_handlers = {}
             for layer in self.ownership_layers:
-                self.resolved_exception_handlers.update(layer.exception_handlers or {})
-        return cast("Dict[Union[int, Type[Exception]], ExceptionHandler]", self.resolved_exception_handlers)
-
-    @staticmethod
-    def validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
-        """
-        Validates that a given provider has not been already defined under a different key
-        """
-        for dependency_key, value in dependencies.items():
-            if provider == value:
-                raise ImproperlyConfiguredException(
-                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
-                    f"If you wish to override a provider, it must have the same key."
-                )
-
-    def validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once set by inspecting its return annotations
-        """
-        if not self.fn:
-            raise ImproperlyConfiguredException("Cannot call validate_handler_function without first setting self.fn")
+                self._resolved_exception_handlers.update(layer.exception_handlers or {})
+        return cast("Dict[Union[int, Type[Exception]], ExceptionHandler]", self._resolved_exception_handlers)
 
     async def authorize_connection(self, connection: "HTTPConnection") -> None:
         """
@@ -226,3 +203,22 @@ class BaseRouteHandler(Generic[T]):
                 await guard(connection, copy(self))  # type: ignore[misc]
             else:
                 await run_sync(guard, connection, copy(self))
+
+    @staticmethod
+    def _validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
+        """
+        Validates that a given provider has not been already defined under a different key
+        """
+        for dependency_key, value in dependencies.items():
+            if provider == value:
+                raise ImproperlyConfiguredException(
+                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
+                    f"If you wish to override a provider, it must have the same key."
+                )
+
+    def _validate_handler_function(self) -> None:
+        """
+        Validates the route handler function once set by inspecting its return annotations
+        """
+        if not self.fn:
+            raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")

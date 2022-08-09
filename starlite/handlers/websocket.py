@@ -17,14 +17,14 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Replaces a function with itself
         """
         self.fn = fn
-        self.validate_handler_function()
+        self._validate_handler_function()
         return self
 
-    def validate_handler_function(self) -> None:
+    def _validate_handler_function(self) -> None:
         """
         Validates the route handler function once it's set by inspecting its return annotations
         """
-        super().validate_handler_function()
+        super()._validate_handler_function()
         signature = Signature.from_callable(cast("AnyCallable", self.fn))
 
         if signature.return_annotation is not None:

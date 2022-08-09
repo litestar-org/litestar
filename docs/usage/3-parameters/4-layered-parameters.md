@@ -64,6 +64,7 @@ handler. Let's look at these closer.
 
 - Finally `local_param` is a route handler local query parameter, and `path_param` is a path parameter.
 
+<!-- prettier-ignore -->
 !!! note
-You cannot declare path parameters in different application layers. The reason for this is to ensure
-simplicity - otherwise parameter resolution becomes very difficult to do correctly.
+    You cannot declare path parameters in different application layers. The reason for this is to ensure
+    simplicity - otherwise parameter resolution becomes very difficult to do correctly.

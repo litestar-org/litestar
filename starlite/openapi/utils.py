@@ -9,9 +9,11 @@ if TYPE_CHECKING:
 
     from pydantic.fields import ModelField
 
-    from starlite import Controller, Router, Starlite
+    from starlite.app import Starlite
+    from starlite.controller import Controller
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.openapi.enums import OpenAPIType
+    from starlite.router import Router
 
 
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")

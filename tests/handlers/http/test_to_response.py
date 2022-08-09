@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Generator
 
 import pytest
 from pydantic import ValidationError
+from starlette.background import BackgroundTask
 from starlette.responses import (
     FileResponse,
     HTMLResponse,
@@ -16,16 +17,20 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_200_OK
 
 from starlite import (
+    Cookie,
     File,
     HttpMethod,
     HTTPRoute,
     MediaType,
     Redirect,
     Response,
+    ResponseHeader,
     Stream,
+    Template,
     get,
     route,
 )
+from starlite.response import TemplateResponse
 from starlite.signature import SignatureModelFactory
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
@@ -91,9 +96,21 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
 
 @pytest.mark.asyncio()
 async def test_to_response_returning_redirect_response() -> None:
-    @get(path="/test", status_code=301)
+    background_task = BackgroundTask(lambda: "")
+
+    @get(
+        path="/test",
+        status_code=301,
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
     def test_function() -> Redirect:
-        return Redirect(path="/somewhere-else")
+        return Redirect(
+            path="/somewhere-else",
+            headers={"file-header": "abc"},
+            cookies=[Cookie(key="redirect-cookie", value="xyz")],
+            background=background_task,
+        )
 
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]  # type: ignore
@@ -101,16 +118,34 @@ async def test_to_response_returning_redirect_response() -> None:
         response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
+        assert response.headers["local-header"] == "123"
+        assert response.headers["file-header"] == "abc"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 2
+        assert cookies[0] == "redirect-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert response.background == background_task
 
 
 @pytest.mark.asyncio()
 async def test_to_response_returning_file_response() -> None:
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
+    background_task = BackgroundTask(lambda: "")
 
-    @get(path="/test")
+    @get(
+        path="/test",
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
     def test_function() -> File:
-        return File(path=current_file_path, filename=filename)
+        return File(
+            path=current_file_path,
+            filename=filename,
+            headers={"file-header": "abc"},
+            cookies=[Cookie(key="file-cookie", value="xyz")],
+            background=background_task,
+        )
 
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]  # type: ignore
@@ -118,6 +153,15 @@ async def test_to_response_returning_file_response() -> None:
         response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
         assert isinstance(response, FileResponse)
         assert response.stat_result
+        assert response.path == current_file_path
+        assert response.filename == filename
+        assert response.headers["local-header"] == "123"
+        assert response.headers["file-header"] == "abc"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 3
+        assert cookies[0] == "file-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert response.background == background_task
 
 
 def my_iterator() -> Generator[int, None, None]:
@@ -140,16 +184,65 @@ async def my_async_iterator() -> "AsyncGenerator[int, None]":
 )
 async def test_to_response_streaming_response(iterator: Any, should_raise: bool) -> None:
     if not should_raise:
+        background_task = BackgroundTask(lambda: "")
 
-        @get(path="/test")
+        @get(
+            path="/test",
+            response_headers={"local-header": ResponseHeader(value="123")},
+            response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+        )
         def test_function() -> Stream:
-            return Stream(iterator=iterator)
+            return Stream(
+                iterator=iterator,
+                headers={"file-header": "abc"},
+                cookies=[Cookie(key="streaming-cookie", value="xyz")],
+                background=background_task,
+            )
 
         with create_test_client(test_function) as client:
             route: HTTPRoute = client.app.routes[0]  # type: ignore
             route_handler = route.route_handlers[0]
             response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
             assert isinstance(response, StreamingResponse)
+            assert response.headers["local-header"] == "123"
+            assert response.headers["file-header"] == "abc"
+            cookies = response.headers.getlist("set-cookie")
+            assert len(cookies) == 3
+            assert cookies[0] == "streaming-cookie=xyz; Path=/; SameSite=lax"
+            assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+            assert response.background == background_task
     else:
         with pytest.raises(ValidationError):
             Stream(iterator=iterator)
+
+
+@pytest.mark.asyncio()
+async def func_to_response_template_response() -> None:
+    background_task = BackgroundTask(lambda: "")
+
+    @get(
+        path="/test",
+        response_headers={"local-header": ResponseHeader(value="123")},
+        response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
+    )
+    def test_function() -> Template:
+        return Template(
+            name="test.template",
+            context={},
+            headers={"file-header": "abc"},
+            cookies=[Cookie(key="template-cookie", value="xyz")],
+            background=background_task,
+        )
+
+    with create_test_client(test_function) as client:
+        route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route_handler = route.route_handlers[0]
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        assert isinstance(response, TemplateResponse)
+        assert response.headers["local-header"] == "123"
+        assert response.headers["file-header"] == "abc"
+        cookies = response.headers.getlist("set-cookie")
+        assert len(cookies) == 2
+        assert cookies[0] == "template-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert response.background == background_task
