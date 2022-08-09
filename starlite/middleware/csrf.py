@@ -16,10 +16,6 @@ CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
-class BadSignature(Exception):
-    pass
-
-
 class CSRFMiddleware(MiddlewareProtocol):
     def __init__(
         self,
@@ -74,24 +70,25 @@ class CSRFMiddleware(MiddlewareProtocol):
         token_hash = self._generate_csrf_hash(token)
         return token + token_hash
 
-    def _decode_csrf_token(self, token: str) -> str:
+    def _decode_csrf_token(self, token: str) -> Optional[str]:
         if len(token) < CSRF_SECRET_LENGTH + 1:
-            raise BadSignature
+            return None
 
         ts = token[:CSRF_SECRET_LENGTH]
         existing_hash = token[CSRF_SECRET_LENGTH:]
         expected_hash = self._generate_csrf_hash(ts)
         if not secrets.compare_digest(existing_hash, expected_hash):
-            raise BadSignature
+            return None
 
         return ts
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
         if not (request_csrf_token and cookie_csrf_token):
             return False
-        try:
-            decoded_request_token = self._decode_csrf_token(request_csrf_token)
-            decoded_cookie_token = self._decode_csrf_token(cookie_csrf_token)
-            return secrets.compare_digest(decoded_request_token, decoded_cookie_token)
-        except BadSignature:
+
+        decoded_request_token = self._decode_csrf_token(request_csrf_token)
+        decoded_cookie_token = self._decode_csrf_token(cookie_csrf_token)
+        if decoded_request_token is None or decoded_cookie_token is None:
             return False
+
+        return secrets.compare_digest(decoded_request_token, decoded_cookie_token)
