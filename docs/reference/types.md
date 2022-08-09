@@ -10,4 +10,3 @@
 ::: starlite.types.Guard
 ::: starlite.types.LifeCycleHandler
 ::: starlite.types.Middleware
-::: starlite.types.ResponseHeader
