@@ -184,7 +184,7 @@ You can pass the following kwargs to `CSRFConfig`:
 
 - `secret` - this is the only mandatory parameter, it's a string that is used to create an HMAC to sign the CSRF token
 - `cookie_name` - the CSRF cookie name, set to `csrftoken` by default
-- `cookie_path` - the CSRF cookie path, set to `/` be default
+- `cookie_path` - the CSRF cookie path, set to `/` by default
 - `header_name` - the header that will be expected in each request, has a default value of `x-csrftoken`
 - `cookie_secure` - a boolean value indicating whether to set the `Secure` attribute on the cookie, set to `False`
   by default
