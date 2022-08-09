@@ -35,6 +35,7 @@ class MyController(Controller):
 
 
 router = Router(
+    path="/router-path",
     route_handlers=[MyController],
     response_cookies=[
         Cookie(
@@ -121,10 +122,13 @@ We can simply return a response instance directly from the route handler and set
 as you see fit, e.g.:
 
 ```python
+from random import randint
+
 from pydantic import BaseModel
+from starlette.status import HTTP_200_OK
 from starlite import Response, get
 from starlite.datastructures import Cookie
-from random import randint
+from starlite.enums import MediaType
 
 
 class Resource(BaseModel):
@@ -136,7 +140,7 @@ class Resource(BaseModel):
     "/resources",
     response_cookies=[
         Cookie(
-            key="Random-Header",
+            key="Random-Cookie",
             description="a random number in the range 1 - 100",
             documentation_only=True,
         )
@@ -148,7 +152,9 @@ def retrieve_resource() -> Response[Resource]:
             id=1,
             name="my resource",
         ),
-        cookies=[Cookie(key="Random-Header", value=str(randint(1, 100)))],
+        cookies=[Cookie(key="Random-Cookie", value=str(randint(1, 100)))],
+        media_type=MediaType.JSON,
+        status_code=HTTP_200_OK,
     )
 ```
 
@@ -164,10 +170,11 @@ the handler on different layers of the application as explained in the pertinent
 the cookies on the corresponding layer:
 
 ```python
-from pydantic import BaseModel
-from starlite import Router, Response, get
-from starlite.datastructures import Cookie
 from random import randint
+
+from pydantic import BaseModel
+from starlite import Response, Router, get
+from starlite.datastructures import Cookie
 
 
 class Resource(BaseModel):
@@ -185,26 +192,25 @@ def retrieve_resource() -> Resource:
 
 def after_request_handler(response: Response) -> Response:
     response.set_cookie(
-        **Cookie(key="Random-Header", value=str(randint(1, 100))).dict(
-            exclude_none=True
+        **Cookie(key="Random-Cookie", value=str(randint(1, 100))).dict(
+            exclude_none=True, exclude={"documentation_only", "description"}
         )
     )
     return response
 
 
 router = Router(
+    path="/router-path",
     route_handlers=[retrieve_resource],
     after_request=after_request_handler,
     response_cookies=[
         Cookie(
-            key="Random-Header",
+            key="Random-Cookie",
             description="a random number in the range 1 - 100",
             documentation_only=True,
         )
     ],
 )
-
-# ...
 ```
 
 In the above we set the cookie using an `after_request_handler` function on the router level. Because the
@@ -215,10 +221,13 @@ required. For example, lets say we have a router level cookie being set and a lo
 different value range:
 
 ```python
-from pydantic import BaseModel
-from starlite import Router, Response, get
-from starlite.datastructures import Cookie
 from random import randint
+
+from pydantic import BaseModel
+from starlette.status import HTTP_200_OK
+from starlite import Response, Router, get
+from starlite.datastructures import Cookie
+from starlite.enums import MediaType
 
 
 class Resource(BaseModel):
@@ -230,7 +239,7 @@ class Resource(BaseModel):
     "/resources",
     response_cookies=[
         Cookie(
-            key="Random-Header",
+            key="Random-Cookie",
             description="a random number in the range 100 - 1000",
             documentation_only=True,
         )
@@ -242,30 +251,31 @@ def retrieve_resource() -> Response[Resource]:
             id=1,
             name="my resource",
         ),
-        cookies=[Cookie(key="Random-Header", value=str(randint(100, 1000)))],
+        cookies=[Cookie(key="Random-Cookie", value=str(randint(100, 1000)))],
+        media_type=MediaType.JSON,
+        status_code=HTTP_200_OK,
     )
 
 
 def after_request_handler(response: Response) -> Response:
     response.set_cookie(
-        **Cookie(key="Random-Header", value=str(randint(1, 100))).dict(
-            exclude_none=True
+        **Cookie(key="Random-Cookie", value=str(randint(1, 100))).dict(
+            exclude_none=True, exclude={"documentation_only", "description"}
         )
     )
     return response
 
 
 router = Router(
+    path="/router-path",
     route_handlers=[retrieve_resource],
     after_request=after_request_handler,
     response_cookies=[
         Cookie(
-            key="Random-Header",
+            key="Random-Cookie",
             description="a random number in the range 1 - 100",
             documentation_only=True,
         )
     ],
 )
-
-# ...
 ```

@@ -349,11 +349,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         normalized_cookies: List[Dict[str, Any]] = []
         for cookie in filtered_cookies:
             if not cookie.documentation_only:
-                cookie_dict = cookie.dict(exclude_none=True)
-                for excluded_key in ["description", "documentation_only"]:
-                    if excluded_key in cookie_dict:
-                        del cookie_dict[excluded_key]
-                normalized_cookies.append(cookie_dict)
+                normalized_cookies.append(cookie.dict(exclude_none=True, exclude={"documentation_only", "description"}))
         return normalized_cookies
 
     def _get_response_from_data(

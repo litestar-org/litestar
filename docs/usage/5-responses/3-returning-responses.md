@@ -7,18 +7,30 @@ Starlite allows you to return any class inheriting from the `starlette.responses
 example will work perfectly fine:
 
 ```python
-from starlite import get
-from starlette.responses import Response
-from starlette.status import HTTP_202_ACCEPTED
+from pydantic import BaseModel
+from starlite import Response, get
+from starlite.datastructures import Cookie
+from starlite.enums import MediaType
+from starlette.status import HTTP_200_OK
 
 
-@get("/")
-def my_route_handler() -> Response:
-    response = Response(
-        content="123", headers={"MY-HEADER": "123"}, status_code=HTTP_202_ACCEPTED
+class Resource(BaseModel):
+    id: int
+    name: str
+
+
+@get("/resources")
+def retrieve_resource() -> Response[Resource]:
+    return Response(
+        Resource(
+            id=1,
+            name="my resource",
+        ),
+        headers={"MY-HEADER": "xyz"},
+        cookies=[Cookie(key="my-cookie", value="abc")],
+        media_type=MediaType.JSON,
+        status_code=HTTP_200_OK,
     )
-    response.set_cookie("my_cookie", value="abc")
-    return response
 ```
 
 The caveat of using a Starlette response though is that Starlite will not be able to infer the OpenAPI documentation.
