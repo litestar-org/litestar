@@ -39,7 +39,7 @@ def test_websocket_receive_json_invalid_mode() -> None:
 
     assert (
         str(exc)
-        == """<ExceptionInfo WebSocketDisconnect(4500, '500 - InternalServerException - The "mode" argument should be "text" or "binary".') tblen=3>"""
+        == """<ExceptionInfo WebSocketDisconnect(4500, '500 - ImproperlyConfiguredException - The "mode" argument should be "text" or "binary".') tblen=3>"""
     )
 
 
@@ -56,7 +56,7 @@ def test_websocket_send_json_invalid_mode() -> None:
 
     assert (
         str(exc)
-        == """<ExceptionInfo WebSocketDisconnect(4500, '500 - InternalServerException - The "mode" argument should be "text" or "binary".') tblen=3>"""
+        == """<ExceptionInfo WebSocketDisconnect(4500, '500 - ImproperlyConfiguredException - The "mode" argument should be "text" or "binary".') tblen=3>"""
     )
 
 

@@ -36,8 +36,8 @@ class Request(StarletteRequest, Generic[User, Auth]):
         """
         Allows access to user data.
 
-        Notes:
-            If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable User.
@@ -51,8 +51,8 @@ class Request(StarletteRequest, Generic[User, Auth]):
         """
         Allows access to auth data.
 
-        Notes:
-            If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable Auth.
@@ -113,8 +113,8 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
         """
         Allows access to user data.
 
-        Notes:
-            If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable User.
@@ -128,8 +128,8 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
         """
         Allows access to auth data.
 
-        Notes:
-            If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable Auth.

@@ -279,6 +279,10 @@ class Template(ResponseContainer["TemplateResponse"]):
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
 
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
+            is not configured.
+
         Returns:
             A TemplateResponse instance
         """
