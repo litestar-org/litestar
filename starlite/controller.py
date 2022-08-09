@@ -25,12 +25,6 @@ if TYPE_CHECKING:
 
 
 class Controller:
-    """
-    The Starlite Controller class is the basic 'view' component of Starlite.
-
-    Subclass Controller to use OOP based route handling.
-    """
-
     __slots__ = (
         "after_request",
         "after_response",

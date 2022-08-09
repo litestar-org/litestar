@@ -5,7 +5,6 @@ from inspect import Signature, isawaitable, isclass
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
-from starlette.background import BackgroundTask, BackgroundTasks
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
@@ -13,6 +12,8 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
+    BackgroundTask,
+    BackgroundTasks,
     Cookie,
     File,
     Redirect,
@@ -65,7 +66,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "_resolved_response_headers",
         "after_request",
         "after_response",
-        "background_tasks",
+        "background",
         "before_request",
         "cache",
         "cache_key_builder",
@@ -96,7 +97,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
-        background_tasks: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -124,6 +125,62 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        HTTP Route Decorator. Use this decorator to decorate an HTTP handler with multiple methods.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            http_method: An [http method string][starlite.types.Method], a member of the enum
+                [HttpMethod][starlite.enums.HttpMethod] or a list of these that correlates to the methods the
+                route handler function should handle.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '200' for mixed method or 'GET', 'PUT' and
+                'PATCH', '201' for 'POST' and '204' for 'DELETE'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
         if isinstance(http_method, list):
@@ -150,7 +207,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         )
         self.after_request = after_request
         self.after_response = after_response
-        self.background_tasks = background_tasks
+        self.background = background
         self.before_request = before_request
         self.cache = cache
         self.cache_key_builder = cache_key_builder
@@ -300,7 +357,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                         data = plugin.to_dict(data)
             response_class = self.resolve_response_class()
             response = response_class(
-                background=self.background_tasks,
+                background=self.background,
                 content=data,
                 headers=headers,
                 media_type=media_type,
@@ -434,6 +491,7 @@ class get(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -460,9 +518,62 @@ class get(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        GET Route Decorator. Use this decorator to decorate an HTTP handler for GET requests.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '200'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         super().__init__(
             after_request=after_request,
             after_response=after_response,
+            background=background,
             before_request=before_request,
             cache=cache,
             cache_key_builder=cache_key_builder,
@@ -500,6 +611,7 @@ class post(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -526,9 +638,62 @@ class post(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        POST Route Decorator. Use this decorator to decorate an HTTP handler for POST requests.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '201' for 'POST'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         super().__init__(
             after_request=after_request,
             after_response=after_response,
+            background=background,
             before_request=before_request,
             cache=cache,
             cache_key_builder=cache_key_builder,
@@ -566,6 +731,7 @@ class put(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -592,9 +758,62 @@ class put(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        PUT Route Decorator. Use this decorator to decorate an HTTP handler for PUT requests.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '200'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         super().__init__(
             after_request=after_request,
             after_response=after_response,
+            background=background,
             before_request=before_request,
             cache=cache,
             cache_key_builder=cache_key_builder,
@@ -632,6 +851,7 @@ class patch(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -658,9 +878,62 @@ class patch(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        PATCH Route Decorator. Use this decorator to decorate an HTTP handler for PATCH requests.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '200'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         super().__init__(
             after_request=after_request,
             after_response=after_response,
+            background=background,
             before_request=before_request,
             cache=cache,
             cache_key_builder=cache_key_builder,
@@ -698,6 +971,7 @@ class delete(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
+        background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
@@ -724,9 +998,62 @@ class delete(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
+        """
+        DELETE Route Decorator. Use this decorator to decorate an HTTP handler for DELETE requests.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments.
+                If not given defaults to '/'
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
+                of seconds (e.g. '120') to cache the response.
+            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+                of the cache key if caching is configured on the application level.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+                valid IANA Media-Type.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+                default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            status_code: An http status code for the response. Defaults to '204'.
+            sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
+                main event loop. This has an effect only for sync handler functions. See using sync handler functions.
+            content_encoding: A string describing the encoding of the content, e.g. "base64".
+            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
+            description: Text used for the route's schema description section.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
+                OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
+                wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's
+                function/method. The Starlite ValidationException will be added automatically for the schema if
+                any validation is involved.
+            response_description: Text used for the route's response schema description section.
+            summary: Text used for the route's schema summary section.
+            tags: A list of string tags that will be appended to the OpenAPI schema.
+        """
         super().__init__(
             after_request=after_request,
             after_response=after_response,
+            background=background,
             before_request=before_request,
             cache=cache,
             cache_key_builder=cache_key_builder,

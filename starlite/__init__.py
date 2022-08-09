@@ -1,4 +1,6 @@
 from starlite.datastructures import (
+    BackgroundTask,
+    BackgroundTasks,
     Cookie,
     File,
     Redirect,
@@ -68,6 +70,8 @@ __all__ = [
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
+    "BackgroundTask",
+    "BackgroundTasks",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",

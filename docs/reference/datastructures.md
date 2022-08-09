@@ -1,5 +1,9 @@
 # datastructures
 
+::: starlite.datastructures.BackgroundTask
+
+::: starlite.datastructures.BackgroundTasks
+
 ::: starlite.datastructures.State
 
 ::: starlite.datastructures.Cookie
