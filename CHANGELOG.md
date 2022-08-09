@@ -309,3 +309,8 @@
 
 - Add support for [picologging](https://github.com/microsoft/picologging)
 - Update response headers, handling of cookies and handling of responses
+
+[1.9.1]
+
+- CSRF Middleware and config, @seladb
+- Normalize BackgroundTask and BackgroundTasks into `starlite.datastructures`
