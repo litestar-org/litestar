@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from starlette.websockets import WebSocketDisconnect
 
@@ -5,9 +7,12 @@ from starlite import websocket
 from starlite.connection import WebSocket
 from starlite.testing import create_test_client
 
+if TYPE_CHECKING:
+    from typing_extensions import Literal
+
 
 @pytest.mark.parametrize("mode", ["text", "binary"])
-def test_websocket_send_receive_json(mode: str) -> None:
+def test_websocket_send_receive_json(mode: "Literal['text', 'binary']") -> None:
     @websocket(path="/")
     async def websocket_handler(socket: WebSocket) -> None:
         await socket.accept()
@@ -25,7 +30,7 @@ def test_websocket_receive_json_invalid_mode() -> None:
     @websocket(path="/")
     async def websocket_handler(socket: WebSocket) -> None:
         await socket.accept()
-        await socket.receive_json(mode="weezer")
+        await socket.receive_json(mode="weezer")  # type: ignore
 
     with pytest.raises(WebSocketDisconnect) as exc, create_test_client(
         route_handlers=[websocket_handler]
@@ -42,7 +47,7 @@ def test_websocket_send_json_invalid_mode() -> None:
     @websocket(path="/")
     async def websocket_handler(socket: WebSocket) -> None:
         await socket.accept()
-        await socket.send_json({"whoo": "psie"}, mode="matchbox 20")
+        await socket.send_json({"whoo": "psie"}, mode="matchbox 20")  # type: ignore
 
     with pytest.raises(WebSocketDisconnect) as exc, create_test_client(
         route_handlers=[websocket_handler]

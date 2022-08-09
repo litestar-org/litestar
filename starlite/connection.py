@@ -9,6 +9,8 @@ from starlite.exceptions import ImproperlyConfiguredException, InternalServerExc
 from starlite.parsers import parse_query_params
 
 if TYPE_CHECKING:
+    from typing_extensions import Literal
+
     from starlite.app import Starlite
     from starlite.types import Method
 
@@ -17,28 +19,63 @@ Auth = TypeVar("Auth")
 
 
 class Request(StarletteRequest, Generic[User, Auth]):
+    """
+    The Starlite Request class
+    """
+
     @property
     def app(self) -> "Starlite":
+        """
+        Returns:
+            The [Starlite][starlite.app.Starlite] application instance
+        """
         return cast("Starlite", self.scope["app"])
 
     @property
     def user(self) -> User:
+        """
+        Allows access to user data.
+
+        Notes:
+            If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
+
+        Returns:
+            A type correlating to the generic variable User.
+        """
         if "user" not in self.scope:
             raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
         return cast("User", self.scope["user"])
 
     @property
     def auth(self) -> Auth:
+        """
+        Allows access to auth data.
+
+        Notes:
+            If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
+
+        Returns:
+            A type correlating to the generic variable Auth.
+        """
         if "auth" not in self.scope:
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
         return cast("Auth", self.scope["auth"])
 
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        """
+        Returns:
+            A normalized dict of query parameters. Multiple values for the same key are returned as a list.
+        """
         return parse_query_params(self)
 
     @property
     def method(self) -> "Method":
+        """
+
+        Returns:
+            The request [Method][starlite.types.Method]
+        """
         return cast("Method", self.scope["method"])
 
     async def json(self) -> Any:
@@ -46,6 +83,9 @@ class Request(StarletteRequest, Generic[User, Auth]):
         Method to retrieve the json request body from the request.
 
         This method overrides the Starlette method using the much faster orjson.loads() function
+
+        Returns:
+            An arbitrary value
         """
         if not hasattr(self, "_json"):
             body = self.scope.get("_body")
@@ -56,32 +96,68 @@ class Request(StarletteRequest, Generic[User, Auth]):
 
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):
+    """
+    The Starlite WebSocket class
+    """
+
     @property
     def app(self) -> "Starlite":
+        """
+        Returns:
+            The [Starlite][starlite.app.Starlite] application instance
+        """
         return cast("Starlite", self.scope["app"])
 
     @property
     def user(self) -> User:
+        """
+        Allows access to user data.
+
+        Notes:
+            If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
+
+        Returns:
+            A type correlating to the generic variable User.
+        """
         if "user" not in self.scope:
             raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
         return cast("User", self.scope["user"])
 
     @property
     def auth(self) -> Auth:
+        """
+        Allows access to auth data.
+
+        Notes:
+            If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
+
+        Returns:
+            A type correlating to the generic variable Auth.
+        """
         if "auth" not in self.scope:
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
         return cast("Auth", self.scope["auth"])
 
     @property
     def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+        """
+        Returns:
+            A normalized dict of query parameters. Multiple values for the same key are returned as a list.
+        """
         return parse_query_params(self)
 
-    async def receive_json(self, mode: str = "text") -> Any:
+    async def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:  # type: ignore
         """
-        Exact copy of the `starlette` method, but using `orjson.loads()`.
+        Receives data and loads it into JSON using orson.
+
+        Args:
+            mode: Either 'text' or 'binary'.
+
+        Returns:
+            An arbitrary value
         """
         if mode not in {"text", "binary"}:
-            raise InternalServerException('The "mode" argument should be "text" or "binary".')
+            raise ImproperlyConfiguredException('The "mode" argument should be "text" or "binary".')
         if self.application_state != WebSocketState.CONNECTED:
             raise InternalServerException('WebSocket is not connected. Need to call "accept" first.')
         message = await self.receive()
@@ -93,12 +169,19 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
             text = message["bytes"].decode("utf-8")
         return loads(text)
 
-    async def send_json(self, data: Any, mode: str = "text") -> None:
+    async def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:  # type: ignore
         """
-        Exact copy of the `starlette` method, but using `orjson.dumps()`.
+        Sends data as JSON.
+
+        Args:
+            data: A value to serialize.
+            mode: Either 'text' or 'binary'.
+
+        Returns:
+            None
         """
         if mode not in {"text", "binary"}:
-            raise InternalServerException('The "mode" argument should be "text" or "binary".')
+            raise ImproperlyConfiguredException('The "mode" argument should be "text" or "binary".')
         binary = dumps(data, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
         if mode == "text":
             await self.send({"type": "websocket.send", "text": binary.decode("utf-8")})
