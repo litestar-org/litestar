@@ -332,8 +332,8 @@ class Starlite(Router):
             value: an instance of [Router][starlite.router.Router], a subclasses of
         [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
 
-        Returns: None
-
+        Returns:
+            None
         """
         routes = super().register(value=value)
         for route in routes:
