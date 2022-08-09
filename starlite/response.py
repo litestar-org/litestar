@@ -1,32 +1,42 @@
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic import BaseModel, validate_arguments
+from pydantic import BaseModel
 from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-from starlette.background import BackgroundTask
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT
 
-from starlite.datastructures import Cookie
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.template import TemplateEngineProtocol
 
 T = TypeVar("T")
 
+if TYPE_CHECKING:
+    from starlite.datastructures import BackgroundTask, BackgroundTasks, Cookie
+    from starlite.template import TemplateEngineProtocol
+
 
 class Response(StarletteResponse, Generic[T]):
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         content: T,
         *,
         status_code: int,
         media_type: Union[MediaType, OpenAPIMediaType, str],
-        background: Optional[BackgroundTask] = None,
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[List[Cookie]] = None,
+        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: Optional[List["Cookie"]] = None,
     ):
         """
         The response class is used to return an HTTP response.
@@ -35,9 +45,11 @@ class Response(StarletteResponse, Generic[T]):
             content: A value for the response body that will be rendered into bytes string.
             status_code: A value for the response HTTP status code.
             media_type: A value for the response 'Content-Type' header.
-            background: A background task to execute in parallel to the response. Defaults to None.
-            headers: A string/string dictionary of response headers. Header keys are insensitive. Defaults to None.
-            cookies: A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
         """
         super().__init__(
             content=content,
@@ -91,16 +103,15 @@ class Response(StarletteResponse, Generic[T]):
 
 
 class TemplateResponse(Response):
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
         template_name: str,
-        template_engine: TemplateEngineProtocol,
+        template_engine: "TemplateEngineProtocol",
         status_code: int,
         context: Optional[Dict[str, Any]] = None,
-        background: Optional[BackgroundTask] = None,
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[List[Cookie]] = None,
+        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: Optional[List["Cookie"]] = None,
     ):
         """
         Handles the rendering of a given template into a bytes string.
@@ -110,9 +121,11 @@ class TemplateResponse(Response):
             template_engine: The template engine class to use to render the response.
             status_code: A value for the response HTTP status code.
             context: A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None.
-            background: A background task to execute in parallel to the response. Defaults to None.
-            headers: A string/string dictionary of response headers. Header keys are insensitive. Defaults to None.
-            cookies: A list of Cookie instance to be set under the response 'Set-Cookie' header. Defaults to None.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
         """
         context = context or {}
         template = template_engine.get_template(template_name)

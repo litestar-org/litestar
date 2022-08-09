@@ -727,7 +727,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "1.4.1"
+version = "1.5.0"
 description = "Mock data generation for pydantic based models"
 category = "main"
 optional = false
@@ -1785,8 +1785,8 @@ pydantic = [
     {file = "pydantic-1.9.1.tar.gz", hash = "sha256:1ed987c3ff29fff7fd8c3ea3a3ea877ad310aae2ef9889a119e22d3f2db0691a"},
 ]
 pydantic-factories = [
-    {file = "pydantic-factories-1.4.1.tar.gz", hash = "sha256:0ac03224ba5677de3d43d304beb4648c0dcbdf0e997e5c6d34af0d09794ccb81"},
-    {file = "pydantic_factories-1.4.1-py3-none-any.whl", hash = "sha256:775e550c359ad32cb23e723dfba7b3bda2043880e5db7dd64d2d2948f87b894f"},
+    {file = "pydantic-factories-1.5.0.tar.gz", hash = "sha256:46d81a27d82e7521f46792fc8eb5b241a5e475ab5c758e60b47a61b691d1ebaa"},
+    {file = "pydantic_factories-1.5.0-py3-none-any.whl", hash = "sha256:48e056c82d27bda5ceb2480fe6eb06a0c91e0a0b24d6536b5fcdfc5dd5752773"},
 ]
 pydantic-openapi-schema = [
     {file = "pydantic-openapi-schema-1.0.0.tar.gz", hash = "sha256:28cb8b52e18c66e04215ac3e150dd6f9ea8d5075069f08aaff8e1a1290e17f89"},
