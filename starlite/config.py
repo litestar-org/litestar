@@ -163,17 +163,26 @@ class CompressionConfig(BaseModel):
 
 
 class CSRFConfig(BaseModel):
-    """Class containing CSRF configuration."""
+    """CSRF middleware configuration."""
 
     secret: str
+    """A string that is used to create an HMAC to sign the CSRF token"""
     cookie_name: str = "csrftoken"
+    """The CSRF cookie name"""
     cookie_path: str = "/"
+    """The CSRF cookie path"""
     header_name: str = "x-csrftoken"
+    """The header that will be expected in each request"""
     cookie_secure: bool = False
+    """A boolean value indicating whether to set the `Secure` attribute on the cookie"""
     cookie_httponly: bool = False
+    """A boolean value indicating whether to set the `HttpOnly` attribute on the cookie"""
     cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    """The value to set in the `SameSite` attribute of the cookie"""
     cookie_domain: Optional[str] = None
+    """Specifies which hosts can receive the cookie"""
     safe_methods: Set[Method] = {"GET", "HEAD"}
+    """A set of "safe methods" that can set the cookie"""
 
 
 class OpenAPIConfig(BaseModel):

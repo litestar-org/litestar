@@ -125,6 +125,7 @@ class Starlite(Router):
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application.
             cors_config: If set this enables the `starlette.middleware.cores.CORSMiddleware`.
+            csrf_config: If set this enables the CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
             dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
