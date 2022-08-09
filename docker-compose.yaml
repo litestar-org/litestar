@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  docs:
+    build:
+      dockerfile: .docker/Dockerfile
+      context: .
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/docs
+    command:
+      - "serve"
+      - "--dev-addr=0.0.0.0:8000"
