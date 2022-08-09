@@ -16,7 +16,6 @@ from typing import (
 
 from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
-from pydantic_openapi_schema.v3_1_0.header import Header
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -25,7 +24,6 @@ from starlette.responses import Response as StarletteResponse
 from typing_extensions import Literal, Protocol, runtime_checkable
 
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
-from starlite.response import Response
 
 try:
     # python 3.9 changed these variable
@@ -40,6 +38,7 @@ if TYPE_CHECKING:
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
     Request = Any
@@ -48,6 +47,7 @@ else:
     Controller = Any
     Router = Any
     State = Any
+    Response = Any
 
 T = TypeVar("T", bound=BaseModel)
 H = TypeVar("H", bound=HTTPConnection)
@@ -62,16 +62,8 @@ LifeCycleHandler = Union[
     Callable[[State], Awaitable[Any]],
 ]
 Guard = Union[Callable[[H, BaseRouteHandler], Awaitable[None]], Callable[[H, BaseRouteHandler], None]]
-Method = Union[Literal["GET"], Literal["POST"], Literal["DELETE"], Literal["PATCH"], Literal["PUT"], Literal["HEAD"]]
-ReservedKwargs = Union[
-    Literal["request"],
-    Literal["socket"],
-    Literal["headers"],
-    Literal["query"],
-    Literal["cookies"],
-    Literal["state"],
-    Literal["data"],
-]
+Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
+ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 
 # connection-lifecycle hook handlers
@@ -124,8 +116,11 @@ class Partial(Generic[T]):
         return cast("Type[T]", cls._models.get(item))
 
 
-class ResponseHeader(Header):
-    value: Any = ...
-
-
 Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
+
+
+class Empty:
+    """Placeholder"""
+
+
+EmptyType = Type[Empty]

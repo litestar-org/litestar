@@ -1,29 +1,55 @@
 from http import HTTPStatus
+from http.cookies import SimpleCookie
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
+from pydantic_openapi_schema.v3_1_0 import Response
 from pydantic_openapi_schema.v3_1_0.header import Header
 from pydantic_openapi_schema.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
 )
-from pydantic_openapi_schema.v3_1_0.response import Response
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from starlette.routing import get_name
+from typing_extensions import get_args, get_origin
 
-from starlite.datastructures import File, Redirect, Stream, Template
+from starlite.datastructures import Cookie, File, Redirect, Stream, Template
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
+from starlite.response import Response as StarliteResponse
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
+    from http.cookies import BaseCookie
+
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
+
+
+def create_cookie_schema(cookie: Cookie) -> Schema:
+    """
+    Given a Cookie instance, return its corresponding OpenAPI schema
+    Args:
+        cookie: Cookie
+
+    Returns:
+        Schema
+    """
+    base_cookie: "BaseCookie[str]" = SimpleCookie()
+    base_cookie[cookie.key] = "<string>"
+    cookie_dict = cookie.dict()
+    if cookie_dict["max_age"]:
+        base_cookie[cookie.key]["max-age"] = cookie_dict["max_age"]
+    for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
+        if cookie_dict[key]:
+            base_cookie[cookie.key][key] = cookie_dict[key]
+    value = base_cookie.output(header="").strip()
+    return Schema(description=cookie.description or "", example=value)
 
 
 def create_success_response(
@@ -45,12 +71,12 @@ def create_success_response(
         or HTTPStatus(route_handler.status_code).description
     )
     if signature.return_annotation not in [signature.empty, None, Redirect, File, Stream]:
-
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
             return_annotation = str  # since templates return str
             route_handler.media_type = MediaType.HTML
-
+        elif get_origin(signature.return_annotation) is StarliteResponse:
+            return_annotation = get_args(signature.return_annotation)[0] or Any
         as_parsed_model_field = create_parsed_model_field(return_annotation)
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples, plugins=plugins)
         schema.contentEncoding = route_handler.content_encoding
@@ -109,9 +135,14 @@ def create_success_response(
             if attribute_name == "value":
                 model_field = create_parsed_model_field(type(attribute_value))
                 header.param_schema = create_schema(field=model_field, generate_examples=False, plugins=plugins)
-            else:
+            elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
+    cookies = route_handler.resolve_response_cookies()
+    if cookies:
+        response.headers["Set-Cookie"] = Header(
+            param_schema=Schema(allOf=[create_cookie_schema(cookie=cookie) for cookie in cookies])
+        )
     return response
 
 

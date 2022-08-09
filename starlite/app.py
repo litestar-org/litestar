@@ -17,7 +17,7 @@ from starlite.config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from starlite.datastructures import State
+from starlite.datastructures import Cookie, ResponseHeader, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -38,7 +38,6 @@ from starlite.types import (
     Guard,
     LifeCycleHandler,
     Middleware,
-    ResponseHeader,
 )
 from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
@@ -57,47 +56,6 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 
 class Starlite(Router):
-    """
-    The Starlite application.
-
-    `Starlite` is the root level of the app - it has the base path of "/" and all root level
-    Controllers, Routers and Route Handlers should be registered on it.
-
-    Args:
-        after_request (AfterRequestHandler | None, optional): A sync or async function executed before a request
-            is passed to any route handler. If this function returns a value, the request will not reach the route
-            handler, and instead this value will be used.
-        after_response (AfterResponseHandler | None, optional): Sync or async function called after the response has been
-            awaited. It receives the `Request` object and should not return any values.
-        allowed_hosts (list[str] | None): A list of allowed hosts - enables `AllowedHostsMiddleware`.
-        before_request (BeforeRequestHandler | None, optional): Sync or async function called immediately before calling
-            the route handler. Receives the `starlite.connection.Request` instance and any non-`None` return value is
-            used for the response, bypassing the route handler.
-        cache_config (CacheConfig, optional): Configures caching behavior of the application.
-        compression_config (CompressionConfig | None, optional): Configures compression behaviour of the application.
-        cors_config (CORSConfig | None, optional): If set this enables the `starlette.middleware.cores.CORSMiddleware`.
-        debug (bool, optional): If `True`, app errors rendered as HTML with a stack trace. **This option should not be
-            used in production.**
-        dependencies (dict[str, Provide] | None, optional): mapping of dependency providers.
-        exception_handlers (dict[int | type[Exception], ExceptionHandler], optional): handler functions mapped to status
-            codes and/or exception types.
-        guards (list[Guard] | None, optional): A list of [Guard][starlite.types.Guard] callables.
-        middleware (list[Middleware] | None, optional): List of [Middleware][starlite.types.Middleware].
-        on_shutdown (list[LifeCycleHandler] | None, optional): List of [LifeCycleHandler][starlite.types.LifeCycleHandler]
-            called during application shutdown.
-        on_startup (list[LifeCycleHandler] | None, optional): List of [LifeCycleHandler][starlite.types.LifeCycleHandler]
-            called during application startup.
-        openapi_config (OpenAPIConfig | None, optional): Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
-        parameters (dict[str, FieldInfo] | None, optional): A mapping of parameter definitions available to all
-            application paths. See [Parameter][starlite.params.Parameter].
-        plugins (list[PluginProtocol] | None, optional): List of plugins.
-        response_class (type[Response] | None, optional): A custom response class to be used as the app's default.
-        response_headers (dict[str, ResponseHeader] | None, optional): A dictionary of [ResponseHeader][starlite.types.ResponseHeader] instances.
-        route_handlers (list[ControllerRouterHandler]): Required collection of route handlers.
-        static_files_config (StaticFilesConfig | list[StaticFilesConfig] | None, optional): An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
-        template_config (TemplateConfig | None, optional): An instance of [TemplateConfig][starlite.config.TemplateConfig]
-    """
-
     __slots__ = (
         "allowed_hosts",
         "asgi_handler",
@@ -139,11 +97,57 @@ class Starlite(Router):
         parameters: Optional[Dict[str, FieldInfo]] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         response_class: Optional[Type[Response]] = None,
+        response_cookies: Optional[List[Cookie]] = None,
         response_headers: Optional[Dict[str, ResponseHeader]] = None,
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
+        tags: Optional[List[str]] = None,
     ):
+        """
+        The Starlite application.
+
+        `Starlite` is the root level of the app - it has the base path of "/" and all root level
+        Controllers, Routers and Route Handlers should be registered on it.
+
+        It inherits from the [Router][starlite.router.Router] class.
+
+        Args:
+            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
+            after_response: A sync or async function called after the response has been awaited. It receives the
+                [Request][starlite.connection.Request] object and should not return any values.
+            allowed_hosts: A list of allowed hosts - enables `AllowedHostsMiddleware`.
+            before_request: A sync or async function called immediately before calling the route handler. Receives
+                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                bypassing the route handler.
+            cache_config: Configures caching behavior of the application.
+            compression_config: Configures compression behaviour of the application.
+            cors_config: If set this enables the `starlette.middleware.cores.CORSMiddleware`.
+            debug: If `True`, app errors rendered as HTML with a stack trace.
+            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            on_shutdown: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application
+                shutdown.
+            on_startup: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application startup.
+            openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
+            parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
+                application paths.
+            plugins: List of plugins.
+            response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
+            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+                instances.
+            route_handlers: A required list of route handlers, which can include instances of
+                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
+                function decorated by the route handler decorators.
+            static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
+            template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            tags: A list of string tags that will be appended to the schema of all route handlers under the application.
+        """
         self.allowed_hosts = allowed_hosts
         self.cache_config = cache_config
         self.cors_config = cors_config
@@ -168,8 +172,10 @@ class Starlite(Router):
             parameters=parameters,
             path="",
             response_class=response_class,
+            response_cookies=response_cookies,
             response_headers=response_headers,
             route_handlers=route_handlers,
+            tags=tags,
         )
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
@@ -318,9 +324,15 @@ class Starlite(Router):
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """
-        Register a Controller, Route instance or RouteHandler on the app.
 
-        Calls Router.register() and then creates a signature model for all handlers.
+        Registers a route handler on the app. This method can be used to dynamically add endpoints to an application.
+
+        Args:
+            value: an instance of [Router][starlite.router.Router], a subclasses of
+        [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
+
+        Returns: None
+
         """
         routes = super().register(value=value)
         for route in routes:
@@ -336,6 +348,9 @@ class Starlite(Router):
                     route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_request()
+                    route_handler.resolve_after_response()
+                    route_handler.resolve_response_headers()
+                    route_handler.resolve_response_cookies()
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
             elif isinstance(route, WebSocketRoute):

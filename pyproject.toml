@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.8.1"
+version = "1.9.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -62,7 +62,8 @@ tox = "*"
 requests = "*"
 piccolo = "*"
 pre-commit = "*"
-redis = "^4.3.4"
+redis = "*"
+picologging = "*"
 mkdocstrings = {version = "*", extras = ["python"]}
 black = "*"
 

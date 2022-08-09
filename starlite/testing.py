@@ -5,11 +5,11 @@ from orjson import dumps
 from pydantic import BaseModel
 from starlette.testclient import TestClient as StarletteTestClient
 
-from starlite import MissingDependencyException
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.datastructures import State
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType
+from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
     from typing import Type

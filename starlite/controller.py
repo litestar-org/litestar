@@ -9,9 +9,8 @@ if TYPE_CHECKING:
     from typing import Type
 
     from pydantic.fields import FieldInfo
-    from starlette.middleware import Middleware
-    from starlette.middleware.base import BaseHTTPMiddleware
 
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.provide import Provide
     from starlite.response import Response
     from starlite.router import Router
@@ -21,14 +20,15 @@ if TYPE_CHECKING:
         BeforeRequestHandler,
         ExceptionHandler,
         Guard,
-        MiddlewareProtocol,
-        ResponseHeader,
+        Middleware,
     )
 
 
 class Controller:
     """
-    Starlite Controller. This is the basic 'view' component of Starlite.
+    The Starlite Controller class is the basic 'view' component of Starlite.
+
+    Subclass Controller to use OOP based route handling.
     """
 
     __slots__ = (
@@ -43,23 +43,75 @@ class Controller:
         "parameters",
         "path",
         "response_class",
+        "response_cookies",
         "response_headers",
         "tags",
     )
 
     after_request: Optional["AfterRequestHandler"]
+    """
+        A sync or async function executed before a [Request][starlite.connection.Request] is passed to any route handler.
+        If this function returns a value, the request will not reach the route handler, and instead this value will be used.
+    """
     after_response: Optional["AfterResponseHandler"]
+    """
+        A sync or async function called after the response has been awaited.
+        It receives the [Request][starlite.connection.Request] instance and should not return any values.
+    """
     before_request: Optional["BeforeRequestHandler"]
+    """
+        A sync or async function called immediately before calling the route handler.
+        It receives the [Request][starlite.connection.Request] instance and any
+        non-`None` return value is used for the response, bypassing the route handler.
+    """
     dependencies: Optional[Dict[str, "Provide"]]
+    """
+        A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+    """
     exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]
+    """
+        A dictionary that maps handler functions to status codes and/or exception types.
+    """
     guards: Optional[List["Guard"]]
-    middleware: Optional[List[Union["Middleware", "Type[BaseHTTPMiddleware]", "Type[MiddlewareProtocol]"]]]
+    """
+        A list of [Guard][starlite.types.Guard] callables.
+    """
+    middleware: Optional[List["Middleware"]]
+    """
+        A list of [Middleware][starlite.types.Middleware].
+    """
     owner: "Router"
+    """
+        The [Router][starlite.router.Router] or [Starlite][starlite.app.Starlite] app that owns the controller.
+        This value is set internally by Starlite and it should not be set when subclassing the controller.
+    """
     parameters: Optional[Dict[str, "FieldInfo"]]
+    """
+        A mapping of [Parameter][starlite.params.Parameter] definitions available to all application paths.
+    """
     path: str
+    """
+        A path fragment for the controller.
+        All route handlers under the controller will have the fragment appended to them.
+        If not set it defaults to '/'.
+    """
     response_class: Optional["Type[Response]"]
+    """
+        A custom subclass of [starlite.response.Response] to be used as the default response
+        for all route handlers under the controller.
+    """
+    response_cookies: Optional[List["Cookie"]]
+    """
+        A list of [Cookie](starlite.datastructures.Cookie] instances.
+    """
     response_headers: Optional[Dict[str, "ResponseHeader"]]
+    """
+        A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
+    """
     tags: Optional[List[str]]
+    """
+        A list of string tags that will be appended to the schema of all route handlers under the controller.
+    """
 
     def __init__(self, owner: "Router"):
         for key in self.__slots__:
