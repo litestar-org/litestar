@@ -36,3 +36,5 @@
             - __init__
 
 ::: starlite.exceptions.ValidationException
+
+::: starlite.exceptions.utils.create_exception_response
