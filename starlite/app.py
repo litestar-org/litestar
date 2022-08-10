@@ -57,6 +57,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class Starlite(Router):
     __slots__ = (
+        "_registered_routes",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
@@ -159,6 +160,7 @@ class Starlite(Router):
         self.plugins = plugins or []
         self.route_map: Dict[str, Any] = {}
         self.routes: List[BaseRoute] = []
+        self._registered_routes: Set[BaseRoute] = set()
         self.state = State()
         self.static_paths = set()
 
@@ -295,10 +297,12 @@ class Starlite(Router):
         """
         if "_components" not in self.route_map:
             self.route_map["_components"] = set()
-        for route in self.routes:
+        new_routes = [route for route in self.routes if route not in self._registered_routes]
+        for route in new_routes:
             node = self.add_node_to_route_map(route)
             if node["_path_parameters"] != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
+            self._registered_routes.add(route)
 
     def build_route_middleware_stack(
         self,

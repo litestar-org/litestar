@@ -54,6 +54,28 @@ def test_path_inside_static(tmpdir: Any) -> None:
         app.register(handler)
 
 
+def test_multiple_configs(tmpdir: Any) -> None:
+    root1 = tmpdir.mkdir("1")
+    root2 = tmpdir.mkdir("2")
+    path1 = root1.join("test.txt")
+    path1.write("content1")
+    path2 = root2.join("test.txt")
+    path2.write("content2")
+
+    static_files_config = [
+        StaticFilesConfig(path="/1", directories=[root1]),
+        StaticFilesConfig(path="/2", directories=[root2]),
+    ]
+    with create_test_client([], static_files_config=static_files_config) as client:
+        response = client.get("/1/test.txt")
+        assert response.status_code == 200
+        assert response.text == "content1"
+
+        response = client.get("/2/test.txt")
+        assert response.status_code == 200
+        assert response.text == "content2"
+
+
 def test_static_substring_of_self(tmpdir: Any) -> None:
     path = tmpdir.mkdir("static_part").mkdir("static")
     path = path.join("test.txt")
