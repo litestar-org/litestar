@@ -2,15 +2,18 @@ import hashlib
 import hmac
 import secrets
 from http.cookies import SimpleCookie
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from starlette.datastructures import MutableHeaders
-from starlette.types import ASGIApp, Message, Receive, Scope, Send  # noqa: TC002
 
-from starlite.config import CSRFConfig  # noqa: TC001
 from starlite.connection import Request
 from starlite.exceptions import PermissionDeniedException
 from starlite.types import MiddlewareProtocol
+
+if TYPE_CHECKING:
+    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+    from starlite.config import CSRFConfig
 
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
@@ -24,19 +27,19 @@ class CSRFMiddleware(MiddlewareProtocol):
 
     def __init__(
         self,
-        app: ASGIApp,
-        config: CSRFConfig,
+        app: "ASGIApp",
+        config: "CSRFConfig",
     ):
         super().__init__(app)
         self.app = app
         self.config = config
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
-        request: Request = Request(scope=scope)
+        request = Request[Any, Any](scope=scope)
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
@@ -47,7 +50,7 @@ class CSRFMiddleware(MiddlewareProtocol):
                 raise PermissionDeniedException("CSRF token verification failed")
         else:
 
-            async def send_wrapper(message: Message) -> None:
+            async def send_wrapper(message: "Message") -> None:
                 if csrf_cookie is None and message["type"] == "http.response.start":
                     message.setdefault("headers", [])
                     headers = MutableHeaders(scope=message)

@@ -34,10 +34,11 @@ consult the theme docs as a first step.
 
 ### Running the Docs Locally
 
-To run the docs locally, use docker and follow these steps:
+To run the docs locally, simply use the `docker-compose` configuration in place by executing `docker compose up`.
+On the first run it will pull and build the image, but afterwards this should be quite fast.
 
-- pull the theme image with `docker pull squidfunk/mkdocs-material`
-- run the docs site locally with `docker run --rm -it -p 8000:8000 -v ${PWD}:/docs squidfunk/mkdocs-material`
+Note: if you want your terminal back use `docker compose up --detach` but then you will need to bring the docs down
+with `docker compose down` rather than ctrl+C.
 
 ### Writing and Editing Docs
 

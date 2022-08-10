@@ -107,7 +107,7 @@ async def test_to_response_returning_redirect_response() -> None:
     def test_function() -> Redirect:
         return Redirect(
             path="/somewhere-else",
-            headers={"file-header": "abc"},
+            headers={"response-header": "abc"},
             cookies=[Cookie(key="redirect-cookie", value="xyz")],
             background=background_task,
         )
@@ -119,7 +119,7 @@ async def test_to_response_returning_redirect_response() -> None:
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
         assert response.headers["local-header"] == "123"
-        assert response.headers["file-header"] == "abc"
+        assert response.headers["response-header"] == "abc"
         cookies = response.headers.getlist("set-cookie")
         assert len(cookies) == 2
         assert cookies[0] == "redirect-cookie=xyz; Path=/; SameSite=lax"
@@ -142,7 +142,7 @@ async def test_to_response_returning_file_response() -> None:
         return File(
             path=current_file_path,
             filename=filename,
-            headers={"file-header": "abc"},
+            headers={"response-header": "abc"},
             cookies=[Cookie(key="file-cookie", value="xyz")],
             background=background_task,
         )
@@ -156,7 +156,7 @@ async def test_to_response_returning_file_response() -> None:
         assert response.path == current_file_path
         assert response.filename == filename
         assert response.headers["local-header"] == "123"
-        assert response.headers["file-header"] == "abc"
+        assert response.headers["response-header"] == "abc"
         cookies = response.headers.getlist("set-cookie")
         assert len(cookies) == 3
         assert cookies[0] == "file-cookie=xyz; Path=/; SameSite=lax"
@@ -194,7 +194,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
         def test_function() -> Stream:
             return Stream(
                 iterator=iterator,
-                headers={"file-header": "abc"},
+                headers={"response-header": "abc"},
                 cookies=[Cookie(key="streaming-cookie", value="xyz")],
                 background=background_task,
             )
@@ -205,7 +205,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
             response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
             assert isinstance(response, StreamingResponse)
             assert response.headers["local-header"] == "123"
-            assert response.headers["file-header"] == "abc"
+            assert response.headers["response-header"] == "abc"
             cookies = response.headers.getlist("set-cookie")
             assert len(cookies) == 3
             assert cookies[0] == "streaming-cookie=xyz; Path=/; SameSite=lax"
@@ -229,7 +229,7 @@ async def func_to_response_template_response() -> None:
         return Template(
             name="test.template",
             context={},
-            headers={"file-header": "abc"},
+            headers={"response-header": "abc"},
             cookies=[Cookie(key="template-cookie", value="xyz")],
             background=background_task,
         )
@@ -240,7 +240,7 @@ async def func_to_response_template_response() -> None:
         response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
         assert isinstance(response, TemplateResponse)
         assert response.headers["local-header"] == "123"
-        assert response.headers["file-header"] == "abc"
+        assert response.headers["response-header"] == "abc"
         cookies = response.headers.getlist("set-cookie")
         assert len(cookies) == 2
         assert cookies[0] == "template-cookie=xyz; Path=/; SameSite=lax"
