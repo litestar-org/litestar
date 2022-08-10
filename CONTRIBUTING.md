@@ -18,6 +18,17 @@ To contribute code changes or update the documentation, please follow these step
 2. All public functions and methods should be documented with a doc string. The project uses
    the [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
    Private methods should have a doc string explaining what they do, but do not require an elaborate doc string.
+3. If adding a new public interface to the library API ensure interface is included in the reference documentation and
+   public members are listed, e.g.:
+
+   ```text
+   ::: starlite.config.CacheConfig
+       options:
+           members:
+               - backend
+               - expiration
+               - cache_key_builder
+   ```
 
 ## Project Documentation
 
