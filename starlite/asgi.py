@@ -102,14 +102,17 @@ class StarliteASGIRouter(StarletteRouter):
 
     async def call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
         """
-        Determines whether the lifecycle handler expects an argument, and if so passed the app.state to it.
+        Determines whether the lifecycle handler expects an argument, and if so passes the `app.state` to it.
         If the handler is an async function, it awaits the return.
+
+        Args:
+            handler (LifeCycleHandler): sync or async callable that may or may not have an argument.
         """
         arg_spec = getfullargspec(handler)
         if (not ismethod(handler) and len(arg_spec.args) == 1) or (ismethod(handler) and len(arg_spec.args) == 2):
-            value = handler(self.app.state)  # type: ignore
+            value = handler(self.app.state)  # type:ignore[call-arg]
         else:
-            value = handler()  # type: ignore
+            value = handler()  # type:ignore[call-arg]
         if isawaitable(value):
             await value
 
