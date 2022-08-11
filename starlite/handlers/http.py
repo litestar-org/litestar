@@ -2,7 +2,7 @@
 from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, NoReturn, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
 from starlette.responses import Response as StarletteResponse
@@ -407,9 +407,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         signature = Signature.from_callable(cast("AnyCallable", self.fn))
         return_annotation = signature.return_annotation
         if return_annotation is Signature.empty:
-            raise ValidationException(
+            raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
-                "If your function doesn't return a value or returns None, annotate it as returning None."
+                "If your function doesn't return a value or returns None, annotate it as returning 'NoReturn' or 'None' respectively."
+            )
+        if (self.status_code < 200 or self.status_code in {204, 304}) and return_annotation not in {None, NoReturn}:
+            raise ImproperlyConfiguredException(
+                "A status code 204, 304 or in the range below 200 does not support a response body."
+                "If the function should return a value, change the route handler status code to an appropriate value.",
             )
         if isclass(return_annotation):
             with suppress(TypeError):
