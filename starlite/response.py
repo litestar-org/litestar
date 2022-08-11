@@ -16,6 +16,7 @@ from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dum
 from pydantic import BaseModel
 from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 from starlette.responses import Response as StarletteResponse
+from starlette.status import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -87,8 +88,10 @@ class Response(StarletteResponse, Generic[T]):
             An encoded bytes string
         """
         try:
-            if content is NoReturn or (
-                content in {None, NoReturn} and (self.status_code < 100 or self.status_code in {204, 304})
+            if (
+                content is None
+                or content is NoReturn
+                and (self.status_code < 100 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED})
             ):
                 return b""
             if self.media_type == MediaType.JSON:
