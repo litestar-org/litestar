@@ -5,7 +5,6 @@ from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.staticfiles import StaticFiles
 
 from starlite.asgi import StarliteASGIRouter
 from starlite.config import (
@@ -191,9 +190,7 @@ class Starlite(Router):
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 path = normalize_path(config.path)
                 self.static_paths.add(path)
-                static_files = StaticFiles(html=config.html_mode, check_dir=False)
-                static_files.all_directories = config.directories  # type: ignore
-                self.register(asgi(path=path)(static_files))
+                self.register(asgi(path=path)(config.to_static_files_app()))
         self.template_engine = create_template_engine(template_config)
 
     def create_asgi_handler(self) -> "ASGIApp":

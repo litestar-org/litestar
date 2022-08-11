@@ -25,6 +25,7 @@ from pydantic_openapi_schema.v3_1_0.reference import Reference
 from pydantic_openapi_schema.v3_1_0.security_requirement import SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.server import Server
 from pydantic_openapi_schema.v3_1_0.tag import Tag
+from starlette.staticfiles import StaticFiles
 from typing_extensions import Literal
 
 from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
@@ -35,6 +36,8 @@ from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder, Method
 
 if TYPE_CHECKING:
+    from starlette.types import ASGIApp
+
     from starlite.app import Starlite
     from starlite.connection import Request
 
@@ -283,6 +286,21 @@ class StaticFilesConfig(BaseModel):
     path: constr(min_length=1)  # type: ignore
     directories: List[DirectoryPath]
     html_mode: bool = False
+
+    def to_static_files_app(self) -> "ASGIApp":
+        """
+                Returns an ASGI app serving static files based on the config
+
+                Returns:
+        ^           [StaticFiles][starlette.static_files.StaticFiles]
+        """
+        static_files = StaticFiles(
+            html=self.html_mode,
+            check_dir=False,
+            directory=self.directories[0],
+        )
+        static_files.all_directories = self.directories  # type: ignore[assignment]
+        return static_files
 
 
 class TemplateConfig(BaseModel):
