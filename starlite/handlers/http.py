@@ -2,7 +2,17 @@
 from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass
-from typing import TYPE_CHECKING, Any, Dict, List, NoReturn, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    NoReturn,
+    Optional,
+    Type,
+    Union,
+    cast,
+)
 
 from pydantic import validate_arguments
 from starlette.responses import Response as StarletteResponse
@@ -56,6 +66,7 @@ if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
 
     from starlite.app import Starlite
+    from starlite.types import AsyncAnyCallable
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
@@ -66,6 +77,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "_resolved_response_class",
         "_resolved_response_cookies",
         "_resolved_response_headers",
+        "_resolved_response_handler",
         "after_request",
         "after_response",
         "background",
@@ -234,6 +246,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._resolved_after_response: Union[Optional[AfterResponseHook], EmptyType] = Empty
         self._resolved_before_request: Union[Optional[BeforeRequestHook], EmptyType] = Empty
         self._resolved_response_headers: Union[Dict[str, ResponseHeader], EmptyType] = Empty
+        self._resolved_response_handler: Union["AsyncAnyCallable", EmptyType] = Empty
         self._resolved_response_cookies: Union[List[Cookie], EmptyType] = Empty
         self._resolved_response_class: Union[Type[Response], EmptyType] = Empty
 
@@ -250,6 +263,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns the closest custom Response class in the owner graph or the default Response class.
 
         This method is memoized so the computation occurs only once.
+
+        Returns:
+            The default [Response][starlite.response.Response] class for the route handler.
         """
         if self._resolved_response_class is Empty:
             self._resolved_response_class = Response
@@ -265,7 +281,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            A dictionary mapping keys to [ResponseHeader][starlite.datastructures.ResponseHeader] instances
+            A dictionary mapping keys to [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
         """
         if self._resolved_response_headers is Empty:
             self._resolved_response_headers = {}
@@ -334,6 +350,61 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self._resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
         return cast("Optional[AfterResponseHook]", self._resolved_after_response)
 
+    def resolve_response_handler(self) -> Any:
+        if self._resolved_response_handler is Empty:
+            media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
+            headers = self.resolve_response_headers()
+            cookies = self.resolve_response_cookies()
+            if isclass(self.signature.return_annotation) and issubclass(
+                self.signature.return_annotation, ResponseContainer
+            ):
+
+                async def handler(data: ResponseContainer, app: "Starlite", **kwargs) -> StarletteResponse:
+                    normalized_headers = {**self._normalize_headers(headers), **data.headers}
+                    normalized_cookies = self._normalize_cookies(data.cookies, cookies)
+                    response = data.to_response(
+                        app=app, headers=normalized_headers, status_code=self.status_code, media_type=media_type
+                    )
+                    for cookie in normalized_cookies:
+                        response.set_cookie(**cookie)
+                    return await self._process_after_request_hook(response)
+
+            elif isclass(self.signature.return_annotation) and issubclass(self.signature.return_annotation, Response):
+
+                async def handler(data: Response, **kwargs) -> StarletteResponse:
+                    normalized_cookies = self._normalize_cookies(data.cookies, cookies)
+                    for cookie in normalized_cookies:
+                        data.set_cookie(**cookie)
+                    return await self._process_after_request_hook(data)
+
+            elif isclass(self.signature.return_annotation) and issubclass(
+                self.signature.return_annotation, StarletteResponse
+            ):
+
+                async def handler(data: StarletteResponse, **kwargs) -> StarletteResponse:
+                    normalized_cookies = self._normalize_cookies(cookies, [])
+                    for cookie in normalized_cookies:
+                        data.set_cookie(**cookie)
+                    return await self._process_after_request_hook(data)
+
+            else:
+
+                async def handler(data: Any, plugins: List[PluginProtocol], **kwargs) -> StarletteResponse:
+                    data = await self._normalize_response_data(data=data, plugins=plugins)
+                    normalized_cookies = self._normalize_cookies(cookies, [])
+                    response = self._create_response(
+                        data=data, headers=self._normalize_headers(headers), media_type=media_type
+                    )
+                    for cookie in normalized_cookies:
+                        response.set_cookie(**cookie)
+                    return await self._process_after_request_hook(response)
+
+            self._resolved_response_handler = handler
+        return cast("AsyncAnyCallable", self._resolved_response_handler)
+
+    async def to_response(self, **kwargs) -> StarletteResponse:
+        return await self.resolve_response_handler()(**kwargs)
+
     @property
     def http_methods(self) -> List["Method"]:
         """
@@ -342,45 +413,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         return cast("List[Method]", self.http_method if isinstance(self.http_method, list) else [self.http_method])
 
-    async def to_response(self, data: Any, app: "Starlite", plugins: List[PluginProtocol]) -> StarletteResponse:
+    @property
+    def signature(self) -> Signature:
         """
-        Determines the correct response type and returns it
-
-        Args:
-            data: An arbitrary value that is either a [Response][starlite.response.Response] instance,
-                a Starlette response, a [ResponseContainer][starlite.datastructures.ResponseContainer]
-                or a value for a response body.
-            app: The [Starlite][starlite.app.Starlite] application instance
-            plugins: [plugins][starlite.plugins.base.PluginProtocol]
-
         Returns:
-            A Starlette compatible Response object
+            The Signature of 'self.fn'.
         """
-
-        data = await self._normalize_response_data(data=data, plugins=plugins)
-
-        media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
-        headers = self.resolve_response_headers()
-        cookies = self.resolve_response_cookies()
-
-        if isinstance(data, ResponseContainer):
-            headers = {**self._normalize_headers(headers), **data.headers}
-            response = data.to_response(app=app, headers=headers, status_code=self.status_code, media_type=media_type)
-        elif isinstance(data, StarletteResponse):
-            response = data
-        else:
-            response = self._create_response(data=data, headers=self._normalize_headers(headers), media_type=media_type)
-
-        if cookies:
-            if hasattr(data, "cookies"):
-                normalized_cookies = self._normalize_cookies(data.cookies, cookies)
-            else:
-                normalized_cookies = self._normalize_cookies(cookies, [])
-
-            for cookie in normalized_cookies:
-                response.set_cookie(**cookie)
-
-        return await self._process_after_request_hook(response)
+        return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _create_response(self, data: Any, headers: Dict[str, Any], media_type: Union[MediaType, str]) -> Response:
         """
@@ -409,8 +448,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Validates the route handler function once it is set by inspecting its return annotations
         """
         super()._validate_handler_function()
-        signature = Signature.from_callable(cast("AnyCallable", self.fn))
-        return_annotation = signature.return_annotation
+        return_annotation = self.signature.return_annotation
         if return_annotation is Signature.empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
@@ -432,9 +470,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     )
                 if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
                     self.media_type = MediaType.TEXT
-        if "socket" in signature.parameters:
+        if "socket" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-        if "data" in signature.parameters and "GET" in self.http_methods:
+        if "data" in self.signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
     @staticmethod
