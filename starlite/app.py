@@ -252,7 +252,7 @@ class Starlite(Router):
                 if component not in cur_node:
                     cur_node[component] = {"_components": set()}
                 cur_node = cast("Dict[str, Any]", cur_node[component])
-                if "static_path" in cur_node:
+                if "_static_path" in cur_node:
                     raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
         else:
             if path not in self.route_map:
@@ -275,7 +275,7 @@ class Starlite(Router):
         if route.path in self.static_paths:
             if node["_components"]:
                 raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
-            node["static_path"] = route.path
+            node["_static_path"] = route.path
             node["_is_asgi"] = True
         asgi_handlers = cast("Dict[str, ASGIApp]", node["_asgi_handlers"])
         if isinstance(route, HTTPRoute):

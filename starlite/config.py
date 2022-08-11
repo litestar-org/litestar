@@ -297,7 +297,7 @@ class StaticFilesConfig(BaseModel):
         static_files = StaticFiles(
             html=self.html_mode,
             check_dir=False,
-            directory=self.directories[0],
+            directory=str(self.directories[0]),
         )
         static_files.all_directories = self.directories  # type: ignore[assignment]
         return static_files

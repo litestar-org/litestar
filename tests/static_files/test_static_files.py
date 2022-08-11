@@ -18,6 +18,16 @@ def test_staticfiles(tmpdir: Any) -> None:
         assert response.text == "content"
 
 
+def test_staticfiles_html_mode(tmpdir: Any) -> None:
+    path = tmpdir.join("index.html")
+    path.write("content")
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir], html_mode=True)
+    with create_test_client([], static_files_config=static_files_config) as client:
+        response = client.get("/static")
+        assert response.status_code == 200
+        assert response.text == "content"
+
+
 def test_staticfiles_for_slash_path(tmpdir: Any) -> None:
     path = tmpdir.join("text.txt")
     path.write("content")

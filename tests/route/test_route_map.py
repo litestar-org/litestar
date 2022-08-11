@@ -117,7 +117,7 @@ def test_find_existing_asgi_handlers(test_paths: List[RouteMapTestCase]) -> None
             route_handlers=[get(path=router_path)(handler_fn)],
         )
         app.add_node_to_route_map(route)
-        asgi_handlers, is_asgi = router.parse_scope_to_route({"path": request_path})
+        asgi_handlers, is_asgi = router._parse_scope_to_route({"path": request_path})
         assert "GET" in asgi_handlers
         assert isinstance(asgi_handlers["GET"], ExceptionHandlerMiddleware)
         assert is_asgi is False
@@ -141,4 +141,4 @@ def test_missing_asgi_handlers(test_paths: List[RouteMapTestCase]) -> None:
             route_handlers=[get(path=router_path)(handler_fn)],
         )
         app.add_node_to_route_map(route)
-        assert router.parse_scope_to_route({"path": request_path}) == ({}, False)
+        assert router._parse_scope_to_route({"path": request_path}) == ({}, False)
