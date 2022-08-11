@@ -29,7 +29,7 @@ def create_exception_response(exc: Exception) -> Response:
         exc (Exception): Any exception.
 
     Returns:
-        Response
+        Response: HTTP response constructed from exception details.
     """
     if isinstance(exc, (HTTPException, StarletteHTTPException)):
         content = ExceptionResponseContent(detail=exc.detail, status_code=exc.status_code)
