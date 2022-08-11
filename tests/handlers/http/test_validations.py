@@ -1,6 +1,11 @@
 import pytest
 from pydantic import ValidationError
-from starlette.status import HTTP_200_OK, HTTP_307_TEMPORARY_REDIRECT
+from starlette.status import (
+    HTTP_100_CONTINUE,
+    HTTP_200_OK,
+    HTTP_304_NOT_MODIFIED,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
 
 from starlite import (
     File,
@@ -9,6 +14,7 @@ from starlite import (
     Redirect,
     Response,
     WebSocket,
+    delete,
     get,
     route,
 )
@@ -49,7 +55,7 @@ def test_route_handler_validation_response_class() -> None:
 
 @pytest.mark.asyncio()
 async def test_function_validation() -> None:
-    with pytest.raises(ValidationException):
+    with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/")
         def method_with_no_annotation():  # type: ignore
@@ -59,6 +65,24 @@ async def test_function_validation() -> None:
 
         @get(path="/", status_code=HTTP_200_OK)
         def redirect_method_without_proper_status() -> Redirect:
+            pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @delete(path="/")
+        def method_with_no_content() -> dict:
+            pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @get(path="/", status_code=HTTP_304_NOT_MODIFIED)
+        def method_with_not_modified() -> dict:
+            pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @get(path="/", status_code=HTTP_100_CONTINUE)
+        def method_with_status_lower_than_200() -> dict:
             pass
 
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)

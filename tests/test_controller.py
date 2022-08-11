@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Any, NoReturn, Type, Union
 
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -10,19 +10,20 @@ from tests import Person, PersonFactory
 
 
 @pytest.mark.parametrize(
-    "decorator, http_method, expected_status_code",
+    "decorator, http_method, expected_status_code, return_annotation",
     [
-        (get, HttpMethod.GET, HTTP_200_OK),
-        (post, HttpMethod.POST, HTTP_201_CREATED),
-        (put, HttpMethod.PUT, HTTP_200_OK),
-        (patch, HttpMethod.PATCH, HTTP_200_OK),
-        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+        (get, HttpMethod.GET, HTTP_200_OK, Person),
+        (post, HttpMethod.POST, HTTP_201_CREATED, Person),
+        (put, HttpMethod.PUT, HTTP_200_OK, Person),
+        (patch, HttpMethod.PATCH, HTTP_200_OK, Person),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT, NoReturn),
     ],
 )
 def test_controller_http_method(
     decorator: Union[Type[get], Type[post], Type[put], Type[patch], Type[delete]],
     http_method: HttpMethod,
     expected_status_code: int,
+    return_annotation: Any,
 ) -> None:
     test_path = "/person"
     person_instance = PersonFactory.build()
@@ -31,7 +32,7 @@ def test_controller_http_method(
         path = test_path
 
         @decorator()
-        def test_method(self) -> Person:
+        def test_method(self) -> return_annotation:  # type: ignore[valid-type]
             return person_instance
 
     with create_test_client(MyController) as client:

@@ -25,6 +25,11 @@ If `status_code` is not set by the user, the following defaults are used:
 - GET, PATCH, PUT: 200 (Ok)
 
 <!-- prettier-ignore -->
+!!! important
+    For status codes < 100 or 204, 304 statuses, no response body is allowed. If you specify a return annotation other
+    than `typing.NoReturn` or `None` in those cases, an `ImproperlyConfiguredException` will be raised.
+
+<!-- prettier-ignore -->
 !!! note
     When using the `route` decorator with multiple http methods, the default status code is `200`.
 

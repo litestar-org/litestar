@@ -99,7 +99,7 @@ While supporting function based route handlers, Starlite also supports and promo
 controllers:
 
 ```python title="my_app/controllers/user.py"
-from typing import List, Optional
+from typing import List, Optional, NoReturn
 
 from pydantic import UUID4
 from starlite import Controller, Partial, get, post, put, patch, delete
@@ -140,7 +140,7 @@ class UserController(Controller):
         ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> User:
+    async def delete_user(self, user_id: UUID4) -> NoReturn:
         ...
 ```
 
