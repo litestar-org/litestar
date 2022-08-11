@@ -318,3 +318,11 @@
 [1.9.2]
 
 - update installation extras
+
+[1.10.0]
+
+- breaking: update handling of status code <100, 204 or 304
+- fix: adding only new routes to the route_map by @Dr-Emann
+- refactor: tidy up exceptions
+- refactor: update `to_response` and datastructures
+- refactor: update installation extras
