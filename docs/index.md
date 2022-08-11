@@ -43,10 +43,30 @@ as **[middleware](usage/7-middleware.md)** and **[guards](usage/9-guards.md)**.
 pip install starlite
 ```
 
-To include the additional dependencies for testing:
+### Extras
+
+To install the extras required for the built-in [Testing](./usage/14-testing.md) helpers:
 
 ```shell
 pip install starlite[testing]
+```
+
+To install the extras required for logging with [Picologging](./usage/0-the-starlite-app/4-logging.md#picologging-integration):
+
+```shell
+pip install starlite[picologging]
+```
+
+To install the extras required for using the [Brotli Compression Middleware](./usage/7-middleware.md#brotli):
+
+```shell
+pip install starlite[brotli]
+```
+
+And to install all of the above:
+
+```shell
+pip install starlite[full]
 ```
 
 ## Minimal Example

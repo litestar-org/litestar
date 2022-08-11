@@ -314,3 +314,7 @@
 
 - CSRF Middleware and config, @seladb
 - Normalize BackgroundTask and BackgroundTasks into `starlite.datastructures`
+
+[1.9.2]
+
+- update installation extras

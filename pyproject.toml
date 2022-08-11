@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.9.1"
+version = "1.9.2"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -33,44 +33,41 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
+brotli = { version = "*", optional = true }
 orjson = "*"
+picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
+pydantic-openapi-schema = "*"
 python-multipart = "*"
 pyyaml = "*"
+requests = { version = "*", optional = true }
 starlette = "*"
 typing-extensions = "*"
-requests = { version = "*", optional = true }
-brotli = { version = "*", optional = true }
-pydantic-openapi-schema = "*"
-picologging = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
+freezegun = "*"
 hypothesis = "*"
-mkdocs-material = "*"
+jinja2 = "*"
+mako = "*"
+piccolo = "*"
+picologging = "*"
+pre-commit = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-uvicorn = "*"
-sqlalchemy = { extras = ["mypy"], version = "*" }
-tortoise-orm = "*"
-jinja2 = "*"
-mako = "*"
-freezegun = "*"
-pytest-mock = "*"
-tox = "*"
-requests = "*"
-piccolo = "*"
-pre-commit = "*"
 redis = "*"
-picologging = "*"
-mkdocstrings = {version = "*", extras = ["python"]}
-black = "*"
+requests = "*"
+sqlalchemy = "*"
+tortoise-orm = "*"
+tox = "*"
+uvicorn = "*"
 
 [tool.poetry.extras]
-testing = ["requests", "brotli", "picologging"]
+testing = ["requests"]
 brotli = ["brotli"]
 picologging = ["picologging"]
+full = ["requests", "brotli", "picologging"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
