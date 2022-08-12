@@ -88,7 +88,7 @@ class StarliteASGIRouter(StarletteRouter):
             request_path_parameter_values: A list of raw strings sent as path parameters as part of the request
 
         Raises:
-            TypeError
+            ValidationException
 
         Returns:
             A dictionary mapping path parameter names to parsed values
