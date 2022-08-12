@@ -286,7 +286,7 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
-        from starlite import ImproperlyConfiguredException
+        from starlite.exceptions import ImproperlyConfiguredException
         from starlite.response import TemplateResponse
 
         if not app.template_engine:

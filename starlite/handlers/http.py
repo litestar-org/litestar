@@ -2,17 +2,7 @@
 from contextlib import suppress
 from enum import Enum
 from inspect import Signature, isawaitable, isclass
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    NoReturn,
-    Optional,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, NoReturn, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
 from starlette.responses import Response as StarletteResponse

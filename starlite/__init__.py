@@ -63,10 +63,11 @@ from .plugins import PluginProtocol
 from .provide import Provide
 from .response import Response
 from .router import Router
-from .routes import BaseRoute, HTTPRoute, WebSocketRoute
+from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from .types import MiddlewareProtocol, Partial
 
 __all__ = [
+    "ASGIRoute",
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
