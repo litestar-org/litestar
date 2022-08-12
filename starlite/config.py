@@ -34,6 +34,7 @@ from starlite.openapi.path_item import create_path_item
 from starlite.routes import HTTPRoute
 from starlite.template import TemplateEngineProtocol
 from starlite.types import CacheKeyBuilder, Method
+from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp
@@ -286,6 +287,21 @@ class StaticFilesConfig(BaseModel):
     path: constr(min_length=1)  # type: ignore
     directories: List[DirectoryPath]
     html_mode: bool = False
+
+    @validator("path")
+    def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument
+        """
+        Ensures the the path has not path parameters
+
+        Args:
+            value: A path string
+
+        Returns:
+            The passed in value
+        """
+        if "{" in value:
+            raise ValueError("path parameters are not supported for static files")
+        return normalize_path(value)
 
     def to_static_files_app(self) -> "ASGIApp":
         """

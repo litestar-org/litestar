@@ -46,6 +46,9 @@ def test_config_validation(tmpdir: Any) -> None:
     with pytest.raises(ValidationError):
         StaticFilesConfig(path="", directories=[tmpdir])
 
+    with pytest.raises(ValidationError):
+        StaticFilesConfig(path="/{param:int}", directories=[tmpdir])
+
 
 def test_path_inside_static(tmpdir: Any) -> None:
     path = tmpdir.join("test.txt")

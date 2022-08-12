@@ -38,7 +38,6 @@ from starlite.types import (
     LifeCycleHandler,
     Middleware,
 )
-from starlite.utils import normalize_path
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
@@ -188,9 +187,8 @@ class Starlite(Router):
             self.register(openapi_config.openapi_controller)
         if static_files_config:
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
-                path = normalize_path(config.path)
-                self.static_paths.add(path)
-                self.register(asgi(path=path)(config.to_static_files_app()))
+                self.static_paths.add(config.path)
+                self.register(asgi(path=config.path)(config.to_static_files_app()))
         self.template_engine = create_template_engine(template_config)
 
     def create_asgi_handler(self) -> "ASGIApp":
@@ -239,7 +237,7 @@ class Starlite(Router):
         For paths containing parameters, splits the path on '/' and nests each path
         segment under the previous segment's node (see prefix tree / trie).
         """
-        cur_node = self.route_map
+        current_node = self.route_map
         path = route.path
         if route.path_parameters or path in self.static_paths:
             for param_definition in route.path_parameters:
@@ -247,20 +245,20 @@ class Starlite(Router):
             path = path.replace("{}", "*")
             components = ["/", *[component for component in path.split("/") if component]]
             for component in components:
-                components_set = cast("Set[str]", cur_node["_components"])
+                components_set = cast("Set[str]", current_node["_components"])
                 components_set.add(component)
-                if component not in cur_node:
-                    cur_node[component] = {"_components": set()}
-                cur_node = cast("Dict[str, Any]", cur_node[component])
-                if "_static_path" in cur_node:
+                if component not in current_node:
+                    current_node[component] = {"_components": set()}
+                current_node = cast("Dict[str, Any]", current_node[component])
+                if "_static_path" in current_node:
                     raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
         else:
             if path not in self.route_map:
                 self.route_map[path] = {"_components": set()}
             self.plain_routes.add(path)
-            cur_node = self.route_map[path]
-        self.configure_route_map_node(route, cur_node)
-        return cur_node
+            current_node = self.route_map[path]
+        self.configure_route_map_node(route, current_node)
+        return current_node
 
     def configure_route_map_node(self, route: BaseRoute, node: Dict[str, Any]) -> None:
         """

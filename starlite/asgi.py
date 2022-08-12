@@ -49,15 +49,23 @@ class StarliteASGIRouter(StarletteRouter):
             if "*" in components_set:
                 path_params.append(component)
                 current_node = cast("Dict[str, Any]", current_node["*"])
-                if "_static_path" in current_node:
-                    self._handle_static_path(scope=scope, node=current_node)
-                    break
                 continue
             raise NotFoundException()
         return current_node, path_params
 
     @staticmethod
     def _handle_static_path(scope: "Scope", node: Dict[str, Any]) -> None:
+        """
+        Normalize the static path and update scope so file resolution will work as expected.
+
+        Args:
+            scope: Request Scope
+            node: Trie Node
+
+        Returns:
+            None
+
+        """
         static_path = cast("str", node["_static_path"])
         if static_path != "/" and scope["path"].startswith(static_path):
             start_idx = len(static_path)
@@ -72,15 +80,15 @@ class StarliteASGIRouter(StarletteRouter):
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
-            cur: Dict[str, Any] = self.app.route_map[path]
+            current_node: Dict[str, Any] = self.app.route_map[path]
             path_params: List[str] = []
         else:
-            cur, path_params = self._traverse_route_map(path=path, scope=scope)
+            current_node, path_params = self._traverse_route_map(path=path, scope=scope)
         scope["path_params"] = (
-            parse_path_params(cur["_path_parameters"], path_params) if cur["_path_parameters"] else {}
+            parse_path_params(current_node["_path_parameters"], path_params) if current_node["_path_parameters"] else {}
         )
-        asgi_handlers = cast("Dict[str, ASGIApp]", cur["_asgi_handlers"])
-        is_asgi = cast("bool", cur["_is_asgi"])
+        asgi_handlers = cast("Dict[str, ASGIApp]", current_node["_asgi_handlers"])
+        is_asgi = cast("bool", current_node["_is_asgi"])
         return asgi_handlers, is_asgi
 
     @staticmethod
