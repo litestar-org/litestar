@@ -48,38 +48,77 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
+    def create_handler_map(self) -> None:
+        """
+        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
+        """
+        for route_handler in self.route_handlers:
+            kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
+            for http_method in route_handler.http_methods:
+                if self.route_handler_map.get(http_method):
+                    raise ImproperlyConfiguredException(
+                        f"Handler already registered for path {self.path!r} and http method {http_method}"
+                    )
+                self.route_handler_map[http_method] = (route_handler, kwargs_model)
+
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that creates a Request from the passed in args, and then awaits a Response
         """
         request = Request[Any, Any](scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
+
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
-        caching_enabled = route_handler.cache
-        response: Optional[Union["Response", "StarletteResponse"]] = None
-        if caching_enabled:
-            response = await self.get_cached_response(request=request, route_handler=route_handler)
-        if not response:
-            response = await self.call_handler(
-                scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
-            )
-            # we cache the response instance
-            if caching_enabled:
-                await self.set_cached_response(
-                    response=response,
-                    request=request,
-                    route_handler=route_handler,
-                )
+        response = await self._get_response_for_request(
+            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
+        )
+
         await response(scope, receive, send)
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
             await after_response_handler(request)
 
-    async def call_handler(
+    async def _get_response_for_request(
+        self,
+        scope: "Scope",
+        request: Request[Any, Any],
+        route_handler: "HTTPRouteHandler",
+        parameter_model: "KwargsModel",
+    ) -> "StarletteResponse":
+        """
+        Handles creating a response instance and/or using cache.
+
+        Args:
+            scope: The Request's scope
+            request: The Request instance
+            route_handler: The HTTPRouteHandler instance
+            parameter_model: The Handler's KwargsModel
+
+        Returns:
+            An instance of StarletteResponse or a subclass of it
+        """
+        response: Optional["StarletteResponse"] = None
+        if route_handler.cache:
+            response = await self._get_cached_response(request=request, route_handler=route_handler)
+
+        if not response:
+            response = await self._call_handler_function(
+                scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+            )
+            if route_handler.cache:
+                await self._set_cached_response(
+                    response=response,
+                    request=request,
+                    route_handler=route_handler,
+                )
+
+        return response
+
+    async def _call_handler_function(
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
-    ) -> Union["Response", "StarletteResponse"]:
+    ) -> "StarletteResponse":
         """
         Calls the before request handlers, retrieves any data required for the route handler,
         and calls the route handler's to_response method.
@@ -89,13 +128,15 @@ class HTTPRoute(BaseRoute):
         """
         response_data = None
         before_request_handler = route_handler.resolve_before_request()
-        # run the before_request hook handler
+
         if before_request_handler:
             response_data = await before_request_handler(request)
+
         if not response_data:
-            response_data = await self.get_response_data(
+            response_data = await self._get_response_data(
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
+
         return await route_handler.to_response(
             app=scope["app"],
             data=response_data,
@@ -103,7 +144,7 @@ class HTTPRoute(BaseRoute):
         )
 
     @staticmethod
-    async def get_response_data(
+    async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
         """
@@ -132,21 +173,10 @@ class HTTPRoute(BaseRoute):
             return await run_sync(fn)
         return fn()
 
-    def create_handler_map(self) -> None:
-        """
-        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
-        """
-        for route_handler in self.route_handlers:
-            kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
-            for http_method in route_handler.http_methods:
-                if self.route_handler_map.get(http_method):
-                    raise ImproperlyConfiguredException(
-                        f"Handler already registered for path {self.path!r} and http method {http_method}"
-                    )
-                self.route_handler_map[http_method] = (route_handler, kwargs_model)
-
     @staticmethod
-    async def get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["StarletteResponse"]:
+    async def _get_cached_response(
+        request: Request, route_handler: "HTTPRouteHandler"
+    ) -> Optional["StarletteResponse"]:
         """
         Retrieves and un-pickles the cached value, if it exists
         """
@@ -164,7 +194,7 @@ class HTTPRoute(BaseRoute):
         return None
 
     @staticmethod
-    async def set_cached_response(
+    async def _set_cached_response(
         response: Union["Response", "StarletteResponse"], request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
         """

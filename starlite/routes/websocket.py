@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from starlette.routing import get_name
 
@@ -39,25 +39,38 @@ class WebSocketRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
 
+    async def _resolve_kwargs(self, websocket: WebSocket[Any, Any]) -> Dict[str, Any]:
+        """
+        Resolves the required kwargs from the request data
+
+        Args:
+            websocket: WebSocket instance
+
+        Returns:
+            Dictionary of parsed kwargs
+        """
+        assert self.handler_parameter_model, "handler parameter model not defined"
+
+        signature_model = get_signature_model(self.route_handler)
+        kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
+        for dependency in self.handler_parameter_model.expected_dependencies:
+            kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
+                dependency=dependency, connection=websocket, **kwargs
+            )
+        return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs)
+
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
         """
-        assert self.handler_parameter_model, "handler parameter model not defined"
-        route_handler = self.route_handler
-        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=receive, send=send)
-        if route_handler.resolve_guards():
-            await route_handler.authorize_connection(connection=web_socket)
-        signature_model = get_signature_model(route_handler)
-        handler_parameter_model = self.handler_parameter_model
-        kwargs = handler_parameter_model.to_kwargs(connection=web_socket)
-        for dependency in handler_parameter_model.expected_dependencies:
-            kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
-                dependency=dependency, connection=web_socket, **kwargs
-            )
-        parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=web_socket, **kwargs)
+        websocket = WebSocket[Any, Any](scope=scope, receive=receive, send=send)
+        if self.route_handler.resolve_guards():
+            await self.route_handler.authorize_connection(connection=websocket)
+
+        kwargs = await self._resolve_kwargs(websocket=websocket)
+
         fn = cast("AsyncAnyCallable", self.route_handler.fn)
-        if isinstance(route_handler.owner, Controller):
-            await fn(route_handler.owner, **parsed_kwargs)
+        if isinstance(self.route_handler.owner, Controller):
+            await fn(self.route_handler.owner, **kwargs)
         else:
-            await fn(**parsed_kwargs)
+            await fn(**kwargs)

@@ -42,6 +42,7 @@ class ASGIRoute(BaseRoute):
         if self.route_handler.resolve_guards():
             connection = HTTPConnection(scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
+
         fn = cast("AnyCallable", self.route_handler.fn)
         if isinstance(self.route_handler.owner, Controller):
             await fn(self.route_handler.owner, scope=scope, receive=receive, send=send)
