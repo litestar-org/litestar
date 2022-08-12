@@ -2,13 +2,16 @@ from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.requests import Request as StarletteRequest
+from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
 from starlette.websockets import WebSocketState
 
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
+from starlite.types import Empty
 
 if TYPE_CHECKING:
+    from starlette.types import Receive, Scope, Send
     from typing_extensions import Literal
 
     from starlite.app import Starlite
@@ -22,6 +25,10 @@ class Request(StarletteRequest, Generic[User, Auth]):
     """
     The Starlite Request class
     """
+
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+        super().__init__(scope, receive, send)
+        self._json: Any = Empty
 
     @property
     def app(self) -> "Starlite":
@@ -87,11 +94,12 @@ class Request(StarletteRequest, Generic[User, Auth]):
         Returns:
             An arbitrary value
         """
-        if not hasattr(self, "_json"):
-            body = self.scope.get("_body")
-            if not body:
-                body = self.scope["_body"] = await self.body()
-            self._json = loads(body or "null")  # pylint: disable=attribute-defined-outside-init
+        if self._json is Empty:
+            if "_body" not in self.scope:
+                body = self.scope["_body"] = (await self.body()) or b"null"
+            else:
+                body = self.scope["_body"]
+            self._json = loads(body)
         return self._json
 
 
