@@ -67,6 +67,18 @@ async def slow_numbers(minimum: int, maximum: int) -> Any:
 generator = slow_numbers(1, 10)
 
 
+async def test_to_response_returning_starlite_response() -> None:
+    @get(path="/test")
+    def test_function() -> Response:
+        return Response(status_code=HTTP_200_OK, media_type=MediaType.TEXT, content="ok")
+
+    with create_test_client(test_function) as client:
+        http_route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route_handler = http_route.route_handlers[0]
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        assert isinstance(response, Response)
+
+
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "expected_response",
