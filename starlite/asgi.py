@@ -29,34 +29,49 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def traverse_route_map(self, path: str, scope: Scope) -> Tuple[Dict[str, Any], List[str]]:
+    def _traverse_route_map(self, path: str, scope: Scope) -> Tuple[Dict[str, Any], List[str]]:
         """
         Traverses the application route mapping and retrieves the correct node for the request url.
 
         Raises NotFoundException if no correlating node is found
         """
         path_params: List[str] = []
-        cur = self.app.route_map
+        current_node = self.app.route_map
         components = ["/", *[component for component in path.split("/") if component]]
         for component in components:
-            components_set = cast("Set[str]", cur["_components"])
+            components_set = cast("Set[str]", current_node["_components"])
             if component in components_set:
-                cur = cast("Dict[str, Any]", cur[component])
+                current_node = cast("Dict[str, Any]", current_node[component])
+                if "_static_path" in current_node:
+                    self._handle_static_path(scope=scope, node=current_node)
+                    break
                 continue
             if "*" in components_set:
                 path_params.append(component)
-                cur = cast("Dict[str, Any]", cur["*"])
+                current_node = cast("Dict[str, Any]", current_node["*"])
                 continue
-            if cur.get("static_path"):
-                static_path = cast("str", cur["static_path"])
-                if static_path != "/" and scope["path"].startswith(static_path):
-                    start_idx = len(static_path)
-                    scope["path"] = scope["path"][start_idx:]
-                break
             raise NotFoundException()
-        return cur, path_params
+        return current_node, path_params
 
-    def parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
+    @staticmethod
+    def _handle_static_path(scope: "Scope", node: Dict[str, Any]) -> None:
+        """
+        Normalize the static path and update scope so file resolution will work as expected.
+
+        Args:
+            scope: Request Scope
+            node: Trie Node
+
+        Returns:
+            None
+
+        """
+        static_path = cast("str", node["_static_path"])
+        if static_path != "/" and scope["path"].startswith(static_path):
+            start_idx = len(static_path)
+            scope["path"] = scope["path"][start_idx:] + "/"
+
+    def _parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
         """
         Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
         """
@@ -65,19 +80,19 @@ class StarliteASGIRouter(StarletteRouter):
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
-            cur: Dict[str, Any] = self.app.route_map[path]
+            current_node: Dict[str, Any] = self.app.route_map[path]
             path_params: List[str] = []
         else:
-            cur, path_params = self.traverse_route_map(path=path, scope=scope)
+            current_node, path_params = self._traverse_route_map(path=path, scope=scope)
         scope["path_params"] = (
-            parse_path_params(cur["_path_parameters"], path_params) if cur["_path_parameters"] else {}
+            parse_path_params(current_node["_path_parameters"], path_params) if current_node["_path_parameters"] else {}
         )
-        asgi_handlers = cast("Dict[str, ASGIApp]", cur["_asgi_handlers"])
-        is_asgi = cast("bool", cur["_is_asgi"])
+        asgi_handlers = cast("Dict[str, ASGIApp]", current_node["_asgi_handlers"])
+        is_asgi = cast("bool", current_node["_is_asgi"])
         return asgi_handlers, is_asgi
 
     @staticmethod
-    def resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
+    def _resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
         """
         Given a scope, retrieves the correct ASGI App for the route
         """
@@ -94,13 +109,13 @@ class StarliteASGIRouter(StarletteRouter):
         The main entry point to the Router class.
         """
         try:
-            asgi_handlers, is_asgi = self.parse_scope_to_route(scope=scope)
-            asgi_handler = self.resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
+            asgi_handlers, is_asgi = self._parse_scope_to_route(scope=scope)
+            asgi_handler = self._resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
         except KeyError as e:
             raise NotFoundException() from e
         await asgi_handler(scope, receive, send)
 
-    async def call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
+    async def _call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
         """
         Determines whether the lifecycle handler expects an argument, and if so passes the `app.state` to it.
         If the handler is an async function, it awaits the return.
@@ -121,11 +136,11 @@ class StarliteASGIRouter(StarletteRouter):
         Run any `.on_startup` event handlers.
         """
         for handler in self.on_startup:
-            await self.call_lifecycle_handler(handler)
+            await self._call_lifecycle_handler(handler)
 
     async def shutdown(self) -> None:
         """
         Run any `.on_shutdown` event handlers.
         """
         for handler in self.on_shutdown:
-            await self.call_lifecycle_handler(handler)
+            await self._call_lifecycle_handler(handler)
