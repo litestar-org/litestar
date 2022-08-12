@@ -2,16 +2,21 @@ from inspect import getfullargspec, isawaitable, ismethod
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, cast
 
 from starlette.routing import Router as StarletteRouter
-from starlette.types import ASGIApp, Receive, Scope, Send
 
 from starlite.enums import ScopeType
-from starlite.exceptions import MethodNotAllowedException, NotFoundException
-from starlite.parsers import parse_path_params
+from starlite.exceptions import (
+    MethodNotAllowedException,
+    NotFoundException,
+    ValidationException,
+)
 
 if TYPE_CHECKING:
     from typing import Set
 
+    from starlette.types import ASGIApp, Receive, Scope, Send
+
     from starlite.app import Starlite
+    from starlite.routes.base import PathParameterDefinition
     from starlite.types import LifeCycleHandler
 
 
@@ -29,7 +34,7 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def _traverse_route_map(self, path: str, scope: Scope) -> Tuple[Dict[str, Any], List[str]]:
+    def _traverse_route_map(self, path: str, scope: "Scope") -> Tuple[Dict[str, Any], List[str]]:
         """
         Traverses the application route mapping and retrieves the correct node for the request url.
 
@@ -71,7 +76,38 @@ class StarliteASGIRouter(StarletteRouter):
             start_idx = len(static_path)
             scope["path"] = scope["path"][start_idx:] + "/"
 
-    def _parse_scope_to_route(self, scope: Scope) -> Tuple[Dict[str, ASGIApp], bool]:
+    @staticmethod
+    def _parse_path_parameters(
+        path_parameter_definitions: List["PathParameterDefinition"], request_path_parameter_values: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Parses path parameters into their expected types
+
+        Args:
+            path_parameter_definitions: A list of [PathParameterDefinition][starlite.route.base.PathParameterDefinition] instances
+            request_path_parameter_values: A list of raw strings sent as path parameters as part of the request
+
+        Raises:
+            TypeError
+
+        Returns:
+            A dictionary mapping path parameter names to parsed values
+        """
+        result: Dict[str, Any] = {}
+
+        try:
+            for idx, parameter_definition in enumerate(path_parameter_definitions):
+                raw_param_value = request_path_parameter_values[idx]
+                parameter_type = parameter_definition["type"]
+                parameter_name = parameter_definition["name"]
+                result[parameter_name] = parameter_type(raw_param_value)
+            return result
+        except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
+            raise ValidationException(
+                f"unable to parse path parameters {','.join(request_path_parameter_values)}"
+            ) from e
+
+    def _parse_scope_to_route(self, scope: "Scope") -> Tuple[Dict[str, "ASGIApp"], bool]:
         """
         Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
         """
@@ -84,15 +120,21 @@ class StarliteASGIRouter(StarletteRouter):
             path_params: List[str] = []
         else:
             current_node, path_params = self._traverse_route_map(path=path, scope=scope)
+
         scope["path_params"] = (
-            parse_path_params(current_node["_path_parameters"], path_params) if current_node["_path_parameters"] else {}
+            self._parse_path_parameters(
+                path_parameter_definitions=current_node["_path_parameters"], request_path_parameter_values=path_params
+            )
+            if path_params
+            else {}
         )
+
         asgi_handlers = cast("Dict[str, ASGIApp]", current_node["_asgi_handlers"])
         is_asgi = cast("bool", current_node["_is_asgi"])
         return asgi_handlers, is_asgi
 
     @staticmethod
-    def _resolve_asgi_app(scope: Scope, asgi_handlers: Dict[str, ASGIApp], is_asgi: bool) -> ASGIApp:
+    def _resolve_asgi_app(scope: "Scope", asgi_handlers: Dict[str, "ASGIApp"], is_asgi: bool) -> "ASGIApp":
         """
         Given a scope, retrieves the correct ASGI App for the route
         """
@@ -104,7 +146,7 @@ class StarliteASGIRouter(StarletteRouter):
             return asgi_handlers[scope["method"]]
         return asgi_handlers[ScopeType.WEBSOCKET]
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         The main entry point to the Router class.
         """

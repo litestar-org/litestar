@@ -27,7 +27,7 @@ from starlite.handlers import (
 )
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
     AfterResponseHandler,
@@ -41,6 +41,7 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 
 if TYPE_CHECKING:
     from starlite.enums import HttpMethod
+    from starlite.routes import BaseRoute
 
 
 class Router:
@@ -126,7 +127,7 @@ class Router:
         self.response_class = response_class
         self.response_cookies = response_cookies
         self.response_headers = response_headers
-        self.routes: List[BaseRoute] = []
+        self.routes: List["BaseRoute"] = []
         self.tags = tags
 
         for route_handler in route_handlers or []:
@@ -201,7 +202,7 @@ class Router:
         value.owner = self
         return cast("Union[Controller, BaseRouteHandler, Router]", value)
 
-    def register(self, value: ControllerRouterHandler) -> List[BaseRoute]:
+    def register(self, value: ControllerRouterHandler) -> List["BaseRoute"]:
         """
         Register a Controller, Route instance or RouteHandler on the router
 
@@ -209,11 +210,11 @@ class Router:
         by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
         """
         validated_value = self.validate_registration_value(value)
-        routes: List[BaseRoute] = []
+        routes: List["BaseRoute"] = []
         for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route: BaseRoute = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                route: "BaseRoute" = WebSocketRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)

@@ -34,7 +34,7 @@ class Response(StarletteResponse, Generic[T]):
         content: T,
         *,
         status_code: int,
-        media_type: Union[MediaType, OpenAPIMediaType, str],
+        media_type: Union["MediaType", "OpenAPIMediaType", str],
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional[List["Cookie"]] = None,
