@@ -326,3 +326,7 @@
 - refactor: tidy up exceptions
 - refactor: update `to_response` and datastructures
 - refactor: update installation extras
+
+[1.10.1]
+
+- fix: regression in StaticFiles of resolution of index.html in `html_mode=True`
