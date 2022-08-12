@@ -1,6 +1,8 @@
 import re
-from typing import TYPE_CHECKING, List, Optional, Tuple, Type, TypedDict
+from typing import TYPE_CHECKING, List, Optional, Tuple, Type
 from uuid import UUID
+
+from typing_extensions import TypedDict
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
