@@ -164,15 +164,16 @@ app = Starlite(
 )
 ```
 
-You can override the `root` handler to serve other included UIs or your own [template](./15-templating.md):
+The root handler serves Redoc by default via `render_redoc`. You can override the `root` handler to serve other included documentation, such as Swagger UI by returning `render_swagger_ui` or Stoplight Elements with `render_stoplight_elements`. You can also have it serve your own [template](./15-templating.md):
 
 ```python
-from starlite OpenAPIController
+from starlite import OpenAPIController, Request, get
+from starlite.enums import MediaType
 
 
 class MyOpenAPIController(OpenAPIController):
     path = "/"
-    
+
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
     def root(self, request: Request) -> str:
         return self.render_swagger_ui(request)
