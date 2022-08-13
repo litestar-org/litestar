@@ -5,13 +5,18 @@ from copy import copy
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncGenerator,
+    AsyncIterable,
     AsyncIterator,
     Callable,
     Dict,
+    Generator,
     Generic,
+    Iterable,
     Iterator,
     List,
     Optional,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -23,14 +28,19 @@ from pydantic_openapi_schema.v3_1_0 import Header
 from starlette.background import BackgroundTask as StarletteBackgroundTask
 from starlette.background import BackgroundTasks as StarletteBackgroundTasks
 from starlette.datastructures import State as StarletteStateClass
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from typing_extensions import Literal, ParamSpec
 
+from starlite.openapi.enums import OpenAPIType
+
 P = ParamSpec("P")
 
 if TYPE_CHECKING:
+    from pydantic.fields import ModelField
+
     from starlite.app import Starlite
     from starlite.enums import MediaType
     from starlite.response import TemplateResponse
@@ -230,8 +240,17 @@ class Stream(ResponseContainer[StreamingResponse]):
     Container type for returning Stream responses
     """
 
-    iterator: Union[Iterator[Any], AsyncIterator[Any]]
-    """Iterator returning stream chunks"""
+    iterator: Union[
+        Iterator[Union[str, bytes]],
+        Generator[Union[str, bytes], Any, Any],
+        AsyncIterator[Union[str, bytes]],
+        AsyncGenerator[Union[str, bytes], Any],
+        Type[Iterator[Union[str, bytes]]],
+        Type[AsyncIterator[Union[str, bytes]]],
+        Callable[[], AsyncGenerator[Union[str, bytes], Any]],
+        Callable[[], Generator[Union[str, bytes], Any, Any]],
+    ]
+    """Iterator, Generator or async Iterator or Generator returning stream chunks"""
 
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
@@ -248,9 +267,10 @@ class Stream(ResponseContainer[StreamingResponse]):
         Returns:
             A StreamingResponse instance
         """
+
         return StreamingResponse(
             background=self.background,
-            content=self.iterator,
+            content=self.iterator if isinstance(self.iterator, (Iterable, AsyncIterable)) else self.iterator(),
             headers=headers,
             media_type=media_type,
             status_code=status_code,
@@ -320,3 +340,27 @@ class ResponseHeader(Header):
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
+
+
+class UploadFile(StarletteUploadFile):
+    @classmethod
+    def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
+        """
+        Creates a pydantic JSON schema
+
+        Args:
+            field_schema: The schema being generated for the field
+            field: the model class field
+
+        Returns:
+            None
+        """
+        if field:
+            field_schema.update(
+                {
+                    "type": OpenAPIType.OBJECT,
+                    "properties": {
+                        "filename": {"type": OpenAPIType.STRING, "contentMediaType": "application/octet-stream"}
+                    },
+                }
+            )

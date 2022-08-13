@@ -1,6 +1,8 @@
 import re
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple, Type
 from uuid import UUID
+
+from typing_extensions import TypedDict
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
@@ -15,6 +17,12 @@ if TYPE_CHECKING:
 
 param_match_regex = re.compile(r"{(.*?)}")
 param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
+
+
+class PathParameterDefinition(TypedDict):
+    name: str
+    full: str
+    type: Type
 
 
 class BaseRoute:
@@ -65,7 +73,7 @@ class BaseRoute:
                 )
 
     @classmethod
-    def parse_path(cls, path: str) -> Tuple[str, str, List[Dict[str, Any]]]:
+    def parse_path(cls, path: str) -> Tuple[str, str, List[PathParameterDefinition]]:
         """
         Normalizes and parses a path
         """
@@ -77,7 +85,9 @@ class BaseRoute:
         for param in identified_params:
             param_name, param_type = (p.strip() for p in param.split(":"))
             path_format = path_format.replace(param, param_name)
-            path_parameters.append({"name": param_name, "type": param_type_map[param_type], "full": param})
+            path_parameters.append(
+                PathParameterDefinition(name=param_name, type=param_type_map[param_type], full=param)
+            )
         return path, path_format, path_parameters
 
     def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
