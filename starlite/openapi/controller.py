@@ -34,6 +34,11 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         return request.app.openapi_schema
 
+    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
+    def root(self, request: Request) -> str:
+        """Endpoint that serves root content"""
+        return self.render_redoc(request)
+
     @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
     def retrieve_schema_yaml(self, request: Request) -> "OpenAPI":
         """Returns the openapi schema"""
@@ -145,7 +150,7 @@ class OpenAPIController(Controller):
             </html>
         """
 
-    @get(path=["/", "/redoc"], media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
         return self.render_redoc(request)
