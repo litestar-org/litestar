@@ -30,8 +30,7 @@ interface for working with files. Therefore, you need to type your file uploads 
 To access a single file simply type `data` as `UploadFile`:
 
 ```python
-from starlette.datastructures import UploadFile
-from starlite import Body, post, RequestEncodingType
+from starlite import Body, UploadFile, post, RequestEncodingType
 
 
 @post(path="/file-upload")
