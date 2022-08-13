@@ -36,7 +36,11 @@ class OpenAPIController(Controller):
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
     def root(self, request: Request) -> str:
-        """Endpoint that serves root content"""
+        """
+        This route handler serves Redoc API documentation at the root path.
+        Override this handler to serve custom templates or other API documentation, such as
+        `render_swagger_ui`, `render_stoplight_elements`, a template, or your own content.
+        """
         return self.render_redoc(request)
 
     @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
