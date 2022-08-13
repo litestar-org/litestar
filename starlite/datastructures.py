@@ -5,13 +5,18 @@ from copy import copy
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncGenerator,
+    AsyncIterable,
     AsyncIterator,
     Callable,
     Dict,
+    Generator,
     Generic,
+    Iterable,
     Iterator,
     List,
     Optional,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -230,8 +235,17 @@ class Stream(ResponseContainer[StreamingResponse]):
     Container type for returning Stream responses
     """
 
-    iterator: Union[Iterator[Any], AsyncIterator[Any]]
-    """Iterator returning stream chunks"""
+    iterator: Union[
+        Iterator[Union[str, bytes]],
+        Generator[Union[str, bytes], Any, Any],
+        AsyncIterator[Union[str, bytes]],
+        AsyncGenerator[Union[str, bytes], Any],
+        Type[Iterator[Union[str, bytes]]],
+        Type[AsyncIterator[Union[str, bytes]]],
+        Callable[[], AsyncGenerator[Union[str, bytes], Any]],
+        Callable[[], Generator[Union[str, bytes], Any, Any]],
+    ]
+    """Iterator, Generator or async Iterator or Generator returning stream chunks"""
 
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
@@ -248,9 +262,10 @@ class Stream(ResponseContainer[StreamingResponse]):
         Returns:
             A StreamingResponse instance
         """
+
         return StreamingResponse(
             background=self.background,
-            content=self.iterator,
+            content=self.iterator if isinstance(self.iterator, (Iterable, AsyncIterable)) else self.iterator(),
             headers=headers,
             media_type=media_type,
             status_code=status_code,
