@@ -330,3 +330,10 @@
 [1.10.1]
 
 - fix: regression in StaticFiles of resolution of index.html in `html_mode=True`
+
+[1.11.0]
+
+- update: OpenAPIController to use render methods and configurable `root` class var @mobiusxs
+- fix: `UploadFile` OpenAPI schema exception
+- fix: `Stream` handling of generators
+- refactor: http and path param parsing
