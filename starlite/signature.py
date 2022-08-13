@@ -206,7 +206,7 @@ class SignatureModelFactory:
     # names of params always typed `Any`.
     SKIP_VALIDATION_NAMES = {"request", "socket"}
 
-    def __init__(self, fn: "AnyCallable", plugins: List[PluginProtocol], dependency_names: Set[str]) -> None:
+    def __init__(self, fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_names: Set[str]) -> None:
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
         self.signature = Signature.from_callable(fn)

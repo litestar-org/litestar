@@ -27,7 +27,7 @@ from starlite.handlers import (
 )
 from starlite.provide import Provide
 from starlite.response import Response
-from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
     AfterResponseHandler,
@@ -41,6 +41,7 @@ from starlite.utils import find_index, join_paths, normalize_path, unique
 
 if TYPE_CHECKING:
     from starlite.enums import HttpMethod
+    from starlite.routes import BaseRoute
 
 
 class Router:
@@ -126,16 +127,58 @@ class Router:
         self.response_class = response_class
         self.response_cookies = response_cookies
         self.response_headers = response_headers
-        self.routes: List[BaseRoute] = []
+        self.routes: List["BaseRoute"] = []
         self.tags = tags
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 
-    @property
-    def route_handler_method_map(self) -> Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
+    def register(self, value: ControllerRouterHandler) -> List["BaseRoute"]:
         """
-        Returns dictionary that maps paths (keys) to a list of route handler functions (values)
+        Register a Controller, Route instance or RouteHandler on the router
+
+        Accepts a subclass or instance of Controller, an instance of Router or a function/method that has been decorated
+        by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
+        """
+        validated_value = self._validate_registration_value(value)
+        routes: List["BaseRoute"] = []
+        for route_path, handler_or_method_map in self._map_route_handlers(value=validated_value):
+            path = join_paths([self.path, route_path])
+            if isinstance(handler_or_method_map, WebsocketRouteHandler):
+                route: "BaseRoute" = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                self.routes.append(route)
+            elif isinstance(handler_or_method_map, ASGIRouteHandler):
+                route = ASGIRoute(path=path, route_handler=handler_or_method_map)
+                self.routes.append(route)
+            else:
+                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
+                route_handlers = unique(
+                    list(cast("Dict[HttpMethod, HTTPRouteHandler]", handler_or_method_map).values())
+                )
+                if existing_handlers:
+                    route_handlers.extend(unique(existing_handlers))
+                    existing_route_index = find_index(
+                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
+                    )
+                    assert existing_route_index != -1, "unable to find_index existing route index"
+                    route = HTTPRoute(
+                        path=path,
+                        route_handlers=route_handlers,
+                    )
+                    self.routes[existing_route_index] = route
+                else:
+                    route = HTTPRoute(path=path, route_handlers=route_handlers)
+                    self.routes.append(route)
+            routes.append(route)
+        return routes
+
+    @property
+    def route_handler_method_map(
+        self,
+    ) -> Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
+        """
+        Returns:
+             A dictionary mapping paths to route handlers
         """
         route_map: Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]] = {}
         for route in self.routes:
@@ -150,7 +193,7 @@ class Router:
         return route_map
 
     @staticmethod
-    def map_route_handlers(
+    def _map_route_handlers(
         value: Union[Controller, BaseRouteHandler, "Router"],
     ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict["HttpMethod", HTTPRouteHandler]]]:
         """
@@ -179,7 +222,7 @@ class Router:
                         handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
         return handlers_map.items()
 
-    def validate_registration_value(
+    def _validate_registration_value(
         self, value: ControllerRouterHandler
     ) -> Union[Controller, BaseRouteHandler, "Router"]:
         """
@@ -200,42 +243,3 @@ class Router:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
         value.owner = self
         return cast("Union[Controller, BaseRouteHandler, Router]", value)
-
-    def register(self, value: ControllerRouterHandler) -> List[BaseRoute]:
-        """
-        Register a Controller, Route instance or RouteHandler on the router
-
-        Accepts a subclass or instance of Controller, an instance of Router or a function/method that has been decorated
-        by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
-        """
-        validated_value = self.validate_registration_value(value)
-        routes: List[BaseRoute] = []
-        for route_path, handler_or_method_map in self.map_route_handlers(value=validated_value):
-            path = join_paths([self.path, route_path])
-            if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route: BaseRoute = WebSocketRoute(path=path, route_handler=handler_or_method_map)
-                self.routes.append(route)
-            elif isinstance(handler_or_method_map, ASGIRouteHandler):
-                route = ASGIRoute(path=path, route_handler=handler_or_method_map)
-                self.routes.append(route)
-            else:
-                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
-                route_handlers = unique(
-                    list(cast("Dict[HttpMethod, HTTPRouteHandler]", handler_or_method_map).values())
-                )
-                if existing_handlers:
-                    route_handlers.extend(unique(existing_handlers))
-                    existing_route_index = find_index(
-                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
-                    )
-                    assert existing_route_index != -1, "unable to find_index existing route index"
-                    route = HTTPRoute(
-                        path=path,
-                        route_handlers=route_handlers,
-                    )
-                    self.routes[existing_route_index] = route
-                else:
-                    route = HTTPRoute(path=path, route_handlers=route_handlers)
-                    self.routes.append(route)
-            routes.append(route)
-        return routes

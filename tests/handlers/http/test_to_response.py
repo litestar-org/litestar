@@ -1,6 +1,8 @@
+from asyncio import sleep as async_sleep
 from json import loads
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generator
+from time import sleep
+from typing import TYPE_CHECKING, Any, AsyncIterator, Generator, Iterator
 
 import pytest
 from pydantic import ValidationError
@@ -65,6 +67,18 @@ async def slow_numbers(minimum: int, maximum: int) -> Any:
 
 
 generator = slow_numbers(1, 10)
+
+
+async def test_to_response_returning_starlite_response() -> None:
+    @get(path="/test")
+    def test_function() -> Response:
+        return Response(status_code=HTTP_200_OK, media_type=MediaType.TEXT, content="ok")
+
+    with create_test_client(test_function) as client:
+        http_route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route_handler = http_route.route_handlers[0]
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        assert isinstance(response, Response)
 
 
 @pytest.mark.asyncio()
@@ -164,23 +178,72 @@ async def test_to_response_returning_file_response() -> None:
         assert response.background == background_task
 
 
-def my_iterator() -> Generator[int, None, None]:
+def my_generator() -> Generator[int, None, None]:
     count = 0
     while True:
         count += 1
         yield count
 
 
-async def my_async_iterator() -> "AsyncGenerator[int, None]":
+async def my_async_generator() -> "AsyncGenerator[int, None]":
     count = 0
     while True:
         count += 1
         yield count
+
+
+class MySyncIterator:
+    def __init__(self) -> None:
+        self.delay = 0.01
+        self.i = 0
+        self.to = 0.1
+
+    def __iter__(self) -> Iterator[int]:
+        return self
+
+    def __next__(self) -> int:
+        i = self.i
+        if i >= self.to:
+            raise StopAsyncIteration
+        self.i += 1
+        if i:
+            sleep(self.delay)
+        return i
+
+
+class MyAsyncIterator:
+    def __init__(self) -> None:
+        self.delay = 0.01
+        self.i = 0
+        self.to = 0.1
+
+    def __aiter__(self) -> AsyncIterator[int]:
+        return self
+
+    async def __anext__(self) -> int:
+        i = self.i
+        if i >= self.to:
+            raise StopAsyncIteration
+        self.i += 1
+        if i:
+            await async_sleep(self.delay)
+        return i
 
 
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
-    "iterator, should_raise", [[my_iterator(), False], [my_async_iterator(), False], [{"key": 1}, True]]
+    "iterator, should_raise",
+    [
+        [my_generator(), False],
+        [my_async_generator(), False],
+        [MySyncIterator(), False],
+        [MyAsyncIterator(), False],
+        [my_generator, False],
+        [my_async_generator, False],
+        [MyAsyncIterator, False],
+        [MySyncIterator, False],
+        [{"key": 1}, True],
+    ],
 )
 async def test_to_response_streaming_response(iterator: Any, should_raise: bool) -> None:
     if not should_raise:

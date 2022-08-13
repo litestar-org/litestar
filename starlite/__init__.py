@@ -8,6 +8,7 @@ from starlite.datastructures import (
     State,
     Stream,
     Template,
+    UploadFile,
 )
 
 from .app import Starlite
@@ -63,10 +64,11 @@ from .plugins import PluginProtocol
 from .provide import Provide
 from .response import Response
 from .router import Router
-from .routes import BaseRoute, HTTPRoute, WebSocketRoute
+from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from .types import MiddlewareProtocol, Partial
 
 __all__ = [
+    "ASGIRoute",
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
     "AuthenticationResult",
@@ -119,6 +121,7 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
+    "UploadFile",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",

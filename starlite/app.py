@@ -226,12 +226,9 @@ class Starlite(Router):
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
                 if isinstance(route_handler, HTTPRouteHandler):
-                    route_handler.resolve_response_class()
                     route_handler.resolve_before_request()
-                    route_handler.resolve_after_request()
                     route_handler.resolve_after_response()
-                    route_handler.resolve_response_headers()
-                    route_handler.resolve_response_cookies()
+                    route_handler.resolve_response_handler()
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
             elif isinstance(route, WebSocketRoute):
