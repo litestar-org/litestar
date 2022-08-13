@@ -163,3 +163,17 @@ app = Starlite(
     openapi_config=OpenAPIConfig(openapi_controller=MyOpenAPIController),
 )
 ```
+
+You can override the `root` handler to serve other included UIs or your own [template](./15-templating.md):
+
+```python
+from starlite OpenAPIController
+
+
+class MyOpenAPIController(OpenAPIController):
+    path = "/"
+    
+    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
+    def root(self, request: Request) -> str:
+        return self.render_swagger_ui(request)
+```
