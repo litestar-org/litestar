@@ -34,6 +34,15 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         return request.app.openapi_schema
 
+    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
+    def root(self, request: Request) -> str:
+        """
+        This route handler serves Redoc API documentation at the root path.
+        Override this handler to serve custom templates or other API documentation, such as
+        `render_swagger_ui`, `render_stoplight_elements`, a template, or your own content.
+        """
+        return self.render_redoc(request)
+
     @get(path="/openapi.yaml", media_type=OpenAPIMediaType.OPENAPI_YAML, include_in_schema=False)
     def retrieve_schema_yaml(self, request: Request) -> "OpenAPI":
         """Returns the openapi schema"""
@@ -54,6 +63,10 @@ class OpenAPIController(Controller):
     @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False)
     def swagger_ui(self, request: Request) -> str:
         """Endpoint that serves SwaggerUI"""
+        return self.render_swagger_ui(request)
+
+    def render_swagger_ui(self, request: Request) -> str:
+        """Method that renders SwaggerUI from schema"""
         schema = self.schema_from_request(request)
         # Note: Fix for Swagger rejection OpenAPI >=3.1
         # We force the version to be lower to get the default JS bundle to accept it
@@ -108,6 +121,10 @@ class OpenAPIController(Controller):
     @get(path="/elements/", media_type=MediaType.HTML, include_in_schema=False)
     def stoplight_elements(self, request: Request) -> str:
         """Endpoint that serves Stoplight Elements OpenAPI UI"""
+        return self.render_stoplight_elements(request)
+
+    def render_stoplight_elements(self, request: Request) -> str:
+        """Method that renders Stoplight Elements OpenAPI UI from schema"""
         schema = self.schema_from_request(request)
         head = f"""
           <head>
@@ -137,9 +154,13 @@ class OpenAPIController(Controller):
             </html>
         """
 
-    @get(path=["/", "/redoc"], media_type=MediaType.HTML, include_in_schema=False)
+    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> str:  # pragma: no cover
         """Endpoint that serves Redoc"""
+        return self.render_redoc(request)
+
+    def render_redoc(self, request: Request) -> str:  # pragma: no cover
+        """Method that renders Redoc from schema"""
         schema = self.schema_from_request(request)
         if self._dumped_schema == "":
             self._dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
