@@ -2,10 +2,10 @@ from typing import Any, Dict, List, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
-from starlette.datastructures import UploadFile
 from starlette.status import HTTP_201_CREATED
 
 from starlite import Body, RequestEncodingType, post
+from starlite.datastructures import UploadFile
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 from tests.kwargs import Form

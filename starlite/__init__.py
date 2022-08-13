@@ -8,6 +8,7 @@ from starlite.datastructures import (
     State,
     Stream,
     Template,
+    UploadFile,
 )
 
 from .app import Starlite
@@ -120,6 +121,7 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
+    "UploadFile",
     "ValidationException",
     "WebSocket",
     "WebSocketRoute",
