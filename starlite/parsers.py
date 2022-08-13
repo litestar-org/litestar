@@ -5,8 +5,9 @@ from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
-from starlette.datastructures import UploadFile
+from starlette.datastructures import UploadFile as StarletteUploadFile
 
+from starlite.datastructures import UploadFile
 from starlite.enums import RequestEncodingType
 
 if TYPE_CHECKING:
@@ -61,9 +62,13 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", fi
     """
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
-        if not isinstance(value, UploadFile):
+        if not isinstance(value, (UploadFile, StarletteUploadFile)):
             with suppress(JSONDecodeError):
                 value = loads(value)
+        if isinstance(value, StarletteUploadFile) and not isinstance(value, UploadFile):
+            value = UploadFile(
+                filename=value.filename, file=value.file, content_type=value.content_type, headers=value.headers
+            )
         if values_dict.get(key):
             if isinstance(values_dict[key], list):
                 values_dict[key].append(value)
@@ -74,6 +79,6 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", fi
     if media_type == RequestEncodingType.MULTI_PART:
         if field.shape is SHAPE_LIST:
             return list(values_dict.values())
-        if field.shape is SHAPE_SINGLETON and field.type_ is UploadFile and values_dict:
+        if field.shape is SHAPE_SINGLETON and field.type_ in [UploadFile, StarletteUploadFile] and values_dict:
             return list(values_dict.values())[0]
     return values_dict

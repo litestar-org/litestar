@@ -28,14 +28,19 @@ from pydantic_openapi_schema.v3_1_0 import Header
 from starlette.background import BackgroundTask as StarletteBackgroundTask
 from starlette.background import BackgroundTasks as StarletteBackgroundTasks
 from starlette.datastructures import State as StarletteStateClass
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
 from typing_extensions import Literal, ParamSpec
 
+from starlite.openapi.enums import OpenAPIType
+
 P = ParamSpec("P")
 
 if TYPE_CHECKING:
+    from pydantic.fields import ModelField
+
     from starlite.app import Starlite
     from starlite.enums import MediaType
     from starlite.response import TemplateResponse
@@ -335,3 +340,27 @@ class ResponseHeader(Header):
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
+
+
+class UploadFile(StarletteUploadFile):
+    @classmethod
+    def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
+        """
+        Creates a pydantic JSON schema
+
+        Args:
+            field_schema: The schema being generated for the field
+            field: the model class field
+
+        Returns:
+            None
+        """
+        if field:
+            field_schema.update(
+                {
+                    "type": OpenAPIType.OBJECT,
+                    "properties": {
+                        "filename": {"type": OpenAPIType.STRING, "contentMediaType": "application/octet-stream"}
+                    },
+                }
+            )

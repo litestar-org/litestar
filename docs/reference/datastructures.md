@@ -75,3 +75,7 @@
         members:
             - documentation_only
             - value
+
+::: starlite.datastructures.UploadFile
+    options:
+        show_source: false

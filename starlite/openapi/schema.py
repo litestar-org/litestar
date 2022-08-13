@@ -15,6 +15,7 @@ from pydantic import (
 )
 from pydantic.fields import FieldInfo, ModelField, Undefined
 from pydantic_factories import ModelFactory
+from pydantic_factories.exceptions import ParameterError
 from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
 from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
@@ -190,8 +191,12 @@ def create_examples_for_field(field: ModelField) -> List[Example]:
     """
     Use the pydantic-factories package to create an example value for the given schema
     """
-    value = normalize_example_value(ExampleFactory.get_field_value(field))
-    return [Example(description=f"Example {field.name} value", value=value)]
+    try:
+
+        value = normalize_example_value(ExampleFactory.get_field_value(field))
+        return [Example(description=f"Example {field.name} value", value=value)]
+    except ParameterError:
+        return []
 
 
 def create_schema(
