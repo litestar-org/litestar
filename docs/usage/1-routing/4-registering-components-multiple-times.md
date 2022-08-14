@@ -1,6 +1,6 @@
 # Registering Components Multiple Times
 
-You can register both standalone route handler functions and controllers multiple time.
+You can register both standalone route handler functions and controllers multiple times.
 
 ## Registering Controllers Multiple Times
 
@@ -25,7 +25,7 @@ In the above, the same `MyController` class has been registered on three differe
 what is passed to the router is not a class instance but rather the class itself. The router creates its own instance of
 the controller, which ensures encapsulation.
 
-Therefore , in the above example, three different instances of `MyController` will be created, each mounted on a
+Therefore, in the above example, three different instances of `MyController` will be created, each mounted on a
 different sub-path, e.g. `/internal/controller`, `/partner/controller` and `/consumer/controller`.
 
 ## Registering Standalone Route Handlers Multiple Times
