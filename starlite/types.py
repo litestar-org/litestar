@@ -83,7 +83,7 @@ CacheKeyBuilder = Callable[[Request], str]
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp"):  # pragma: no cover
+    def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):  # pragma: no cover
         ...
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover

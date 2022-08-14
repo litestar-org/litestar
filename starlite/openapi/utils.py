@@ -19,9 +19,9 @@ if TYPE_CHECKING:
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
 
 
-def pascal_case_to_text(s: str) -> str:
+def pascal_case_to_text(string: str) -> str:
     """Given a 'PascalCased' string, return its split form- 'Pascal Cased'"""
-    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, s)).strip()
+    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
 
 
 def extract_tags_from_route_handler(route_handler: "HTTPRouteHandler") -> Optional[List[str]]:

@@ -49,8 +49,15 @@ if TYPE_CHECKING:
     from starlite.handlers.websocket import WebsocketRouteHandler
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
-"""OpenAPI config utilised if not explicitly declared to [Starlite][starlite.app.Starlite] instance constructor."""
+"""
+    The default OpenAPI config used if not configuration is explicitly passed
+    to the [Starlite][starlite.app.Starlite] instance constructor.
+"""
 DEFAULT_CACHE_CONFIG = CacheConfig()
+"""
+    The default cache config used if not configuration is explicitly passed
+    to the [Starlite][starlite.app.Starlite] instance constructor.
+"""
 
 
 class Starlite(Router):

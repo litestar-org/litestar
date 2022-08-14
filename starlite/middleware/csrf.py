@@ -85,13 +85,13 @@ class CSRFMiddleware(MiddlewareProtocol):
         if len(token) < CSRF_SECRET_LENGTH + 1:
             return None
 
-        ts = token[:CSRF_SECRET_LENGTH]
+        token_secret = token[:CSRF_SECRET_LENGTH]
         existing_hash = token[CSRF_SECRET_LENGTH:]
-        expected_hash = self._generate_csrf_hash(ts)
+        expected_hash = self._generate_csrf_hash(token_secret)
         if not secrets.compare_digest(existing_hash, expected_hash):
             return None
 
-        return ts
+        return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
         """Takes the CSRF tokens from the request and the cookie and verifies both are valid and identical"""

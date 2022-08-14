@@ -45,11 +45,13 @@ def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
     """
     Parses and normalize a given connection's query parameters into a regular dictionary
     """
-    qs = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
+    query_string = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
 
     return reduce(
         _query_param_reducer,
-        parse_qsl(qs if isinstance(qs, str) else qs.decode("latin-1"), keep_blank_values=True),
+        parse_qsl(
+            query_string if isinstance(query_string, str) else query_string.decode("latin-1"), keep_blank_values=True
+        ),
         {},
     )
 

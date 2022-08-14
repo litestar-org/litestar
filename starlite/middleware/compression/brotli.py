@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Union
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
 
-from starlite.config import BrotliMode
-from starlite.enums import ScopeType
+from starlite.enums import BrotliMode, ScopeType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
@@ -20,16 +19,13 @@ except ImportError as e:
 
 
 class ContentEncoding(str, Enum):
+    """An Enum for supported compression encodings"""
+
     GZIP = "gzip"
     BROTLI = "br"
 
 
 class BrotliMiddleware:
-    """Brotli middleware for Starlite
-
-    Compresses responses using Brotli and optionally fall back to Gzip.
-    """
-
     def __init__(
         self,
         app: "ASGIApp",
@@ -40,6 +36,22 @@ class BrotliMiddleware:
         brotli_lgblock: int = 0,
         brotli_gzip_fallback: bool = True,
     ) -> None:
+        """
+        Brotli middleware for Starlite
+
+        Compresses responses using Brotli and optional fallback to Gzip.
+
+        Args:
+            app: The [Starlite][starlite.app.Starlite] App instance.
+            minimum_size: Minimum size for the response body to affect compression.
+            brotli_quality: Controls the compression-speed vs compression-density tradeoffs.
+                The higher the quality, the slower the compression. The range of this value is 0 to 11.
+            brotli_mode: The encoder mode.
+            brotli_lgwin: The base-2 logarithm of the sliding window size. The range of this value is 10 to 24.
+            brotli_lgblock: The base-2 logarithm of the maximum input block size. The range of this value is 16 to 24.
+                If set to 0, the value will be set based on quality.
+            brotli_gzip_fallback: Allow falling back to GZIP.
+        """
         self.app = app
         self.quality = brotli_quality
         self.mode = _brotli_mode_lookup(brotli_mode)
@@ -70,11 +82,6 @@ class BrotliMiddleware:
 
 
 class BrotliResponder:
-    """Brotli Responder
-
-    Formats a response with Brotli compression.
-    """
-
     def __init__(
         self,
         app: "ASGIApp",
@@ -84,6 +91,21 @@ class BrotliResponder:
         lgwin: int,
         lgblock: int,
     ) -> None:
+        """
+        Brotli Responder
+
+        Formats a response with Brotli compression.
+
+        Args:
+            app: The [Starlite][starlite.app.Starlite] App instance.
+            minimum_size: Minimum size for the response body to affect compression.
+            quality: Controls the compression-speed vs compression-density tradeoffs.
+                The higher the quality, the slower the compression. The range of this value is 0 to 11.
+            mode: The encoder mode.
+            lgwin: The base-2 logarithm of the sliding window size. The range of this value is 10 to 24.
+            lgblock: The base-2 logarithm of the maximum input block size. The range of this value is 16 to 24.
+                If set to 0, the value will be set based on quality.
+        """
         self.app = app
         self.minimum_size = minimum_size
         self.send: "Send" = unattached_send

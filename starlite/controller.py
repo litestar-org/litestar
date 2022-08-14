@@ -112,6 +112,12 @@ class Controller:
     """
 
     def __init__(self, owner: "Router"):
+        """
+        The controller init method should only be called by routers as part of controller registration.
+
+        Args:
+            owner: An instance of 'Router'
+        """
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
@@ -138,7 +144,10 @@ class Controller:
 
     def get_route_handlers(self) -> List["BaseRouteHandler"]:
         """
-        Returns a list of route handlers defined on the controller
+        A getter for the controller's route handlers that sets their owner.
+
+        Returns:
+            A list containing a copy of the route handlers defined on the controller
         """
         route_handlers: List["BaseRouteHandler"] = []
         route_handler_fields = [
