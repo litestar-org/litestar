@@ -62,7 +62,7 @@ from starlite.types import (
     Method,
     Middleware,
 )
-from starlite.utils import is_async_callable
+from starlite.utils import is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
@@ -489,10 +489,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
             after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
-
-            if isclass(self.signature.return_annotation) and issubclass(
-                self.signature.return_annotation, ResponseContainer
-            ):
+            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):
                 handler = _create_response_container_handler(
                     status_code=self.status_code,
                     headers=headers,
@@ -500,11 +497,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     media_type=media_type,
                     after_request=after_request,
                 )
-            elif isclass(self.signature.return_annotation) and issubclass(self.signature.return_annotation, Response):
+            elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
-            elif isclass(self.signature.return_annotation) and issubclass(
-                self.signature.return_annotation, StarletteResponse
-            ):
+            elif is_class_and_subclass(self.signature.return_annotation, StarletteResponse):
                 handler = _create_starlette_response_handler(cookies=cookies, after_request=after_request)
             else:
                 handler = _create_data_handler(
