@@ -294,6 +294,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Aidan-Simard",
+      "name": "Aidan Simard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73361895?v=4",
+      "profile": "http://aidansimard.dev",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
