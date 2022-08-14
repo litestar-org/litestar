@@ -1,5 +1,4 @@
 import sys
-from unittest import skipIf
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +7,7 @@ from orjson import JSONDecodeError
 from starlite.connection import Request
 
 
-@skipIf(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")
+@pytest.mark.skipif(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")  # type: ignore[misc]
 @pytest.mark.asyncio()  # type: ignore[misc]
 async def test_request_empty_body_to_json() -> None:
     with patch.object(Request, "body", return_value=b""):
@@ -17,7 +16,7 @@ async def test_request_empty_body_to_json() -> None:
         assert request_json is None
 
 
-@skipIf(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")
+@pytest.mark.skipif(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")  # type: ignore[misc]
 @pytest.mark.asyncio()  # type: ignore[misc]
 async def test_request_invalid_body_to_json() -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(JSONDecodeError):
@@ -25,7 +24,7 @@ async def test_request_invalid_body_to_json() -> None:
         await request_empty_payload.json()
 
 
-@skipIf(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")
+@pytest.mark.skipif(sys.version_info < (3, 8), "skipping due to python 3.7 async failures")  # type: ignore[misc]
 @pytest.mark.asyncio()  # type: ignore[misc]
 async def test_request_valid_body_to_json() -> None:
     with patch.object(Request, "body", return_value=b'{"test": "valid"}'):
