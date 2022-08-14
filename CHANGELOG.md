@@ -337,3 +337,7 @@
 - fix: `UploadFile` OpenAPI schema exception
 - fix: `Stream` handling of generators
 - refactor: http and path param parsing
+
+[1.11.1]
+
+- hotfix: Exception raised by `issubclass` check
