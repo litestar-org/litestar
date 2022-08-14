@@ -1,7 +1,6 @@
 # pylint: disable=too-many-instance-attributes
-from contextlib import suppress
 from enum import Enum
-from inspect import Signature, isawaitable, isclass
+from inspect import Signature, isawaitable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -62,7 +61,7 @@ from starlite.types import (
     Method,
     Middleware,
 )
-from starlite.utils import is_async_callable
+from starlite.utils import is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
@@ -489,10 +488,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
             after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
-
-            if isclass(self.signature.return_annotation) and issubclass(
-                self.signature.return_annotation, ResponseContainer
-            ):
+            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):
                 handler = _create_response_container_handler(
                     status_code=self.status_code,
                     headers=headers,
@@ -500,11 +496,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     media_type=media_type,
                     after_request=after_request,
                 )
-            elif isclass(self.signature.return_annotation) and issubclass(self.signature.return_annotation, Response):
+            elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
-            elif isclass(self.signature.return_annotation) and issubclass(
-                self.signature.return_annotation, StarletteResponse
-            ):
+            elif is_class_and_subclass(self.signature.return_annotation, StarletteResponse):
                 handler = _create_starlette_response_handler(cookies=cookies, after_request=after_request)
             else:
                 handler = _create_data_handler(
@@ -570,15 +564,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
-        if isclass(return_annotation):
-            with suppress(TypeError):
-                if issubclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
-                    raise ValidationException(
-                        f"Redirect responses should have one of "
-                        f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
-                    )
-                if issubclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
-                    self.media_type = MediaType.TEXT
+        if is_class_and_subclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
+            raise ValidationException(
+                f"Redirect responses should have one of "
+                f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+            )
+        if is_class_and_subclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+            self.media_type = MediaType.TEXT
         if "socket" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
         if "data" in self.signature.parameters and "GET" in self.http_methods:

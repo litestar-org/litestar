@@ -3,7 +3,7 @@ from typing import Callable
 
 import pytest
 
-from starlite.utils.helpers import is_async_callable
+from starlite.utils.predicates import is_async_callable
 
 
 class AsyncCallable:

@@ -1,4 +1,3 @@
-from inspect import isclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -37,7 +36,13 @@ from starlite.types import (
     Guard,
     MiddlewareProtocol,
 )
-from starlite.utils import find_index, join_paths, normalize_path, unique
+from starlite.utils import (
+    find_index,
+    is_class_and_subclass,
+    join_paths,
+    normalize_path,
+    unique,
+)
 
 if TYPE_CHECKING:
     from starlite.enums import HttpMethod
@@ -228,7 +233,7 @@ class Router:
         """
         Validates that the value passed to the register method is supported
         """
-        if isclass(value) and issubclass(cast("Type[Controller]", value), Controller):
+        if is_class_and_subclass(value, Controller):
             return cast("Type[Controller]", value)(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):
             raise ImproperlyConfiguredException(

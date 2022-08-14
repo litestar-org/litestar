@@ -47,7 +47,9 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         Validates the route handler function once it's set by inspecting its return annotations
         """
         super()._validate_handler_function()
-        signature = Signature.from_callable(cast("AnyCallable", self.fn))
+
+        fn = cast("AnyCallable", self.fn)
+        signature = Signature.from_callable(fn)
 
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
@@ -55,7 +57,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
-        if not is_async_callable(self.fn):
+        if not is_async_callable(fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
 

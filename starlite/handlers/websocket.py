@@ -61,7 +61,9 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Validates the route handler function once it's set by inspecting its return annotations
         """
         super()._validate_handler_function()
-        signature = Signature.from_callable(cast("AnyCallable", self.fn))
+
+        fn = cast("AnyCallable", self.fn)
+        signature = Signature.from_callable(fn)
 
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
@@ -71,7 +73,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
         if "data" in signature.parameters:
             raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-        if not is_async_callable(self.fn):
+        if not is_async_callable(fn):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 

@@ -24,6 +24,7 @@ from starlette.responses import Response as StarletteResponse
 from typing_extensions import Literal, Protocol, runtime_checkable
 
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
+from starlite.utils import is_class_and_subclass
 
 try:
     # python 3.9 changed these variable
@@ -96,7 +97,7 @@ class Partial(Generic[T]):
         """
         Modifies a given T subclass of BaseModel to be all optional
         """
-        if not issubclass(item, BaseModel):
+        if not is_class_and_subclass(item, BaseModel):
             raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
         if not cls._models.get(item):
             field_definitions: Dict[str, Tuple[Any, None]] = {}
