@@ -5,9 +5,8 @@ from typing import Any, Callable
 
 
 def is_async_callable(value: Callable) -> bool:
-    """
-    Extends `asyncio.iscoroutinefunction()` to additionally detect async `partial` objects and
-    class instances with `async def __call__()` defined.
+    """Extends `asyncio.iscoroutinefunction()` to additionally detect async
+    `partial` objects and class instances with `async def __call__()` defined.
 
     Args:
         value: Any
@@ -22,8 +21,7 @@ def is_async_callable(value: Callable) -> bool:
 
 
 def is_class_and_subclass(value: Any, t_type: Any) -> bool:
-    """
-    Return `True` if `value` is a `class` and is a subtype of `t_type`.
+    """Return `True` if `value` is a `class` and is a subtype of `t_type`.
 
     See https://github.com/starlite-api/starlite/issues/367
 

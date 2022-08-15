@@ -25,8 +25,10 @@ if TYPE_CHECKING:
 
 
 class Controller:
-    """
-    The Starlite Controller class. Subclass this class to create 'view' like components and utilize OOP.
+    """The Starlite Controller class.
+
+    Subclass this class to create 'view' like components and utilize
+    OOP.
     """
 
     __slots__ = (
@@ -112,6 +114,12 @@ class Controller:
     """
 
     def __init__(self, owner: "Router"):
+        """The controller init method should only be called by routers as part
+        of controller registration.
+
+        Args:
+            owner: An instance of 'Router'
+        """
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
@@ -121,11 +129,13 @@ class Controller:
         self._unbind_lifecycle_hook_functions()
 
     def _unbind_lifecycle_hook_functions(self) -> None:
-        """
-        Functions assigned to class variables will be bound as instance methods on instantiation of the controller.
-        Left unchecked, this results in a `TypeError` when the handlers are called as any function satisfying the type
-        annotation of the lifecycle hook attributes can only receive a single positional argument, but will receive two
-        positional arguments if called as an instance method (`self` and the hook argument)`.
+        """Functions assigned to class variables will be bound as instance
+        methods on instantiation of the controller. Left unchecked, this
+        results in a `TypeError` when the handlers are called as any function
+        satisfying the type annotation of the lifecycle hook attributes can
+        only receive a single positional argument, but will receive two
+        positional arguments if called as an instance method (`self` and the
+        hook argument)`.
 
         Overwrites the bound method with the original function.
         """
@@ -137,8 +147,10 @@ class Controller:
                 setattr(self, hook_key, hook_class_var)
 
     def get_route_handlers(self) -> List["BaseRouteHandler"]:
-        """
-        Returns a list of route handlers defined on the controller
+        """A getter for the controller's route handlers that sets their owner.
+
+        Returns:
+            A list containing a copy of the route handlers defined on the controller
         """
         route_handlers: List["BaseRouteHandler"] = []
         route_handler_fields = [

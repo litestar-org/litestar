@@ -87,8 +87,7 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):
-        """
-        The Starlite Router class.
+        """The Starlite Router class.
 
         A Router instance is used to group controller, routers and route handler functions under a shared path fragment.
 
@@ -139,11 +138,12 @@ class Router:
             self.register(value=route_handler)
 
     def register(self, value: ControllerRouterHandler) -> List["BaseRoute"]:
-        """
-        Register a Controller, Route instance or RouteHandler on the router
+        """Register a Controller, Route instance or RouteHandler on the router.
 
-        Accepts a subclass or instance of Controller, an instance of Router or a function/method that has been decorated
-        by any of the routing decorators (e.g. route, get, post...) exported from 'starlite.routing'
+        Accepts a subclass or instance of Controller, an instance of
+        Router or a function/method that has been decorated by any of
+        the routing decorators (e.g. route, get, post...) exported from
+        'starlite.routing'
         """
         validated_value = self._validate_registration_value(value)
         routes: List["BaseRoute"] = []
@@ -201,9 +201,7 @@ class Router:
     def _map_route_handlers(
         value: Union[Controller, BaseRouteHandler, "Router"],
     ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict["HttpMethod", HTTPRouteHandler]]]:
-        """
-        Maps route handlers to http methods
-        """
+        """Maps route handlers to http methods."""
         handlers_map: Dict[str, Any] = {}
         if isinstance(value, BaseRouteHandler):
             for path in value.paths:
@@ -230,9 +228,8 @@ class Router:
     def _validate_registration_value(
         self, value: ControllerRouterHandler
     ) -> Union[Controller, BaseRouteHandler, "Router"]:
-        """
-        Validates that the value passed to the register method is supported
-        """
+        """Validates that the value passed to the register method is
+        supported."""
         if is_class_and_subclass(value, Controller):
             return cast("Type[Controller]", value)(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):

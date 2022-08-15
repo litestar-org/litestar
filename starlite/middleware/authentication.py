@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Union
 
-from pydantic import BaseModel
+from pydantic import BaseConfig, BaseModel
 from starlette.requests import HTTPConnection
 
 from starlite.enums import MediaType, ScopeType
@@ -17,7 +17,7 @@ class AuthenticationResult(BaseModel):
     user: Any
     auth: Any = None
 
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
 
 
@@ -25,6 +25,13 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
     def __init__(self, app: "ASGIApp"):
+        """This is an abstract AuthenticationMiddleware that allows users to
+        create their own AuthenticationMiddleware by extending it and
+        overriding the 'authenticate_request' method.
+
+        Args:
+            app: "ASGIApp"
+        """
         super().__init__(app)
         self.app = app
 
@@ -46,7 +53,8 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
 
     @staticmethod
     def create_error_response(exc: Union[NotAuthorizedException, PermissionDeniedException]) -> Response:
-        """Creates an Error response from the given exceptions, defaults to a JSON response"""
+        """Creates an Error response from the given exceptions, defaults to a
+        JSON response."""
         return Response(
             media_type=MediaType.JSON,
             content={"detail": exc.detail, "extra": exc.extra},
@@ -55,11 +63,11 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
 
     @abstractmethod
     async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
-        """
-        Given a request, return an instance of AuthenticationResult
+        """Given a request, return an instance of AuthenticationResult
         containing a user and any relevant auth context, e.g. a JWT token.
 
-        If authentication fails, raise an HTTPException, e.g. starlite.exceptions.NotAuthorizedException
-        or starlite.exceptions.PermissionDeniedException
+        If authentication fails, raise an HTTPException, e.g.
+        starlite.exceptions.NotAuthorizedException or
+        starlite.exceptions.PermissionDeniedException
         """
         raise NotImplementedError("authenticate_request must be overridden by subclasses")

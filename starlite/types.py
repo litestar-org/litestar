@@ -83,7 +83,7 @@ CacheKeyBuilder = Callable[[Request], str]
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp"):  # pragma: no cover
+    def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):  # pragma: no cover
         ...
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
@@ -94,9 +94,7 @@ class Partial(Generic[T]):
     _models: Dict[Type[T], Any] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """
-        Modifies a given T subclass of BaseModel to be all optional
-        """
+        """Modifies a given T subclass of BaseModel to be all optional."""
         if not is_class_and_subclass(item, BaseModel):
             raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
         if not cls._models.get(item):
@@ -121,7 +119,7 @@ Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[Middlewar
 
 
 class Empty:
-    """Placeholder"""
+    """Placeholder."""
 
 
 EmptyType = Type[Empty]

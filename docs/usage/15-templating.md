@@ -69,8 +69,8 @@ class TemplateEngineProtocol(Protocol[SomeTemplate]):
         """Builds a template engine."""
         ...
 
-    def get_template(self, name: str) -> SomeTemplate:
-        """Loads the template with name and returns it."""
+    def get_template(self, template_name: str) -> SomeTemplate:
+        """Loads the template with template_name and returns it."""
         ...
 ```
 

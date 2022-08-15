@@ -23,9 +23,11 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     @staticmethod
     def _create_pydantic_model(model_class: Type[Model], **kwargs: Dict[str, Any]) -> "Type[PydanticModel]":
-        """
-        Takes a tortoise model_class instance and convert it to a subclass of the tortoise PydanticModel.
-        It fixes some issues with the result of the tortoise model creator.
+        """Takes a tortoise model_class instance and convert it to a subclass
+        of the tortoise PydanticModel.
+
+        It fixes some issues with the result of the tortoise model
+        creator.
         """
         pydantic_model = cast("Type[PydanticModel]", pydantic_model_creator(model_class, **kwargs))
         for (
@@ -48,8 +50,8 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         return pydantic_model
 
     def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[PydanticModel]:
-        """
-        Given a tortoise model_class instance, convert it to a subclass of the tortoise PydanticModel
+        """Given a tortoise model_class instance, convert it to a subclass of
+        the tortoise PydanticModel.
 
         Since incoming request body's cannot and should not include values for
         related fields, pk fields and read only fields in tortoise-orm, we generate two different kinds of pydantic models here:
@@ -79,30 +81,27 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
-        """
-        Given a value of indeterminate type, determine if this value is supported by the plugin.
-        """
+        """Given a value of indeterminate type, determine if this value is
+        supported by the plugin."""
         return isinstance(value, (Model, ModelMeta))
 
     def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
-        """
-        Given an instance of a pydantic model created using the plugin's 'to_pydantic_model_class',
-        return an instance of the class from which that pydantic model has been created.
+        """Given an instance of a pydantic model created using the plugin's
+        'to_pydantic_model_class', return an instance of the class from which
+        that pydantic model has been created.
 
         This class is passed in as the 'model_class' kwarg.
         """
         return model_class().update_from_dict(pydantic_model_instance.dict())
 
     async def to_dict(self, model_instance: Model) -> Dict[str, Any]:  # pylint: disable=invalid-overridden-method
-        """
-        Given an instance of a model supported by the plugin, return a dictionary of serializable values.
-        """
+        """Given an instance of a model supported by the plugin, return a
+        dictionary of serializable values."""
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
         return cast("Dict[str, Any]", data.dict())
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
-        """
-        Given a class supported by this plugin and a dict of values, create an instance of the class
-        """
+        """Given a class supported by this plugin and a dict of values, create
+        an instance of the class."""
         return model_class().update_from_dict(**kwargs)

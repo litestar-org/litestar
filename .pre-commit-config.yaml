@@ -14,6 +14,11 @@ repos:
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.1
+    hooks:
+      - id: pycln
+        args: [--config=pyproject.toml]
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
@@ -46,11 +51,11 @@ repos:
     hooks:
       - id: markdownlint
         args: [--disable=MD013, --disable=MD033, --disable=MD050]
-  - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.1
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.5.0-rc1
     hooks:
-      - id: pycln
-        args: [--config=pyproject.toml]
+      - id: docformatter
+        args: [--in-place]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:

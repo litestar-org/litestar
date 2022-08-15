@@ -50,12 +50,13 @@ class SignatureModel(BaseModel):
     def parse_values_from_connection_kwargs(
         cls, connection: Union[Request, WebSocket], **kwargs: Any
     ) -> Dict[str, Any]:
-        """
-        Given a dictionary of values extracted from the connection, create an instance of the given
-        SignatureModel subclass and return the parsed values.
+        """Given a dictionary of values extracted from the connection, create
+        an instance of the given SignatureModel subclass and return the parsed
+        values.
 
-        This is not equivalent to calling the '.dict'  method of the pydantic model,
-        because it doesn't convert nested values into dictionary, just extracts the data from the signature model
+        This is not equivalent to calling the '.dict'  method of the
+        pydantic model, because it doesn't convert nested values into
+        dictionary, just extracts the data from the signature model
         """
         try:
             signature = cls(**kwargs)
@@ -64,9 +65,8 @@ class SignatureModel(BaseModel):
             raise cls.construct_exception(connection, exc) from exc
 
     def resolve_field_value(self, key: str) -> Any:
-        """
-        Given a field key, return value using plugin mapping, if available.
-        """
+        """Given a field key, return value using plugin mapping, if
+        available."""
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
         return mapping.get_model_instance_for_value(value) if mapping else value
@@ -75,8 +75,8 @@ class SignatureModel(BaseModel):
     def construct_exception(
         cls, connection: Union[Request, WebSocket], exc: ValidationError
     ) -> Union[InternalServerException, ValidationException]:
-        """
-        Distinguish between validation errors that arise from parameters and dependencies.
+        """Distinguish between validation errors that arise from parameters and
+        dependencies.
 
         If both parameter and dependency values are invalid, we raise the client error first.
 
@@ -107,19 +107,19 @@ class SignatureModel(BaseModel):
 
     @classmethod
     def is_server_error(cls, error: "ErrorDict") -> bool:
-        """Check whether given validation error is a server error"""
+        """Check whether given validation error is a server error."""
         return error["loc"][-1] in cls.dependency_name_set
 
     @staticmethod
     def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, "URL"]:
-        """Extract method and URL from Request or WebSocket"""
+        """Extract method and URL from Request or WebSocket."""
         method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
         return method, connection.url
 
 
 class SignatureParameter:
-    """
-    Represents the parameters of a callable for purpose of signature model generation.
+    """Represents the parameters of a callable for purpose of signature model
+    generation.
 
     Parameters
     ----------
@@ -155,8 +155,7 @@ class SignatureParameter:
 
     @property
     def default_defined(self) -> bool:
-        """
-        `True` if `self.default` is not one of the undefined sentinel types.
+        """`True` if `self.default` is not one of the undefined sentinel types.
 
         Returns
         -------
@@ -166,8 +165,8 @@ class SignatureParameter:
 
 
 class SignatureModelFactory:
-    """
-    Utility class for constructing the signature model and grouping associated state.
+    """Utility class for constructing the signature model and grouping
+    associated state.
 
     Instance available at `SignatureModel.factory`.
 
@@ -218,10 +217,10 @@ class SignatureModelFactory:
         self.dependency_name_set = dependency_names
 
     def check_for_unprovided_dependency(self, parameter: SignatureParameter) -> None:
-        """
-        Where a dependency has been explicitly marked using the `Dependency` function, it is a
-        configuration error if that dependency has been defined without a default value, and it
-        hasn't been provided to the handler.
+        """Where a dependency has been explicitly marked using the `Dependency`
+        function, it is a configuration error if that dependency has been
+        defined without a default value, and it hasn't been provided to the
+        handler.
 
         Parameters
         ----------
@@ -245,9 +244,8 @@ class SignatureModelFactory:
             )
 
     def collect_dependency_names(self, parameter: SignatureParameter) -> None:
-        """
-        Add parameter name of dependencies declared using `Dependency()` function to the set of all
-        dependency names.
+        """Add parameter name of dependencies declared using `Dependency()`
+        function to the set of all dependency names.
 
         Parameters
         ----------
@@ -257,8 +255,8 @@ class SignatureModelFactory:
             self.dependency_name_set.add(parameter.name)
 
     def set_field_default(self, parameter: SignatureParameter) -> None:
-        """
-        If `parameter` has defined default, map it to the parameter name in `self.defaults`.
+        """If `parameter` has defined default, map it to the parameter name in
+        `self.defaults`.
 
         Parameters
         ----------
@@ -268,8 +266,8 @@ class SignatureModelFactory:
             self.defaults[parameter.name] = parameter.default
 
     def get_type_annotation_from_plugin(self, parameter: SignatureParameter, plugin: PluginProtocol) -> Any:
-        """
-        Use plugin declared for parameter annotation type to generate a pydantic model.
+        """Use plugin declared for parameter annotation type to generate a
+        pydantic model.
 
         Parameters
         ----------
@@ -290,8 +288,8 @@ class SignatureModelFactory:
 
     @staticmethod
     def create_field_definition_from_parameter(parameter: SignatureParameter) -> Tuple[Any, Any]:
-        """
-        Construct an `(<annotation>, <default>)` tuple, appropriate for `pydantic.create_model()`.
+        """Construct an `(<annotation>, <default>)` tuple, appropriate for
+        `pydantic.create_model()`.
 
         Parameters
         ----------
@@ -311,9 +309,9 @@ class SignatureModelFactory:
 
     @property
     def signature_parameters(self) -> Generator[SignatureParameter, None, None]:
-        """
-        Iterable of `SignatureModel` instances, that represent the parameters of the function
-        signature that should be included in the `SignatureModel` type.
+        """Iterable of `SignatureModel` instances, that represent the
+        parameters of the function signature that should be included in the
+        `SignatureModel` type.
 
         Returns
         -------
@@ -325,8 +323,8 @@ class SignatureModelFactory:
             yield SignatureParameter(self.fn_name, name, parameter)
 
     def create_signature_model(self) -> Type[SignatureModel]:
-        """
-        Constructs a `SignatureModel` type that represents the signature of `self.fn`
+        """Constructs a `SignatureModel` type that represents the signature of
+        `self.fn`
 
         Returns
         -------
@@ -360,9 +358,8 @@ class SignatureModelFactory:
 
 
 def get_signature_model(value: Any) -> Type[SignatureModel]:
-    """
-    Helper function to retrieve and validate the signature model from a provider or handler
-    """
+    """Helper function to retrieve and validate the signature model from a
+    provider or handler."""
     try:
         return cast("Type[SignatureModel]", getattr(value, "signature_model"))
     except AttributeError as e:  # pragma: no cover

@@ -9,17 +9,15 @@ if TYPE_CHECKING:
 
 
 class SimpleCacheBackend(CacheBackendProtocol):
-    """
-    This class offers a cache backend that stores values in a dict.
+    """This class offers a cache backend that stores values in a dict.
 
-    In a production system you probably should use Redis or MemCached instead.
+    In a production system you probably should use Redis or MemCached
+    instead.
     """
 
     @dataclass()
     class CacheObject:
-        """
-        A container class
-        """
+        """A container class."""
 
         value: Any
         expiration: datetime
@@ -28,9 +26,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
         self._store: Dict[str, Any] = {}
 
     def get(self, key: str) -> Any:
-        """
-        Retrieve a value for a given key
-        """
+        """Retrieve a value for a given key."""
         cache_obj = cast("Optional[SimpleCacheBackend.CacheObject]", self._store.get(key))
         if cache_obj:
             if cache_obj.expiration >= datetime.now():
@@ -39,15 +35,11 @@ class SimpleCacheBackend(CacheBackendProtocol):
         return None
 
     def set(self, key: str, value: Any, expiration: int) -> None:
-        """
-        Set a value for a given key
-        """
+        """Set a value for a given key."""
         self._store[key] = SimpleCacheBackend.CacheObject(
             value=value, expiration=datetime.now() + timedelta(seconds=expiration)
         )
 
     def delete(self, key: str) -> None:
-        """
-        Remove a value for a given key
-        """
+        """Remove a value for a given key."""
         self._store.pop(key, None)

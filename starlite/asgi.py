@@ -21,9 +21,8 @@ if TYPE_CHECKING:
 
 
 class StarliteASGIRouter(StarletteRouter):
-    """
-    This class extends the Starlette Router class and *is* the ASGI app used in Starlite
-    """
+    """This class extends the Starlette Router class and *is* the ASGI app used
+    in Starlite."""
 
     def __init__(
         self,
@@ -35,8 +34,8 @@ class StarliteASGIRouter(StarletteRouter):
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
     def _traverse_route_map(self, path: str, scope: "Scope") -> Tuple[Dict[str, Any], List[str]]:
-        """
-        Traverses the application route mapping and retrieves the correct node for the request url.
+        """Traverses the application route mapping and retrieves the correct
+        node for the request url.
 
         Raises NotFoundException if no correlating node is found
         """
@@ -60,8 +59,8 @@ class StarliteASGIRouter(StarletteRouter):
 
     @staticmethod
     def _handle_static_path(scope: "Scope", node: Dict[str, Any]) -> None:
-        """
-        Normalize the static path and update scope so file resolution will work as expected.
+        """Normalize the static path and update scope so file resolution will
+        work as expected.
 
         Args:
             scope: Request Scope
@@ -69,7 +68,6 @@ class StarliteASGIRouter(StarletteRouter):
 
         Returns:
             None
-
         """
         static_path = cast("str", node["_static_path"])
         if static_path != "/" and scope["path"].startswith(static_path):
@@ -80,8 +78,7 @@ class StarliteASGIRouter(StarletteRouter):
     def _parse_path_parameters(
         path_parameter_definitions: List["PathParameterDefinition"], request_path_parameter_values: List[str]
     ) -> Dict[str, Any]:
-        """
-        Parses path parameters into their expected types
+        """Parses path parameters into their expected types.
 
         Args:
             path_parameter_definitions: A list of [PathParameterDefinition][starlite.route.base.PathParameterDefinition] instances
@@ -108,9 +105,8 @@ class StarliteASGIRouter(StarletteRouter):
             ) from e
 
     def _parse_scope_to_route(self, scope: "Scope") -> Tuple[Dict[str, "ASGIApp"], bool]:
-        """
-        Given a scope object, retrieve the _asgi_handlers and _is_asgi values from correct trie node.
-        """
+        """Given a scope object, retrieve the _asgi_handlers and _is_asgi
+        values from correct trie node."""
 
         path = cast("str", scope["path"]).strip()
         if path != "/" and path.endswith("/"):
@@ -135,9 +131,7 @@ class StarliteASGIRouter(StarletteRouter):
 
     @staticmethod
     def _resolve_asgi_app(scope: "Scope", asgi_handlers: Dict[str, "ASGIApp"], is_asgi: bool) -> "ASGIApp":
-        """
-        Given a scope, retrieves the correct ASGI App for the route
-        """
+        """Given a scope, retrieves the correct ASGI App for the route."""
         if is_asgi:
             return asgi_handlers[ScopeType.ASGI]
         if scope["type"] == ScopeType.HTTP:
@@ -147,9 +141,7 @@ class StarliteASGIRouter(StarletteRouter):
         return asgi_handlers[ScopeType.WEBSOCKET]
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        The main entry point to the Router class.
-        """
+        """The main entry point to the Router class."""
         try:
             asgi_handlers, is_asgi = self._parse_scope_to_route(scope=scope)
             asgi_handler = self._resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
@@ -158,9 +150,9 @@ class StarliteASGIRouter(StarletteRouter):
         await asgi_handler(scope, receive, send)
 
     async def _call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
-        """
-        Determines whether the lifecycle handler expects an argument, and if so passes the `app.state` to it.
-        If the handler is an async function, it awaits the return.
+        """Determines whether the lifecycle handler expects an argument, and if
+        so passes the `app.state` to it. If the handler is an async function,
+        it awaits the return.
 
         Args:
             handler (LifeCycleHandler): sync or async callable that may or may not have an argument.
@@ -174,15 +166,11 @@ class StarliteASGIRouter(StarletteRouter):
             await value
 
     async def startup(self) -> None:
-        """
-        Run any `.on_startup` event handlers.
-        """
+        """Run any `.on_startup` event handlers."""
         for handler in self.on_startup:
             await self._call_lifecycle_handler(handler)
 
     async def shutdown(self) -> None:
-        """
-        Run any `.on_shutdown` event handlers.
-        """
+        """Run any `.on_shutdown` event handlers."""
         for handler in self.on_shutdown:
             await self._call_lifecycle_handler(handler)

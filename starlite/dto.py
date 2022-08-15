@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 
 def get_field_type(model_field: ModelField) -> Any:
-    """Given a model field instance, return the correct type"""
+    """Given a model field instance, return the correct type."""
     outer_type = model_field.outer_type_
     inner_type = model_field.type_
     if "ForwardRef" not in repr(outer_type):
@@ -60,9 +60,8 @@ class DTO(GenericModel, Generic[T]):
 
     @classmethod
     def from_model_instance(cls, model_instance: T) -> "DTO[T]":
-        """
-        Given an instance of the source model, create an instance of the given DTO subclass
-        """
+        """Given an instance of the source model, create an instance of the
+        given DTO subclass."""
         if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
             result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
             if isawaitable(result):
@@ -79,9 +78,8 @@ class DTO(GenericModel, Generic[T]):
 
     @classmethod
     async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
-        """
-        Given an instance of the source model, create an instance of the given DTO subclass asynchronously
-        """
+        """Given an instance of the source model, create an instance of the
+        given DTO subclass asynchronously."""
         if (
             cls.dto_source_plugin is not None
             and cls.dto_source_plugin.is_plugin_supported_type(model_instance)
@@ -94,9 +92,8 @@ class DTO(GenericModel, Generic[T]):
         return cls.from_model_instance(model_instance=model_instance)
 
     def to_model_instance(self) -> T:
-        """
-        Convert the DTO instance into an instance of the original class from which the DTO was created
-        """
+        """Convert the DTO instance into an instance of the original class from
+        which the DTO was created."""
         values = self.dict()
         for dto_key, original_key in self.dto_field_mapping.items():
             value = values.pop(dto_key)
@@ -188,10 +185,8 @@ class DTOFactory:
         return dto
 
     def _get_fields_from_source(self, source: Type[T]) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
-        """
-        Converts a `BaseModel` subclass, `dataclass` or any other type that has a plugin registered into a mapping of
-        `str` to `ModelField`.
-        """
+        """Converts a `BaseModel` subclass, `dataclass` or any other type that
+        has a plugin registered into a mapping of `str` to `ModelField`."""
         plugin: Optional[PluginProtocol] = None
         if issubclass(source, BaseModel):
             source.update_forward_refs()
@@ -215,9 +210,8 @@ class DTOFactory:
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]],
         fields: Dict[str, ModelField],
     ) -> Dict[str, Tuple[Any, Any]]:
-        """
-        Populates `field_definitions`, ignoring fields in `exclude`, and remapping fields in `field_mapping`.
-        """
+        """Populates `field_definitions`, ignoring fields in `exclude`, and
+        remapping fields in `field_mapping`."""
         for field_name, model_field in fields.items():
             if field_name in exclude:
                 continue
@@ -245,9 +239,8 @@ class DTOFactory:
     def _remap_field(
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]], field_name: str, field_type: Any
     ) -> Tuple[str, Any]:
-        """
-        Returns tuple of field name and field type remapped according to entry in `field_mapping`.
-        """
+        """Returns tuple of field name and field type remapped according to
+        entry in `field_mapping`."""
         mapping = field_mapping[field_name]
         if isinstance(mapping, tuple):
             field_name, field_type = mapping

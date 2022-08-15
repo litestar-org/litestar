@@ -8,8 +8,8 @@ from starlite.logging.standard import resolve_handlers
 
 class QueueListenerHandler(QueueHandler):  # type: ignore
     def __init__(self, handlers: List[Any], respect_handler_level: bool = False, queue: Queue = Queue(-1)):
-        """
-        Configures queue listener and handler to support non-blocking logging configuration.
+        """Configures queue listener and handler to support non-blocking
+        logging configuration.
 
         Requires `picologging`, install with:
         ```shell

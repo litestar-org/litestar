@@ -25,10 +25,7 @@ def test_partial() -> None:
 
 
 def test_partial_superclass() -> None:
-    """
-    Test that Partial returns the correct annotations
-    for nested models.
-    """
+    """Test that Partial returns the correct annotations for nested models."""
 
     class Parent(BaseModel):
         foo: int
@@ -48,10 +45,8 @@ def test_partial_superclass() -> None:
 
 
 def test_partial_basemodel() -> None:
-    """
-    Test that Partial returns no annotations for classes
-    that don't inherit from BaseModel.
-    """
+    """Test that Partial returns no annotations for classes that don't inherit
+    from BaseModel."""
 
     class Foo:
         bar: int

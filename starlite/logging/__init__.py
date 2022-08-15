@@ -8,8 +8,7 @@ from starlite.logging.standard import QueueListenerHandler
 
 
 class LoggingConfig(BaseModel):
-    """
-    Convenience `pydantic` model for configuring logging.
+    """Convenience `pydantic` model for configuring logging.
 
     For detailed instructions consult [standard library docs](https://docs.python.org/3/library/logging.config.html).
     """

@@ -15,8 +15,7 @@ from starlette.status import (
 
 class StarLiteException(Exception):
     def __init__(self, *args: Any, detail: str = ""):
-        """
-        Base `starlite` exception.
+        """Base `starlite` exception.
 
         Args:
             *args (Any): args are cast to `str` before passing to `Exception.__init__()`
@@ -49,8 +48,7 @@ class HTTPException(StarletteHTTPException, StarLiteException):
         status_code: Optional[int] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ):
-        """
-        Base exception for HTTP error responses.
+        """Base exception for HTTP error responses.
 
         These exceptions carry information to construct an HTTP response.
 
@@ -82,7 +80,8 @@ class ValidationException(HTTPException, ValueError):
 
 
 class NotAuthorizedException(HTTPException):
-    """Request lacks valid authentication credentials for the requested resource."""
+    """Request lacks valid authentication credentials for the requested
+    resource."""
 
     status_code = HTTP_401_UNAUTHORIZED
 
@@ -94,19 +93,21 @@ class PermissionDeniedException(HTTPException):
 
 
 class NotFoundException(HTTPException, ValueError):
-    """Cannot find the requested resource"""
+    """Cannot find the requested resource."""
 
     status_code = HTTP_404_NOT_FOUND
 
 
 class MethodNotAllowedException(HTTPException):
-    """Server knows the request method, but the target resource doesn't support this method."""
+    """Server knows the request method, but the target resource doesn't support
+    this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
 
 
 class InternalServerException(HTTPException):
-    """Server encountered an unexpected condition that prevented it from fulfilling the request."""
+    """Server encountered an unexpected condition that prevented it from
+    fulfilling the request."""
 
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -117,14 +118,12 @@ class ServiceUnavailableException(HTTPException):
     status_code = HTTP_503_SERVICE_UNAVAILABLE
 
 
-class TemplateNotFound(InternalServerException):
+class TemplateNotFoundException(InternalServerException):
     def __init__(self, *args: Any, template_name: str):
-        """
-        Referenced template could not be found.
+        """Referenced template could not be found.
 
         Args:
             *args (Any): Passed through to `super().__init__()` - should not include `detail`.
             template_name (str): Name of template that could not be found.
-
         """
         super().__init__(*args, detail=f"Template {template_name} not found.")

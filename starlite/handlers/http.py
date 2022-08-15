@@ -72,10 +72,8 @@ if TYPE_CHECKING:
 
 
 def _normalize_cookies(local_cookies: List["Cookie"], layered_cookies: List["Cookie"]) -> List[Dict[str, Any]]:
-    """
-    Given two lists of cookies, ensures the uniqueness of cookies by key
-    and returns a normalized dict ready to be set on the response.
-    """
+    """Given two lists of cookies, ensures the uniqueness of cookies by key and
+    returns a normalized dict ready to be set on the response."""
     filtered_cookies = [*local_cookies]
     for cookie in layered_cookies:
         if not any(cookie.key == c.key for c in filtered_cookies):
@@ -88,22 +86,21 @@ def _normalize_cookies(local_cookies: List["Cookie"], layered_cookies: List["Coo
 
 
 def _normalize_headers(headers: Dict[str, "ResponseHeader"]) -> Dict[str, Any]:
-    """
-    Given a dictionary of ResponseHeader, filters them and returns a dictionary of values
+    """Given a dictionary of ResponseHeader, filters them and returns a
+    dictionary of values.
 
     Args:
         headers: A dictionary of [ResponseHeader][starlite.datastructures.ResponseHeader] values
 
     Returns:
         A string keyed dictionary of normalized values
-
     """
     return {k: v.value for k, v in headers.items() if not v.documentation_only}
 
 
 async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -> Any:
-    """
-    Normalizes the response's data by awaiting any async values and resolving and plugins
+    """Normalizes the response's data by awaiting any async values and
+    resolving and plugins.
 
     Args:
         data: An arbitrary value
@@ -139,9 +136,7 @@ def _create_response_container_handler(
     media_type: str,
     status_code: int,
 ) -> "AsyncAnyCallable":
-    """
-    Creates a handler function for ResponseContainers
-    """
+    """Creates a handler function for ResponseContainers."""
 
     async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Dict[str, Any]) -> StarletteResponse:
         normalized_headers = {**_normalize_headers(headers), **data.headers}
@@ -157,9 +152,7 @@ def _create_response_container_handler(
 def _create_response_handler(
     after_request: Optional["AfterRequestHandler"], cookies: List["Cookie"]
 ) -> "AsyncAnyCallable":
-    """
-    Creates a handler function for Starlite Responses
-    """
+    """Creates a handler function for Starlite Responses."""
 
     async def handler(data: Response, **kwargs: Dict[str, Any]) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
@@ -173,9 +166,7 @@ def _create_response_handler(
 def _create_starlette_response_handler(
     after_request: Optional["AfterRequestHandler"], cookies: List["Cookie"]
 ) -> "AsyncAnyCallable":
-    """
-    Creates a handler function for Starlette Responses
-    """
+    """Creates a handler function for Starlette Responses."""
 
     async def handler(data: StarletteResponse, **kwargs: Dict[str, Any]) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(cookies, [])
@@ -195,9 +186,7 @@ def _create_data_handler(
     response_class: Type[Response],
     status_code: int,
 ) -> "AsyncAnyCallable":
-    """
-    Creates a handler function for arbitrary data
-    """
+    """Creates a handler function for arbitrary data."""
 
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Dict[str, Any]) -> StarletteResponse:
         data = await _normalize_response_data(data=data, plugins=plugins)
@@ -284,8 +273,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        HTTP Route Decorator. Use this decorator to decorate an HTTP handler with multiple methods.
+        """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
+        with multiple methods.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -392,16 +381,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._resolved_response_handler: Union["Callable[[Any], Awaitable[StarletteResponse]]", EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
-        """
-        Replaces a function with itself
-        """
+        """Replaces a function with itself."""
         self.fn = fn
         self._validate_handler_function()
         return self
 
     def resolve_response_class(self) -> Type["Response"]:
-        """
-        Returns the closest custom Response class in the owner graph or the default Response class.
+        """Returns the closest custom Response class in the owner graph or the
+        default Response class.
 
         This method is memoized so the computation occurs only once.
 
@@ -415,8 +402,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return response_class
 
     def resolve_response_headers(self) -> Dict[str, "ResponseHeader"]:
-        """
-        Returns all header parameters in the scope of the handler function
+        """Returns all header parameters in the scope of the handler function.
 
         Returns:
             A dictionary mapping keys to [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
@@ -427,8 +413,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> List["Cookie"]:
-        """
-        Returns a list of Cookie instances. Filters the list to ensure each cookie key is unique.
+        """Returns a list of Cookie instances. Filters the list to ensure each
+        cookie key is unique.
 
         Returns:
             A list of [Cookie][starlite.datastructures.Cookie] instances.
@@ -444,8 +430,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return filtered_cookies
 
     def resolve_before_request(self) -> Optional["BeforeRequestHook"]:
-        """
-        Resolves the before_handler handler by starting from the route handler and moving up.
+        """Resolves the before_handler handler by starting from the route
+        handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -458,8 +444,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return cast("Optional[BeforeRequestHook]", self._resolved_before_request)
 
     def resolve_after_response(self) -> Optional["AfterResponseHook"]:
-        """
-        Resolves the after_response handler by starting from the route handler and moving up.
+        """Resolves the after_response handler by starting from the route
+        handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -474,8 +460,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     def resolve_response_handler(
         self,
     ) -> Callable[[Any], Awaitable[StarletteResponse]]:
-        """
-        Resolves the response_handler function for the route handler.
+        """Resolves the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
 
@@ -547,9 +532,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it is set by inspecting its return annotations
-        """
+        """Validates the route handler function once it is set by inspecting
+        its return annotations."""
         super()._validate_handler_function()
         return_annotation = self.signature.return_annotation
         if return_annotation is Signature.empty:
@@ -615,8 +599,8 @@ class get(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        GET Route Decorator. Use this decorator to decorate an HTTP handler for GET requests.
+        """GET Route Decorator. Use this decorator to decorate an HTTP handler
+        for GET requests.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -735,8 +719,8 @@ class post(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        POST Route Decorator. Use this decorator to decorate an HTTP handler for POST requests.
+        """POST Route Decorator. Use this decorator to decorate an HTTP handler
+        for POST requests.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -855,8 +839,8 @@ class put(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        PUT Route Decorator. Use this decorator to decorate an HTTP handler for PUT requests.
+        """PUT Route Decorator. Use this decorator to decorate an HTTP handler
+        for PUT requests.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -975,8 +959,8 @@ class patch(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        PATCH Route Decorator. Use this decorator to decorate an HTTP handler for PATCH requests.
+        """PATCH Route Decorator. Use this decorator to decorate an HTTP
+        handler for PATCH requests.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -1095,8 +1079,8 @@ class delete(HTTPRouteHandler):
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        DELETE Route Decorator. Use this decorator to decorate an HTTP handler for DELETE requests.
+        """DELETE Route Decorator. Use this decorator to decorate an HTTP
+        handler for DELETE requests.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.

@@ -19,13 +19,13 @@ if TYPE_CHECKING:
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
 
 
-def pascal_case_to_text(s: str) -> str:
-    """Given a 'PascalCased' string, return its split form- 'Pascal Cased'"""
-    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, s)).strip()
+def pascal_case_to_text(string: str) -> str:
+    """Given a 'PascalCased' string, return its split form- 'Pascal Cased'."""
+    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
 
 
 def extract_tags_from_route_handler(route_handler: "HTTPRouteHandler") -> Optional[List[str]]:
-    """Extracts and combines tags from route_handler and any owners"""
+    """Extracts and combines tags from route_handler and any owners."""
     child_tags = route_handler.tags or []
     parent_tags: List[str] = []
     obj: "Union[HTTPRouteHandler, Controller, Router, Starlite]"
@@ -39,10 +39,10 @@ def extract_tags_from_route_handler(route_handler: "HTTPRouteHandler") -> Option
 
 
 def get_openapi_type_for_complex_type(field: "ModelField") -> "OpenAPIType":
-    """
-    We are dealing with complex types in this case.
+    """We are dealing with complex types in this case.
 
-    The problem here is that the Python typing system is too crude to define OpenAPI objects properly.
+    The problem here is that the Python typing system is too crude to
+    define OpenAPI objects properly.
     """
     try:
         return PYDANTIC_FIELD_SHAPE_MAP[field.shape]

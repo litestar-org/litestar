@@ -42,33 +42,26 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
-        """
-        This plugin supports only SQLAlchemy declarative models
-        """
+        """This plugin supports only SQLAlchemy declarative models."""
         return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
 
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
-        """
-        Handles the SQLAlchemy String types, including Blob and Binary types
-        """
+        """Handles the SQLAlchemy String types, including Blob and Binary
+        types."""
         if column_type.length is not None:
             return constr(max_length=column_type.length)
         return str
 
     @staticmethod
     def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> "Type":
-        """
-        Handles the SQLAlchemy non-int Numeric types
-        """
+        """Handles the SQLAlchemy non-int Numeric types."""
         if column_type.asdecimal:
             return Decimal
         return float
 
     def handle_list_type(self, column_type: sqlalchemy_type.ARRAY) -> Any:
-        """
-        Handles the SQLAlchemy Array type
-        """
+        """Handles the SQLAlchemy Array type."""
         list_type: Any = self.get_pydantic_type(column_type=column_type.item_type)
 
         dimensions = column_type.dimensions or 1
@@ -78,25 +71,21 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return list_type
 
     def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:
-        """
-        Handles the SQLAlchemy Tuple type
-        """
+        """Handles the SQLAlchemy Tuple type."""
         types = [self.get_pydantic_type(column_type=t) for t in column_type.types]
         return Tuple[tuple(types)]
 
     @staticmethod
     def handle_enum(column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
-        """
-        Handles the SQLAlchemy Enum types
-        """
+        """Handles the SQLAlchemy Enum types."""
         return column_type.enum_class
 
     @property
     def providers_map(self) -> Dict["Type[TypeEngine]", Callable[[Union[TypeEngine, "Type[TypeEngine]"]], Any]]:
-        """
-        A map of SQLAlchemy column types to provider functions.
+        """A map of SQLAlchemy column types to provider functions.
 
-        This method is separated to allow for easy overriding in subclasses.
+        This method is separated to allow for easy overriding in
+        subclasses.
         """
         return {
             sqlalchemy_type.ARRAY: self.handle_list_type,
@@ -242,9 +231,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
-        """
-        Given a Column.type value, return a type supported by pydantic
-        """
+        """Given a 'Column.type' value, return a type supported by pydantic."""
 
         column_type_class = column_type if isclass(column_type) else column_type.__class__
         if issubclass(column_type_class, TypeEngine):
@@ -259,9 +246,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def parse_model(model_class: DeclarativeMeta) -> Mapper:
-        """
-        Validates that the passed in model_class is an SQLAlchemy declarative model, and returns a Mapper of it
-        """
+        """Validates that the passed in model_class is an SQLAlchemy
+        declarative model, and returns a Mapper of it."""
         if not isinstance(model_class, DeclarativeMeta):
             raise ImproperlyConfiguredException(
                 "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
@@ -269,9 +255,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return inspect(model_class)
 
     def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> "Type[BaseModel]":
-        """
-        Generates a pydantic model for a given SQLAlchemy declarative table and any nested relations.
-        """
+        """Generates a pydantic model for a given SQLAlchemy declarative table
+        and any nested relations."""
 
         mapper = self.parse_model(model_class=model_class)
         model_name = mapper.class_.__qualname__
@@ -313,15 +298,13 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def from_pydantic_model_instance(
         self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
-        """
-        Create an instance of a given model_class using the values stored in the given pydantic_model_instance
-        """
+        """Create an instance of a given model_class using the values stored in
+        the given pydantic_model_instance."""
         return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: Any) -> Dict[str, Any]:
-        """
-        Given a model instance, convert it to a dict of values that can be serialized
-        """
+        """Given a model instance, convert it to a dict of values that can be
+        serialized."""
         model_class = model_instance.__class__
         pydantic_model = self.model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
             model_class=model_class
@@ -332,7 +315,6 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return pydantic_model(**kwargs).dict()
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
-        """
-        Given a dictionary of kwargs, return an instance of the given model_class
-        """
+        """Given a dictionary of kwargs, return an instance of the given
+        model_class."""
         return model_class(**kwargs)

@@ -1,5 +1,5 @@
-"""
-The contents of this file were adapted from:
+"""The contents of this file were adapted from:
+
 https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/tables.py
 """
 

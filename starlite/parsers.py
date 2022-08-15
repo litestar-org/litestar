@@ -42,21 +42,22 @@ def _query_param_reducer(acc: Dict[str, List[str]], cur: Tuple[str, str]) -> Dic
 
 
 def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
-    """
-    Parses and normalize a given connection's query parameters into a regular dictionary
-    """
-    qs = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
+    """Parses and normalize a given connection's query parameters into a
+    regular dictionary."""
+    query_string = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
 
     return reduce(
         _query_param_reducer,
-        parse_qsl(qs if isinstance(qs, str) else qs.decode("latin-1"), keep_blank_values=True),
+        parse_qsl(
+            query_string if isinstance(query_string, str) else query_string.decode("latin-1"), keep_blank_values=True
+        ),
         {},
     )
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", field: "ModelField") -> Any:
-    """
-    Transforms the multidict into a regular dict, try to load json on all non-file values.
+    """Transforms the multidict into a regular dict, try to load json on all
+    non-file values.
 
     Supports lists.
     """

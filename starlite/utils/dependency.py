@@ -4,8 +4,8 @@ from pydantic.fields import FieldInfo
 
 
 def is_dependency_field(val: Any) -> bool:
-    """
-    Determine if a value is a `FieldInfo` instance created via the `Dependency()` function.
+    """Determine if a value is a `FieldInfo` instance created via the
+    `Dependency()` function.
 
     Parameters
     ----------

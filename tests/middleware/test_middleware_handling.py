@@ -144,7 +144,7 @@ def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
 
 
 def test_middleware_call_order() -> None:
-    """Test that middlewares are called in the order they have been passed"""
+    """Test that middlewares are called in the order they have been passed."""
 
     results: List[int] = []
 

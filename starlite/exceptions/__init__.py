@@ -10,7 +10,7 @@ from .exceptions import (
     PermissionDeniedException,
     ServiceUnavailableException,
     StarLiteException,
-    TemplateNotFound,
+    TemplateNotFoundException,
     ValidationException,
 )
 
@@ -25,7 +25,7 @@ __all__ = [
     "PermissionDeniedException",
     "ServiceUnavailableException",
     "StarLiteException",
-    "TemplateNotFound",
+    "TemplateNotFoundException",
     "ValidationException",
     "utils",
 ]

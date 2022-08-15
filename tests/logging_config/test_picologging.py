@@ -70,9 +70,7 @@ config.configure()
 
 
 def test_queue_logger(caplog: "LogCaptureFixture") -> None:
-    """
-    Test to check logging output contains the logged message
-    """
+    """Test to check logging output contains the logged message."""
 
     with caplog.at_level(logging.INFO):
         logger.info("Testing now!")

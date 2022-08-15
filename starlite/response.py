@@ -39,8 +39,7 @@ class Response(StarletteResponse, Generic[T]):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional[List["Cookie"]] = None,
     ):
-        """
-        The response class is used to return an HTTP response.
+        """The response class is used to return an HTTP response.
 
         Args:
             content: A value for the response body that will be rendered into bytes string.
@@ -63,8 +62,7 @@ class Response(StarletteResponse, Generic[T]):
 
     @staticmethod
     def serializer(value: Any) -> Dict[str, Any]:
-        """
-        Serializer hook for orjson to handle pydantic models.
+        """Serializer hook for orjson to handle pydantic models.
 
         This method can be overridden to extend json serialization.
 
@@ -118,8 +116,7 @@ class TemplateResponse(Response):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional[List["Cookie"]] = None,
     ):
-        """
-        Handles the rendering of a given template into a bytes string.
+        """Handles the rendering of a given template into a bytes string.
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. "index.html".

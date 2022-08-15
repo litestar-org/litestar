@@ -1,15 +1,15 @@
 # config
 
-::: starlite.config.CacheConfig
+::: starlite.config.cache.CacheConfig
     options:
         members:
             - backend
             - expiration
             - cache_key_builder
 
-::: starlite.config.default_cache_key_builder
+::: starlite.config.cache.default_cache_key_builder
 
-::: starlite.config.CORSConfig
+::: starlite.config.cors.CORSConfig
     options:
         members:
             - allow_origins
@@ -20,20 +20,20 @@
             - expose_headers
             - max_age
 
-::: starlite.config.CompressionBackend
+::: starlite.config.csrf.CSRFConfig
     options:
         members:
-            - GZIP
-            - BROTLI
+            - secret
+            - cookie_name
+            - cookie_path
+            - header_name
+            - cookie_secure
+            - cookie_httponly
+            - cookie_samesite
+            - cookie_domain
+            - safe_methods
 
-::: starlite.config.BrotliMode
-    options:
-        members:
-            - GENERIC
-            - TEXT
-            - FONT
-
-::: starlite.config.CompressionConfig
+::: starlite.config.compression.CompressionConfig
     options:
         members:
             - backend
@@ -45,7 +45,7 @@
             - brotli_lgblock
             - brotli_gzip_fallback
 
-::: starlite.config.OpenAPIConfig
+::: starlite.config.openapi.OpenAPIConfig
     options:
         members:
             - create_examples
@@ -64,14 +64,14 @@
             - use_handler_docstrings
             - webhooks
 
-::: starlite.config.StaticFilesConfig
+::: starlite.config.static_files.StaticFilesConfig
     options:
         members:
             - path
             - directories
             - html_mode
 
-::: starlite.config.TemplateConfig
+::: starlite.config.template.TemplateConfig
     options:
         members:
             - directory

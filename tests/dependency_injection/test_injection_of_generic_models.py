@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 
 class Store(GenericModel, Generic[T]):
-    """Abstract store"""
+    """Abstract store."""
 
     model: Type[T]
 
@@ -24,7 +24,7 @@ class Item(BaseModel):
 
 
 class DictStore(Store[Item]):
-    """In-memory store implementation"""
+    """In-memory store implementation."""
 
     def get(self, value_id: str) -> Optional[T]:
         return None
