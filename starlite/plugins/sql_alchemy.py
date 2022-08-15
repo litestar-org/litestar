@@ -231,7 +231,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
-        """Given a Column.type value, return a type supported by pydantic."""
+        """Given a 'Column.type' value, return a type supported by pydantic."""
 
         column_type_class = column_type if isclass(column_type) else column_type.__class__
         if issubclass(column_type_class, TypeEngine):

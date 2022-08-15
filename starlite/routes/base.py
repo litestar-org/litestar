@@ -48,8 +48,8 @@ class BaseRoute(ABC):
         scope_type: "ScopeType",
         methods: Optional[List["Method"]] = None,
     ):
-        """This is the base Route class used by Starlite. Its an abstract class
-        meant to be extended.
+        """This is the base Route class used by Starlite. It's an abstract
+        class meant to be extended.
 
         Args:
             handler_names:

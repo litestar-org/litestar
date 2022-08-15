@@ -329,8 +329,8 @@ class UploadFile(StarletteUploadFile):
         """Creates a pydantic JSON schema.
 
         Args:
-            field_schema: The schema being generated for the field
-            field: the model class field
+            field_schema: The schema being generated for the field.
+            field: the model class field.
 
         Returns:
             None
