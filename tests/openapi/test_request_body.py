@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseConfig, BaseModel
 
 from starlite import Body, RequestEncodingType, Starlite, post
 from starlite.datastructures import UploadFile
@@ -10,7 +10,7 @@ class FormData(BaseModel):
     cv: UploadFile
     image: UploadFile
 
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
 
 

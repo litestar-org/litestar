@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Union
 
-from pydantic import BaseModel
+from pydantic import BaseConfig, BaseModel
 from starlette.requests import HTTPConnection
 
 from starlite.enums import MediaType, ScopeType
@@ -17,7 +17,7 @@ class AuthenticationResult(BaseModel):
     user: Any
     auth: Any = None
 
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
 
 

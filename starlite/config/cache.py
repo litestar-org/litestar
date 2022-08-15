@@ -35,7 +35,6 @@ class CacheConfig(BaseModel):
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
-        copy_on_model_validation = False
 
     backend: CacheBackendProtocol = SimpleCacheBackend()
     """

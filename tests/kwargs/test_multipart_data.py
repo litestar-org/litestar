@@ -16,7 +16,7 @@ class FormData(BaseModel):
     age: UploadFile
     programmer: UploadFile
 
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
 
 

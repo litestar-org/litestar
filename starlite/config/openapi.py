@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union
 
-from pydantic import AnyUrl, BaseConfig, BaseModel
+from pydantic import AnyUrl, BaseModel
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from pydantic_openapi_schema.v3_1_0 import (
     Contact,
@@ -30,9 +30,6 @@ class OpenAPIConfig(BaseModel):
     this class to the [Starlite][starlite.app.Starlite] constructor
     using the 'openapi_config' key.
     """
-
-    class Config(BaseConfig):
-        copy_on_model_validation = False
 
     create_examples: bool = False
     """

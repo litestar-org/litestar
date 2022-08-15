@@ -126,7 +126,6 @@ R = TypeVar("R", bound=StarletteResponse)
 class ResponseContainer(GenericModel, ABC, Generic[R]):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
-        copy_on_model_validation = False
 
     background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
     """

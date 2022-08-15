@@ -43,7 +43,7 @@ async def handle_file_upload(
 To access multiple files with known filenames, you can use a pydantic model:
 
 ```python
-from pydantic import BaseModel
+from pydantic import BaseModel, BaseConfig
 from starlette.datastructures import UploadFile
 from starlite import Body, post, RequestEncodingType
 
@@ -52,7 +52,7 @@ class FormData(BaseModel):
     cv: UploadFile
     image: UploadFile
 
-    class Config:
+    class Config(BaseConfig):
         arbitrary_types_allowed = True
 
 

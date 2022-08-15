@@ -15,7 +15,6 @@ class TemplateConfig(BaseModel):
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
-        copy_on_model_validation = False
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
     """
