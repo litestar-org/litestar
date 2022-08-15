@@ -11,9 +11,8 @@ if TYPE_CHECKING:
 def get_exception_handler(
     exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"], exc: Exception
 ) -> Optional["ExceptionHandler"]:
-    """
-    Given a dictionary that maps exceptions and status codes to handler functions,
-    and an exception, returns the appropriate handler if existing.
+    """Given a dictionary that maps exceptions and status codes to handler
+    functions, and an exception, returns the appropriate handler if existing.
 
     Status codes are given preference over exception type.
 

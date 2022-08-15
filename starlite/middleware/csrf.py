@@ -25,8 +25,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         app: "ASGIApp",
         config: "CSRFConfig",
     ):
-        """
-        CSRF Middleware class.
+        """CSRF Middleware class.
 
         This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
 
@@ -55,8 +54,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         else:
 
             async def send_wrapper(message: "Message") -> None:
-                """
-                Send function that wraps the original send to inject a cookie
+                """Send function that wraps the original send to inject a
+                cookie.
 
                 Args:
                     message: An ASGI 'Message'
@@ -84,17 +83,18 @@ class CSRFMiddleware(MiddlewareProtocol):
         await self.app(scope, receive, send_callable_to_use)
 
     def _generate_csrf_hash(self, token: str) -> str:
-        """Generate an HMAC that signs the CSRF token"""
+        """Generate an HMAC that signs the CSRF token."""
         return hmac.new(self.config.secret.encode(), token.encode(), hashlib.sha256).hexdigest()
 
     def _generate_csrf_token(self) -> str:
-        """Generate a CSRF token that includes a randomly generated string signed by an HMAC"""
+        """Generate a CSRF token that includes a randomly generated string
+        signed by an HMAC."""
         token = secrets.token_hex(CSRF_SECRET_BYTES)
         token_hash = self._generate_csrf_hash(token)
         return token + token_hash
 
     def _decode_csrf_token(self, token: str) -> Optional[str]:
-        """Decode a CSRF token and validate its HMAC"""
+        """Decode a CSRF token and validate its HMAC."""
         if len(token) < CSRF_SECRET_LENGTH + 1:
             return None
 
@@ -107,7 +107,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
-        """Takes the CSRF tokens from the request and the cookie and verifies both are valid and identical"""
+        """Takes the CSRF tokens from the request and the cookie and verifies
+        both are valid and identical."""
         if not (request_csrf_token and cookie_csrf_token):
             return False
 

@@ -91,12 +91,14 @@ class BaseRouteHandler(Generic[T]):
 
     @property
     def dependency_name_set(self) -> Set[str]:
-        """
-        The set of all dependency names provided in the handler's ownership layers.
+        """The set of all dependency names provided in the handler's ownership
+        layers.
 
-        Intended as a fast to compute set of the names of dependencies provided to the handler, and
-        available at the time that the handler's signature model is generated. Full resolution of
-        dependencies requires that the signature model is already generated and is performed in
+        Intended as a fast to compute set of the names of dependencies
+        provided to the handler, and available at the time that the
+        handler's signature model is generated. Full resolution of
+        dependencies requires that the signature model is already
+        generated and is performed in
         ``BaseRouteHandler.resolve_dependencies()``.
         """
         if self._resolved_dependency_name_set is Empty:
@@ -106,8 +108,7 @@ class BaseRouteHandler(Generic[T]):
 
     @property
     def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
-        """
-        Returns the handler layers from the app down to the route handler
+        """Returns the handler layers from the app down to the route handler.
 
         app -> ... -> route handler
         """
@@ -121,7 +122,8 @@ class BaseRouteHandler(Generic[T]):
         return list(reversed(layers))
 
     def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
-        """Returns all parameters declared above the handler, transforming them into pydantic ModelField instances"""
+        """Returns all parameters declared above the handler, transforming them
+        into pydantic ModelField instances."""
         if self._resolved_layered_parameters is Empty:
             self._resolved_layered_parameters = {}
             parameters: Dict[str, FieldInfo] = {}
@@ -146,7 +148,8 @@ class BaseRouteHandler(Generic[T]):
         return cast("Dict[str, ModelField]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
-        """Returns all guards in the handlers scope, starting from highest to current layer"""
+        """Returns all guards in the handlers scope, starting from highest to
+        current layer."""
         if self._resolved_guards is Empty:
             self._resolved_guards = []
             for layer in self.ownership_layers:
@@ -154,9 +157,8 @@ class BaseRouteHandler(Generic[T]):
         return cast("List[Guard]", self._resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
-        """
-        Returns all dependencies correlating to handler function's kwargs that exist in the handler's scope
-        """
+        """Returns all dependencies correlating to handler function's kwargs
+        that exist in the handler's scope."""
         if not self.signature_model:
             raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self._resolved_dependencies is Empty:
@@ -170,10 +172,10 @@ class BaseRouteHandler(Generic[T]):
         return cast("Dict[str, Provide]", self._resolved_dependencies)
 
     def resolve_middleware(self) -> List["Middleware"]:
-        """
-        Builds the middleware stack for the RouteHandler and returns it.
+        """Builds the middleware stack for the RouteHandler and returns it.
 
-        The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
+        The middlewares are added from top to bottom (app -> router ->
+        controller -> route handler) and then reversed.
         """
         if self._resolved_middleware is Empty:
             self._resolved_middleware = []
@@ -183,8 +185,8 @@ class BaseRouteHandler(Generic[T]):
         return cast("List[Middleware]", self._resolved_middleware)
 
     def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
-        """
-        Resolves the exception_handlers by starting from the route handler and moving up.
+        """Resolves the exception_handlers by starting from the route handler
+        and moving up.
 
         This method is memoized so the computation occurs only once.
         """
@@ -195,9 +197,8 @@ class BaseRouteHandler(Generic[T]):
         return cast("Dict[Union[int, Type[Exception]], ExceptionHandler]", self._resolved_exception_handlers)
 
     async def authorize_connection(self, connection: "HTTPConnection") -> None:
-        """
-        Ensures the connection is authorized by running all the route guards in scope
-        """
+        """Ensures the connection is authorized by running all the route guards
+        in scope."""
         for guard in self.resolve_guards():
             if is_async_callable(guard):
                 await guard(connection, copy(self))  # type: ignore[misc]
@@ -206,9 +207,8 @@ class BaseRouteHandler(Generic[T]):
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
-        """
-        Validates that a given provider has not been already defined under a different key
-        """
+        """Validates that a given provider has not been already defined under a
+        different key."""
         for dependency_key, value in dependencies.items():
             if provider == value:
                 raise ImproperlyConfiguredException(
@@ -217,8 +217,7 @@ class BaseRouteHandler(Generic[T]):
                 )
 
     def _validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once set by inspecting its return annotations
-        """
+        """Validates the route handler function once set by inspecting its
+        return annotations."""
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")

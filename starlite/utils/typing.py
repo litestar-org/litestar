@@ -12,7 +12,8 @@ else:
 
 
 def detect_optional_union(annotation: Any) -> bool:
-    """Given a type annotation determine if the annotation infers an optional union.
+    """Given a type annotation determine if the annotation infers an optional
+    union.
 
     >>> from typing import Optional, Union, get_args, get_origin
     >>> from types import UnionType

@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class Provide:
-    """
-    A wrapper class used for dependency injection
+    """A wrapper class used for dependency injection.
 
     Args:
         dependency (AnyCallable): callable to inject, can be a function, method or class.
@@ -36,9 +35,7 @@ class Provide:
         self.is_coroutine = is_async_callable(dependency)
 
     async def __call__(self, **kwargs: Any) -> Any:
-        """
-        Proxies call to 'self.proxy'
-        """
+        """Proxies call to 'self.proxy'."""
 
         if self.use_cache and self.value is not Undefined:
             return self.value

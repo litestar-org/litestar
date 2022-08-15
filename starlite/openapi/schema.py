@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 
 def normalize_example_value(value: Any) -> Any:
-    """Normalize the example value to make it look a bit prettier"""
+    """Normalize the example value to make it look a bit prettier."""
     if isinstance(value, (Decimal, float)):
         value = round(float(value), 2)
     if isinstance(value, Enum):
@@ -53,7 +53,7 @@ def normalize_example_value(value: Any) -> Any:
 
 
 class ExampleFactory(ModelFactory[BaseModel]):
-    """A factory that always returns values"""
+    """A factory that always returns values."""
 
     __model__ = BaseModel
     __allow_none_optionals__ = False
@@ -62,9 +62,7 @@ class ExampleFactory(ModelFactory[BaseModel]):
 def create_numerical_constrained_field_schema(
     field_type: Union[Type[ConstrainedFloat], Type[ConstrainedInt], Type[ConstrainedDecimal]]
 ) -> Schema:
-    """
-    Create Schema from Constrained Int/Float/Decimal field
-    """
+    """Create Schema from Constrained Int/Float/Decimal field."""
     schema = Schema(type=OpenAPIType.INTEGER if issubclass(field_type, int) else OpenAPIType.NUMBER)
     if field_type.le is not None:
         schema.maximum = float(field_type.le)
@@ -80,9 +78,7 @@ def create_numerical_constrained_field_schema(
 
 
 def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr], Type[ConstrainedBytes]]) -> Schema:
-    """
-    Create Schema from Constrained Str/Bytes field
-    """
+    """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)
     if field_type.min_length:
         schema.minLength = field_type.min_length
@@ -100,9 +96,7 @@ def create_collection_constrained_field_schema(
     sub_fields: Optional[List[ModelField]],
     plugins: List["PluginProtocol"],
 ) -> Schema:
-    """
-    Create Schema from Constrained List/Set field
-    """
+    """Create Schema from Constrained List/Set field."""
     schema = Schema(type=OpenAPIType.ARRAY)
     if field_type.min_items:
         schema.minItems = field_type.min_items
@@ -135,8 +129,10 @@ def create_constrained_field_schema(
     sub_fields: Optional[List[ModelField]],
     plugins: List["PluginProtocol"],
 ) -> Schema:
-    """
-    Create Schema for Pydantic Constrained fields (created using constr(), conint() etc. or by subclassing Constrained*)
+    """Create Schema for Pydantic Constrained fields (created using constr(),
+    conint() etc.
+
+    or by subclassing Constrained*)
     """
     if issubclass(field_type, (ConstrainedFloat, ConstrainedInt, ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)
@@ -146,9 +142,8 @@ def create_constrained_field_schema(
 
 
 def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Schema:
-    """
-    Copy values from the given instance of pydantic FieldInfo into the schema
-    """
+    """Copy values from the given instance of pydantic FieldInfo into the
+    schema."""
     if field_info.const and field_info.default not in [None, ..., Undefined] and schema.const is None:
         schema.const = field_info.default
     for pydantic_key, schema_key in PYDANTIC_TO_OPENAPI_PROPERTY_MAP.items():
@@ -164,9 +159,7 @@ def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Sche
 
 
 def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]) -> Schema:
-    """
-    Get or create a Schema object for the given field type
-    """
+    """Get or create a Schema object for the given field type."""
     field_type = field.outer_type_
     if field_type in TYPE_MAP:
         return TYPE_MAP[field_type].copy()
@@ -188,9 +181,8 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
 
 
 def create_examples_for_field(field: ModelField) -> List[Example]:
-    """
-    Use the pydantic-factories package to create an example value for the given schema
-    """
+    """Use the pydantic-factories package to create an example value for the
+    given schema."""
     try:
 
         value = normalize_example_value(ExampleFactory.get_field_value(field))

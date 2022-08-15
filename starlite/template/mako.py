@@ -15,7 +15,7 @@ except ImportError as e:
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
-    """Template engine using the mako templating library"""
+    """Template engine using the mako templating library."""
 
     def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
         super().__init__(directory)

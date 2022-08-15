@@ -26,20 +26,20 @@ if TYPE_CHECKING:
 def create_path_parameter_schema(
     path_parameter: "PathParameterDefinition", field: "ModelField", generate_examples: bool
 ) -> "Schema":
-    """Create a path parameter from the given path_param definition"""
+    """Create a path parameter from the given path_param definition."""
     field.sub_fields = None
     field.outer_type_ = path_parameter["type"]
     return create_schema(field=field, generate_examples=generate_examples, plugins=[])
 
 
 class ParameterCollection:
-    """
-    Facilitates conditional deduplication of parameters.
+    """Facilitates conditional deduplication of parameters.
 
-    If multiple parameters with the same name are produced for a handler, the condition is
-    ignored if the two `Parameter` instances are the same (the first is retained and any
-    duplicates are ignored). If the `Parameter` instances are not the same, an exception
-    is raised.
+    If multiple parameters with the same name are produced for a
+    handler, the condition is ignored if the two `Parameter` instances
+    are the same (the first is retained and any duplicates are ignored).
+    If the `Parameter` instances are not the same, an exception is
+    raised.
     """
 
     def __init__(self, route_handler: "BaseRouteHandler") -> None:
@@ -47,8 +47,7 @@ class ParameterCollection:
         self._parameters: Dict[str, Parameter] = {}
 
     def add(self, parameter: Parameter) -> None:
-        """
-        Add a `Parameter` to the collection.
+        """Add a `Parameter` to the collection.
 
         If an existing parameter with the same name and type already exists, the
         parameter is ignored.
@@ -68,9 +67,7 @@ class ParameterCollection:
         )
 
     def list(self) -> List[Parameter]:
-        """
-        Return a list of all `Parameter`'s in the collection.
-        """
+        """Return a list of all `Parameter`'s in the collection."""
         return list(self._parameters.values())
 
 
@@ -80,9 +77,7 @@ def create_parameter(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> Parameter:
-    """
-    Creates an OpenAPI Parameter instance
-    """
+    """Creates an OpenAPI Parameter instance."""
     schema = None
     is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
     extra = model_field.field_info.extra
@@ -128,9 +123,13 @@ def get_recursive_handler_parameters(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> List[Parameter]:
-    """Create and return parameters for a handler. If the provided field is not a dependency,
-    a normal parameter is created and returned as a list, otherwise
-    `create_parameter_for_handler()` is called to generate parameters for the dependency."""
+    """Create and return parameters for a handler.
+
+    If the provided field is not a dependency, a normal parameter is
+    created and returned as a list, otherwise
+    `create_parameter_for_handler()` is called to generate parameters
+    for the dependency.
+    """
 
     if field_name not in dependencies:
         return [
@@ -153,8 +152,10 @@ def get_layered_parameter(
     generate_examples: bool,
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
+
     Layer info is extracted from the provided `layered_parameters` dict
-    and set as the field's `field_info` attribute."""
+    and set as the field's `field_info` attribute.
+    """
     layer_field_info = layered_parameters[field_name].field_info
     signature_field_info = signature_model_field.field_info
 
@@ -191,9 +192,8 @@ def create_parameter_for_handler(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> List[Parameter]:
-    """
-    Create a list of path/query/header Parameter models for the given PathHandler
-    """
+    """Create a list of path/query/header Parameter models for the given
+    PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
     dependencies = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()

@@ -6,8 +6,7 @@ if TYPE_CHECKING:
 
 
 def create_template_engine(template_config: Optional["TemplateConfig"]) -> Optional["TemplateEngineProtocol"]:
-    """
-    Construct a template engine if `template_config` is provided.
+    """Construct a template engine if `template_config` is provided.
 
     Parameters
     ----------

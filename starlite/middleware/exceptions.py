@@ -21,8 +21,8 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
     def __init__(
         self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], ExceptionHandler]
     ):
-        """
-        This middleware is used to wrap an ASGIApp inside a try catch block and handles any exceptions raised.
+        """This middleware is used to wrap an ASGIApp inside a try catch block
+        and handles any exceptions raised.
 
         Notes:
             * It's used in multiple layers of Starlite.
@@ -56,7 +56,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
                 await send({"type": "websocket.close", "code": status_code, "reason": reason})
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "StarletteResponse":
-        """Default handler for exceptions subclassed from HTTPException"""
+        """Default handler for exceptions subclassed from HTTPException."""
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             # in debug mode, we just use the serve_middleware to create an HTML formatted response for us

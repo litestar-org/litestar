@@ -34,10 +34,8 @@ def Parameter(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """
-    Creates a pydantic FieldInfo instance with an extra kwargs,
-    used for both parameter parsing and OpenAPI schema generation.
-    """
+    """Creates a pydantic FieldInfo instance with an extra kwargs, used for
+    both parameter parsing and OpenAPI schema generation."""
     extra: Dict[str, Any] = dict(is_parameter=True)
     extra.update(header=header)
     extra.update(cookie=cookie)
@@ -89,10 +87,8 @@ def Body(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """
-    Creates a pydantic FieldInfo instance with an extra kwargs,
-    used for both parameter parsing and OpenAPI schema generation.
-    """
+    """Creates a pydantic FieldInfo instance with an extra kwargs, used for
+    both parameter parsing and OpenAPI schema generation."""
     extra: Dict[str, Any] = {}
     extra.update(media_type=media_type)
     extra.update(examples=examples)
@@ -120,8 +116,6 @@ def Body(
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Dependency(*, default: Any = Undefined) -> Any:
-    """
-    Creates a pydantic FieldInfo instance with an extra kwargs,
-    used for both parameter parsing and OpenAPI schema generation.
-    """
+    """Creates a pydantic FieldInfo instance with an extra kwargs, used for
+    both parameter parsing and OpenAPI schema generation."""
     return Field(default, is_dependency=True)

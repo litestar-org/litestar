@@ -30,9 +30,8 @@ def test_config_validation_scenario() -> None:
 
 
 def test_config_validation_deep_copy() -> None:
-    """
-    test fix for issue-333: https://github.com/starlite-api/starlite/issues/333
-    """
+    """test fix for issue-333: https://github.com/starlite-
+    api/starlite/issues/333."""
 
     cache_config = CacheConfig(backend=redis.from_url("redis://localhost:6379/1"))
     Starlite(route_handlers=[], cache_config=cache_config)

@@ -55,9 +55,7 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
 def create_success_response(
     route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["PluginProtocol"]
 ) -> Response:
-    """
-    Creates the schema for a success response
-    """
+    """Creates the schema for a success response."""
 
     signature = Signature.from_callable(cast("AnyCallable", route_handler.fn))
     default_descriptions: Dict[Any, str] = {
@@ -147,9 +145,7 @@ def create_success_response(
 
 
 def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tuple[str, Response]]:
-    """
-    Creates the schema for error responses, if any
-    """
+    """Creates the schema for error responses, if any."""
     grouped_exceptions: Dict[int, List[Type[HTTPException]]] = {}
     for exc in exceptions:
         if not grouped_exceptions.get(exc.status_code):
@@ -188,9 +184,8 @@ def create_responses(
     generate_examples: bool,
     plugins: List["PluginProtocol"],
 ) -> Optional["Responses"]:
-    """
-    Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None
-    """
+    """Create a Response model embedded in a `Responses` dictionary for the
+    given RouteHandler or return None."""
     responses: "Responses" = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,

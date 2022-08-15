@@ -19,8 +19,7 @@ class ExceptionResponseContent(BaseModel):
 
 
 def create_exception_response(exc: Exception) -> Response:
-    """
-    Constructs a response from an exception.
+    """Constructs a response from an exception.
 
     For instances of either `starlite.exceptions.HTTPException` or `starlette.exceptions.HTTPException` the response
     status code is drawn from the exception, otherwise response status is `HTTP_500_INTERNAL_SERVER_ERROR`.

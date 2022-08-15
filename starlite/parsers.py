@@ -42,9 +42,8 @@ def _query_param_reducer(acc: Dict[str, List[str]], cur: Tuple[str, str]) -> Dic
 
 
 def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
-    """
-    Parses and normalize a given connection's query parameters into a regular dictionary
-    """
+    """Parses and normalize a given connection's query parameters into a
+    regular dictionary."""
     query_string = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
 
     return reduce(
@@ -57,8 +56,8 @@ def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", field: "ModelField") -> Any:
-    """
-    Transforms the multidict into a regular dict, try to load json on all non-file values.
+    """Transforms the multidict into a regular dict, try to load json on all
+    non-file values.
 
     Supports lists.
     """

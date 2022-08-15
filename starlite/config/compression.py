@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 
 
 class CompressionConfig(BaseModel):
-    """
-    Configuration for response compression.
+    """Configuration for response compression.
 
-    To enable response compression, pass an instance of this class to the [Starlite][starlite.app.Starlite]
-    constructor using the 'compression_config' key.
+    To enable response compression, pass an instance of this class to
+    the [Starlite][starlite.app.Starlite] constructor using the
+    'compression_config' key.
     """
 
     backend: Union[CompressionBackend]
@@ -60,7 +60,7 @@ class CompressionConfig(BaseModel):
 
     @validator("brotli_mode", pre=True, always=True)
     def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
-        """Compression Backend Validation
+        """Compression Backend Validation.
 
         Args:
             v (CompressionBackend|str): Holds the selected compression backend
@@ -103,8 +103,7 @@ class CompressionConfig(BaseModel):
         return super().dict(*args, **kwargs)
 
     def to_middleware(self, app: "ASGIApp") -> "MiddlewareProtocol":
-        """
-        Creates a middleware instance from the config
+        """Creates a middleware instance from the config.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] App instance.

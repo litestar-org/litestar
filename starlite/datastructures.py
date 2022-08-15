@@ -48,8 +48,8 @@ if TYPE_CHECKING:
 
 class BackgroundTask(StarletteBackgroundTask):
     def __init__(self, func: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
-        """
-        A container for a 'background' task function. Background tasks are called once a Response finishes.
+        """A container for a 'background' task function. Background tasks are
+        called once a Response finishes.
 
         Args:
             func: A sync or async function to call as the background task.
@@ -61,8 +61,8 @@ class BackgroundTask(StarletteBackgroundTask):
 
 class BackgroundTasks(StarletteBackgroundTasks):
     def __init__(self, tasks: List[BackgroundTask]):
-        """
-        A container for multiple 'background' task functions. Background tasks are called once a Response finishes.
+        """A container for multiple 'background' task functions. Background
+        tasks are called once a Response finishes.
 
         Args:
             tasks: A list of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
@@ -71,8 +71,7 @@ class BackgroundTasks(StarletteBackgroundTasks):
 
 
 class State(StarletteStateClass):
-    """
-    An object that can be used to store arbitrary state.
+    """An object that can be used to store arbitrary state.
 
     Used for `request.state` and `app.state`.
 
@@ -80,20 +79,19 @@ class State(StarletteStateClass):
     """
 
     def __copy__(self) -> "State":
-        """
-        Returns a shallow copy of the given state object.
+        """Returns a shallow copy of the given state object.
+
         Customizes how the builtin "copy" function will work.
         """
         return self.__class__(copy(self._state))
 
     def copy(self) -> "State":
-        """Returns a shallow copy of the given state object"""
+        """Returns a shallow copy of the given state object."""
         return copy(self)
 
 
 class Cookie(BaseModel):
-    """
-    Container class for defining a cookie using the 'Set-Cookie' header.
+    """Container class for defining a cookie using the 'Set-Cookie' header.
 
     See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
     """
@@ -145,8 +143,8 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
     ) -> R:  # pragma: no cover
-        """
-        Abstract method that should be implemented by subclasses. Returns a Starlette compatible Response instance.
+        """Abstract method that should be implemented by subclasses. Returns a
+        Starlette compatible Response instance.
 
         Args:
             headers: A dictionary of headers.
@@ -161,9 +159,7 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
 
 
 class File(ResponseContainer[FileResponse]):
-    """
-    Container type for returning File responses
-    """
+    """Container type for returning File responses."""
 
     path: FilePath
     """Path to the file to send"""
@@ -176,7 +172,7 @@ class File(ResponseContainer[FileResponse]):
     def validate_status_code(  # pylint: disable=no-self-argument
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
-        """Set the stat_result value for the given filepath"""
+        """Set the stat_result value for the given filepath."""
         return value or os.stat(cast("str", values.get("path")))
 
     def to_response(
@@ -186,8 +182,7 @@ class File(ResponseContainer[FileResponse]):
         status_code: int,
         app: "Starlite",
     ) -> FileResponse:
-        """
-        Creates a FileResponse instance.
+        """Creates a FileResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -210,9 +205,7 @@ class File(ResponseContainer[FileResponse]):
 
 
 class Redirect(ResponseContainer[RedirectResponse]):
-    """
-    Container type for returning Redirect responses
-    """
+    """Container type for returning Redirect responses."""
 
     path: str
     """Redirection path"""
@@ -220,8 +213,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
     ) -> RedirectResponse:
-        """
-        Creates a RedirectResponse instance.
+        """Creates a RedirectResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -236,9 +228,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
 
 
 class Stream(ResponseContainer[StreamingResponse]):
-    """
-    Container type for returning Stream responses
-    """
+    """Container type for returning Stream responses."""
 
     iterator: Union[
         Iterator[Union[str, bytes]],
@@ -255,8 +245,7 @@ class Stream(ResponseContainer[StreamingResponse]):
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
     ) -> StreamingResponse:
-        """
-        Creates a StreamingResponse instance.
+        """Creates a StreamingResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -278,9 +267,7 @@ class Stream(ResponseContainer[StreamingResponse]):
 
 
 class Template(ResponseContainer["TemplateResponse"]):
-    """
-    Container type for returning Template responses
-    """
+    """Container type for returning Template responses."""
 
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
@@ -290,8 +277,7 @@ class Template(ResponseContainer["TemplateResponse"]):
     def to_response(
         self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
     ) -> "TemplateResponse":
-        """
-        Creates a TemplateResponse instance.
+        """Creates a TemplateResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -322,9 +308,7 @@ class Template(ResponseContainer["TemplateResponse"]):
 
 
 class ResponseHeader(Header):
-    """
-    Container type for a response header
-    """
+    """Container type for a response header."""
 
     documentation_only: bool = False
     """defines the ResponseHeader instance as for OpenAPI documentation purpose only"""
@@ -333,10 +317,8 @@ class ResponseHeader(Header):
 
     @validator("value", always=True)
     def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
-        """
-        Ensures that either value is set or the instance is for documentation_only
-
-        """
+        """Ensures that either value is set or the instance is for
+        documentation_only."""
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
@@ -345,8 +327,7 @@ class ResponseHeader(Header):
 class UploadFile(StarletteUploadFile):
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
-        """
-        Creates a pydantic JSON schema
+        """Creates a pydantic JSON schema.
 
         Args:
             field_schema: The schema being generated for the field

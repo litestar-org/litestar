@@ -3,8 +3,8 @@ from typing import Sequence
 
 
 def normalize_path(path: str) -> str:
-    """
-    Normalizes a given path by ensuring it starts with a slash and does not end with a slash
+    """Normalizes a given path by ensuring it starts with a slash and does not
+    end with a slash.
 
     Args:
         path: Path string
@@ -20,7 +20,5 @@ def normalize_path(path: str) -> str:
 
 
 def join_paths(paths: Sequence[str]) -> str:
-    """
-    Normalizes and joins path fragments
-    """
+    """Normalizes and joins path fragments."""
     return normalize_path("/".join(paths))

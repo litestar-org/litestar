@@ -19,7 +19,7 @@ except ImportError as e:
 
 
 class CompressionEncoding(str, Enum):
-    """An Enum for supported compression encodings"""
+    """An Enum for supported compression encodings."""
 
     GZIP = "gzip"
     BROTLI = "br"
@@ -33,11 +33,9 @@ class BrotliMode(str, Enum):
     FONT = "font"
 
     def to_int(self) -> int:
-        """
-        Select the correct brotli mode
+        """Select the correct brotli mode.
 
         Returns: An int correlating with the constants in the brotli package
-
         """
         if self == BrotliMode.TEXT:
             return int(brotli.MODE_TEXT)
@@ -57,8 +55,7 @@ class BrotliMiddleware:
         brotli_lgblock: int = 0,
         brotli_gzip_fallback: bool = True,
     ) -> None:
-        """
-        Brotli middleware for Starlite
+        """Brotli middleware for Starlite.
 
         Compresses responses using Brotli and optional fallback to Gzip.
 
@@ -112,8 +109,7 @@ class BrotliResponder:
         lgwin: int,
         lgblock: int,
     ) -> None:
-        """
-        Brotli Responder
+        """Brotli Responder.
 
         Formats a response with Brotli compression.
 
@@ -144,7 +140,7 @@ class BrotliResponder:
         await self.app(scope, receive, self.send_with_brotli)
 
     async def send_with_brotli(self, message: "Message") -> None:
-        """Handles and compresses the HTTP Message with brotli
+        """Handles and compresses the HTTP Message with brotli.
 
         Args:
             message (Message): ASGI HTTP Message

@@ -10,11 +10,11 @@ if TYPE_CHECKING:
 
 
 class StaticFilesConfig(BaseModel):
-    """
-    Configuration for static file service.
+    """Configuration for static file service.
 
-    To enable static files, pass an instance of this class to the [Starlite][starlite.app.Starlite]
-    constructor using the 'static_files_config' key.
+    To enable static files, pass an instance of this class to the
+    [Starlite][starlite.app.Starlite] constructor using the
+    'static_files_config' key.
     """
 
     path: constr(min_length=1)  # type: ignore
@@ -33,8 +33,7 @@ class StaticFilesConfig(BaseModel):
 
     @validator("path")
     def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument
-        """
-        Ensures the path has no path parameters
+        """Ensures the path has no path parameters.
 
         Args:
             value: A path string
@@ -47,8 +46,7 @@ class StaticFilesConfig(BaseModel):
         return normalize_path(value)
 
     def to_static_files_app(self) -> "ASGIApp":
-        """
-                Returns an ASGI app serving static files based on the config
+        """Returns an ASGI app serving static files based on the config.
 
                 Returns:
         ^           [StaticFiles][starlette.static_files.StaticFiles]

@@ -29,8 +29,7 @@ class WebSocketRoute(BaseRoute):
         path: str,
         route_handler: "WebsocketRouteHandler",
     ):
-        """
-        This class handles a single Websocket Route.
+        """This class handles a single Websocket Route.
 
         Args:
             path: The path for the route.
@@ -45,8 +44,8 @@ class WebSocketRoute(BaseRoute):
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
+        """ASGI app that creates a WebSocket from the passed in args, and then
+        awaits the handler function.
 
         Args:
             scope: The ASGI connection scope.
@@ -69,8 +68,7 @@ class WebSocketRoute(BaseRoute):
             await fn(**kwargs)
 
     async def _resolve_kwargs(self, websocket: WebSocket[Any, Any]) -> Dict[str, Any]:
-        """
-        Resolves the required kwargs from the request data
+        """Resolves the required kwargs from the request data.
 
         Args:
             websocket: WebSocket instance

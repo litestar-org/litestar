@@ -7,11 +7,11 @@ from starlite.types import Method
 
 
 class CSRFConfig(BaseModel):
-    """
-    Configuration for CSRF (Cross Site Request Forgery) protection.
+    """Configuration for CSRF (Cross Site Request Forgery) protection.
 
-    To enable CSRF protection, pass an instance of this class to the [Starlite][starlite.app.Starlite]
-    constructor using the 'csrf_config' key.
+    To enable CSRF protection, pass an instance of this class to the
+    [Starlite][starlite.app.Starlite] constructor using the
+    'csrf_config' key.
     """
 
     secret: str

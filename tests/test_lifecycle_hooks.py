@@ -55,10 +55,9 @@ async def test_call_async_hook(async_hook: LifecycleHook) -> None:
 
 
 def test_layer_lifecycle_hook_handler_attribute_assignment() -> None:
-    """
-    Test ensures behavior of both functions and instance methods passed as lifecycle hook handlers to the layer type
-    constructors, after the handlers have been assigned to an attribute on the layer type instance.
-    """
+    """Test ensures behavior of both functions and instance methods passed as
+    lifecycle hook handlers to the layer type constructors, after the handlers
+    have been assigned to an attribute on the layer type instance."""
 
     class HandlerClass:
         def handler_method(self, _: Any) -> Any:
@@ -78,10 +77,9 @@ def test_layer_lifecycle_hook_handler_attribute_assignment() -> None:
 
 
 def test_controller_lifecycle_hook_handler_attribute_assignment() -> None:
-    """
-    Test ensures consistent behavior to that of the other layer types when lifecycle hook handlers are associated with
-    a `Controller` instance via assignment to class variable.
-    """
+    """Test ensures consistent behavior to that of the other layer types when
+    lifecycle hook handlers are associated with a `Controller` instance via
+    assignment to class variable."""
 
     class HandlerClass:
         def handler_method(self, _: Any) -> Any:

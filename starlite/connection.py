@@ -22,9 +22,7 @@ Auth = TypeVar("Auth")
 
 
 class Request(StarletteRequest, Generic[User, Auth]):
-    """
-    The Starlite Request class
-    """
+    """The Starlite Request class."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
         super().__init__(scope, receive, send)
@@ -40,8 +38,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
 
     @property
     def user(self) -> User:
-        """
-        Allows access to user data.
+        """Allows access to user data.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -55,8 +52,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
 
     @property
     def auth(self) -> Auth:
-        """
-        Allows access to auth data.
+        """Allows access to auth data.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -86,8 +82,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
         return cast("Method", self.scope["method"])
 
     async def json(self) -> Any:
-        """
-        Method to retrieve the json request body from the request.
+        """Method to retrieve the json request body from the request.
 
         This method overrides the Starlette method using the much faster orjson.loads() function
 
@@ -104,9 +99,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
 
 
 class WebSocket(StarletteWebSocket, Generic[User, Auth]):
-    """
-    The Starlite WebSocket class
-    """
+    """The Starlite WebSocket class."""
 
     @property
     def app(self) -> "Starlite":
@@ -118,8 +111,7 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
 
     @property
     def user(self) -> User:
-        """
-        Allows access to user data.
+        """Allows access to user data.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -133,8 +125,7 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
 
     @property
     def auth(self) -> Auth:
-        """
-        Allows access to auth data.
+        """Allows access to auth data.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -155,8 +146,7 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
         return parse_query_params(self)
 
     async def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:  # type: ignore
-        """
-        Receives data and loads it into JSON using orson.
+        """Receives data and loads it into JSON using orson.
 
         Args:
             mode: Either 'text' or 'binary'.
@@ -178,8 +168,7 @@ class WebSocket(StarletteWebSocket, Generic[User, Auth]):
         return loads(text)
 
     async def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:  # type: ignore
-        """
-        Sends data as JSON.
+        """Sends data as JSON.
 
         Args:
             data: A value to serialize.

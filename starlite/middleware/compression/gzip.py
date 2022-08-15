@@ -13,8 +13,7 @@ class GZipMiddleware(StarletteGzipMiddleware):
         minimum_size: int = 400,
         gzip_compress_level: int = 9,
     ) -> None:
-        """
-        GZIP Compression middleware for Starlite
+        """GZIP Compression middleware for Starlite.
 
         This is a wrapper around the Starlette GZipMiddleware.
         It converts the Starlite parameters into the expected Gzip parameters.

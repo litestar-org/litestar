@@ -27,8 +27,10 @@ R = TypeVar("R")
 
 
 class LifecycleHook(Generic[R]):
-    """
-    Abstracts handler resolution and provides eager discrimination of sync vs. async handlers.
+    """Abstracts handler resolution and provides eager discrimination of sync
+    vs.
+
+    async handlers.
     """
 
     def __init__(self, handler: Union[Callable[..., R], Callable[..., Awaitable[R]]]) -> None:
@@ -47,8 +49,7 @@ class LifecycleHook(Generic[R]):
         route_handler: "HTTPRouteHandler",
         attribute_key: Literal["after_request", "after_response", "before_request"],
     ) -> Optional[H]:
-        """
-        Resolves `attribute_key` for `route_handler`.
+        """Resolves `attribute_key` for `route_handler`.
 
         If a hook is registered, returns an instance of `LifecycleHook`, otherwise returns `None`.
 

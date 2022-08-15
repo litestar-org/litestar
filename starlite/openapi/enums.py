@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class OpenAPIFormat(str, Enum):
-    """
-    Formats extracted from:
+    """Formats extracted from:
+
     https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13
     """
 

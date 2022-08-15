@@ -22,7 +22,6 @@ class FormData(BaseModel):
 
 @pytest.mark.parametrize("t_type", [FormData, Dict[str, UploadFile], List[UploadFile], UploadFile])
 def test_request_body_multi_part(t_type: Type[Any]) -> None:
-
     body = Body(media_type=RequestEncodingType.MULTI_PART)
 
     test_path = "/test"

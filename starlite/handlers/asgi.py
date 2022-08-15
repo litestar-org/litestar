@@ -22,8 +22,8 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        """
-        ASGI Route Handler decorator. Use this decorator to decorate ASGI apps.
+        """ASGI Route Handler decorator. Use this decorator to decorate ASGI
+        apps.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -35,17 +35,14 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         super().__init__(path=path, guards=guards, opt=opt, exception_handlers=exception_handlers)
 
     def __call__(self, fn: "AnyCallable") -> "ASGIRouteHandler":
-        """
-        Replaces a function with itself
-        """
+        """Replaces a function with itself."""
         self.fn = fn
         self._validate_handler_function()
         return self
 
     def _validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it's set by inspecting its return annotations
-        """
+        """Validates the route handler function once it's set by inspecting its
+        return annotations."""
         super()._validate_handler_function()
 
         fn = cast("AnyCallable", self.fn)

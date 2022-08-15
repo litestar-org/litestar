@@ -274,7 +274,6 @@ def test_brotli_middleware_invalid_mode() -> None:
 
 
 def test_invalid_compression_middleware() -> None:
-
     try:
         create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="super-zip"))  # type: ignore
     except Exception as exc:

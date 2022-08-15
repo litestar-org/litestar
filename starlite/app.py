@@ -110,8 +110,7 @@ class Starlite(Router):
         template_config: Optional[TemplateConfig] = None,
         tags: Optional[List[str]] = None,
     ):
-        """
-        The Starlite application.
+        """The Starlite application.
 
         `Starlite` is the root level of the app - it has the base path of "/" and all root level
         Controllers, Routers and Route Handlers should be registered on it.
@@ -199,9 +198,10 @@ class Starlite(Router):
         self.template_engine = create_template_engine(template_config)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        The application entry point.
-        Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
+        """The application entry point.
+
+        Lifespan events (startup / shutdown) are sent to the lifespan
+        handler, otherwise the ASGI handler is used
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
@@ -211,9 +211,8 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, send)
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
-        """
-
-        Registers a route handler on the app. This method can be used to dynamically add endpoints to an application.
+        """Registers a route handler on the app. This method can be used to
+        dynamically add endpoints to an application.
 
         Args:
             value: an instance of [Router][starlite.router.Router], a subclasses of
@@ -243,10 +242,11 @@ class Starlite(Router):
         self._construct_route_map()
 
     def _create_asgi_handler(self) -> "ASGIApp":
-        """
-        Creates an ASGIApp that wraps the ASGI router inside an exception handler.
+        """Creates an ASGIApp that wraps the ASGI router inside an exception
+        handler.
 
-        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
+        If CORS or TrustedHost configs are provided to the constructor,
+        they will wrap the router as well.
         """
         asgi_handler: "ASGIApp" = self.asgi_router
         if self.compression_config:
@@ -262,19 +262,19 @@ class Starlite(Router):
     def _wrap_in_exception_handler(
         self, app: "ASGIApp", exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
     ) -> "ASGIApp":
-        """
-        Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware
-        """
+        """Wraps the given ASGIApp in an instance of
+        ExceptionHandlerMiddleware."""
 
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
     def _add_node_to_route_map(self, route: BaseRoute) -> Dict[str, Any]:
-        """
-        Adds a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
+        """Adds a new route path (e.g. '/foo/bar/{param:int}') into the
+        route_map tree.
 
-        Inserts non-parameter paths ('plain routes') off the tree's root node.
-        For paths containing parameters, splits the path on '/' and nests each path
-        segment under the previous segment's node (see prefix tree / trie).
+        Inserts non-parameter paths ('plain routes') off the tree's root
+        node. For paths containing parameters, splits the path on '/'
+        and nests each path segment under the previous segment's node
+        (see prefix tree / trie).
         """
         current_node = self.route_map
         path = route.path
@@ -300,9 +300,8 @@ class Starlite(Router):
         return current_node
 
     def _configure_route_map_node(self, route: BaseRoute, node: Dict[str, Any]) -> None:
-        """
-        Set required attributes and route handlers on route_map tree node.
-        """
+        """Set required attributes and route handlers on route_map tree
+        node."""
         if "_path_parameters" not in node:
             node["_path_parameters"] = route.path_parameters
         if "_asgi_handlers" not in node:
@@ -326,8 +325,9 @@ class Starlite(Router):
             node["_is_asgi"] = True
 
     def _construct_route_map(self) -> None:
-        """
-        Create a map of the app's routes. This map is used in the asgi router to route requests.
+        """Create a map of the app's routes.
+
+        This map is used in the asgi router to route requests.
         """
         if "_components" not in self.route_map:
             self.route_map["_components"] = set()
@@ -343,7 +343,8 @@ class Starlite(Router):
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
         route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", ASGIRouteHandler],
     ) -> "ASGIApp":
-        """Constructs a middleware stack that serves as the point of entry for each route"""
+        """Constructs a middleware stack that serves as the point of entry for
+        each route."""
 
         # we wrap the route.handle method in the ExceptionHandlerMiddleware
         asgi_handler = self._wrap_in_exception_handler(
@@ -362,9 +363,8 @@ class Starlite(Router):
         )
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
-        """
-        Creates function signature models for all route handler functions and provider dependencies
-        """
+        """Creates function signature models for all route handler functions
+        and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
                 fn=cast("AnyCallable", route_handler.fn),

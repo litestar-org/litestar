@@ -37,8 +37,7 @@ class HTTPRoute(BaseRoute):
         path: str,
         route_handlers: List["HTTPRouteHandler"],
     ):
-        """
-        This class handles a multiple HTTP Routes.
+        """This class handles a multiple HTTP Routes.
 
         Args:
             path: The path for the route.
@@ -54,8 +53,8 @@ class HTTPRoute(BaseRoute):
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        ASGI app that creates a Request from the passed in args, determines which handler function to call and then handles the call.
+        """ASGI app that creates a Request from the passed in args, determines
+        which handler function to call and then handles the call.
 
         Args:
             scope: The ASGI connection scope.
@@ -81,9 +80,8 @@ class HTTPRoute(BaseRoute):
             await after_response_handler(request)
 
     def create_handler_map(self) -> None:
-        """
-        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
-        """
+        """Parses the passed in route_handlers and returns a mapping of http-
+        methods and route handlers."""
         for route_handler in self.route_handlers:
             kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
             for http_method in route_handler.http_methods:
@@ -100,8 +98,7 @@ class HTTPRoute(BaseRoute):
         route_handler: "HTTPRouteHandler",
         parameter_model: "KwargsModel",
     ) -> "StarletteResponse":
-        """
-        Handles creating a response instance and/or using cache.
+        """Handles creating a response instance and/or using cache.
 
         Args:
             scope: The Request's scope
@@ -132,9 +129,8 @@ class HTTPRoute(BaseRoute):
     async def _call_handler_function(
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
     ) -> "StarletteResponse":
-        """
-        Calls the before request handlers, retrieves any data required for the route handler,
-        and calls the route handler's to_response method.
+        """Calls the before request handlers, retrieves any data required for
+        the route handler, and calls the route handler's to_response method.
 
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
@@ -160,9 +156,8 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
-        """
-        Determines what kwargs are required for the given route handler's 'fn' and calls it
-        """
+        """Determines what kwargs are required for the given route handler's
+        'fn' and calls it."""
         signature_model = get_signature_model(route_handler)
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
@@ -190,9 +185,7 @@ class HTTPRoute(BaseRoute):
     async def _get_cached_response(
         request: Request, route_handler: "HTTPRouteHandler"
     ) -> Optional["StarletteResponse"]:
-        """
-        Retrieves and un-pickles the cached value, if it exists
-        """
+        """Retrieves and un-pickles the cached value, if it exists."""
         cache_config = request.app.cache_config
         key_builder = cast(
             "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
@@ -210,9 +203,7 @@ class HTTPRoute(BaseRoute):
     async def _set_cached_response(
         response: Union["Response", "StarletteResponse"], request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
-        """
-        Pickles and caches a response object
-        """
+        """Pickles and caches a response object."""
         cache_config = request.app.cache_config
         key_builder = cast(
             "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]

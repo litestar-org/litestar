@@ -170,7 +170,6 @@ def test_create_function_signature_model_validation() -> None:
 
 
 def test_dependency_validation_failure_raises_500() -> None:
-
     dependencies = {"dep": Provide(lambda: "thirteen")}
 
     @get("/")
@@ -188,7 +187,6 @@ def test_dependency_validation_failure_raises_500() -> None:
 
 
 def test_validation_failure_raises_400() -> None:
-
     dependencies = {"dep": Provide(lambda: 13)}
 
     @get("/")
@@ -206,7 +204,6 @@ def test_validation_failure_raises_400() -> None:
 
 
 def test_client_error_precedence_over_server_error() -> None:
-
     dependencies = {"dep": Provide(lambda: "thirteen"), "optional_dep": Provide(lambda: "thirty-one")}
 
     @get("/")

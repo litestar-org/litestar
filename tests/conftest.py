@@ -10,7 +10,7 @@ from tests.plugins.tortoise_orm import cleanup, init_tortoise
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
-    """Sets ENV variables for testing"""
+    """Sets ENV variables for testing."""
     os.environ.update(PICCOLO_CONF="tests.piccolo_conf")
 
 
@@ -21,7 +21,7 @@ def template_dir(tmp_path: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture()
 async def scaffold_tortoise() -> AsyncGenerator:
-    """Scaffolds Tortoise ORM and performs cleanup"""
+    """Scaffolds Tortoise ORM and performs cleanup."""
     await init_tortoise()
     yield
     await cleanup()
@@ -29,7 +29,7 @@ async def scaffold_tortoise() -> AsyncGenerator:
 
 @pytest.fixture()
 async def scaffold_piccolo() -> AsyncGenerator:
-    """Scaffolds Piccolo ORM and performs cleanup"""
+    """Scaffolds Piccolo ORM and performs cleanup."""
     TABLES = Finder().get_table_classes()
     await drop_db_tables(*TABLES)
     await create_db_tables(*TABLES)

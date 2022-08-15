@@ -10,8 +10,7 @@ if TYPE_CHECKING:
 
 class CompressionMiddleware(MiddlewareProtocol):
     def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
-        """
-        Compression Middleware Wrapper
+        """Compression Middleware Wrapper.
 
         This is a wrapper allowing for generic compression configuration / handler middleware
 

@@ -95,9 +95,9 @@ class TestClient(StarletteTestClient):
         )
 
     def __enter__(self: T_client, *args: Any, **kwargs: Any) -> T_client:
-        """
-        Starlette's `TestClient.__enter__()` return value is strongly typed to return their own
-        `TestClient`, i.e., not-generic to support subclassing.
+        """Starlette's `TestClient.__enter__()` return value is strongly typed
+        to return their own `TestClient`, i.e., not-generic to support
+        subclassing.
 
         We override here to provide a nicer typing experience for our users.
 
@@ -145,7 +145,7 @@ def create_test_client(
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
 ) -> TestClient:
-    """Create a TestClient"""
+    """Create a TestClient."""
     return TestClient(
         app=Starlite(
             after_request=after_request,
@@ -191,7 +191,7 @@ def create_test_request(
     scheme: str = "http",
     server: str = "test.org",
 ) -> Request:
-    """Create a starlette request using passed in parameters"""
+    """Create a starlette request using passed in parameters."""
 
     class App:
         state = State()

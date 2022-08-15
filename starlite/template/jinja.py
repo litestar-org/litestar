@@ -15,7 +15,7 @@ except ImportError as e:
 
 
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
-    """Template engine using the jinja templating library"""
+    """Template engine using the jinja templating library."""
 
     def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
         super().__init__(directory)

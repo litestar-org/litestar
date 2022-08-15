@@ -48,8 +48,8 @@ class BaseRoute(ABC):
         scope_type: "ScopeType",
         methods: Optional[List["Method"]] = None,
     ):
-        """
-        This is the base Route class used by Starlite. Its an abstract class meant to be extended.
+        """This is the base Route class used by Starlite. Its an abstract class
+        meant to be extended.
 
         Args:
             handler_names:
@@ -66,8 +66,7 @@ class BaseRoute(ABC):
 
     @abstractmethod
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
-        """
-        The route's ASGI App
+        """The route's ASGI App.
 
         Args:
             scope: The ASGI connection scope.
@@ -80,9 +79,7 @@ class BaseRoute(ABC):
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
 
     def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
-        """
-        Method to create a KwargsModel for a given route handler
-        """
+        """Method to create a KwargsModel for a given route handler."""
         dependencies = route_handler.resolve_dependencies()
         signature_model = get_signature_model(route_handler)
 
@@ -102,10 +99,11 @@ class BaseRoute(ABC):
 
     @staticmethod
     def _validate_path_parameters(parameters: List[str]) -> None:
-        """
-        Validates that path parameters adhere to the required format and datatypes
+        """Validates that path parameters adhere to the required format and
+        datatypes.
 
-        Raises ImproperlyConfiguredException if any parameter is found with invalid format
+        Raises ImproperlyConfiguredException if any parameter is found
+        with invalid format
         """
         for param in parameters:
             if len(param.split(":")) != 2:
@@ -122,9 +120,7 @@ class BaseRoute(ABC):
 
     @classmethod
     def _parse_path(cls, path: str) -> Tuple[str, str, List[PathParameterDefinition]]:
-        """
-        Normalizes and parses a path
-        """
+        """Normalizes and parses a path."""
         path = normalize_path(path)
         path_format = path
         path_parameters = []

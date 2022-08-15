@@ -27,8 +27,8 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        """
-        WebSocket Route Handler decorator. Use this decorator to decorate websocket handler functions.
+        """WebSocket Route Handler decorator. Use this decorator to decorate
+        websocket handler functions.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -49,17 +49,14 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         )
 
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
-        """
-        Replaces a function with itself
-        """
+        """Replaces a function with itself."""
         self.fn = fn
         self._validate_handler_function()
         return self
 
     def _validate_handler_function(self) -> None:
-        """
-        Validates the route handler function once it's set by inspecting its return annotations
-        """
+        """Validates the route handler function once it's set by inspecting its
+        return annotations."""
         super()._validate_handler_function()
 
         fn = cast("AnyCallable", self.fn)

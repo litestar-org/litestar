@@ -90,11 +90,11 @@ class PersonController(Controller):
 
     @get(path="/{person_id:str}")
     def get_person_by_id(self, person_id: str) -> Person:
-        """Description in docstring"""
+        """Description in docstring."""
 
     @patch(path="/{person_id:str}", description="Description in decorator")
     def partial_update_person(self, person_id: str, data: Partial[Person]) -> Person:
-        """Description in docstring"""
+        """Description in docstring."""
 
     @put(path="/{person_id:str}")
     def update_person(self, person_id: str, data: Person) -> Person:

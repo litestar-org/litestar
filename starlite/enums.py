@@ -2,9 +2,7 @@ from enum import Enum
 
 
 class HttpMethod(str, Enum):
-    """
-    An Enum for HTTP methods.
-    """
+    """An Enum for HTTP methods."""
 
     GET = "GET"
     POST = "POST"
@@ -14,9 +12,7 @@ class HttpMethod(str, Enum):
 
 
 class MediaType(str, Enum):
-    """
-    An Enum for 'Content-Type' header values.
-    """
+    """An Enum for 'Content-Type' header values."""
 
     JSON = "application/json"
     HTML = "text/html"
@@ -24,18 +20,15 @@ class MediaType(str, Enum):
 
 
 class OpenAPIMediaType(str, Enum):
-    """
-    An Enum for OpenAPI specific response 'Content-Type' header values.
-    """
+    """An Enum for OpenAPI specific response 'Content-Type' header values."""
 
     OPENAPI_YAML = "application/vnd.oai.openapi"
     OPENAPI_JSON = "application/vnd.oai.openapi+json"
 
 
 class RequestEncodingType(str, Enum):
-    """
-    An Enum for request 'Content-Type' header values designating encoding formats.
-    """
+    """An Enum for request 'Content-Type' header values designating encoding
+    formats."""
 
     JSON = "application/json"
     MULTI_PART = "multipart/form-data"
@@ -43,8 +36,7 @@ class RequestEncodingType(str, Enum):
 
 
 class ScopeType(str, Enum):
-    """
-    An Enum for the 'http' key stored under Scope.
+    """An Enum for the 'http' key stored under Scope.
 
     Notes:
         - 'asgi' is used by Starlite internally and is not part of the specification.
@@ -56,9 +48,7 @@ class ScopeType(str, Enum):
 
 
 class ParamType(str, Enum):
-    """
-    An Enum for the types of parameters a request can receive.
-    """
+    """An Enum for the types of parameters a request can receive."""
 
     PATH = "path"
     QUERY = "query"
