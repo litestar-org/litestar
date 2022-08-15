@@ -21,14 +21,22 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
     def __init__(
         self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], ExceptionHandler]
     ):
+        """
+        This middleware is used to wrap an ASGIApp inside a try catch block and handles any exceptions raised.
+
+        Notes:
+            * It's used in multiple layers of Starlite.
+
+        Args:
+            app: The 'next' ASGI app to call.
+            debug: Whether 'debug' mode is enabled
+            exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
+        """
         self.app = app
         self.exception_handlers = exception_handlers
         self.debug = debug
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
-        """
-        Wraps self.app inside a try catch block and handles any exceptions raised
-        """
         try:
             await self.app(scope, receive, send)
         except Exception as exc:  # pylint: disable=broad-except

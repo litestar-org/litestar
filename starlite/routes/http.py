@@ -28,9 +28,7 @@ if TYPE_CHECKING:
 class HTTPRoute(BaseRoute):
     __slots__ = (
         "route_handler_map",
-        "route_handlers"
-        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
-        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+        "route_handlers",
     )
 
     def __init__(
@@ -39,6 +37,13 @@ class HTTPRoute(BaseRoute):
         path: str,
         route_handlers: List["HTTPRouteHandler"],
     ):
+        """
+        This class handles a multiple HTTP Routes.
+
+        Args:
+            path: The path for the route.
+            route_handlers: A list of [HTTPRouteHandler][starlite.handlers.http.HTTPRouteHandler].
+        """
         self.route_handlers = route_handlers
         self.route_handler_map: Dict["Method", Tuple["HTTPRouteHandler", "KwargsModel"]] = {}
         super().__init__(
@@ -48,22 +53,17 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
-    def create_handler_map(self) -> None:
-        """
-        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
-        """
-        for route_handler in self.route_handlers:
-            kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
-            for http_method in route_handler.http_methods:
-                if self.route_handler_map.get(http_method):
-                    raise ImproperlyConfiguredException(
-                        f"Handler already registered for path {self.path!r} and http method {http_method}"
-                    )
-                self.route_handler_map[http_method] = (route_handler, kwargs_model)
-
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
-        ASGI app that creates a Request from the passed in args, and then awaits a Response
+        ASGI app that creates a Request from the passed in args, determines which handler function to call and then handles the call.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
         """
         request = Request[Any, Any](scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
@@ -79,6 +79,19 @@ class HTTPRoute(BaseRoute):
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
             await after_response_handler(request)
+
+    def create_handler_map(self) -> None:
+        """
+        Parses the passed in route_handlers and returns a mapping of http-methods and route handlers
+        """
+        for route_handler in self.route_handlers:
+            kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
+            for http_method in route_handler.http_methods:
+                if self.route_handler_map.get(http_method):
+                    raise ImproperlyConfiguredException(
+                        f"Handler already registered for path {self.path!r} and http method {http_method}"
+                    )
+                self.route_handler_map[http_method] = (route_handler, kwargs_model)
 
     async def _get_response_for_request(
         self,

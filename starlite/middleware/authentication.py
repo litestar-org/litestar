@@ -25,6 +25,13 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
 
     def __init__(self, app: "ASGIApp"):
+        """
+        This is an abstract AuthenticationMiddleware that allows users to create their own AuthenticationMiddleware by
+        extending it and overriding the 'authenticate_request' method.
+
+        Args:
+            app: "ASGIApp"
+        """
         super().__init__(app)
         self.app = app
 

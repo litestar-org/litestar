@@ -20,9 +20,7 @@ if TYPE_CHECKING:
 class WebSocketRoute(BaseRoute):
     __slots__ = (
         "route_handler",
-        "handler_parameter_model"
-        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
-        # see: https://stackoverflow.com/questions/472000/usage-of-slots
+        "handler_parameter_model",
     )
 
     def __init__(
@@ -31,6 +29,13 @@ class WebSocketRoute(BaseRoute):
         path: str,
         route_handler: "WebsocketRouteHandler",
     ):
+        """
+        This class handles a single Websocket Route.
+
+        Args:
+            path: The path for the route.
+            route_handler: An instance of [WebsocketRouteHandler][starlite.handlers.websocket.WebsocketRouteHandler].
+        """
         self.route_handler = route_handler
         self.handler_parameter_model: Optional["KwargsModel"] = None
         super().__init__(
@@ -38,6 +43,30 @@ class WebSocketRoute(BaseRoute):
             scope_type=ScopeType.WEBSOCKET,
             handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
+
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """
+        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        websocket = WebSocket[Any, Any](scope=scope, receive=receive, send=send)
+        if self.route_handler.resolve_guards():
+            await self.route_handler.authorize_connection(connection=websocket)
+
+        kwargs = await self._resolve_kwargs(websocket=websocket)
+
+        fn = cast("AsyncAnyCallable", self.route_handler.fn)
+        if isinstance(self.route_handler.owner, Controller):
+            await fn(self.route_handler.owner, **kwargs)
+        else:
+            await fn(**kwargs)
 
     async def _resolve_kwargs(self, websocket: WebSocket[Any, Any]) -> Dict[str, Any]:
         """
@@ -58,19 +87,3 @@ class WebSocketRoute(BaseRoute):
                 dependency=dependency, connection=websocket, **kwargs
             )
         return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs)
-
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function
-        """
-        websocket = WebSocket[Any, Any](scope=scope, receive=receive, send=send)
-        if self.route_handler.resolve_guards():
-            await self.route_handler.authorize_connection(connection=websocket)
-
-        kwargs = await self._resolve_kwargs(websocket=websocket)
-
-        fn = cast("AsyncAnyCallable", self.route_handler.fn)
-        if isinstance(self.route_handler.owner, Controller):
-            await fn(self.route_handler.owner, **kwargs)
-        else:
-            await fn(**kwargs)

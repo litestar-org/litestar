@@ -16,7 +16,7 @@ class CompressionMiddleware(MiddlewareProtocol):
         This is a wrapper allowing for generic compression configuration / handler middleware
 
         Args:
-            app: An ASGIApp instance
+            app: The 'next' ASGI app to call.
             config: An instance of [CompressionConfig][starlite.config.CompressionConfig]
         """
         self.handler = config.to_middleware(app=app)

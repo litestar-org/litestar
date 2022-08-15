@@ -71,11 +71,3 @@ class CompressionBackend(str, Enum):
 
     GZIP = "gzip"
     BROTLI = "brotli"
-
-
-class BrotliMode(str, Enum):
-    """Enumerates the available brotli compression optimization modes."""
-
-    GENERIC = "generic"
-    TEXT = "text"
-    FONT = "font"

@@ -1,11 +1,11 @@
 import io
 from enum import Enum
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
 
-from starlite.enums import BrotliMode, ScopeType
+from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
@@ -18,11 +18,32 @@ except ImportError as e:
     raise MissingDependencyException("brotli is not installed") from e
 
 
-class ContentEncoding(str, Enum):
+class CompressionEncoding(str, Enum):
     """An Enum for supported compression encodings"""
 
     GZIP = "gzip"
     BROTLI = "br"
+
+
+class BrotliMode(str, Enum):
+    """Enumerates the available brotli compression optimization modes."""
+
+    GENERIC = "generic"
+    TEXT = "text"
+    FONT = "font"
+
+    def to_int(self) -> int:
+        """
+        Select the correct brotli mode
+
+        Returns: An int correlating with the constants in the brotli package
+
+        """
+        if self == BrotliMode.TEXT:
+            return int(brotli.MODE_TEXT)
+        if self == BrotliMode.FONT:
+            return int(brotli.MODE_FONT)
+        return int(brotli.MODE_GENERIC)
 
 
 class BrotliMiddleware:
@@ -42,7 +63,7 @@ class BrotliMiddleware:
         Compresses responses using Brotli and optional fallback to Gzip.
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] App instance.
+            app: The 'next' ASGI app to call.
             minimum_size: Minimum size for the response body to affect compression.
             brotli_quality: Controls the compression-speed vs compression-density tradeoffs.
                 The higher the quality, the slower the compression. The range of this value is 0 to 11.
@@ -54,7 +75,7 @@ class BrotliMiddleware:
         """
         self.app = app
         self.quality = brotli_quality
-        self.mode = _brotli_mode_lookup(brotli_mode)
+        self.mode = brotli_mode.to_int()
         self.minimum_size = minimum_size
         self.lgwin = brotli_lgwin
         self.lgblock = brotli_lgblock
@@ -63,7 +84,7 @@ class BrotliMiddleware:
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
             headers = Headers(scope=scope)
-            if ContentEncoding.BROTLI in headers.get("Accept-Encoding", ""):
+            if CompressionEncoding.BROTLI in headers.get("Accept-Encoding", ""):
                 brotli_responder = BrotliResponder(
                     app=self.app,
                     minimum_size=self.minimum_size,
@@ -74,7 +95,7 @@ class BrotliMiddleware:
                 )
                 await brotli_responder(scope, receive, send)
                 return
-            if self.gzip_fallback and ContentEncoding.GZIP in headers.get("Accept-Encoding", ""):
+            if self.gzip_fallback and CompressionEncoding.GZIP in headers.get("Accept-Encoding", ""):
                 gzip_responder = GZipResponder(self.app, self.minimum_size)
                 await gzip_responder(scope, receive, send)
                 return
@@ -97,7 +118,7 @@ class BrotliResponder:
         Formats a response with Brotli compression.
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] App instance.
+            app: The 'next' ASGI app to call.
             minimum_size: Minimum size for the response body to affect compression.
             quality: Controls the compression-speed vs compression-density tradeoffs.
                 The higher the quality, the slower the compression. The range of this value is 0 to 11.
@@ -145,7 +166,7 @@ class BrotliResponder:
                 # Standard Brotli response.
                 body = self.br_file.process(body) + self.br_file.finish()
                 headers = MutableHeaders(raw=self.initial_message["headers"])
-                headers["Content-Encoding"] = ContentEncoding.BROTLI
+                headers["Content-Encoding"] = CompressionEncoding.BROTLI
                 headers["Content-Length"] = str(len(body))
                 headers.add_vary_header("Accept-Encoding")
                 message["body"] = body
@@ -155,7 +176,7 @@ class BrotliResponder:
             else:
                 # Initial body in streaming Brotli response.
                 headers = MutableHeaders(raw=self.initial_message["headers"])
-                headers["Content-Encoding"] = ContentEncoding.BROTLI
+                headers["Content-Encoding"] = CompressionEncoding.BROTLI
                 headers.add_vary_header("Accept-Encoding")
                 del headers["Content-Length"]
                 self.br_buffer.write(self.br_file.process(body) + self.br_file.flush())
@@ -180,14 +201,3 @@ class BrotliResponder:
             if not more_body:
                 self.br_buffer.close()
             await self.send(message)
-
-
-def _brotli_mode_lookup(mode: Union[BrotliMode, str]) -> int:
-    if isinstance(mode, str):
-        # convert to enum
-        mode = getattr(BrotliMode, mode.upper())
-    if mode == BrotliMode.TEXT:
-        return int(brotli.MODE_TEXT)
-    if mode == BrotliMode.FONT:
-        return int(brotli.MODE_FONT)
-    return int(brotli.MODE_GENERIC)

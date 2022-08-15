@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Any, Dict, Literal, Union, cast
 
 from pydantic import BaseModel, conint, validator
 
-from starlite.enums import BrotliMode, CompressionBackend
+from starlite.enums import CompressionBackend
+from starlite.middleware.compression.brotli import BrotliMode
 from starlite.utils import import_string
 
 if TYPE_CHECKING:

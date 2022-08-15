@@ -15,11 +15,7 @@ if TYPE_CHECKING:
 
 
 class ASGIRoute(BaseRoute):
-    __slots__ = (
-        "route_handler",
-        # the rest of __slots__ are defined in BaseRoute and should not be duplicated
-        # see: https://stackoverflow.com/questions/472000/usage-of-slots
-    )
+    __slots__ = ("route_handler",)
 
     def __init__(
         self,
@@ -27,6 +23,13 @@ class ASGIRoute(BaseRoute):
         path: str,
         route_handler: "ASGIRouteHandler",
     ):
+        """
+        This class handles a single ASGI Route.
+
+        Args:
+            path: The path for the route.
+            route_handler: An instance of [ASGIRouteHandler][starlite.handlers.asgi.ASGIRouteHandler].
+        """
         self.route_handler = route_handler
         super().__init__(
             path=path,
@@ -37,6 +40,14 @@ class ASGIRoute(BaseRoute):
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
         ASGI app that authorizes the connection and then awaits the handler function
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
         """
 
         if self.route_handler.resolve_guards():

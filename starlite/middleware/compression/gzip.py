@@ -20,7 +20,7 @@ class GZipMiddleware(StarletteGzipMiddleware):
         It converts the Starlite parameters into the expected Gzip parameters.
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] App instance.
+            app: The 'next' ASGI app to call.
             minimum_size: Minimum size for the response body to affect compression.
             gzip_compress_level: The gzip compression level, value is in range from 1 to 9.
         """

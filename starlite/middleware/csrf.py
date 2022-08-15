@@ -20,16 +20,20 @@ CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
 class CSRFMiddleware(MiddlewareProtocol):
-    """CSRF middleware for Starlite
-
-    Prevent CSRF attacks by setting a CSRF cookie with a token and verifying it in request headers.
-    """
-
     def __init__(
         self,
         app: "ASGIApp",
         config: "CSRFConfig",
     ):
+        """
+        CSRF Middleware class.
+
+        This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
+
+        Args:
+            app: The 'next' ASGI app to call.
+            config: The CSRFConfig instance.
+        """
         super().__init__(app)
         self.app = app
         self.config = config
@@ -51,6 +55,15 @@ class CSRFMiddleware(MiddlewareProtocol):
         else:
 
             async def send_wrapper(message: "Message") -> None:
+                """
+                Send function that wraps the original send to inject a cookie
+
+                Args:
+                    message: An ASGI 'Message'
+
+                Returns:
+                    None
+                """
                 if csrf_cookie is None and message["type"] == "http.response.start":
                     message.setdefault("headers", [])
                     headers = MutableHeaders(scope=message)

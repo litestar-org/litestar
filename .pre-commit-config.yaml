@@ -51,12 +51,6 @@ repos:
     hooks:
       - id: markdownlint
         args: [--disable=MD013, --disable=MD033, --disable=MD050]
-  - repo: https://github.com/econchick/interrogate
-    rev: 1.5.0
-    hooks:
-      - id: interrogate
-        exclude: "test_*"
-        args: [-vv]
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.2
     hooks:
