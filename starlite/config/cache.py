@@ -49,5 +49,5 @@ class CacheConfig(BaseModel):
     cache_key_builder: CacheKeyBuilder = default_cache_key_builder
     """
         [CacheKeyBuilder][starlite.types.CacheKeyBuilder],
-        [default_cache_key_builder][starlite.config.default_cache_key_builder] if not provided
+        [default_cache_key_builder][starlite.config.cache.default_cache_key_builder] if not provided
     """

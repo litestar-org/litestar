@@ -30,7 +30,7 @@
         members:
             - __init__
 
-::: starlite.exceptions.TemplateNotFound
+::: starlite.exceptions.TemplateNotFoundException
     options:
         members:
             - __init__

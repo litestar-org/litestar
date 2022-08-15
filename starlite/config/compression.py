@@ -24,7 +24,7 @@ class CompressionConfig(BaseModel):
 
     backend: Union[CompressionBackend]
     """
-        [CompressionBackend][starlite.middleware.compression.base.CompressionBackend] or dotted path for
+        [CompressionBackend][starlite.enums.CompressionBackend] or dotted path for
         compression backend to import.
     """
     minimum_size: conint(gt=0) = 500  # type: ignore[valid-type]

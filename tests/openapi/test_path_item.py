@@ -38,6 +38,6 @@ def test_create_path_item_use_handler_docstring_false(route: HTTPRoute) -> None:
 def test_create_path_item_use_handler_docstring_true(route: HTTPRoute) -> None:
     schema = create_path_item(route=route, create_examples=True, plugins=[], use_handler_docstrings=True)
     assert schema.get
-    assert schema.get.description == "Description in docstring"
+    assert schema.get.description == "Description in docstring."
     assert schema.patch
     assert schema.patch.description == "Description in decorator"
