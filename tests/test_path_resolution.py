@@ -191,6 +191,7 @@ def test_conflicting_paths() -> None:
     [
         ("/name:str/{name:str}", "/name:str/test", HTTP_200_OK, "test"),
         ("/user/*/{name:str}", "/user/foo/bar", HTTP_404_NOT_FOUND, None),
+        ("/user/*/{name:str}", "/user/*/bar", HTTP_200_OK, "bar"),
     ],
 )
 def test_special_chars(
@@ -205,7 +206,4 @@ def test_special_chars(
         assert response.status_code == expected_status_code
 
         if response.ok:
-            if expected_param is not None:
-                assert response.text == expected_param
-            else:
-                assert response.content == b""
+            assert response.text == expected_param

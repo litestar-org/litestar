@@ -1,15 +1,5 @@
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    MutableMapping,
-    Set,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, Type, Union, cast
 
 from starlette.routing import Router as StarletteRouter
 
@@ -21,7 +11,6 @@ from starlite.exceptions import (
 )
 
 if TYPE_CHECKING:
-
     from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.app import Starlite
@@ -29,16 +18,13 @@ if TYPE_CHECKING:
     from starlite.types import LifeCycleHandler
 
 
-# Sentinel object to represent a path param in the route map
-class _PathParam:
-    def __repr__(self) -> str:  # pragma: no cover
-        return "*"
+class PathParamPlaceholder:
+    """Sentinel object to represent a path param in the route map."""
 
 
-_path_param = _PathParam()
-
-RouteMapDict = MutableMapping[Union[str, _PathParam], Any]
-ComponentsSet = Set[Union[str, _PathParam]]
+PathParamPlaceholderType = Type[PathParamPlaceholder]
+RouteMapNode = Dict[Union[str, PathParamPlaceholderType], Any]
+ComponentsSet = Set[Union[str, PathParamPlaceholderType]]
 
 
 class StarliteASGIRouter(StarletteRouter):
@@ -54,7 +40,7 @@ class StarliteASGIRouter(StarletteRouter):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
-    def _traverse_route_map(self, path: str, scope: "Scope") -> Tuple[RouteMapDict, List[str]]:
+    def _traverse_route_map(self, path: str, scope: "Scope") -> Tuple[RouteMapNode, List[str]]:
         """Traverses the application route mapping and retrieves the correct
         node for the request url.
 
@@ -66,20 +52,20 @@ class StarliteASGIRouter(StarletteRouter):
         for component in components:
             components_set = cast("ComponentsSet", current_node["_components"])
             if component in components_set:
-                current_node = cast("RouteMapDict", current_node[component])
+                current_node = cast("RouteMapNode", current_node[component])
                 if "_static_path" in current_node:
                     self._handle_static_path(scope=scope, node=current_node)
                     break
                 continue
-            if _path_param in components_set:
+            if PathParamPlaceholder in components_set:
                 path_params.append(component)
-                current_node = cast("RouteMapDict", current_node[_path_param])
+                current_node = cast("RouteMapNode", current_node[PathParamPlaceholder])
                 continue
             raise NotFoundException()
         return current_node, path_params
 
     @staticmethod
-    def _handle_static_path(scope: "Scope", node: RouteMapDict) -> None:
+    def _handle_static_path(scope: "Scope", node: RouteMapNode) -> None:
         """Normalize the static path and update scope so file resolution will
         work as expected.
 
@@ -133,7 +119,7 @@ class StarliteASGIRouter(StarletteRouter):
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
-            current_node: RouteMapDict = self.app.route_map[path]
+            current_node: RouteMapNode = self.app.route_map[path]
             path_params: List[str] = []
         else:
             current_node, path_params = self._traverse_route_map(path=path, scope=scope)

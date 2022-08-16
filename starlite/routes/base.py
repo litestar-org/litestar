@@ -123,30 +123,34 @@ class BaseRoute(ABC):
 
     @classmethod
     def _parse_path(cls, path: str) -> Tuple[str, str, List[Union[str, PathParameterDefinition]]]:
-        """Normalizes and parses a path."""
+        """Normalizes and parses a path.
+
+        Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
+        compatible path, which does not include the type of the path parameters.
+
+        Returns:
+            A 3-tuple of the normalized path, the OpenAPI formatted path, and the list of parsed components.
+        """
         path = normalize_path(path)
 
         parsed_components: List[Union[str, PathParameterDefinition]] = []
+        path_format_components = []
 
-        # Handle each component in the route path
         components = [component for component in path.split("/") if component]
         for component in components:
             param_match = param_match_regex.fullmatch(component)
             if param_match:
-                # Parse and validate components that are path params
                 param = param_match.group(1)
                 cls._validate_path_parameter(param)
                 param_name, param_type = (p.strip() for p in param.split(":"))
                 parsed_components.append(
                     PathParameterDefinition(name=param_name, type=param_type_map[param_type], full=param)
                 )
+                path_format_components.append("{" + param_name + "}")
             else:
-                # Just append strings
                 parsed_components.append(component)
+                path_format_components.append(component)
 
-        # Build the url used for the OpenAPI schema
-        path_format = join_paths(
-            f"{{{component['name']}}}" if isinstance(component, dict) else component for component in parsed_components
-        )
+        path_format = join_paths(path_format_components)
 
         return path, path_format, parsed_components
