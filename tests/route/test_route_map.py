@@ -1,13 +1,14 @@
 import re
 from random import shuffle
 from string import ascii_letters
-from typing import Any, Dict, List, Set, Tuple, cast
+from typing import List, Set, Tuple, Union, cast
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.strategies import DrawFn
 
 from starlite import HTTPRoute, get
+from starlite.asgi import RouteMapDict, _path_param, _PathParam
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.testing import create_test_client
 
@@ -16,10 +17,20 @@ param_pat = re.compile(r"{.*?:int}")
 RouteMapTestCase = Tuple[str, str, Set[str]]
 
 
-def is_path_in_route_map(route_map: Dict[str, Any], path: str, path_params: Set[str]) -> bool:
+def is_path_in_route_map(route_map: RouteMapDict, path: str, path_params: Set[str]) -> bool:
     if not path_params:
         return path in route_map
-    components = ["/", *[component for component in param_pat.sub("*", path).split("/") if component]]
+    components = cast(
+        "List[Union[str, _PathParam]]",
+        [
+            "/",
+            *[
+                _path_param if param_pat.fullmatch(component) else component
+                for component in path.split("/")
+                if component
+            ],
+        ],
+    )
     cur_node = route_map
     for component in components:
         if component not in cur_node:

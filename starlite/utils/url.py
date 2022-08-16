@@ -1,5 +1,5 @@
 import re
-from typing import Sequence
+from typing import Iterable
 
 
 def normalize_path(path: str) -> str:
@@ -19,6 +19,6 @@ def normalize_path(path: str) -> str:
     return path
 
 
-def join_paths(paths: Sequence[str]) -> str:
+def join_paths(paths: Iterable[str]) -> str:
     """Normalizes and joins path fragments."""
     return normalize_path("/".join(paths))

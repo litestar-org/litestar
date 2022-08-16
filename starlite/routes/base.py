@@ -146,10 +146,7 @@ class BaseRoute(ABC):
 
         # Build the url used for the OpenAPI schema
         path_format = join_paths(
-            [
-                f"{{{component['name']}}}" if isinstance(component, dict) else component
-                for component in parsed_components
-            ]
+            f"{{{component['name']}}}" if isinstance(component, dict) else component for component in parsed_components
         )
 
         return path, path_format, parsed_components

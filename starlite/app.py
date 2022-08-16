@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, cast
 
 from pydantic import validate_arguments
 from pydantic.fields import FieldInfo
@@ -6,7 +6,7 @@ from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from starlite.asgi import StarliteASGIRouter
+from starlite.asgi import RouteMapDict, StarliteASGIRouter, _path_param
 from starlite.config import (
     CacheConfig,
     CompressionConfig,
@@ -45,8 +45,10 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
     from starlette.types import ASGIApp, Receive, Scope, Send
 
+    from starlite.asgi import ComponentsSet, _PathParam
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
+    from starlite.routes.base import PathParameterDefinition
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -164,7 +166,7 @@ class Starlite(Router):
         self.compression_config = compression_config
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
-        self.route_map: Dict[str, Any] = {}
+        self.route_map: RouteMapDict = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
 
@@ -267,7 +269,7 @@ class Starlite(Router):
 
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
-    def _add_node_to_route_map(self, route: BaseRoute) -> Dict[str, Any]:
+    def _add_node_to_route_map(self, route: BaseRoute) -> RouteMapDict:
         """Adds a new route path (e.g. '/foo/bar/{param:int}') into the
         route_map tree.
 
@@ -279,16 +281,19 @@ class Starlite(Router):
         current_node = self.route_map
         path = route.path
         if route.path_parameters or path in self._static_paths:
-            for param_definition in route.path_parameters:
-                path = path.replace(param_definition["full"], "")
-            path = path.replace("{}", "*")
-            components = ["/", *[component for component in path.split("/") if component]]
+            components = cast("List[Union[str, _PathParam, PathParameterDefinition]]", ["/", *route.path_components])
             for component in components:
-                components_set = cast("Set[str]", current_node["_components"])
+                components_set = cast("ComponentsSet", current_node["_components"])
+
+                if isinstance(component, dict):
+                    # Represent path parameters using a special value
+                    component = _path_param
+
                 components_set.add(component)
+
                 if component not in current_node:
                     current_node[component] = {"_components": set()}
-                current_node = cast("Dict[str, Any]", current_node[component])
+                current_node = cast("RouteMapDict", current_node[component])
                 if "_static_path" in current_node:
                     raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
         else:
@@ -299,7 +304,7 @@ class Starlite(Router):
         self._configure_route_map_node(route, current_node)
         return current_node
 
-    def _configure_route_map_node(self, route: BaseRoute, node: Dict[str, Any]) -> None:
+    def _configure_route_map_node(self, route: BaseRoute, node: RouteMapDict) -> None:
         """Set required attributes and route handlers on route_map tree
         node."""
         if "_path_parameters" not in node:
