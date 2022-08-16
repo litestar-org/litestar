@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 # Sentinel object to represent a path param in the route map
 class _PathParam:
-    def __repr__(self) -> str:
+    def __repr__(self) -> str:  # pragma: no cover
         return "*"
 
 
