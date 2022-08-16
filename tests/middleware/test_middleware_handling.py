@@ -15,7 +15,6 @@ from starlite import (
     Request,
     Response,
     Router,
-    Starlite,
     get,
     post,
 )
@@ -31,9 +30,10 @@ logger = logging.getLogger(__name__)
 
 
 class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
-    def __init__(self, app: "ASGIApp") -> None:
+    def __init__(self, app: "ASGIApp", kwarg: str = "") -> None:
         super().__init__(app)
         self.app = app
+        self.kwarg = kwarg
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == "http":
@@ -49,35 +49,52 @@ class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
         return await call_next(request)  # type: ignore
 
 
-class CustomHeaderMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: Any, header_value: str = "Example") -> None:
+class KwargMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: Any, kwarg: str) -> None:
         super().__init__(app)
-        self.header_value = header_value
+        self.kwarg = kwarg
 
     async def dispatch(  # type: ignore
         self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        response = await call_next(request)
-        response.headers["Custom"] = self.header_value
-        return response
-
-
-@pytest.mark.parametrize(
-    "middleware",
-    [
-        MiddlewareProtocolRequestLoggingMiddleware,
-        BaseMiddlewareRequestLoggingMiddleware,
-        Middleware(CustomHeaderMiddleware, header_value="Customized"),
-    ],
-)
-def test_custom_middleware_processing(middleware: Any) -> None:
-    app = Starlite(route_handlers=[], middleware=[middleware])
-    assert app.middleware == [middleware]
+        ...
 
 
 @get(path="/")
 def handler() -> None:
     ...
+
+
+@pytest.mark.parametrize(
+    "middleware",
+    [
+        BaseMiddlewareRequestLoggingMiddleware,
+        Middleware(KwargMiddleware, kwarg="123Jeronimo"),
+        Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
+    ],
+)
+def test_custom_middleware_processing(middleware: Any) -> None:
+    with create_test_client(route_handlers=[handler], middleware=[middleware]) as client:
+        app = client.app
+        assert app.middleware == [middleware]
+
+        unpacked_middleware = []
+        cur = client.app.route_map["/"]["_asgi_handlers"]["GET"]
+        while hasattr(cur, "app"):
+            unpacked_middleware.append(cur)
+            cur = cast("ASGIApp", cur.app)
+        else:
+            unpacked_middleware.append(cur)
+        assert len(unpacked_middleware) == 4
+
+        middleware_instance = unpacked_middleware[1]
+
+        assert isinstance(
+            middleware_instance,
+            (MiddlewareProtocolRequestLoggingMiddleware, BaseMiddlewareRequestLoggingMiddleware, KwargMiddleware),
+        )
+        if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, KwargMiddleware)):
+            assert middleware_instance.kwarg == "123Jeronimo"
 
 
 class JSONRequest(BaseModel):

@@ -42,11 +42,8 @@ class BaseRouteHandler(Generic[T]):
 
     __slots__ = (
         "_resolved_dependencies",
-        "_resolved_dependency_name_set",
-        "_resolved_exception_handlers",
         "_resolved_guards",
         "_resolved_layered_parameters",
-        "_resolved_middleware",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -83,28 +80,15 @@ class BaseRouteHandler(Generic[T]):
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.signature_model: Optional[Type["SignatureModel"]] = None
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
-        self._resolved_dependency_name_set: Union[Set[str], EmptyType] = Empty
-        self._resolved_exception_handlers: Union[Dict[Union[int, Type[Exception]], ExceptionHandler], EmptyType] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_middleware: Union[List[Middleware], EmptyType] = Empty
         self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
 
     @property
     def dependency_name_set(self) -> Set[str]:
         """The set of all dependency names provided in the handler's ownership
-        layers.
-
-        Intended as a fast to compute set of the names of dependencies
-        provided to the handler, and available at the time that the
-        handler's signature model is generated. Full resolution of
-        dependencies requires that the signature model is already
-        generated and is performed in
-        ``BaseRouteHandler.resolve_dependencies()``.
-        """
-        if self._resolved_dependency_name_set is Empty:
-            layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
-            self._resolved_dependency_name_set = {name for layer in layered_dependencies for name in layer.keys()}
-        return cast("Set[str]", self._resolved_dependency_name_set)
+        layers."""
+        layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
+        return {name for layer in layered_dependencies for name in layer.keys()}
 
     @property
     def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
@@ -177,12 +161,10 @@ class BaseRouteHandler(Generic[T]):
         The middlewares are added from top to bottom (app -> router ->
         controller -> route handler) and then reversed.
         """
-        if self._resolved_middleware is Empty:
-            self._resolved_middleware = []
-            for layer in self.ownership_layers:
-                self._resolved_middleware.extend(layer.middleware or [])
-            self._resolved_middleware = list(reversed(self._resolved_middleware))
-        return cast("List[Middleware]", self._resolved_middleware)
+        resolved_middleware = []
+        for layer in self.ownership_layers:
+            resolved_middleware.extend(layer.middleware or [])
+        return list(reversed(resolved_middleware))
 
     def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
         """Resolves the exception_handlers by starting from the route handler
@@ -190,11 +172,10 @@ class BaseRouteHandler(Generic[T]):
 
         This method is memoized so the computation occurs only once.
         """
-        if self._resolved_exception_handlers is Empty:
-            self._resolved_exception_handlers = {}
-            for layer in self.ownership_layers:
-                self._resolved_exception_handlers.update(layer.exception_handlers or {})
-        return cast("Dict[Union[int, Type[Exception]], ExceptionHandler]", self._resolved_exception_handlers)
+        resolved_exception_handlers = {}
+        for layer in self.ownership_layers:
+            resolved_exception_handlers.update(layer.exception_handlers or {})
+        return resolved_exception_handlers
 
     async def authorize_connection(self, connection: "HTTPConnection") -> None:
         """Ensures the connection is authorized by running all the route guards

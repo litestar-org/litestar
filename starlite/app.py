@@ -353,7 +353,8 @@ class Starlite(Router):
 
         for middleware in route_handler.resolve_middleware():
             if isinstance(middleware, StarletteMiddleware):
-                asgi_handler = middleware.cls(app=asgi_handler, **middleware.options)
+                handler, kwargs = middleware
+                asgi_handler = handler(app=asgi_handler, **kwargs)
             else:
                 asgi_handler = middleware(app=asgi_handler)
 
