@@ -303,6 +303,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "waweber",
+      "name": "wweber",
+      "avatar_url": "https://avatars.githubusercontent.com/u/714224?v=4",
+      "profile": "https://github.com/waweber",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
