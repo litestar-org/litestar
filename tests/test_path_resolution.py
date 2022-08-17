@@ -184,3 +184,26 @@ def test_conflicting_paths() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         create_test_client(handler_fn)
+
+
+@pytest.mark.parametrize(
+    "handler_path, request_path, expected_status_code, expected_param",
+    [
+        ("/name:str/{name:str}", "/name:str/test", HTTP_200_OK, "test"),
+        ("/user/*/{name:str}", "/user/foo/bar", HTTP_404_NOT_FOUND, None),
+        ("/user/*/{name:str}", "/user/*/bar", HTTP_200_OK, "bar"),
+    ],
+)
+def test_special_chars(
+    handler_path: str, request_path: str, expected_status_code: int, expected_param: Optional[str]
+) -> None:
+    @get(path=handler_path, media_type=MediaType.TEXT)
+    def handler_fn(name: str) -> str:
+        return name
+
+    with create_test_client(handler_fn) as client:
+        response = client.get(request_path)
+        assert response.status_code == expected_status_code
+
+        if response.ok:
+            assert response.text == expected_param

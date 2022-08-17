@@ -1,25 +1,36 @@
 import re
 from random import shuffle
 from string import ascii_letters
-from typing import Any, Dict, List, Set, Tuple, cast
+from typing import List, Set, Tuple, Union, cast
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.strategies import DrawFn
 
 from starlite import HTTPRoute, get
+from starlite.asgi import PathParamPlaceholder, PathParamPlaceholderType, RouteMapNode
 from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.testing import create_test_client
 
-param_pat = re.compile(r"{.*?:int}")
+param_pattern = re.compile(r"{.*?:int}")
 
 RouteMapTestCase = Tuple[str, str, Set[str]]
 
 
-def is_path_in_route_map(route_map: Dict[str, Any], path: str, path_params: Set[str]) -> bool:
+def is_path_in_route_map(route_map: RouteMapNode, path: str, path_params: Set[str]) -> bool:
     if not path_params:
         return path in route_map
-    components = ["/", *[component for component in param_pat.sub("*", path).split("/") if component]]
+    components = cast(
+        "List[Union[str, PathParamPlaceholderType]]",
+        [
+            "/",
+            *[
+                PathParamPlaceholder if param_pattern.fullmatch(component) else component
+                for component in path.split("/")
+                if component
+            ],
+        ],
+    )
     cur_node = route_map
     for component in components:
         if component not in cur_node:
@@ -37,7 +48,7 @@ def route_test_paths(draw: DrawFn) -> List[RouteMapTestCase]:
         segments = components + [f"{{{p}:int}}" for p in params]
         shuffle(segments)
         router_path = "/" + "/".join(segments)
-        request_path = param_pat.sub("1", router_path)
+        request_path = param_pattern.sub("1", router_path)
         return router_path, request_path, {f"{p}:int" for p in params}
 
     parameter_names = ["a", "b", "c", "d", "e"]

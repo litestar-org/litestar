@@ -1,6 +1,6 @@
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, List, Optional, Tuple, Type, Union
 from uuid import UUID
 
 from typing_extensions import TypedDict
@@ -8,7 +8,7 @@ from typing_extensions import TypedDict
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
-from starlite.utils import normalize_path
+from starlite.utils import join_paths, normalize_path
 
 if TYPE_CHECKING:
     from starlette.types import Receive, Scope, Send
@@ -37,6 +37,7 @@ class BaseRoute(ABC):
         "path",
         "path_format",
         "path_parameters",
+        "path_components",
         "scope_type",
     )
 
@@ -57,7 +58,10 @@ class BaseRoute(ABC):
             scope_type:
             methods:
         """
-        self.path, self.path_format, self.path_parameters = self._parse_path(path)
+        self.path, self.path_format, self.path_components = self._parse_path(path)
+        self.path_parameters: List[PathParameterDefinition] = [
+            component for component in self.path_components if isinstance(component, dict)
+        ]
         self.handler_names = handler_names
         self.scope_type = scope_type
         self.methods = set(methods or [])
@@ -98,38 +102,55 @@ class BaseRoute(ABC):
         )
 
     @staticmethod
-    def _validate_path_parameters(parameters: List[str]) -> None:
-        """Validates that path parameters adhere to the required format and
+    def _validate_path_parameter(param: str) -> None:
+        """Validates that a path parameter adheres to the required format and
         datatypes.
 
-        Raises ImproperlyConfiguredException if any parameter is found
-        with invalid format
+        Raises:
+            ImproperlyConfiguredException: If the parameter has an invalid format.
         """
-        for param in parameters:
-            if len(param.split(":")) != 2:
-                raise ImproperlyConfiguredException(
-                    "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
-                )
-            param_name, param_type = (p.strip() for p in param.split(":"))
-            if len(param_name) == 0:
-                raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
-            if param_type not in param_type_map:
-                raise ImproperlyConfiguredException(
-                    "Path parameters should be declared with an allowed type, i.e. 'str', 'int', 'float' or 'uuid'"
-                )
+        if len(param.split(":")) != 2:
+            raise ImproperlyConfiguredException(
+                "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
+            )
+        param_name, param_type = (p.strip() for p in param.split(":"))
+        if len(param_name) == 0:
+            raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
+        if param_type not in param_type_map:
+            raise ImproperlyConfiguredException(
+                "Path parameters should be declared with an allowed type, i.e. 'str', 'int', 'float' or 'uuid'"
+            )
 
     @classmethod
-    def _parse_path(cls, path: str) -> Tuple[str, str, List[PathParameterDefinition]]:
-        """Normalizes and parses a path."""
+    def _parse_path(cls, path: str) -> Tuple[str, str, List[Union[str, PathParameterDefinition]]]:
+        """Normalizes and parses a path.
+
+        Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
+        compatible path, which does not include the type of the path parameters.
+
+        Returns:
+            A 3-tuple of the normalized path, the OpenAPI formatted path, and the list of parsed components.
+        """
         path = normalize_path(path)
-        path_format = path
-        path_parameters = []
-        identified_params = param_match_regex.findall(path)
-        cls._validate_path_parameters(identified_params)
-        for param in identified_params:
-            param_name, param_type = (p.strip() for p in param.split(":"))
-            path_format = path_format.replace(param, param_name)
-            path_parameters.append(
-                PathParameterDefinition(name=param_name, type=param_type_map[param_type], full=param)
-            )
-        return path, path_format, path_parameters
+
+        parsed_components: List[Union[str, PathParameterDefinition]] = []
+        path_format_components = []
+
+        components = [component for component in path.split("/") if component]
+        for component in components:
+            param_match = param_match_regex.fullmatch(component)
+            if param_match:
+                param = param_match.group(1)
+                cls._validate_path_parameter(param)
+                param_name, param_type = (p.strip() for p in param.split(":"))
+                parsed_components.append(
+                    PathParameterDefinition(name=param_name, type=param_type_map[param_type], full=param)
+                )
+                path_format_components.append("{" + param_name + "}")
+            else:
+                parsed_components.append(component)
+                path_format_components.append(component)
+
+        path_format = join_paths(path_format_components)
+
+        return path, path_format, parsed_components
