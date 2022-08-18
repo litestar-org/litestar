@@ -17,11 +17,9 @@ from typing import (
 from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.middleware import Middleware as StarletteMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
-from typing_extensions import Literal, Protocol, runtime_checkable
+from typing_extensions import Literal
 
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.utils import is_class_and_subclass
@@ -33,12 +31,17 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
+    from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
 
     from starlite.connection import Request  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.middleware.base import (  # noqa: TC004
+        DefineMiddleware,
+        MiddlewareProtocol,
+    )
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
@@ -49,9 +52,15 @@ else:
     Router = Any
     State = Any
     Response = Any
+    MiddlewareProtocol = Any
+    StarletteMiddleware = Any
+    BaseHTTPMiddleware = Any
+    DefineMiddleware = Any
 
 T = TypeVar("T", bound=BaseModel)
 H = TypeVar("H", bound=HTTPConnection)
+
+Middleware = Union[StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
 
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
@@ -81,15 +90,6 @@ AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]
 
 
-@runtime_checkable
-class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):  # pragma: no cover
-        ...
-
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
-        ...
-
-
 class Partial(Generic[T]):
     _models: Dict[Type[T], Any] = {}
 
@@ -113,9 +113,6 @@ class Partial(Generic[T]):
                     break
             cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
         return cast("Type[T]", cls._models.get(item))
-
-
-Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
 
 
 class Empty:

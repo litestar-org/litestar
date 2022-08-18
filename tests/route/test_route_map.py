@@ -9,7 +9,7 @@ from hypothesis.strategies import DrawFn
 
 from starlite import HTTPRoute, get
 from starlite.asgi import PathParamPlaceholder, PathParamPlaceholderType, RouteMapNode
-from starlite.middleware import ExceptionHandlerMiddleware
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.testing import create_test_client
 
 param_pattern = re.compile(r"{.*?:int}")

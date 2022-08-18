@@ -92,7 +92,7 @@ nav:
           - usage/6-dependency-injection/3-the-provide-class.md
           - usage/6-dependency-injection/4-dependencies-in-dependencies.md
           - usage/6-dependency-injection/5-the-dependency-function.md
-      - usage/7-middleware.md
+      - usage/0-middleware-intro.md
       - usage/8-authentication.md
       - usage/9-guards.md
       - Plugins:

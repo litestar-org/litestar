@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from starlette.types import ASGIApp
 
-    from starlite.types import MiddlewareProtocol
+    from starlite.middleware.base import MiddlewareProtocol
 
 
 class CompressionConfig(BaseModel):

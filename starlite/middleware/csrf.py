@@ -8,7 +8,7 @@ from starlette.datastructures import MutableHeaders
 
 from starlite.connection import Request
 from starlite.exceptions import PermissionDeniedException
-from starlite.types import MiddlewareProtocol
+from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Message, Receive, Scope, Send

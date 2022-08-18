@@ -26,16 +26,16 @@ The Starlite constructor accepts the following additional kwargs:
 
 - `after_request`: A [after request lifecycle hook handler](../13-lifecycle-hooks.md#after-request).
 - `after_response`: A [after response lifecycle hook handler](../13-lifecycle-hooks.md#after-response).
-- `allowed_hosts`: A list of allowed hosts. If set this enables the [AllowedHostsMiddleware](../7-middleware.md#built-in-middlewares).
+- `allowed_hosts`: A list of allowed hosts. If set this enables the [AllowedHostsMiddleware](../7-middleware/0-middleware-intro.md#built-in-middlewares).
 - `before_request`: A [before request lifecycle hook handler](../13-lifecycle-hooks.md#before-request).
 - `cache_config`: A [CacheConfig instance](../16-caching.md#configuring-caching). Allows specification of cache parameters such as backend, expiry, etc.
-- `compression_config`: A [CompressionConfig instance](../7-middleware.md#compression). Built in support for Gzip and Brotli compression.
-- `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the [CORSMiddleware](../7-middleware.md#built-in-middlewares).
+- `compression_config`: A [CompressionConfig instance](../7-middleware/0-middleware-intro.md#compression). Built in support for Gzip and Brotli compression.
+- `cors_config`: An instance of `starlite.config.CORSConfig`. If set this enables the [CORSMiddleware](../7-middleware/0-middleware-intro.md#built-in-middlewares).
 - `debug`: A boolean flag toggling debug mode on and off, if True, 404 errors will be rendered as HTML with a stack trace. This option should _not_ be used in production. Defaults to `False`.
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
-- `middleware`: A list of middlewares. See [middleware](../7-middleware.md).
+- `middleware`: A list of middlewares. See [middleware](../7-middleware/0-middleware-intro.md).
 - `on_shutdown`: A list of callables that are called during the application shutdown. See [startup-and-shutdown](./1-startup-and-shutdown.md).
 - `on_startup`: A list of callables that are called during the application startup. See [startup-and-shutdown](./1-startup-and-shutdown.md).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config. See [open-api](../12-openapi.md).

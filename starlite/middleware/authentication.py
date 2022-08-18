@@ -6,8 +6,8 @@ from starlette.requests import HTTPConnection
 
 from starlite.enums import MediaType, ScopeType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
+from starlite.middleware.base import MiddlewareProtocol
 from starlite.response import Response
-from starlite.types import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send

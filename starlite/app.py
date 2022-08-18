@@ -20,8 +20,9 @@ from starlite.datastructures import Cookie, ResponseHeader, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.middleware import CSRFMiddleware, ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
+from starlite.middleware.csrf import CSRFMiddleware
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response

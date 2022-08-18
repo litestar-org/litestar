@@ -35,7 +35,7 @@ of **[pydantic](https://github.com/samuelcolvin/pydantic)** and **[Starlette](ht
 The Starlite framework supports **[plugins](usage/10-plugins/0-plugins-intro.md)**, ships
 with **[dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md)**, **[authentication](usage/8-authentication.md)**
 , **[OpenAPI specifications-generation](usage/12-openapi.md)** – among other common API-framework components such
-as **[middleware](usage/7-middleware.md)** and **[guards](usage/9-guards.md)**.
+as **[middleware](usage/7-middleware/0-middleware-intro.md)** and **[guards](usage/9-guards.md)**.
 
 ## Installation
 
@@ -57,7 +57,7 @@ To install the extras required for logging with [Picologging](./usage/0-the-star
 pip install starlite[picologging]
 ```
 
-To install the extras required for using the [Brotli Compression Middleware](./usage/7-middleware.md#brotli):
+To install the extras required for using the [Brotli Compression Middleware](usage/7-middleware/0-middleware-intro.md#brotli):
 
 ```shell
 pip install starlite[brotli]
