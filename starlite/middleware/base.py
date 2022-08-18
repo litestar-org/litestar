@@ -7,10 +7,28 @@ if TYPE_CHECKING:
 @runtime_checkable
 class MiddlewareProtocol(Protocol):  # pragma: no cover
     def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):
-        ...
+        """The MiddlewareProtocol is a PEP 544 Protocol that species the bare-
+        bone requirements for an ASGI middleware.
+
+        Args:
+            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+            **kwargs: Any key value pairs that are required for the middleware.
+        """
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        ...
+        """The call method is the ASGIApp entry point. Once the middleware
+        finishes doing whatever it is meant to be doing,
+
+        it should call the next ASGI handler and await it - or await a response created in its closure.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
 
 
 class DefineMiddleware:
@@ -38,4 +56,13 @@ class DefineMiddleware:
         self.kwargs = kwargs
 
     def __call__(self, app: "ASGIApp") -> "ASGIApp":
+        """
+
+        Args:
+            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+
+        Returns:
+            Calls 'self.middleware' and returns the ASGIApp created.
+
+        """
         return self.middleware(*self.args, app=app, **self.kwargs)

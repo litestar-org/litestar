@@ -69,7 +69,7 @@ from .provide import Provide
 from .response import Response
 from .router import Router
 from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from .types import Partial
+from .typing import Partial
 
 __all__ = [
     "ASGIRoute",

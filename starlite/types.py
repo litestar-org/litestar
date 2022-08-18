@@ -1,34 +1,12 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    Callable,
-    Dict,
-    Generic,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    get_type_hints,
-)
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
 
-from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from typing_extensions import Literal
 
-from starlite.exceptions import HTTPException, ImproperlyConfiguredException
-from starlite.utils import is_class_and_subclass
-
-try:
-    # python 3.9 changed these variable
-    from typing import _UnionGenericAlias as GenericAlias  # type: ignore
-except ImportError:  # pragma: no cover
-    from typing import _GenericAlias as GenericAlias  # type: ignore
+from starlite.exceptions import HTTPException
 
 if TYPE_CHECKING:
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
@@ -57,7 +35,6 @@ else:
     BaseHTTPMiddleware = Any
     DefineMiddleware = Any
 
-T = TypeVar("T", bound=BaseModel)
 H = TypeVar("H", bound=HTTPConnection)
 
 Middleware = Union[StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
@@ -90,33 +67,8 @@ AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]
 
 
-class Partial(Generic[T]):
-    _models: Dict[Type[T], Any] = {}
-
-    def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Modifies a given T subclass of BaseModel to be all optional."""
-        if not is_class_and_subclass(item, BaseModel):
-            raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
-        if not cls._models.get(item):
-            field_definitions: Dict[str, Tuple[Any, None]] = {}
-            # traverse the object's mro and get all annotations
-            # until we find a BaseModel.
-            for obj in item.mro():
-                if issubclass(obj, BaseModel):
-                    for field_name, field_type in get_type_hints(obj).items():
-                        # we modify the field annotations to make it optional
-                        if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
-                            field_definitions[field_name] = (Optional[field_type], None)
-                        else:
-                            field_definitions[field_name] = (field_type, None)
-                else:
-                    break
-            cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
-        return cast("Type[T]", cls._models.get(item))
-
-
 class Empty:
-    """Placeholder."""
+    """A sentinel class used as placeholder."""
 
 
 EmptyType = Type[Empty]

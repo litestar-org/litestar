@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types import Partial
+from starlite.typing import Partial
 from tests import Person
 
 try:
