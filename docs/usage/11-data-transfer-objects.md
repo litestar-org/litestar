@@ -1,14 +1,15 @@
+<!-- markdownlint-disable MD052 -->
 # Data Transfer Objects (DTOs)
 
-Starlite includes a `DTOFactory` class that allows you to create DTOs from pydantic models, dataclasses and any other
-class supported via plugins.
+Starlite includes a [`DTOFactory`][starlite.dto.DTOFactory] class that allows you to create DTOs from pydantic models,
+dataclasses and any other class supported via plugins.
 
 An instance of the factory must first be created, optionally passing plugins to it as a kwarg. It can then be used to
-create a DTO by calling the instance like a function. Additionally, it can exclude (drop) attributes, remap field names
-and field types, and add new fields.
+create a [`DTO`][starlite.dto.DTO] by calling the instance like a function. Additionally, it can exclude (drop)
+attributes, remap field names and field types, and add new fields.
 
-The created DTO can be used for data parsing, validation and OpenAPI schema generation like a regularly declared
-pydantic model.
+The created [`DTO`][starlite.dto.DTO] can be used for data parsing, validation and OpenAPI schema generation like a
+regularly declared pydantic model.
 
 <!-- prettier-ignore -->
 !!! important
@@ -21,8 +22,9 @@ pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The `DTOFactory` class supports [plugins](10-plugins/0-plugins-intro.md), for example, this is how it could be used with an SQL Alchemy
-declarative class using the [SQLAlchemyPlugin](10-plugins/1-sql-alchemy-plugin.md):
+The [`DTOFactory`][starlite.dto.DTOFactory] class supports [plugins](10-plugins/0-plugins-intro.md), for example, this
+is how it could be used with an SQLAlchemy declarative class using the
+[SQLAlchemyPlugin](10-plugins/1-sql-alchemy-plugin.md):
 
 ```python
 from sqlalchemy import Column, Float, Integer, String
@@ -62,7 +64,7 @@ editor completion and mypy support - this requires the implementation of a mypy 
 
 ## Excluding Fields
 
-You can exclude any field in the original model class from the DTO:
+You can exclude any field in the original model class from the [`DTO`][starlite.dto.DTO]:
 
 ```python
 from pydantic import BaseModel
@@ -154,7 +156,8 @@ class MyClassDTO(BaseModel):
 ## Add New Fields
 
 You add fields that do not exist in the original model by passing in a `field_definitions` dictionary. This dictionary
-should have field names as keys, and a tuple following the format supported by the [pydantic create_model helper](https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation):
+should have field names as keys, and a tuple following the format supported by the
+[pydantic create_model helper](https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation):
 
 1. For required fields use a tuple of type + ellipsis, for example `(str, ...)`.
 2. For optional fields use a tuple of type + `None`, for example `(str, None)`
@@ -189,7 +192,9 @@ class MyClassDTO(BaseModel):
 
 ## Partial DTOs
 
-For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to partially modify a resource. In these cases, DTOs can be wrapped with Partial. `Partial` can only be used on pydantic models.
+For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to
+partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`][starlite.types.partial].
+[`Partial`][starlite.types.partial] can only be used on pydantic models.
 
 ```python
 from pydantic import BaseModel
@@ -218,7 +223,7 @@ class PartialCompanyDTO(BaseModel):
     worth: Optional[float]
 ```
 
-`Partial` can also be used inline when creating routes.
+[`Partial`][starlite.types.partial] can also be used inline when creating routes.
 
 ```python
 from pydantic import UUID4, BaseModel
@@ -245,10 +250,10 @@ class UserOrderController(Controller):
 
 ## DTO Methods
 
-### from_model_instance
+### DTO.from_model_instance()
 
-Once you create a DTO class you can use its class method `from_model_instance` to create an instance from an existing
-instance of the model from which the DTO was generated:
+Once you create a DTO class you can use its class method [`from_model_instance()`][starlite.dto.DTO.from_model_instance]
+to create an instance from an existing instance of the model from which the DTO was generated:
 
 ```python
 from sqlalchemy import Column, Float, Integer, String
@@ -276,9 +281,10 @@ dto_instance = CompanyDTO.from_model_instance(company_instance)
 
 In the above, `dto_instance` is a validated pydantic model instance.
 
-### to_model_instance
+### DTO.to_model_instance()
 
-When you have an instance of a DTO model, you can convert it into a model instance using the `to_model_instance` method:
+When you have an instance of a [`DTO`][starlite.dto.DTO] model, you can convert it into a model instance using the
+[`to_model_instance()`][starlite.dto.DTO.to_model_instance] method:
 
 ```python
 from starlite import get
@@ -306,8 +312,8 @@ def create_company(data: CompanyDTO) -> Company:
     return data.to_model_instance()
 ```
 
-In the above `company_instance` is an instance of the SQL Alchemy class `Company`. It is correctly typed as Company
-because the `DTO` class uses generic to store this data.
+In the above `company_instance` is an instance of the SQLAlchemy declarative class `Company`. It is correctly typed as
+`Company` because the [`DTO`][starlite.dto.DTO] class uses generic to store this data.
 
 <!-- prettier-ignore -->
 !!! important
