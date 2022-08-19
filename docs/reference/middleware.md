@@ -4,13 +4,11 @@
     options:
         members:
             - __init__
-            _ __call__
 
 ::: starlite.middleware.base.DefineMiddleware
     options:
         members:
             - __init__
-            - __call__
 
 ::: starlite.middleware.authentication.AuthenticationResult
     options:

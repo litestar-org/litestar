@@ -11,6 +11,7 @@ from starlite.exceptions import HTTPException
 if TYPE_CHECKING:
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
+    from starlette.types import ASGIApp  # noqa: TC004
 
     from starlite.connection import Request  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
+    ASGIApp = Any
     Request = Any
     WebSocket = Any
     BaseRouteHandler = Any
@@ -37,7 +39,9 @@ else:
 
 H = TypeVar("H", bound=HTTPConnection)
 
-Middleware = Union[StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
+Middleware = Union[
+    StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol], Callable[..., ASGIApp]
+]
 
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]

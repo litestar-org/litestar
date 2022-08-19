@@ -7,8 +7,8 @@ if TYPE_CHECKING:
 @runtime_checkable
 class MiddlewareProtocol(Protocol):  # pragma: no cover
     def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):
-        """The MiddlewareProtocol is a PEP 544 Protocol that species the bare-
-        bone requirements for an ASGI middleware.
+        """The MiddlewareProtocol is a PEP 544 Protocol that species the
+        requirements for an ASGI middleware.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.

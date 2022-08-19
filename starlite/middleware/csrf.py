@@ -67,7 +67,7 @@ class CSRFMiddleware(MiddlewareProtocol):
                     message.setdefault("headers", [])
                     headers = MutableHeaders(scope=message)
                     if "set-cookie" not in headers:
-                        cookie: SimpleCookie = SimpleCookie()
+                        cookie = SimpleCookie[str]()
                         cookie[self.config.cookie_name] = self._generate_csrf_token()
                         cookie[self.config.cookie_name]["path"] = self.config.cookie_path
                         cookie[self.config.cookie_name]["secure"] = self.config.cookie_secure

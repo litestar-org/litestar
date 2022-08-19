@@ -1,81 +1,18 @@
-# Creating Middleware
+# Using MiddlewareProtocol
 
-You can easily create your own middleware by subclassing either the Starlette `BaseHTTPMiddleware` class or the
-Starlite `MiddlewareProtocol`.
-
-## Using BaseHTTPMiddleware
-
-You can create middleware by subclassing `BaseHTTPMiddleware`:
+The `starlite.middleware.base.MiddlewareProtocol` class is a [PEP 544 Protocol](https://peps.python.org/pep-0544/) that
+specifies the minimal implementation of a middleware as follows:
 
 ```python
-import logging
-
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.requests import Request
-from starlette.responses import Response
-
-logger = logging.getLogger(__name__)
-
-
-class MyRequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
-        logger.info("%s - %s" % request.method, request.url)
-        response = await call_next(request)
-        return response
-```
-
-This class offers an abstraction on top of ASGI - instead of working directly with the ASGI primitives, it offers a
-convenient `dispatch` function that offers access to the `Request` object and a `call_next` callback, which is similar
-to the interface used by other frameworks (most famously expressJS).
-
-If you want to add kwargs to your middleware, you can of course customize the `__init__` function as well:
-
-```python
-import logging
-
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.requests import Request
-from starlette.responses import Response
-from starlette.types import ASGIApp
-
-logger = logging.getLogger(__name__)
-
-
-class MyRequestLoggingMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: ASGIApp, my_kwarg: str):
-        super().__init__(app=app)
-        self.my_kwarg = my_kwarg
-
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
-        logger.info("%s - %s -%s" % self.my_kwarg, request.method, request.url)
-        response = await call_next(request)
-        return response
-```
-
-While using `BaseHTTPMiddleware` as a base is very convenient, it doesn't offer direct access to the ASGI primitives.
-Furthermore, Middlewares based on this class do not work `websockets`. Thus, if you want more flexibility and control
-you should use the Starlite `MiddlewareProtocol` (below).
-
-## Using MiddlewareProtocol
-
-The `MiddlewareProtocol` is a [PEP 544 Protocol](https://peps.python.org/pep-0544/) that specifies the minimal
-implementation of a middleware as follows:
-
-```python
-from typing import Protocol, runtime_checkable, Any
+from typing import Protocol, Any
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 
-@runtime_checkable
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp", **kwargs: dict[str, Any]):
+    def __init__(self, app: ASGIApp, **kwargs: dict[str, Any]):
         ...
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         ...
 ```
 
@@ -118,7 +55,7 @@ simpler to access because it does some parsing for you already, the actual sourc
 request. If you need to modify the data of the request you must modify the scope object, not any ephemeral request
 objects created as in the above.
 
-### Responding using the MiddlewareProtocol
+## Responding using the MiddlewareProtocol
 
 Once a middleware finishes doing whatever its doing, it should pass `scope`, `receive` and `send` to an ASGI app and
 await it. This is what's happening in the above example with : `await self.app(scope, receive, send)`. Let's explore
@@ -153,10 +90,10 @@ await it. Otherwise, we await `self.app`
 ## Modifying ASGI Requests and Responses using the MiddlewareProtocol
 
 !!! important
-If you'd like to modify a [Response](../5-responses/0-responses-intro.md) object after it was created for a route
+If you'd like to modify a [Response](../../5-responses/0-responses-intro.md) object after it was created for a route
 handler function but before the actual response message is transmitted, the correct place to do this is using the
-special life-cycle hook called [After Request](../13-lifecycle-hooks.md#After Request). The instructions in this section
-are for how to modify the ASGI response message itself, which is a step further in the response process.
+special life-cycle hook called [After Request](../../13-lifecycle-hooks.md#After Request). The instructions in this
+section are for how to modify the ASGI response message itself, which is a step further in the response process.
 
 Using the `MiddlewareProtocol` you can intercept and modifying both the incoming and outgoing data in a request /
 response cycle by "wrapping" that respective `receive` and `send` ASGI functions.
