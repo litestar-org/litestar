@@ -1,4 +1,4 @@
-# Trusted Hosts
+# Allowed Hosts
 
 Another common security mechanism is to require that each incoming request has a "HOST" header, and then to restrict
 hosts to a specific set of domains - what's called "allowed hosts". To enable this middleware simply pass a list of

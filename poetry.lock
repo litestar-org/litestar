@@ -454,7 +454,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
 name = "piccolo"
-version = "0.85.0"
+version = "0.85.1"
 description = "A fast, user friendly ORM and query builder which supports asyncio."
 category = "dev"
 optional = false
@@ -470,12 +470,12 @@ targ = ">=0.3.7"
 typing-extensions = ">=3.10.0.0"
 
 [package.extras]
-all = ["orjson (>=3.5.1)", "ipython", "asyncpg (>=0.21.0)", "aiosqlite (>=0.16.0)", "uvloop (>=0.12.0)"]
-orjson = ["orjson (>=3.5.1)"]
-playground = ["ipython"]
-postgres = ["asyncpg (>=0.21.0)"]
-sqlite = ["aiosqlite (>=0.16.0)"]
 uvloop = ["uvloop (>=0.12.0)"]
+sqlite = ["aiosqlite (>=0.16.0)"]
+postgres = ["asyncpg (>=0.21.0)"]
+playground = ["ipython"]
+orjson = ["orjson (>=3.5.1)"]
+all = ["uvloop (>=0.12.0)", "aiosqlite (>=0.16.0)", "asyncpg (>=0.21.0)", "ipython", "orjson (>=3.5.1)"]
 
 [[package]]
 name = "picologging"
@@ -1401,8 +1401,8 @@ pathspec = [
     {file = "pathspec-0.9.0.tar.gz", hash = "sha256:e564499435a2673d586f6b2130bb5b95f04a3ba06f81b8f895b651a3c76aabb1"},
 ]
 piccolo = [
-    {file = "piccolo-0.85.0-py3-none-any.whl", hash = "sha256:ba5f55fb84f2d6a2157f567d0e1db82cbd3869090bd4fb2ca40bfc7e2c803f84"},
-    {file = "piccolo-0.85.0.tar.gz", hash = "sha256:061d0b13367934d5bfa438a890ac44be62858146570990b82ee2bcb8470ff8a2"},
+    {file = "piccolo-0.85.1-py3-none-any.whl", hash = "sha256:9f93ef63c861f3587774b453265201b442e545b71e9d7ad46e8df45d0d9c88b7"},
+    {file = "piccolo-0.85.1.tar.gz", hash = "sha256:297d6904ee64a7f02ece6c0b214471d5fb3f1619c9eacff7a728f05fb2449a15"},
 ]
 picologging = [
     {file = "picologging-0.7.2-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:ef1bc1d36cc063a7b582693217f40582920cd4be177b0e5e0295262f7cef639a"},

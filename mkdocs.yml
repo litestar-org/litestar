@@ -107,7 +107,7 @@ nav:
           - Builtin Middlewares:
               - usage/7-middleware/3-builtin-middlewares/0-builtin-middlewares-intro.md
               - usage/7-middleware/3-builtin-middlewares/1-cors-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/2-trusted-hosts-middleware.md
+              - usage/7-middleware/3-builtin-middlewares/2-allowed-hosts-middleware.md
               - usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md
               - usage/7-middleware/3-builtin-middlewares/4-compression-middleware.md
       - usage/8-authentication.md

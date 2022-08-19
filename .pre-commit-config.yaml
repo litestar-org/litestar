@@ -29,7 +29,7 @@ repos:
       - id: black
         args: [--config=./pyproject.toml]
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.0
+    rev: v2.2.1
     hooks:
       - id: codespell
   - repo: https://github.com/asottile/blacken-docs

@@ -49,11 +49,12 @@ class MyRequestLoggingMiddleware(MiddlewareProtocol):
         await self.app(scope, receive, send)
 ```
 
+<!-- prettier-ignore -->
 !!! important
-Although `scope` is used to create an instance of request by passing it to the `Request` constructor, which makes it
-simpler to access because it does some parsing for you already, the actual source of truth remains `scope` - not the
-request. If you need to modify the data of the request you must modify the scope object, not any ephemeral request
-objects created as in the above.
+    Although `scope` is used to create an instance of request by passing it to the `Request` constructor, which makes it
+    simpler to access because it does some parsing for you already, the actual source of truth remains `scope` - not the
+    request. If you need to modify the data of the request you must modify the scope object, not any ephemeral request
+    objects created as in the above.
 
 ## Responding using the MiddlewareProtocol
 
@@ -89,11 +90,12 @@ await it. Otherwise, we await `self.app`
 
 ## Modifying ASGI Requests and Responses using the MiddlewareProtocol
 
+<!-- prettier-ignore -->
 !!! important
-If you'd like to modify a [Response](../../5-responses/0-responses-intro.md) object after it was created for a route
-handler function but before the actual response message is transmitted, the correct place to do this is using the
-special life-cycle hook called [After Request](../../13-lifecycle-hooks.md#After Request). The instructions in this
-section are for how to modify the ASGI response message itself, which is a step further in the response process.
+    If you'd like to modify a [Response](../../5-responses/0-responses-intro.md) object after it was created for a route
+    handler function but before the actual response message is transmitted, the correct place to do this is using the
+    special life-cycle hook called [After Request](../../13-lifecycle-hooks.md#After Request). The instructions in this
+    section are for how to modify the ASGI response message itself, which is a step further in the response process.
 
 Using the `MiddlewareProtocol` you can intercept and modifying both the incoming and outgoing data in a request /
 response cycle by "wrapping" that respective `receive` and `send` ASGI functions.
