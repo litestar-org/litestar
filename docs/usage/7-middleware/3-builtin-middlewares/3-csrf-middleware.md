@@ -26,8 +26,7 @@ To enable CSRF protection in a Starlite application simply pass an instance of `
 to the Starlite constructor:
 
 ```python
-from starlite import Starlite
-from starlite.config import CSRFConfig
+from starlite import Starlite, CSRFConfig
 
 csrf_config = CSRFConfig(secret="my-secret")
 

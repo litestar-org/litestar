@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, runtime_checkable
+from typing import TYPE_CHECKING, Any, Callable, Dict
 
-from typing_extensions import Protocol
+from typing_extensions import Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
