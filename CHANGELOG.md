@@ -341,3 +341,8 @@
 [1.11.1]
 
 - hotfix: Exception raised by `issubclass` check
+
+[1.12.0]
+
+- fix: handling of "\*" in routes by @waweber
+  -update: middleware typing and addition of `DefineMiddleware
