@@ -22,7 +22,7 @@ string keys into values that will be rendered in the template.
 pass the following kwargs to it:
 
 - `name`: Path-like name for the template to be rendered, **required**.
-- `context`: "A dictionary of key/value pairs to be passed to the temple engine's render method.
+- `context`: A dictionary of key/value pairs to be passed to the temple engine's render method.
 - `background`: A callable wrapped in an instance of `starlite.datastructures.BackgroundTask` or a list
   of `BackgroundTask` instances wrapped in `starlite.datastructures.BackgroundTasks`. The callable(s) will be called after
   the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the

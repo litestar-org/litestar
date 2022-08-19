@@ -8,7 +8,7 @@ accordance with Starlette and many other frameworks (e.g. Django, NestJS etc.).
 ## Authentication Middleware
 
 Starlite exports a class called `AbstractAuthenticationMiddleware`, which, as its name implies, is an Abstract Base
-Class (ABC) that implements the [middleware protocol](7-middleware.md#the-middleware-protocol). To add authentication to
+Class (ABC) that implements the [middleware protocol](7-middleware/0-middleware-intro.md#the-middleware-protocol). To add authentication to
 your app simply subclass `AbstractAuthenticationMiddleware` and implement the method `authenticate_request`, which has
 the following signature:
 

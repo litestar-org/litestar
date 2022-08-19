@@ -1,7 +1,5 @@
 # types
 
-::: starlite.types.T
-
 ::: starlite.types.H
 
 ::: starlite.types.AfterRequestHandler
@@ -29,9 +27,5 @@
 ::: starlite.types.AsyncAnyCallable
 
 ::: starlite.types.LifeCycleHandler
-
-::: starlite.types.MiddlewareProtocol
-
-::: starlite.types.Partial
 
 ::: starlite.types.Middleware

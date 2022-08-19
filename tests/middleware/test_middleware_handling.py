@@ -11,6 +11,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlite import (
     Controller,
     CORSConfig,
+    DefineMiddleware,
     MiddlewareProtocol,
     Request,
     Response,
@@ -49,9 +50,10 @@ class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
         return await call_next(request)  # type: ignore
 
 
-class KwargMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: Any, kwarg: str) -> None:
+class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
+    def __init__(self, arg: int = 0, *, app: Any, kwarg: str) -> None:
         super().__init__(app)
+        self.arg = arg
         self.kwarg = kwarg
 
     async def dispatch(  # type: ignore
@@ -69,8 +71,10 @@ def handler() -> None:
     "middleware",
     [
         BaseMiddlewareRequestLoggingMiddleware,
-        Middleware(KwargMiddleware, kwarg="123Jeronimo"),
+        Middleware(MiddlewareWithArgsAndKwargs, kwarg="123Jeronimo"),
         Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
+        DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),
+        DefineMiddleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
 )
 def test_custom_middleware_processing(middleware: Any) -> None:
@@ -91,10 +95,16 @@ def test_custom_middleware_processing(middleware: Any) -> None:
 
         assert isinstance(
             middleware_instance,
-            (MiddlewareProtocolRequestLoggingMiddleware, BaseMiddlewareRequestLoggingMiddleware, KwargMiddleware),
+            (
+                MiddlewareProtocolRequestLoggingMiddleware,
+                BaseMiddlewareRequestLoggingMiddleware,
+                MiddlewareWithArgsAndKwargs,
+            ),
         )
-        if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, KwargMiddleware)):
+        if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
             assert middleware_instance.kwarg == "123Jeronimo"
+        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
+            assert middleware_instance.arg == 1
 
 
 class JSONRequest(BaseModel):

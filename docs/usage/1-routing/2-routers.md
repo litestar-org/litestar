@@ -28,7 +28,7 @@ The `starlite.router.Router` constructor also accepts the following kwargs:
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions. See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of guard callable. See [guards](../9-guards.md).
-- `middleware`: A list of middlewares. See [middleware](../7-middleware.md).
+- `middleware`: A list of middlewares. See [middleware](../7-middleware/0-middleware-intro.md).
 - `parameters`: A mapping of parameters definition that will be available on all sub route handlers. See [layered parameters](../3-parameters/4-layered-parameters.md).
 - `response_class`: A custom response class to be used as the app's default. See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
 - `response_cookies`: A list of `Cookie` instances. See [response-cookies](../5-responses/5-response-cookies.md)

@@ -6,7 +6,7 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import HTTPException, Request, Response, Starlite, get
 from starlite.enums import MediaType
-from starlite.middleware import ExceptionHandlerMiddleware
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:

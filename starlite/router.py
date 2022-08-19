@@ -12,8 +12,6 @@ from typing import (
 
 from pydantic import validate_arguments
 from pydantic.fields import FieldInfo
-from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from starlite.controller import Controller
 from starlite.datastructures import Cookie, ResponseHeader
@@ -34,7 +32,7 @@ from starlite.types import (
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
-    MiddlewareProtocol,
+    Middleware,
 )
 from starlite.utils import (
     find_index,
@@ -78,7 +76,7 @@ class Router:
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Union[Middleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]]] = None,
+        middleware: Optional[List[Middleware]] = None,
         parameters: Optional[Dict[str, FieldInfo]] = None,
         path: str,
         response_class: Optional[Type[Response]] = None,

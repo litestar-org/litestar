@@ -198,7 +198,7 @@ partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`
 
 ```python
 from pydantic import BaseModel
-from starlite.types import Partial
+from starlite.typing import Partial
 
 
 class CompanyDTO(BaseModel):
@@ -229,7 +229,7 @@ class PartialCompanyDTO(BaseModel):
 from pydantic import UUID4, BaseModel
 from starlite.controller import Controller
 from starlite.handlers import patch
-from starlite.types import Partial
+from starlite.typing import Partial
 
 
 class UserOrder(BaseModel):

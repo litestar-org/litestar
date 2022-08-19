@@ -20,8 +20,9 @@ from starlite.datastructures import Cookie, ResponseHeader, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.middleware import CSRFMiddleware, ExceptionHandlerMiddleware
 from starlite.middleware.compression.base import CompressionMiddleware
+from starlite.middleware.csrf import CSRFMiddleware
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.response import Response
@@ -125,14 +126,15 @@ class Starlite(Router):
                 [`Response`][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
-            allowed_hosts: A list of allowed hosts - enables `AllowedHostsMiddleware`.
+            allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
             cache_config: Configures caching behavior of the application.
-            compression_config: Configures compression behaviour of the application.
-            cors_config: If set this enables the `starlette.middleware.cores.CORSMiddleware`.
-            csrf_config: If set this enables the CSRF middleware.
+            compression_config: Configures compression behaviour of the application, this enabled a builtin or user
+                defined Compression middleware.
+            cors_config: If set this enables the builtin CORS middleware.
+            csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
             dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
