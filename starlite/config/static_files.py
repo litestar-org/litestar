@@ -6,7 +6,7 @@ from starlette.staticfiles import StaticFiles
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp
+    from starlite.types import ASGIApp
 
 
 class StaticFilesConfig(BaseModel):

@@ -9,7 +9,7 @@ For example, the following function can be used as a middleware because it recei
 an `ASGIApp`:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 
 
 def middleware_factory(app: ASGIApp) -> ASGIApp:
@@ -26,7 +26,7 @@ that allow users to define middleware only on the application level, Starlite al
 different layers of the application. Thus, we could use our middleware on the application layer - like so:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 from starlite import Starlite
 
 

@@ -5,7 +5,7 @@ specifies the minimal implementation of a middleware as follows:
 
 ```python
 from typing import Protocol, Any
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 
 
 class MiddlewareProtocol(Protocol):
@@ -30,7 +30,7 @@ specifies:
 ```python
 import logging
 
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlite.types import ASGIApp, Receive, Scope, Send
 from starlite import Request
 from starlite.middleware.base import MiddlewareProtocol
 
@@ -63,7 +63,7 @@ await it. This is what's happening in the above example with : `await self.app(s
 another example - redirecting the request to a different url from a middleware:
 
 ```python
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlite.types import ASGIApp, Receive, Scope, Send
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_307_TEMPORARY_REDIRECT
 from starlite import Request
@@ -107,7 +107,7 @@ this by doing the following:
 import time
 
 from starlette.datastructures import MutableHeaders
-from starlette.types import Message, Receive, Scope, Send
+from starlite.types import Message, Receive, Scope, Send
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.types import ASGIApp
 

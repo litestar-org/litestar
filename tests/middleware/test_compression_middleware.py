@@ -2,9 +2,10 @@ import logging
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
+from pydantic import ValidationError
 from starlette.responses import PlainTextResponse
 
-from starlite import get
+from starlite import Starlite, get
 from starlite.config import CompressionConfig
 from starlite.datastructures import Stream
 from starlite.enums import CompressionBackend
@@ -19,9 +20,8 @@ from starlite.testing import create_test_client
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp
-
     from starlite.middleware.compression.base import CompressionMiddleware
+    from starlite.types import ASGIApp
 
 
 @get(path="/")
@@ -46,7 +46,7 @@ def test_no_compression_backend() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("ASGIApp", cur.app)  # type: ignore
+            cur = cast("ASGIApp", cur.app)
         else:
             unpacked_middleware.append(cur)
         for middleware in unpacked_middleware:
@@ -64,11 +64,11 @@ def test_gzip_middleware_from_enum() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    gzip_middleware = unpacked_middleware[1].handler  # type: ignore
+    gzip_middleware = unpacked_middleware[1].handler
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 500
     assert gzip_middleware.compresslevel == 9
@@ -83,7 +83,7 @@ def test_gzip_middleware_custom_settings() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
@@ -102,7 +102,7 @@ def test_gzip_middleware_set_from_string() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
@@ -121,11 +121,11 @@ def test_brotli_middleware_from_enum() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
+    brotli_middleware = unpacked_middleware[1].handler
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
     assert brotli_middleware.mode == BrotliMode.TEXT.to_int()
@@ -141,11 +141,11 @@ def test_brotli_middleware_from_string() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
+    brotli_middleware = unpacked_middleware[1].handler
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
     assert brotli_middleware.mode == BrotliMode.TEXT.to_int()
@@ -247,11 +247,11 @@ def test_brotli_middleware_custom_settings() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
+    brotli_middleware = unpacked_middleware[1].handler
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
     assert brotli_middleware.mode == BrotliMode.FONT.to_int()
@@ -274,7 +274,5 @@ def test_brotli_middleware_invalid_mode() -> None:
 
 
 def test_invalid_compression_middleware() -> None:
-    try:
-        create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="super-zip"))  # type: ignore
-    except Exception as exc:
-        assert isinstance(exc, ValueError)
+    with pytest.raises(ValidationError):
+        Starlite(route_handlers=[handler], compression_config=CompressionConfig(backend="super-zip"))  # type: ignore

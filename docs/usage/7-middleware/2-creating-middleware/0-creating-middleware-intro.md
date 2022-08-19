@@ -6,7 +6,7 @@ is **any callable** that takes a kwarg called `app`, which is the next ASGI hand
 The example previously given was using a factory function, i.e.:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 
 
 def middleware_factory(app: ASGIApp) -> ASGIApp:

@@ -14,9 +14,8 @@ if TYPE_CHECKING:
     from typing import Type
 
     from starlette.responses import Response as StarletteResponse
-    from starlette.types import ASGIApp, Receive, Scope, Send
 
-    from starlite.types import ExceptionHandler
+    from starlite.types import ASGIApp, ExceptionHandler, Receive, Scope, Send
 
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):

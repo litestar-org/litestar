@@ -12,9 +12,8 @@ from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Message, Receive, Scope, Send
-
     from starlite.config import CSRFConfig
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2

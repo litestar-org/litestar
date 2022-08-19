@@ -11,11 +11,9 @@ from starlite.signature import get_signature_model
 from starlite.utils import join_paths, normalize_path
 
 if TYPE_CHECKING:
-    from starlette.types import Receive, Scope, Send
-
     from starlite.enums import ScopeType
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.types import Method
+    from starlite.types import Method, Receive, Scope, Send
 
 
 param_match_regex = re.compile(r"{(.*?)}")

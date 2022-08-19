@@ -3,7 +3,7 @@
 If you need to write your own ASGI application, you can do so using the `asgi` decorator:
 
 ```python
-from starlette.types import Scope, Receive, Send
+from starlite.types import Scope, Receive, Send
 from starlite.enums import MediaType
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import Response, asgi
@@ -30,7 +30,7 @@ Like other route handlers, the `asgi` decorator is an alias of the class `starli
 the code below is equivalent to the one above:
 
 ```python
-from starlette.types import Scope, Receive, Send
+from starlite.types import Scope, Receive, Send
 from starlite.enums import MediaType
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import ASGIRouteHandler, Response

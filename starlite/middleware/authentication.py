@@ -10,7 +10,7 @@ from starlite.middleware.base import MiddlewareProtocol
 from starlite.response import Response
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 
 class AuthenticationResult(BaseModel):

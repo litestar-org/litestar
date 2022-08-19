@@ -5,7 +5,7 @@ using the `starlite.middleware.base.DefineMiddleware` class. Let's extend the fa
 to take some args and kwargs and then use `DefineMiddleware` to pass these values to our middleware:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 from starlite import Starlite, DefineMiddleware
 
 

@@ -3,9 +3,8 @@ from typing import TYPE_CHECKING
 from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
-
     from starlite.config import CompressionConfig
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 
 class CompressionMiddleware(MiddlewareProtocol):

@@ -44,6 +44,7 @@ pyyaml = "*"
 requests = { version = "*", optional = true }
 starlette = "*"
 typing-extensions = "*"
+asgiref = "^3.5.2"
 
 [tool.poetry.dev-dependencies]
 freezegun = "*"

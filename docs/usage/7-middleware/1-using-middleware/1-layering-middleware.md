@@ -10,7 +10,7 @@ are supported as well:
 By passing middleware on the router, this middleware will be used for all routes on the router:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 from starlite import Starlite, Router, get
 
 
@@ -44,7 +44,7 @@ app = Starlite(route_handlers=[router])
 By passing middleware on the controller, this middleware will be used for all routes on the controller:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 from starlite import Starlite, Controller, get
 
 
@@ -77,7 +77,7 @@ app = Starlite(route_handlers=[MyController], middleware=[middleware_factory])
 By passing middleware on the route handler, this middleware will be used only for those route handlers that specify it:
 
 ```python
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlite.types import ASGIApp, Scope, Receive, Send
 from starlite import Starlite, get
 
 

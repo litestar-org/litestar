@@ -7,6 +7,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.responses import Response
 
 from starlite import (
     Controller,
@@ -14,7 +15,6 @@ from starlite import (
     DefineMiddleware,
     MiddlewareProtocol,
     Request,
-    Response,
     Router,
     get,
     post,
@@ -25,7 +25,9 @@ if TYPE_CHECKING:
     from typing import Type
 
     from _pytest.logging import LogCaptureFixture
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlette.requests import Request as StarletteRequest
+
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +47,9 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
 
 
 class BaseMiddlewareRequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:  # type: ignore
+    async def dispatch(self, request: "StarletteRequest", call_next: RequestResponseEndpoint) -> Response:
         logging.getLogger(__name__).info("%s - %s", request.method, request.url)
-        return await call_next(request)  # type: ignore
+        return await call_next(request)
 
 
 class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
@@ -56,10 +58,10 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
         self.arg = arg
         self.kwarg = kwarg
 
-    async def dispatch(  # type: ignore
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    async def dispatch(
+        self, request: "StarletteRequest", call_next: Callable[["StarletteRequest"], Awaitable[Response]]
     ) -> Response:
-        ...
+        return Response()
 
 
 @get(path="/")
@@ -133,7 +135,7 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("ASGIApp", cur.app)  # type: ignore
+            cur = cast("ASGIApp", cur.app)
         else:
             unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
@@ -151,7 +153,7 @@ def test_trusted_hosts_middleware() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("ASGIApp", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 4

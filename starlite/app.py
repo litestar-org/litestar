@@ -44,12 +44,12 @@ from starlite.utils.templates import create_template_engine
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-    from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
