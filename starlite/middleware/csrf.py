@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from starlette.datastructures import MutableHeaders
 
 from starlite.connection import Request
+from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
 
@@ -38,7 +39,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        if scope["type"] != "http":
+        if scope["type"] != ScopeType.HTTP:
             await self.app(scope, receive, send)
             return
 
@@ -46,12 +47,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
-        send_callable_to_use = send
-
-        if request.method not in self.config.safe_methods:
-            if not self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
-                raise PermissionDeniedException("CSRF token verification failed")
-        else:
+        if request.method in self.config.safe_methods:
 
             async def send_wrapper(message: "Message") -> None:
                 """Send function that wraps the original send to inject a
@@ -67,7 +63,7 @@ class CSRFMiddleware(MiddlewareProtocol):
                     message.setdefault("headers", [])
                     headers = MutableHeaders(scope=message)
                     if "set-cookie" not in headers:
-                        cookie = SimpleCookie[str]()
+                        cookie: SimpleCookie = SimpleCookie()
                         cookie[self.config.cookie_name] = self._generate_csrf_token()
                         cookie[self.config.cookie_name]["path"] = self.config.cookie_path
                         cookie[self.config.cookie_name]["secure"] = self.config.cookie_secure
@@ -78,9 +74,11 @@ class CSRFMiddleware(MiddlewareProtocol):
                         headers.append("set-cookie", cookie.output(header="").strip())
                 await send(message)
 
-            send_callable_to_use = send_wrapper
-
-        await self.app(scope, receive, send_callable_to_use)
+            await self.app(scope, receive, send_wrapper)
+        elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
+            await self.app(scope, receive, send)
+        else:
+            raise PermissionDeniedException("CSRF token verification failed")
 
     def _generate_csrf_hash(self, token: str) -> str:
         """Generate an HMAC that signs the CSRF token."""

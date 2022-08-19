@@ -2,6 +2,7 @@ from typing import Optional
 
 import pytest
 from starlette import status
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from starlite import CSRFConfig, WebSocket, delete, get, patch, post, put, websocket
 from starlite.testing import create_test_client
@@ -37,6 +38,7 @@ def test_csrf_successful_flow() -> None:
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
 
         csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
         assert csrf_token is not None
@@ -50,7 +52,7 @@ def test_csrf_successful_flow() -> None:
         ]
 
         response = client.post("/", headers={"x-csrftoken": csrf_token})
-        assert response.status_code, status.HTTP_201_CREATED
+        assert response.status_code == status.HTTP_201_CREATED
 
 
 @pytest.mark.parametrize(
@@ -63,14 +65,14 @@ def test_unsafe_method_fails_without_csrf_header(method: str) -> None:
         csrf_config=CSRFConfig(secret="secret"),
     ) as client:
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
 
         csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
         assert csrf_token is not None
 
         response = client.request(method, "/")
-
-        assert response.status_code, status.HTTP_403_FORBIDDEN
-        assert response.text, "CSRF token verification failed"
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
 def test_invalid_csrf_token() -> None:
@@ -78,14 +80,14 @@ def test_invalid_csrf_token() -> None:
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
 
         csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
         assert csrf_token is not None
 
         response = client.post("/", headers={"x-csrftoken": csrf_token + "invalid"})
-
-        assert response.status_code, status.HTTP_403_FORBIDDEN
-        assert response.text, "CSRF token verification failed"
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
 def test_csrf_token_too_short() -> None:
@@ -93,13 +95,13 @@ def test_csrf_token_too_short() -> None:
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret")
     ) as client:
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
 
         assert "csrftoken" in response.cookies
 
         response = client.post("/", headers={"x-csrftoken": "too-short"})
-
-        assert response.status_code, status.HTTP_403_FORBIDDEN
-        assert response.text, "CSRF token verification failed"
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
 def test_websocket_ignored() -> None:
@@ -123,15 +125,12 @@ def test_custom_csrf_config() -> None:
         csrf_config=CSRFConfig(
             secret="secret",
             cookie_name="custom-csrftoken",
-            cookie_path="/custom",
             header_name="x-custom-csrftoken",
-            cookie_secure=True,
-            cookie_httponly=True,
-            cookie_samesite="none",
-            cookie_domain="test.com",
         ),
     ) as client:
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
         csrf_token: Optional[str] = response.cookies.get("custom-csrftoken")  # type: ignore[no-untyped-call]
         assert csrf_token is not None
 
@@ -139,12 +138,9 @@ def test_custom_csrf_config() -> None:
         assert set_cookie_header is not None
         assert set_cookie_header.split("; ") == [
             f"custom-csrftoken={csrf_token}",
-            "Domain=test.com",
-            "HttpOnly",
-            "Path=/custom",
-            "SameSite=none",
-            "Secure",
+            "Path=/",
+            "SameSite=lax",
         ]
 
         response = client.post("/", headers={"x-custom-csrftoken": csrf_token})
-        assert response.status_code, status.HTTP_201_CREATED
+        assert response.status_code == HTTP_201_CREATED
