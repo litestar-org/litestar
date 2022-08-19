@@ -120,9 +120,9 @@ class Starlite(Router):
         It inherits from the [Router][starlite.router.Router] class.
 
         Args:
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
-                to any route handler. If this function returns a value, the request will not reach the route handler,
-                and instead this value will be used.
+            after_request: A sync or async function executed after the route handler function returned and the response
+                object has been resolved. Receives the response object which may be either an instance of
+                [`Response`][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
             allowed_hosts: A list of allowed hosts - enables `AllowedHostsMiddleware`.
