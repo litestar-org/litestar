@@ -36,6 +36,11 @@ def test_starlite_exception_str() -> None:
     assert str(result) == "200 an unknown exception occurred"
 
 
+def test_http_exception_str() -> None:
+    exc = HTTPException("message")
+    assert str(exc) == "500: message"
+
+
 @given(status_code=st.integers(min_value=400, max_value=404), detail=st.one_of(st.none(), st.text()))
 def test_http_exception(status_code: int, detail: Optional[str]) -> None:
     assert HTTPException().status_code == HTTP_500_INTERNAL_SERVER_ERROR

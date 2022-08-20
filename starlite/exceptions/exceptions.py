@@ -59,7 +59,8 @@ class HTTPException(StarletteHTTPException, StarLiteException):
             extra (dict[str, Any], list[Any] | None, optional): extra info for HTTP response.
         """
         if not detail:
-            detail = args[0] if len(args) > 0 else HTTPStatus(status_code or self.status_code).phrase
+            detail = args[0] if args else HTTPStatus(status_code or self.status_code).phrase
+            args = args[1:]
         self.extra = extra
         super().__init__(status_code or self.status_code, *args)
         self.detail = detail
