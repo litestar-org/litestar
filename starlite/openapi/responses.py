@@ -40,15 +40,8 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
     Returns:
         Schema
     """
-    base_cookie: "BaseCookie[str]" = SimpleCookie()
-    base_cookie[cookie.key] = "<string>"
-    cookie_dict = cookie.dict()
-    if cookie_dict["max_age"]:
-        base_cookie[cookie.key]["max-age"] = cookie_dict["max_age"]
-    for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
-        if cookie_dict[key]:
-            base_cookie[cookie.key][key] = cookie_dict[key]
-    value = base_cookie.output(header="").strip()
+    cookie_copy = cookie.copy(update={"value": "<string>"})
+    value = cookie_copy.to_header(header="")
     return Schema(description=cookie.description or "", example=value)
 
 

@@ -22,6 +22,7 @@ from typing import (
     cast,
 )
 
+from http.cookies import SimpleCookie
 from pydantic import BaseConfig, BaseModel, FilePath, validator
 from pydantic.generics import GenericModel
 from pydantic_openapi_schema.v3_1_0 import Header
@@ -118,6 +119,17 @@ class Cookie(BaseModel):
     """description of the response cookie header for OpenAPI documentation"""
     documentation_only: bool = False
     """defines the Cookie instance as for OpenAPI documentation purpose only"""
+
+    def to_header(self, **kwargs) -> str:
+        simple_cookie: SimpleCookie = SimpleCookie()
+        simple_cookie[self.key] = self.value or ""
+        if self.max_age:
+            simple_cookie[self.key]["max-age"] = self.max_age
+        cookie_dict = self.dict()
+        for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
+            if cookie_dict[key] is not None:
+                simple_cookie[self.key][key] = cookie_dict[key]
+        return simple_cookie.output(**kwargs).strip()
 
 
 R = TypeVar("R", bound=StarletteResponse)
