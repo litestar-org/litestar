@@ -37,6 +37,8 @@ and [pydantic](https://github.com/samuelcolvin/pydantic).
 
 Check out the [Starlite documentation 📚](https://starlite-api.github.io/starlite/)
 
+For a more complete example, see [ Example Starlite project using Postgresql, Redis and Docker Resources](https://github.com/starlite-api/starlite-pg-redis-docker).
+
 ## Installation
 
 ```shell
