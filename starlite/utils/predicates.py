@@ -1,7 +1,17 @@
 import asyncio
 import functools
+import sys
 from inspect import isclass
-from typing import Any, Callable
+from typing import Any, Callable, Union
+
+from typing_extensions import get_args, get_origin
+
+if sys.version_info >= (3, 10):
+    from types import UnionType
+
+    UNION_TYPES = {UnionType, Union}
+else:  # pragma: no cover
+    UNION_TYPES = {Union}
 
 
 def is_async_callable(value: Callable) -> bool:
@@ -38,3 +48,16 @@ def is_class_and_subclass(value: Any, t_type: Any) -> bool:
         return issubclass(value, t_type)
     except TypeError:
         return False
+
+
+def is_optional_union(annotation: Any) -> bool:
+    """Given a type annotation determine if the annotation infers an optional
+    union.
+
+    Args:
+        annotation: A type.
+
+    Returns:
+        True for a union, False otherwise.
+    """
+    return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)

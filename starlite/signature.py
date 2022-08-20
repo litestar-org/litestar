@@ -26,11 +26,11 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
-from starlite.utils.dependency import (
+from starlite.utils import (
     is_dependency_field,
+    is_optional_union,
     should_skip_dependency_validation,
 )
-from starlite.utils.typing import detect_optional_union
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
@@ -154,7 +154,7 @@ class SignatureParameter:
         self.annotation = parameter.annotation
         self.default = parameter.default
         self.name = parameter_name
-        self.optional = detect_optional_union(parameter.annotation)
+        self.optional = is_optional_union(parameter.annotation)
 
     @property
     def default_defined(self) -> bool:
