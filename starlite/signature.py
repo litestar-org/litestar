@@ -26,7 +26,10 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
-from starlite.utils.dependency import is_dependency_field, skip_dependency_validation
+from starlite.utils.dependency import (
+    is_dependency_field,
+    should_skip_dependency_validation,
+)
 from starlite.utils.typing import detect_optional_union
 
 if TYPE_CHECKING:
@@ -322,7 +325,7 @@ class SignatureModelFactory:
                 continue
             yield SignatureParameter(self.fn_name, name, parameter)
 
-    def skip_parameter_validation(self, parameter: SignatureParameter) -> bool:
+    def should_skip_parameter_validation(self, parameter: SignatureParameter) -> bool:
         """Identify dependencies for which provided values should not be
         validated.
 
@@ -332,7 +335,7 @@ class SignatureModelFactory:
         Returns:
             A boolean indicating whether injected values for this parameter should not be validated.
         """
-        return parameter.name in self.SKIP_VALIDATION_NAMES or skip_dependency_validation(parameter.default)
+        return parameter.name in self.SKIP_VALIDATION_NAMES or should_skip_dependency_validation(parameter.default)
 
     def create_signature_model(self) -> Type[SignatureModel]:
         """Constructs a `SignatureModel` type that represents the signature of
@@ -347,7 +350,7 @@ class SignatureModelFactory:
                 self.check_for_unprovided_dependency(parameter)
                 self.collect_dependency_names(parameter)
                 self.set_field_default(parameter)
-                if self.skip_parameter_validation(parameter):
+                if self.should_skip_parameter_validation(parameter):
                     # pydantic has issues with none-pydantic classes that receive generics
                     self.field_definitions[parameter.name] = (Any, ...)
                     continue
