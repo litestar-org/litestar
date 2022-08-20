@@ -12,6 +12,7 @@ from starlite.constants import (
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
+from starlite.utils.dependency import is_dependency_field
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -201,8 +202,7 @@ def create_parameter_for_handler(
     for field_name, model_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
     ):
-        extra = model_field.field_info.extra
-        if extra.get("is_dependency") and field_name not in dependencies:
+        if is_dependency_field(model_field.field_info) and field_name not in dependencies:
             # never document explicit dependencies
             continue
         for parameter in get_recursive_handler_parameters(

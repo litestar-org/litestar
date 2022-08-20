@@ -3,12 +3,13 @@ from typing import Any, Dict, Optional
 import pytest
 
 from starlite import Controller, Dependency, Provide, Starlite, get
+from starlite.constants import EXTRA_KEY_IS_DEPENDENCY
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.testing import create_test_client
 
 
 def test_is_dependency_inserted_into_field_extra() -> None:
-    assert Dependency().extra["is_dependency"] is True
+    assert Dependency().extra[EXTRA_KEY_IS_DEPENDENCY] is True
 
 
 @pytest.mark.parametrize(

@@ -5,6 +5,7 @@ from pydantic.fields import Field, Undefined
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
 
+from starlite.constants import EXTRA_KEY_IS_DEPENDENCY, EXTRA_KEY_SKIP_VALIDATION
 from starlite.enums import RequestEncodingType
 
 
@@ -115,7 +116,8 @@ def Body(
 
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
-def Dependency(*, default: Any = Undefined) -> Any:
+def Dependency(*, default: Any = Undefined, skip_validation: bool = False) -> Any:
     """Creates a pydantic FieldInfo instance with an extra kwargs, used for
     both parameter parsing and OpenAPI schema generation."""
-    return Field(default, is_dependency=True)
+    extra: Dict[str, Any] = {EXTRA_KEY_IS_DEPENDENCY: True, EXTRA_KEY_SKIP_VALIDATION: skip_validation}
+    return Field(default, **extra)
