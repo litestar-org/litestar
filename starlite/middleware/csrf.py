@@ -1,12 +1,12 @@
 import hashlib
 import hmac
 import secrets
-from http.cookies import SimpleCookie
 from typing import TYPE_CHECKING, Any, Optional
 
 from starlette.datastructures import MutableHeaders
 
 from starlite.connection import Request
+from starlite.datastructures import Cookie
 from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
@@ -61,17 +61,8 @@ class CSRFMiddleware(MiddlewareProtocol):
                 """
                 if csrf_cookie is None and message["type"] == "http.response.start":
                     message.setdefault("headers", [])
-                    headers = MutableHeaders(scope=message)
-                    if "set-cookie" not in headers:
-                        cookie: SimpleCookie = SimpleCookie()
-                        cookie[self.config.cookie_name] = self._generate_csrf_token()
-                        cookie[self.config.cookie_name]["path"] = self.config.cookie_path
-                        cookie[self.config.cookie_name]["secure"] = self.config.cookie_secure
-                        cookie[self.config.cookie_name]["httponly"] = self.config.cookie_httponly
-                        cookie[self.config.cookie_name]["samesite"] = self.config.cookie_samesite
-                        if self.config.cookie_domain is not None:
-                            cookie[self.config.cookie_name]["domain"] = self.config.cookie_domain
-                        headers.append("set-cookie", cookie.output(header="").strip())
+                    self._set_cookie_if_needed(message)
+
                 await send(message)
 
             await self.app(scope, receive, send_wrapper)
@@ -79,6 +70,20 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
+
+    def _set_cookie_if_needed(self, message: "Message") -> None:
+        headers = MutableHeaders(scope=message)
+        if "set-cookie" not in headers:
+            cookie = Cookie(
+                key=self.config.cookie_name,
+                value=self._generate_csrf_token(),
+                path=self.config.cookie_path,
+                secure=self.config.cookie_secure,
+                httponly=self.config.cookie_httponly,
+                samesite=self.config.cookie_samesite,
+                domain=self.config.cookie_domain,
+            )
+            headers.append("set-cookie", cookie.to_header(header=""))
 
     def _generate_csrf_hash(self, token: str) -> str:
         """Generate an HMAC that signs the CSRF token."""

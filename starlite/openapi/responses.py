@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from http.cookies import SimpleCookie
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
@@ -22,7 +21,6 @@ from starlite.response import Response as StarliteResponse
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
-    from http.cookies import BaseCookie
 
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.responses import Responses
@@ -40,15 +38,8 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
     Returns:
         Schema
     """
-    base_cookie: "BaseCookie[str]" = SimpleCookie()
-    base_cookie[cookie.key] = "<string>"
-    cookie_dict = cookie.dict()
-    if cookie_dict["max_age"]:
-        base_cookie[cookie.key]["max-age"] = cookie_dict["max_age"]
-    for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
-        if cookie_dict[key]:
-            base_cookie[cookie.key][key] = cookie_dict[key]
-    value = base_cookie.output(header="").strip()
+    cookie_copy = cookie.copy(update={"value": "<string>"})
+    value = cookie_copy.to_header(header="")
     return Schema(description=cookie.description or "", example=value)
 
 

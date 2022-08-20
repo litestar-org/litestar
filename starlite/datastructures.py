@@ -2,6 +2,7 @@
 import os
 from abc import ABC, abstractmethod
 from copy import copy
+from http.cookies import SimpleCookie
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -118,6 +119,20 @@ class Cookie(BaseModel):
     """description of the response cookie header for OpenAPI documentation"""
     documentation_only: bool = False
     """defines the Cookie instance as for OpenAPI documentation purpose only"""
+
+    def to_header(self, **kwargs: Any) -> str:
+        """Return a string representation suitable to be sent as HTTP
+        headers."""
+
+        simple_cookie: SimpleCookie = SimpleCookie()
+        simple_cookie[self.key] = self.value or ""
+        if self.max_age:
+            simple_cookie[self.key]["max-age"] = self.max_age
+        cookie_dict = self.dict()
+        for key in ["expires", "path", "domain", "secure", "httponly", "samesite"]:
+            if cookie_dict[key] is not None:
+                simple_cookie[self.key][key] = cookie_dict[key]
+        return simple_cookie.output(**kwargs).strip()
 
 
 R = TypeVar("R", bound=StarletteResponse)
