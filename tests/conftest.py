@@ -1,4 +1,3 @@
-import asyncio
 import os
 import pathlib
 from typing import AsyncGenerator, Callable
@@ -6,8 +5,6 @@ from typing import AsyncGenerator, Callable
 import pytest
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
-
-asyncio.set_event_loop(asyncio.get_event_loop())
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
