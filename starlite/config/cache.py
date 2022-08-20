@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 from urllib.parse import urlencode
 
 from pydantic import BaseConfig, BaseModel
@@ -37,7 +37,7 @@ class CacheConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    backend: CacheBackendProtocol = SimpleCacheBackend()
+    backend: Optional[CacheBackendProtocol] = None
     """
         Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default
         [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
@@ -58,4 +58,4 @@ class CacheConfig(BaseModel):
         Returns:
             An instance of [Cache][starlite.cache.base.Cache]
         """
-        return Cache(backend=self.backend, default_expiration=self.expiration, cache_key_builder=self.cache_key_builder)  # type: ignore
+        return Cache(backend=self.backend or SimpleCacheBackend(), default_expiration=self.expiration, cache_key_builder=self.cache_key_builder)  # type: ignore
