@@ -1,19 +1,18 @@
 from functools import partial
-from typing import Awaitable, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Dict
 
 from anyio.to_thread import run_sync
-from typing_extensions import ParamSpec
 
 from starlite.utils.predicates import is_async_callable
 
-P = ParamSpec("P")
-T = TypeVar("T")
+if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
 
 
 class AsyncCallable:
     __slots__ = ("args", "kwargs", "fn")
 
-    def __init__(self, fn: Callable[P, T]):
+    def __init__(self, fn: "AnyCallable"):
         """Utility class that wraps a callable and ensures it can be called as
         an async function.
 
@@ -23,7 +22,7 @@ class AsyncCallable:
         if is_async_callable(fn):
             self.fn = fn
         else:
-            self.fn = partial(run_sync, fn)  # type: ignore
+            self.fn = partial(run_sync, fn)
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:
-        return await self.fn(*args, **kwargs)  # type: ignore
+    async def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+        return await self.fn(*args, **kwargs)

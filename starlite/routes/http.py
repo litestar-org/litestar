@@ -77,7 +77,7 @@ class HTTPRoute(BaseRoute):
         await response(scope, receive, send)
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
-            await after_response_handler(request)
+            await after_response_handler(request)  # type: ignore
 
     def create_handler_map(self) -> None:
         """Parses the passed in route_handlers and returns a mapping of http-
@@ -193,6 +193,8 @@ class HTTPRoute(BaseRoute):
         cache_key = key_builder(request)
         if is_async_callable(cache_config.backend.get):
             cached_value = await cache_config.backend.get(cache_key)
+        elif route_handler.sync_to_thread:
+            cached_value = await run_sync(cache_config.backend.get, cache_key)
         else:
             cached_value = cache_config.backend.get(cache_key)
         if cached_value:
@@ -213,5 +215,7 @@ class HTTPRoute(BaseRoute):
         pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
         if is_async_callable(cache_config.backend.set):
             await cache_config.backend.set(cache_key, pickled_response, expiration)
+        elif route_handler.sync_to_thread:
+            await run_sync(cache_config.backend.set, cache_key, pickled_response, expiration)
         else:
             cache_config.backend.set(cache_key, pickled_response, expiration)

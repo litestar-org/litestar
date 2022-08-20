@@ -2,9 +2,12 @@ import asyncio
 import functools
 import sys
 from inspect import isclass
-from typing import Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import get_args, get_origin
+
+if TYPE_CHECKING:
+    from pydantic.typing import AnyCallable
 
 if sys.version_info >= (3, 10):
     from types import UnionType
@@ -14,7 +17,7 @@ else:  # pragma: no cover
     UNION_TYPES = {Union}
 
 
-def is_async_callable(value: Callable) -> bool:
+def is_async_callable(value: "AnyCallable") -> bool:
     """Extends `asyncio.iscoroutinefunction()` to additionally detect async
     `partial` objects and class instances with `async def __call__()` defined.
 

@@ -41,11 +41,6 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.handlers.base import BaseRouteHandler
-from starlite.lifecycle_hooks import (
-    AfterRequestHook,
-    AfterResponseHook,
-    BeforeRequestHook,
-)
 from starlite.plugins import get_plugin_for_value
 from starlite.provide import Provide
 from starlite.response import Response
@@ -61,7 +56,7 @@ from starlite.types import (
     Method,
     Middleware,
 )
-from starlite.utils import is_async_callable, is_class_and_subclass
+from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
@@ -376,8 +371,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.summary = summary
         self.tags = tags
         # memoized attributes, defaulted to Empty
-        self._resolved_after_response: Union[Optional[AfterResponseHook], EmptyType] = Empty
-        self._resolved_before_request: Union[Optional[BeforeRequestHook], EmptyType] = Empty
+        self._resolved_after_response: Union[Optional[AfterResponseHandler], EmptyType] = Empty
+        self._resolved_before_request: Union[Optional[BeforeRequestHandler], EmptyType] = Empty
         self._resolved_response_handler: Union["Callable[[Any], Awaitable[StarletteResponse]]", EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
@@ -429,7 +424,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 filtered_cookies.append(cookie)
         return filtered_cookies
 
-    def resolve_before_request(self) -> Optional["BeforeRequestHook"]:
+    def resolve_before_request(self) -> Optional["BeforeRequestHandler"]:
         """Resolves the before_handler handler by starting from the route
         handler and moving up.
 
@@ -437,13 +432,18 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [before request lifecycle hook handler][starlite.life_cycle.BeforeRequestHook]
+            An optional [before request lifecycle hook handler][starlite.types.BeforeRequestHandler]
         """
         if self._resolved_before_request is Empty:
-            self._resolved_before_request = BeforeRequestHook.resolve_for_handler(self, "before_request")
-        return cast("Optional[BeforeRequestHook]", self._resolved_before_request)
+            before_request_handlers = [
+                AsyncCallable(layer.before_request) for layer in self.ownership_layers if layer.before_request
+            ]
+            self._resolved_before_request = cast(
+                "Optional[BeforeRequestHandler]", before_request_handlers[-1] if before_request_handlers else None
+            )
+        return cast("Optional[BeforeRequestHandler]", self._resolved_before_request)
 
-    def resolve_after_response(self) -> Optional["AfterResponseHook"]:
+    def resolve_after_response(self) -> Optional["AfterResponseHandler"]:
         """Resolves the after_response handler by starting from the route
         handler and moving up.
 
@@ -451,11 +451,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [after response lifecycle hook handler][starlite.life_cycle.AfterResponseHook]
+            An optional [after response lifecycle hook handler][starlite.types.AfterResponseHandler]
         """
         if self._resolved_after_response is Empty:
-            self._resolved_after_response = AfterResponseHook.resolve_for_handler(self, "after_response")
-        return cast("Optional[AfterResponseHook]", self._resolved_after_response)
+            after_response_handlers = [
+                AsyncCallable(layer.after_response) for layer in self.ownership_layers if layer.after_response
+            ]
+            self._resolved_after_response = cast(
+                "Optional[AfterResponseHandler]", after_response_handlers[-1] if after_response_handlers else None
+            )
+        return cast("Optional[AfterResponseHandler]", self._resolved_after_response)
 
     def resolve_response_handler(
         self,
@@ -468,11 +473,18 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             Async Callable to handle an HTTP Request
         """
         if self._resolved_response_handler is Empty:
+            after_request_handlers = [
+                AsyncCallable(layer.after_request) for layer in self.ownership_layers if layer.after_request
+            ]
+            after_request = cast(
+                "Optional[AfterRequestHandler]", after_request_handlers[-1] if after_request_handlers else None
+            )
+
             media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
-            after_request = AfterRequestHook.resolve_for_handler(self, "after_request")
+
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):
                 handler = _create_response_container_handler(
                     status_code=self.status_code,
