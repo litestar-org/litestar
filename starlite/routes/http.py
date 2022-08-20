@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.response import Response
-    from starlite.types import CacheKeyBuilder, Method
+    from starlite.types import Method
 
 
 class HTTPRoute(BaseRoute):
@@ -185,20 +185,23 @@ class HTTPRoute(BaseRoute):
     async def _get_cached_response(
         request: Request, route_handler: "HTTPRouteHandler"
     ) -> Optional["StarletteResponse"]:
-        """Retrieves and un-pickles the cached value, if it exists."""
-        cache_config = request.app.cache_config
-        key_builder = cast(
-            "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
-        )
-        cache_key = key_builder(request)
-        if is_async_callable(cache_config.backend.get):
-            cached_value = await cache_config.backend.get(cache_key)
-        elif route_handler.sync_to_thread:
-            cached_value = await run_sync(cache_config.backend.get, cache_key)
-        else:
-            cached_value = cache_config.backend.get(cache_key)
-        if cached_value:
-            return cast("StarletteResponse", pickle.loads(cached_value))  # nosec
+        """Retrieves and un-pickles the cached response, if existing.
+
+        Args:
+            request: The [Request][starlite.connection.Request] instance
+            route_handler: The [HTTPRouteHandler][starlite.handlers.http.HTTPRouteHandler] instance
+
+        Returns:
+            A cached response instance, if existing.
+        """
+
+        cache = request.app.cache
+        cache_key = cache.build_cache_key(request=request, cache_key_builder=route_handler.cache_key_builder)
+        cached_response = await cache.get(key=cache_key)
+
+        if cached_response:
+            return cast("StarletteResponse", pickle.loads(cached_response))  # nosec
+
         return None
 
     @staticmethod
@@ -206,16 +209,11 @@ class HTTPRoute(BaseRoute):
         response: Union["Response", "StarletteResponse"], request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
         """Pickles and caches a response object."""
-        cache_config = request.app.cache_config
-        key_builder = cast(
-            "CacheKeyBuilder", route_handler.cache_key_builder or cache_config.cache_key_builder  # type: ignore[misc]
+        cache = request.app.cache
+        cache_key = cache.build_cache_key(request, route_handler.cache_key_builder)
+
+        await cache.set(
+            key=cache_key,
+            value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL),
+            expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
         )
-        cache_key = key_builder(request)
-        expiration = route_handler.cache if not isinstance(route_handler.cache, bool) else cache_config.expiration
-        pickled_response = pickle.dumps(response, pickle.HIGHEST_PROTOCOL)
-        if is_async_callable(cache_config.backend.set):
-            await cache_config.backend.set(cache_key, pickled_response, expiration)
-        elif route_handler.sync_to_thread:
-            await run_sync(cache_config.backend.set, cache_key, pickled_response, expiration)
-        else:
-            cache_config.backend.set(cache_key, pickled_response, expiration)

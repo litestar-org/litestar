@@ -3,14 +3,15 @@ from urllib.parse import urlencode
 
 from pydantic import BaseConfig, BaseModel
 
-from starlite.cache import CacheBackendProtocol, SimpleCacheBackend
+from starlite.cache.base import Cache, CacheBackendProtocol
+from starlite.cache.simple_cache_backend import SimpleCacheBackend
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:
     from starlite.connection import Request
 
 
-def default_cache_key_builder(request: "Request") -> str:
+def default_cache_key_builder(request: "Request[Any, Any]") -> str:
     """Given a request object, returns a cache key by combining the path with
     the sorted query params.
 
@@ -41,7 +42,7 @@ class CacheConfig(BaseModel):
         Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default
         [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
     """
-    expiration: int = 60  # value in seconds
+    expiration: int = 60
     """
         Default cache expiration in seconds
     """
@@ -50,3 +51,11 @@ class CacheConfig(BaseModel):
         [CacheKeyBuilder][starlite.types.CacheKeyBuilder],
         [default_cache_key_builder][starlite.config.cache.default_cache_key_builder] if not provided
     """
+
+    def to_cache(self) -> Cache:
+        """Creates a cache wrapper from the config.
+
+        Returns:
+            An instance of [Cache][starlite.cache.base.Cache]
+        """
+        return Cache(backend=self.backend, default_expiration=self.expiration, cache_key_builder=self.cache_key_builder)  # type: ignore
