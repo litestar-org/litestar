@@ -71,7 +71,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 
-    def _set_cookie_if_needed(self, message: "Message"):
+    def _set_cookie_if_needed(self, message: "Message") -> None:
         headers = MutableHeaders(scope=message)
         if "set-cookie" not in headers:
             cookie = Cookie(

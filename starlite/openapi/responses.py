@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from http.cookies import SimpleCookie
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
 
@@ -22,7 +21,6 @@ from starlite.response import Response as StarliteResponse
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
-    from http.cookies import BaseCookie
 
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.responses import Responses

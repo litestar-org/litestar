@@ -2,6 +2,7 @@
 import os
 from abc import ABC, abstractmethod
 from copy import copy
+from http.cookies import SimpleCookie
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,7 +23,6 @@ from typing import (
     cast,
 )
 
-from http.cookies import SimpleCookie
 from pydantic import BaseConfig, BaseModel, FilePath, validator
 from pydantic.generics import GenericModel
 from pydantic_openapi_schema.v3_1_0 import Header
@@ -120,7 +120,10 @@ class Cookie(BaseModel):
     documentation_only: bool = False
     """defines the Cookie instance as for OpenAPI documentation purpose only"""
 
-    def to_header(self, **kwargs) -> str:
+    def to_header(self, **kwargs: Any) -> str:
+        """Return a string representation suitable to be sent as HTTP
+        headers."""
+
         simple_cookie: SimpleCookie = SimpleCookie()
         simple_cookie[self.key] = self.value or ""
         if self.max_age:
