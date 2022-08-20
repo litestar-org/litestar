@@ -6,7 +6,7 @@ from typing import Any, Dict
 from starlite.cache.base import CacheBackendProtocol
 
 
-@dataclass(slots=True)
+@dataclass()
 class CacheObject:
     """A container class for cache data."""
 
