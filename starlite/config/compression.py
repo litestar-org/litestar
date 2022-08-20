@@ -23,7 +23,7 @@ class CompressionConfig(BaseModel):
     'compression_config' key.
     """
 
-    backend: Union[CompressionBackend]
+    backend: Union[CompressionBackend, str]
     """
         [CompressionBackend][starlite.enums.CompressionBackend] or dotted path for
         compression backend to import.
@@ -59,8 +59,10 @@ class CompressionConfig(BaseModel):
         Use GZIP if Brotli not supported.
     """
 
-    @validator("brotli_mode", pre=True, always=True)
-    def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
+    @validator("backend", pre=True, always=True)
+    def backend_must_be_valid(  # pylint: disable=no-self-argument
+        cls, v: Union[CompressionBackend, str]
+    ) -> CompressionBackend:
         """Compression Backend Validation.
 
         Args:
@@ -71,6 +73,26 @@ class CompressionConfig(BaseModel):
 
         Returns:
             _type_: CompressionBackend
+        """
+        if isinstance(v, str):
+            try:
+                v = CompressionBackend[v.upper()]
+            except KeyError as e:
+                raise ValueError(f"{v} is not a valid compression backend mode") from e
+        return v
+
+    @validator("brotli_mode", pre=True, always=True)
+    def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
+        """Brotli Mode Validation.
+
+        Args:
+            v (BrotliMode|str): Holds the selected compression backend
+
+        Raises:
+            ValueError: Value is not a valid compression backend
+
+        Returns:
+            _type_: BrotliMode
         """
         if isinstance(v, str):
             try:
