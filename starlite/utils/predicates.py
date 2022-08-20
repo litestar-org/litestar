@@ -25,7 +25,7 @@ def is_async_callable(value: "AnyCallable") -> TypeGuard[Callable[..., Awaitable
         value: Any
 
     Returns:
-        If type of `value` can be narrowed to return an awaitable, or not.
+        Bool determining if type of `value` is an awaitable.
     """
     while isinstance(value, functools.partial):
         value = value.func
