@@ -208,7 +208,7 @@ class DTOFactory:
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If `source` is not a
-            pydantic model or dataclass, and there is no plugin registered for its type.
+                pydantic model or dataclass, and there is no plugin registered for its type.
         """
         field_definitions = field_definitions or {}
         exclude = exclude or []
