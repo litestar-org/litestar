@@ -474,7 +474,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         if self._resolved_response_handler is Empty:
             after_request_handlers = [
-                AsyncCallable(layer.after_request) for layer in self.ownership_layers if layer.after_request
+                AsyncCallable(layer.after_request) for layer in self.ownership_layers if layer.after_request  # type: ignore
             ]
             after_request = cast(
                 "Optional[AfterRequestHandler]", after_request_handlers[-1] if after_request_handlers else None
