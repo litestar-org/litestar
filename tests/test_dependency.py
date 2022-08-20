@@ -1,14 +1,16 @@
 from typing import Any, Dict, Optional
 
 import pytest
+from starlette.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import Controller, Dependency, Provide, Starlite, get
+from starlite.constants import EXTRA_KEY_IS_DEPENDENCY
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.testing import create_test_client
 
 
 def test_is_dependency_inserted_into_field_extra() -> None:
-    assert Dependency().extra["is_dependency"] is True
+    assert Dependency().extra[EXTRA_KEY_IS_DEPENDENCY] is True
 
 
 @pytest.mark.parametrize(
@@ -73,3 +75,22 @@ def test_dependency_provided_on_controller() -> None:
     with create_test_client(route_handlers=[C]) as client:
         resp = client.get("/")
     assert resp.json() == {"value": 13}
+
+
+def test_dependency_skip_validation() -> None:
+    @get("/validated")
+    def validated(value: int = Dependency()) -> Dict[str, int]:
+        return {"value": value}
+
+    @get("/skipped")
+    def skipped(value: int = Dependency(skip_validation=True)) -> Dict[str, int]:
+        return {"value": value}
+
+    with create_test_client(
+        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str")}
+    ) as client:
+        validated_resp = client.get("/validated")
+        assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        skipped_resp = client.get("/skipped")
+        assert skipped_resp.status_code == HTTP_200_OK
+        assert skipped_resp.json() == {"value": "str"}

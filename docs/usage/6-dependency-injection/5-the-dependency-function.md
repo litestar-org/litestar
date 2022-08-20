@@ -77,4 +77,8 @@ class ResourceRepository:
 Now Starlite knows that the function parameter is not a `query` parameter and that it should not appear in the OpenAPI
 documentation.
 
-`Dependency` accepts a single kwarg - `default`, which is the default value for the parameter, if any.
+`Dependency` accepts the following kwargs:
+
+- `default`: default value for the parameter, if any
+- `skip_validation`: if `True` value returned from `Provide` function is not validated by the signature model. Default
+  `False`.
