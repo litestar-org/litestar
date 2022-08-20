@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from starlite.types import MiddlewareProtocol
+from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send

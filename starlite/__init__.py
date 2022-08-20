@@ -16,6 +16,7 @@ from .config import (
     CacheConfig,
     CompressionConfig,
     CORSConfig,
+    CSRFConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -57,7 +58,11 @@ from .handlers import (
     websocket,
 )
 from .logging import LoggingConfig, QueueListenerHandler
-from .middleware import AbstractAuthenticationMiddleware, AuthenticationResult
+from .middleware.authentication import (
+    AbstractAuthenticationMiddleware,
+    AuthenticationResult,
+)
+from .middleware.base import DefineMiddleware, MiddlewareProtocol
 from .openapi.controller import OpenAPIController
 from .params import Body, Dependency, Parameter
 from .plugins import PluginProtocol
@@ -65,7 +70,7 @@ from .provide import Provide
 from .response import Response
 from .router import Router
 from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from .types import MiddlewareProtocol, Partial
+from .typing import Partial
 
 __all__ = [
     "ASGIRoute",
@@ -78,11 +83,13 @@ __all__ = [
     "BaseRouteHandler",
     "Body",
     "CORSConfig",
+    "CSRFConfig",
     "CacheConfig",
     "CompressionConfig",
     "Controller",
     "Cookie",
     "DTOFactory",
+    "DefineMiddleware",
     "Dependency",
     "File",
     "HTTPException",

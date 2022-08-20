@@ -8,7 +8,8 @@ In fact, you can inject the same data that you
 can [inject into route handlers](../2-route-handlers/1_http_route_handlers.md#http-route-handlers-kwargs).
 
 ```python
-from starlite import Controller, Provide, Partial, patch
+from starlite import Controller, Provide, patch
+from starlite.typing import Partial
 from pydantic import BaseModel, UUID4
 
 

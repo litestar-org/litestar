@@ -1,47 +1,30 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    Callable,
-    Dict,
-    Generic,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    get_type_hints,
-)
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
 
-from pydantic import BaseModel, create_model
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.middleware import Middleware as StarletteMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
-from typing_extensions import Literal, Protocol, runtime_checkable
+from typing_extensions import Literal
 
-from starlite.exceptions import HTTPException, ImproperlyConfiguredException
-from starlite.utils import is_class_and_subclass
-
-try:
-    # python 3.9 changed these variable
-    from typing import _UnionGenericAlias as GenericAlias  # type: ignore
-except ImportError:  # pragma: no cover
-    from typing import _GenericAlias as GenericAlias  # type: ignore
+from starlite.exceptions import HTTPException
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
+    from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
+    from starlette.types import ASGIApp  # noqa: TC004
 
     from starlite.connection import Request  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.middleware.base import (  # noqa: TC004
+        DefineMiddleware,
+        MiddlewareProtocol,
+    )
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
+    ASGIApp = Any
     Request = Any
     WebSocket = Any
     BaseRouteHandler = Any
@@ -49,9 +32,16 @@ else:
     Router = Any
     State = Any
     Response = Any
+    MiddlewareProtocol = Any
+    StarletteMiddleware = Any
+    BaseHTTPMiddleware = Any
+    DefineMiddleware = Any
 
-T = TypeVar("T", bound=BaseModel)
 H = TypeVar("H", bound=HTTPConnection)
+
+Middleware = Union[
+    StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol], Callable[..., ASGIApp]
+]
 
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
@@ -81,45 +71,8 @@ AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]
 
 
-@runtime_checkable
-class MiddlewareProtocol(Protocol):
-    def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):  # pragma: no cover
-        ...
-
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
-        ...
-
-
-class Partial(Generic[T]):
-    _models: Dict[Type[T], Any] = {}
-
-    def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Modifies a given T subclass of BaseModel to be all optional."""
-        if not is_class_and_subclass(item, BaseModel):
-            raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
-        if not cls._models.get(item):
-            field_definitions: Dict[str, Tuple[Any, None]] = {}
-            # traverse the object's mro and get all annotations
-            # until we find a BaseModel.
-            for obj in item.mro():
-                if issubclass(obj, BaseModel):
-                    for field_name, field_type in get_type_hints(obj).items():
-                        # we modify the field annotations to make it optional
-                        if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
-                            field_definitions[field_name] = (Optional[field_type], None)
-                        else:
-                            field_definitions[field_name] = (field_type, None)
-                else:
-                    break
-            cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
-        return cast("Type[T]", cls._models.get(item))
-
-
-Middleware = Union[StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]]
-
-
 class Empty:
-    """Placeholder."""
+    """A sentinel class used as placeholder."""
 
 
 EmptyType = Type[Empty]

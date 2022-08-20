@@ -92,7 +92,24 @@ nav:
           - usage/6-dependency-injection/3-the-provide-class.md
           - usage/6-dependency-injection/4-dependencies-in-dependencies.md
           - usage/6-dependency-injection/5-the-dependency-function.md
-      - usage/7-middleware.md
+      - Middleware:
+          - usage/7-middleware/0-middleware-intro.md
+          - Using Middleware:
+              - usage/7-middleware/1-using-middleware/0-using-middleware-intro.md
+              - usage/7-middleware/1-using-middleware/1-layering-middleware.md
+              - usage/7-middleware/1-using-middleware/2-middleware-call-order.md
+              - usage/7-middleware/1-using-middleware/3-define-middleware.md
+              - usage/7-middleware/1-using-middleware/4-middleware-and-exceptions.md
+          - Creating Middleware:
+              - usage/7-middleware/2-creating-middleware/0-creating-middleware-intro.md
+              - usage/7-middleware/2-creating-middleware/1-using-basehttp-middleware.md
+              - usage/7-middleware/2-creating-middleware/2-using-middleware-protocol.md
+          - Builtin Middlewares:
+              - usage/7-middleware/3-builtin-middlewares/0-builtin-middlewares-intro.md
+              - usage/7-middleware/3-builtin-middlewares/1-cors-middleware.md
+              - usage/7-middleware/3-builtin-middlewares/2-allowed-hosts-middleware.md
+              - usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md
+              - usage/7-middleware/3-builtin-middlewares/4-compression-middleware.md
       - usage/8-authentication.md
       - usage/9-guards.md
       - Plugins:
@@ -130,6 +147,7 @@ nav:
       - reference/template.md
       - reference/testing.md
       - reference/types.md
+      - reference/typing.md
   - migration.md
 extra:
   social:

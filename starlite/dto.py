@@ -29,7 +29,14 @@ if TYPE_CHECKING:
 
 
 def get_field_type(model_field: ModelField) -> Any:
-    """Given a model field instance, return the correct type."""
+    """Given a model field instance, return the correct type.
+
+    Args:
+        model_field (ModelField): `pydantic.fields.ModelField`
+
+    Returns:
+        Type of field.
+    """
     outer_type = model_field.outer_type_
     inner_type = model_field.type_
     if "ForwardRef" not in repr(outer_type):
@@ -61,7 +68,14 @@ class DTO(GenericModel, Generic[T]):
     @classmethod
     def from_model_instance(cls, model_instance: T) -> "DTO[T]":
         """Given an instance of the source model, create an instance of the
-        given DTO subclass."""
+        given DTO subclass.
+
+        Args:
+            model_instance (T): instance of source model.
+
+        Returns:
+            Instance of the [`DTO`][starlite.dto.DTO] subclass.
+        """
         if cls.dto_source_plugin is not None and cls.dto_source_plugin.is_plugin_supported_type(model_instance):
             result = cls.dto_source_plugin.to_dict(model_instance=model_instance)
             if isawaitable(result):
@@ -79,7 +93,14 @@ class DTO(GenericModel, Generic[T]):
     @classmethod
     async def from_model_instance_async(cls, model_instance: T) -> "DTO[T]":
         """Given an instance of the source model, create an instance of the
-        given DTO subclass asynchronously."""
+        given DTO subclass asynchronously.
+
+        Args:
+            model_instance (T): instance of source model.
+
+        Returns:
+            Instance of the [`DTO`][starlite.dto.DTO] subclass.
+        """
         if (
             cls.dto_source_plugin is not None
             and cls.dto_source_plugin.is_plugin_supported_type(model_instance)
@@ -93,7 +114,11 @@ class DTO(GenericModel, Generic[T]):
 
     def to_model_instance(self) -> T:
         """Convert the DTO instance into an instance of the original class from
-        which the DTO was created."""
+        which the DTO was created.
+
+        Returns:
+            Instance of source model type.
+        """
         values = self.dict()
         for dto_key, original_key in self.dto_field_mapping.items():
             value = values.pop(dto_key)
@@ -108,6 +133,12 @@ class DTO(GenericModel, Generic[T]):
 
 class DTOFactory:
     def __init__(self, plugins: Optional[List[PluginProtocol]] = None):
+        """Create [`DTO`][starlite.dto.DTO] types from pydantic models,
+        dataclasses and other types supported via plugins.
+
+        Args:
+            plugins (list[PluginProtocol] | None): Plugins used to support `DTO` construction from arbitrary types.
+        """
         self.plugins = plugins or []
 
     def __call__(
@@ -128,21 +159,31 @@ class DTOFactory:
 
         For example, given a pydantic model
 
-            class MyClass(BaseModel):
-                first: int
-                second: int
+        ```python
+        class MyClass(BaseModel):
+            first: int
+            second: int
 
-            MyClassDTO = DTOFactory()(MyClass, exclude=["first"], field_mapping={"second": ("third", float)})
+
+        MyClassDTO = DTOFactory()(
+            MyClass, exclude=["first"], field_mapping={"second": ("third", float)}
+        )
+        ```
 
         `MyClassDTO` is now equal to this:
-            class MyClassDTO(BaseModel):
-                third: float
+
+        ```python
+        class MyClassDTO(BaseModel):
+            third: float
+        ```
 
         It can be used as a regular pydantic model:
 
-            @post(path="/my-path)
-            def create_obj(data: MyClassDTO) -> MyClass:
-                ...
+        ```python
+        @post(path="/my-path")
+        def create_obj(data: MyClassDTO) -> MyClass:
+            ...
+        ```
 
         This will affect parsing, validation and how OpenAPI schema is generated exactly like when using a pydantic model.
 

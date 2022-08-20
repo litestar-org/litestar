@@ -7,8 +7,9 @@ from starlette.datastructures import MutableHeaders
 
 from starlite.connection import Request
 from starlite.datastructures import Cookie
+from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
-from starlite.types import MiddlewareProtocol
+from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -38,7 +39,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        if scope["type"] != "http":
+        if scope["type"] != ScopeType.HTTP:
             await self.app(scope, receive, send)
             return
 
@@ -46,12 +47,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
-        send_callable_to_use = send
-
-        if request.method not in self.config.safe_methods:
-            if not self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
-                raise PermissionDeniedException("CSRF token verification failed")
-        else:
+        if request.method in self.config.safe_methods:
 
             async def send_wrapper(message: "Message") -> None:
                 """Send function that wraps the original send to inject a
@@ -69,9 +65,11 @@ class CSRFMiddleware(MiddlewareProtocol):
 
                 await send(message)
 
-            send_callable_to_use = send_wrapper
-
-        await self.app(scope, receive, send_callable_to_use)
+            await self.app(scope, receive, send_wrapper)
+        elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
+            await self.app(scope, receive, send)
+        else:
+            raise PermissionDeniedException("CSRF token verification failed")
 
     def _set_cookie_if_needed(self, message: "Message"):
         headers = MutableHeaders(scope=message)

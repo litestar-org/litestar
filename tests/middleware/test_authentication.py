@@ -12,7 +12,10 @@ from starlette.websockets import WebSocketDisconnect
 from starlite import Starlite, get, websocket
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import PermissionDeniedException
-from starlite.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
+from starlite.middleware.authentication import (
+    AbstractAuthenticationMiddleware,
+    AuthenticationResult,
+)
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

@@ -7,7 +7,7 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions.utils import create_exception_response
-from starlite.types import ExceptionHandler, MiddlewareProtocol
+from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:
@@ -16,10 +16,12 @@ if TYPE_CHECKING:
     from starlette.responses import Response as StarletteResponse
     from starlette.types import ASGIApp, Receive, Scope, Send
 
+    from starlite.types import ExceptionHandler
+
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):
     def __init__(
-        self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], ExceptionHandler]
+        self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]
     ):
         """This middleware is used to wrap an ASGIApp inside a try catch block
         and handles any exceptions raised.
