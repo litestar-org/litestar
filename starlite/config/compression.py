@@ -23,10 +23,9 @@ class CompressionConfig(BaseModel):
     'compression_config' key.
     """
 
-    backend: Union[CompressionBackend, str]
+    backend: Union[CompressionBackend, Literal["gzip", "brotli"]]
     """
-        [CompressionBackend][starlite.enums.CompressionBackend] or dotted path for
-        compression backend to import.
+        [CompressionBackend][starlite.enums.CompressionBackend] or string literal of "gzip" or "brotli"
     """
     minimum_size: conint(gt=0) = 500  # type: ignore[valid-type]
     """
@@ -61,12 +60,12 @@ class CompressionConfig(BaseModel):
 
     @validator("backend", pre=True, always=True)
     def backend_must_be_valid(  # pylint: disable=no-self-argument
-        cls, v: Union[CompressionBackend, str]
+        cls, v: Union[CompressionBackend, Literal["gzip", "brotli"]]
     ) -> CompressionBackend:
         """Compression Backend Validation.
 
         Args:
-            v (CompressionBackend|str): Holds the selected compression backend
+            v (CompressionBackend|Literal["gzip", "brotli"]): Holds the selected compression backend
 
         Raises:
             ValueError: Value is not a valid compression backend
@@ -76,7 +75,7 @@ class CompressionConfig(BaseModel):
         """
         if isinstance(v, str):
             try:
-                v = CompressionBackend[v.upper()]
+                v = CompressionBackend[v]
             except KeyError as e:
                 raise ValueError(f"{v} is not a valid compression backend mode") from e
         return v
