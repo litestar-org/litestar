@@ -95,9 +95,7 @@ def test_gzip_middleware_custom_settings() -> None:
 
 
 def test_gzip_middleware_set_from_string() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.GZIP)
-    )
+    client = create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="gzip"))
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
@@ -114,9 +112,7 @@ def test_gzip_middleware_set_from_string() -> None:
 
 
 def test_brotli_middleware_from_enum() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    )
+    client = create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli"))
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
