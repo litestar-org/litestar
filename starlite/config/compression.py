@@ -1,10 +1,10 @@
+from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Union, cast
 
 from pydantic import BaseModel, conint, validator
 from typing_extensions import Literal
 
 from starlite.enums import CompressionBackend
-from starlite.middleware.compression.brotli import BrotliMode
 from starlite.utils import import_string
 
 if TYPE_CHECKING:
@@ -13,6 +13,21 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp
 
     from starlite.middleware.base import MiddlewareProtocol
+
+
+class CompressionEncoding(str, Enum):
+    """An Enum for supported compression encodings."""
+
+    GZIP = "gzip"
+    BROTLI = "br"
+
+
+class BrotliMode(str, Enum):
+    """Enumerates the available brotli compression optimization modes."""
+
+    GENERIC = "generic"
+    TEXT = "text"
+    FONT = "font"
 
 
 class CompressionConfig(BaseModel):
