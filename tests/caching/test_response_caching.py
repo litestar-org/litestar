@@ -66,5 +66,5 @@ async def test_custom_cache_key(sync_to_thread: bool) -> None:
         ]
     ) as client:
         client.get("/cached")
-        value = client.app.cache.get("/cached:::cached")
+        value = await client.app.cache.get("/cached:::cached")
         assert value
