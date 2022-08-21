@@ -112,9 +112,9 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
         if plugin:
             if is_async_callable(plugin.to_dict):
                 if isinstance(data, (list, tuple)):
-                    data = [await plugin.to_dict(datum) for datum in data]  # type: ignore
+                    data = [await plugin.to_dict(datum) for datum in data]
                 else:
-                    data = await plugin.to_dict(data)  # type: ignore
+                    data = await plugin.to_dict(data)
             else:
                 if isinstance(data, (list, tuple)):
                     data = [plugin.to_dict(datum) for datum in data]

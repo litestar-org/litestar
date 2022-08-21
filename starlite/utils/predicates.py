@@ -2,9 +2,9 @@ import asyncio
 import functools
 import sys
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Union
 
-from typing_extensions import get_args, get_origin
+from typing_extensions import TypeGuard, get_args, get_origin
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
@@ -17,7 +17,7 @@ else:  # pragma: no cover
     UNION_TYPES = {Union}
 
 
-def is_async_callable(value: "AnyCallable") -> bool:
+def is_async_callable(value: "AnyCallable") -> TypeGuard[Callable[..., Awaitable[Any]]]:
     """Extends `asyncio.iscoroutinefunction()` to additionally detect async
     `partial` objects and class instances with `async def __call__()` defined.
 
@@ -25,7 +25,7 @@ def is_async_callable(value: "AnyCallable") -> bool:
         value: Any
 
     Returns:
-        bool
+        If type of `value` can be narrowed to return an awaitable, or not.
     """
     while isinstance(value, functools.partial):
         value = value.func
