@@ -133,6 +133,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
+addopts = "--ignore=examples"
 asyncio_mode = "auto"
 
 [tool.pycln]
