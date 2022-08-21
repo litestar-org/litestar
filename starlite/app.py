@@ -70,7 +70,7 @@ class Starlite(Router):
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
-        "cache_config",
+        "cache",
         "compression_config",
         "cors_config",
         "csrf_config",
@@ -161,11 +161,11 @@ class Starlite(Router):
         self._registered_routes: Set[BaseRoute] = set()
         self._static_paths: Set[str] = set()
         self.allowed_hosts = allowed_hosts
-        self.cache_config = cache_config
+        self.cache = cache_config.to_cache()
+        self.compression_config = compression_config
         self.cors_config = cors_config
         self.csrf_config = csrf_config
         self.debug = debug
-        self.compression_config = compression_config
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}

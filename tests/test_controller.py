@@ -19,7 +19,7 @@ from tests import Person, PersonFactory
         (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT, NoReturn),
     ],
 )
-def test_controller_http_method(
+async def test_controller_http_method(
     decorator: Union[Type[get], Type[post], Type[put], Type[patch], Type[delete]],
     http_method: HttpMethod,
     expected_status_code: int,
