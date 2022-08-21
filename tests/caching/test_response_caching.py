@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import pytest
 from freezegun import freeze_time
 
 from starlite import Request, get
@@ -8,9 +9,11 @@ from starlite.testing import create_test_client
 from . import after_request_handler, slow_handler
 
 
-def test_default_cache_response() -> None:
+@pytest.mark.parametrize("sync_to_thread", (True, False))
+def test_default_cache_response(sync_to_thread: bool) -> None:
     with create_test_client(
-        route_handlers=[get("/cached", cache=True)(slow_handler)], after_request=after_request_handler
+        route_handlers=[get("/cached", sync_to_thread=sync_to_thread, cache=True)(slow_handler)],
+        after_request=after_request_handler,
     ) as client:
         first_response = client.get("/cached")
         first_response_identifier = first_response.headers["unique-identifier"]
@@ -48,12 +51,17 @@ def test_default_expiration() -> None:
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
-def test_custom_cache_key() -> None:
+@pytest.mark.parametrize("sync_to_thread", (True, False))
+def test_custom_cache_key(sync_to_thread: bool) -> None:
     def custom_cache_key_builder(request: Request) -> str:
         return request.url.path + ":::cached"
 
     with create_test_client(
-        route_handlers=[get("/cached", cache=True, cache_key_builder=custom_cache_key_builder)(slow_handler)]
+        route_handlers=[
+            get("/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder)(
+                slow_handler
+            )
+        ]
     ) as client:
         client.get("/cached")
         assert client.app.cache_config.backend.get("/cached:::cached")

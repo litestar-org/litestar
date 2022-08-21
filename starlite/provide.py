@@ -1,10 +1,7 @@
-from functools import partial
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
-from anyio.to_thread import run_sync
-from pydantic.fields import Undefined
-
-from starlite.utils import is_async_callable
+from starlite.types import Empty
+from starlite.utils import AsyncCallable, is_async_callable
 
 if TYPE_CHECKING:
     from typing import Type
@@ -23,31 +20,29 @@ class Provide:
         sync_to_thread (bool): run sync code in an async thread. Defaults to False.
     """
 
-    __slots__ = ("dependency", "use_cache", "value", "signature_model", "sync_to_thread", "is_coroutine")
+    __slots__ = ("dependency", "use_cache", "value", "signature_model")
 
     def __init__(self, dependency: "AnyCallable", use_cache: bool = False, sync_to_thread: bool = False):
 
-        self.dependency = dependency
+        self.dependency = cast("AnyCallable", AsyncCallable(dependency) if sync_to_thread else dependency)
         self.use_cache = use_cache
-        self.value: Any = Undefined
+        self.value: Any = Empty
         self.signature_model: Optional["Type[SignatureModel]"] = None
-        self.sync_to_thread = sync_to_thread
-        self.is_coroutine = is_async_callable(dependency)
 
-    async def __call__(self, **kwargs: Any) -> Any:
+    async def __call__(self, **kwargs: Dict[str, Any]) -> Any:
         """Proxies call to 'self.proxy'."""
 
-        if self.use_cache and self.value is not Undefined:
+        if self.use_cache and self.value is not Empty:
             return self.value
-        fn = partial(self.dependency, **kwargs)
-        if self.is_coroutine:
-            value = await fn()
-        elif self.sync_to_thread:
-            value = await run_sync(fn)
+
+        if is_async_callable(self.dependency):
+            value = await self.dependency(**kwargs)
         else:
-            value = fn()
+            value = self.dependency(**kwargs)
+
         if self.use_cache:
             self.value = value
+
         return value
 
     def __eq__(self, other: Any) -> bool:

@@ -2,9 +2,9 @@ from functools import partial
 from typing import Any
 
 import pytest
-from pydantic.fields import Undefined
 
 from starlite import Provide
+from starlite.types import Empty
 
 
 class C:
@@ -58,7 +58,7 @@ async def test_provide_default() -> None:
 @pytest.mark.asyncio()
 async def test_provide_cached() -> None:
     provider = Provide(dependency=async_fn, use_cache=True)
-    assert provider.value is Undefined
+    assert provider.value is Empty
     value = await provider()
     assert value == "three-one"
     assert provider.value == value
