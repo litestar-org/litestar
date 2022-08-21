@@ -1,18 +1,16 @@
 import logging
 from typing import TYPE_CHECKING, Any, cast
 
+import brotli
 import pytest
 from starlette.responses import PlainTextResponse
 
 from starlite import get
 from starlite.config import CompressionConfig
+from starlite.config.compression import BrotliMode, CompressionEncoding
 from starlite.datastructures import Stream
 from starlite.enums import CompressionBackend
-from starlite.middleware.compression.brotli import (
-    BrotliMiddleware,
-    BrotliMode,
-    CompressionEncoding,
-)
+from starlite.middleware.compression.brotli import BrotliMiddleware
 from starlite.middleware.compression.gzip import GZipMiddleware
 from starlite.testing import create_test_client
 
@@ -128,7 +126,7 @@ def test_brotli_middleware_from_enum() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
-    assert brotli_middleware.mode == BrotliMode.TEXT.to_int()
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.TEXT)
     assert brotli_middleware.lgwin == 22
     assert brotli_middleware.lgblock == 0
 
@@ -148,7 +146,7 @@ def test_brotli_middleware_from_string() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
-    assert brotli_middleware.mode == BrotliMode.TEXT.to_int()
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.TEXT)
     assert brotli_middleware.lgwin == 22
     assert brotli_middleware.lgblock == 0
 
@@ -254,7 +252,7 @@ def test_brotli_middleware_custom_settings() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
-    assert brotli_middleware.mode == BrotliMode.FONT.to_int()
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.FONT)
     assert brotli_middleware.lgwin == 20
     assert brotli_middleware.lgblock == 17
 
@@ -278,3 +276,15 @@ def test_invalid_compression_middleware() -> None:
         create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="super-zip"))  # type: ignore
     except Exception as exc:
         assert isinstance(exc, ValueError)
+
+
+@pytest.mark.parametrize(
+    "mode, exp",
+    [
+        (BrotliMode.TEXT, brotli.MODE_TEXT),
+        (BrotliMode.FONT, brotli.MODE_FONT),
+        (BrotliMode.GENERIC, brotli.MODE_GENERIC),
+    ],
+)
+def test_brotli_middleware_brotli_mode_to_int(mode: BrotliMode, exp: int) -> None:
+    assert BrotliMiddleware._brotli_mode_to_int(mode) == exp

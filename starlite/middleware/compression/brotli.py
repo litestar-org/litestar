@@ -1,10 +1,10 @@
 import io
-from enum import Enum
 from typing import TYPE_CHECKING
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
 
+from starlite.config.compression import BrotliMode, CompressionEncoding
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
@@ -16,32 +16,6 @@ try:
     import brotli
 except ImportError as e:
     raise MissingDependencyException("brotli is not installed") from e
-
-
-class CompressionEncoding(str, Enum):
-    """An Enum for supported compression encodings."""
-
-    GZIP = "gzip"
-    BROTLI = "br"
-
-
-class BrotliMode(str, Enum):
-    """Enumerates the available brotli compression optimization modes."""
-
-    GENERIC = "generic"
-    TEXT = "text"
-    FONT = "font"
-
-    def to_int(self) -> int:
-        """Select the correct brotli mode.
-
-        Returns: An int correlating with the constants in the brotli package
-        """
-        if self == BrotliMode.TEXT:
-            return int(brotli.MODE_TEXT)
-        if self == BrotliMode.FONT:
-            return int(brotli.MODE_FONT)
-        return int(brotli.MODE_GENERIC)
 
 
 class BrotliMiddleware:
@@ -72,7 +46,7 @@ class BrotliMiddleware:
         """
         self.app = app
         self.quality = brotli_quality
-        self.mode = brotli_mode.to_int()
+        self.mode = self._brotli_mode_to_int(brotli_mode)
         self.minimum_size = minimum_size
         self.lgwin = brotli_lgwin
         self.lgblock = brotli_lgblock
@@ -97,6 +71,19 @@ class BrotliMiddleware:
                 await gzip_responder(scope, receive, send)
                 return
         await self.app(scope, receive, send)
+
+    @staticmethod
+    def _brotli_mode_to_int(brotli_mode: BrotliMode) -> int:
+        """Select the correct brotli mode.
+
+        Returns:
+            An int correlating with the constants in the brotli package
+        """
+        if brotli_mode == BrotliMode.TEXT:
+            return int(brotli.MODE_TEXT)
+        if brotli_mode == BrotliMode.FONT:
+            return int(brotli.MODE_FONT)
+        return int(brotli.MODE_GENERIC)
 
 
 class BrotliResponder:
