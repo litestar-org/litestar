@@ -75,7 +75,7 @@ class CompressionConfig(BaseModel):
         """
         if isinstance(v, str):
             try:
-                v = CompressionBackend[v]
+                v = CompressionBackend(v)
             except KeyError as e:
                 raise ValueError(f"{v} is not a valid compression backend mode") from e
         return v
