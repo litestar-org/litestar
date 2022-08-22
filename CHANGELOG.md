@@ -345,4 +345,17 @@
 [1.12.0]
 
 - fix: handling of "\*" in routes by @waweber
-  -update: middleware typing and addition of `DefineMiddleware
+- update: middleware typing and addition of `DefineMiddleware
+
+[1.13.0]
+
+- update: Export starlite cookie to header and use it in CSRF middleware and OpenAPI response @seladb
+- fix: remove duplicated detail in `HTTPException.__str__()`
+- update: Add `skip_validation` flag to `Dependency` function
+- update: consistent eager evaluation of async callables across the codebase
+- update: cache protocol, cache backend integration including locking for sync access
+- fix: removed imports causing `MissingDependencyException` where `brotli` not installed and not required.
+
+[1.13.1]
+
+- fix `is_class_and_subclass` not handling type annotations.

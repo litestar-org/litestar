@@ -6,8 +6,6 @@ import pytest
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 
-from tests.plugins.tortoise_orm import cleanup, init_tortoise
-
 
 def pytest_generate_tests(metafunc: Callable) -> None:
     """Sets ENV variables for testing."""
@@ -22,6 +20,8 @@ def template_dir(tmp_path: pathlib.Path) -> pathlib.Path:
 @pytest.fixture()
 async def scaffold_tortoise() -> AsyncGenerator:
     """Scaffolds Tortoise ORM and performs cleanup."""
+    from tests.plugins.tortoise_orm import cleanup, init_tortoise
+
     await init_tortoise()
     yield
     await cleanup()

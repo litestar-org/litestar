@@ -13,7 +13,6 @@ from typing import (
     cast,
 )
 
-from anyio.to_thread import run_sync
 from pydantic import BaseConfig, Extra, validate_arguments
 from pydantic.fields import FieldInfo, ModelField, Undefined
 
@@ -21,7 +20,7 @@ from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
 from starlite.types import Empty, EmptyType, ExceptionHandler, Guard, Middleware
-from starlite.utils import is_async_callable, normalize_path
+from starlite.utils import AsyncCallable, normalize_path
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
@@ -138,6 +137,7 @@ class BaseRouteHandler(Generic[T]):
             self._resolved_guards = []
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
+            self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
         return cast("List[Guard]", self._resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
@@ -181,10 +181,7 @@ class BaseRouteHandler(Generic[T]):
         """Ensures the connection is authorized by running all the route guards
         in scope."""
         for guard in self.resolve_guards():
-            if is_async_callable(guard):
-                await guard(connection, copy(self))  # type: ignore[misc]
-            else:
-                await run_sync(guard, connection, copy(self))
+            await guard(connection, copy(self))  # type: ignore
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:

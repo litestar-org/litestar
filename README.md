@@ -32,10 +32,15 @@
 
 # Starlite
 
-Starlite is a powerful, flexible and highly performant ASGI API framework built on top of [Starlette](https://github.com/encode/starlette)
+Starlite is a powerful, flexible and highly performant ASGI API framework built on top
+of [Starlette](https://github.com/encode/starlette)
 and [pydantic](https://github.com/samuelcolvin/pydantic).
 
 Check out the [Starlite documentation 📚](https://starlite-api.github.io/starlite/)
+
+For a more complete example,
+see [Example Starlite project using Postgresql, Redis and Docker Resources](https://github.com/starlite-api/starlite-pg-redis-docker)
+.
 
 ## Installation
 
@@ -146,7 +151,9 @@ class UserController(Controller):
 
 ### ReDoc, Swagger-UI and Stoplight Elements API Documentation
 
-While running Starlite, you can view the generated OpenAPI documentation using a [ReDoc](https://redoc.ly/) site, a [Swagger-UI](https://swagger.io/tools/swagger-ui/) as well as a [Stoplight Elements](https://github.com/stoplightio/elements) site.
+While running Starlite, you can view the generated OpenAPI documentation using a [ReDoc](https://redoc.ly/) site,
+a [Swagger-UI](https://swagger.io/tools/swagger-ui/) as well as
+a [Stoplight Elements](https://github.com/stoplightio/elements) site.
 
 ### Data Parsing, Type Hints and Pydantic
 
