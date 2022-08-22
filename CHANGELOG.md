@@ -355,3 +355,7 @@
 - update: consistent eager evaluation of async callables across the codebase
 - update: cache protocol, cache backend integration including locking for sync access
 - fix: removed imports causing `MissingDependencyException` where `brotli` not installed and not required.
+
+[1.13.1]
+
+- fix `is_class_and_subclass` not handling type annotations.

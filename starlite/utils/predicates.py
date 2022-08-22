@@ -45,9 +45,12 @@ def is_class_and_subclass(value: Any, t_type: Any) -> bool:
     Returns:
         bool
     """
-    if not isclass(value):
+    origin = get_origin(value)
+    if not origin and not isclass(value):
         return False
     try:
+        if origin:
+            return origin and issubclass(origin, t_type)
         return issubclass(value, t_type)
     except TypeError:
         return False
