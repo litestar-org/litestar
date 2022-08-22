@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, Union, cast
 from pydantic import BaseModel, conint, validator
 from typing_extensions import Literal
 
-from starlite.enums import CompressionBackend
 from starlite.utils import import_string
 
 if TYPE_CHECKING:
@@ -38,7 +37,7 @@ class CompressionConfig(BaseModel):
     'compression_config' key.
     """
 
-    backend: Union[CompressionBackend, Literal["gzip", "brotli"]]
+    backend: Literal["gzip", "brotli"]
     """
         [CompressionBackend][starlite.enums.CompressionBackend] or string literal of "gzip" or "brotli"
     """
@@ -72,28 +71,6 @@ class CompressionConfig(BaseModel):
     """
         Use GZIP if Brotli not supported.
     """
-
-    @validator("backend", pre=True, always=True)
-    def backend_must_be_valid(  # pylint: disable=no-self-argument
-        cls, v: Union[CompressionBackend, Literal["gzip", "brotli"]]
-    ) -> CompressionBackend:
-        """Compression Backend Validation.
-
-        Args:
-            v (CompressionBackend|Literal["gzip", "brotli"]): Holds the selected compression backend
-
-        Raises:
-            ValueError: Value is not a valid compression backend
-
-        Returns:
-            _type_: CompressionBackend
-        """
-        if isinstance(v, str):
-            try:
-                v = CompressionBackend(v)
-            except KeyError as e:
-                raise ValueError(f"{v} is not a valid compression backend mode") from e
-        return v
 
     @validator("brotli_mode", pre=True, always=True)
     def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
@@ -130,12 +107,10 @@ class CompressionConfig(BaseModel):
             "brotli_gzip_fallback",
         }
         gzip_keys = {"minimum_size", "gzip_compress_level"}
-        if self.backend == CompressionBackend.GZIP:
+        if self.backend == "gzip":
             kwargs["include"] = gzip_keys
-        elif self.backend == CompressionBackend.BROTLI:
+        elif self.backend == "brotli":
             kwargs["include"] = brotli_keys
-        else:
-            kwargs["include"] = brotli_keys.union(gzip_keys)
 
         return super().dict(*args, **kwargs)
 
@@ -148,7 +123,7 @@ class CompressionConfig(BaseModel):
         Returns:
             A middleware instance
         """
-        if self.backend == CompressionBackend.GZIP:
+        if self.backend == "gzip":
             handler = cast(
                 "Type[MiddlewareProtocol]", import_string("starlite.middleware.compression.gzip.GZipMiddleware")
             )
