@@ -54,7 +54,7 @@ class CompressionConfig(BaseModel):
         Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the quality, the slower
         the compression.
     """
-    brotli_mode: Union[BrotliMode, str] = BrotliMode.TEXT
+    brotli_mode: Literal["generic", "text", "font"] = "text"
     """
         MODE_GENERIC, MODE_TEXT (for UTF-8 format text input, default) or MODE_FONT (for WOFF 2.0).
     """

@@ -1,10 +1,10 @@
 import io
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
 
-from starlite.config.compression import BrotliMode, CompressionEncoding
+from starlite.config.compression import CompressionEncoding
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
@@ -17,6 +17,8 @@ try:
 except ImportError as e:
     raise MissingDependencyException("brotli is not installed") from e
 
+BrotliMode = Literal["text", "generic", "font"]
+
 
 class BrotliMiddleware:
     def __init__(
@@ -24,7 +26,7 @@ class BrotliMiddleware:
         app: "ASGIApp",
         minimum_size: int = 400,
         brotli_quality: int = 4,
-        brotli_mode: BrotliMode = BrotliMode.TEXT,
+        brotli_mode: BrotliMode = "text",
         brotli_lgwin: int = 22,
         brotli_lgblock: int = 0,
         brotli_gzip_fallback: bool = True,
@@ -79,9 +81,9 @@ class BrotliMiddleware:
         Returns:
             An int correlating with the constants in the brotli package
         """
-        if brotli_mode == BrotliMode.TEXT:
+        if brotli_mode == "text":
             return int(brotli.MODE_TEXT)
-        if brotli_mode == BrotliMode.FONT:
+        if brotli_mode == "font":
             return int(brotli.MODE_FONT)
         return int(brotli.MODE_GENERIC)
 

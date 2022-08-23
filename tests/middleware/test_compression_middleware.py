@@ -119,7 +119,7 @@ def test_brotli_middleware_from_string() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
-    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.TEXT)
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int("text")
     assert brotli_middleware.lgwin == 22
     assert brotli_middleware.lgblock == 0
 
@@ -203,7 +203,7 @@ def test_brotli_middleware_custom_settings() -> None:
             backend="brotli",
             minimum_size=1000,
             brotli_quality=3,
-            brotli_mode=BrotliMode.FONT,
+            brotli_mode="font",
             brotli_lgwin=20,
             brotli_lgblock=17,
         ),
@@ -219,7 +219,7 @@ def test_brotli_middleware_custom_settings() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
-    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.FONT)
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int("font")
     assert brotli_middleware.lgwin == 20
     assert brotli_middleware.lgblock == 17
 
@@ -230,7 +230,7 @@ def test_brotli_middleware_invalid_mode() -> None:
             route_handlers=[handler],
             compression_config=CompressionConfig(
                 backend="brotli",
-                brotli_mode="BINARY",
+                brotli_mode="BINARY",  # type: ignore
             ),
         )
     except Exception as exc:
@@ -248,10 +248,10 @@ def test_invalid_compression_middleware() -> None:
 @pytest.mark.parametrize(
     "mode, exp",
     [
-        (BrotliMode.TEXT, brotli.MODE_TEXT),
-        (BrotliMode.FONT, brotli.MODE_FONT),
-        (BrotliMode.GENERIC, brotli.MODE_GENERIC),
+        ("text", brotli.MODE_TEXT),
+        ("font", brotli.MODE_FONT),
+        ("generic", brotli.MODE_GENERIC),
     ],
 )
 def test_brotli_middleware_brotli_mode_to_int(mode: BrotliMode, exp: int) -> None:
-    assert BrotliMiddleware._brotli_mode_to_int(mode) == exp
+    assert BrotliMiddleware._brotli_mode_to_int(mode) == exp  # type: ignore
