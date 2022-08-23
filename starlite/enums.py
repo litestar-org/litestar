@@ -54,10 +54,3 @@ class ParamType(str, Enum):
     QUERY = "query"
     COOKIE = "cookie"
     HEADER = "header"
-
-
-class CompressionBackend(str, Enum):
-    """Enumerates available compression backends."""
-
-    GZIP = "gzip"
-    BROTLI = "brotli"

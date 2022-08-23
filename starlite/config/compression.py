@@ -1,10 +1,8 @@
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, cast
 
-from pydantic import BaseModel, conint, validator
+from pydantic import BaseModel, conint
 from typing_extensions import Literal
 
-from starlite.enums import CompressionBackend
 from starlite.utils import import_string
 
 if TYPE_CHECKING:
@@ -15,21 +13,6 @@ if TYPE_CHECKING:
     from starlite.middleware.base import MiddlewareProtocol
 
 
-class CompressionEncoding(str, Enum):
-    """An Enum for supported compression encodings."""
-
-    GZIP = "gzip"
-    BROTLI = "br"
-
-
-class BrotliMode(str, Enum):
-    """Enumerates the available brotli compression optimization modes."""
-
-    GENERIC = "generic"
-    TEXT = "text"
-    FONT = "font"
-
-
 class CompressionConfig(BaseModel):
     """Configuration for response compression.
 
@@ -38,10 +21,9 @@ class CompressionConfig(BaseModel):
     'compression_config' key.
     """
 
-    backend: Union[CompressionBackend]
+    backend: Literal["gzip", "brotli"]
     """
-        [CompressionBackend][starlite.enums.CompressionBackend] or dotted path for
-        compression backend to import.
+        [CompressionBackend][starlite.enums.CompressionBackend] or string literal of "gzip" or "brotli"
     """
     minimum_size: conint(gt=0) = 500  # type: ignore[valid-type]
     """
@@ -56,7 +38,7 @@ class CompressionConfig(BaseModel):
         Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the quality, the slower
         the compression.
     """
-    brotli_mode: Union[BrotliMode, str] = BrotliMode.TEXT
+    brotli_mode: Literal["generic", "text", "font"] = "text"
     """
         MODE_GENERIC, MODE_TEXT (for UTF-8 format text input, default) or MODE_FONT (for WOFF 2.0).
     """
@@ -74,31 +56,11 @@ class CompressionConfig(BaseModel):
         Use GZIP if Brotli not supported.
     """
 
-    @validator("brotli_mode", pre=True, always=True)
-    def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
-        """Compression Backend Validation.
-
-        Args:
-            v (CompressionBackend|str): Holds the selected compression backend
-
-        Raises:
-            ValueError: Value is not a valid compression backend
-
-        Returns:
-            _type_: CompressionBackend
-        """
-        if isinstance(v, str):
-            try:
-                v = BrotliMode[v.upper()]
-            except KeyError as e:
-                raise ValueError(f"{v} is not a valid compression optimization mode") from e
-        return v
-
-    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # type: ignore[no-untyped-def]
+    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Returns a dictionary representation of the CompressionConfig.
 
         Returns:
-            Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
+            dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
         """
         brotli_keys = {
             "minimum_size",
@@ -109,12 +71,10 @@ class CompressionConfig(BaseModel):
             "brotli_gzip_fallback",
         }
         gzip_keys = {"minimum_size", "gzip_compress_level"}
-        if self.backend == CompressionBackend.GZIP:
+        if self.backend == "gzip":
             kwargs["include"] = gzip_keys
-        elif self.backend == CompressionBackend.BROTLI:
+        elif self.backend == "brotli":
             kwargs["include"] = brotli_keys
-        else:
-            kwargs["include"] = brotli_keys.union(gzip_keys)
 
         return super().dict(*args, **kwargs)
 
@@ -127,7 +87,7 @@ class CompressionConfig(BaseModel):
         Returns:
             A middleware instance
         """
-        if self.backend == CompressionBackend.GZIP:
+        if self.backend == "gzip":
             handler = cast(
                 "Type[MiddlewareProtocol]", import_string("starlite.middleware.compression.gzip.GZipMiddleware")
             )
