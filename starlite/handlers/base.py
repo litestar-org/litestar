@@ -14,12 +14,20 @@ from typing import (
 )
 
 from pydantic import BaseConfig, Extra, validate_arguments
-from pydantic.fields import FieldInfo, ModelField, Undefined
+from pydantic.fields import ModelField, Undefined
 
 from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.provide import Provide
-from starlite.types import Empty, EmptyType, ExceptionHandler, Guard, Middleware
+from starlite.types import (
+    Dependencies,
+    Empty,
+    EmptyType,
+    ExceptionHandlersMap,
+    Guard,
+    Middleware,
+    ParametersMap,
+)
 from starlite.utils import AsyncCallable, normalize_path
 
 if TYPE_CHECKING:
@@ -59,8 +67,8 @@ class BaseRouteHandler(Generic[T]):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        dependencies: Optional[Dict[str, "Provide"]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        dependencies: Optional[Dependencies] = None,
+        exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -109,7 +117,7 @@ class BaseRouteHandler(Generic[T]):
         into pydantic ModelField instances."""
         if self._resolved_layered_parameters is Empty:
             self._resolved_layered_parameters = {}
-            parameters: Dict[str, FieldInfo] = {}
+            parameters: ParametersMap = {}
             for layer in self.ownership_layers:
                 parameters.update(getattr(layer, "parameters", None) or {})
 
@@ -166,7 +174,7 @@ class BaseRouteHandler(Generic[T]):
             resolved_middleware.extend(layer.middleware or [])
         return list(reversed(resolved_middleware))
 
-    def resolve_exception_handlers(self) -> Dict[Union[int, Type[Exception]], ExceptionHandler]:
+    def resolve_exception_handlers(self) -> ExceptionHandlersMap:
         """Resolves the exception_handlers by starting from the route handler
         and moving up.
 

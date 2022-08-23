@@ -1,27 +1,14 @@
-from typing import Any, Dict, Type
+from typing import TYPE_CHECKING, Any, Dict, Type
 
 import pytest
 from pydantic import BaseModel
 
-from starlite.plugins.base import ModelT, PluginMapping, PluginProtocol
+from starlite import MediaType, Starlite, State, get
+from starlite.plugins.base import PluginMapping, PluginProtocol
+from starlite.testing import create_test_client
 
-
-class DummyPlugin(PluginProtocol[ModelT]):
-    def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[BaseModel]:
-        raise NotImplementedError
-
-    @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
-        raise NotImplementedError
-
-    def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: BaseModel) -> ModelT:
-        raise NotImplementedError
-
-    def to_dict(self, model_instance: ModelT) -> Dict[str, Any]:
-        raise NotImplementedError
-
-    def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
-        raise NotImplementedError
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 
 class AModel:
@@ -38,13 +25,13 @@ class APydanticModel(BaseModel):
     name: str
 
 
-class APlugin(DummyPlugin[AModel]):
-    def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[BaseModel]:
+class APlugin(PluginProtocol[AModel]):
+    def to_pydantic_model_class(self, model_class: Type[AModel], **kwargs: Any) -> Type[BaseModel]:
         assert model_class is AModel
         return APydanticModel
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
+    def is_plugin_supported_type(value: Any) -> "TypeGuard[AModel]":
         return value is AModel
 
     def from_pydantic_model_instance(self, model_class: Type[AModel], pydantic_model_instance: BaseModel) -> AModel:
@@ -52,10 +39,10 @@ class APlugin(DummyPlugin[AModel]):
         assert isinstance(pydantic_model_instance, APydanticModel)
         return model_class(**pydantic_model_instance.dict())
 
-    def to_dict(self, model_instance: ModelT) -> Dict[str, Any]:
+    def to_dict(self, model_instance: AModel) -> Dict[str, Any]:
         return dict(model_instance)  # type: ignore
 
-    def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
+    def from_dict(self, model_class: Type[AModel], **kwargs: Any) -> AModel:
         assert model_class is AModel
         return model_class(**kwargs)
 
@@ -71,3 +58,28 @@ class APlugin(DummyPlugin[AModel]):
 def test_plugin_mapping_value_to_model_instance(input_value: Any, output_value: Any) -> None:
     mapping = PluginMapping(plugin=APlugin(), model_class=AModel)
     assert mapping.get_model_instance_for_value(input_value) == output_value
+
+
+@get("/", media_type=MediaType.TEXT)
+def greet() -> str:
+    return "hello world"
+
+
+def test_plugin_on_app_init() -> None:
+    tag = "on_app_init_called"
+
+    def on_startup(state: State) -> None:
+        state.called = True
+
+    class PluginWithInitOnly(PluginProtocol[Any]):
+        def on_app_init(self, app: "Starlite") -> None:
+            app.tags.append(tag)
+            app.on_startup.append(on_startup)
+            app.register(greet)
+
+    with create_test_client(route_handlers=[], plugins=[PluginWithInitOnly()]) as client:
+        response = client.get("/")
+        assert response.text == "hello world"
+
+        assert tag in client.app.tags
+        assert client.app.state.called

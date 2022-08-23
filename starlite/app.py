@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -16,7 +15,7 @@ from starlite.config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from starlite.datastructures import Cookie, ResponseHeader, State
+from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -25,7 +24,6 @@ from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
-from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -34,10 +32,14 @@ from starlite.types import (
     AfterResponseHandler,
     BeforeRequestHandler,
     ControllerRouterHandler,
-    ExceptionHandler,
+    ExceptionHandlersMap,
     Guard,
     LifeCycleHandler,
     Middleware,
+    ParametersMap,
+    ResponseCookies,
+    ResponseHeadersMap,
+    ResponseType,
 )
 from starlite.utils.templates import create_template_engine
 
@@ -65,6 +67,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class Starlite(Router):
     __slots__ = (
+        "_init",
         "_registered_routes",
         "_static_paths",
         "allowed_hosts",
@@ -75,6 +78,8 @@ class Starlite(Router):
         "cors_config",
         "csrf_config",
         "debug",
+        "on_shutdown",
+        "on_startup",
         "openapi_schema",
         "plain_routes",
         "plugins",
@@ -97,17 +102,17 @@ class Starlite(Router):
         csrf_config: Optional[CSRFConfig] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        parameters: Optional[Dict[str, FieldInfo]] = None,
+        parameters: Optional[ParametersMap] = None,
         plugins: Optional[List[PluginProtocol]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
@@ -123,12 +128,12 @@ class Starlite(Router):
         Args:
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object which may be either an instance of
-                [`Response`][starlite.response.Response] or `starlette.Response`.
+                [Response][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the [Request][starlite.connection.Request] instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
@@ -136,7 +141,7 @@ class Starlite(Router):
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
@@ -158,6 +163,7 @@ class Starlite(Router):
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
+        self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._static_paths: Set[str] = set()
         self.allowed_hosts = allowed_hosts
@@ -166,12 +172,14 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.csrf_config = csrf_config
         self.debug = debug
+        self.on_shutdown = on_shutdown or []
+        self.on_startup = on_startup or []
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
-
+        self.template_engine = create_template_engine(template_config)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -188,9 +196,17 @@ class Starlite(Router):
             route_handlers=route_handlers,
             tags=tags,
         )
+        self._init = True
 
-        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
+        for plugin in self.plugins:
+            plugin.on_app_init(app=self)
+
+        for route_handler in route_handlers:
+            self.register(route_handler)
+
+        self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
+
         self.openapi_schema: Optional["OpenAPI"] = None
         if openapi_config:
             self.openapi_schema = openapi_config.create_openapi_schema_model(self)
@@ -199,7 +215,6 @@ class Starlite(Router):
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 self._static_paths.add(config.path)
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
-        self.template_engine = create_template_engine(template_config)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The application entry point.
@@ -225,6 +240,8 @@ class Starlite(Router):
         Returns:
             None
         """
+        if not self._init:
+            return
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
@@ -263,9 +280,7 @@ class Starlite(Router):
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
-    def _wrap_in_exception_handler(
-        self, app: "ASGIApp", exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
-    ) -> "ASGIApp":
+    def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: ExceptionHandlersMap) -> "ASGIApp":
         """Wraps the given ASGIApp in an instance of
         ExceptionHandlerMiddleware."""
 

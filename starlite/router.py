@@ -11,10 +11,8 @@ from typing import (
 )
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
 
 from starlite.controller import Controller
-from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -23,7 +21,6 @@ from starlite.handlers import (
     WebsocketRouteHandler,
 )
 from starlite.provide import Provide
-from starlite.response import Response
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
@@ -33,6 +30,10 @@ from starlite.types import (
     ExceptionHandler,
     Guard,
     Middleware,
+    ParametersMap,
+    ResponseCookies,
+    ResponseHeadersMap,
+    ResponseType,
 )
 from starlite.utils import (
     find_index,
@@ -77,11 +78,11 @@ class Router:
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
-        parameters: Optional[Dict[str, FieldInfo]] = None,
+        parameters: Optional[ParametersMap] = None,
         path: str,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):
@@ -98,7 +99,7 @@ class Router:
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
-            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
@@ -119,18 +120,18 @@ class Router:
         self.after_request = after_request
         self.after_response = after_response
         self.before_request = before_request
-        self.dependencies = dependencies
-        self.exception_handlers = exception_handlers
-        self.guards = guards
-        self.middleware = middleware
+        self.dependencies = dependencies or {}
+        self.exception_handlers = exception_handlers or {}
+        self.guards = guards or []
+        self.middleware = middleware or []
         self.owner: Optional["Router"] = None
-        self.parameters = parameters
+        self.parameters = parameters or {}
         self.path = normalize_path(path)
         self.response_class = response_class
-        self.response_cookies = response_cookies
-        self.response_headers = response_headers
+        self.response_cookies = response_cookies or []
+        self.response_headers = response_headers or {}
         self.routes: List["BaseRoute"] = []
-        self.tags = tags
+        self.tags = tags or []
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)

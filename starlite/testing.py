@@ -14,7 +14,6 @@ from starlite.exceptions import MissingDependencyException
 if TYPE_CHECKING:
     from typing import Type
 
-    from pydantic.fields import FieldInfo
     from pydantic.typing import AnyCallable
 
     from starlite.config import (
@@ -29,16 +28,17 @@ if TYPE_CHECKING:
     from starlite.controller import Controller
     from starlite.handlers import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.provide import Provide
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHandler,
         AfterResponseHandler,
         BeforeRequestHandler,
-        ExceptionHandler,
+        Dependencies,
+        ExceptionHandlersMap,
         Guard,
         LifeCycleHandler,
         Middleware,
+        ParametersMap,
     )
 
 
@@ -131,14 +131,14 @@ def create_test_client(
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
     csrf_config: Optional["CSRFConfig"] = None,
-    dependencies: Optional[Dict[str, "Provide"]] = None,
-    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]] = None,
+    dependencies: Optional["Dependencies"] = None,
+    exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,
     on_startup: Optional[List["LifeCycleHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
-    parameters: Optional[Dict[str, "FieldInfo"]] = None,
+    parameters: Optional["ParametersMap"] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",

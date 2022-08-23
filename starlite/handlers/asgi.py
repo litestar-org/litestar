@@ -1,11 +1,11 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import ExceptionHandler, Guard
+from starlite.types import ExceptionHandlersMap, Guard
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
