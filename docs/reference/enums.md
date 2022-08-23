@@ -11,9 +11,3 @@
 ::: starlite.enums.ScopeType
 
 ::: starlite.enums.ParamType
-
-::: starlite.enums.CompressionBackend
-    options:
-        members:
-            - GZIP
-            - BROTLI
