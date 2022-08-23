@@ -17,19 +17,43 @@ from typing_extensions import Protocol, get_args, runtime_checkable
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
+    from starlite.types import Dependencies, Middleware
+
 ModelT = TypeVar("ModelT")
 
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
+    def provide_middlewares(self, middlewares: List["Middleware"]) -> List["Middleware"]:
+        """Receives the list of user provided middlewares and returns an
+        updated list of middlewares. This is intended to allow the plugin to
+        determine the order of insertion of middlewares.
+
+        Args:
+            middlewares: The list of user provided middlewares provided on the Starlite app constructor
+                (i.e. app 'level' middlewares).
+        Returns:
+            An updates list of middlewares.
+        """
+        return middlewares
+
+    def provide_dependencies(self) -> "Dependencies":
+        """Provides dependencies to the application. Any .
+
+        Returns: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+        """
+        return {}
+
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         """Given a value of indeterminate type, determine if this value is
         supported by the plugin."""
+        return False
 
     def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type["BaseModel"]:
         """Given a model_class T, convert it to a subclass of the pydantic
         BaseModel."""
+        raise NotImplementedError()
 
     def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: "BaseModel") -> ModelT:
         """Given an instance of a pydantic model created using a plugin's
@@ -38,14 +62,17 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
 
         This class is passed in as the 'model_class' kwarg.
         """
+        raise NotImplementedError()
 
     def to_dict(self, model_instance: ModelT) -> Union[Dict[str, Any], Awaitable[Dict[str, Any]]]:
         """Given an instance of a model supported by the plugin, return a
         dictionary of serializable values."""
+        raise NotImplementedError()
 
     def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
         """Given a class supported by this plugin and a dict of values, create
         an instance of the class."""
+        raise NotImplementedError()
 
 
 def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[PluginProtocol]:
