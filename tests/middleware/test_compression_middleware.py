@@ -1,9 +1,10 @@
 import logging
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import brotli
 import pytest
 from starlette.responses import PlainTextResponse
+from typing_extensions import Literal
 
 from starlite import get
 from starlite.config import CompressionConfig

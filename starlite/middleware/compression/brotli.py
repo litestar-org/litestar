@@ -1,9 +1,10 @@
 import io
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
+from typing_extensions import Literal
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
