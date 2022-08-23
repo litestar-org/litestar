@@ -1,10 +1,10 @@
 import io
+from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder, unattached_send
 
-from starlite.config.compression import CompressionEncoding
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
@@ -18,6 +18,13 @@ except ImportError as e:
     raise MissingDependencyException("brotli is not installed") from e
 
 BrotliMode = Literal["text", "generic", "font"]
+
+
+class CompressionEncoding(str, Enum):
+    """An Enum for supported compression encodings."""
+
+    GZIP = "gzip"
+    BROTLI = "br"
 
 
 class BrotliMiddleware:

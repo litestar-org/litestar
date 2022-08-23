@@ -1,7 +1,6 @@
-from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, cast
 
-from pydantic import BaseModel, conint, validator
+from pydantic import BaseModel, conint
 from typing_extensions import Literal
 
 from starlite.utils import import_string
@@ -12,21 +11,6 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp
 
     from starlite.middleware.base import MiddlewareProtocol
-
-
-class CompressionEncoding(str, Enum):
-    """An Enum for supported compression encodings."""
-
-    GZIP = "gzip"
-    BROTLI = "br"
-
-
-class BrotliMode(str, Enum):
-    """Enumerates the available brotli compression optimization modes."""
-
-    GENERIC = "generic"
-    TEXT = "text"
-    FONT = "font"
 
 
 class CompressionConfig(BaseModel):
@@ -72,31 +56,11 @@ class CompressionConfig(BaseModel):
         Use GZIP if Brotli not supported.
     """
 
-    @validator("brotli_mode", pre=True, always=True)
-    def brotli_mode_must_be_valid(cls, v: Union[BrotliMode, str]) -> BrotliMode:  # pylint: disable=no-self-argument
-        """Brotli Mode Validation.
-
-        Args:
-            v (BrotliMode|str): Holds the selected compression backend
-
-        Raises:
-            ValueError: Value is not a valid compression backend
-
-        Returns:
-            _type_: BrotliMode
-        """
-        if isinstance(v, str):
-            try:
-                v = BrotliMode[v.upper()]
-            except KeyError as e:
-                raise ValueError(f"{v} is not a valid compression optimization mode") from e
-        return v
-
-    def dict(self, *args, **kwargs) -> Dict[str, Any]:  # type: ignore[no-untyped-def]
+    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Returns a dictionary representation of the CompressionConfig.
 
         Returns:
-            Dict[str, Any]: dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
+            dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
         """
         brotli_keys = {
             "minimum_size",

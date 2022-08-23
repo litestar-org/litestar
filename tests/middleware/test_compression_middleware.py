@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import brotli
 import pytest
@@ -7,9 +7,8 @@ from starlette.responses import PlainTextResponse
 
 from starlite import get
 from starlite.config import CompressionConfig
-from starlite.config.compression import BrotliMode, CompressionEncoding
 from starlite.datastructures import Stream
-from starlite.middleware.compression.brotli import BrotliMiddleware
+from starlite.middleware.compression.brotli import BrotliMiddleware, CompressionEncoding
 from starlite.middleware.compression.gzip import GZipMiddleware
 from starlite.testing import create_test_client
 
@@ -19,6 +18,8 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp
 
     from starlite.middleware.compression.base import CompressionMiddleware
+
+BrotliMode = Literal["text", "generic", "font"]
 
 
 @get(path="/")
@@ -235,7 +236,7 @@ def test_brotli_middleware_invalid_mode() -> None:
         )
     except Exception as exc:
         assert isinstance(exc, ValueError)
-        assert "not a valid compression optimization mode" in str(exc)
+        assert "unexpected value" in str(exc)
 
 
 def test_invalid_compression_middleware() -> None:
@@ -254,4 +255,4 @@ def test_invalid_compression_middleware() -> None:
     ],
 )
 def test_brotli_middleware_brotli_mode_to_int(mode: BrotliMode, exp: int) -> None:
-    assert BrotliMiddleware._brotli_mode_to_int(mode) == exp  # type: ignore
+    assert BrotliMiddleware._brotli_mode_to_int(mode) == exp
