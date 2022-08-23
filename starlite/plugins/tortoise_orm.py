@@ -15,6 +15,7 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
+    from typing_extensions import TypeGuard
 
 
 class TortoiseORMPlugin(PluginProtocol[Model]):
@@ -80,7 +81,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         return self._models_map[model_class]
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
+    def is_plugin_supported_type(value: Any) -> "TypeGuard[Model]":
         """Given a value of indeterminate type, determine if this value is
         supported by the plugin."""
         return isinstance(value, (Model, ModelMeta))

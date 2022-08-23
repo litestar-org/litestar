@@ -1,9 +1,12 @@
-from typing import Any, Dict, Type
+from typing import TYPE_CHECKING, Any, Dict, Type
 
 import pytest
 from pydantic import BaseModel
 
 from starlite.plugins.base import ModelT, PluginMapping, PluginProtocol
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 
 class DummyPlugin(PluginProtocol[ModelT]):
@@ -11,7 +14,7 @@ class DummyPlugin(PluginProtocol[ModelT]):
         raise NotImplementedError
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
+    def is_plugin_supported_type(value: Any) -> "TypeGuard[ModelT]":
         raise NotImplementedError
 
     def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: BaseModel) -> ModelT:
@@ -44,7 +47,7 @@ class APlugin(DummyPlugin[AModel]):
         return APydanticModel
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
+    def is_plugin_supported_type(value: Any) -> "TypeGuard[AModel]":
         return value is AModel
 
     def from_pydantic_model_instance(self, model_class: Type[AModel], pydantic_model_instance: BaseModel) -> AModel:

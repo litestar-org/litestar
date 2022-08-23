@@ -34,6 +34,8 @@ except ImportError as e:
 if TYPE_CHECKING:
     from typing import Type
 
+    from typing_extensions import TypeGuard
+
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def __init__(self) -> None:
@@ -41,7 +43,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         self.model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> bool:
+    def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
         """This plugin supports only SQLAlchemy declarative models."""
         return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
 
