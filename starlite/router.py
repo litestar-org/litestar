@@ -120,18 +120,18 @@ class Router:
         self.after_request = after_request
         self.after_response = after_response
         self.before_request = before_request
-        self.dependencies = dependencies
-        self.exception_handlers = exception_handlers
-        self.guards = guards
-        self.middleware = middleware
+        self.dependencies = dependencies or {}
+        self.exception_handlers = exception_handlers or {}
+        self.guards = guards or []
+        self.middleware = middleware or []
         self.owner: Optional["Router"] = None
-        self.parameters = parameters
+        self.parameters = parameters or {}
         self.path = normalize_path(path)
         self.response_class = response_class
-        self.response_cookies = response_cookies
-        self.response_headers = response_headers
+        self.response_cookies = response_cookies or []
+        self.response_headers = response_headers or {}
         self.routes: List["BaseRoute"] = []
-        self.tags = tags
+        self.tags = tags or []
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)

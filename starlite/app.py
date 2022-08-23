@@ -77,6 +77,8 @@ class Starlite(Router):
         "cors_config",
         "csrf_config",
         "debug",
+        "on_shutdown",
+        "on_startup",
         "openapi_schema",
         "plain_routes",
         "plugins",
@@ -168,6 +170,8 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.csrf_config = csrf_config
         self.debug = debug
+        self.on_shutdown = on_shutdown or []
+        self.on_startup = on_startup or []
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
@@ -190,8 +194,10 @@ class Starlite(Router):
             route_handlers=route_handlers,
             tags=tags,
         )
+        for plugin in self.plugins:
+            plugin.on_app_init(self)
 
-        self.asgi_router = StarliteASGIRouter(on_shutdown=on_shutdown or [], on_startup=on_startup or [], app=self)
+        self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
         self.openapi_schema: Optional["OpenAPI"] = None
         if openapi_config:

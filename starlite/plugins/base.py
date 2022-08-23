@@ -17,170 +17,57 @@ from typing_extensions import Protocol, TypeGuard, get_args, runtime_checkable
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
-    from starlite.types import (
-        AfterRequestHandler,
-        AfterResponseHandler,
-        BeforeRequestHandler,
-        ControllerRouterHandler,
-        Dependencies,
-        ExceptionHandlersMap,
-        Guard,
-        LifeCycleHandler,
-        Middleware,
-        ParametersMap,
-        ResponseCookies,
-        ResponseHeadersMap,
-        ResponseType,
-    )
+    from starlite.app import Starlite
 
 ModelT = TypeVar("ModelT")
 
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
-    def provide_route_handlers(self) -> List["ControllerRouterHandler"]:
-        """Allows providing a list of route handlers (decorated functions,
-        controllers and routers) to be registered on the app.
+    def on_app_init(self, app: "Starlite") -> None:
+        """Receives the Starlite application instance before `init` is
+        finalized and allows the plugin to update various attributes.
 
-        Returns:
-            A list of [Route Handler][starlite.types.ControllerRouterHandler].
-        """
-        return []
+        Examples:
+            ```python
+            from starlite import PluginProtocol, Starlite, get
 
-    def provide_on_startup_handlers(self, on_startup: List["LifeCycleHandler"]) -> List["LifeCycleHandler"]:
-        """Receives the list of callables, sync or async, to execute on
-        application startup and returns an updated list.
 
-        Args:
-            on_startup: A list of [Life Cycle Handlers][starlite.types.LifeCycleHandler].
+            @get("/my-path")
+            def my_route_handler() -> dict[str, str]:
+                return {"hello": "world"}
 
-        Returns:
-            A list of [Life Cycle Handlers][starlite.types.LifeCycleHandler].
-        """
-        return on_startup
 
-    def provide_on_shutdown_handlers(self, on_shutdown: List["LifeCycleHandler"]) -> List["LifeCycleHandler"]:
-        """Receives the list of callables, sync or async, to execute on
-        application shutdown and returns an updated list.
+            class MyPlugin(PluginProtocol[Any]):
+                def on_app_init(self, app: Starlite) -> None:
+                    # update app attributes
 
-        Args:
-            on_shutdown: A list of [Life Cycle Handlers][starlite.types.LifeCycleHandler].
+                    app.after_request = ...
+                    app.after_response = ...
+                    app.before_request = ...
+                    app.dependencies.update({...})
+                    app.exception_handlers.update({...})
+                    app.guards.extend(...)
+                    app.middleware.extend(...)
+                    app.on_shutdown.extend(...)
+                    app.on_startup.extend(...)
+                    app.parameters.update({...})
+                    app.response_class = ...
+                    app.response_cookies.extend(...)
+                    app.response_headers.update(...)
+                    app.tags.extend(...)
 
-        Returns:
-            A list of [Life Cycle Handlers][starlite.types.LifeCycleHandler].
-        """
-        return on_shutdown
-
-    def provide_after_request(self) -> Optional["AfterRequestHandler"]:
-        """Allows providing an after request handler. If provided it will be
-        set on the application level.
-
-        Returns:
-            An [After Request Handler][starlite.types.AfterRequestHandler].
-        """
-        return None
-
-    def provide_before_request(self) -> Optional["BeforeRequestHandler"]:
-        """Allows providing a before request handler. If provided it will be
-        set on the application level.
-
-        Returns:
-            A [Before Request Handler][starlite.types.BeforeRequestHandler].
-        """
-        return None
-
-    def provide_after_response(self) -> Optional["AfterResponseHandler"]:
-        """Allows providing an after response handler. If provided it will be
-        set on the application level.
-
-        Returns:
-            An [After Response Handler][starlite.types.AfterResponseHandler].
-        """
-        return None
-
-    def provide_exception_handlers(self) -> "ExceptionHandlersMap":
-        """Allows returning a mapping of exception handler functions.
-
-        Returns:
-            An [Exception Handler Mapping][starlite.types.ExceptionHandlersMap].
-        """
-        return {}
-
-    def provide_guards(self) -> List["Guard"]:
-        """Allows returning a list of route guard functions.
-
-        Returns:
-            A list of [Guard][starlite.types.Guard] callables.
-        """
-        return []
-
-    def provide_middlewares(self, middlewares: List["Middleware"]) -> List["Middleware"]:
-        """Receives the list of user provided middlewares and returns an
-        updated list of middlewares. This is intended to allow the plugin to
-        determine the order of insertion of middlewares.
+                    # register a route handler
+                    app.register(my_route_handler)
+            ```
 
         Args:
-            middlewares: The list of user provided middlewares provided on the Starlite app constructor
-                (i.e. app 'level' middlewares).
-        Returns:
-            An updates list of [Middlewares][starlite.types.Middleware].
-        """
-        return middlewares
-
-    def provide_dependencies(self) -> "Dependencies":
-        """Provides dependencies to the application. Any .
+            app: The [Starlite][starlite.app.Starlite] instance.
 
         Returns:
-            A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
-        """
-        return {}
-
-    def provide_parameters(self) -> "ParametersMap":
-        """Allows providing a mapping of [Parameter][starlite.params.Parameter]
-        definitions that will be available to all application paths.
-
-        Returns:
-            A [Mapping of Parameters][starlite.types.ParametersMap]
-        """
-        return {}
-
-    def provide_response_class(self) -> Optional["ResponseType"]:
-        """Allows providing a custom subclass of [starlite.response.Response]
-        to be used as the default response for all route handlers under the
-        controller.
-
-        Returns:
-            A [Custom Response Subclass][starlite.types.ResponseType]
+            None
         """
         return None
-
-    def provide_response_headers(self) -> "ResponseHeadersMap":
-        """Allows providing a string keyed dictionary mapping.
-
-        [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
-
-        Returns:
-            A [Response Header Mapping][starlite.types.ResponseHeadersMap]
-        """
-        return {}
-
-    def provide_response_cookies(self) -> "ResponseCookies":
-        """Allows providing a list of [Cookie](starlite.datastructures.Cookie]
-        instances.
-
-        Returns:
-            A [List of Cookie instances][starlite.types.ResponseCookies]
-        """
-        return []
-
-    def provide_openapi_tags(self) -> List[str]:
-        """Allows providing a list of string tags that will be appended to the
-        schema of all route handlers.
-
-        Returns:
-            A list of strings.
-        """
-        return []
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:
