@@ -32,7 +32,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
                 If not given defaults to '/'
-            dependencies: dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].

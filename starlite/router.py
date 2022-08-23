@@ -99,7 +99,7 @@ class Router:
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
-            dependencies: dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
