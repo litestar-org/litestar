@@ -67,6 +67,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class Starlite(Router):
     __slots__ = (
+        "_init",
         "_registered_routes",
         "_static_paths",
         "allowed_hosts",
@@ -162,6 +163,7 @@ class Starlite(Router):
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
+        self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._static_paths: Set[str] = set()
         self.allowed_hosts = allowed_hosts
@@ -177,7 +179,7 @@ class Starlite(Router):
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
-
+        self.template_engine = create_template_engine(template_config)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -194,11 +196,17 @@ class Starlite(Router):
             route_handlers=route_handlers,
             tags=tags,
         )
+        self._init = True
+
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
+        for route_handler in route_handlers:
+            self.register(route_handler)
+
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
+
         self.openapi_schema: Optional["OpenAPI"] = None
         if openapi_config:
             self.openapi_schema = openapi_config.create_openapi_schema_model(self)
@@ -207,7 +215,6 @@ class Starlite(Router):
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 self._static_paths.add(config.path)
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
-        self.template_engine = create_template_engine(template_config)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The application entry point.
@@ -233,6 +240,8 @@ class Starlite(Router):
         Returns:
             None
         """
+        if not self._init:
+            return
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):

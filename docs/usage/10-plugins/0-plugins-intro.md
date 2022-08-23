@@ -2,18 +2,19 @@
 
 Starlite supports extension through plugins, which allow for the following:
 
-1. Serialization and deserialization of non-pydantic based 3rd party classes.
-2. Automatic OpenAPI schema creation for 3rd party classes.
+1. Updating the [Starlite](../0-the-starlite-app/0-the-starlite-app.md) application instance during the init process.
+2. Serialization and deserialization of non-pydantic based 3rd party classes.
+3. Automatic OpenAPI schema creation for 3rd party classes.
 
-In other words, plugins allow for the parsing and validation of incoming data using non-pydantic classes, while still
-retaining the type safety, parsing and validation of pydantic. Additionally, they allow for seamless serialization and
-schema generation.
+Thus, plugins allow for a wide range of actions - from registering middleware to the parsing and validation of incoming
+data using non-pydantic classes. Additionally, they allow for seamless serialization and schema generation.
 
 ## Creating Plugins
 
-A plugin is a class that implements the `starlite.plugins.base.PluginProtocol`. To create a plugin, subclass
-the `PluginProtocol` and pass to it the base class for which the plugin is for as a generic argument. You should then
-implement the following methods specified by the protocol:
+A plugin is a class that implements the `starlite.plugins.base.PluginProtocol`.
+
+If you wish to support the serialization and deserialization of none-pydantic classes, you need to implement the
+following methods specified by the:
 
 ```python
 from typing import Type, Any, Dict
@@ -69,4 +70,38 @@ class MyPlugin(PluginProtocol[MyClass]):
         Given a class supported by this plugin and a dict of values, create an instance of the class
         """
         ...
+```
+
+If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the `on_app_init` method:
+
+```python
+from typing import Any
+from starlite import PluginProtocol, Starlite, get
+
+
+@get("/some-path")
+def my_handler() -> None:
+    ...
+
+
+class MyPlugin(PluginProtocol[Any]):
+    def on_app_init(self, app: Starlite) -> None:
+        # register a route handler
+        app.register(my_handler)
+
+        # update attributes of the application before init is finished.
+        app.after_request = ...
+        app.after_response = ...
+        app.before_request = ...
+        app.dependencies.update({...})
+        app.exception_handlers.update({...})
+        app.guards.extend(...)
+        app.middleware.extend(...)
+        app.on_shutdown.extend(...)
+        app.on_startup.extend(...)
+        app.parameters.update({...})
+        app.response_class = ...
+        app.response_cookies.extend(...)
+        app.response_headers.update(...)
+        app.tags.extend(...)
 ```
