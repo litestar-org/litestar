@@ -1,10 +1,10 @@
-from typing import Any, Dict, Type, Union
+from typing import Any
 
 import pytest
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import HTTPException, InternalServerException, ValidationException
-from starlite.types import ExceptionHandler
+from starlite.types import ExceptionHandlersMap
 from starlite.utils.exception import get_exception_handler
 
 
@@ -34,7 +34,5 @@ def handler_2(_: Any, __: Any) -> Any:
         ({HTTP_500_INTERNAL_SERVER_ERROR: handler, HTTPException: handler_2}, InternalServerException(), handler),
     ],
 )
-def test_get_exception_handler(
-    mapping: Dict[Union[int, Type[Exception]], ExceptionHandler], exc: Exception, expected: Any
-) -> None:
+def test_get_exception_handler(mapping: ExceptionHandlersMap, exc: Exception, expected: Any) -> None:
     assert get_exception_handler(mapping, exc) == expected

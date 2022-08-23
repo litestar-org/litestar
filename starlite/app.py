@@ -34,7 +34,7 @@ from starlite.types import (
     AfterResponseHandler,
     BeforeRequestHandler,
     ControllerRouterHandler,
-    ExceptionHandler,
+    ExceptionHandlersMap,
     Guard,
     LifeCycleHandler,
     Middleware,
@@ -97,7 +97,7 @@ class Starlite(Router):
         csrf_config: Optional[CSRFConfig] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
@@ -123,12 +123,12 @@ class Starlite(Router):
         Args:
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object which may be either an instance of
-                [`Response`][starlite.response.Response] or `starlette.Response`.
+                [Response][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the [Request][starlite.connection.Request] instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
@@ -136,7 +136,7 @@ class Starlite(Router):
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
@@ -263,9 +263,7 @@ class Starlite(Router):
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
-    def _wrap_in_exception_handler(
-        self, app: "ASGIApp", exception_handlers: Dict[Union[int, Type[Exception]], ExceptionHandler]
-    ) -> "ASGIApp":
+    def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: ExceptionHandlersMap) -> "ASGIApp":
         """Wraps the given ASGIApp in an instance of
         ExceptionHandlerMiddleware."""
 

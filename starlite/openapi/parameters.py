@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.schema import Schema
 
     from starlite.handlers import BaseRouteHandler
-    from starlite.provide import Provide
     from starlite.routes.base import PathParameterDefinition
+    from starlite.types import Dependencies
 
 
 def create_path_parameter_schema(
@@ -119,7 +119,7 @@ def create_parameter(
 def get_recursive_handler_parameters(
     field_name: str,
     model_field: "ModelField",
-    dependencies: Dict[str, "Provide"],
+    dependencies: "Dependencies",
     route_handler: "BaseRouteHandler",
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,

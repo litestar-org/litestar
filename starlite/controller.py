@@ -1,6 +1,6 @@
 import inspect
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
@@ -11,14 +11,14 @@ if TYPE_CHECKING:
     from pydantic.fields import FieldInfo
 
     from starlite.datastructures import Cookie, ResponseHeader
-    from starlite.provide import Provide
     from starlite.response import Response
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHandler,
         AfterResponseHandler,
         BeforeRequestHandler,
-        ExceptionHandler,
+        Dependencies,
+        ExceptionHandlersMap,
         Guard,
         Middleware,
     )
@@ -64,11 +64,11 @@ class Controller:
         It receives the [Request][starlite.connection.Request] instance and any
         non-`None` return value is used for the response, bypassing the route handler.
     """
-    dependencies: Optional[Dict[str, "Provide"]]
+    dependencies: Optional["Dependencies"]
     """
-        A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+        dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
     """
-    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]]
+    exception_handlers: Optional["ExceptionHandlersMap"]
     """
         A dictionary that maps handler functions to status codes and/or exception types.
     """

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Type, TypeVar, Union
 
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         DefineMiddleware,
         MiddlewareProtocol,
     )
+    from starlite.provide import Provide  # noqa: TC004
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
@@ -36,6 +37,7 @@ else:
     StarletteMiddleware = Any
     BaseHTTPMiddleware = Any
     DefineMiddleware = Any
+    Provide = Any
 
 H = TypeVar("H", bound=HTTPConnection)
 
@@ -46,6 +48,7 @@ Middleware = Union[
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
 ]
+ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
 LifeCycleHandler = Union[
     Callable[[], Any],
     Callable[[State], Any],
@@ -56,7 +59,7 @@ Guard = Union[Callable[[H, BaseRouteHandler], Awaitable[None]], Callable[[H, Bas
 Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
 ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
-
+Dependencies = Dict[str, "Provide"]
 # connection-lifecycle hook handlers
 BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
 AfterRequestHandler = Union[

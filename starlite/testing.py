@@ -29,13 +29,13 @@ if TYPE_CHECKING:
     from starlite.controller import Controller
     from starlite.handlers import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.provide import Provide
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHandler,
         AfterResponseHandler,
         BeforeRequestHandler,
-        ExceptionHandler,
+        Dependencies,
+        ExceptionHandlersMap,
         Guard,
         LifeCycleHandler,
         Middleware,
@@ -131,8 +131,8 @@ def create_test_client(
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
     csrf_config: Optional["CSRFConfig"] = None,
-    dependencies: Optional[Dict[str, "Provide"]] = None,
-    exception_handlers: Optional[Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]] = None,
+    dependencies: Optional["Dependencies"] = None,
+    exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,

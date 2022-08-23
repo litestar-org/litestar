@@ -5,13 +5,12 @@ from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import ExceptionHandler, Guard, Middleware
+from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
 
-    from starlite.provide import Provide
     from starlite.types import AsyncAnyCallable
 
 
@@ -21,7 +20,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        dependencies: Optional[Dict[str, "Provide"]] = None,
+        dependencies: Optional[Dependencies] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
@@ -33,7 +32,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
                 If not given defaults to '/'
-            dependencies: A string/[Provider][starlite.provide.Provide] dictionary that maps dependency providers.
+            dependencies: dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].

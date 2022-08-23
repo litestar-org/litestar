@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
@@ -11,18 +11,15 @@ from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:
-    from typing import Type
 
     from starlette.responses import Response as StarletteResponse
     from starlette.types import ASGIApp, Receive, Scope, Send
 
-    from starlite.types import ExceptionHandler
+    from starlite.types import ExceptionHandlersMap
 
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):
-    def __init__(
-        self, app: "ASGIApp", debug: bool, exception_handlers: Dict[Union[int, "Type[Exception]"], "ExceptionHandler"]
-    ):
+    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap"):
         """This middleware is used to wrap an ASGIApp inside a try catch block
         and handles any exceptions raised.
 
