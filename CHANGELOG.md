@@ -349,13 +349,18 @@
 
 [1.13.0]
 
-- update: Export starlite cookie to header and use it in CSRF middleware and OpenAPI response @seladb
 - fix: remove duplicated detail in `HTTPException.__str__()`
-- update: Add `skip_validation` flag to `Dependency` function
-- update: consistent eager evaluation of async callables across the codebase
-- update: cache protocol, cache backend integration including locking for sync access
 - fix: removed imports causing `MissingDependencyException` where `brotli` not installed and not required.
+- update: Add `skip_validation` flag to `Dependency` function
+- update: Export starlite cookie to header and use it in CSRF middleware and OpenAPI response @seladb
+- update: cache protocol, cache backend integration including locking for sync access
+- update: consistent eager evaluation of async callables across the codebase
 
 [1.13.1]
 
 - fix `is_class_and_subclass` not handling type annotations.
+
+[1.14.0]
+
+- refactor: Simplified and improved brotli middleware typing
+- update: Extended `PluginProtocol` with an `on_app_init` method.
