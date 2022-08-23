@@ -7,3 +7,4 @@ type-checking-fastapi-enabled = true
 classmethod-decorators =
     classmethod
     validator
+    root_validator

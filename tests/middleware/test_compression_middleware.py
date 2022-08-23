@@ -4,13 +4,12 @@ from typing import TYPE_CHECKING, Any, cast
 import brotli
 import pytest
 from starlette.responses import PlainTextResponse
+from typing_extensions import Literal
 
 from starlite import get
 from starlite.config import CompressionConfig
-from starlite.config.compression import BrotliMode, CompressionEncoding
 from starlite.datastructures import Stream
-from starlite.enums import CompressionBackend
-from starlite.middleware.compression.brotli import BrotliMiddleware
+from starlite.middleware.compression.brotli import BrotliMiddleware, CompressionEncoding
 from starlite.middleware.compression.gzip import GZipMiddleware
 from starlite.testing import create_test_client
 
@@ -20,6 +19,8 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp
 
     from starlite.middleware.compression.base import CompressionMiddleware
+
+BrotliMode = Literal["text", "generic", "font"]
 
 
 @get(path="/")
@@ -55,9 +56,7 @@ def test_no_compression_backend() -> None:
 
 
 def test_gzip_middleware_from_enum() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.GZIP)
-    )
+    client = create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="gzip"))
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
@@ -75,7 +74,7 @@ def test_gzip_middleware_from_enum() -> None:
 def test_gzip_middleware_custom_settings() -> None:
     client = create_test_client(
         route_handlers=[handler],
-        compression_config=CompressionConfig(backend=CompressionBackend.GZIP, minimum_size=1000, gzip_compress_level=3),
+        compression_config=CompressionConfig(backend="gzip", minimum_size=1000, gzip_compress_level=3),
     )
     unpacked_middleware = []
     cur = client.app.asgi_handler
@@ -93,9 +92,7 @@ def test_gzip_middleware_custom_settings() -> None:
 
 
 def test_gzip_middleware_set_from_string() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.GZIP)
-    )
+    client = create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="gzip"))
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
@@ -111,30 +108,8 @@ def test_gzip_middleware_set_from_string() -> None:
     assert gzip_middleware.compresslevel == 9
 
 
-def test_brotli_middleware_from_enum() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    )
-    unpacked_middleware = []
-    cur = client.app.asgi_handler
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
-    else:
-        unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
-    brotli_middleware = unpacked_middleware[1].handler  # type: ignore
-    assert isinstance(brotli_middleware, BrotliMiddleware)
-    assert brotli_middleware.quality == 5
-    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.TEXT)
-    assert brotli_middleware.lgwin == 22
-    assert brotli_middleware.lgblock == 0
-
-
 def test_brotli_middleware_from_string() -> None:
-    client = create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    )
+    client = create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli"))
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
@@ -146,15 +121,13 @@ def test_brotli_middleware_from_string() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
-    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.TEXT)
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int("text")
     assert brotli_middleware.lgwin == 22
     assert brotli_middleware.lgblock == 0
 
 
 def test_brotli_encoding_disable_for_unsupported_client() -> None:
-    with create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    ) as client:
+    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.request("GET", "/", headers={"accept-encoding": "deflate"})
         assert response.status_code == 200, response.text
         assert response.text == "_starlite_" * 4000
@@ -163,9 +136,7 @@ def test_brotli_encoding_disable_for_unsupported_client() -> None:
 
 
 def test_brotli_regular_response() -> None:
-    with create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    ) as client:
+    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.request("GET", "/")
         assert response.status_code == 200, response.text
         assert response.text == "_starlite_" * 4000
@@ -186,7 +157,7 @@ async def test_brotli_streaming_response(iterator: Any) -> None:
         return Stream(iterator=iterator)
 
     with create_test_client(
-        route_handlers=[streaming_handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
+        route_handlers=[streaming_handler], compression_config=CompressionConfig(backend="brotli")
     ) as client:
         response = client.request("GET", "/streaming-response")
         assert response.status_code == 200, response.text
@@ -197,7 +168,7 @@ async def test_brotli_streaming_response(iterator: Any) -> None:
 
 def test_brotli_dont_compress_small_responses() -> None:
     with create_test_client(
-        route_handlers=[no_compress_handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
+        route_handlers=[no_compress_handler], compression_config=CompressionConfig(backend="brotli")
     ) as client:
         response = client.request("GET", "/no-compression")
         assert response.status_code == 200, response.text
@@ -207,9 +178,7 @@ def test_brotli_dont_compress_small_responses() -> None:
 
 
 def test_brotli_gzip_fallback_enabled() -> None:
-    with create_test_client(
-        route_handlers=[handler], compression_config=CompressionConfig(backend=CompressionBackend.BROTLI)
-    ) as client:
+    with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.request("GET", "/", headers={"accept-encoding": "gzip"})
         assert response.status_code == 200, response.text
         assert response.text == "_starlite_" * 4000
@@ -220,7 +189,7 @@ def test_brotli_gzip_fallback_enabled() -> None:
 def test_brotli_gzip_fallback_disabled() -> None:
     with create_test_client(
         route_handlers=[handler],
-        compression_config=CompressionConfig(backend=CompressionBackend.BROTLI, brotli_gzip_fallback=False),
+        compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
     ) as client:
         response = client.request("GET", "/", headers={"accept-encoding": "gzip"})
         assert response.status_code == 200, response.text
@@ -233,10 +202,10 @@ def test_brotli_middleware_custom_settings() -> None:
     client = create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(
-            backend=CompressionBackend.BROTLI,
+            backend="brotli",
             minimum_size=1000,
             brotli_quality=3,
-            brotli_mode=BrotliMode.FONT,
+            brotli_mode="font",
             brotli_lgwin=20,
             brotli_lgblock=17,
         ),
@@ -252,7 +221,7 @@ def test_brotli_middleware_custom_settings() -> None:
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
-    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int(BrotliMode.FONT)
+    assert brotli_middleware.mode == BrotliMiddleware._brotli_mode_to_int("font")
     assert brotli_middleware.lgwin == 20
     assert brotli_middleware.lgblock == 17
 
@@ -262,13 +231,13 @@ def test_brotli_middleware_invalid_mode() -> None:
         create_test_client(
             route_handlers=[handler],
             compression_config=CompressionConfig(
-                backend=CompressionBackend.BROTLI,
-                brotli_mode="BINARY",
+                backend="brotli",
+                brotli_mode="BINARY",  # type: ignore
             ),
         )
     except Exception as exc:
         assert isinstance(exc, ValueError)
-        assert "not a valid compression optimization mode" in str(exc)
+        assert "unexpected value" in str(exc)
 
 
 def test_invalid_compression_middleware() -> None:
@@ -281,9 +250,9 @@ def test_invalid_compression_middleware() -> None:
 @pytest.mark.parametrize(
     "mode, exp",
     [
-        (BrotliMode.TEXT, brotli.MODE_TEXT),
-        (BrotliMode.FONT, brotli.MODE_FONT),
-        (BrotliMode.GENERIC, brotli.MODE_GENERIC),
+        ("text", brotli.MODE_TEXT),
+        ("font", brotli.MODE_FONT),
+        ("generic", brotli.MODE_GENERIC),
     ],
 )
 def test_brotli_middleware_brotli_mode_to_int(mode: BrotliMode, exp: int) -> None:
