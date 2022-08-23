@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union
 from pydantic import AnyUrl, BaseModel
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from pydantic_openapi_schema.v3_1_0 import (
+    Components,
     Contact,
     ExternalDocumentation,
     Info,
@@ -71,6 +72,11 @@ class OpenAPIConfig(BaseModel):
         API Security requirements information.
         Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_10_0.security_requirement.SecurityRequirement].
     """
+    components: Optional[Components] = None
+    """
+        API Components information.
+        Should be an instance of [Components][pydantic_openapi_schema.v3_10_0.components.Components].
+    """
     servers: List[Server] = [Server(url="/")]
     """
         A list of [Server][pydantic_openapi_schema.v3_10_0.server.Server] instances.
@@ -106,6 +112,7 @@ class OpenAPIConfig(BaseModel):
         return OpenAPI(
             externalDocs=self.external_docs,
             security=self.security,
+            components=self.components,
             servers=self.servers,
             tags=self.tags,
             webhooks=self.webhooks,

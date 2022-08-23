@@ -58,6 +58,7 @@ def create_path_item(
                 ),
                 requestBody=request_body,
                 parameters=parameters,  # type: ignore[arg-type]
+                security=route_handler.security,
             )
             setattr(path_item, http_method.lower(), operation)
     return path_item

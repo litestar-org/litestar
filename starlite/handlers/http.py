@@ -268,6 +268,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
         with multiple methods.
@@ -371,6 +372,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
+        self.security = security
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: Union[Optional[AfterResponseHandler], EmptyType] = Empty
         self._resolved_before_request: Union[Optional[BeforeRequestHandler], EmptyType] = Empty
@@ -611,6 +613,7 @@ class get(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
@@ -663,6 +666,7 @@ class get(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of strings that describe authentication methods that override the default ones.
         """
         super().__init__(
             after_request=after_request,
@@ -694,6 +698,7 @@ class get(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            security=security,
         )
 
 
@@ -731,6 +736,7 @@ class post(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """POST Route Decorator. Use this decorator to decorate an HTTP handler
         for POST requests.
@@ -783,6 +789,7 @@ class post(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of strings that describe authentication methods that override the default ones.
         """
         super().__init__(
             after_request=after_request,
@@ -814,6 +821,7 @@ class post(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            security=security,
         )
 
 
@@ -851,6 +859,7 @@ class put(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """PUT Route Decorator. Use this decorator to decorate an HTTP handler
         for PUT requests.
@@ -903,6 +912,7 @@ class put(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of strings that describe authentication methods that override the default ones.
         """
         super().__init__(
             after_request=after_request,
@@ -934,6 +944,7 @@ class put(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            security=security,
         )
 
 
@@ -971,6 +982,7 @@ class patch(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """PATCH Route Decorator. Use this decorator to decorate an HTTP
         handler for PATCH requests.
@@ -1023,6 +1035,7 @@ class patch(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of strings that describe authentication methods that override the default ones.
         """
         super().__init__(
             after_request=after_request,
@@ -1054,6 +1067,7 @@ class patch(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            security=security,
         )
 
 
@@ -1091,6 +1105,7 @@ class delete(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        security: Optional[List[str]] = None,
     ):
         """DELETE Route Decorator. Use this decorator to decorate an HTTP
         handler for DELETE requests.
@@ -1143,6 +1158,7 @@ class delete(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of strings that describe authentication methods that override the default ones.
         """
         super().__init__(
             after_request=after_request,
@@ -1174,4 +1190,5 @@ class delete(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            security=security,
         )
