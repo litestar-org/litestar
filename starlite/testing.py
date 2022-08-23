@@ -14,7 +14,6 @@ from starlite.exceptions import MissingDependencyException
 if TYPE_CHECKING:
     from typing import Type
 
-    from pydantic.fields import FieldInfo
     from pydantic.typing import AnyCallable
 
     from starlite.config import (
@@ -39,6 +38,7 @@ if TYPE_CHECKING:
         Guard,
         LifeCycleHandler,
         Middleware,
+        ParametersMap,
     )
 
 
@@ -138,7 +138,7 @@ def create_test_client(
     on_shutdown: Optional[List["LifeCycleHandler"]] = None,
     on_startup: Optional[List["LifeCycleHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
-    parameters: Optional[Dict[str, "FieldInfo"]] = None,
+    parameters: Optional["ParametersMap"] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
     root_path: str = "",

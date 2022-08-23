@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -16,7 +15,7 @@ from starlite.config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from starlite.datastructures import Cookie, ResponseHeader, State
+from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import ASGIRouteHandler, asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -25,7 +24,6 @@ from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
-from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -38,6 +36,10 @@ from starlite.types import (
     Guard,
     LifeCycleHandler,
     Middleware,
+    ParametersMap,
+    ResponseCookies,
+    ResponseHeadersMap,
+    ResponseType,
 )
 from starlite.utils.templates import create_template_engine
 
@@ -103,11 +105,11 @@ class Starlite(Router):
         on_shutdown: Optional[List[LifeCycleHandler]] = None,
         on_startup: Optional[List[LifeCycleHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        parameters: Optional[Dict[str, FieldInfo]] = None,
+        parameters: Optional[ParametersMap] = None,
         plugins: Optional[List[PluginProtocol]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,

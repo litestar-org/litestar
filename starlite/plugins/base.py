@@ -17,13 +17,51 @@ from typing_extensions import Protocol, get_args, runtime_checkable
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
-    from starlite.types import Dependencies, Middleware
+    from starlite.types import (
+        AfterRequestHandler,
+        AfterResponseHandler,
+        BeforeRequestHandler,
+        ControllerRouterHandler,
+        Dependencies,
+        ExceptionHandlersMap,
+        Guard,
+        LifeCycleHandler,
+        Middleware,
+        ParametersMap,
+        ResponseCookies,
+        ResponseHeadersMap,
+        ResponseType,
+    )
 
 ModelT = TypeVar("ModelT")
 
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
+    def provide_route_handlers(self) -> List["ControllerRouterHandler"]:
+        return []
+
+    def provide_on_startup_handlers(self, on_startup: List["LifeCycleHandler"]) -> List["LifeCycleHandler"]:
+        return on_startup
+
+    def provide_on_shutdown_handlers(self, on_shutdown: List["LifeCycleHandler"]) -> List["LifeCycleHandler"]:
+        return on_shutdown
+
+    def provide_after_request(self) -> Optional["AfterRequestHandler"]:
+        return None
+
+    def provide_before_request(self) -> Optional["BeforeRequestHandler"]:
+        return None
+
+    def provide_after_response(self) -> Optional["AfterResponseHandler"]:
+        return None
+
+    def provide_exception_handlers(self) -> "ExceptionHandlersMap":
+        return {}
+
+    def provide_guards(self) -> List["Guard"]:
+        return []
+
     def provide_middlewares(self, middlewares: List["Middleware"]) -> List["Middleware"]:
         """Receives the list of user provided middlewares and returns an
         updated list of middlewares. This is intended to allow the plugin to
@@ -43,6 +81,21 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
         Returns: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
         """
         return {}
+
+    def provide_parameters(self) -> "ParametersMap":
+        return {}
+
+    def provide_response_class(self) -> Optional["ResponseType"]:
+        return None
+
+    def provide_response_headers(self) -> "ResponseHeadersMap":
+        return {}
+
+    def provide_response_cookies(self) -> "ResponseCookies":
+        return []
+
+    def provide_openapi_tags(self) -> List[str]:
+        return []
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:

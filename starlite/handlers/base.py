@@ -14,7 +14,7 @@ from typing import (
 )
 
 from pydantic import BaseConfig, Extra, validate_arguments
-from pydantic.fields import FieldInfo, ModelField, Undefined
+from pydantic.fields import ModelField, Undefined
 
 from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.exceptions import ImproperlyConfiguredException
@@ -26,6 +26,7 @@ from starlite.types import (
     ExceptionHandlersMap,
     Guard,
     Middleware,
+    ParametersMap,
 )
 from starlite.utils import AsyncCallable, normalize_path
 
@@ -116,7 +117,7 @@ class BaseRouteHandler(Generic[T]):
         into pydantic ModelField instances."""
         if self._resolved_layered_parameters is Empty:
             self._resolved_layered_parameters = {}
-            parameters: Dict[str, FieldInfo] = {}
+            parameters: ParametersMap = {}
             for layer in self.ownership_layers:
                 parameters.update(getattr(layer, "parameters", None) or {})
 

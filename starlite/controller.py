@@ -1,17 +1,12 @@
 import inspect
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
-    from typing import Type
 
-    from pydantic.fields import FieldInfo
-
-    from starlite.datastructures import Cookie, ResponseHeader
-    from starlite.response import Response
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHandler,
@@ -21,6 +16,10 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         Guard,
         Middleware,
+        ParametersMap,
+        ResponseCookies,
+        ResponseHeadersMap,
+        ResponseType,
     )
 
 
@@ -85,7 +84,7 @@ class Controller:
         The [Router][starlite.router.Router] or [Starlite][starlite.app.Starlite] app that owns the controller.
         This value is set internally by Starlite and it should not be set when subclassing the controller.
     """
-    parameters: Optional[Dict[str, "FieldInfo"]]
+    parameters: Optional["ParametersMap"]
     """
         A mapping of [Parameter][starlite.params.Parameter] definitions available to all application paths.
     """
@@ -95,16 +94,16 @@ class Controller:
         All route handlers under the controller will have the fragment appended to them.
         If not set it defaults to '/'.
     """
-    response_class: Optional["Type[Response]"]
+    response_class: Optional["ResponseType"]
     """
         A custom subclass of [starlite.response.Response] to be used as the default response
         for all route handlers under the controller.
     """
-    response_cookies: Optional[List["Cookie"]]
+    response_cookies: Optional["ResponseCookies"]
     """
         A list of [Cookie](starlite.datastructures.Cookie] instances.
     """
-    response_headers: Optional[Dict[str, "ResponseHeader"]]
+    response_headers: Optional["ResponseHeadersMap"]
     """
         A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
     """

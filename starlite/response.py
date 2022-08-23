@@ -3,7 +3,6 @@ from typing import (
     Any,
     Dict,
     Generic,
-    List,
     NoReturn,
     Optional,
     TypeVar,
@@ -24,8 +23,9 @@ from starlite.exceptions import ImproperlyConfiguredException
 T = TypeVar("T")
 
 if TYPE_CHECKING:
-    from starlite.datastructures import BackgroundTask, BackgroundTasks, Cookie
+    from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
+    from starlite.types import ResponseCookies
 
 
 class Response(StarletteResponse, Generic[T]):
@@ -37,7 +37,7 @@ class Response(StarletteResponse, Generic[T]):
         media_type: Union["MediaType", "OpenAPIMediaType", str],
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional[List["Cookie"]] = None,
+        cookies: Optional["ResponseCookies"] = None,
     ):
         """The response class is used to return an HTTP response.
 
@@ -114,7 +114,7 @@ class TemplateResponse(Response):
         context: Optional[Dict[str, Any]] = None,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional[List["Cookie"]] = None,
+        cookies: Optional["ResponseCookies"] = None,
     ):
         """Handles the rendering of a given template into a bytes string.
 

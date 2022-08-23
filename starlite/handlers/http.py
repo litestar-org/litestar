@@ -28,11 +28,9 @@ from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
     BackgroundTask,
     BackgroundTasks,
-    Cookie,
     File,
     Redirect,
     ResponseContainer,
-    ResponseHeader,
 )
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -55,6 +53,9 @@ from starlite.types import (
     Guard,
     Method,
     Middleware,
+    ResponseCookies,
+    ResponseHeadersMap,
+    ResponseType,
 )
 from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
 
@@ -66,7 +67,7 @@ if TYPE_CHECKING:
     from starlite.types import AsyncAnyCallable
 
 
-def _normalize_cookies(local_cookies: List["Cookie"], layered_cookies: List["Cookie"]) -> List[Dict[str, Any]]:
+def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
     """Given two lists of cookies, ensures the uniqueness of cookies by key and
     returns a normalized dict ready to be set on the response."""
     filtered_cookies = [*local_cookies]
@@ -80,7 +81,7 @@ def _normalize_cookies(local_cookies: List["Cookie"], layered_cookies: List["Coo
     return normalized_cookies
 
 
-def _normalize_headers(headers: Dict[str, "ResponseHeader"]) -> Dict[str, Any]:
+def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
     """Given a dictionary of ResponseHeader, filters them and returns a
     dictionary of values.
 
@@ -126,7 +127,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
 
 def _create_response_container_handler(
     after_request: Optional["AfterRequestHandler"],
-    cookies: List["Cookie"],
+    cookies: "ResponseCookies",
     headers: Dict[str, Any],
     media_type: str,
     status_code: int,
@@ -145,7 +146,7 @@ def _create_response_container_handler(
 
 
 def _create_response_handler(
-    after_request: Optional["AfterRequestHandler"], cookies: List["Cookie"]
+    after_request: Optional["AfterRequestHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlite Responses."""
 
@@ -159,7 +160,7 @@ def _create_response_handler(
 
 
 def _create_starlette_response_handler(
-    after_request: Optional["AfterRequestHandler"], cookies: List["Cookie"]
+    after_request: Optional["AfterRequestHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlette Responses."""
 
@@ -175,10 +176,10 @@ def _create_starlette_response_handler(
 def _create_data_handler(
     after_request: Optional["AfterRequestHandler"],
     background: Optional[Union["BackgroundTask", "BackgroundTasks"]],
-    cookies: List["Cookie"],
+    cookies: "ResponseCookies",
     headers: Dict[str, Any],
     media_type: str,
-    response_class: Type[Response],
+    response_class: "ResponseType",
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Creates a handler function for arbitrary data."""
@@ -251,9 +252,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -396,7 +397,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 response_class = layer.response_class
         return response_class
 
-    def resolve_response_headers(self) -> Dict[str, "ResponseHeader"]:
+    def resolve_response_headers(self) -> "ResponseHeadersMap":
         """Returns all header parameters in the scope of the handler function.
 
         Returns:
@@ -407,7 +408,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             resolved_response_headers.update(layer.response_headers or {})
         return resolved_response_headers
 
-    def resolve_response_cookies(self) -> List["Cookie"]:
+    def resolve_response_cookies(self) -> "ResponseCookies":
         """Returns a list of Cookie instances. Filters the list to ensure each
         cookie key is unique.
 
@@ -415,10 +416,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             A list of [Cookie][starlite.datastructures.Cookie] instances.
         """
 
-        cookies: List["Cookie"] = []
+        cookies: "ResponseCookies" = []
         for layer in self.ownership_layers:
             cookies.extend(layer.response_cookies or [])
-        filtered_cookies: List["Cookie"] = []
+        filtered_cookies: "ResponseCookies" = []
         for cookie in reversed(cookies):
             if not any(cookie.key == c.key for c in filtered_cookies):
                 filtered_cookies.append(cookie)
@@ -594,9 +595,9 @@ class get(HTTPRouteHandler):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -714,9 +715,9 @@ class post(HTTPRouteHandler):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -834,9 +835,9 @@ class put(HTTPRouteHandler):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -954,9 +955,9 @@ class patch(HTTPRouteHandler):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1074,9 +1075,9 @@ class delete(HTTPRouteHandler):
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
         opt: Optional[Dict[str, Any]] = None,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes

@@ -11,10 +11,8 @@ from typing import (
 )
 
 from pydantic import validate_arguments
-from pydantic.fields import FieldInfo
 
 from starlite.controller import Controller
-from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -23,7 +21,6 @@ from starlite.handlers import (
     WebsocketRouteHandler,
 )
 from starlite.provide import Provide
-from starlite.response import Response
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHandler,
@@ -33,6 +30,10 @@ from starlite.types import (
     ExceptionHandler,
     Guard,
     Middleware,
+    ParametersMap,
+    ResponseCookies,
+    ResponseHeadersMap,
+    ResponseType,
 )
 from starlite.utils import (
     find_index,
@@ -77,11 +78,11 @@ class Router:
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
-        parameters: Optional[Dict[str, FieldInfo]] = None,
+        parameters: Optional[ParametersMap] = None,
         path: str,
-        response_class: Optional[Type[Response]] = None,
-        response_cookies: Optional[List[Cookie]] = None,
-        response_headers: Optional[Dict[str, ResponseHeader]] = None,
+        response_class: Optional[ResponseType] = None,
+        response_cookies: Optional[ResponseCookies] = None,
+        response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
         tags: Optional[List[str]] = None,
     ):

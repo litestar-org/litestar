@@ -1,5 +1,16 @@
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Type, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Type,
+    TypeVar,
+    Union,
+)
 
+from pydantic.fields import FieldInfo
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import HTTPConnection
@@ -9,13 +20,14 @@ from typing_extensions import Literal
 from starlite.exceptions import HTTPException
 
 if TYPE_CHECKING:
+
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
     from starlette.types import ASGIApp  # noqa: TC004
 
     from starlite.connection import Request  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
-    from starlite.datastructures import State  # noqa: TC004
+    from starlite.datastructures import Cookie, ResponseHeader, State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
     from starlite.middleware.base import (  # noqa: TC004
         DefineMiddleware,
@@ -38,13 +50,15 @@ else:
     BaseHTTPMiddleware = Any
     DefineMiddleware = Any
     Provide = Any
+    ResponseHeader = Any
+    Cookie = Any
 
 H = TypeVar("H", bound=HTTPConnection)
 
 Middleware = Union[
     StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol], Callable[..., ASGIApp]
 ]
-
+ResponseType = Type[Response]
 ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
 ]
@@ -59,7 +73,10 @@ Guard = Union[Callable[[H, BaseRouteHandler], Awaitable[None]], Callable[[H, Bas
 Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
 ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
-Dependencies = Dict[str, "Provide"]
+Dependencies = Dict[str, Provide]
+ParametersMap = Dict[str, FieldInfo]
+ResponseHeadersMap = Dict[str, ResponseHeader]
+ResponseCookies = List[Cookie]
 # connection-lifecycle hook handlers
 BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
 AfterRequestHandler = Union[
