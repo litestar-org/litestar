@@ -195,7 +195,7 @@ class Starlite(Router):
             tags=tags,
         )
         for plugin in self.plugins:
-            plugin.on_app_init(self)
+            plugin.on_app_init(app=self)
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
