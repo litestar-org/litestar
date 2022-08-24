@@ -36,7 +36,7 @@ python = ">=3.7,<4.0"
 brotli = { version = "*", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
-pydantic = "*"
+pydantic = "1.10.0a2"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 python-multipart = "*"
