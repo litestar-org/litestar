@@ -312,6 +312,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "samuelcolvin",
+      "name": "Samuel Colvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4039449?v=4",
+      "profile": "http://scolvin.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
