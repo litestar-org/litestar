@@ -227,6 +227,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "response_cookies",
         "response_description",
         "response_headers",
+        "security",
         "status_code",
         "summary",
         "sync_to_thread",
@@ -268,7 +269,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
         with multiple methods.
@@ -613,7 +614,7 @@ class get(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
@@ -736,7 +737,7 @@ class post(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """POST Route Decorator. Use this decorator to decorate an HTTP handler
         for POST requests.
@@ -859,7 +860,7 @@ class put(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """PUT Route Decorator. Use this decorator to decorate an HTTP handler
         for PUT requests.
@@ -982,7 +983,7 @@ class patch(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """PATCH Route Decorator. Use this decorator to decorate an HTTP
         handler for PATCH requests.
@@ -1105,7 +1106,7 @@ class delete(HTTPRouteHandler):
         response_description: Optional[str] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[str]] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """DELETE Route Decorator. Use this decorator to decorate an HTTP
         handler for DELETE requests.
