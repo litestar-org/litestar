@@ -28,3 +28,28 @@ def test_create_request_body() -> None:
             if "data" in handler_fields:
                 request_body = create_request_body(field=handler_fields["data"], generate_examples=True, plugins=[])
                 assert request_body
+
+
+def test_upload_file_request_body() -> None:
+    app = Starlite(route_handlers=[handle_file_upload])
+    assert app.openapi_schema.dict(exclude_none=True)["components"] == {  # type: ignore[union-attr]
+        "schemas": {
+            "FormData": {
+                "properties": {
+                    "cv": {
+                        "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
+                        "type": "object",
+                        "title": "Cv",
+                    },
+                    "image": {
+                        "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
+                        "type": "object",
+                        "title": "Image",
+                    },
+                },
+                "type": "object",
+                "required": ["cv", "image"],
+                "title": "FormData",
+            }
+        }
+    }

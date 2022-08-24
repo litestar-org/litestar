@@ -174,6 +174,7 @@ class Starlite(Router):
         self.debug = debug
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
+        self.openapi_schema: Optional["OpenAPI"] = None
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
@@ -204,10 +205,6 @@ class Starlite(Router):
         for route_handler in route_handlers:
             self.register(route_handler)
 
-        self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
-        self.asgi_handler = self._create_asgi_handler()
-
-        self.openapi_schema: Optional["OpenAPI"] = None
         if openapi_config:
             self.openapi_schema = openapi_config.create_openapi_schema_model(self)
             self.register(openapi_config.openapi_controller)
@@ -215,6 +212,9 @@ class Starlite(Router):
             for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
                 self._static_paths.add(config.path)
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
+
+        self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
+        self.asgi_handler = self._create_asgi_handler()
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The application entry point.

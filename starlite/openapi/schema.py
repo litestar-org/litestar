@@ -130,10 +130,7 @@ def create_constrained_field_schema(
     plugins: List["PluginProtocol"],
 ) -> Schema:
     """Create Schema for Pydantic Constrained fields (created using constr(),
-    conint() etc.
-
-    or by subclassing Constrained*)
-    """
+    conint() and so forth, or by subclassing Constrained*)"""
     if issubclass(field_type, (ConstrainedFloat, ConstrainedInt, ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, (ConstrainedStr, ConstrainedBytes)):
