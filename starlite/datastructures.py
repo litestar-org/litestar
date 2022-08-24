@@ -357,6 +357,7 @@ class UploadFile(StarletteUploadFile):
             field_schema.update(
                 {
                     "type": OpenAPIType.OBJECT.value,
+                    "required": ["filename"],
                     "properties": {
                         "filename": {"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"}
                     },
