@@ -90,7 +90,6 @@ def Parameter(
     extra.update(value_type=value_type)
     return Field(
         default,
-        alias="",
         title=title,  # type: ignore
         description=description,  # type: ignore
         const=const,  # type: ignore
@@ -176,7 +175,6 @@ def Body(
     extra.update(content_encoding=content_encoding)
     return Field(
         default,
-        alias="",
         title=title,  # type: ignore
         description=description,  # type: ignore
         const=const,  # type: ignore
