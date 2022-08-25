@@ -68,9 +68,9 @@ def test_route_handler_kwarg_handling(
         assert result.response_class == response_class
         assert result.response_headers == response_headers
         if not path:
-            assert result.paths[0] == "/"
+            assert result.paths == {"/"}
         else:
-            assert result.paths[0] == normalize_path(path)
+            assert list(result.paths)[0] == normalize_path(path)
         if isinstance(http_method, list) and len(http_method) == 1:
             http_method = http_method[0]
         if status_code:

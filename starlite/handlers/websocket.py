@@ -24,19 +24,20 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
         """WebSocket Route Handler decorator. Use this decorator to decorate
         websocket handler functions.
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
         """
         super().__init__(
             path,
@@ -44,6 +45,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             exception_handlers=exception_handlers,
             guards=guards,
             middleware=middleware,
+            name=name,
             opt=opt,
         )
 

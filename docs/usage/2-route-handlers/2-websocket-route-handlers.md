@@ -44,5 +44,9 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 Aside from `path`, the `asgi` route handler accepts the following optional kwargs:
 
 - `dependencies`: A dictionary mapping dependency providers. See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
+- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
+  See [exception-handlers](../17-exceptions#exception-handling).
 - `guards`: A list of [guards](../9-guards.md).
+- `middleware`: A list of [middlewares](../7-middleware/0-middleware-intro.md).
+- `name`: A unique name that identifies the route handler. See: [route handler indexing](4-route-handler-indexing.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).

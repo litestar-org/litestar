@@ -89,11 +89,10 @@ Additionally, you can specify the following special kwargs, what's called "reser
 - `headers`: injects the request `headers` as an instance of `starlette.datastructures.Headers` - which is a case-insensitive mapping.
 - `query`: injects the request `query_params` as a parsed dictionary.
 - `cookies`: injects the request `cookies` as a parsed dictionary.
+- As well as:
 
-As well as:
-
-- `request`: injects the `starlite.connection.Request` instance. Available only for [http route handlers](1_http_route_handlers.md)
-- `socket`: injects the `starlite.connection.WebSocket` instance. Available only for [websocket handlers](2_websocket_route_handlers.md)
+- `request`: injects the `starlite.connection.Request` instance. Available only for [http route handlers](1-http-route-handlers.md)
+- `socket`: injects the `starlite.connection.WebSocket` instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
 
 For example:
 
