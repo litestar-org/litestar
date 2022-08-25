@@ -326,6 +326,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -667,7 +668,7 @@ class get(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of strings that describe authentication methods that override the default ones.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -790,7 +791,7 @@ class post(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of strings that describe authentication methods that override the default ones.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -913,7 +914,7 @@ class put(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of strings that describe authentication methods that override the default ones.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -1036,7 +1037,7 @@ class patch(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of strings that describe authentication methods that override the default ones.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -1159,7 +1160,7 @@ class delete(HTTPRouteHandler):
             response_description: Text used for the route's response schema description section.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of strings that describe authentication methods that override the default ones.
+            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
