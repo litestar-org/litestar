@@ -37,4 +37,4 @@ def my_handler(dep: Provide(my_dependency)) -> None:
     ...
 ```
 
-See [handler function kwargs](../2-route-handlers/1_http_route_handlers.md#http-route-handlers-kwargs).
+See [handler function kwargs](../2-route-handlers/1-http-route-handlers.md#http-route-handlers-kwargs).

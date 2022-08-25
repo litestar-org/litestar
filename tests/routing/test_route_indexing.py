@@ -4,6 +4,7 @@ import pytest
 
 from starlite import (
     HTTPRouteHandler,
+    ImproperlyConfiguredException,
     Router,
     Starlite,
     asgi,
@@ -49,3 +50,16 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     assert handler_index["handler"] == websocket_handler
 
     assert app.get_handler_index_by_name("nope") is None
+
+
+def test_indexing_validation() -> None:
+    @get("/abc", name="same-name")
+    def handler_one() -> None:
+        pass
+
+    @get("/xyz", name="same-name")
+    def handler_two() -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[handler_one, handler_two])

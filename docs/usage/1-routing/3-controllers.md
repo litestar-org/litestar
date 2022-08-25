@@ -40,7 +40,7 @@ class UserOrderController(Controller):
 ```
 
 The above is a simple example of a "CRUD" controller for a model called `UserOrder`. You can place as
-many [route handler methods](../2-route-handlers/1_http_route_handlers.md) on a controller,
+many [route handler methods](../2-route-handlers/1-http-route-handlers.md) on a controller,
 as long as the combination of path+http method is unique.
 
 The `path` that is defined on the Controller is appended before the path that is defined for the route handlers declared
