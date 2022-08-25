@@ -28,6 +28,11 @@ class PathParameterDefinition(TypedDict):
     type: Type
 
 
+class RouteHandlerIndex(TypedDict):
+    name: str
+    handler: "BaseRouteHandler"
+
+
 class BaseRoute(ABC):
     __slots__ = (
         "app",
