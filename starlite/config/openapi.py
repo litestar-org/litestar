@@ -51,7 +51,7 @@ class OpenAPIConfig(BaseModel):
     """
     contact: Optional[Contact] = None
     """
-        API contact information, should be an [Contact][pydantic_openapi_schema.v3_10_0.Contact] instance.
+        API contact information, should be an [Contact][pydantic_openapi_schema.v3_1_0.contact.Contact] instance.
     """
     description: Optional[str] = None
     """
@@ -60,17 +60,17 @@ class OpenAPIConfig(BaseModel):
     external_docs: Optional[ExternalDocumentation] = None
     """
         Links to external documentation.
-        Should be an instance of [ExternalDocumentation][pydantic_openapi_schema.v3_10_0.external_documentation.ExternalDocumentation].
+        Should be an instance of [ExternalDocumentation][pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation].
     """
     license: Optional[License] = None
     """
         API Licensing information.
-        Should be an instance of [License][pydantic_openapi_schema.v3_10_0.license.License].
+        Should be an instance of [License][pydantic_openapi_schema.v3_1_0.license.License].
     """
     security: Optional[List[SecurityRequirement]] = None
     """
         API Security requirements information.
-        Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_10_0.security_requirement.SecurityRequirement].
+        Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement].
     """
     components: Optional[Components] = None
     """
@@ -79,7 +79,7 @@ class OpenAPIConfig(BaseModel):
     """
     servers: List[Server] = [Server(url="/")]
     """
-        A list of [Server][pydantic_openapi_schema.v3_10_0.server.Server] instances.
+        A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances.
     """
     summary: Optional[str] = None
     """
@@ -87,7 +87,7 @@ class OpenAPIConfig(BaseModel):
     """
     tags: Optional[List[Tag]] = None
     """
-        A list of [Tag][pydantic_openapi_schema.v3_10_0.tag.Tag] instances.
+        A list of [Tag][pydantic_openapi_schema.v3_1_0.tag.Tag] instances.
     """
     terms_of_service: Optional[AnyUrl] = None
     """
@@ -99,15 +99,15 @@ class OpenAPIConfig(BaseModel):
     """
     webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
     """
-        A mapping of key to either [PathItem][pydantic_openapi_schema.v3_10_0.path_item.PathItem]
-        or [Reference][pydantic_openapi_schema.v3_10_0.reference.Reference] objects.
+        A mapping of key to either [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem]
+        or [Reference][pydantic_openapi_schema.v3_1_0.reference.Reference] objects.
     """
 
     def to_openapi_schema(self) -> OpenAPI:
         """Generates an OpenAPI model.
 
         Returns:
-            pydantic_openapi_schema.v3_10_0.open_api.OpenAPI
+            pydantic_openapi_schema.v3_1_0.open_api.OpenAPI
         """
         return OpenAPI(
             externalDocs=self.external_docs,

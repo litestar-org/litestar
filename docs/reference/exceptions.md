@@ -1,10 +1,6 @@
 # exceptions
 
 ::: starlite.exceptions.HTTPException
-
-::: starlite.exceptions.ImproperlyConfiguredException
-
-::: starlite.exceptions.HTTPException
     options:
         members:
             - __init__

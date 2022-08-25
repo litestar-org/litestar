@@ -1,5 +1,5 @@
-<!-- markdownlint-disable MD052 -->
 # Data Transfer Objects (DTOs)
+<!-- markdownlint-disable MD052 -->
 
 Starlite includes a [`DTOFactory`][starlite.dto.DTOFactory] class that allows you to create DTOs from pydantic models,
 dataclasses and any other class supported via plugins.
@@ -193,8 +193,8 @@ class MyClassDTO(BaseModel):
 ## Partial DTOs
 
 For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to
-partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`][starlite.types.partial].
-[`Partial`][starlite.types.partial] can only be used on pydantic models.
+partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`][starlite.typing.Partial].
+[`Partial`][starlite.typing.Partial] can only be used on pydantic models.
 
 ```python
 from pydantic import BaseModel
@@ -223,7 +223,7 @@ class PartialCompanyDTO(BaseModel):
     worth: Optional[float]
 ```
 
-[`Partial`][starlite.types.partial] can also be used inline when creating routes.
+[`Partial`][starlite.typing.Partial] can also be used inline when creating routes.
 
 ```python
 from pydantic import UUID4, BaseModel

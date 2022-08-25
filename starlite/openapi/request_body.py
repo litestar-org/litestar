@@ -21,4 +21,4 @@ def create_request_body(
     media_type = field.field_info.extra.get("media_type", RequestEncodingType.JSON)
     schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins)
     update_schema_with_field_info(schema=schema, field_info=field.field_info)
-    return RequestBody(content={media_type: OpenAPISchemaMediaType(media_type_schema=schema)})
+    return RequestBody(required=True, content={media_type: OpenAPISchemaMediaType(media_type_schema=schema)})

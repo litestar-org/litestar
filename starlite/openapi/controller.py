@@ -13,8 +13,12 @@ if TYPE_CHECKING:
 
 
 class OpenAPIController(Controller):
-    path = "/schema"
+    """Handlers for serving OpenAPI related interfaces."""
 
+    path = "/schema"
+    """
+        All OpenAPI endpoints served under `/path`.
+    """
     style = "body { margin: 0; padding: 0 }"
     redoc_version = "next"
     swagger_ui_version = "4.13.0"

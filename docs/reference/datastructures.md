@@ -2,13 +2,11 @@
 
 ::: starlite.datastructures.BackgroundTask
     options:
-        show_source: false
         members:
             - __init__
 
 ::: starlite.datastructures.BackgroundTasks
     options:
-        show_source: false
         members:
             - __init__
 
@@ -16,7 +14,6 @@
 
 ::: starlite.datastructures.Cookie
     options:
-        show_source: false
         members:
             - key
             - value
@@ -29,53 +26,47 @@
             - samesite
             - description
             - documentation_only
+            - to_header
+
+::: starlite.datastructures.ResponseContainer
+    options:
+        members:
+            - background
+            - headers
+            - cookies
+            - to_response
 
 ::: starlite.datastructures.File
     options:
-        show_source: false
         members:
-            - background
-            - headers
-            - cookies
             - path
             - filename
             - stat_result
+            - to_response
 
 ::: starlite.datastructures.Redirect
     options:
-        show_source: false
         members:
-            - background
-            - headers
-            - cookies
             - path
+            - to_response
 
 ::: starlite.datastructures.Stream
     options:
-        show_source: false
         members:
-            - background
-            - headers
-            - cookies
             - iterator
+            - to_response
 
 ::: starlite.datastructures.Template
     options:
-        show_source: false
         members:
-            - background
-            - headers
-            - cookies
             - name
             - context
+            - to_response
 
 ::: starlite.datastructures.ResponseHeader
     options:
-        show_source: false
         members:
             - documentation_only
             - value
 
 ::: starlite.datastructures.UploadFile
-    options:
-        show_source: false
