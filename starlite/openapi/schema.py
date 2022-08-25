@@ -21,6 +21,7 @@ from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
+from starlite.datastructures import UploadFile
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
@@ -130,10 +131,7 @@ def create_constrained_field_schema(
     plugins: List["PluginProtocol"],
 ) -> Schema:
     """Create Schema for Pydantic Constrained fields (created using constr(),
-    conint() etc.
-
-    or by subclassing Constrained*)
-    """
+    conint() and so forth, or by subclassing Constrained*)"""
     if issubclass(field_type, (ConstrainedFloat, ConstrainedInt, ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, (ConstrainedStr, ConstrainedBytes)):
@@ -176,6 +174,11 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return OpenAPI310PydanticSchema(
             schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name)
         )
+    if field_type is UploadFile:
+        return Schema(
+            type=OpenAPIType.STRING,
+            contentMediaType="application/octet-stream",
+        )
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
 
@@ -184,7 +187,6 @@ def create_examples_for_field(field: ModelField) -> List[Example]:
     """Use the pydantic-factories package to create an example value for the
     given schema."""
     try:
-
         value = normalize_example_value(ExampleFactory.get_field_value(field))
         return [Example(description=f"Example {field.name} value", value=value)]
     except ParameterError:
