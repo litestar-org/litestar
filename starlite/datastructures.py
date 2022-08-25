@@ -304,7 +304,7 @@ class Template(ResponseContainer["TemplateResponse"]):
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
-            is not configured.
+                is not configured.
 
         Returns:
             A TemplateResponse instance

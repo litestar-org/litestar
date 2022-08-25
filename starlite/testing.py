@@ -74,6 +74,8 @@ T_client = TypeVar("T_client", bound="TestClient")
 
 
 class TestClient(StarletteTestClient):
+    """Wraps."""
+
     app: Starlite
 
     def __init__(
