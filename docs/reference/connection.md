@@ -21,5 +21,3 @@
             - query_params
             - receive_json
             - send_json
-            - receive
-            - send
