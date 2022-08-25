@@ -1,4 +1,3 @@
-# pylint: disable=too-many-instance-attributes
 from enum import Enum
 from inspect import Signature, isawaitable
 from typing import (
@@ -251,6 +250,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]],
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -299,6 +299,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -342,12 +343,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         else:
             self.status_code = HTTP_200_OK
         super().__init__(
-            path=path,
+            path,
             dependencies=dependencies,
-            guards=guards,
-            opt=opt,
-            middleware=middleware,
             exception_handlers=exception_handlers,
+            guards=guards,
+            middleware=middleware,
+            name=name,
+            opt=opt,
         )
         self.after_request = after_request
         self.after_response = after_response
@@ -488,11 +490,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):
                 handler = _create_response_container_handler(
-                    status_code=self.status_code,
-                    headers=headers,
-                    cookies=cookies,
-                    media_type=media_type,
                     after_request=after_request,
+                    cookies=cookies,
+                    headers=headers,
+                    media_type=media_type,
+                    status_code=self.status_code,
                 )
             elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
@@ -594,6 +596,7 @@ class get(HTTPRouteHandler):
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -639,6 +642,7 @@ class get(HTTPRouteHandler):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -682,13 +686,14 @@ class get(HTTPRouteHandler):
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
+            name=name,
             operation_id=operation_id,
             opt=opt,
             path=path,
             raises=raises,
             response_class=response_class,
-            response_description=response_description,
             response_cookies=response_cookies,
+            response_description=response_description,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -714,6 +719,7 @@ class post(HTTPRouteHandler):
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -759,6 +765,7 @@ class post(HTTPRouteHandler):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -802,13 +809,14 @@ class post(HTTPRouteHandler):
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
+            name=name,
             operation_id=operation_id,
             opt=opt,
             path=path,
             raises=raises,
             response_class=response_class,
-            response_description=response_description,
             response_cookies=response_cookies,
+            response_description=response_description,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -834,6 +842,7 @@ class put(HTTPRouteHandler):
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -879,6 +888,7 @@ class put(HTTPRouteHandler):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -922,13 +932,14 @@ class put(HTTPRouteHandler):
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
+            name=name,
             operation_id=operation_id,
             opt=opt,
             path=path,
             raises=raises,
             response_class=response_class,
-            response_description=response_description,
             response_cookies=response_cookies,
+            response_description=response_description,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -954,6 +965,7 @@ class patch(HTTPRouteHandler):
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -999,6 +1011,7 @@ class patch(HTTPRouteHandler):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -1042,13 +1055,14 @@ class patch(HTTPRouteHandler):
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
+            name=name,
             operation_id=operation_id,
             opt=opt,
             path=path,
             raises=raises,
             response_class=response_class,
-            response_description=response_description,
             response_cookies=response_cookies,
+            response_description=response_description,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,
@@ -1074,6 +1088,7 @@ class delete(HTTPRouteHandler):
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -1119,6 +1134,7 @@ class delete(HTTPRouteHandler):
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
@@ -1162,13 +1178,14 @@ class delete(HTTPRouteHandler):
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
+            name=name,
             operation_id=operation_id,
             opt=opt,
             path=path,
             raises=raises,
             response_class=response_class,
-            response_description=response_description,
             response_cookies=response_cookies,
+            response_description=response_description,
             response_headers=response_headers,
             status_code=status_code,
             summary=summary,

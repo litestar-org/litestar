@@ -70,6 +70,7 @@ class Router:
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
+        path: str,
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
@@ -79,7 +80,6 @@ class Router:
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         parameters: Optional[ParametersMap] = None,
-        path: str,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,

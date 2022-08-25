@@ -4,6 +4,7 @@ from pydantic import validate_arguments
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from typing_extensions import TypedDict
 
 from starlite.asgi import PathParamPlaceholder, RouteMapNode, StarliteASGIRouter
 from starlite.config import (
@@ -17,7 +18,7 @@ from starlite.config import (
 )
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.asgi import ASGIRouteHandler, asgi
+from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.middleware.csrf import CSRFMiddleware
@@ -49,6 +50,7 @@ if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
+    from starlite.handlers.asgi import ASGIRouteHandler
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
@@ -65,8 +67,22 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 """
 
 
+class HandlerIndex(TypedDict):
+    """This class is used to map route handler names to a mapping of path +
+    route handler.
+
+    Its used in the 'resolve' utility method.
+    """
+
+    path: str
+    """Full route path to the route handler."""
+    handler: Union[Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]]
+    """Route handler instance."""
+
+
 class Starlite(Router):
     __slots__ = (
+        "_route_name_to_path_map",
         "_init",
         "_registered_routes",
         "_static_paths",
@@ -163,8 +179,10 @@ class Starlite(Router):
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
+
         self._init = False
         self._registered_routes: Set[BaseRoute] = set()
+        self._route_name_to_path_map: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
         self.allowed_hosts = allowed_hosts
         self.cache = cache_config.to_cache()
@@ -283,7 +301,6 @@ class Starlite(Router):
     def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: ExceptionHandlersMap) -> "ASGIApp":
         """Wraps the given ASGIApp in an instance of
         ExceptionHandlerMiddleware."""
-
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
 
     def _add_node_to_route_map(self, route: BaseRoute) -> RouteMapNode:
@@ -323,6 +340,29 @@ class Starlite(Router):
         self._configure_route_map_node(route, current_node)
         return current_node
 
+    def _add_route_to_handler_index(self, route: BaseRoute) -> None:
+        """Maps route handler names to urls.
+
+        Args:
+            route: A Route instance.
+
+        Returns:
+            None
+        """
+        route_handlers: List[Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]] = []
+        if isinstance(route, (WebSocketRoute, ASGIRoute)):
+            route_handlers.append(route.route_handler)
+        else:
+            route_handlers.extend(cast("HTTPRoute", route).route_handlers)
+
+        for route_handler in route_handlers:
+            if route_handler.name in self._route_name_to_path_map:
+                raise ImproperlyConfiguredException(
+                    f"route handler names must be unique - {route_handler.name} is not unique."
+                )
+            if route_handler.name:
+                self._route_name_to_path_map[route_handler.name] = HandlerIndex(path=route.path, handler=route_handler)
+
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree
         node."""
@@ -360,12 +400,13 @@ class Starlite(Router):
             node = self._add_node_to_route_map(route)
             if node["_path_parameters"] != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
+            self._add_route_to_handler_index(route)
             self._registered_routes.add(route)
 
     def _build_route_middleware_stack(
         self,
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: Union[HTTPRouteHandler, "WebsocketRouteHandler", ASGIRouteHandler],
+        route_handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"],
     ) -> "ASGIApp":
         """Constructs a middleware stack that serves as the point of entry for
         each route."""
