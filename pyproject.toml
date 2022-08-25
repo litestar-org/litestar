@@ -44,7 +44,7 @@ pyyaml = "*"
 requests = { version = "*", optional = true }
 starlette = "*"
 typing-extensions = "*"
-pre-commit = "^2.20.0"
+itsdangerous = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 freezegun = "*"
