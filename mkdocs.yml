@@ -58,10 +58,11 @@ nav:
           - usage/1-routing/3-controllers.md
           - usage/1-routing/4-registering-components-multiple-times.md
       - Route Handlers:
-          - usage/2-route-handlers/0_route_handlers_concept.md
-          - usage/2-route-handlers/1_http_route_handlers.md
-          - usage/2-route-handlers/2_websocket_route_handlers.md
-          - usage/2-route-handlers/3_asgi_route_handlers.md
+          - usage/2-route-handlers/0-route-handlers-concept.md
+          - usage/2-route-handlers/1-http-route-handlers.md
+          - usage/2-route-handlers/2-websocket-route-handlers.md
+          - usage/2-route-handlers/3-asgi-route-handlers.md
+          - usage/2-route-handlers/4-route-handler-indexing.md
       - Parameters:
           - usage/3-parameters/0-path-parameters.md
           - usage/3-parameters/1-query-parameters.md

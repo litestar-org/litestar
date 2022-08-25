@@ -44,6 +44,8 @@ Additionally, you can pass the following optional kwargs:
   See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
 - `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
 - `guards`: A list of [guards](../9-guards.md).
+- `middleware`: A list of [middlewares](../7-middleware/0-middleware-intro.md).
+- `name`: A unique name that identifies the route handler. See: [route handler indexing](4-route-handler-indexing.md).
 - `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the
   controller. If the callable returns a value, the request will not reach the route handler, and instead this value
   will be used.

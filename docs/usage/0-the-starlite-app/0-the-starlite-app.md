@@ -5,7 +5,7 @@ this code will be placed in a file called `main.py` at the **project's root dire
 
 Creating an app is straightforward – the **only required kwarg is a list**
 of [Controllers](../1-routing/3-controllers.md#controllers), [Routers](../1-routing/2-routers.md)
-or [Route Handlers](../2-route-handlers/1_http_route_handlers.md):
+or [Route Handlers](../2-route-handlers/1-http-route-handlers.md):
 
 ```python
 from starlite import Starlite, get
@@ -20,8 +20,7 @@ app = Starlite(route_handlers=[health_check])
 ```
 
 The **app instance is the root level** of the app - it has the base path of "/" and all root level Controllers, Routers
-and
-Route Handlers should be registered on it. See [registering routes](../1-routing/1-registering-routes.md) for
+and Route Handlers should be registered on it. See [registering routes](../1-routing/1-registering-routes.md) for
 full details.
 
 The Starlite constructor accepts the following additional kwargs:

@@ -11,7 +11,7 @@ need to convert it to use the **`on_startup` and `on_shutdown` [hooks](usage/0-t
 ## Routing Decorators
 
 Starlite does not include any decorator as part of the `Router` or `Starlite` instances. **All routes have to be declared
-using [route handlers](usage/2-route-handlers/1_http_route_handlers.md)** – in standalone functions or Controller methods. You then have to
+using [route handlers](usage/2-route-handlers/1-http-route-handlers.md)** – in standalone functions or Controller methods. You then have to
 register them with the app, either by first **registering them on a router** and then **registering the router on the app**, or
 by **registering them directly on the app**. See
 the [registering routes](usage/1-routing/1-registering-routes.md) part of the documentation for details.
@@ -23,12 +23,12 @@ versions of these. You will **need to use the Starlite `Router` classes** instea
 frameworks. There are some **differences** from the **Starlite class** to those from the other frameworks:
 
 1. The Starlite version is **not an ASGI app**, the only ASGI app is the Starlite app and any middlewares you pass to it.
-2. The Starlite version **does not include decorators**, instead you have to use [route handlers](usage/2-route-handlers/1_http_route_handlers.md).
+2. The Starlite version **does not include decorators**, instead you have to use [route handlers](usage/2-route-handlers/1-http-route-handlers.md).
 3. The Starlite version **does not support lifecycle** hooks, instead you have to handle all of your lifecycle management in
    the app layer.
 
 If you use the Starlette `Route` instances directly, you will need to replace these
-with [route handlers](usage/2-route-handlers/1_http_route_handlers.md).
+with [route handlers](usage/2-route-handlers/1-http-route-handlers.md).
 
 <!-- prettier-ignore -->
 !!! important

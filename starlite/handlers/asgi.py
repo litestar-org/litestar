@@ -20,19 +20,26 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         *,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
         """ASGI Route Handler decorator. Use this decorator to decorate ASGI
         apps.
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
+            name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
         """
-        super().__init__(path=path, guards=guards, opt=opt, exception_handlers=exception_handlers)
+        super().__init__(
+            path,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            name=name,
+            opt=opt,
+        )
 
     def __call__(self, fn: "AnyCallable") -> "ASGIRouteHandler":
         """Replaces a function with itself."""

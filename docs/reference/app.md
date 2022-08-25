@@ -6,6 +6,9 @@
             - __init__
             - __call__
             - register
+            - get_handler_index_by_name
+
+::: starlite.app.HandlerIndex
 
 ::: starlite.app.DEFAULT_OPENAPI_CONFIG
 

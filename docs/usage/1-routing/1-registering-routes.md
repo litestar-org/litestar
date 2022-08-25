@@ -64,7 +64,26 @@ app.register(sub_path_handler)
 ```
 
 Since the app instance is attached to all instances of `HTTPConnection`, `Request` and `WebSocket` objects, you can in
-effect call the `.register` method inside route handler functions, middlewares and even injected dependencies.
+effect call the `.register` method inside route handler functions, middlewares and even injected dependencies. For example:
+
+```python
+from typing import Any
+from starlite import Starlite, Request, get
+
+
+@get("/some-path")
+def route_handler(request: Request[Any, Any]) -> None:
+    @get("/sub-path")
+    def sub_path_handler() -> None:
+        ...
+
+    request.app.register(sub_path_handler)
+
+
+app = Starlite(route_handlers=[route_handler])
+```
+
+In the above we dynamically created the sub-path_handler and registered it inside the `route_handler` function.
 
 <!-- prettier-ignore -->
 !!! warning

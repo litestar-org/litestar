@@ -46,7 +46,6 @@ class ParameterConfig(BaseConfig):
 
 
 class BaseRouteHandler(Generic[T]):
-
     __slots__ = (
         "_resolved_dependencies",
         "_resolved_guards",
@@ -56,6 +55,7 @@ class BaseRouteHandler(Generic[T]):
         "fn",
         "guards",
         "middleware",
+        "name",
         "opt",
         "owner",
         "paths",
@@ -71,24 +71,22 @@ class BaseRouteHandler(Generic[T]):
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
+        name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
     ):
-        self.paths: List[str] = (
-            [normalize_path(p) for p in path]
-            if path and isinstance(path, list)
-            else [normalize_path(path or "/")]  # type: ignore
-        )
+        self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
+        self._resolved_guards: Union[List[Guard], EmptyType] = Empty
+        self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.fn: Optional["AnyCallable"] = None
         self.guards = guards
         self.middleware = middleware
+        self.name = name
         self.opt: Dict[str, Any] = opt or {}
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.signature_model: Optional[Type["SignatureModel"]] = None
-        self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
-        self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
+        self.paths = {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
 
     @property
     def dependency_name_set(self) -> Set[str]:
