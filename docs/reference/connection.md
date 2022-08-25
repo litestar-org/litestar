@@ -2,7 +2,6 @@
 
 ::: starlite.connection.Request
     options:
-        show_source: false
         members:
             - app
             - user
@@ -13,7 +12,6 @@
 
 ::: starlite.connection.WebSocket
     options:
-        show_source: false
         members:
             - app
             - user

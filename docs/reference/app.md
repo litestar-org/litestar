@@ -2,7 +2,6 @@
 
 ::: starlite.app.Starlite
     options:
-        show_source: false
         members:
             - __init__
             - __call__

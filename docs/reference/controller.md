@@ -2,7 +2,6 @@
 
 ::: starlite.controller.Controller
     options:
-        show_source: false
         members:
             - after_request
             - after_response
