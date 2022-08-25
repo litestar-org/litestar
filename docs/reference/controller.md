@@ -2,7 +2,6 @@
 
 ::: starlite.controller.Controller
     options:
-        show_source: false
         members:
             - after_request
             - after_response
@@ -11,6 +10,7 @@
             - exception_handlers
             - guards
             - middleware
+            - owner
             - parameters
             - path
             - response_class

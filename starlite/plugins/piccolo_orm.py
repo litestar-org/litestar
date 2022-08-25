@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 
 
 class PiccoloORMPlugin(PluginProtocol[Table]):
+    """Support (de)serialization and OpenAPI generation for Piccolo ORM
+    types."""
+
     _models_map: Dict[Type[Table], Type["BaseModel"]] = {}
     _data_models_map: Dict[Type[Table], Type["BaseModel"]] = {}
 

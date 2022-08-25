@@ -38,6 +38,9 @@ if TYPE_CHECKING:
 
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
+    """Support (de)serialization and OpenAPI generation for SQLAlchemy ORM
+    types."""
+
     def __init__(self) -> None:
         # a map object that maps SQLAlchemy entity qualified names to pydantic BaseModel subclasses
         self.model_namespace_map: Dict[str, "Type[BaseModel]"] = {}

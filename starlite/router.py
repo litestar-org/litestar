@@ -139,10 +139,13 @@ class Router:
     def register(self, value: ControllerRouterHandler) -> List["BaseRoute"]:
         """Register a Controller, Route instance or RouteHandler on the router.
 
-        Accepts a subclass or instance of Controller, an instance of
-        Router or a function/method that has been decorated by any of
-        the routing decorators (e.g. route, get, post...) exported from
-        'starlite.routing'
+        Args:
+            value: a subclass or instance of Controller, an instance of `Router` or a function/method that has been
+                decorated by any of the routing decorators, e.g. [get][starlite.handlers.http.get],
+                [post][starlite.handlers.http.post].
+
+        Returns:
+            Collection of handlers added to the router.
         """
         validated_value = self._validate_registration_value(value)
         routes: List["BaseRoute"] = []

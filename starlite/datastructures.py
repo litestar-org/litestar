@@ -121,8 +121,11 @@ class Cookie(BaseModel):
     """defines the Cookie instance as for OpenAPI documentation purpose only"""
 
     def to_header(self, **kwargs: Any) -> str:
-        """Return a string representation suitable to be sent as HTTP
-        headers."""
+        """Return a string representation suitable to be sent as HTTP headers.
+
+        Args:
+            **kwargs: Passed to [SimpleCookie][http.cookies.SimpleCookie]
+        """
 
         simple_cookie: SimpleCookie = SimpleCookie()
         simple_cookie[self.key] = self.value or ""
@@ -301,7 +304,7 @@ class Template(ResponseContainer["TemplateResponse"]):
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
-            is not configured.
+                is not configured.
 
         Returns:
             A TemplateResponse instance
