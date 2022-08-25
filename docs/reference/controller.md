@@ -11,6 +11,7 @@
             - exception_handlers
             - guards
             - middleware
+            - owner
             - parameters
             - path
             - response_class
