@@ -9,3 +9,9 @@
             - from_pydantic_model_instance
             - to_dict
             - from_dict
+
+::: starlite.plugins.piccolo_orm.PiccoloORMPlugin
+
+::: starlite.plugins.sql_alchemy.SQLAlchemyPlugin
+
+::: starlite.plugins.tortoise_orm.TortoiseORMPlugin

@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
 
 class TortoiseORMPlugin(PluginProtocol[Model]):
+    """Support (de)serialization and OpenAPI generation for Tortoise ORM
+    types."""
+
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
 
