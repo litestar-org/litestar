@@ -1,50 +1,60 @@
 # middleware
 
-::: starlite.middleware.base.MiddlewareProtocol
+::: starlite.middleware.MiddlewareProtocol
     options:
         members:
             - __init__
 
-::: starlite.middleware.base.DefineMiddleware
+::: starlite.middleware.DefineMiddleware
     options:
         members:
             - __init__
 
-::: starlite.middleware.authentication.AuthenticationResult
+::: starlite.middleware.AuthenticationResult
     options:
         members:
             - user
             - auth
 
-::: starlite.middleware.csrf.CSRFMiddleware
-    options:
-        members:
-            - __init__
-
-::: starlite.middleware.exceptions.ExceptionHandlerMiddleware
-    options:
-        members:
-            - __init__
-
-::: starlite.middleware.authentication.AbstractAuthenticationMiddleware
+::: starlite.middleware.AbstractAuthenticationMiddleware
     options:
         members:
             - scopes
             - error_response_media_type
             - websocket_error_status_code
-            - __init__
             - create_error_response
             - authenticate_request
 
-::: starlite.middleware.compression.brotli.BrotliMode
+::: starlite.middleware.CSRFMiddleware
     options:
         members:
-            - GENERIC
-            - TEXT
-            - FONT
+            - __init__
+
+::: starlite.middleware.ExceptionHandlerMiddleware
+    options:
+        members:
+            - __init__
+            - default_http_exception_handler
+
+::: starlite.middleware.CompressionMiddleware
+    options:
+        members:
+            - __init__
+
+::: starlite.middleware.compression.brotli.BrotliMode
+
+::: starlite.middleware.compression.brotli.CompressionEncoding
+    options:
+        members:
+            - GZIP
+            - BROTLI
 
 ::: starlite.middleware.compression.brotli.BrotliMiddleware
     options:
-        show_source: false
+        members:
+            - __init__
+
+::: starlite.middleware.compression.gzip.GZipMiddleware
+    options:
         members:
             - __init__
