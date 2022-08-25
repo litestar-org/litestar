@@ -49,34 +49,19 @@ def test_upload_file_request_body_generation() -> None:
     paths = schema_dict["paths"]
     components = schema_dict["components"]
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
-        "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
-        "type": "object",
-        "required": ["filename"],
+        "type": "string",
+        "contentMediaType": "application/octet-stream",
     }
     assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
-        "items": {
-            "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
-            "type": "object",
-            "required": ["filename"],
-        },
+        "items": {"type": "string", "contentMediaType": "application/octet-stream"},
         "type": "array",
     }
     assert components == {
         "schemas": {
             "FormData": {
                 "properties": {
-                    "cv": {
-                        "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
-                        "type": "object",
-                        "required": ["filename"],
-                        "title": "Cv",
-                    },
-                    "image": {
-                        "properties": {"filename": {"type": "string", "contentMediaType": "application/octet-stream"}},
-                        "type": "object",
-                        "required": ["filename"],
-                        "title": "Image",
-                    },
+                    "cv": {"type": "string", "contentMediaType": "application/octet-stream", "title": "Cv"},
+                    "image": {"type": "string", "contentMediaType": "application/octet-stream", "title": "Image"},
                 },
                 "type": "object",
                 "required": ["cv", "image"],

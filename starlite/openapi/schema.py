@@ -176,9 +176,8 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         )
     if field_type is UploadFile:
         return Schema(
-            type=OpenAPIType.OBJECT,
-            required=["filename"],
-            properties={"filename": Schema(type=OpenAPIType.STRING, contentMediaType="application/octet-stream")},
+            type=OpenAPIType.STRING,
+            contentMediaType="application/octet-stream",
         )
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
