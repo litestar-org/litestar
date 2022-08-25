@@ -1,4 +1,5 @@
 import logging
+import secrets
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, cast
 
 import pytest
@@ -6,6 +7,7 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from starlite import (
@@ -205,3 +207,23 @@ def test_middleware_call_order() -> None:
         client.get("/router/controller/handler")
 
         assert results == [0, 1, 2, 3, 4, 5, 6, 7]
+
+
+@pytest.mark.xfail(reason="Cannot set cookie of size greater than the allowed max-size.", strict=True)
+def test_session_middleware_should_fail_setcookie() -> None:
+    """Test if size of set cookie is greater than max-size limit of cookie
+    allowed by the browsers."""
+
+    @get("/session")
+    def session_handler(request: Request) -> None:
+        """Mock route handler to set session."""
+        # Fill the session with large string to exceed the max-size limit.
+        request.session["mock_cookie"] = secrets.token_hex(1514)
+
+    client = create_test_client(
+        route_handlers=[session_handler],
+        middleware=[DefineMiddleware(SessionMiddleware, secret_key=secrets.token_hex(16))],
+    )
+    response = client.get("/session")
+    assert response.status_code == 200
+    assert len(response.cookies["session"]) < 4096
