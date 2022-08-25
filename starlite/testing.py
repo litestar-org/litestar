@@ -74,9 +74,10 @@ T_client = TypeVar("T_client", bound="TestClient")
 
 
 class TestClient(StarletteTestClient):
-    """Wraps."""
-
     app: Starlite
+    """
+        Starlite application instance under test.
+    """
 
     def __init__(
         self,
@@ -87,6 +88,18 @@ class TestClient(StarletteTestClient):
         backend: str = "asyncio",
         backend_options: Optional[Dict[str, Any]] = None,
     ):
+        """A client implementation providing a context manager for testing
+        applications.
+
+        Args:
+            app: Application under test.
+            base_url: Scheme and domain for test request paths.
+            raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
+                wrapping them in a HTTP response.
+            root_path: Path prefix for requests.
+            backend: "asyncio" or "trio"
+            backend_options: options passed to `anyio` for backend.
+        """
         super().__init__(
             app=app,
             base_url=base_url,
