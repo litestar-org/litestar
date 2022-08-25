@@ -1,49 +1,47 @@
 # handlers
 
-::: starlite.handlers.asgi.asgi
+::: starlite.handlers.ASGIRouteHandler
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.websocket.websocket
+::: starlite.handlers.asgi
+
+::: starlite.handlers.HTTPRouteHandler
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.route
+::: starlite.handlers.route
+
+::: starlite.handlers.get
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.get
+::: starlite.handlers.post
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.post
+::: starlite.handlers.put
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.put
+::: starlite.handlers.patch
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.patch
+::: starlite.handlers.delete
     options:
-        show_source: false
         members:
             - __init__
 
-::: starlite.handlers.http.delete
+::: starlite.handlers.WebsocketRouteHandler
     options:
-        show_source: false
         members:
             - __init__
+
+::: starlite.handlers.websocket
