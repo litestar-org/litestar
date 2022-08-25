@@ -6,6 +6,8 @@ from typing_extensions import Literal
 
 from starlite.logging.standard import QueueListenerHandler
 
+__all__ = ["LoggingConfig", "QueueListenerHandler"]
+
 
 class LoggingConfig(BaseModel):
     """Convenience `pydantic` model for configuring logging.
@@ -49,6 +51,3 @@ class LoggingConfig(BaseModel):
     def configure(self) -> None:
         """Configured logger with the given configuration."""
         config.dictConfig(self.dict(exclude_none=True))
-
-
-__all__ = ["LoggingConfig", "QueueListenerHandler"]

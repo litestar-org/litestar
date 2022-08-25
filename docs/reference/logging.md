@@ -14,17 +14,14 @@
             - root
             - configure
 
-## picologging.QueueListenerHandler
-
-::: starlite.logging.picologging.QueueListenerHandler
+::: starlite.logging.QueueListenerHandler
     options:
-        show_root_heading: false
         members:
             - __init__
 
-## standard.QueueListenerHandler
+## picologging.QueueListenerHandler
 
-::: starlite.logging.standard.QueueListenerHandler
+::: starlite.logging.picologging.QueueListenerHandler
     options:
         show_root_heading: false
         members:
