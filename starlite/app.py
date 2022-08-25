@@ -71,7 +71,7 @@ class HandlerIndex(TypedDict):
     """This class is used to map route handler names to a mapping of path +
     route handler.
 
-    Its used in the 'resolve' utility method.
+    It's used in the 'get_handler_index_by_name' utility method.
     """
 
     path: str
@@ -82,9 +82,9 @@ class HandlerIndex(TypedDict):
 
 class Starlite(Router):
     __slots__ = (
-        "_route_name_to_path_map",
         "_init",
         "_registered_routes",
+        "_route_handler_index",
         "_static_paths",
         "allowed_hosts",
         "asgi_handler",
@@ -182,7 +182,7 @@ class Starlite(Router):
 
         self._init = False
         self._registered_routes: Set[BaseRoute] = set()
-        self._route_name_to_path_map: Dict[str, HandlerIndex] = {}
+        self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
         self.allowed_hosts = allowed_hosts
         self.cache = cache_config.to_cache()
@@ -280,6 +280,34 @@ class Starlite(Router):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
         self._construct_route_map()
 
+    def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
+        """Receives a route handler name and returns an optional dictionary
+        containing the route handler instance and the path.
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+
+
+            @get("/", name="my-handler")
+            def handler() -> None:
+                pass
+
+
+            app = Starlite(route_handlers=[handler])
+
+            handler_index = app.get_handler_index_by_name("my-handler")
+
+            # { "path": "/", "handler" ... }
+            ```
+        Args:
+            name: A route handler unique name.
+
+        Returns:
+            A [HandlerIndex][starlite.app.HandlerIndex] instance or None.
+        """
+        return self._route_handler_index.get(name)
+
     def _create_asgi_handler(self) -> "ASGIApp":
         """Creates an ASGIApp that wraps the ASGI router inside an exception
         handler.
@@ -356,12 +384,12 @@ class Starlite(Router):
             route_handlers.extend(cast("HTTPRoute", route).route_handlers)
 
         for route_handler in route_handlers:
-            if route_handler.name in self._route_name_to_path_map:
+            if route_handler.name in self._route_handler_index:
                 raise ImproperlyConfiguredException(
                     f"route handler names must be unique - {route_handler.name} is not unique."
                 )
             if route_handler.name:
-                self._route_name_to_path_map[route_handler.name] = HandlerIndex(path=route.path, handler=route_handler)
+                self._route_handler_index[route_handler.name] = HandlerIndex(path=route.path, handler=route_handler)
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree

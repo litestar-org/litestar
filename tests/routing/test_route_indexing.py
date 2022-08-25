@@ -32,9 +32,20 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
 
     router = Router("router-path/", route_handlers=[handler])
     app = Starlite(route_handlers=[router, websocket_handler, asgi_handler])
-    assert app._route_name_to_path_map["handler-name"]["path"] == "/router-path/path-one/{param:str}"
-    assert app._route_name_to_path_map["handler-name"]["handler"] == handler
-    assert app._route_name_to_path_map["asgi-name"]["path"] == "/asgi-path"
-    assert app._route_name_to_path_map["asgi-name"]["handler"] == asgi_handler
-    assert app._route_name_to_path_map["websocket-name"]["path"] == "/websocket-path"
-    assert app._route_name_to_path_map["websocket-name"]["handler"] == websocket_handler
+
+    handler_index = app.get_handler_index_by_name("handler-name")
+    assert handler_index
+    assert handler_index["path"] == "/router-path/path-one/{param:str}"
+    assert handler_index["handler"] == handler
+
+    handler_index = app.get_handler_index_by_name("asgi-name")
+    assert handler_index
+    assert handler_index["path"] == "/asgi-path"
+    assert handler_index["handler"] == asgi_handler
+
+    handler_index = app.get_handler_index_by_name("websocket-name")
+    assert handler_index
+    assert handler_index["path"] == "/websocket-path"
+    assert handler_index["handler"] == websocket_handler
+
+    assert app.get_handler_index_by_name("nope") is None
