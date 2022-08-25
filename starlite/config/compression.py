@@ -23,7 +23,7 @@ class CompressionConfig(BaseModel):
 
     backend: Literal["gzip", "brotli"]
     """
-        [CompressionBackend][starlite.enums.CompressionBackend] or string literal of "gzip" or "brotli"
+        Literal of "gzip" or "brotli"
     """
     minimum_size: conint(gt=0) = 500  # type: ignore[valid-type]
     """
