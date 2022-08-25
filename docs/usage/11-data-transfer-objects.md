@@ -1,5 +1,5 @@
-<!-- markdownlint-disable MD052 -->
 # Data Transfer Objects (DTOs)
+<!-- markdownlint-disable MD052 -->
 
 Starlite includes a [`DTOFactory`][starlite.dto.DTOFactory] class that allows you to create DTOs from pydantic models,
 dataclasses and any other class supported via plugins.
