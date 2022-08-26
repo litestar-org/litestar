@@ -321,6 +321,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "toudi",
+      "name": "Mateusz Mikołajczyk",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81148?v=4",
+      "profile": "https://github.com/toudi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
