@@ -173,3 +173,11 @@ has a different design, different project goals and a completely different codeb
 3. Finally, **Python OOP** is extremely powerful and versatile. While still allowing for **function-based endpoints**,
    Starlite
    seeks to build on this by placing **class-based controllers** at its core.
+
+## Example Applications
+
+- [starlite-pg-redis-docker](https://github.com/starlite-api/starlite-pg-redis-docker): In addition to Starlite, this
+  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
+  Starlite projects, this application is open to contributions, big and small.
+- [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
+  for testing and POC work.
