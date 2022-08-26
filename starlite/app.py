@@ -178,7 +178,7 @@ class Starlite(Router):
                 function decorated by the route handler decorators.
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
-            security: A list of dictionaries that will be added to the schema of all route handlers in the application.
+            security: A list of dictionaries that will be added to the schema of all route handlers in the application. See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
 
