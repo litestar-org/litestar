@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, cast
 
 from pydantic_openapi_schema.v3_1_0.operation import Operation
 from pydantic_openapi_schema.v3_1_0.path_item import PathItem
@@ -7,7 +7,6 @@ from starlette.routing import get_name
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
-from starlite.openapi.utils import extract_tags_from_route_handler
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -16,6 +15,44 @@ if TYPE_CHECKING:
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
+
+
+def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
+    """Produces the operation description for a route handler, either by using the description value if provided, or the docstring - if config is enabled.
+
+    Args:
+        route_handler: A route handler instance.
+        use_handler_docstrings: If `True` and `route_handler.description` is `None` returns docstring of wrapped
+            handler function.
+
+    Returns:
+        An optional description string
+    """
+    handler_description = route_handler.description
+    if handler_description is None and use_handler_docstrings:
+        return route_handler.fn.__doc__
+    return handler_description
+
+
+def extract_layered_values(
+    route_handler: "HTTPRouteHandler",
+) -> Tuple[Optional[List[str]], Optional[List[Dict[str, List[str]]]]]:
+    """Extracts the tags and security values from the route handler layers.
+
+    Args:
+        route_handler: A Route Handler instance.
+
+    Returns:
+        A tuple of optional lists.
+    """
+    tags: List[str] = []
+    security: List[Dict[str, List[str]]] = []
+    for layer in route_handler.ownership_layers:
+        if layer.tags:
+            tags.extend(layer.tags)
+        if layer.security:
+            security.extend(layer.security)
+    return list(set(tags)) if tags else None, security or None
 
 
 def create_path_item(
@@ -44,9 +81,11 @@ def create_path_item(
                 request_body = create_request_body(
                     field=handler_fields["data"], generate_examples=create_examples, plugins=plugins
                 )
+
+            tags, security = extract_layered_values(route_handler)
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
-                tags=extract_tags_from_route_handler(route_handler),
+                tags=list(set(tags)) if tags else None,
                 summary=route_handler.summary,
                 description=get_description_for_handler(route_handler, use_handler_docstrings),
                 deprecated=route_handler.deprecated,
@@ -58,24 +97,7 @@ def create_path_item(
                 ),
                 requestBody=request_body,
                 parameters=parameters,  # type: ignore[arg-type]
-                security=route_handler.security,
+                security=security or None,
             )
             setattr(path_item, http_method.lower(), operation)
     return path_item
-
-
-def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
-    """Produces the operation description for the handler.
-
-    Args:
-        route_handler (HTTPRouteHandler)
-        use_handler_docstrings (bool): If `True` and `route_handler.description` is `None` returns docstring of wrapped
-            handler function.
-
-    Returns:
-        str | None
-    """
-    handler_description = route_handler.description
-    if handler_description is None and use_handler_docstrings:
-        return route_handler.fn.__doc__
-    return handler_description

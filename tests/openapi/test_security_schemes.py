@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List
 
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Components
 from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
-from starlite import HTTPRouteHandler, OpenAPIConfig, Starlite, get
+from starlite import Controller, HTTPRouteHandler, OpenAPIConfig, Router, Starlite, get
 
 
 @pytest.fixture()
@@ -96,3 +96,56 @@ def test_schema_with_route_security_overridden(protected_route: HTTPRouteHandler
 
     route = schema_dict["paths"]["/protected"]["get"]
     assert route.get("security", None) == [{"BearerToken": []}]
+
+
+def test_layered_security_declaration() -> None:
+    class MyController(Controller):
+        path = "/controller"
+        security: List[Dict[str, List[str]]] = [{"controllerToken": []}]
+
+        @get("", security=[{"handlerToken": []}])
+        def my_handler(self) -> None:
+            ...
+
+    router = Router("/router", route_handlers=[MyController], security=[{"routerToken": []}])
+
+    app = Starlite(
+        route_handlers=[router],
+        security=[{"appToken": []}],
+        openapi_config=OpenAPIConfig(
+            title="test app",
+            version="0.0.1",
+            components=Components(
+                securitySchemes={
+                    "handlerToken": SecurityScheme(
+                        type="http",
+                        scheme="bearer",
+                    ),
+                    "controllerToken": SecurityScheme(
+                        type="http",
+                        scheme="bearer",
+                    ),
+                    "routerToken": SecurityScheme(
+                        type="http",
+                        scheme="bearer",
+                    ),
+                    "appToken": SecurityScheme(
+                        type="http",
+                        scheme="bearer",
+                    ),
+                },
+            ),
+        ),
+    )
+    assert list(app.openapi_schema.components.securitySchemes.keys()) == [  # type: ignore
+        "handlerToken",
+        "controllerToken",
+        "routerToken",
+        "appToken",
+    ]
+    assert app.openapi_schema.paths["/router/controller"].get.security == [  # type: ignore
+        {"appToken": []},
+        {"routerToken": []},
+        {"controllerToken": []},
+        {"handlerToken": []},
+    ]

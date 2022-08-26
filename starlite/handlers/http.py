@@ -267,9 +267,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
         with multiple methods.
@@ -316,18 +316,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -616,9 +611,9 @@ class get(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
@@ -661,18 +656,13 @@ class get(HTTPRouteHandler):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -701,11 +691,11 @@ class get(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            security=security,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
-            security=security,
         )
 
 
@@ -742,9 +732,9 @@ class post(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """POST Route Decorator. Use this decorator to decorate an HTTP handler
         for POST requests.
@@ -787,18 +777,13 @@ class post(HTTPRouteHandler):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -827,11 +812,11 @@ class post(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            security=security,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
-            security=security,
         )
 
 
@@ -868,9 +853,9 @@ class put(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """PUT Route Decorator. Use this decorator to decorate an HTTP handler
         for PUT requests.
@@ -913,18 +898,13 @@ class put(HTTPRouteHandler):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -953,11 +933,11 @@ class put(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            security=security,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
-            security=security,
         )
 
 
@@ -994,9 +974,9 @@ class patch(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """PATCH Route Decorator. Use this decorator to decorate an HTTP
         handler for PATCH requests.
@@ -1039,18 +1019,13 @@ class patch(HTTPRouteHandler):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -1079,11 +1054,11 @@ class patch(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            security=security,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
-            security=security,
         )
 
 
@@ -1120,9 +1095,9 @@ class delete(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
     ):
         """DELETE Route Decorator. Use this decorator to decorate an HTTP
         handler for DELETE requests.
@@ -1165,18 +1140,13 @@ class delete(HTTPRouteHandler):
             content_media_type: A string designating the media-type of the content, e.g. "image/png".
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
-            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the
-                OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the
-                wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's
-                function/method. The Starlite ValidationException will be added automatically for the schema if
-                any validation is involved.
+            include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
+            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
-            security: A list of dicts that contain information about which security scheme can be used on the endpoint.
         """
         super().__init__(
             after_request=after_request,
@@ -1205,9 +1175,9 @@ class delete(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            security=security,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
-            security=security,
         )
