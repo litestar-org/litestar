@@ -85,7 +85,7 @@ def create_path_item(
             tags, security = extract_layered_values(route_handler)
             operation = Operation(
                 operationId=route_handler.operation_id or handler_name,
-                tags=list(set(tags)) if tags else None,
+                tags=tags,
                 summary=route_handler.summary,
                 description=get_description_for_handler(route_handler, use_handler_docstrings),
                 deprecated=route_handler.deprecated,
