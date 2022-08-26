@@ -74,7 +74,7 @@ def test_schema_with_security_scheme_defined(public_route: HTTPRouteHandler) -> 
     assert schema_dict.get("security", []) == [{"BearerToken": []}]
 
 
-def test_schema_with_route_security_overriden(protected_route: HTTPRouteHandler) -> None:
+def test_schema_with_route_security_overridden(protected_route: HTTPRouteHandler) -> None:
     app = Starlite(
         route_handlers=[protected_route],
         openapi_config=OpenAPIConfig(
