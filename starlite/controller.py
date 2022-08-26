@@ -1,6 +1,6 @@
 import inspect
 from copy import copy
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
@@ -44,6 +44,7 @@ class Controller:
         "response_class",
         "response_cookies",
         "response_headers",
+        "security",
         "tags",
     )
 
@@ -110,6 +111,10 @@ class Controller:
     tags: Optional[List[str]]
     """
         A list of string tags that will be appended to the schema of all route handlers under the controller.
+    """
+    security: Optional[List[Dict[str, List[str]]]]
+    """
+        A list of dictionaries that to the schema of all route handlers under the controller.
     """
 
     def __init__(self, owner: "Router"):

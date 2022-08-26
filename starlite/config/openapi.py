@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union, cast
 
 from pydantic import AnyUrl, BaseModel
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from pydantic_openapi_schema.v3_1_0 import (
+    Components,
     Contact,
     ExternalDocumentation,
     Info,
@@ -71,6 +72,11 @@ class OpenAPIConfig(BaseModel):
         API Security requirements information.
         Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement].
     """
+    components: Optional[Union[Components, List[Components]]] = None
+    """
+        API Components information.
+        Should be an instance of [Components][pydantic_openapi_schema.v3_10_0.components.Components] or a list thereof.
+    """
     servers: List[Server] = [Server(url="/")]
     """
         A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances.
@@ -103,9 +109,20 @@ class OpenAPIConfig(BaseModel):
         Returns:
             pydantic_openapi_schema.v3_1_0.open_api.OpenAPI
         """
+        if isinstance(self.components, list):
+            merged_components = Components()
+            for components in self.components:
+                for key in components.__fields__.keys():
+                    value = getattr(components, key, None)
+                    if value:
+                        merged_value_dict = getattr(merged_components, key, {}) or {}
+                        merged_value_dict.update(value)
+                        setattr(merged_components, key, merged_value_dict)
+            self.components = merged_components
         return OpenAPI(
             externalDocs=self.external_docs,
             security=self.security,
+            components=cast("Components", self.components),
             servers=self.servers,
             tags=self.tags,
             webhooks=self.webhooks,

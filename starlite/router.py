@@ -64,6 +64,7 @@ class Router:
         "response_cookies",
         "response_headers",
         "routes",
+        "security",
         "tags",
     )
 
@@ -84,6 +85,7 @@ class Router:
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
+        security: Optional[List[Dict[str, List[str]]]] = None,
         tags: Optional[List[str]] = None,
     ):
         """The Starlite Router class.
@@ -115,6 +117,7 @@ class Router:
             route_handlers: A required list of route handlers, which can include instances of
                 [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
                 function decorated by the route handler decorators.
+            security: A list of dictionaries that will be added to the schema of all route handlers under the router.
             tags: A list of string tags that will be appended to the schema of all route handlers under the router.
         """
         self.after_request = after_request
@@ -131,6 +134,7 @@ class Router:
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
         self.routes: List["BaseRoute"] = []
+        self.security = security
         self.tags = tags or []
 
         for route_handler in route_handlers or []:
