@@ -57,8 +57,7 @@ def test_schema_with_security_scheme_defined(public_route: HTTPRouteHandler) -> 
     schema_components = schema_dict.get("components", {})
     assert "securitySchemes" in schema_components
 
-    securitySchemes = schema_components.get("securitySchemes", {})
-    assert securitySchemes == {
+    assert schema_components.get("securitySchemes", {}) == {
         "BearerToken": {
             "type": "http",
             "description": None,

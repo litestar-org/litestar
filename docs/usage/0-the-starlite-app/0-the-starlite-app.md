@@ -50,7 +50,7 @@ The Starlite constructor accepts the following additional kwargs:
 - `on_startup`: A list of callables that are called during the application startup.
   See [startup-and-shutdown](./1-startup-and-shutdown.md).
 - `openapi_config`: An instance of `starlite.config.OpenAPIConfig`. Defaults to the baseline config.
-  See [open-api](../12-openapi.md).
+  See [open-api](../12-openapi/0-openapi-intro.md).
 - `parameters`: A mapping of parameters definition that will be available in all application paths.
   See [layered parameters](../3-parameters/4-layered-parameters.md).
 - `response_class`: A custom response class to be used as the app's default.
@@ -61,4 +61,4 @@ The Starlite constructor accepts the following additional kwargs:
 - `static_files_config`: An instance or list of `starlite.config.StaticFilesConfig`.
   See [static files](./3-static-files.md).
 - `tags`: A list of tags to add to the openapi path definitions for all application paths.
-  See [open-api](../12-openapi.md).
+  See [open-api](../12-openapi/0-openapi-intro.md).

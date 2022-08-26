@@ -96,17 +96,20 @@ class Starlite(Router):
         "debug",
         "on_shutdown",
         "on_startup",
+        "openapi_config",
         "openapi_schema",
         "plain_routes",
         "plugins",
         "route_map",
         "state",
+        "static_files_config",
         "template_engine",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
+        route_handlers: List[ControllerRouterHandler],
         *,
         after_request: Optional[AfterRequestHandler] = None,
         after_response: Optional[AfterResponseHandler] = None,
@@ -129,7 +132,6 @@ class Starlite(Router):
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
-        route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
         security: Optional[List[Dict[str, List[str]]]] = None,
@@ -191,6 +193,8 @@ class Starlite(Router):
         self.compression_config = compression_config
         self.cors_config = cors_config
         self.csrf_config = csrf_config
+        self.openapi_config = openapi_config
+        self.static_files_config = static_files_config
         self.debug = debug
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
@@ -226,11 +230,13 @@ class Starlite(Router):
         for route_handler in route_handlers:
             self.register(route_handler)
 
-        if openapi_config:
-            self.openapi_schema = openapi_config.create_openapi_schema_model(self)
-            self.register(openapi_config.openapi_controller)
-        if static_files_config:
-            for config in static_files_config if isinstance(static_files_config, list) else [static_files_config]:
+        if self.openapi_config:
+            self.openapi_schema = self.openapi_config.create_openapi_schema_model(self)
+            self.register(self.openapi_config.openapi_controller)
+        if self.static_files_config:
+            for config in (
+                self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
+            ):
                 self._static_paths.add(config.path)
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
 

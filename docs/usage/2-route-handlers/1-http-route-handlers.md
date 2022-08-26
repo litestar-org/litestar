@@ -68,7 +68,7 @@ Additionally, you can pass the following optional kwargs:
 - `cache_key_builder`: A cache key building function. Allows for customization of the cache key if caching is
   configured on the application level. See [caching](../16-caching.md)
 
-And the following kwargs, which affect [OpenAPI schema generation](../12-openapi.md#route-handler-configuration)
+And the following kwargs, which affect [OpenAPI schema generation](../12-openapi/0-openapi-intro.md)
 
 - `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
   schema. Defaults to `True`.
