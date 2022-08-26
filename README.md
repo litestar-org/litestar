@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-34-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-35-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -260,6 +260,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://aidansimard.dev"><img src="https://avatars.githubusercontent.com/u/73361895?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aidan Simard</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Aidan-Simard" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/waweber"><img src="https://avatars.githubusercontent.com/u/714224?v=4?s=100" width="100px;" alt=""/><br /><sub><b>wweber</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=waweber" title="Code">💻</a></td>
     <td align="center"><a href="http://scolvin.com"><img src="https://avatars.githubusercontent.com/u/4039449?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Samuel Colvin</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=samuelcolvin" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/toudi"><img src="https://avatars.githubusercontent.com/u/81148?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mateusz Mikołajczyk</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=toudi" title="Code">💻</a></td>
   </tr>
 </table>
 
