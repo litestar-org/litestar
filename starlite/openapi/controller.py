@@ -51,7 +51,7 @@ class OpenAPIController(Controller):
         """Returns the OpenAPI pydantic model from the request instance.
 
         Args:
-            request: A [Starlite][starlite.request.Request] instance.
+            request: A [Starlite][starlite.connection.Request] instance.
 
         Returns:
             An [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance.
@@ -91,7 +91,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered YAML object..
@@ -105,7 +105,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered JSON object..
@@ -121,7 +121,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -142,7 +142,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -155,7 +155,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -168,7 +168,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -183,7 +183,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -242,7 +242,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.
@@ -284,7 +284,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.request.Request] instance.
+                A [Request][starlite.connection.Request] instance.
 
         Returns:
             A rendered html string.

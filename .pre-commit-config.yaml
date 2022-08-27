@@ -40,6 +40,7 @@ repos:
     rev: "v3.0.0-alpha.0"
     hooks:
       - id: prettier
+        exclude: "^(?!usage/)"
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.4
     hooks:

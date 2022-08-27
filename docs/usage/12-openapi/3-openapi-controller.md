@@ -1,6 +1,6 @@
 # The OpenAPI Controller
 
-Starlite includes an [OpenAPIController][starlite.openapi.controller.openapicontroller] class that is used as the default controller in the [OpenAPIConfig](1-schema-generation.md).
+Starlite includes an [OpenAPIController][starlite.openapi.controller.OpenAPIController] class that is used as the default controller in the [OpenAPIConfig](1-schema-generation.md).
 
 This controller exposes the following endpoints:
 

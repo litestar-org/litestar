@@ -1,7 +1,7 @@
 # OpenAPI Schema Generation Config
 
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
-[OpenAPIConfig][starlite.config.openapiconfig] to the Starlite constructor using the `openapi_config` kwarg:
+[OpenAPIConfig][starlite.config.OpenAPIConfig] to the Starlite constructor using the `openapi_config` kwarg:
 
 ```python
 from starlite import Starlite, OpenAPIConfig
@@ -13,25 +13,25 @@ app = Starlite(
 
 Aside from `title` and `version`, both of which are **required**, you can pass the following optional kwargs:
 
-- `components`: An instance of [Components][pydantic_openapi_schema.v3.1.0.components.components] or list of instances.
+- `components`: An instance of [Components][pydantic_openapi_schema.v3_1_0.components.Components] or list of instances.
   If a list is provided, its members will be merged recursively into a single instance.
-- `contact`: An instance of the [Contact][pydantic_openapi_schema.v3.1.0.contact.contact].
+- `contact`: An instance of the [Contact][pydantic_openapi_schema.v3_1_0.contact.Contact].
 - `create_examples`: Boolean flag dictating whether examples will be auto-generated using
   the [pydantic-factories](https://github.com/starlite-api/pydantic-factories) library. Defaults to `False`.
 - `description`: Description text.
 - `external_docs`: An instance of
-  the [ExternalDocumentation][pydantic_openapi_schema.v3.1.0.external_documentation.externaldocumentation].
-- `license`: An instance of the [License][pydantic_openapi_schema.v3.1.0.license.license].
+  the [ExternalDocumentation][pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation].
+- `license`: An instance of the [License][pydantic_openapi_schema.v3_1_0.license.License].
 - `openapi_controller`: The controller class to use for the openapi to generate the openapi related routes. Must be a
   subclass of [the openapi controller class](#the-openapi-controller).
 - `security`: An instance of
-  the [SecurityRequirement][pydantic_openapi_schema.v3.1.0.security_requirements.securityrequirement]
-- `servers`: A list of [Server][pydantic_openapi_schema.v3.1.0.server.server] instances. Defaults to `[Server("/")]`
+  the [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirements.SecurityRequirements]
+- `servers`: A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances. Defaults to `[Server("/")]`
 - `summary`: Summary text.
-- `tags`: A list of [Tag][pydantic_openapi_schema.v3.1.0.tag.tag] instances.
+- `tags`: A list of [Tag][pydantic_openapi_schema.v3_1_0.tag.Tag] instances.
 - `terms_of_service`: A url to a page containing the terms of service.
 - `use_handler_docstrings`: Boolean flag dictating whether to use route handler docstring to generate descriptions.
-- `webhooks`: A string keyed dictionary of [PathItem][pydantic_openapi_schema.v3.1.0.path_item.pathitem] instances.
+- `webhooks`: A string keyed dictionary of [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem] instances.
 
 ## Disabling Schema Generation
 
