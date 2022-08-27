@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Dict, Literal
+from typing import TYPE_CHECKING, Callable, Dict
 
 from orjson import OPT_INDENT_2, dumps
 
@@ -10,6 +10,7 @@ from starlite.handlers import get
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from typing_extensions import Literal
 
 
 class OpenAPIController(Controller):
@@ -73,7 +74,7 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @property
-    def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
+    def render_methods_map(self) -> Dict["Literal['redoc', 'swagger', 'elements']", Callable[[Request], str]]:
         """
         Returns:
             A mapping of string keys to render methods.
