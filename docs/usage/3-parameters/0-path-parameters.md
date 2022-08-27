@@ -55,7 +55,6 @@ as `datetime.datetime`. This works because the int value will be passed to a pyd
 signature, which will coerce the int into a datetime. Thus, when the function is called it will be called with a
 datetime typed parameter.
 
-<!-- prettier-ignore -->
 !!! note
     You only need to define the parameter in the function declaration if it's actually used inside the function. If the
     path parameter is part of the path, but the function doesn't use it, it's fine to omit it. It will still be validated

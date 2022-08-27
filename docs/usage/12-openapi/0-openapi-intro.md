@@ -17,5 +17,5 @@ This library offers a full implementation of the OpenAPI specification as pydant
 type correct foundation for schema generation using python.
 
 !!! tip
-You can refer to the [pydantic-openapi-schema doc](https://starlite-api.github.io/pydantic-openapi-schema/) for a
-full reference regarding the library's API.
+    You can refer to the [pydantic-openapi-schema doc](https://starlite-api.github.io/pydantic-openapi-schema/) for a
+    full reference regarding the library's API.

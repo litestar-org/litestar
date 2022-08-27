@@ -34,7 +34,6 @@ app = Starlite(
 )
 ```
 
-<!-- prettier-ignore -->
 !!! important
     The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
     because this style does not use classes, and is very hard to convert to pydantic correctly.

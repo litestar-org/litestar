@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
 from pydantic import validate_arguments
+from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -134,7 +135,7 @@ class Starlite(Router):
         response_headers: Optional[ResponseHeadersMap] = None,
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         tags: Optional[List[str]] = None,
     ):
         """The Starlite application.

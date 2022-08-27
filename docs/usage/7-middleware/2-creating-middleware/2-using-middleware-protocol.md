@@ -49,7 +49,6 @@ class MyRequestLoggingMiddleware(MiddlewareProtocol):
         await self.app(scope, receive, send)
 ```
 
-<!-- prettier-ignore -->
 !!! important
     Although `scope` is used to create an instance of request by passing it to the `Request` constructor, which makes it
     simpler to access because it does some parsing for you already, the actual source of truth remains `scope` - not the
@@ -90,7 +89,6 @@ await it. Otherwise, we await `self.app`
 
 ## Modifying ASGI Requests and Responses using the MiddlewareProtocol
 
-<!-- prettier-ignore -->
 !!! important
     If you'd like to modify a [Response](../../5-responses/0-responses-intro.md) object after it was created for a route
     handler function but before the actual response message is transmitted, the correct place to do this is using the

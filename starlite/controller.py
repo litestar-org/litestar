@@ -1,11 +1,12 @@
 import inspect
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.router import Router
     from starlite.types import (
@@ -112,7 +113,7 @@ class Controller:
     """
         A list of string tags that will be appended to the schema of all route handlers under the controller.
     """
-    security: Optional[List[Dict[str, List[str]]]]
+    security: Optional[List["SecurityRequirement"]]
     """
         A list of dictionaries that to the schema of all route handlers under the controller.
     """

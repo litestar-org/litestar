@@ -24,14 +24,15 @@ Aside from `title` and `version`, both of which are **required**, you can pass t
 - `license`: An instance of the [License][pydantic_openapi_schema.v3_1_0.license.License].
 - `openapi_controller`: The controller class to use for the openapi to generate the openapi related routes. Must be a
   subclass of [the openapi controller class](3-openapi-controller.md).
-- `security`: An instance of
-  the [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirements.SecurityRequirements]
+- `security`: An instance of the [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement]
 - `servers`: A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances. Defaults to `[Server("/")]`
 - `summary`: Summary text.
 - `tags`: A list of [Tag][pydantic_openapi_schema.v3_1_0.tag.Tag] instances.
 - `terms_of_service`: A url to a page containing the terms of service.
 - `use_handler_docstrings`: Boolean flag dictating whether to use route handler docstring to generate descriptions.
-- `webhooks`: A string keyed dictionary of [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem] instances.
+- `webhooks`: A string keyed dictionary of [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem] instances. #
+- `root_schema_site`: Dictates which schema site is served by default.
+  The value should be one of `redoc`, `swagger`, `elements`, with the default be `redoc`.
 
 ## Disabling Schema Generation
 
@@ -42,26 +43,4 @@ value for `openapi_config`:
 from starlite import Starlite
 
 app = Starlite(route_handlers=[...], openapi_config=None)
-```
-
-## Viewing the API Documentation in ReDoc
-
-Starlite comes with integration of [ReDoc API Documentation Page](https://redoc.ly/) to render your OpenAPI schema as an
-interactive web user interface. If your app is running locally on port 8000 you can access the
-[ReDoc page at http://0.0.0.0:8000/schema](http://0.0.0.0:8000/schema). The ReDoc page will show and document all your
-routes,
-DTOs, and any metadata attached to your controllers mentioned above.
-
-## Accessing the OpenAPI Schema
-
-The generated schema is an instance of the `OpenAPI` pydantic model, and you can access it in any route handler like so:
-
-```python
-from starlite import Request, get
-
-
-@get(path="/")
-def my_route_handler(request: Request) -> dict:
-    schema = request.app.openapi_schema
-    return schema.dict()
 ```

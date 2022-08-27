@@ -47,7 +47,6 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller - `/user-order/`,
 while `retrieve_user_order` has the path `/user-order/{order_id:uuid}"`.
 
-<!-- prettier-ignore -->
 !!! note
     If you do not declare a `path` class variable on the controller, it will default to the root path of "/".
 

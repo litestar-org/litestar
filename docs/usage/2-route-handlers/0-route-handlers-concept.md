@@ -113,7 +113,6 @@ def my_request_handler(
     ...
 ```
 
-<!-- prettier-ignore -->
 !!! tip
     You can define a custom typing for your application state and then use it as a type instead of just using the
     State class from Starlite

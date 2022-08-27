@@ -1,6 +1,7 @@
-# The OpenAPI Controller
+# The OpenAPIController
 
-Starlite includes an [OpenAPIController][starlite.openapi.controller.OpenAPIController] class that is used as the default controller in the [OpenAPIConfig](1-schema-generation.md).
+Starlite includes an [OpenAPIController][starlite.openapi.controller.OpenAPIController] class that is used as the
+default controller in the [OpenAPIConfig](1-schema-generation.md).
 
 This controller exposes the following endpoints:
 
@@ -10,33 +11,18 @@ This controller exposes the following endpoints:
 - `/schema/swagger`: which serves the docs using[Swagger-UI](https://swagger.io/docs/open-source-tools/swagger-ui/).
 - `/schema/elements`: which serves the docs using [Stoplight Elements](https://github.com/stoplightio/elements).
 
-Additionally, the root `/schema/` path is accessible, seving the `redoc` site by default.
+Additionally, the root `/schema/` path is accessible, serving the site that is configured as the default in
+the [OpenAPIConfig][starlite.config.OpenAPIConfig].
 
-If you would like to modify the base path, add new endpoints, change the styling of the page etc., you can subclass the
-`OpenAPIController` and then pass your subclass to the `OpenAPIConfig`.
+## Subclassing OpenAPIController
 
-For example, lets say we wanted to change the base path from "/schema" to "/api-docs":
+You can use your own subclass of [OpenAPIController][starlite.openapi.controller.OpenAPIController] by setting it as
+then controller to use in the [OpenAPIConfig][starlite.config.OpenAPIConfig] `openapi_controller` kwarg.
 
-```python
-from starlite import OpenAPIController
-
-
-class MyOpenAPIController(OpenAPIController):
-    path = "/api-docs"
-```
-
-The following extra attributes are defined on this controller and are customizable:
-
-- `style`: base css for the page.
-- `favicon_url`: url pointing at `.ico` file to use as a favicon.
-- `redoc_version`: version of redoc to use.
-- `swagger_ui_version`: version of Swagger-UI to use.
-- `stoplight_elements_version`: version of Stoplight Elements to use.
-
-We would then use the subclassed controller like so:
+For example, lets say we wanted to change the base path of the OpenAPI related endpoints from `/schema` to `/api-docs`, in this case we'd the following:
 
 ```python
-from starlite import Starlite, OpenAPIConfig, OpenAPIController
+from starlite import Starlite, OpenAPIController, OpenAPIConfig
 
 
 class MyOpenAPIController(OpenAPIController):
@@ -45,23 +31,19 @@ class MyOpenAPIController(OpenAPIController):
 
 app = Starlite(
     route_handlers=[...],
-    openapi_config=OpenAPIConfig(openapi_controller=MyOpenAPIController),
+    openapi_config=OpenAPIConfig(
+        title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
+    ),
 )
 ```
 
-The root handler serves Redoc by default via `render_redoc`. You can override the `root` handler to serve other included
-documentation, such as Swagger UI by returning `render_swagger_ui` or Stoplight Elements
-with `render_stoplight_elements`. You can also have it serve your own [template](../15-templating.md):
+## Controller Class Attributes
 
-```python
-from starlite import OpenAPIController, Request, get
-from starlite.enums import MediaType
+The [OpenAPIController][starlite.openapi.controller.OpenAPIController] class defines the following class attributes that
+can be customized by subclassing::
 
-
-class MyOpenAPIController(OpenAPIController):
-    path = "/"
-
-    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
-    def root(self, request: Request) -> str:
-        return self.render_swagger_ui(request)
-```
+- `style`: base css for the page.
+- `favicon_url`: url pointing at a `.ico` file to use as a favicon.
+- `redoc_version`: version of redoc to use.
+- `swagger_ui_version`: version of Swagger-UI to use.
+- `stoplight_elements_version`: version of Stoplight Elements to use.

@@ -85,7 +85,6 @@ app = Starlite(route_handlers=[route_handler])
 
 In the above we dynamically created the sub-path_handler and registered it inside the `route_handler` function.
 
-<!-- prettier-ignore -->
 !!! warning
     Although Starlite exposes the `.register` method, it should not be abused. Dynamic route registration increases the
     application complexity and makes it harder to reason about the code. It should therefore be used only when

@@ -4,7 +4,6 @@ Although `Starlite` builds on the `Starlette` ASGI toolkit as a basis, it does n
 which uses regex matching, and instead it implements its own solution that is based on the concept of a
 [radix tree](https://en.wikipedia.org/wiki/Radix_tree) or `trie`.
 
-<!-- prettier-ignore -->
 !!! important
     We are currently in the processes of porting the `Starlite` routing system into __rust__, which will increase the
     framework's velocity by an order of magnitude. You can read more about this in
@@ -20,7 +19,6 @@ small microservices. The **trie** based approach used by `Starlite` is agnostic 
 application giving it better horizontal scaling characteristics at the expense of somewhat slower resolution of path
 parameters.
 
-<!-- prettier-ignore -->
 !!! tip
     If you are interested in the technical aspects of the implementation, refer to
     [this GitHub issue](https://github.com/starlite-api/starlite/issues/177) - it includes an indepth discussion of the
