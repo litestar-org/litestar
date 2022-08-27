@@ -51,7 +51,7 @@ repos:
     rev: v0.32.2
     hooks:
       - id: markdownlint
-        args: [--disable=MD013, --disable=MD033, --disable=MD050]
+        args: [--disable=MD013, --disable=MD033, --disable=MD050, --disable=MD052]
   - repo: https://github.com/PyCQA/docformatter
     rev: v1.5.0
     hooks:

@@ -23,7 +23,7 @@ Aside from `title` and `version`, both of which are **required**, you can pass t
   the [ExternalDocumentation][pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation].
 - `license`: An instance of the [License][pydantic_openapi_schema.v3_1_0.license.License].
 - `openapi_controller`: The controller class to use for the openapi to generate the openapi related routes. Must be a
-  subclass of [the openapi controller class](#the-openapi-controller).
+  subclass of [the openapi controller class](3-openapi-controller.md).
 - `security`: An instance of
   the [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirements.SecurityRequirements]
 - `servers`: A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances. Defaults to `[Server("/")]`
@@ -65,5 +65,3 @@ def my_route_handler(request: Request) -> dict:
     schema = request.app.openapi_schema
     return schema.dict()
 ```
-
-##
