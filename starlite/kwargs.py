@@ -151,6 +151,76 @@ class KwargsModel:
         )
 
     @classmethod
+    def _get_paramdefinitions(
+        cls,
+        path_parameters: Set[str],
+        layered_parameters: Dict[str, ModelField],
+        dependencies: Dict[str, Provide],
+        signaturemodel_fields: Dict,
+    ) -> Tuple[Set[ParameterDefinition], set]:
+
+        expected_dependencies = {
+            cls._create_dependency_graph(key=key, dependencies=dependencies)
+            for key in dependencies
+            if key in signaturemodel_fields
+        }
+        ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
+
+        param_definitions = {
+            *(
+                cls._create_parameter_definition(
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=model_field.field_info,
+                    path_parameters=path_parameters,
+                    is_sequence=model_field.shape in SEQ_SHAPES,
+                )
+                for field_name, model_field in layered_parameters.items()
+                if field_name not in ignored_keys and field_name not in signaturemodel_fields
+            ),
+            *(
+                cls._create_parameter_definition(
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=model_field.field_info,
+                    path_parameters=path_parameters,
+                    is_sequence=model_field.shape in SEQ_SHAPES,
+                )
+                for field_name, model_field in signaturemodel_fields.items()
+                if field_name not in ignored_keys and field_name not in layered_parameters
+            ),
+        }
+
+        for field_name, model_field in filter(
+            lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
+            signaturemodel_fields.items(),
+        ):
+            layer_field_info = layered_parameters[field_name].field_info
+            signature_field_info = model_field.field_info
+
+            field_info = layer_field_info
+            # allow users to manually override Parameter definition using Parameter
+            if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
+                field_info = signature_field_info
+
+            field_info.default = (
+                signature_field_info.default
+                if signature_field_info.default not in [Undefined, Ellipsis]
+                else layer_field_info.default
+            )
+
+            param_definitions.add(
+                cls._create_parameter_definition(
+                    allow_none=model_field.allow_none,
+                    field_name=field_name,
+                    field_info=field_info,
+                    path_parameters=path_parameters,
+                    is_sequence=model_field.shape in SEQ_SHAPES,
+                )
+            )
+        return param_definitions, expected_dependencies
+
+    @classmethod
     def create_for_signature_model(
         cls,
         signature_model: Type[SignatureModel],
@@ -181,66 +251,10 @@ class KwargsModel:
         expected_reserved_kwargs = {
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
         }
-        expected_dependencies = {
-            cls._create_dependency_graph(key=key, dependencies=dependencies)
-            for key in dependencies
-            if key in signature_model.__fields__
-        }
 
-        ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
-
-        param_definitions = {
-            *(
-                cls._create_parameter_definition(
-                    allow_none=model_field.allow_none,
-                    field_name=field_name,
-                    field_info=model_field.field_info,
-                    path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
-                )
-                for field_name, model_field in layered_parameters.items()
-                if field_name not in ignored_keys and field_name not in signature_model.__fields__
-            ),
-            *(
-                cls._create_parameter_definition(
-                    allow_none=model_field.allow_none,
-                    field_name=field_name,
-                    field_info=model_field.field_info,
-                    path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
-                )
-                for field_name, model_field in signature_model.__fields__.items()
-                if field_name not in ignored_keys and field_name not in layered_parameters
-            ),
-        }
-
-        for field_name, model_field in filter(
-            lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
-            signature_model.__fields__.items(),
-        ):
-            layer_field_info = layered_parameters[field_name].field_info
-            signature_field_info = model_field.field_info
-
-            field_info = layer_field_info
-            # allow users to manually override Parameter definition using Parameter
-            if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
-                field_info = signature_field_info
-
-            field_info.default = (
-                signature_field_info.default
-                if signature_field_info.default not in [Undefined, Ellipsis]
-                else layer_field_info.default
-            )
-
-            param_definitions.add(
-                cls._create_parameter_definition(
-                    allow_none=model_field.allow_none,
-                    field_name=field_name,
-                    field_info=field_info,
-                    path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
-                )
-            )
+        param_definitions, expected_dependencies = cls._get_paramdefinitions(
+            path_parameters, layered_parameters, dependencies, signaturemodel_fields=signature_model.__fields__
+        )
 
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
         expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
