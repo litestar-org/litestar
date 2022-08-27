@@ -168,7 +168,7 @@ dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "im
 
 [[package]]
 name = "distlib"
-version = "0.3.5"
+version = "0.3.6"
 description = "Distribution utilities"
 category = "dev"
 optional = false
@@ -558,7 +558,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "1.5.4"
+version = "1.6.0"
 description = "Mock data generation for pydantic based models"
 category = "main"
 optional = false
@@ -566,9 +566,9 @@ python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 faker = "*"
-pydantic = "*"
+pydantic = ">=1.9.0"
 typing-extensions = "*"
-xeger = ">=0.3.5,<0.4.0"
+xeger = "*"
 
 [[package]]
 name = "pydantic-openapi-schema"
@@ -1174,8 +1174,8 @@ deprecated = [
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
 ]
 distlib = [
-    {file = "distlib-0.3.5-py2.py3-none-any.whl", hash = "sha256:b710088c59f06338ca514800ad795a132da19fda270e3ce4affc74abf955a26c"},
-    {file = "distlib-0.3.5.tar.gz", hash = "sha256:a7f75737c70be3b25e2bee06288cec4e4c221de18455b2dd037fe2a795cab2fe"},
+    {file = "distlib-0.3.6-py2.py3-none-any.whl", hash = "sha256:f35c4b692542ca110de7ef0bea44d73981caeb34ca0b9b6b2e6d7790dda8f80e"},
+    {file = "distlib-0.3.6.tar.gz", hash = "sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46"},
 ]
 dnspython = [
     {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
@@ -1490,8 +1490,8 @@ pydantic = [
     {file = "pydantic-1.9.2.tar.gz", hash = "sha256:8cb0bc509bfb71305d7a59d00163d5f9fc4530f0881ea32c74ff4f74c85f3d3d"},
 ]
 pydantic-factories = [
-    {file = "pydantic-factories-1.5.4.tar.gz", hash = "sha256:cf529a57a95c353a52ec07ef5d4a6259cba539aa1da62db81edf40e837f2b7ab"},
-    {file = "pydantic_factories-1.5.4-py3-none-any.whl", hash = "sha256:197c96a17c4cc3c985f8e1c5bfa8ff3c98215bed3e333227cf7dfa7b6990c40b"},
+    {file = "pydantic-factories-1.6.0.tar.gz", hash = "sha256:c703ddf7aaf3a39fd58a0eabc8aea55f6371d981a60ef45bc4d9bfbf8358b1de"},
+    {file = "pydantic_factories-1.6.0-py3-none-any.whl", hash = "sha256:aba5793a51403406f5c8bde4bd13aa7ebbb15602dfe1afd990597757cb6292a5"},
 ]
 pydantic-openapi-schema = [
     {file = "pydantic-openapi-schema-1.0.3.tar.gz", hash = "sha256:0e1f1a1a7587467a877b01230acb1010e65d25ad145a1c2a4648d2693e32fb54"},
