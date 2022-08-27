@@ -38,10 +38,6 @@ and [pydantic](https://github.com/samuelcolvin/pydantic).
 
 Check out the [Starlite documentation 📚](https://starlite-api.github.io/starlite/)
 
-For a more complete example,
-see [Example Starlite project using Postgresql, Redis and Docker Resources](https://github.com/starlite-api/starlite-pg-redis-docker)
-.
-
 ## Installation
 
 ```shell
@@ -68,6 +64,14 @@ pip install starlite
 - Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - Support for [Stoplight Elements](https://github.com/stoplightio/elements)
 - Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
+
+## Example Applications
+
+- [starlite-pg-redis-docker](https://github.com/starlite-api/starlite-pg-redis-docker): In addition to Starlite, this
+  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
+  Starlite projects, this application is open to contributions, big and small.
+- [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
+  for testing and POC work.
 
 ## Relation to Starlette and FastAPI
 

@@ -132,6 +132,7 @@ class Starlite(Router):
         route_handlers: List[ControllerRouterHandler],
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         template_config: Optional[TemplateConfig] = None,
+        security: Optional[List[Dict[str, List[str]]]] = None,
         tags: Optional[List[str]] = None,
     ):
         """The Starlite application.
@@ -177,6 +178,7 @@ class Starlite(Router):
                 function decorated by the route handler decorators.
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            security: A list of dictionaries that will be added to the schema of all route handlers in the application. See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
         """
 
@@ -213,6 +215,7 @@ class Starlite(Router):
             response_cookies=response_cookies,
             response_headers=response_headers,
             route_handlers=route_handlers,
+            security=security,
             tags=tags,
         )
         self._init = True

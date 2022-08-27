@@ -364,3 +364,9 @@
 
 - refactor: Simplified and improved brotli middleware typing
 - update: Extended `PluginProtocol` with an `on_app_init` method.
+
+[1.14.1]
+
+- fix OpenAPI schema for `UploadFile`
+- integrate OpenAPI security definitions into OpenAPI configuration
+- remove empty aliases from field parameters
