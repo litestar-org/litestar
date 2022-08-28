@@ -1,7 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any, List
 
 import pytest
-from pydantic_openapi_schema.v3_1_0 import Components
+from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
 from starlite import Controller, HTTPRouteHandler, OpenAPIConfig, Router, Starlite, get
@@ -57,8 +57,7 @@ def test_schema_with_security_scheme_defined(public_route: HTTPRouteHandler) -> 
     schema_components = schema_dict.get("components", {})
     assert "securitySchemes" in schema_components
 
-    securitySchemes = schema_components.get("securitySchemes", {})
-    assert securitySchemes == {
+    assert schema_components.get("securitySchemes", {}) == {
         "BearerToken": {
             "type": "http",
             "description": None,
@@ -101,7 +100,7 @@ def test_schema_with_route_security_overridden(protected_route: HTTPRouteHandler
 def test_layered_security_declaration() -> None:
     class MyController(Controller):
         path = "/controller"
-        security: List[Dict[str, List[str]]] = [{"controllerToken": []}]
+        security: List[SecurityRequirement] = [{"controllerToken": []}]
 
         @get("", security=[{"handlerToken": []}])
         def my_handler(self) -> None:

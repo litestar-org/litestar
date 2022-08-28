@@ -370,3 +370,7 @@
 - fix OpenAPI schema for `UploadFile`
 - integrate OpenAPI security definitions into OpenAPI configuration
 - remove empty aliases from field parameters
+
+[1.14.2]
+
+- update `OpenAPIController` to allow configuration in `OpenAPIConfig` of root schema site

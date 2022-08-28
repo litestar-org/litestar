@@ -170,9 +170,8 @@ layers for this purpose.
 
 #### Logging Exception Handler
 
-<!-- prettier-ignore -->
 !!! note
-    `starlite.exceptions.utils.create_exception_response()` is used internally to produce default error responses if no
+    The [create_exception_response][starlite.exceptions.utils.create_exception_response] function is used internally to produce default error responses if no
     handler has been registered to a route. This is available as part of the public API of Starlite so that you can
     apply it wherever necessary to ensure consistent error responses across your application.
 

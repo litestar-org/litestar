@@ -30,7 +30,6 @@ frameworks. There are some **differences** from the **Starlite class** to those 
 If you use the Starlette `Route` instances directly, you will need to replace these
 with [route handlers](usage/2-route-handlers/1-http-route-handlers.md).
 
-<!-- prettier-ignore -->
 !!! important
     The Starlette `Mount` class is replaced by the Starlite `Router`. The `Host` class is intentionally
     unsupported. If your application relies on `Host` you will have to separate the logic into different microservices

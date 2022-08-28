@@ -16,4 +16,5 @@
             - response_class
             - response_cookies
             - response_headers
+            - security
             - tags

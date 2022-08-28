@@ -35,7 +35,6 @@ In difference to HTTP routes handlers, websocket handlers have the following req
 
 These requirements are enforced using inspection, and if any of them is unfulfilled an informative exception will be raised.
 
-<!-- prettier-ignore -->
 !!! note
     OpenAPI currently does not support websockets. As such no schema will be generated for these route handlers.
 

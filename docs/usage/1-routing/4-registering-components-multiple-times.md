@@ -52,7 +52,6 @@ When the handler function is registered, it's actually copied. Thus, each router
 the route handler. Path behaviour is identical to that of controllers above, namely, the route handler
 function will be accessible in the following paths: `/internal/handler`, `/partner/handler` and `/consumer/handler`.
 
-<!-- prettier-ignore -->
 !!! important
     You can nest routers as you see fit - but be aware that once a router has been registered it cannot be
     re-registered or an exception will be raised.

@@ -119,7 +119,12 @@ nav:
           - usage/10-plugins/2-tortoise-orm-plugin.md
           - usage/10-plugins/3-piccolo-orm-plugin.md
       - usage/11-data-transfer-objects.md
-      - usage/12-openapi.md
+      - OpenAPI:
+          - usage/12-openapi/0-openapi-intro.md
+          - usage/12-openapi/1-schema-generation.md
+          - usage/12-openapi/2-route-handler-configuration.md
+          - usage/12-openapi/3-openapi-controller.md
+          - usage/12-openapi/4-viewing-and-accessing-schema.md
       - usage/13-lifecycle-hooks.md
       - usage/14-testing.md
       - usage/15-templating.md

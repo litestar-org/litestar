@@ -47,7 +47,6 @@ The `path` that is defined on the Controller is appended before the path that is
 on it. Thus, in the above example, `create_user_order` has the path of the controller - `/user-order/`,
 while `retrieve_user_order` has the path `/user-order/{order_id:uuid}"`.
 
-<!-- prettier-ignore -->
 !!! note
     If you do not declare a `path` class variable on the controller, it will default to the root path of "/".
 
@@ -64,4 +63,4 @@ Aside from the `path` class variable see above, you can also define the followin
 - `response_class`: A custom response class to be used as the app's default. See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
 - `response_cookies`: A list of `Cookie` instances. See [response-cookies](../5-responses/5-response-cookies.md)
 - `response_headers`: A dictionary of `ResponseHeader` instances. See [response-headers](../5-responses/0-responses-intro.md#response-headers).
-- `tags`: A list of tags to add to the openapi path definitions defined on the router. See [open-api](../12-openapi.md).
+- `tags`: A list of tags to add to the openapi path definitions defined on the router. See [open-api](../12-openapi/0-openapi-intro.md).

@@ -15,6 +15,7 @@ from typing import (
 )
 
 from pydantic import validate_arguments
+from pydantic_openapi_schema.v3_0_3 import SecurityRequirement
 from starlette.responses import Response as StarletteResponse
 from starlette.status import (
     HTTP_200_OK,
@@ -267,7 +268,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
@@ -611,7 +612,7 @@ class get(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
@@ -732,7 +733,7 @@ class post(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
@@ -853,7 +854,7 @@ class put(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
@@ -974,7 +975,7 @@ class patch(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):
@@ -1095,7 +1096,7 @@ class delete(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
     ):

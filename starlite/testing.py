@@ -95,7 +95,7 @@ class TestClient(StarletteTestClient):
             app: Application under test.
             base_url: Scheme and domain for test request paths.
             raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
-                wrapping them in a HTTP response.
+                wrapping them in an HTTP response.
             root_path: Path prefix for requests.
             backend: "asyncio" or "trio"
             backend_options: options passed to `anyio` for backend.

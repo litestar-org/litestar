@@ -22,7 +22,6 @@ def stream_time() -> Stream:
     return Stream(iterator=my_generator())
 ```
 
-<!-- prettier-ignore -->
 !!! note
     You can use different kinds of values of the `iterator` keyword - it can be a callable returning a sync or async
     generator. The generator itself. A sync or async iterator class, or and instance of this class.

@@ -2,7 +2,6 @@
 
 Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
 
-<!-- prettier-ignore -->
 !!! important
     Testing utils rely on extra dependencies. So make sure to install them, e.g.:
     `pip install starlite[testing]` or `poetry install starlite --extras testing`
@@ -72,7 +71,6 @@ def test_health_check(test_client: TestClient):
         assert response.text == "healthy"
 ```
 
-<!-- prettier-ignore -->
 !!! important
     Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
     `on_startup` and `on_shutdown`.

@@ -40,6 +40,7 @@ repos:
     rev: "v3.0.0-alpha.0"
     hooks:
       - id: prettier
+        exclude: "^(?!usage/)"
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.4
     hooks:
@@ -50,7 +51,7 @@ repos:
     rev: v0.32.2
     hooks:
       - id: markdownlint
-        args: [--disable=MD013, --disable=MD033, --disable=MD050]
+        args: [--disable=MD013, --disable=MD033, --disable=MD050, --disable=MD052]
   - repo: https://github.com/PyCQA/docformatter
     rev: v1.5.0
     hooks:
@@ -101,7 +102,7 @@ repos:
             brotli,
           ]
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.14.5"
+    rev: "v2.15.0"
     hooks:
       - id: pylint
         exclude: "test_*"
