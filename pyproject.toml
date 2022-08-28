@@ -62,8 +62,7 @@ sqlalchemy = "*"
 tortoise-orm = "*"
 tox = "*"
 uvicorn = "*"
-itsdangerous = "*"
-cryptography = "^37.0.4"
+cryptography = "*"
 
 [tool.poetry.extras]
 testing = ["requests"]
