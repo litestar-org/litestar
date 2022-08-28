@@ -148,7 +148,8 @@ class OpenAPIConfig(BaseModel):
         )
 
     def create_openapi_schema_model(self, app: "Starlite") -> "OpenAPI":
-        """Creates instance of
+        """Creates instance of.
+
         [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance for
         the given [Starlite][starlite.app.Starlite] application.
 
