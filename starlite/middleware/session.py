@@ -2,7 +2,7 @@ from base64 import b64decode, b64encode
 from os import urandom
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
 
-from orjson import dumps
+from orjson import OPT_SERIALIZE_NUMPY, dumps
 from orjson.orjson import loads
 from pydantic import (
     BaseConfig,
@@ -17,9 +17,10 @@ from starlette.datastructures import MutableHeaders
 from starlette.requests import HTTPConnection
 from typing_extensions import Literal
 
-from starlite import MissingDependencyException
 from starlite.datastructures import Cookie
+from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import MiddlewareProtocol
+from starlite.response import Response
 
 try:
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
-CHUNK_SIZE = 4096
+CHUNK_SIZE = 4096 - 512
 
 
 class SessionCookieConfig(BaseModel):
@@ -45,7 +46,7 @@ class SessionCookieConfig(BaseModel):
     A secret key to use for generating an encryption key.
     Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.
     """
-    key: constr(min_length=1) = "session"  # type: ignore[valid-type]
+    key: constr(min_length=1, max_length=256) = "session"  # type: ignore[valid-type]
     """
     Key to use for the cookie inside the header,
     e.g. `session=<data>` where 'session' is the cookie key and <data> is the session data.
@@ -69,7 +70,7 @@ class SessionCookieConfig(BaseModel):
     samesite: Literal["lax", "strict", "none"] = "lax"
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
 
-    @validator(always=True)
+    @validator("secret", always=True)
     def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
         """Ensures that the 'secret' value is 128, 192 or 256 bits.
 
@@ -105,30 +106,27 @@ class SessionMiddleware(MiddlewareProtocol):
         self.aesgcm = AESGCM(config.secret.get_secret_value())
 
     def dump_data(self, data: Any) -> List[bytes]:
-        """
-        Given an arbitrary data, dump it into a bytes string, encrypt, encode and split it into chunks of the desirable size.
+        """Given orjson serializable data, including pydantic models and numpy
+        types, dump it into a bytes string, encrypt, encode and split it into
+        chunks of the desirable size.
+
         Args:
-            data: Datum to dump
+            data: Data to serialize, encrypt, encode and chunk.
+
+        Notes:
+            - The returned list is composed of a chunks of a single base64 encoded
+                string that is encrypted using AES-CGM.
 
         Returns:
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
-
         """
-        serialized = dumps(data)
+        serialized = dumps(data, default=Response.serializer, option=OPT_SERIALIZE_NUMPY)
         nonce = urandom(NONCE_SIZE)
-        encrypted = self.aesgcm.encrypt(nonce, nonce + serialized)
-        encoded = b64encode(encrypted)
+        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=None)
+        encoded = b64encode(nonce + encrypted)
+        return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
 
-        if len(encoded) <= CHUNK_SIZE:
-            return [encoded]
-
-        result: List[bytes] = []
-        for i in range(0, len(encrypted), CHUNK_SIZE):
-            result.append(encrypted[i : i + CHUNK_SIZE])
-
-        return result
-
-    def load_data(self, data: List[str]) -> Any:
+    def load_data(self, data: List[bytes]) -> Any:
         """Given a list of strings, decodes them into the session object.
 
         Args:
@@ -137,9 +135,10 @@ class SessionMiddleware(MiddlewareProtocol):
         Returns:
             A deserialized session value.
         """
-        decoded = b64decode("".join(data))
+        decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
-        decrypted = self.aesgcm.decrypt(nonce, decoded)
+        encrypted_session = decoded[NONCE_SIZE:]
+        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=None)
         return loads(decrypted)
 
     def create_send_wrapper(
@@ -176,11 +175,10 @@ class SessionMiddleware(MiddlewareProtocol):
                     data = self.dump_data(scope.get("session"))
                     cookie_params = self.config.dict(exclude_none=True, exclude={"secret"})
                     if len(data) == 1:
-                        cookie_params.pop("key")
                         headers.append("Set-Cookie", Cookie(value=data[0].decode("utf-8"), **cookie_params).to_header())
                     else:
+                        cookie_params.pop("key")
                         for i, datum in enumerate(data):
-                            cookie_params.pop("key")
                             headers.append(
                                 "Set-Cookie",
                                 Cookie(
@@ -208,7 +206,7 @@ class SessionMiddleware(MiddlewareProtocol):
             should_vacate_session = False
             if cookie_keys:
                 try:
-                    data = [connection.cookies[key] for key in cookie_keys]
+                    data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
                     scope["session"] = self.load_data(data)
                 except KeyError:
                     should_vacate_session = True
