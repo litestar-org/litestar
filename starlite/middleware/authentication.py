@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING, Any, Union
 from pydantic import BaseConfig, BaseModel
 from starlette.requests import HTTPConnection
 
+from starlite.connection import Request
 from starlite.enums import MediaType, ScopeType
 from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.response import Response
+from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
@@ -65,7 +67,11 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
             if scope["type"] == ScopeType.WEBSOCKET:  # pragma: no cover
                 await send({"type": "websocket.close", "code": self.websocket_error_status_code, "reason": repr(e)})
             else:
-                response = self.create_error_response(exc=e)
+                exception_handler = get_exception_handler(getattr(self.app, "exception_handlers"), e)
+                if exception_handler:
+                    response = exception_handler(Request(scope=scope, receive=receive, send=send), e)
+                else:
+                    response = self.create_error_response(e)
                 await response(scope, receive, send)
 
     def create_error_response(self, exc: Union[NotAuthorizedException, PermissionDeniedException]) -> Response:
