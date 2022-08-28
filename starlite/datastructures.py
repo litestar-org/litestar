@@ -98,27 +98,27 @@ class Cookie(BaseModel):
     """
 
     key: str
-    """key for the cookie."""
+    """Key for the cookie."""
     value: Optional[str] = None
-    """value for the cookie, if none given defaults to empty string."""
+    """Value for the cookie, if none given defaults to empty string."""
     max_age: Optional[int] = None
-    """maximal age before the cookie is invalidated."""
+    """Maximal age of the cookie before its invalidated."""
     expires: Optional[int] = None
-    """expiration date as unix MS timestamp."""
+    """Expiration date as unix MS timestamp."""
     path: str = "/"
-    """path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
     domain: Optional[str] = None
-    """domain for which the cookie is valid."""
+    """Domain for which the cookie is valid."""
     secure: Optional[bool] = None
-    """https is required for the cookie."""
+    """Https is required for the cookie."""
     httponly: Optional[bool] = None
-    """forbids javascript to access the cookie via 'Document.cookie'."""
+    """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
-    """controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
     description: Optional[str] = None
-    """description of the response cookie header for OpenAPI documentation"""
+    """Description of the response cookie header for OpenAPI documentation"""
     documentation_only: bool = False
-    """defines the Cookie instance as for OpenAPI documentation purpose only"""
+    """Defines the Cookie instance as for OpenAPI documentation purpose only"""
 
     def to_header(self, **kwargs: Any) -> str:
         """Return a string representation suitable to be sent as HTTP headers.

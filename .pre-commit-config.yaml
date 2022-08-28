@@ -119,6 +119,7 @@ repos:
             starlette,
             tortoise_orm,
             picologging,
+            itsdangerous,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"
@@ -138,4 +139,5 @@ repos:
             types-redis,
             types-requests,
             picologging,
+            itsdangerous,
           ]
