@@ -24,21 +24,17 @@ If `status_code` is not set by the user, the following defaults are used:
 - DELETE: 204 (No Content)
 - GET, PATCH, PUT: 200 (Ok)
 
-<!-- prettier-ignore -->
 !!! important
     For status codes < 100 or 204, 304 statuses, no response body is allowed. If you specify a return annotation other
     than `typing.NoReturn` or `None` in those cases, an `ImproperlyConfiguredException` will be raised.
 
-<!-- prettier-ignore -->
 !!! note
     When using the `route` decorator with multiple http methods, the default status code is `200`.
 
-<!-- prettier-ignore -->
 !!! note
     The default for `delete` is `204` because by default it is assumed that delete operations return no data.
     This though might not be the case in your implementation - so take care of setting it as you see fit.
 
-<!-- prettier-ignore -->
 !!! tip
     While you can write integers as the value for `status_code`, e.g. `200`, it's best practice to use constants (also in
     tests). Starlette includes easy to use statuses that are exported from `starlette.status`, e.g. `HTTP_200_OK`

@@ -24,7 +24,6 @@ You can pass the following kwargs to CORSConfig:
 - `max_age`: Sets a response header instructing the max amount of _seconds_ that the browser should cache a CORS
   response. Defaults to 600.
 
-<!-- prettier-ignore -->
 !!! note
     The asterisks symbol in the above kwargs means "match any".
 

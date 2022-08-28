@@ -9,7 +9,6 @@ See [the documentation regarding these](./3-builtin-middlewares/0-builtin-middle
 You can also use the builtin [Starlette Middlewares](https://www.starlette.io/middleware/) and most 3rd party middlewares
 created for Starlette or FastAPI.
 
-<!-- prettier-ignore -->
 !!! note
     3rd party middlewares for Starlette that rely on the Starlette routing system are incompatible with Starlite.
     To understand why, read about [the Starlite routing system](../1-routing/0-routing.md).

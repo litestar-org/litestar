@@ -28,7 +28,6 @@ The `DefineMiddleware` is a simple container - it takes a middleware callable as
 positional arguments, followed by key word arguments. The middleware callable will be called with these values as well
 as the kwarg `app` as mentioned above.
 
-<!-- prettier-ignore -->
 !!! note
     Starlette also includes a middleware container - `starlette.middleware.Middleware`, and this class is also supported
     by Starlite - so feel free to use it. You should note though that the Starlette class though does not support

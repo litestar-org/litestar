@@ -27,7 +27,6 @@ my_app_logging_config = LoggingConfig(
 app = Starlite(on_startup=[my_app_logging_config.configure])
 ```
 
-<!-- prettier-ignore -->
 !!! note
     You do not need to use `LoggingConfig` to set up logging. This is completely decoupled from Starlite itself, and
     you are **free to use whatever solution** you want for this (e.g. [loguru](https://github.com/Delgan/loguru)).

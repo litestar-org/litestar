@@ -11,6 +11,7 @@ from starlite.openapi.responses import create_responses
 if TYPE_CHECKING:
     from pydantic import BaseModel
     from pydantic.typing import AnyCallable
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
@@ -46,7 +47,7 @@ def extract_layered_values(
         A tuple of optional lists.
     """
     tags: List[str] = []
-    security: List[Dict[str, List[str]]] = []
+    security: List["SecurityRequirement"] = []
     for layer in route_handler.ownership_layers:
         if layer.tags:
             tags.extend(layer.tags)

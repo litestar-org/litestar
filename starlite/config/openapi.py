@@ -15,6 +15,7 @@ from pydantic_openapi_schema.v3_1_0 import (
     Server,
     Tag,
 )
+from typing_extensions import Literal
 
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.path_item import create_path_item
@@ -29,7 +30,7 @@ class OpenAPIConfig(BaseModel):
 
     To enable OpenAPI schema generation and serving, pass an instance of
     this class to the [Starlite][starlite.app.Starlite] constructor
-    using the 'openapi_config' key.
+    using the 'openapi_config' kwargs.
     """
 
     create_examples: bool = False
@@ -102,13 +103,21 @@ class OpenAPIConfig(BaseModel):
         A mapping of key to either [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem]
         or [Reference][pydantic_openapi_schema.v3_1_0.reference.Reference] objects.
     """
+    root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
+    """
+        The static schema generator to use for the "root" path of `/schema/`.
+    """
 
-    def to_openapi_schema(self) -> OpenAPI:
-        """Generates an OpenAPI model.
+    def to_openapi_schema(self) -> "OpenAPI":
+        """Generates an.
+
+        [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] from the
+        values stored on 'self'.
 
         Returns:
-            pydantic_openapi_schema.v3_1_0.open_api.OpenAPI
+            An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
         """
+
         if isinstance(self.components, list):
             merged_components = Components()
             for components in self.components:
@@ -119,6 +128,7 @@ class OpenAPIConfig(BaseModel):
                         merged_value_dict.update(value)
                         setattr(merged_components, key, merged_value_dict)
             self.components = merged_components
+
         return OpenAPI(
             externalDocs=self.external_docs,
             security=self.security,
@@ -137,14 +147,16 @@ class OpenAPIConfig(BaseModel):
             ),
         )
 
-    def create_openapi_schema_model(self, app: "Starlite") -> OpenAPI:
-        """Creates `OpenAPI` instance for the given `app`.
+    def create_openapi_schema_model(self, app: "Starlite") -> "OpenAPI":
+        """Creates instance of
+        [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance for
+        the given [Starlite][starlite.app.Starlite] application.
 
         Args:
             app (Starlite): [Starlite][starlite.app.Starlite] instance.
 
         Returns:
-            OpenAPI
+            An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
         """
         schema = self.to_openapi_schema()
         schema.paths = {}

@@ -11,6 +11,7 @@ from typing import (
 )
 
 from pydantic import validate_arguments
+from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
 from starlite.exceptions import ImproperlyConfiguredException
@@ -85,7 +86,7 @@ class Router:
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
         route_handlers: List[ControllerRouterHandler],
-        security: Optional[List[Dict[str, List[str]]]] = None,
+        security: Optional[List[SecurityRequirement]] = None,
         tags: Optional[List[str]] = None,
     ):
         """The Starlite Router class.

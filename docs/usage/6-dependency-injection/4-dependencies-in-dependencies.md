@@ -29,6 +29,5 @@ app = Starlite(
 )
 ```
 
-<!-- prettier-ignore -->
 !!! note
     The same rules for [overriding dependencies](2-overriding-dependencies.md) apply here as well.

@@ -71,7 +71,7 @@ class Cache:
     def __init__(self, backend: CacheBackendProtocol, default_expiration: int, cache_key_builder: "CacheKeyBuilder"):
         """This class wraps a provided CacheBackend and ensures it is called in
         an async thread-safe fashion. This enables the use of normal sync
-        libraries, such as the standard Redis python client) for caching
+        libraries (such as the standard Redis python client) for caching
         responses.
 
         Args:
