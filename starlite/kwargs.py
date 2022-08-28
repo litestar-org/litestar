@@ -156,7 +156,7 @@ class KwargsModel:
         path_parameters: Set[str],
         layered_parameters: Dict[str, ModelField],
         dependencies: Dict[str, Provide],
-        signaturemodel_fields: Dict,
+        signaturemodel_fields: Dict[str, ModelField],
     ) -> Tuple[Set[ParameterDefinition], set]:
 
         expected_dependencies = {
