@@ -169,22 +169,23 @@ class SessionMiddleware(MiddlewareProtocol):
             if message["type"] == "http.response.start":
                 headers = MutableHeaders(scope=message)
                 if should_vacate_session:
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age"})
-                    headers.append("Set-Cookie", Cookie(value="null", expires=0, **cookie_params).to_header())
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                    headers.append(
+                        "Set-Cookie",
+                        Cookie(value="null", key=f"{self.config.key}-1", expires=0, **cookie_params)
+                        .to_header()
+                        .removesuffix("Set-Cookie: "),
+                    )
                 else:
                     data = self.dump_data(scope.get("session"))
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret"})
-                    if len(data) == 1:
-                        headers.append("Set-Cookie", Cookie(value=data[0].decode("utf-8"), **cookie_params).to_header())
-                    else:
-                        cookie_params.pop("key")
-                        for i, datum in enumerate(data):
-                            headers.append(
-                                "Set-Cookie",
-                                Cookie(
-                                    value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params
-                                ).to_header(),
-                            )
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+                    for i, datum in enumerate(data):
+                        headers.append(
+                            "Set-Cookie",
+                            Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i + 1}", **cookie_params)
+                            .to_header()
+                            .removeprefix("Set-Cookie: "),
+                        )
             await send(message)
 
         return wrapped_send
