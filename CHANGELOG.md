@@ -1,5 +1,10 @@
 # Changelog
 
+[1.15.0]
+
+- `examples/` directory and tests for complete documentation examples
+- replace `pydantic-openapi-schema` import from `v3_0_3` with import from `v3_10_0`
+
 [1.14.1]
 
 - fix OpenAPI schema for `UploadFile`
