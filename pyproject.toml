@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.14.2"
+version = "1.15.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -46,6 +46,7 @@ starlette = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
+brotli = "*"
 freezegun = "*"
 hypothesis = "*"
 jinja2 = "*"
@@ -133,6 +134,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
+addopts = "--ignore=examples"
 asyncio_mode = "auto"
 
 [tool.pycln]
