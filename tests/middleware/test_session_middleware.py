@@ -1,18 +1,9 @@
 from os import urandom
-from string import printable
 from typing import TYPE_CHECKING
 
 import pytest
 from hypothesis import given
-from hypothesis.strategies import (
-    booleans,
-    dictionaries,
-    floats,
-    lists,
-    none,
-    recursive,
-    text,
-)
+from hypothesis.strategies import text
 from pydantic import SecretBytes, ValidationError
 
 from starlite.middleware.session import (
@@ -27,12 +18,6 @@ if TYPE_CHECKING:
 
 async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
     pass
-
-
-json = recursive(
-    none() | booleans() | floats() | text(printable),
-    lambda children: lists(children) | dictionaries(text(printable), children),
-)
 
 
 @pytest.mark.parametrize(
@@ -55,12 +40,12 @@ def test_config_validation(secret: bytes, should_raise: bool) -> None:
         SessionCookieConfig(secret=SecretBytes(secret))
 
 
-@given(data=json)
+@given(value=text())
 @pytest.mark.parametrize("secret", [urandom(16), urandom(24), urandom(32)])
-def test_dump_and_load_data(data: dict, secret: bytes) -> None:
+def test_dump_and_load_data(value: str, secret: bytes) -> None:
     config = SessionCookieConfig(secret=SecretBytes(secret))
     middleware = SessionMiddleware(app=mock_asgi_app, config=config)
-
+    data = {"key": value}
     dumped_list = middleware.dump_data(data)
     assert dumped_list
 
