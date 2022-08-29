@@ -56,7 +56,11 @@ else:
 H = TypeVar("H", bound=HTTPConnection)
 
 Middleware = Union[
-    StarletteMiddleware, DefineMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol], Callable[..., ASGIApp]
+    StarletteMiddleware,
+    DefineMiddleware,
+    Type[BaseHTTPMiddleware],
+    Type[MiddlewareProtocol],
+    Callable[..., ASGIApp],
 ]
 ResponseType = Type[Response]
 ExceptionHandler = Callable[
