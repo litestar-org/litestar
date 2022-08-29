@@ -15,7 +15,7 @@ from typing import (
 )
 
 from pydantic import validate_arguments
-from pydantic_openapi_schema.v3_0_3 import SecurityRequirement
+from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from starlette.responses import Response as StarletteResponse
 from starlette.status import (
     HTTP_200_OK,
