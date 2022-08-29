@@ -54,7 +54,6 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             exclude: A pattern or list of patterns to skip in the authentication middleware.
-
         """
         super().__init__(app)
         self.app = app

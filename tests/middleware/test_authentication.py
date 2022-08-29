@@ -132,7 +132,6 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
 
 
 def test_authentication_middleware_exclude() -> None:
-
     auth_mw = DefineMiddleware(AuthMiddleware, exclude=["north", "south"])
 
     @get("/north/{value:int}")
