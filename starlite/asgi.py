@@ -1,6 +1,15 @@
+from datetime import date, datetime, time
+from decimal import Decimal
 from inspect import getfullargspec, isawaitable, ismethod
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, Type, Union, cast
 
+from pydantic.datetime_parse import (
+    parse_date,
+    parse_datetime,
+    parse_duration,
+    parse_time,
+)
 from starlette.routing import Router as StarletteRouter
 
 from starlite.enums import ScopeType
@@ -104,7 +113,16 @@ class StarliteASGIRouter(StarletteRouter):
                 raw_param_value = request_path_parameter_values[idx]
                 parameter_type = parameter_definition["type"]
                 parameter_name = parameter_definition["name"]
-                result[parameter_name] = parameter_type(raw_param_value)
+                if parameter_type in (int, float, str, Decimal, Path):
+                    result[parameter_name] = parameter_type(raw_param_value)
+                elif parameter_type is date:
+                    result[parameter_name] = parse_date(raw_param_value)
+                elif parameter_type is datetime:
+                    result[parameter_name] = parse_datetime(raw_param_value)
+                elif parameter_type is time:
+                    result[parameter_name] = parse_time(raw_param_value)
+                else:
+                    result[parameter_name] = parse_duration(raw_param_value)
             return result
         except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
             raise ValidationException(

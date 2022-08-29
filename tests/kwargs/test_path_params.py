@@ -1,4 +1,8 @@
-from uuid import uuid1, uuid4
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+from pathlib import Path
+from typing import Any
+from uuid import UUID, uuid1, uuid4
 
 import pytest
 from pydantic import UUID4
@@ -100,7 +104,7 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
 def test_path_param_validation(path: str) -> None:
     @get(path=path)
     def test_method() -> None:
-        pass
+        raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[test_method])
@@ -108,8 +112,39 @@ def test_path_param_validation(path: str) -> None:
 
 def test_duplicate_path_param_validation() -> None:
     @get(path="/{param:int}/foo/{param:int}")
-    def test_method(param: int) -> None:
-        pass
+    def test_method() -> None:
+        raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[test_method])
+
+
+@pytest.mark.parametrize(
+    "param_type_name, param_type_class, value",
+    [
+        ["str", str, "abc"],
+        ["int", int, 1],
+        ["float", float, 1.01],
+        ["uuid", UUID, uuid4()],
+        ["decimal", Decimal, Decimal("1.00001")],
+        ["date", date, date.today().isoformat()],
+        ["datetime", datetime, datetime.now().isoformat()],
+        ["timedelta", timedelta, timedelta(days=1).total_seconds()],
+        ["path", Path, "/1/2/3/4/some-file.txt"],
+    ],
+)
+def test_path_param_type_resolution(param_type_name: str, param_type_class: Any, value: Any) -> None:
+    @get("/{test:" + param_type_name + "}")
+    def handler(test: param_type_class) -> None:  # type: ignore
+        if isinstance(test, (date, datetime)):
+            assert test.isoformat() == value  # type: ignore
+        elif isinstance(test, timedelta):  # type: ignore
+            assert test.total_seconds() == value
+        elif isinstance(test, (Decimal, Path)):
+            assert str(test) == str(value)
+        else:
+            assert test == value
+
+    with create_test_client(handler) as client:
+        response = client.get("/" + str(value))
+        assert response.status_code == HTTP_200_OK

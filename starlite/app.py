@@ -277,6 +277,7 @@ class Starlite(Router):
             else:
                 route_handlers = [cast("Union[WebSocketRoute, ASGIRoute]", route).route_handler]  # type: ignore
             for route_handler in route_handlers:
+
                 self._create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
