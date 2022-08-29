@@ -158,7 +158,18 @@ class KwargsModel:
         dependencies: Dict[str, Provide],
         signaturemodel_fields: Dict[str, ModelField],
     ) -> Tuple[Set[ParameterDefinition], set]:
+        """This function gets parameter_definitions for the construction of
+        KwargsModel instance.
 
+        Args:
+            path_parameters: Any expected path parameters.
+            layered_parameters: A string keyed dictionary of layered parameters.
+            dependencies: A string keyed dictionary mapping dependency providers.
+            signaturemodel_fields: __fields__ definition from SignatureModel.
+
+        Returns:
+            Set of ParameterDefinitions
+        """
         expected_dependencies = {
             cls._create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
