@@ -66,10 +66,12 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         return request.app.openapi_schema
 
-    @staticmethod
-    def should_serve_endpoint(request: Request) -> bool:
+    def should_serve_endpoint(self, request: Request) -> bool:
         """This method verifies that the requested path is within the allowed
         endpoints in the openapi_config.
+
+        Args:
+            request: A [Starlite][starlite.connection.Request] instance.
 
         Returns:
             A boolean.
@@ -81,14 +83,16 @@ class OpenAPIController(Controller):
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
 
-        path = set(filter(None, request.url.path.split("/")))
+        request_path = set(filter(None, request.url.path.split("/")))
+        root_path = set(filter(None, self.path.split("/")))
 
         config = request.app.openapi_config
-        if path == {"schema"} and config.root_schema_site in config.allowed_endpoints:
+        if request_path == root_path and config.root_schema_site in config.enabled_endpoints:
             return True
 
-        if path & config.allowed_endpoints:
+        if request_path & config.enabled_endpoints:
             return True
+
         return False
 
     @property

@@ -36,7 +36,7 @@ def test_openapi_stoplight_elements() -> None:
 
 def test_openapi_root_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.allowed_endpoints.discard(DEFAULT_OPENAPI_CONFIG.root_schema_site)
+    openapi_config.enabled_endpoints.discard(DEFAULT_OPENAPI_CONFIG.root_schema_site)
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         response = client.get("/schema")
@@ -46,7 +46,7 @@ def test_openapi_root_not_allowed() -> None:
 
 def test_openapi_redoc_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.allowed_endpoints.discard("redoc")
+    openapi_config.enabled_endpoints.discard("redoc")
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         response = client.get("/schema/redoc")
@@ -56,7 +56,7 @@ def test_openapi_redoc_not_allowed() -> None:
 
 def test_openapi_swagger_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.allowed_endpoints.discard("swagger")
+    openapi_config.enabled_endpoints.discard("swagger")
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         response = client.get("/schema/swagger")
@@ -66,7 +66,7 @@ def test_openapi_swagger_not_allowed() -> None:
 
 def test_openapi_stoplight_elements_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.allowed_endpoints.discard("elements")
+    openapi_config.enabled_endpoints.discard("elements")
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         response = client.get("/schema/elements/")
