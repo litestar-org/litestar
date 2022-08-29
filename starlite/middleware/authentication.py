@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Union
 from pydantic import BaseConfig, BaseModel
 from starlette.requests import HTTPConnection
 
-from starlite.enums import MediaType, ScopeType
+from starlite.enums import ScopeType
 from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
@@ -32,14 +32,6 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """
     Scopes supported by the middleware.
-    """
-    error_response_media_type = MediaType.JSON
-    """
-    The 'Content-Type' to use for error responses.
-    """
-    websocket_error_status_code = 4000
-    """
-    The status code to for websocket authentication errors.
     """
 
     def __init__(
