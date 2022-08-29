@@ -4,7 +4,7 @@ To contribute code changes or update the documentation, please follow these step
 
 1. Fork the upstream repository and clone the fork locally.
 2. Install [poetry](https://python-poetry.org/), and install the project's dependencies
-   with `poetry install --extras full`.
+   with `poetry install`.
 3. Install [pre-commit](https://pre-commit.com/) and install the hooks by running `pre-commit install` in the
    repository's hook.
 4. Make whatever changes and additions you wish and commit these - please try to keep your commit history clean.
