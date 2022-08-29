@@ -140,8 +140,10 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
             assert test.isoformat() == value  # type: ignore
         elif isinstance(test, timedelta):  # type: ignore
             assert test.total_seconds() == value
-        elif isinstance(test, (Decimal, Path)):
+        elif isinstance(test, Decimal):
             assert str(test) == str(value)
+        elif isinstance(test, Path):
+            assert str(test) == str(value).removeprefix("/")
         else:
             assert test == value
 

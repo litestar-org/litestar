@@ -1,6 +1,20 @@
 from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, Type, Union, cast
+from pathlib import Path
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
+from uuid import UUID
 
 from pydantic.datetime_parse import (
     parse_date,
@@ -31,7 +45,7 @@ class PathParamNode:
 
 
 class PathParameterTypePathDesignator:
-    """Sentinel object to represent a path param in the route map."""
+    """Sentinel object to a path parameter of type 'path'."""
 
 
 PathParamPlaceholderType = Type[PathParamNode]
@@ -57,7 +71,15 @@ class StarliteASGIRouter(StarletteRouter):
         """Traverses the application route mapping and retrieves the correct
         node for the request url.
 
-        Raises NotFoundException if no correlating node is found
+        Args:
+            path: The request's path.
+            scope: The ASGI connection scope.
+
+        Raises:
+             NotFoundException: if no correlating node is found.
+
+        Returns:
+            A tuple containing the target RouteMapNode and a list containing all path parameter values.
         """
         path_params: List[str] = []
         current_node = self.app.route_map
@@ -73,7 +95,7 @@ class StarliteASGIRouter(StarletteRouter):
             if PathParamNode in components_set:
                 current_node = cast("RouteMapNode", current_node[PathParamNode])
                 if PathParameterTypePathDesignator in components_set:
-                    path_params.append(normalize_path(path.removeprefix("/".join(path.split("/")[:idx]))))
+                    path_params.append(path.removeprefix("/".join(path.split("/")[:idx])))
                     break
                 path_params.append(component)
                 continue
@@ -86,7 +108,7 @@ class StarliteASGIRouter(StarletteRouter):
         work as expected.
 
         Args:
-            scope: Request Scope
+            scope: The ASGI connection scope.
             node: Trie Node
 
         Returns:
@@ -108,28 +130,32 @@ class StarliteASGIRouter(StarletteRouter):
             request_path_parameter_values: A list of raw strings sent as path parameters as part of the request
 
         Raises:
-            ValidationException
+            ValidationException: if path parameter parsing fails
 
         Returns:
             A dictionary mapping path parameter names to parsed values
         """
         result: Dict[str, Any] = {}
+        parsers_map: Dict[Any, Callable] = {
+            str: str,
+            float: float,
+            int: int,
+            Decimal: Decimal,
+            UUID: UUID,
+            Path: lambda x: Path(normalize_path(x).removeprefix("/")),
+            date: parse_date,
+            datetime: parse_datetime,
+            time: parse_time,
+            timedelta: parse_duration,
+        }
 
         try:
             for idx, parameter_definition in enumerate(path_parameter_definitions):
                 raw_param_value = request_path_parameter_values[idx]
                 parameter_type = parameter_definition["type"]
                 parameter_name = parameter_definition["name"]
-                if parameter_type not in (date, datetime, time, timedelta):
-                    result[parameter_name] = parameter_type(raw_param_value)
-                elif parameter_type is date:
-                    result[parameter_name] = parse_date(raw_param_value)
-                elif parameter_type is datetime:
-                    result[parameter_name] = parse_datetime(raw_param_value)
-                elif parameter_type is time:
-                    result[parameter_name] = parse_time(raw_param_value)
-                else:
-                    result[parameter_name] = parse_duration(raw_param_value)
+                parser = parsers_map[parameter_type]
+                result[parameter_name] = parser(raw_param_value)
             return result
         except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
             raise ValidationException(
