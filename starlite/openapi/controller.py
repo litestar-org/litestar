@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict, Optional
 
 from orjson import OPT_INDENT_2, dumps
 from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
@@ -68,7 +68,7 @@ class OpenAPIController(Controller):
         return request.app.openapi_schema
 
     @staticmethod
-    def check_exposed_endpoints(request: Request) -> Response | None:
+    def check_exposed_endpoints(request: Request) -> Optional[Response]:
         """This method verifies that the requested path is within the endpoints
         exposed in the openapi_config. If the requested path is exposed it will
         return None to allow the route handler call. If the requested path is
