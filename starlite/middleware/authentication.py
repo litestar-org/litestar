@@ -64,14 +64,14 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
             await self.app(scope, receive, send)
 
     @abstractmethod
-    async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
+    async def authenticate_request(self, connection: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
         """This method must be overridden by subclasses. It receives the http
         connection and returns an instance of.
 
         [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].
 
         Args:
-            request: A Starlette 'HTTPConnection' instance.
+            connection: A Starlette 'HTTPConnection' instance.
 
         Raises:
             If authentication fail: either an [NotAuthorizedException][starlite.exceptions.NotAuthorizedException] or
