@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
 from pydantic import validate_arguments
@@ -7,7 +8,12 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from typing_extensions import TypedDict
 
-from starlite.asgi import PathParamPlaceholder, RouteMapNode, StarliteASGIRouter
+from starlite.asgi import (
+    PathParameterTypePathDesignator,
+    PathParamNode,
+    RouteMapNode,
+    StarliteASGIRouter,
+)
 from starlite.config import (
     CacheConfig,
     CompressionConfig,
@@ -361,8 +367,11 @@ class Starlite(Router):
                 components_set = cast("ComponentsSet", current_node["_components"])
 
                 if isinstance(component, dict):
+                    # The rest of the path should be regarded as a parameter value.
+                    if component["type"] is Path:
+                        components_set.add(PathParameterTypePathDesignator)
                     # Represent path parameters using a special value
-                    component = PathParamPlaceholder
+                    component = PathParamNode
 
                 components_set.add(component)
 

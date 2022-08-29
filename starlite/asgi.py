@@ -1,7 +1,5 @@
-from datetime import date, datetime, time
-from decimal import Decimal
+from datetime import date, datetime, time, timedelta
 from inspect import getfullargspec, isawaitable, ismethod
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, Type, Union, cast
 
 from pydantic.datetime_parse import (
@@ -18,6 +16,7 @@ from starlite.exceptions import (
     NotFoundException,
     ValidationException,
 )
+from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
@@ -27,13 +26,18 @@ if TYPE_CHECKING:
     from starlite.types import LifeCycleHandler
 
 
-class PathParamPlaceholder:
+class PathParamNode:
     """Sentinel object to represent a path param in the route map."""
 
 
-PathParamPlaceholderType = Type[PathParamPlaceholder]
+class PathParameterTypePathDesignator:
+    """Sentinel object to represent a path param in the route map."""
+
+
+PathParamPlaceholderType = Type[PathParamNode]
+TerminusNodePlaceholderType = Type[PathParameterTypePathDesignator]
 RouteMapNode = Dict[Union[str, PathParamPlaceholderType], Any]
-ComponentsSet = Set[Union[str, PathParamPlaceholderType]]
+ComponentsSet = Set[Union[str, PathParamPlaceholderType, TerminusNodePlaceholderType]]
 
 
 class StarliteASGIRouter(StarletteRouter):
@@ -58,7 +62,7 @@ class StarliteASGIRouter(StarletteRouter):
         path_params: List[str] = []
         current_node = self.app.route_map
         components = ["/", *[component for component in path.split("/") if component]]
-        for component in components:
+        for idx, component in enumerate(components):
             components_set = cast("ComponentsSet", current_node["_components"])
             if component in components_set:
                 current_node = cast("RouteMapNode", current_node[component])
@@ -66,9 +70,12 @@ class StarliteASGIRouter(StarletteRouter):
                     self._handle_static_path(scope=scope, node=current_node)
                     break
                 continue
-            if PathParamPlaceholder in components_set:
+            if PathParamNode in components_set:
+                current_node = cast("RouteMapNode", current_node[PathParamNode])
+                if PathParameterTypePathDesignator in components_set:
+                    path_params.append(normalize_path(path.removeprefix("/".join(path.split("/")[:idx]))))
+                    break
                 path_params.append(component)
-                current_node = cast("RouteMapNode", current_node[PathParamPlaceholder])
                 continue
             raise NotFoundException()
         return current_node, path_params
@@ -113,7 +120,7 @@ class StarliteASGIRouter(StarletteRouter):
                 raw_param_value = request_path_parameter_values[idx]
                 parameter_type = parameter_definition["type"]
                 parameter_name = parameter_definition["name"]
-                if parameter_type in (int, float, str, Decimal, Path):
+                if parameter_type not in (date, datetime, time, timedelta):
                     result[parameter_name] = parameter_type(raw_param_value)
                 elif parameter_type is date:
                     result[parameter_name] = parse_date(raw_param_value)
