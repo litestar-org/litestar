@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 import pytest
 from pydantic import BaseModel
@@ -16,10 +16,15 @@ from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
+from starlite.middleware.base import DefineMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from starlette.requests import HTTPConnection
+
+
+async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
+    return None
 
 
 class User(BaseModel):
@@ -124,3 +129,32 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket
     client = create_test_client(route_handlers=route_handler)
     with pytest.raises(WebSocketDisconnect), client.websocket_connect("/", headers={"Authorization": "yep"}) as ws:
         ws.receive_json()
+
+
+def test_authentication_middleware_exclude() -> None:
+    auth_mw = DefineMiddleware(AuthMiddleware, exclude=["north", "south"])
+
+    @get("/north/{value:int}")
+    def north_handler(value: int) -> Dict[str, int]:
+        return {"value": value}
+
+    @get("/south")
+    def south_handler() -> None:
+        return None
+
+    @get("/west")
+    def west_handler() -> None:
+        return None
+
+    with create_test_client(
+        route_handlers=[north_handler, south_handler, west_handler],
+        middleware=[auth_mw],
+    ) as client:
+        response = client.get("/north/1")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/south")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/west")
+        assert response.status_code == HTTP_403_FORBIDDEN

@@ -145,11 +145,13 @@ Finally, we need to pass our middleware to the Starlite constructor:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
+from starlite.middleware.base import DefineMiddleware
 
 from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
+auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
 
-app = Starlite(request_handlers=[...], middleware=[JWTAuthenticationMiddleware])
+app = Starlite(request_handlers=[...], middleware=[auth_mw])
 ```
 
 That's it. The `JWTAuthenticationMiddleware` will now run for every request.

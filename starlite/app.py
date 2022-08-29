@@ -77,7 +77,7 @@ class HandlerIndex(TypedDict):
 
     path: str
     """Full route path to the route handler."""
-    handler: Union[Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]]
+    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
     """Route handler instance."""
 
 

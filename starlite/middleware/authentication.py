@@ -1,13 +1,12 @@
+import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Union
 
 from pydantic import BaseConfig, BaseModel
 from starlette.requests import HTTPConnection
 
-from starlite.enums import MediaType, ScopeType
-from starlite.exceptions import NotAuthorizedException, PermissionDeniedException
+from starlite.enums import ScopeType
 from starlite.middleware.base import MiddlewareProtocol
-from starlite.response import Response
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
@@ -34,56 +33,35 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
     """
     Scopes supported by the middleware.
     """
-    error_response_media_type = MediaType.JSON
-    """
-    The 'Content-Type' to use for error responses.
-    """
-    websocket_error_status_code = 4000
-    """
-    The status code to for websocket authentication errors.
-    """
 
-    def __init__(self, app: "ASGIApp"):
+    def __init__(
+        self,
+        app: "ASGIApp",
+        exclude: Optional[Union[str, List[str]]] = None,
+    ):
         """This is an abstract AuthenticationMiddleware that allows users to
         create their own AuthenticationMiddleware by extending it and
         overriding the 'authenticate_request' method.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+            exclude: A pattern or list of patterns to skip in the authentication middleware.
         """
         super().__init__(app)
         self.app = app
+        self.exclude: Optional[Pattern[str]] = None
+        if exclude:
+            self.exclude = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        try:
+        if self.exclude and self.exclude.findall(scope["path"]):
+            await self.app(scope, receive, send)
+        else:
             if scope["type"] in self.scopes:
                 auth_result = await self.authenticate_request(HTTPConnection(scope))
                 scope["user"] = auth_result.user
                 scope["auth"] = auth_result.auth
             await self.app(scope, receive, send)
-        except (NotAuthorizedException, PermissionDeniedException) as e:
-            if scope["type"] == ScopeType.WEBSOCKET:  # pragma: no cover
-                await send({"type": "websocket.close", "code": self.websocket_error_status_code, "reason": repr(e)})
-            else:
-                response = self.create_error_response(exc=e)
-                await response(scope, receive, send)
-
-    def create_error_response(self, exc: Union[NotAuthorizedException, PermissionDeniedException]) -> Response:
-        """Creates an Error response from the given exceptions, defaults to a
-        JSON response.
-
-        Args:
-            exc: Either an [NotAuthorizedException][starlite.exceptions.NotAuthorizedException] or
-                [PermissionDeniedException][starlite.exceptions.PermissionDeniedException] instance.
-
-        Returns:
-            A [Response][starlite.response.Response] instance.
-        """
-        return Response(
-            media_type=self.error_response_media_type,
-            content={"detail": exc.detail, "extra": exc.extra},
-            status_code=exc.status_code,
-        )
 
     @abstractmethod
     async def authenticate_request(self, request: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
