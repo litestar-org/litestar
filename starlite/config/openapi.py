@@ -107,7 +107,7 @@ class OpenAPIConfig(BaseModel):
     """
         The static schema generator to use for the "root" path of `/schema/`.
     """
-    exposed_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
+    allowed_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
     """
         A set of the enabled documentation sites and schema download endpoints.
     """

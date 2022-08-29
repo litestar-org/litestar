@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Callable, Dict
 
 from orjson import OPT_INDENT_2, dumps
 from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
@@ -42,7 +42,6 @@ class OpenAPIController(Controller):
     """
     URL to download a favicon from.
     """
-
     # internal
     _dumped_schema: str = ""
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
@@ -68,15 +67,12 @@ class OpenAPIController(Controller):
         return request.app.openapi_schema
 
     @staticmethod
-    def check_exposed_endpoints(request: Request) -> Optional[Response]:
-        """This method verifies that the requested path is within the endpoints
-        exposed in the openapi_config. If the requested path is exposed it will
-        return None to allow the route handler call. If the requested path is
-        not exposed it will return a Response instance with a
-        HTTP_404_NOT_FOUND code.
+    def should_serve_endpoint(request: Request) -> bool:
+        """This method verifies that the requested path is within the allowed
+        endpoints in the openapi_config.
 
         Returns:
-            A [Response][starlite.response.Response] instance or None.
+            A boolean.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If the application
@@ -88,35 +84,12 @@ class OpenAPIController(Controller):
         path = set(filter(None, request.url.path.split("/")))
 
         config = request.app.openapi_config
-        if path == {"schema"} and config.root_schema_site in config.exposed_endpoints:
-            return None
+        if path == {"schema"} and config.root_schema_site in config.allowed_endpoints:
+            return True
 
-        if path & config.exposed_endpoints:
-            return None
-
-        head = """
-          <head>
-            <title>404 Not found</title>
-            <meta charset="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>
-                body { margin: 0; padding: 0 }
-            </style>
-          </head>
-        """
-        body = """
-          <body>
-                <h1>Error 404</h1>
-          </body>
-        """
-        content_html = f"""
-        <!DOCTYPE html>
-            <html>
-                {head}
-                {body}
-            </html>
-        """
-        return Response(media_type=MediaType.HTML, content=content_html, status_code=HTTP_404_NOT_FOUND)
+        if path & config.allowed_endpoints:
+            return True
+        return False
 
     @property
     def favicon(self) -> str:
@@ -142,7 +115,6 @@ class OpenAPIController(Controller):
         path="/openapi.yaml",
         media_type=OpenAPIMediaType.OPENAPI_YAML,
         include_in_schema=False,
-        before_request=check_exposed_endpoints,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
         """Returns the OpenAPI schema as YAML with an
@@ -157,18 +129,20 @@ class OpenAPIController(Controller):
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+
+        if self.should_serve_endpoint(request):
+            return Response(
+                content=self.get_schema_from_request(request),
+                status_code=HTTP_200_OK,
+                media_type=OpenAPIMediaType.OPENAPI_YAML,
+            )
         return Response(
-            content=self.get_schema_from_request(request),
-            status_code=HTTP_200_OK,
-            media_type=OpenAPIMediaType.OPENAPI_YAML,
+            content=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
         )
 
-    @get(
-        path="/openapi.json",
-        media_type=OpenAPIMediaType.OPENAPI_JSON,
-        include_in_schema=False,
-        before_request=check_exposed_endpoints,
-    )
+    @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
         """Returns the OpenAPI schema as JSON with an
         'application/vnd.oai.openapi+json' Content-Type header.
@@ -182,18 +156,20 @@ class OpenAPIController(Controller):
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+
+        if self.should_serve_endpoint(request):
+            return Response(
+                content=self.get_schema_from_request(request),
+                status_code=HTTP_200_OK,
+                media_type=OpenAPIMediaType.OPENAPI_JSON,
+            )
         return Response(
-            content=self.get_schema_from_request(request),
-            status_code=HTTP_200_OK,
-            media_type=OpenAPIMediaType.OPENAPI_JSON,
+            content=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
         )
 
-    @get(
-        path="/",
-        media_type=MediaType.HTML,
-        include_in_schema=False,
-        before_request=check_exposed_endpoints,
-    )
+    @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
     def root(self, request: Request) -> Response:
         """The root route handler. Renders a static site based on the
         'root_schema_site' value set in the application's.
@@ -215,9 +191,16 @@ class OpenAPIController(Controller):
         if not config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
         render_method = self.render_methods_map[config.root_schema_site]
-        return Response(content=render_method(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
 
-    @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False, before_request=check_exposed_endpoints)
+        if self.should_serve_endpoint(request):
+            return Response(content=render_method(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+        return Response(
+            content=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
+
+    @get(path="/swagger", media_type=MediaType.HTML, include_in_schema=False)
     def swagger_ui(self, request: Request) -> Response:
         """Route handler responsible for rendering Swagger-UI.
 
@@ -230,9 +213,16 @@ class OpenAPIController(Controller):
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
-        return Response(content=self.render_swagger_ui(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
 
-    @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False, before_request=check_exposed_endpoints)
+        if self.should_serve_endpoint(request):
+            return Response(content=self.render_swagger_ui(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+        return Response(
+            content=self.render_404_page(),
+            status_code=HTTP_404_NOT_FOUND,
+            media_type=MediaType.HTML,
+        )
+
+    @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False)
     def stoplight_elements(self, request: Request) -> Response:
         """Route handler responsible for rendering StopLight Elements.
 
@@ -245,11 +235,14 @@ class OpenAPIController(Controller):
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
-        return Response(
-            content=self.render_stoplight_elements(request), status_code=HTTP_200_OK, media_type=MediaType.HTML
-        )
 
-    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False, before_request=check_exposed_endpoints)
+        if self.should_serve_endpoint(request):
+            return Response(
+                content=self.render_stoplight_elements(request), status_code=HTTP_200_OK, media_type=MediaType.HTML
+            )
+        return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+
+    @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
     def redoc(self, request: Request) -> Response:  # pragma: no cover
         """Route handler responsible for rendering Redoc.
 
@@ -262,7 +255,10 @@ class OpenAPIController(Controller):
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
-        return Response(content=self.render_redoc(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+
+        if self.should_serve_endpoint(request):
+            return Response(content=self.render_redoc(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+        return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     def render_swagger_ui(self, request: Request) -> str:
         """This method renders an HTML page for Swagger-UI.
@@ -414,4 +410,29 @@ class OpenAPIController(Controller):
                 {head}
                 {body}
             </html>
+        """
+
+    def render_404_page(self) -> str:
+        """This method renders an HTML 404 page.
+
+        Returns:
+            A rendered html string.
+        """
+
+        return f"""
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>404 Not found</title>
+                {self.favicon}
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                    {self.style}
+                </style>
+            </head>
+            <body>
+                <h1>Error 404</h1>
+            </body>
+        </html>
         """

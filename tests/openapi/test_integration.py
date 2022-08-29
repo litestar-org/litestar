@@ -37,7 +37,7 @@ def test_openapi_json() -> None:
 
 def test_openapi_yaml_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.exposed_endpoints.discard("openapi.yaml")
+    openapi_config.allowed_endpoints.discard("openapi.yaml")
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
@@ -50,7 +50,7 @@ def test_openapi_yaml_not_allowed() -> None:
 
 def test_openapi_json_not_allowed() -> None:
     openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.exposed_endpoints.discard("openapi.json")
+    openapi_config.allowed_endpoints.discard("openapi.json")
 
     with create_test_client([PersonController, PetController], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
