@@ -1,3 +1,6 @@
+import binascii
+import contextlib
+import time
 from base64 import b64decode, b64encode
 from os import urandom
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
@@ -23,6 +26,7 @@ from starlite.middleware.base import MiddlewareProtocol
 from starlite.response import Response
 
 try:
+    from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 except ImportError as e:
     raise MissingDependencyException("cryptography is not installed") from e
@@ -52,7 +56,7 @@ class SessionCookieConfig(BaseModel):
     e.g. `session=<data>` where 'session' is the cookie key and <data> is the session data.
 
     Notes:
-        - If a session cookie exceed 4KB in size it is split. In this case the key will be of the format
+        - If a session cookie exceeds 4KB in size it is split. In this case the key will be of the format
             'session-{segment number}'.
     """
     max_age: conint(ge=1) = ONE_DAY_IN_SECONDS * 14  # type: ignore[valid-type]
@@ -121,10 +125,27 @@ class SessionMiddleware(MiddlewareProtocol):
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
         serialized = dumps(data, default=Response.serializer, option=OPT_SERIALIZE_NUMPY)
+        associated_data = dumps({"timestamp": round(time.time()), "max_age": self.config.max_age})
         nonce = urandom(NONCE_SIZE)
-        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=None)
-        encoded = b64encode(nonce + encrypted)
+        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
+        encoded = b64encode(nonce + encrypted + b"associated_data=" + associated_data)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
+
+    @staticmethod
+    def _validate_session(associated_data: dict) -> bool:
+        """Verifies the validity of the session.
+
+        Args:
+            associated_data: A dictionary contains the timestamp of the AEAD Tag and max-age of the session.
+
+        Returns:
+            bool: True if the session is NOT expired else False.
+        """
+        timestamp = associated_data["timestamp"]
+        max_age = associated_data["max_age"]
+        if timestamp + max_age >= int(time.time()):
+            return True
+        return False
 
     def load_data(self, data: List[bytes]) -> Any:
         """Given a list of strings, decodes them into the session object.
@@ -137,20 +158,30 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
-        encrypted_session = decoded[NONCE_SIZE:]
-        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=None)
+
+        associated_data = None
+        associated_data_footer = decoded.find(b"associated_data=")
+        if associated_data_footer != -1:
+            associated_data = decoded[associated_data_footer:].replace(b"associated_data=", b"")
+
+        encrypted_session = decoded[NONCE_SIZE:associated_data_footer]
+        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
+
+        session_validation = self._validate_session(associated_data=loads(associated_data))
+        if session_validation is False:
+            return {}
         return loads(decrypted)
 
     def create_send_wrapper(
-        self, scope: "Scope", send: "Send", should_vacate_session: bool
+        self, scope: "Scope", send: "Send", cookie_keys: List[str]
     ) -> Callable[["Message"], Awaitable[None]]:
         """
         Creates a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
         Args:
             scope: The ASGI connection scope.
             send: The ASGI send function.
-            should_vacate_session: A boolean flag dictating whether the session cookie should be vacated on the client
-                side.
+            cookie_keys: Session cookie keys that are sent in the current request. It is required to expire all session
+                cookies from the current request and are replaced with new cookies in the upcoming response.
 
         Returns:
             None.
@@ -168,23 +199,28 @@ class SessionMiddleware(MiddlewareProtocol):
             """
             if message["type"] == "http.response.start":
                 headers = MutableHeaders(scope=message)
-                if should_vacate_session:
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                data = self.dump_data(scope.get("session"))
+                cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+                for i, datum in enumerate(data, start=0):
                     headers.append(
                         "Set-Cookie",
-                        Cookie(value="null", key=f"{self.config.key}-1", expires=0, **cookie_params)
+                        Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
                         .to_header()
-                        .removesuffix("Set-Cookie: "),
+                        .replace("Set-Cookie: ", ""),
                     )
-                else:
-                    data = self.dump_data(scope.get("session"))
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
-                    for i, datum in enumerate(data):
+                # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
+                # cookies, first check how many session cookies will not be overwritten in this upcoming response. If
+                # leftover cookies are greater than or equal to 1, that means older session cookies have to be expired
+                # and their names are in cookie_keys.
+                cookies_left = len(cookie_keys) - len(data)
+                if cookies_left >= 1:
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                    for cookie_key in cookie_keys[len(data) :]:
                         headers.append(
                             "Set-Cookie",
-                            Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i + 1}", **cookie_params)
+                            Cookie(value="null", key=cookie_key, expires=0, **cookie_params)
                             .to_header()
-                            .removeprefix("Set-Cookie: "),
+                            .replace("Set-Cookie: ", ""),
                         )
             await send(message)
 
@@ -204,13 +240,11 @@ class SessionMiddleware(MiddlewareProtocol):
             scope.setdefault("session", {})
             connection = HTTPConnection(scope)
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
-            should_vacate_session = False
             if cookie_keys:
-                try:
+                with contextlib.suppress(KeyError):
                     data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
+                with contextlib.suppress(InvalidTag, binascii.Error):
                     scope["session"] = self.load_data(data)
-                except KeyError:
-                    should_vacate_session = True
-            await self.app(scope, receive, self.create_send_wrapper(scope, send, should_vacate_session))
+            await self.app(scope, receive, self.create_send_wrapper(scope, send, cookie_keys))
         else:
             await self.app(scope, receive, send)
