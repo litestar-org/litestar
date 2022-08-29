@@ -1,3 +1,4 @@
+import re
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from inspect import getfullargspec, isawaitable, ismethod
@@ -30,7 +31,6 @@ from starlite.exceptions import (
     NotFoundException,
     ValidationException,
 )
-from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Receive, Scope, Send
@@ -95,7 +95,7 @@ class StarliteASGIRouter(StarletteRouter):
             if PathParamNode in components_set:
                 current_node = cast("RouteMapNode", current_node[PathParamNode])
                 if PathParameterTypePathDesignator in components_set:
-                    path_params.append(path.removeprefix("/".join(path.split("/")[:idx])))
+                    path_params.append("/".join(path.split("/")[idx:]))
                     break
                 path_params.append(component)
                 continue
@@ -142,7 +142,7 @@ class StarliteASGIRouter(StarletteRouter):
             int: int,
             Decimal: Decimal,
             UUID: UUID,
-            Path: lambda x: Path(normalize_path(x).removeprefix("/")),
+            Path: lambda x: Path(re.sub("//+", "", (x.lstrip("/")))),
             date: parse_date,
             datetime: parse_datetime,
             time: parse_time,
