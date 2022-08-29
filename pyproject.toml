@@ -46,6 +46,7 @@ starlette = "*"
 typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
+brotli = "*"
 freezegun = "*"
 hypothesis = "*"
 jinja2 = "*"
