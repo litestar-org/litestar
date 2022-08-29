@@ -1,5 +1,8 @@
 import re
 from abc import ABC, abstractmethod
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Type, Union
 from uuid import UUID
 
@@ -19,7 +22,18 @@ if TYPE_CHECKING:
 
 
 param_match_regex = re.compile(r"{(.*?)}")
-param_type_map = {"str": str, "int": int, "float": float, "uuid": UUID}
+param_type_map = {
+    "str": str,
+    "int": int,
+    "float": float,
+    "uuid": UUID,
+    "decimal": Decimal,
+    "date": date,
+    "datetime": datetime,
+    "time": time,
+    "timedelta": timedelta,
+    "path": Path,
+}
 
 
 class PathParameterDefinition(TypedDict):
@@ -123,7 +137,7 @@ class BaseRoute(ABC):
             raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
         if param_type not in param_type_map:
             raise ImproperlyConfiguredException(
-                "Path parameters should be declared with an allowed type, i.e. 'str', 'int', 'float' or 'uuid'"
+                f"Path parameters should be declared with an allowed type, i.e. one of {','.join(param_type_map.keys())}"
             )
 
     @classmethod
