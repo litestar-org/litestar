@@ -33,7 +33,7 @@ Starlite is a light, opinionated and flexible ASGI API framework built on top
 of **[pydantic](https://github.com/samuelcolvin/pydantic)** and **[Starlette](https://github.com/encode/starlette)**.
 
 The Starlite framework supports **[plugins](usage/10-plugins/0-plugins-intro.md)**, ships
-with **[dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md)**, **[authentication](usage/8-authentication.md)**
+with **[dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md)**, **[authentication](usage/8-authentication/0-intro.md)**
 , **[OpenAPI specifications-generation](usage/12-openapi/0-openapi-intro.md)** – among other common API-framework components such
 as **[middleware](usage/7-middleware/0-middleware-intro.md)** and **[guards](usage/9-guards.md)**.
 
