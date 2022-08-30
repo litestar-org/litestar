@@ -224,8 +224,8 @@ class SessionMiddleware(MiddlewareProtocol):
             connection = HTTPConnection(scope)
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
             if cookie_keys:
-                with contextlib.suppress(KeyError):
-                    data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
+                data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
+                # If these exceptions occur, the session must remain empty so do nothing.
                 with contextlib.suppress(InvalidTag, binascii.Error):
                     scope["session"] = self.load_data(data)
             await self.app(scope, receive, self.create_send_wrapper(scope, send, cookie_keys))
