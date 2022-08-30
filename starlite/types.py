@@ -70,7 +70,7 @@ ExceptionHandler = Callable[
     [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
 ]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-LifeCycleHandler = Union[
+LifeSpanHandler = Union[
     Callable[[], Any],
     Callable[[State], Any],
     Callable[[], Awaitable[Any]],
@@ -86,20 +86,20 @@ ResponseHeadersMap = Dict[str, ResponseHeader]
 ResponseCookies = List[Cookie]
 
 # connection-lifecycle hook handlers, these are layered on the app, i.e. are defined on all layers
-BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
-AfterRequestHandler = Union[
+BeforeRequestHookHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
+AfterRequestHookHandler = Union[
     Callable[[Response], Response],
     Callable[[Response], Awaitable[Response]],
     Callable[[StarletteResponse], StarletteResponse],
     Callable[[StarletteResponse], Awaitable[StarletteResponse]],
 ]
-AfterResponseHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
+AfterResponseHookHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
 
 # application level hook handlers, these are defined only on the app level.
-LifeSpanHandler = Union[
+LifeSpanHookHandler = Union[
     Callable[[Starlite], None], Callable[[Starlite], Awaitable[None]]
 ]  # fires before / after startup / shutdown
-AfterExceptionHandler = Union[
+AfterExceptionHookHandler = Union[
     Callable[[Exception, Scope, State], None], Callable[[Exception, Scope, State], Awaitable[None]]
 ]
 

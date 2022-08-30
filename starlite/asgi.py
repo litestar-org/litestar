@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import LifeCycleHandler
+    from starlite.types import LifeSpanHandler
 
 
 class PathParamNode:
@@ -61,8 +61,8 @@ class StarliteASGIRouter(StarletteRouter):
     def __init__(
         self,
         app: "Starlite",
-        on_shutdown: List["LifeCycleHandler"],
-        on_startup: List["LifeCycleHandler"],
+        on_shutdown: List["LifeSpanHandler"],
+        on_startup: List["LifeSpanHandler"],
     ):
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
@@ -207,13 +207,13 @@ class StarliteASGIRouter(StarletteRouter):
             raise NotFoundException() from e
         await asgi_handler(scope, receive, send)
 
-    async def _call_lifecycle_handler(self, handler: "LifeCycleHandler") -> None:
+    async def _call_lifecycle_handler(self, handler: "LifeSpanHandler") -> None:
         """Determines whether the lifecycle handler expects an argument, and if
         so passes the `app.state` to it. If the handler is an async function,
         it awaits the return.
 
         Args:
-            handler (LifeCycleHandler): sync or async callable that may or may not have an argument.
+            handler (LifeSpanHandler): sync or async callable that may or may not have an argument.
         """
         arg_spec = getfullargspec(handler)
         if (not ismethod(handler) and len(arg_spec.args) == 1) or (ismethod(handler) and len(arg_spec.args) == 2):

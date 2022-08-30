@@ -36,15 +36,15 @@ from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
-    AfterExceptionHandler,
-    AfterRequestHandler,
-    AfterResponseHandler,
-    BeforeRequestHandler,
+    AfterExceptionHookHandler,
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
     ControllerRouterHandler,
     ExceptionHandlersMap,
     Guard,
-    LifeCycleHandler,
     LifeSpanHandler,
+    LifeSpanHookHandler,
     Middleware,
     ParametersMap,
     ResponseCookies,
@@ -125,15 +125,15 @@ class Starlite(Router):
         self,
         route_handlers: List[ControllerRouterHandler],
         *,
-        after_exception: Optional[AfterExceptionHandler] = None,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
-        after_shutdown: Optional[LifeSpanHandler] = None,
-        after_startup: Optional[LifeSpanHandler] = None,
+        after_exception: Optional[AfterExceptionHookHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
+        after_shutdown: Optional[LifeSpanHookHandler] = None,
+        after_startup: Optional[LifeSpanHookHandler] = None,
         allowed_hosts: Optional[List[str]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
-        before_shutdown: Optional[LifeSpanHandler] = None,
-        before_startup: Optional[LifeSpanHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
+        before_shutdown: Optional[LifeSpanHookHandler] = None,
+        before_startup: Optional[LifeSpanHookHandler] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
         compression_config: Optional[CompressionConfig] = None,
         cors_config: Optional[CORSConfig] = None,
@@ -143,8 +143,8 @@ class Starlite(Router):
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
-        on_shutdown: Optional[List[LifeCycleHandler]] = None,
-        on_startup: Optional[List[LifeCycleHandler]] = None,
+        on_shutdown: Optional[List[LifeSpanHandler]] = None,
+        on_startup: Optional[List[LifeSpanHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         parameters: Optional[ParametersMap] = None,
         plugins: Optional[List[PluginProtocol]] = None,
@@ -164,7 +164,7 @@ class Starlite(Router):
         It inherits from the [Router][starlite.router.Router] class.
 
         Args:
-            after_exception: An application level [exception event handler][starlite.types.AfterExceptionHandler].
+            after_exception: An application level [exception event handler][starlite.types.AfterExceptionHookHandler].
                 This hook is called after an exception occurs. In difference to exception handlers, it is not meant to
                 return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
@@ -172,19 +172,19 @@ class Starlite(Router):
                 [Response][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
-            after_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHandler].
+            after_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler].
                 This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown'
                 list have been called.
-            after_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHandler].
+            after_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler].
                 This hook is called during the ASGI startup, after all callables in the 'on_startup'
                 list have been called.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler.
                 Receives the [Request][starlite.connection.Request] instance and any non-`None` return value is
                 used for the response, bypassing the route handler.
-            before_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHandler]. This hook is
+            before_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
                 called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
-            before_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHandler]. This hook is
+            before_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
                 called during the ASGI startup, before any callables in the 'on_startup' list have been called.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
@@ -196,9 +196,9 @@ class Starlite(Router):
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
-            on_shutdown: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during
+            on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application shutdown.
-            on_startup: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during
+            on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application startup.
             openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
             parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all

@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 
     from starlite.router import Router
     from starlite.types import (
-        AfterRequestHandler,
-        AfterResponseHandler,
-        BeforeRequestHandler,
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
+        BeforeRequestHookHandler,
         Dependencies,
         ExceptionHandlersMap,
         Guard,
@@ -49,17 +49,17 @@ class Controller:
         "tags",
     )
 
-    after_request: Optional["AfterRequestHandler"]
+    after_request: Optional["AfterRequestHookHandler"]
     """
         A sync or async function executed before a [Request][starlite.connection.Request] is passed to any route handler.
         If this function returns a value, the request will not reach the route handler, and instead this value will be used.
     """
-    after_response: Optional["AfterResponseHandler"]
+    after_response: Optional["AfterResponseHookHandler"]
     """
         A sync or async function called after the response has been awaited.
         It receives the [Request][starlite.connection.Request] instance and should not return any values.
     """
-    before_request: Optional["BeforeRequestHandler"]
+    before_request: Optional["BeforeRequestHookHandler"]
     """
         A sync or async function called immediately before calling the route handler.
         It receives the [Request][starlite.connection.Request] instance and any
