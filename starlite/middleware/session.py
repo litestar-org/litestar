@@ -143,9 +143,9 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         timestamp = associated_data["timestamp"]
         max_age = associated_data["max_age"]
-        if timestamp + max_age >= int(time.time()):
-            return True
-        return False
+        if timestamp + max_age <= int(time.time()):
+            return False
+        return True
 
     def load_data(self, data: List[bytes]) -> Any:
         """Given a list of strings, decodes them into the session object.
