@@ -1,7 +1,7 @@
 name: publish
 on:
   release:
-    types: [ published ]
+    types: [published]
 jobs:
   test_minimal_app:
     # tests the hello-world example against a minimal install
