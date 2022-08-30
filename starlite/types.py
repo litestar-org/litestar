@@ -23,8 +23,9 @@ if TYPE_CHECKING:
 
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
-    from starlette.types import ASGIApp  # noqa: TC004
+    from starlette.types import ASGIApp, Scope  # noqa: TC004
 
+    from starlite.app import Starlite  # noqa: TC004
     from starlite.connection import Request  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import Cookie, ResponseHeader, State  # noqa: TC004
@@ -52,6 +53,8 @@ else:
     Provide = Any
     ResponseHeader = Any
     Cookie = Any
+    Starlite = Any
+    Scope = Any
 
 H = TypeVar("H", bound=HTTPConnection)
 
@@ -81,7 +84,8 @@ Dependencies = Dict[str, Provide]
 ParametersMap = Dict[str, FieldInfo]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 ResponseCookies = List[Cookie]
-# connection-lifecycle hook handlers
+
+# connection-lifecycle hook handlers, these are layered on the app, i.e. are defined on all layers
 BeforeRequestHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
 AfterRequestHandler = Union[
     Callable[[Response], Response],
@@ -90,6 +94,14 @@ AfterRequestHandler = Union[
     Callable[[StarletteResponse], Awaitable[StarletteResponse]],
 ]
 AfterResponseHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
+
+# application level hook handlers, these are defined only on the app level.
+LifeSpanHandler = Union[
+    Callable[[Starlite], None], Callable[[Starlite], Awaitable[None]]
+]  # fires before / after startup / shutdown
+AfterExceptionHandler = Union[
+    Callable[[Exception, Scope, State], None], Callable[[Exception, Scope, State], Awaitable[None]]
+]
 
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 CacheKeyBuilder = Callable[[Request], str]
