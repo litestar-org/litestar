@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urlencode
 
 from orjson import dumps
@@ -12,10 +12,6 @@ from starlite.enums import HttpMethod, ParamType, RequestEncodingType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
-    from typing import Type
-
-    from pydantic.typing import AnyCallable
-
     from starlite.config import (
         CacheConfig,
         CompressionConfig,
@@ -25,22 +21,21 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
-    from starlite.controller import Controller
-    from starlite.handlers import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.router import Router
     from starlite.types import (
+        AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
         BeforeRequestHookHandler,
+        ControllerRouterHandler,
         Dependencies,
         ExceptionHandlersMap,
         Guard,
         LifeSpanHandler,
+        LifeSpanHookHandler,
         Middleware,
         ParametersMap,
     )
-
 
 try:
     from requests.models import RequestEncodingMixin
@@ -68,9 +63,6 @@ class RequestEncoder(RequestEncodingMixin):
 
     def url_encode(self, data: Dict[str, Any]) -> bytes:
         return self._encode_params(data).encode("utf-8")  # type: ignore
-
-
-T_client = TypeVar("T_client", bound="TestClient")
 
 
 class TestClient(StarletteTestClient):
@@ -109,39 +101,39 @@ class TestClient(StarletteTestClient):
             backend_options=backend_options,
         )
 
-    def __enter__(self: T_client, *args: Any, **kwargs: Any) -> T_client:
+    def __enter__(self, *args: Any, **kwargs: Any) -> "TestClient":
         """Starlette's `TestClient.__enter__()` return value is strongly typed
         to return their own `TestClient`, i.e., not-generic to support
         subclassing.
 
         We override here to provide a nicer typing experience for our users.
 
-        Parameters
-        ----------
-        args : Any
-        kwargs : Any
-            `*args, **kwargs` passed straight through to `Starlette.testing.TestClient.__enter__()`
+        Args:
+            args : Any
+            kwargs : Any
+                `*args, **kwargs` passed straight through to `Starlette.testing.TestClient.__enter__()`
 
-        Returns
-        -------
-        TestClient
+        Returns:
+            TestClient
         """
         return super().__enter__(*args, **kwargs)  # type:ignore[return-value]
 
 
 def create_test_client(
-    route_handlers: Union[
-        Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"],
-        List[Union["Type[Controller]", "BaseRouteHandler", "Router", "AnyCallable"]],
-    ],
+    route_handlers: Union["ControllerRouterHandler", List["ControllerRouterHandler"]],
     *,
+    after_exception: Optional["AfterExceptionHookHandler"] = None,
     after_request: Optional["AfterRequestHookHandler"] = None,
     after_response: Optional["AfterResponseHookHandler"] = None,
+    after_shutdown: Optional["LifeSpanHookHandler"] = None,
+    after_startup: Optional["LifeSpanHookHandler"] = None,
     allowed_hosts: Optional[List[str]] = None,
     backend: str = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver",
     before_request: Optional["BeforeRequestHookHandler"] = None,
+    before_shutdown: Optional["LifeSpanHookHandler"] = None,
+    before_startup: Optional["LifeSpanHookHandler"] = None,
     cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
@@ -163,10 +155,15 @@ def create_test_client(
     """Create a TestClient."""
     return TestClient(
         app=Starlite(
+            after_exception=after_exception,
             after_request=after_request,
             after_response=after_response,
+            after_shutdown=after_shutdown,
+            after_startup=after_startup,
             allowed_hosts=allowed_hosts,
             before_request=before_request,
+            before_shutdown=before_shutdown,
+            before_startup=before_startup,
             cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,

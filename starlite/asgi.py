@@ -207,7 +207,7 @@ class StarliteASGIRouter(StarletteRouter):
             raise NotFoundException() from e
         await asgi_handler(scope, receive, send)
 
-    async def _call_lifecycle_handler(self, handler: "LifeSpanHandler") -> None:
+    async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
         """Determines whether the lifecycle handler expects an argument, and if
         so passes the `app.state` to it. If the handler is an async function,
         it awaits the return.
@@ -224,11 +224,35 @@ class StarliteASGIRouter(StarletteRouter):
             await value
 
     async def startup(self) -> None:
-        """Run any `.on_startup` event handlers."""
+        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined
+        in the application's `.on_startup` list.
+
+        Calls the `before_startup` hook and `after_startup` hook
+        handlers respectively before and after calling in the lifespan
+        handlers.
+        """
+        if self.app.before_startup:
+            await self.app.before_startup(self.app)
+
         for handler in self.on_startup:
-            await self._call_lifecycle_handler(handler)
+            await self._call_lifespan_handler(handler)
+
+        if self.app.after_startup:
+            await self.app.after_startup(self.app)
 
     async def shutdown(self) -> None:
-        """Run any `.on_shutdown` event handlers."""
+        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined
+        in the application's `.on_shutdown` list.
+
+        Calls the `before_shutdown` hook and `after_shutdown` hook
+        handlers respectively before and after calling in the lifespan
+        handlers.
+        """
+        if self.app.before_shutdown:
+            await self.app.before_shutdown(self.app)
+
         for handler in self.on_shutdown:
-            await self._call_lifecycle_handler(handler)
+            await self._call_lifespan_handler(handler)
+
+        if self.app.after_shutdown:
+            await self.app.after_shutdown(self.app)

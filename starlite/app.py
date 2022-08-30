@@ -51,6 +51,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
+from starlite.utils import AsyncCallable
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
@@ -222,12 +223,12 @@ class Starlite(Router):
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
-        self.after_exception = after_exception
-        self.after_shutdown = after_shutdown
-        self.after_startup = after_startup
+        self.after_exception = AsyncCallable(after_exception) if after_exception else None
+        self.after_shutdown = AsyncCallable(after_shutdown) if after_shutdown else None
+        self.after_startup = AsyncCallable(after_startup) if after_startup else None
         self.allowed_hosts = allowed_hosts
-        self.before_shutdown = before_shutdown
-        self.before_startup = before_startup
+        self.before_shutdown = AsyncCallable(before_shutdown) if before_shutdown else None
+        self.before_startup = AsyncCallable(before_startup) if before_startup else None
         self.cache = cache_config.to_cache()
         self.compression_config = compression_config
         self.cors_config = cors_config
@@ -391,6 +392,7 @@ class Starlite(Router):
         """
         current_node = self.route_map
         path = route.path
+
         if route.path_parameters or path in self._static_paths:
             components = cast(
                 "List[Union[str, PathParamPlaceholderType, PathParameterDefinition]]", ["/", *route.path_components]
