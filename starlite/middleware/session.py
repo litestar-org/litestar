@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
 CHUNK_SIZE = 4096 - 512
+AAD = b"additional_authenticated_data="
 
 
 class SessionCookieConfig(BaseModel):
@@ -69,7 +70,7 @@ class SessionCookieConfig(BaseModel):
     """Domain for which the cookie is valid."""
     secure: Optional[bool] = None
     """Https is required for the cookie."""
-    httponly: Optional[bool] = None
+    httponly: Optional[bool] = True
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
@@ -125,27 +126,11 @@ class SessionMiddleware(MiddlewareProtocol):
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
         serialized = dumps(data, default=Response.serializer, option=OPT_SERIALIZE_NUMPY)
-        associated_data = dumps({"timestamp": round(time.time()), "max_age": self.config.max_age})
+        aad = dumps({"time_to_live": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
-        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
-        encoded = b64encode(nonce + encrypted + b"associated_data=" + associated_data)
+        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=aad)
+        encoded = b64encode(nonce + encrypted + AAD + aad)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
-
-    @staticmethod
-    def _validate_session(associated_data: dict) -> bool:
-        """Verifies the validity of the session.
-
-        Args:
-            associated_data: A dictionary contains the timestamp of the AEAD Tag and max-age of the session.
-
-        Returns:
-            bool: True if the session is NOT expired else False.
-        """
-        timestamp = associated_data["timestamp"]
-        max_age = associated_data["max_age"]
-        if timestamp + max_age <= int(time.time()):
-            return False
-        return True
 
     def load_data(self, data: List[bytes]) -> Any:
         """Given a list of strings, decodes them into the session object.
@@ -159,18 +144,16 @@ class SessionMiddleware(MiddlewareProtocol):
         decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
 
-        associated_data = None
-        associated_data_footer = decoded.find(b"associated_data=")
-        if associated_data_footer != -1:
-            associated_data = decoded[associated_data_footer:].replace(b"associated_data=", b"")
+        aad = None
+        aad_footer = decoded.find(AAD)
+        if aad_footer != -1:
+            aad = decoded[aad_footer:].replace(AAD, b"")
 
-        encrypted_session = decoded[NONCE_SIZE:associated_data_footer]
-        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
+        encrypted_session = decoded[NONCE_SIZE:aad_footer]
+        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=aad)
 
-        session_validation = self._validate_session(associated_data=loads(associated_data))
-        if session_validation is False:
-            return {}
-        return loads(decrypted)
+        session_validation = loads(aad)["time_to_live"] > round(time.time())
+        return loads(decrypted) if session_validation else {}
 
     def create_send_wrapper(
         self, scope: "Scope", send: "Send", cookie_keys: List[str]
