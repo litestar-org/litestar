@@ -77,7 +77,7 @@ repos:
     rev: v0.3.0
     hooks:
       - id: flake8-markdown
-        exclude: "docs/usage/0-the-starlite-app/1-startup-and-shutdown.md"
+        exclude: docs/usage/0-the-starlite-app/[1,2].*\.md
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
     hooks:
