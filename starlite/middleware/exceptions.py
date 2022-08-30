@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from starlette.responses import Response as StarletteResponse
     from starlette.types import ASGIApp, Receive, Scope, Send
 
+    from starlite.app import Starlite
     from starlite.types import ExceptionHandlersMap
 
 
@@ -39,6 +40,10 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
         try:
             await self.app(scope, receive, send)
         except Exception as exc:  # pylint: disable=broad-except
+            starlite_app = cast("Starlite", scope["app"])
+            if starlite_app.after_exception:
+                await starlite_app.after_exception(exc, scope, starlite_app.state)
+
             if scope["type"] == ScopeType.HTTP:
                 exception_handler = (
                     get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler

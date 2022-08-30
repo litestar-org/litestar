@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
@@ -7,6 +7,12 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite import HTTPException, Request, Response, Starlite, get
 from starlite.enums import MediaType
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
+from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlette.types import Scope
+
+    from starlite.datastructures import State
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -93,3 +99,22 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
 
     app = Starlite(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
     assert app.route_map["/"]["_asgi_handlers"]["GET"].exception_handlers == {Exception: exception_handler}
+
+
+def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> None:
+    @get("/test")
+    def handler() -> None:
+        raise RuntimeError()
+
+    async def after_exception_hook_handler(exc: Exception, scope: "Scope", state: "State") -> None:
+        assert isinstance(exc, RuntimeError)
+        assert scope["app"]
+        assert not state.called
+        state.called = True
+
+    with create_test_client(handler, after_exception=after_exception_hook_handler) as client:
+        setattr(client.app.state, "called", False)  # noqa: B010
+        assert not client.app.state.called
+        response = client.get("/test")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        assert client.app.state.called
