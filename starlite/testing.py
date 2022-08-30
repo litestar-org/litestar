@@ -111,8 +111,8 @@ class TestClient(StarletteTestClient):
         We override here to provide a nicer typing experience for our users.
 
         Args:
-            args : Any
-            kwargs : Any
+            *args : Any
+            **kwargs : Any
                 `*args, **kwargs` passed straight through to `Starlette.testing.TestClient.__enter__()`
 
         Returns:

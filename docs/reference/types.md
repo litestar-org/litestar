@@ -2,38 +2,42 @@
 
 ::: starlite.types.H
 
-::: starlite.types.Middleware
+::: starlite.types.AfterExceptionHookHandler
 
-::: starlite.types.ResponseType
+::: starlite.types.AfterRequestHookHandler
 
-::: starlite.types.ExceptionHandler
+::: starlite.types.AfterResponseHookHandler
 
-::: starlite.types.ExceptionHandlersMap
+::: starlite.types.AsyncAnyCallable
 
-::: starlite.types.LifeCycleHandler
+::: starlite.types.BeforeRequestHookHandler
 
-::: starlite.types.Guard
-
-::: starlite.types.Method
-
-::: starlite.types.ReservedKwargs
+::: starlite.types.CacheKeyBuilder
 
 ::: starlite.types.ControllerRouterHandler
 
 ::: starlite.types.Dependencies
 
+::: starlite.types.ExceptionHandler
+
+::: starlite.types.ExceptionHandlersMap
+
+::: starlite.types.Guard
+
+::: starlite.types.LifeSpanHandler
+
+::: starlite.types.LifeSpanHookHandler
+
+::: starlite.types.Method
+
+::: starlite.types.Middleware
+
 ::: starlite.types.ParametersMap
 
-::: starlite.types.ResponseHeadersMap
+::: starlite.types.ReservedKwargs
 
 ::: starlite.types.ResponseCookies
 
-::: starlite.types.BeforeRequestHandler
+::: starlite.types.ResponseHeadersMap
 
-::: starlite.types.AfterRequestHandler
-
-::: starlite.types.AfterResponseHandler
-
-::: starlite.types.AsyncAnyCallable
-
-::: starlite.types.CacheKeyBuilder
+::: starlite.types.ResponseType
