@@ -6,7 +6,7 @@ to reach the endpoint handler in question. If verification fails, the guard shou
 `NotAuthorizedException` with a `status_code` of 401.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Starlite app. As we have done
-for [authentication](8-authentication.md), we will assume that we added some sort of persistence layer without actually
+for [authentication](8-authentication/0-intro.md), we will assume that we added some sort of persistence layer without actually
 specifying it in the example.
 
 We begin by creating an `Enum` with two roles - `consumer` and `admin`:

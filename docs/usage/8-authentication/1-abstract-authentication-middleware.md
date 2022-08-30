@@ -1,37 +1,46 @@
-# Authentication
+# AbstractAuthenticationMiddleware
 
-Starlite is agnostic as to what kind of authentication mechanism(s) an app should use - you can use cookies, JWT tokens,
-OpenID connect depending on your use-case. It also does not implement any of these mechanisms for you. What it does is
-offer an opinion as to where authentication should occur, namely - as part of your middleware stack. This is in
-accordance with Starlette and many other frameworks (e.g. Django, NestJS etc.).
-
-## Authentication Middleware
-
-Starlite exports a class called `AbstractAuthenticationMiddleware`, which, as its name implies, is an Abstract Base
-Class (ABC) that implements the [middleware protocol](7-middleware/0-middleware-intro.md#the-middleware-protocol). To add authentication to
-your app simply subclass `AbstractAuthenticationMiddleware` and implement the method `authenticate_request`, which has
-the following signature:
+Starlite exports a class called `AbstractAuthenticationMiddleware`, which is an Abstract Base
+Class (ABC) that implements the [middleware protocol](../7-middleware/0-middleware-intro.md#the-middleware-protocol). To
+add authentication to your app using this class as a basis, subclass it and implement the abstract method
+`authenticate_request`:
 
 ```python
-from starlite import AuthenticationResult, Request
+from starlite import AbstractAuthenticationMiddleware, AuthenticationResult
+from starlette.requests import HTTPConnection
 
 
-async def authenticate_request(request: Request) -> AuthenticationResult:
-    ...
+class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
+    async def authenticate_request(
+        self, connection: HTTPConnection
+    ) -> AuthenticationResult:
+        # do something here.
+        ...
 ```
 
-### Example: Create a JWT Authentication Middleware
+As you can see, `authenticate_request` is an async function that receives a connection instance and is supposed to return
+an `AuthenticationResult` instance, which is a pydantic model that has two attributes:
 
-For example, lets say we wanted to implement a JWT token based authentication. We start off by creating a user model. It
-can be implemented using pydantic, and ODM, ORM etc. For the sake of the example here lets say it's a pydantic model:
+1. `user`: a non-optional value representing a user. It's typed as `Any` so it receives any value, including `None`.
+2. `auth`: an optional value representing the authentication scheme. Defaults to `None`.
 
-```python
+These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
+and `Request.auth` respectively, for HTTP route handlers, and `WebSocket.user` and `WebSocket.auth` for websocket route
+handlers.
+
+## Example: Implementing a JWTAuthenticationMiddleware
+
+Since the above is quite hard to grasp in the abstract, lets see an example.
+
+We start off by creating a user model. It can be implemented using pydantic, and ODM, ORM etc. For the sake of the
+example here lets say it's a pydantic model:
+
+```python title="my_app/db/models.py"
 import uuid
 
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
-
 
 Base = declarative_base()
 
@@ -92,7 +101,7 @@ def encode_jwt_token(user_id: UUID, expiration: timedelta = DEFAULT_TIME_DELTA) 
 
 We can now create our authentication middleware:
 
-```python
+```python title="my_app/security/authentication_middleware.py"
 from typing import cast, TYPE_CHECKING
 
 from sqlalchemy import select
@@ -115,7 +124,7 @@ API_KEY_HEADER = "X-API-KEY"
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     async def authenticate_request(
-        self, request: HTTPConnection
+            self, request: HTTPConnection
     ) -> AuthenticationResult:
         """
         Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
@@ -145,27 +154,17 @@ Finally, we need to pass our middleware to the Starlite constructor:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
+from starlite.middleware.base import DefineMiddleware
 
 from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
+auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
 
-app = Starlite(request_handlers=[...], middleware=[JWTAuthenticationMiddleware])
+app = Starlite(request_handlers=[...], middleware=[auth_mw])
 ```
 
-That's it. The `JWTAuthenticationMiddleware` will now run for every request.
-
-### Authentication Result
-
-The method `authenticate_request` specified by `AbstractAuthenticationMiddleware` expects the return value to be an
-instance of `AuthenticationResult`. This is a pydantic model that has two attributes:
-
-1. `user`: a non-optional value representing a user. It's typed as `Any` so it receives any value, including `None`.
-2. `auth`: an optional value representing the authentication scheme. Defaults to `None`.
-
-These values are then set as part of the "scope" dictionary, and they are made available as `Request.user`
-and `Request.auth` respectively, for HTTP route handlers, and `WebSocket.user` and `WebSocket.auth` for websocket route handlers.
-
-Building on the previous example, we would be able to access these in a http route handler in the following way:
+That's it. The `JWTAuthenticationMiddleware` will now run for every request and we would be able to access these in a
+http route handler in the following way:
 
 ```python
 from starlite import Request, get

@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 from hypothesis.strategies import DrawFn
 
 from starlite import HTTPRoute, get
-from starlite.asgi import PathParamPlaceholder, PathParamPlaceholderType, RouteMapNode
+from starlite.asgi import PathParamNode, PathParamPlaceholderType, RouteMapNode
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.testing import create_test_client
 
@@ -25,7 +25,7 @@ def is_path_in_route_map(route_map: RouteMapNode, path: str, path_params: Set[st
         [
             "/",
             *[
-                PathParamPlaceholder if param_pattern.fullmatch(component) else component
+                PathParamNode if param_pattern.fullmatch(component) else component
                 for component in path.split("/")
                 if component
             ],

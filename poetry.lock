@@ -88,7 +88,7 @@ name = "brotli"
 version = "1.0.9"
 description = "Python bindings for the Brotli compression library"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -610,7 +610,7 @@ xeger = "*"
 
 [[package]]
 name = "pydantic-openapi-schema"
-version = "1.0.3"
+version = "1.1.0"
 description = "OpenAPI Schema using pydantic. Forked for Starlite-API from 'openapi-schema-pydantic'."
 category = "main"
 optional = false
@@ -1024,7 +1024,7 @@ testing = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "372cef42343170bc713e84c376ca8c663e4dbea76681ab1b0139dc5ddcf26e3e"
+content-hash = "9670cd4edf2628f402d1f9c20a7ba5009e35c6c40cd5a93bca2b78344490d501"
 
 [metadata.files]
 aiosqlite = [
@@ -1626,8 +1626,8 @@ pydantic-factories = [
     {file = "pydantic_factories-1.6.0-py3-none-any.whl", hash = "sha256:aba5793a51403406f5c8bde4bd13aa7ebbb15602dfe1afd990597757cb6292a5"},
 ]
 pydantic-openapi-schema = [
-    {file = "pydantic-openapi-schema-1.0.3.tar.gz", hash = "sha256:0e1f1a1a7587467a877b01230acb1010e65d25ad145a1c2a4648d2693e32fb54"},
-    {file = "pydantic_openapi_schema-1.0.3-py3-none-any.whl", hash = "sha256:3ae36b0557610dadb8c76684314ab773bcbd56ef13529d0143cbb224b4e2a784"},
+    {file = "pydantic-openapi-schema-1.1.0.tar.gz", hash = "sha256:0be3d55355c5502c5538ea6a79d6573d021055c9e39733702e877c015294d2d4"},
+    {file = "pydantic_openapi_schema-1.1.0-py3-none-any.whl", hash = "sha256:1b639a9d6b7685183f1325e8dec6571a86a8323190c9f79a4dc4b37bbde84ffb"},
 ]
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},

@@ -1,6 +1,28 @@
+import re
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
 from inspect import getfullargspec, isawaitable, ismethod
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Tuple, Type, Union, cast
+from pathlib import Path
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
+from uuid import UUID
 
+from pydantic.datetime_parse import (
+    parse_date,
+    parse_datetime,
+    parse_duration,
+    parse_time,
+)
 from starlette.routing import Router as StarletteRouter
 
 from starlite.enums import ScopeType
@@ -18,13 +40,18 @@ if TYPE_CHECKING:
     from starlite.types import LifeCycleHandler
 
 
-class PathParamPlaceholder:
+class PathParamNode:
     """Sentinel object to represent a path param in the route map."""
 
 
-PathParamPlaceholderType = Type[PathParamPlaceholder]
+class PathParameterTypePathDesignator:
+    """Sentinel object to a path parameter of type 'path'."""
+
+
+PathParamPlaceholderType = Type[PathParamNode]
+TerminusNodePlaceholderType = Type[PathParameterTypePathDesignator]
 RouteMapNode = Dict[Union[str, PathParamPlaceholderType], Any]
-ComponentsSet = Set[Union[str, PathParamPlaceholderType]]
+ComponentsSet = Set[Union[str, PathParamPlaceholderType, TerminusNodePlaceholderType]]
 
 
 class StarliteASGIRouter(StarletteRouter):
@@ -44,12 +71,20 @@ class StarliteASGIRouter(StarletteRouter):
         """Traverses the application route mapping and retrieves the correct
         node for the request url.
 
-        Raises NotFoundException if no correlating node is found
+        Args:
+            path: The request's path.
+            scope: The ASGI connection scope.
+
+        Raises:
+             NotFoundException: if no correlating node is found.
+
+        Returns:
+            A tuple containing the target RouteMapNode and a list containing all path parameter values.
         """
         path_params: List[str] = []
         current_node = self.app.route_map
         components = ["/", *[component for component in path.split("/") if component]]
-        for component in components:
+        for idx, component in enumerate(components):
             components_set = cast("ComponentsSet", current_node["_components"])
             if component in components_set:
                 current_node = cast("RouteMapNode", current_node[component])
@@ -57,9 +92,12 @@ class StarliteASGIRouter(StarletteRouter):
                     self._handle_static_path(scope=scope, node=current_node)
                     break
                 continue
-            if PathParamPlaceholder in components_set:
+            if PathParamNode in components_set:
+                current_node = cast("RouteMapNode", current_node[PathParamNode])
+                if PathParameterTypePathDesignator in components_set:
+                    path_params.append("/".join(path.split("/")[idx:]))
+                    break
                 path_params.append(component)
-                current_node = cast("RouteMapNode", current_node[PathParamPlaceholder])
                 continue
             raise NotFoundException()
         return current_node, path_params
@@ -70,7 +108,7 @@ class StarliteASGIRouter(StarletteRouter):
         work as expected.
 
         Args:
-            scope: Request Scope
+            scope: The ASGI connection scope.
             node: Trie Node
 
         Returns:
@@ -92,19 +130,32 @@ class StarliteASGIRouter(StarletteRouter):
             request_path_parameter_values: A list of raw strings sent as path parameters as part of the request
 
         Raises:
-            ValidationException
+            ValidationException: if path parameter parsing fails
 
         Returns:
             A dictionary mapping path parameter names to parsed values
         """
         result: Dict[str, Any] = {}
+        parsers_map: Dict[Any, Callable] = {
+            str: str,
+            float: float,
+            int: int,
+            Decimal: Decimal,
+            UUID: UUID,
+            Path: lambda x: Path(re.sub("//+", "", (x.lstrip("/")))),
+            date: parse_date,
+            datetime: parse_datetime,
+            time: parse_time,
+            timedelta: parse_duration,
+        }
 
         try:
             for idx, parameter_definition in enumerate(path_parameter_definitions):
                 raw_param_value = request_path_parameter_values[idx]
                 parameter_type = parameter_definition["type"]
                 parameter_name = parameter_definition["name"]
-                result[parameter_name] = parameter_type(raw_param_value)
+                parser = parsers_map[parameter_type]
+                result[parameter_name] = parser(raw_param_value)
             return result
         except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
             raise ValidationException(

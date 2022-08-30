@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -43,22 +43,26 @@ jobs:
           key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --extras="full"
+        run: poetry install --no-interaction --no-root
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
-        run: poetry run pytest
         if: matrix.python-version != '3.10'
+        run: poetry run pytest
       - name: Test with Coverage
-        run: poetry run pytest --cov=. --cov-report=xml
         if: matrix.python-version == '3.10'
+        run: poetry run pytest --cov=. --cov-report=xml
+      - name: Test Examples
+        if: matrix.python-version == '3.10'
+        run: poetry run pytest examples/
       - uses: actions/upload-artifact@v3
+        if: matrix.python-version == '3.10'
         with:
           name: coverage-xml
           path: coverage.xml
-        if: matrix.python-version == '3.10'
   sonar:
-    needs: test
+    needs:
+      - test
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +80,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   snyk:
-    needs: test
+    needs:
+      - test
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -96,7 +101,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   codeql:
-    needs: test
+    needs:
+      - test
     runs-on: ubuntu-latest
     permissions:
       security-events: write
