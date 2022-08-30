@@ -59,8 +59,7 @@ class OpenAPIController(Controller):
             An [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If the application
-                `openapi_schema` attribute is `None`.
+            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
         """
         if not request.app.openapi_schema:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -71,14 +70,13 @@ class OpenAPIController(Controller):
         endpoints in the openapi_config.
 
         Args:
-            request: A [Starlite][starlite.connection.Request] instance.
+            request: To be tested if endpoint enabled.
 
         Returns:
             A boolean.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If the application
-                `openapi_config` attribute is `None`.
+            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -129,7 +127,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A [Response][starlite.response.Response] instance with a rendered YAML object
+            resoponse: With a rendered YAML object
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -156,7 +154,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A [Response][starlite.response.Response] instance with a rendered JSON object
+            resoponse: With a rendered YAML object
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -185,11 +183,10 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A [Response][starlite.response.Response] instance.
+            resoponse: With the rendered site defined in root_schema_site.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If the application
-                `openapi_config` attribute is `None`.
+            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
         """
         config = request.app.openapi_config
         if not config:  # pragma: no cover
@@ -213,7 +210,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A rendered html string.
+            response: With a rendered swagger documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -235,7 +232,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A [Response][starlite.response.Response] instance
+            response: With a rendered stoplight elements documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -255,7 +252,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            A [Response][starlite.response.Response] instance
+            response: With a rendered redoc documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
