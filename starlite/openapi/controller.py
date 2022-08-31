@@ -139,9 +139,9 @@ class OpenAPIController(Controller):
                 media_type=OpenAPIMediaType.OPENAPI_YAML,
             )
         return Response(
-            content=self.render_404_page(),
+            content={},
             status_code=HTTP_404_NOT_FOUND,
-            media_type=MediaType.HTML,
+            media_type=MediaType.JSON,
         )
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
@@ -166,9 +166,9 @@ class OpenAPIController(Controller):
                 media_type=OpenAPIMediaType.OPENAPI_JSON,
             )
         return Response(
-            content=self.render_404_page(),
+            content={},
             status_code=HTTP_404_NOT_FOUND,
-            media_type=MediaType.HTML,
+            media_type=MediaType.JSON,
         )
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
@@ -183,7 +183,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            resoponse: With the rendered site defined in root_schema_site.
+            A response with the rendered site defined in root_schema_site.
 
         Raises:
             ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
@@ -232,7 +232,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            response: With a rendered stoplight elements documentation site
+            A response with a rendered stoplight elements documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
@@ -252,7 +252,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            response: With a rendered redoc documentation site
+            A response with a rendered redoc documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")

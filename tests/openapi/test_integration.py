@@ -4,7 +4,7 @@ from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
 from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.enums import MediaType, OpenAPIMediaType
+from starlite.enums import OpenAPIMediaType
 from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
 
@@ -45,7 +45,6 @@ def test_openapi_yaml_not_allowed() -> None:
         assert openapi_schema.paths
         response = client.get("/schema/openapi.yaml")
         assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
 
 def test_openapi_json_not_allowed() -> None:
@@ -58,4 +57,3 @@ def test_openapi_json_not_allowed() -> None:
         assert openapi_schema.paths
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
