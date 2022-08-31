@@ -127,7 +127,7 @@ class OpenAPIController(Controller):
                 A [Request][starlite.connection.Request] instance.
 
         Returns:
-            resoponse: With a rendered YAML object
+            A Response instance with the YAML object rendered into a string.
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
