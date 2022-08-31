@@ -10,11 +10,10 @@ from starlite.signature import get_signature_model
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
-    from starlette.types import Receive, Scope, Send
 
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
-    from starlite.types import AsyncAnyCallable
+    from starlite.types import AsyncAnyCallable, Receive, Scope, Send
 
 
 class WebSocketRoute(BaseRoute):

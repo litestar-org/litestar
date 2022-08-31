@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, cast
 
 from pydantic import AnyUrl, BaseModel
 from pydantic_openapi_schema import construct_open_api_with_schema_class
@@ -106,6 +106,10 @@ class OpenAPIConfig(BaseModel):
     root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
     """
         The static schema generator to use for the "root" path of `/schema/`.
+    """
+    enabled_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
+    """
+        A set of the enabled documentation sites and schema download endpoints.
     """
 
     def to_openapi_schema(self) -> "OpenAPI":

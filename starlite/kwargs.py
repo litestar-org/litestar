@@ -151,12 +151,12 @@ class KwargsModel:
         )
 
     @classmethod
-    def _get_paramdefinitions(
+    def _get_param_definitions(
         cls,
         path_parameters: Set[str],
         layered_parameters: Dict[str, ModelField],
         dependencies: Dict[str, Provide],
-        signaturemodel_fields: Dict[str, ModelField],
+        signature_model_fields: Dict[str, ModelField],
     ) -> Tuple[Set[ParameterDefinition], set]:
         """This function gets parameter_definitions for the construction of
         KwargsModel instance.
@@ -165,15 +165,15 @@ class KwargsModel:
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
             dependencies: A string keyed dictionary mapping dependency providers.
-            signaturemodel_fields: __fields__ definition from SignatureModel.
+            signature_model_fields: __fields__ definition from SignatureModel.
 
         Returns:
-            Set of ParameterDefinitions
+            A Tuple of sets
         """
         expected_dependencies = {
             cls._create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
-            if key in signaturemodel_fields
+            if key in signature_model_fields
         }
         ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
 
@@ -187,7 +187,7 @@ class KwargsModel:
                     is_sequence=model_field.shape in SEQ_SHAPES,
                 )
                 for field_name, model_field in layered_parameters.items()
-                if field_name not in ignored_keys and field_name not in signaturemodel_fields
+                if field_name not in ignored_keys and field_name not in signature_model_fields
             ),
             *(
                 cls._create_parameter_definition(
@@ -197,14 +197,14 @@ class KwargsModel:
                     path_parameters=path_parameters,
                     is_sequence=model_field.shape in SEQ_SHAPES,
                 )
-                for field_name, model_field in signaturemodel_fields.items()
+                for field_name, model_field in signature_model_fields.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
             ),
         }
 
         for field_name, model_field in filter(
             lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
-            signaturemodel_fields.items(),
+            signature_model_fields.items(),
         ):
             layer_field_info = layered_parameters[field_name].field_info
             signature_field_info = model_field.field_info
@@ -263,8 +263,8 @@ class KwargsModel:
             field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
         }
 
-        param_definitions, expected_dependencies = cls._get_paramdefinitions(
-            path_parameters, layered_parameters, dependencies, signaturemodel_fields=signature_model.__fields__
+        param_definitions, expected_dependencies = cls._get_param_definitions(
+            path_parameters, layered_parameters, dependencies, signature_model_fields=signature_model.__fields__
         )
 
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}

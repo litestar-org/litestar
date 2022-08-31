@@ -24,9 +24,9 @@ from starlite.handlers import (
 from starlite.provide import Provide
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
-    AfterRequestHandler,
-    AfterResponseHandler,
-    BeforeRequestHandler,
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
     ControllerRouterHandler,
     ExceptionHandler,
     Guard,
@@ -74,9 +74,9 @@ class Router:
         self,
         path: str,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,

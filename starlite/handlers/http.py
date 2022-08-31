@@ -43,9 +43,9 @@ from starlite.plugins import get_plugin_for_value
 from starlite.provide import Provide
 from starlite.response import Response
 from starlite.types import (
-    AfterRequestHandler,
-    AfterResponseHandler,
-    BeforeRequestHandler,
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeRequestHookHandler,
     CacheKeyBuilder,
     Empty,
     EmptyType,
@@ -126,7 +126,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
 
 
 def _create_response_container_handler(
-    after_request: Optional["AfterRequestHandler"],
+    after_request: Optional["AfterRequestHookHandler"],
     cookies: "ResponseCookies",
     headers: Dict[str, Any],
     media_type: str,
@@ -134,7 +134,7 @@ def _create_response_container_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for ResponseContainers."""
 
-    async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Any) -> StarletteResponse:
         normalized_headers = {**_normalize_headers(headers), **data.headers}
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         response = data.to_response(app=app, headers=normalized_headers, status_code=status_code, media_type=media_type)
@@ -146,11 +146,11 @@ def _create_response_container_handler(
 
 
 def _create_response_handler(
-    after_request: Optional["AfterRequestHandler"], cookies: "ResponseCookies"
+    after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlite Responses."""
 
-    async def handler(data: Response, **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: Response, **kwargs: Any) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         for cookie in normalized_cookies:
             data.set_cookie(**cookie)
@@ -160,11 +160,11 @@ def _create_response_handler(
 
 
 def _create_starlette_response_handler(
-    after_request: Optional["AfterRequestHandler"], cookies: "ResponseCookies"
+    after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlette Responses."""
 
-    async def handler(data: StarletteResponse, **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: StarletteResponse, **kwargs: Any) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(cookies, [])
         for cookie in normalized_cookies:
             data.set_cookie(**cookie)
@@ -174,7 +174,7 @@ def _create_starlette_response_handler(
 
 
 def _create_data_handler(
-    after_request: Optional["AfterRequestHandler"],
+    after_request: Optional["AfterRequestHookHandler"],
     background: Optional[Union["BackgroundTask", "BackgroundTasks"]],
     cookies: "ResponseCookies",
     headers: Dict[str, Any],
@@ -184,7 +184,7 @@ def _create_data_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for arbitrary data."""
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> StarletteResponse:
         data = await _normalize_response_data(data=data, plugins=plugins)
         normalized_cookies = _normalize_cookies(cookies, [])
         response = response_class(
@@ -240,10 +240,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -374,8 +374,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.tags = tags
         self.security = security
         # memoized attributes, defaulted to Empty
-        self._resolved_after_response: Union[Optional[AfterResponseHandler], EmptyType] = Empty
-        self._resolved_before_request: Union[Optional[BeforeRequestHandler], EmptyType] = Empty
+        self._resolved_after_response: Union[Optional[AfterResponseHookHandler], EmptyType] = Empty
+        self._resolved_before_request: Union[Optional[BeforeRequestHookHandler], EmptyType] = Empty
         self._resolved_response_handler: Union["Callable[[Any], Awaitable[StarletteResponse]]", EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
@@ -427,7 +427,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 filtered_cookies.append(cookie)
         return filtered_cookies
 
-    def resolve_before_request(self) -> Optional["BeforeRequestHandler"]:
+    def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
         """Resolves the before_handler handler by starting from the route
         handler and moving up.
 
@@ -435,19 +435,19 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [before request lifecycle hook handler][starlite.types.BeforeRequestHandler]
+            An optional [before request lifecycle hook handler][starlite.types.BeforeRequestHookHandler]
         """
         if self._resolved_before_request is Empty:
             before_request_handlers = [
                 AsyncCallable(layer.before_request) for layer in self.ownership_layers if layer.before_request
             ]
             self._resolved_before_request = cast(
-                "Optional[BeforeRequestHandler]",
+                "Optional[BeforeRequestHookHandler]",
                 AsyncCallable(before_request_handlers[-1]) if before_request_handlers else None,
             )
-        return cast("Optional[BeforeRequestHandler]", self._resolved_before_request)
+        return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
 
-    def resolve_after_response(self) -> Optional["AfterResponseHandler"]:
+    def resolve_after_response(self) -> Optional["AfterResponseHookHandler"]:
         """Resolves the after_response handler by starting from the route
         handler and moving up.
 
@@ -455,16 +455,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [after response lifecycle hook handler][starlite.types.AfterResponseHandler]
+            An optional [after response lifecycle hook handler][starlite.types.AfterResponseHookHandler]
         """
         if self._resolved_after_response is Empty:
             after_response_handlers = [layer.after_response for layer in self.ownership_layers if layer.after_response]
             self._resolved_after_response = cast(
-                "Optional[AfterResponseHandler]",
+                "Optional[AfterResponseHookHandler]",
                 AsyncCallable(after_response_handlers[-1]) if after_response_handlers else None,
             )
 
-        return cast("Optional[AfterResponseHandler]", self._resolved_after_response)
+        return cast("Optional[AfterResponseHookHandler]", self._resolved_after_response)
 
     def resolve_response_handler(
         self,
@@ -479,7 +479,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if self._resolved_response_handler is Empty:
             after_request_handlers = [layer.after_request for layer in self.ownership_layers if layer.after_request]
             after_request = cast(
-                "Optional[AfterRequestHandler]",
+                "Optional[AfterRequestHookHandler]",
                 AsyncCallable(after_request_handlers[-1]) if after_request_handlers else None,  # type: ignore[arg-type]
             )
 
@@ -585,10 +585,10 @@ class get(HTTPRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -706,10 +706,10 @@ class post(HTTPRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -827,10 +827,10 @@ class put(HTTPRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -948,10 +948,10 @@ class patch(HTTPRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
@@ -1069,10 +1069,10 @@ class delete(HTTPRouteHandler):
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,

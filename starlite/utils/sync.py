@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Awaitable, Callable, Generic, TypeVar
+from typing import Awaitable, Callable, Generic, List, TypeVar, Union
 
 from anyio.to_thread import run_sync
 from typing_extensions import ParamSpec
@@ -28,3 +28,17 @@ class AsyncCallable(Generic[P, T]):
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return await self.fn(*args, **kwargs)
+
+
+def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:
+    """
+    Helper function to handle wrapping values in AsyncCallables
+    Args:
+        value: A callable or list of callables.
+
+    Returns:
+        A list of AsyncCallable instances
+    """
+    if not isinstance(value, list):
+        return [AsyncCallable(value)]
+    return [AsyncCallable(v) for v in value]

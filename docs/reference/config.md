@@ -65,6 +65,7 @@
             - use_handler_docstrings
             - version
             - webhooks
+            - enabled_endpoints
 
 ::: starlite.config.static_files.StaticFilesConfig
     options:

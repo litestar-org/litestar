@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
-from uuid import uuid1, uuid4
+from uuid import UUID, uuid1, uuid4
 
 import pytest
 from pydantic import UUID4
@@ -122,14 +122,14 @@ def test_duplicate_path_param_validation() -> None:
 @pytest.mark.parametrize(
     "param_type_name, param_type_class, value",
     [
-        # ["str", str, "abc"],
-        # ["int", int, 1],
-        # ["float", float, 1.01],
-        # ["uuid", UUID, uuid4()],
-        # ["decimal", Decimal, Decimal("1.00001")],
-        # ["date", date, date.today().isoformat()],
-        # ["datetime", datetime, datetime.now().isoformat()],
-        # ["timedelta", timedelta, timedelta(days=1).total_seconds()],
+        ["str", str, "abc"],
+        ["int", int, 1],
+        ["float", float, 1.01],
+        ["uuid", UUID, uuid4()],
+        ["decimal", Decimal, Decimal("1.00001")],
+        ["date", date, date.today().isoformat()],
+        ["datetime", datetime, datetime.now().isoformat()],
+        ["timedelta", timedelta, timedelta(days=1).total_seconds()],
         ["path", Path, "/1/2/3/4/some-file.txt"],
     ],
 )

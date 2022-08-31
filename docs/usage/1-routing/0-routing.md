@@ -4,11 +4,6 @@ Although `Starlite` builds on the `Starlette` ASGI toolkit as a basis, it does n
 which uses regex matching, and instead it implements its own solution that is based on the concept of a
 [radix tree](https://en.wikipedia.org/wiki/Radix_tree) or `trie`.
 
-!!! important
-    We are currently in the processes of porting the `Starlite` routing system into __rust__, which will increase the
-    framework's velocity by an order of magnitude. You can read more about this in
-    [the following GitHub issue](https://github.com/starlite-api/starlite/issues/177).
-
 ## Why Radix Based Routing?
 
 The regex matching used by `Starlette` (and `FastAPI` etc.) is very good at resolving path parameters fast, giving it

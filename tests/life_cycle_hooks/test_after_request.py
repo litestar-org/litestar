@@ -4,7 +4,7 @@ import pytest
 
 from starlite import Controller, HTTPRouteHandler, Response, Router, get
 from starlite.testing import create_test_client
-from starlite.types import AfterRequestHandler
+from starlite.types import AfterRequestHookHandler
 
 
 def greet() -> dict:
@@ -58,10 +58,10 @@ def test_after_request_handler_called(handler: HTTPRouteHandler, expected: dict)
     ],
 )
 def test_after_request_handler_resolution(
-    app_after_request_handler: Optional[AfterRequestHandler],
-    router_after_request_handler: Optional[AfterRequestHandler],
-    controller_after_request_handler: Optional[AfterRequestHandler],
-    method_after_request_handler: Optional[AfterRequestHandler],
+    app_after_request_handler: Optional[AfterRequestHookHandler],
+    router_after_request_handler: Optional[AfterRequestHookHandler],
+    controller_after_request_handler: Optional[AfterRequestHookHandler],
+    method_after_request_handler: Optional[AfterRequestHookHandler],
     expected: dict,
 ) -> None:
     class MyController(Controller):

@@ -20,3 +20,5 @@
             - render_swagger_ui
             - render_stoplight_elements
             - render_redoc
+            - should_serve_endpoint
+            - render_404_page

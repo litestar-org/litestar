@@ -202,4 +202,4 @@ def Dependency(*, default: Any = Undefined, skip_validation: bool = False) -> An
         skip_validation (bool, optional): If `True` provided dependency values are not validated by signature model.
     """
     extra: Dict[str, Any] = {EXTRA_KEY_IS_DEPENDENCY: True, EXTRA_KEY_SKIP_VALIDATION: skip_validation}
-    return Field(default, **extra)
+    return Field(default, **extra)  # type: ignore[pydantic-field]
