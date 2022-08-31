@@ -6,7 +6,6 @@ jobs:
   test_minimal_app:
     # tests the hello-world example against a minimal install
     name: Test Minimal Application with Base Dependencies
-    needs: validate
     runs-on: ubuntu-latest
     env:
       python_version: "3.10"
