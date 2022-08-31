@@ -126,10 +126,10 @@ class SessionMiddleware(MiddlewareProtocol):
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
         serialized = dumps(data, default=Response.serializer, option=OPT_SERIALIZE_NUMPY)
-        aad = dumps({"time_to_live": round(time.time()) + self.config.max_age})
+        associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
-        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=aad)
-        encoded = b64encode(nonce + encrypted + AAD + aad)
+        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
+        encoded = b64encode(nonce + encrypted + AAD + associated_data)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
 
     def load_data(self, data: List[bytes]) -> Any:
@@ -144,15 +144,15 @@ class SessionMiddleware(MiddlewareProtocol):
         decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
 
-        aad = None
-        aad_footer = decoded.find(AAD)
-        if aad_footer != -1:
-            aad = decoded[aad_footer:].replace(AAD, b"")
+        associated_data = None
+        aad_starts_from = decoded.find(AAD)
+        if aad_starts_from != -1:
+            associated_data = decoded[aad_starts_from:].replace(AAD, b"")
 
-        encrypted_session = decoded[NONCE_SIZE:aad_footer]
-        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=aad)
+        encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
+        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
 
-        session_validation = loads(aad)["time_to_live"] > round(time.time())
+        session_validation = loads(associated_data)["expires_at"] > round(time.time())
         return loads(decrypted) if session_validation else {}
 
     def create_send_wrapper(
