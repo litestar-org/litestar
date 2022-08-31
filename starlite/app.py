@@ -36,31 +36,36 @@ from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types import (
-    AfterRequestHandler,
-    AfterResponseHandler,
-    BeforeRequestHandler,
+    AfterExceptionHookHandler,
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    BeforeMessageSendHookHandler,
+    BeforeRequestHookHandler,
     ControllerRouterHandler,
     ExceptionHandlersMap,
     Guard,
-    LifeCycleHandler,
+    LifeSpanHandler,
+    LifeSpanHookHandler,
     Middleware,
     ParametersMap,
     ResponseCookies,
     ResponseHeadersMap,
     ResponseType,
+    SingleOrList,
 )
+from starlite.utils.sync import as_async_callable_list
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-    from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
     from starlite.handlers.asgi import ASGIRouteHandler
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -93,9 +98,15 @@ class Starlite(Router):
         "_registered_routes",
         "_route_handler_index",
         "_static_paths",
+        "after_exception",
+        "after_shutdown",
+        "after_startup",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
+        "before_send",
+        "before_shutdown",
+        "before_startup",
         "cache",
         "compression_config",
         "cors_config",
@@ -118,10 +129,16 @@ class Starlite(Router):
         self,
         route_handlers: List[ControllerRouterHandler],
         *,
-        after_request: Optional[AfterRequestHandler] = None,
-        after_response: Optional[AfterResponseHandler] = None,
+        after_exception: Optional[SingleOrList[AfterExceptionHookHandler]] = None,
+        after_request: Optional[AfterRequestHookHandler] = None,
+        after_response: Optional[AfterResponseHookHandler] = None,
+        after_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        after_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
         allowed_hosts: Optional[List[str]] = None,
-        before_request: Optional[BeforeRequestHandler] = None,
+        before_request: Optional[BeforeRequestHookHandler] = None,
+        before_send: Optional[SingleOrList[BeforeMessageSendHookHandler]] = None,
+        before_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        before_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
         compression_config: Optional[CompressionConfig] = None,
         cors_config: Optional[CORSConfig] = None,
@@ -131,18 +148,18 @@ class Starlite(Router):
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
-        on_shutdown: Optional[List[LifeCycleHandler]] = None,
-        on_startup: Optional[List[LifeCycleHandler]] = None,
+        on_shutdown: Optional[List[LifeSpanHandler]] = None,
+        on_startup: Optional[List[LifeSpanHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         parameters: Optional[ParametersMap] = None,
         plugins: Optional[List[PluginProtocol]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
-        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
-        template_config: Optional[TemplateConfig] = None,
         security: Optional[List[SecurityRequirement]] = None,
+        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         tags: Optional[List[str]] = None,
+        template_config: Optional[TemplateConfig] = None,
     ):
         """The Starlite application.
 
@@ -152,15 +169,32 @@ class Starlite(Router):
         It inherits from the [Router][starlite.router.Router] class.
 
         Args:
+            after_exception: An application level [exception hook handler][starlite.types.AfterExceptionHookHandler]
+                or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
+                it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object which may be either an instance of
                 [Response][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
+            after_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown'
+                list have been called.
+            after_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI startup, after all callables in the 'on_startup'
+                list have been called.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
-            before_request: A sync or async function called immediately before calling the route handler. Receives
-                the [Request][starlite.connection.Request] instance and any non-`None` return value is used for the response,
-                bypassing the route handler.
+            before_request: A sync or async function called immediately before calling the route handler.
+                Receives the [Request][starlite.connection.Request] instance and any non-`None` return value is
+                used for the response, bypassing the route handler.
+            before_send: An application level [before send hook handler][starlite.types.BeforeMessageSendHookHandler] or
+                list thereof. This hook is called when the ASGI send function is called.
+            before_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown'
+                list have been called.
+            before_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI startup, before any callables in the 'on_startup'
+                list have been called.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
@@ -171,9 +205,10 @@ class Starlite(Router):
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
-            on_shutdown: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application
-                shutdown.
-            on_startup: A list of [LifeCycleHandler][starlite.types.LifeCycleHandler] called during application startup.
+            on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
+                application shutdown.
+            on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
+                application startup.
             openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
             parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
                 application paths.
@@ -183,34 +218,41 @@ class Starlite(Router):
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
             route_handlers: A required list of route handlers, which can include instances of
-                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
-                function decorated by the route handler decorators.
+                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or
+                any function decorated by the route handler decorators.
+            security: A list of dictionaries that will be added to the schema of all route handlers in the application.
+                See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
-            template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
-            security: A list of dictionaries that will be added to the schema of all route handlers in the application. See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
+            template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
 
         self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
+        self.after_exception = as_async_callable_list(after_exception) if after_exception else []
+        self.after_shutdown = as_async_callable_list(after_shutdown) if after_shutdown else []
+        self.after_startup = as_async_callable_list(after_startup) if after_startup else []
         self.allowed_hosts = allowed_hosts
+        self.before_send = as_async_callable_list(before_send) if before_send else []
+        self.before_shutdown = as_async_callable_list(before_shutdown) if before_shutdown else []
+        self.before_startup = as_async_callable_list(before_startup) if before_startup else []
         self.cache = cache_config.to_cache()
         self.compression_config = compression_config
         self.cors_config = cors_config
         self.csrf_config = csrf_config
-        self.openapi_config = openapi_config
-        self.static_files_config = static_files_config
         self.debug = debug
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
+        self.openapi_config = openapi_config
         self.openapi_schema: Optional["OpenAPI"] = None
         self.plain_routes: Set[str] = set()
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
+        self.static_files_config = static_files_config
         self.template_engine = create_template_engine(template_config)
         super().__init__(
             after_request=after_request,
@@ -253,15 +295,22 @@ class Starlite(Router):
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The application entry point.
 
-        Lifespan events (startup / shutdown) are sent to the lifespan
-        handler, otherwise the ASGI handler is used
+        Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, send)
+        await self.asgi_handler(scope, receive, self._wrap_send(send))
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -359,6 +408,7 @@ class Starlite(Router):
         """
         current_node = self.route_map
         path = route.path
+
         if route.path_parameters or path in self._static_paths:
             components = cast(
                 "List[Union[str, PathParamPlaceholderType, PathParameterDefinition]]", ["/", *route.path_components]
@@ -492,3 +542,22 @@ class Starlite(Router):
                     plugins=self.plugins,
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
+
+    def _wrap_send(self, send: "Send") -> "Send":
+        """Wraps the ASGI send and handles any 'before send' hooks.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            An ASGI send function.
+        """
+        if self.before_send:
+
+            async def wrapped_send(message: "Message") -> None:
+                for hook in self.before_send:
+                    await hook(message, self.state)
+                await send(message)
+
+            return wrapped_send
+        return send

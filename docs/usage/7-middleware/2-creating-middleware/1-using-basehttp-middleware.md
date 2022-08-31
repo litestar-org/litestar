@@ -33,7 +33,7 @@ import logging
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.types import ASGIApp
+from starlite.types import ASGIApp
 
 logger = logging.getLogger(__name__)
 

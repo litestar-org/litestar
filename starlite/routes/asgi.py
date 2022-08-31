@@ -9,9 +9,9 @@ from starlite.routes.base import BaseRoute
 
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
-    from starlette.types import Receive, Scope, Send
 
     from starlite.handlers.asgi import ASGIRouteHandler
+    from starlite.types import Receive, Scope, Send
 
 
 class ASGIRoute(BaseRoute):

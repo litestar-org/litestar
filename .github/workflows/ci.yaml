@@ -51,10 +51,7 @@ jobs:
         run: poetry run pytest
       - name: Test with Coverage
         if: matrix.python-version == '3.10'
-        run: poetry run pytest --cov=. --cov-report=xml
-      - name: Test Examples
-        if: matrix.python-version == '3.10'
-        run: poetry run pytest examples/
+        run: poetry run pytest tests examples --cov=. --cov-report=xml
       - uses: actions/upload-artifact@v3
         if: matrix.python-version == '3.10'
         with:

@@ -10,7 +10,7 @@ from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
 
 try:

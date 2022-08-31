@@ -163,7 +163,7 @@ auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
 app = Starlite(request_handlers=[...], middleware=[auth_mw])
 ```
 
-That's it. The `JWTAuthenticationMiddleware` will now run for every request and we would be able to access these in a
+That's it. The `JWTAuthenticationMiddleware` will now run for every request, and we would be able to access these in a
 http route handler in the following way:
 
 ```python
