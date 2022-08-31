@@ -53,7 +53,7 @@ class DefineMiddleware:
             *args: Positional arguments to pass to the callable.
             **kwargs: Key word arguments to pass to the callable.
 
-        !!! Note
+        Notes:
             The callable will be passed a kwarg `app`, which is the next ASGI app to call in the middleware stack.
             It therefore must define such a kwarg.
         """
