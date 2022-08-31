@@ -66,7 +66,7 @@ class OpenAPIController(Controller):
         return request.app.openapi_schema
 
     def should_serve_endpoint(self, request: Request) -> bool:
-        """This method verifies that the requested path is within the allowed
+        """This method verifies that the requested path is within the enabled
         endpoints in the openapi_config.
 
         Args:
