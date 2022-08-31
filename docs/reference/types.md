@@ -1,6 +1,6 @@
 # types
 
-::: starlite.types.H
+::: starlite.types.T
 
 ::: starlite.types.AfterExceptionHookHandler
 
