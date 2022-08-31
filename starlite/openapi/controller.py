@@ -79,7 +79,7 @@ class OpenAPIController(Controller):
             ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException("Starlite has not been instantiated with an OpenAPIConfig")
 
         request_path = set(filter(None, request.url.path.split("/")))
         root_path = set(filter(None, self.path.split("/")))
