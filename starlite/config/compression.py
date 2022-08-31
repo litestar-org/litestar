@@ -8,9 +8,8 @@ from starlite.utils import import_string
 if TYPE_CHECKING:
     from typing import Type
 
-    from starlette.types import ASGIApp
-
     from starlite.middleware.base import MiddlewareProtocol
+    from starlite.types import ASGIApp
 
 
 class CompressionConfig(BaseModel):

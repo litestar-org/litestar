@@ -6,7 +6,7 @@ from starlette.requests import HTTPConnection
 from starlite import Provide, Request, Starlite, State, get
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 

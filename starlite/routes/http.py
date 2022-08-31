@@ -17,12 +17,11 @@ from starlite.utils import is_async_callable
 if TYPE_CHECKING:
     from pydantic.typing import AnyCallable
     from starlette.responses import Response as StarletteResponse
-    from starlette.types import Receive, Scope, Send
 
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.response import Response
-    from starlite.types import Method
+    from starlite.types import Method, Receive, Scope, Send
 
 
 class HTTPRoute(BaseRoute):

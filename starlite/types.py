@@ -5,6 +5,7 @@ from typing import (
     Callable,
     Dict,
     List,
+    MutableMapping,
     Type,
     TypeVar,
     Union,
@@ -21,7 +22,6 @@ from starlite.exceptions import HTTPException
 if TYPE_CHECKING:
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
-    from starlette.types import ASGIApp, Message, Receive, Scope, Send  # noqa: TC004
 
     from starlite.app import Starlite  # noqa: TC004
     from starlite.connection import Request, WebSocket  # noqa: TC004
@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
-    ASGIApp = Any
     BaseHTTPMiddleware = Any
     BaseRouteHandler = Any
     Controller = Any
@@ -52,12 +51,18 @@ else:
     Response = Any
     ResponseHeader = Any
     Router = Any
-    Scope = Any
     StarletteMiddleware = Any
     Starlite = Any
     State = Any
     WebSocket = Any
     WebsocketRouteHandler = Any
+
+# ASGI types - ported from 'starlette.types'
+Scope = MutableMapping[str, Any]
+Message = MutableMapping[str, Any]
+Receive = Callable[[], Awaitable[Message]]
+Send = Callable[[Message], Awaitable[None]]
+ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 
 
 class Empty:
@@ -101,13 +106,7 @@ ResponseType = Type[Response]
 
 
 __all__ = [
-    # reexported types
     "ASGIApp",
-    "Scope",
-    "Receive",
-    "Send",
-    "Message",
-    # locally declared types
     "AfterExceptionHookHandler",
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
@@ -125,12 +124,16 @@ __all__ = [
     "Guard",
     "LifeSpanHandler",
     "LifeSpanHookHandler",
+    "Message",
     "Method",
     "Middleware",
     "ParametersMap",
+    "Receive",
     "ReservedKwargs",
     "ResponseCookies",
     "ResponseHeadersMap",
     "ResponseType",
+    "Scope",
+    "Send",
     "SyncOrAsyncUnion",
 ]

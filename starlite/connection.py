@@ -11,11 +11,10 @@ from starlite.parsers import parse_query_params
 from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from starlette.types import Receive, Scope, Send
     from typing_extensions import Literal
 
     from starlite.app import Starlite
-    from starlite.types import Method
+    from starlite.types import Method, Receive, Scope, Send
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")

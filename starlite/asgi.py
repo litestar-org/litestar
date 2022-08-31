@@ -33,11 +33,9 @@ from starlite.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
-
     from starlite.app import Starlite
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import LifeSpanHandler
+    from starlite.types import ASGIApp, LifeSpanHandler, Receive, Scope, Send
 
 
 class PathParamNode:

@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
-from starlette.types import Receive, Scope, Send
 from starlette.websockets import WebSocketDisconnect
 
 from starlite import (
@@ -17,6 +16,7 @@ from starlite import (
 from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException
 from starlite.testing import create_test_client
+from starlite.types import Receive, Scope, Send
 
 if TYPE_CHECKING:
     from starlette.requests import HTTPConnection

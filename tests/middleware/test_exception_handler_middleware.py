@@ -10,9 +10,8 @@ from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlette.types import Scope
-
     from starlite.datastructures import State
+    from starlite.types import Scope
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:

@@ -8,9 +8,8 @@ from starlite import HTTPException, Starlite, get
 logger = logging.getLogger()
 
 if TYPE_CHECKING:
-    from starlette.types import Scope
-
     from starlite.datastructures import State
+    from starlite.types import Scope
 
 
 @get("/some-path")

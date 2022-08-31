@@ -13,10 +13,9 @@ from starlite.utils.exception import get_exception_handler
 if TYPE_CHECKING:
 
     from starlette.responses import Response as StarletteResponse
-    from starlette.types import ASGIApp, Receive, Scope, Send
 
     from starlite.app import Starlite
-    from starlite.types import ExceptionHandlersMap
+    from starlite.types import ASGIApp, ExceptionHandlersMap, Receive, Scope, Send
 
 
 class ExceptionHandlerMiddleware(MiddlewareProtocol):
