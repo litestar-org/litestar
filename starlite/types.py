@@ -13,23 +13,23 @@ from typing import (
 from pydantic.fields import FieldInfo
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
 from typing_extensions import Literal
 
 from starlite.exceptions import HTTPException
 
 if TYPE_CHECKING:
-
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
-    from starlette.types import ASGIApp, Scope  # noqa: TC004
+    from starlette.types import ASGIApp, Message, Receive, Scope, Send  # noqa: TC004
 
     from starlite.app import Starlite  # noqa: TC004
-    from starlite.connection import Request  # noqa: TC004
+    from starlite.connection import Request, WebSocket  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import Cookie, ResponseHeader, State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.handlers.http import HTTPRouteHandler  # noqa: TC004
+    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: TC004
     from starlite.middleware.base import (  # noqa: TC004
         DefineMiddleware,
         MiddlewareProtocol,
@@ -39,72 +39,25 @@ if TYPE_CHECKING:
     from starlite.router import Router  # noqa: TC004
 else:
     ASGIApp = Any
-    Request = Any
-    WebSocket = Any
+    BaseHTTPMiddleware = Any
     BaseRouteHandler = Any
     Controller = Any
-    Router = Any
-    State = Any
-    Response = Any
-    MiddlewareProtocol = Any
-    StarletteMiddleware = Any
-    BaseHTTPMiddleware = Any
-    DefineMiddleware = Any
-    Provide = Any
-    ResponseHeader = Any
     Cookie = Any
-    Starlite = Any
+    DefineMiddleware = Any
+    HTTPRouteHandler = Any
+    Message = Any
+    MiddlewareProtocol = Any
+    Provide = Any
+    Request = Any
+    Response = Any
+    ResponseHeader = Any
+    Router = Any
     Scope = Any
-
-H = TypeVar("H", bound=HTTPConnection)
-
-Middleware = Union[
-    StarletteMiddleware,
-    DefineMiddleware,
-    Type[BaseHTTPMiddleware],
-    Type[MiddlewareProtocol],
-    Callable[..., ASGIApp],
-]
-ResponseType = Type[Response]
-ExceptionHandler = Callable[
-    [Request, Union[Exception, HTTPException, StarletteHTTPException]], Union[Response, StarletteResponse]
-]
-ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-LifeSpanHandler = Union[
-    Callable[[], Any],
-    Callable[[State], Any],
-    Callable[[], Awaitable[Any]],
-    Callable[[State], Awaitable[Any]],
-]
-Guard = Union[Callable[[H, BaseRouteHandler], Awaitable[None]], Callable[[H, BaseRouteHandler], None]]
-Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
-ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
-ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
-Dependencies = Dict[str, Provide]
-ParametersMap = Dict[str, FieldInfo]
-ResponseHeadersMap = Dict[str, ResponseHeader]
-ResponseCookies = List[Cookie]
-
-# connection-lifecycle hook handlers, these are layered on the app, i.e. are defined on all layers
-BeforeRequestHookHandler = Union[Callable[[Request], Any], Callable[[Request], Awaitable[Any]]]
-AfterRequestHookHandler = Union[
-    Callable[[Response], Response],
-    Callable[[Response], Awaitable[Response]],
-    Callable[[StarletteResponse], StarletteResponse],
-    Callable[[StarletteResponse], Awaitable[StarletteResponse]],
-]
-AfterResponseHookHandler = Union[Callable[[Request], None], Callable[[Request], Awaitable[None]]]
-
-# application level hook handlers, these are defined only on the app level.
-LifeSpanHookHandler = Union[
-    Callable[[Starlite], None], Callable[[Starlite], Awaitable[None]]
-]  # fires before / after startup / shutdown
-AfterExceptionHookHandler = Union[
-    Callable[[Exception, Scope, State], None], Callable[[Exception, Scope, State], Awaitable[None]]
-]
-
-AsyncAnyCallable = Callable[..., Awaitable[Any]]
-CacheKeyBuilder = Callable[[Request], str]
+    StarletteMiddleware = Any
+    Starlite = Any
+    State = Any
+    WebSocket = Any
+    WebsocketRouteHandler = Any
 
 
 class Empty:
@@ -112,3 +65,72 @@ class Empty:
 
 
 EmptyType = Type[Empty]
+
+T = TypeVar("T")
+SyncOrAsyncUnion = Union[T, Awaitable[T]]
+
+AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
+AfterRequestHookHandler = Union[
+    Callable[[StarletteResponse], SyncOrAsyncUnion[StarletteResponse]], Callable[[Response], SyncOrAsyncUnion[Response]]
+]
+AfterResponseHookHandler = Callable[[Request], Union[None, Awaitable[None]]]  # noqa: SIM907
+AsyncAnyCallable = Callable[..., Awaitable[Any]]
+BeforeMessageSend = Callable[[Message, State], SyncOrAsyncUnion[None]]
+BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
+BeforeRoutingHandler = Callable[[Scope, State], SyncOrAsyncUnion[None]]
+CacheKeyBuilder = Callable[[Request], str]
+ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
+Dependencies = Dict[str, Provide]
+ExceptionHandler = Callable[[Request, Union[Exception, HTTPException, StarletteHTTPException]], StarletteResponse]
+ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
+Guard = Union[
+    Callable[[Request, HTTPRouteHandler], SyncOrAsyncUnion[None]],
+    Callable[[WebSocket, WebsocketRouteHandler], SyncOrAsyncUnion[None]],
+]
+LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
+LifeSpanHookHandler = Callable[[Starlite], SyncOrAsyncUnion[None]]
+Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
+Middleware = Union[
+    Callable[..., ASGIApp], DefineMiddleware, StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]
+]
+ParametersMap = Dict[str, FieldInfo]
+ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
+ResponseCookies = List[Cookie]
+ResponseHeadersMap = Dict[str, ResponseHeader]
+ResponseType = Type[Response]
+
+
+__all__ = [
+    # reexported types
+    "ASGIApp",
+    "Scope",
+    "Receive",
+    "Send",
+    "Message",
+    # locally declared types
+    "AfterExceptionHookHandler",
+    "AfterRequestHookHandler",
+    "AfterResponseHookHandler",
+    "AsyncAnyCallable",
+    "BeforeMessageSend",
+    "BeforeRequestHookHandler",
+    "BeforeRoutingHandler",
+    "CacheKeyBuilder",
+    "ControllerRouterHandler",
+    "Dependencies",
+    "Empty",
+    "EmptyType",
+    "ExceptionHandler",
+    "ExceptionHandlersMap",
+    "Guard",
+    "LifeSpanHandler",
+    "LifeSpanHookHandler",
+    "Method",
+    "Middleware",
+    "ParametersMap",
+    "ReservedKwargs",
+    "ResponseCookies",
+    "ResponseHeadersMap",
+    "ResponseType",
+    "SyncOrAsyncUnion",
+]
