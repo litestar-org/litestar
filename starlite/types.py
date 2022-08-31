@@ -72,6 +72,7 @@ EmptyType = Type[Empty]
 
 T = TypeVar("T")
 SyncOrAsyncUnion = Union[T, Awaitable[T]]
+SingleOrList = Union[T, List[T]]
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
@@ -79,9 +80,8 @@ AfterRequestHookHandler = Union[
 ]
 AfterResponseHookHandler = Callable[[Request], Union[None, Awaitable[None]]]  # noqa: SIM907
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
-BeforeMessageSend = Callable[[Message, State], SyncOrAsyncUnion[None]]
+BeforeMessageSendHookHandler = Callable[[Message, State], SyncOrAsyncUnion[None]]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
-BeforeRoutingHandler = Callable[[Scope, State], SyncOrAsyncUnion[None]]
 CacheKeyBuilder = Callable[[Request], str]
 ControllerRouterHandler = Union[Type[Controller], BaseRouteHandler, Router, AnyCallable]
 Dependencies = Dict[str, Provide]
@@ -110,9 +110,8 @@ __all__ = [
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
     "AsyncAnyCallable",
-    "BeforeMessageSend",
+    "BeforeMessageSendHookHandler",
     "BeforeRequestHookHandler",
-    "BeforeRoutingHandler",
     "CacheKeyBuilder",
     "ControllerRouterHandler",
     "Dependencies",
@@ -135,4 +134,5 @@ __all__ = [
     "Scope",
     "Send",
     "SyncOrAsyncUnion",
+    "SingleOrList",
 ]

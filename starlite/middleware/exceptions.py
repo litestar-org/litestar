@@ -40,8 +40,8 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
         except Exception as exc:  # pylint: disable=broad-except
             starlite_app = cast("Starlite", scope["app"])
-            if starlite_app.after_exception:
-                await starlite_app.after_exception(exc, scope, starlite_app.state)
+            for hook in starlite_app.after_exception:
+                await hook(exc, scope, starlite_app.state)
 
             if scope["type"] == ScopeType.HTTP:
                 exception_handler = (

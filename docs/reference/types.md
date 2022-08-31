@@ -10,6 +10,8 @@
 
 ::: starlite.types.AsyncAnyCallable
 
+::: starlite.types.BeforeMessageSendHookHandler
+
 ::: starlite.types.BeforeRequestHookHandler
 
 ::: starlite.types.CacheKeyBuilder

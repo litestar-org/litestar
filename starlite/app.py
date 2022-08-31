@@ -39,6 +39,7 @@ from starlite.types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
     AfterResponseHookHandler,
+    BeforeMessageSendHookHandler,
     BeforeRequestHookHandler,
     ControllerRouterHandler,
     ExceptionHandlersMap,
@@ -50,8 +51,9 @@ from starlite.types import (
     ResponseCookies,
     ResponseHeadersMap,
     ResponseType,
+    SingleOrList,
 )
-from starlite.utils import AsyncCallable
+from starlite.utils.sync import as_async_callable_list
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
@@ -63,7 +65,7 @@ if TYPE_CHECKING:
     from starlite.handlers.base import BaseRouteHandler
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -96,9 +98,15 @@ class Starlite(Router):
         "_registered_routes",
         "_route_handler_index",
         "_static_paths",
+        "after_exception",
+        "after_shutdown",
+        "after_startup",
         "allowed_hosts",
         "asgi_handler",
         "asgi_router",
+        "before_send",
+        "before_shutdown",
+        "before_startup",
         "cache",
         "compression_config",
         "cors_config",
@@ -114,11 +122,6 @@ class Starlite(Router):
         "state",
         "static_files_config",
         "template_engine",
-        "before_startup",
-        "before_shutdown",
-        "after_shutdown",
-        "after_startup",
-        "after_exception",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -126,13 +129,14 @@ class Starlite(Router):
         self,
         route_handlers: List[ControllerRouterHandler],
         *,
-        after_exception: Optional[AfterExceptionHookHandler] = None,
+        after_exception: Optional[SingleOrList[AfterExceptionHookHandler]] = None,
         after_request: Optional[AfterRequestHookHandler] = None,
         after_response: Optional[AfterResponseHookHandler] = None,
-        after_shutdown: Optional[LifeSpanHookHandler] = None,
-        after_startup: Optional[LifeSpanHookHandler] = None,
+        after_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        after_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
         allowed_hosts: Optional[List[str]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
+        before_send: Optional[SingleOrList[BeforeMessageSendHookHandler]] = None,
         before_shutdown: Optional[LifeSpanHookHandler] = None,
         before_startup: Optional[LifeSpanHookHandler] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
@@ -165,28 +169,32 @@ class Starlite(Router):
         It inherits from the [Router][starlite.router.Router] class.
 
         Args:
-            after_exception: An application level [exception event handler][starlite.types.AfterExceptionHookHandler].
-                This hook is called after an exception occurs. In difference to exception handlers, it is not meant to
-                return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
+            after_exception: An application level [cxception hook handler][starlite.types.AfterExceptionHookHandler]
+                or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
+                it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object which may be either an instance of
                 [Response][starlite.response.Response] or `starlette.Response`.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
-            after_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler].
-                This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown'
+            after_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown'
                 list have been called.
-            after_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler].
-                This hook is called during the ASGI startup, after all callables in the 'on_startup'
+            after_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI startup, after all callables in the 'on_startup'
                 list have been called.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler.
                 Receives the [Request][starlite.connection.Request] instance and any non-`None` return value is
                 used for the response, bypassing the route handler.
-            before_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
-                called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
-            before_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
-                called during the ASGI startup, before any callables in the 'on_startup' list have been called.
+            before_send: An application level [before send hook handler][starlite.types.BeforeMessageSendHookHandler] or
+                list thereof. This hook is called when the ASGI send function is called.
+            before_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown'
+                list have been called.
+            before_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                list thereof. This hook is called during the ASGI startup, before any callables in the 'on_startup'
+                list have been called.
             cache_config: Configures caching behavior of the application.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
@@ -223,12 +231,13 @@ class Starlite(Router):
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
-        self.after_exception = AsyncCallable(after_exception) if after_exception else None
-        self.after_shutdown = AsyncCallable(after_shutdown) if after_shutdown else None
-        self.after_startup = AsyncCallable(after_startup) if after_startup else None
+        self.after_exception = as_async_callable_list(after_exception) if after_exception else []
+        self.after_shutdown = as_async_callable_list(after_shutdown) if after_shutdown else []
+        self.after_startup = as_async_callable_list(after_startup) if after_startup else []
         self.allowed_hosts = allowed_hosts
-        self.before_shutdown = AsyncCallable(before_shutdown) if before_shutdown else None
-        self.before_startup = AsyncCallable(before_startup) if before_startup else None
+        self.before_send = as_async_callable_list(before_send) if before_send else []
+        self.before_shutdown = as_async_callable_list(before_shutdown) if before_shutdown else []
+        self.before_startup = as_async_callable_list(before_startup) if before_startup else []
         self.cache = cache_config.to_cache()
         self.compression_config = compression_config
         self.cors_config = cors_config
@@ -286,15 +295,22 @@ class Starlite(Router):
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The application entry point.
 
-        Lifespan events (startup / shutdown) are sent to the lifespan
-        handler, otherwise the ASGI handler is used
+        Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(scope, receive, send)
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, send)
+        await self.asgi_handler(scope, receive, self._wrap_send(send))
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -526,3 +542,22 @@ class Starlite(Router):
                     plugins=self.plugins,
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
+
+    def _wrap_send(self, send: "Send") -> "Send":
+        """Wraps the ASGI send and handles any 'before send' hooks.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            An ASGI send function.
+        """
+        if self.before_send:
+
+            async def wrapped_send(message: "Message") -> None:
+                for hook in self.before_send:
+                    await hook(message)
+                await send(message)
+
+            return wrapped_send
+        return send
