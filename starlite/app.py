@@ -169,7 +169,7 @@ class Starlite(Router):
         It inherits from the [Router][starlite.router.Router] class.
 
         Args:
-            after_exception: An application level [cxception hook handler][starlite.types.AfterExceptionHookHandler]
+            after_exception: An application level [exception hook handler][starlite.types.AfterExceptionHookHandler]
                 or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
                 it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
