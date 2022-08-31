@@ -137,8 +137,8 @@ class Starlite(Router):
         allowed_hosts: Optional[List[str]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         before_send: Optional[SingleOrList[BeforeMessageSendHookHandler]] = None,
-        before_shutdown: Optional[LifeSpanHookHandler] = None,
-        before_startup: Optional[LifeSpanHookHandler] = None,
+        before_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        before_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
         compression_config: Optional[CompressionConfig] = None,
         cors_config: Optional[CORSConfig] = None,
@@ -556,7 +556,7 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    await hook(message)
+                    await hook(message, self.state)
                 await send(message)
 
             return wrapped_send

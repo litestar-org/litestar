@@ -1,8 +1,12 @@
 # Application Hooks
 
 Starlite includes several application level hooks that allow users to run their own sync or async callables. While you
-are free to use these hooks as you see fit, the design intention behin them is to allow for easy instrumentation for
+are free to use these hooks as you see fit, the design intention behind them is to allow for easy instrumentation for
 observability (monitoring, tracing, logging etc.).
+
+!!! Note
+    All application hook kwargs detailed below receive either a single callable or a list of callables.
+    If a list is provided, it is called in the order it is given.
 
 Hooks:
 
@@ -28,14 +32,23 @@ list of callables defined in the `on_shutdown` list of callables.
 
 ## After Exception
 
-The `after_exception` take a [sync or async callable][starlite.types.AfterExceptionHookHandler] that is called with
+The `after_exception` hook takes a [sync or async callable][starlite.types.AfterExceptionHookHandler] that is called with
 three arguments: the `exception` that occurred, the ASGI `scope` of the request or websocket connection and the
 application `state`.
 
-```py title="After Exception Hooks"
+```py title="After Exception Hook"
 --8<-- "examples/application_hooks/after_exception_hook.py"
 ```
 
 !!! important
     This hook is not meant to handle exceptions - it just receives them to allow for side effects.
     To handle exceptions you should define [exception handlers](../17-exceptions.md#exception-handling).
+
+## Before Send
+
+The `before_send` hook takes a [sync or async callable][starlite.types.BeforeMessageSendHookHandler] that is called when
+an ASGI message is sent. The hook receives the message instance and the application state.
+
+```py title="Before Send Hook"
+--8<-- "examples/application_hooks/before_send_hook.py"
+```

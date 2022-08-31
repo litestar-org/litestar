@@ -28,6 +28,7 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
+        BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
         Dependencies,
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
         LifeSpanHookHandler,
         Middleware,
         ParametersMap,
+        SingleOrList,
     )
 
 try:
@@ -124,18 +126,19 @@ class TestClient(StarletteTestClient):
 def create_test_client(
     route_handlers: Union["ControllerRouterHandler", List["ControllerRouterHandler"]],
     *,
-    after_exception: Optional["AfterExceptionHookHandler"] = None,
+    after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
     after_request: Optional["AfterRequestHookHandler"] = None,
     after_response: Optional["AfterResponseHookHandler"] = None,
-    after_shutdown: Optional["LifeSpanHookHandler"] = None,
-    after_startup: Optional["LifeSpanHookHandler"] = None,
+    after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+    after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
     allowed_hosts: Optional[List[str]] = None,
     backend: "Literal['asyncio', 'trio']" = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver",
     before_request: Optional["BeforeRequestHookHandler"] = None,
-    before_shutdown: Optional["LifeSpanHookHandler"] = None,
-    before_startup: Optional["LifeSpanHookHandler"] = None,
+    before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
+    before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+    before_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
     cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
@@ -204,6 +207,8 @@ def create_test_client(
         before_request: A sync or async function called immediately before calling the route handler.
             Receives the [Request][starlite.connection.Request] instance and any non-`None` return value is
             used for the response, bypassing the route handler.
+        before_send: An application level [before send hook handler][starlite.types.BeforeMessageSendHookHandler] or
+            list thereof. This hook is called when the ASGI send function is called.
         before_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
             called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
         before_startup: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler]. This hook is
@@ -243,6 +248,7 @@ def create_test_client(
             after_startup=after_startup,
             allowed_hosts=allowed_hosts,
             before_request=before_request,
+            before_send=before_send,
             before_shutdown=before_shutdown,
             before_startup=before_startup,
             cache_config=cache_config,
