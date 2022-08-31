@@ -1,40 +1,23 @@
 # Using Application State
 
 As seen in the examples for the [on_startup / on_shutdown hooks](1-startup-and-shutdown.md), callables passed to these
-hooks can receive an optional kwarg called`state`, which is the application's state object.
-
-This is the same object that is available on the Starlite instance as `.state` and it's an instance of the class
-`starlite.datastructures.State`, which inherits from `starlette.datastructures.State`. Additionally, the application
-state is accessible as `.app.state` on the `starlette.requests.HTTPConnection` object accessible to middleware, as well
-as on the `starlite.connection.Request` and `starlite.connection.WebSocket` objects.
+hooks can receive an optional kwarg called `state`, which is the application's state object.
 
 The advantage of using application `state`, is that it can be accessed during multiple stages of the connection, and
-it can be injected into dependencies and route handlers as well, e.g. as follows:
+it can be injected into dependencies and route handlers.
 
-```python
-from starlite import State, get
+The Application State is an instance of [starlite.datastructures.State][starlite.datastructures.State] which inherits
+from `starlette.datastructures.State`. It is accessible via [Starlite.state][starlite.app.Starlite] and it can be
+accessed via any application reference, such as:
 
+- `starlette.requests.HTTPConnection.app.state` (accessible inside middleware - see the example below).
+- [Request.app][starlite.connection.Request.app]
+- [Websocket.app][starlite.connection.WebSocket.app]
 
-@get("/some-path")
-def my_handler(state: State) -> None:
-    # application state is injected
-    ...
+The following complete example demonstrates different patterns of accessing Application State:
+
+```py title="Using Application State"
+--8<-- "examples/using_application_state.py"
 ```
 
-or
-
-```python
-from starlite import State, Provide, get
-
-
-def my_dependency(state: State) -> None:
-    # application state is injected
-    ...
-
-
-@get("/some-path")
-def my_handler(dep: Provide(my_dependency)) -> None:
-    ...
-```
-
-See [handler function kwargs](../2-route-handlers/1-http-route-handlers.md#http-route-handlers-kwargs).
+Also, see [handler function kwargs](../2-route-handlers/1-http-route-handlers.md#http-route-handlers-kwargs).

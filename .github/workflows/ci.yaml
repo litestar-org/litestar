@@ -47,23 +47,22 @@ jobs:
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
-        run: poetry run pytest
         if: matrix.python-version != '3.10'
+        run: poetry run pytest
       - name: Test with Coverage
+        if: matrix.python-version == '3.10'
         run: poetry run pytest --cov=. --cov-report=xml
-        if: matrix.python-version == '3.10'
       - name: Test Examples
-        run: poetry run pytest examples/
         if: matrix.python-version == '3.10'
+        run: poetry run pytest examples/
       - uses: actions/upload-artifact@v3
+        if: matrix.python-version == '3.10'
         with:
           name: coverage-xml
           path: coverage.xml
-        if: matrix.python-version == '3.10'
   sonar:
     needs:
       - test
-      - test_minimal
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -83,7 +82,6 @@ jobs:
   snyk:
     needs:
       - test
-      - test_minimal
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +103,6 @@ jobs:
   codeql:
     needs:
       - test
-      - test_minimal
     runs-on: ubuntu-latest
     permissions:
       security-events: write

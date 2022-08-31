@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-36-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-37-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -268,6 +268,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/Alex-CodeLab"><img src="https://avatars.githubusercontent.com/u/1678423?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alex </b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Alex-CodeLab" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/odiseo0"><img src="https://avatars.githubusercontent.com/u/87550035?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Odiseo</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=odiseo0" title="Documentation">📖</a></td>
   </tr>
 </table>
 

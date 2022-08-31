@@ -39,8 +39,8 @@ theme:
 extra_css:
   - css/extra.css
 nav:
+  - index.md
   - Overview:
-      - index.md
       - Project Governance: governance.md
       - Contribution Guide: contributing.md
       - License: license.md
@@ -111,7 +111,10 @@ nav:
               - usage/7-middleware/3-builtin-middlewares/2-allowed-hosts-middleware.md
               - usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md
               - usage/7-middleware/3-builtin-middlewares/4-compression-middleware.md
-      - usage/8-authentication.md
+      - Authentication:
+          - usage/8-authentication/0-intro.md
+          - usage/8-authentication/1-abstract-authentication-middleware.md
+          - usage/8-authentication/2-official-authentication-libraries.md
       - usage/9-guards.md
       - Plugins:
           - usage/10-plugins/0-plugins-intro.md
