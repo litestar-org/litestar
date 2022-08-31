@@ -44,7 +44,6 @@ else:
     Cookie = Any
     DefineMiddleware = Any
     HTTPRouteHandler = Any
-    Message = Any
     MiddlewareProtocol = Any
     Provide = Any
     Request = Any
