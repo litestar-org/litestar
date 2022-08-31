@@ -348,6 +348,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ingjavierpinilla",
+      "name": "Javier  Pinilla",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36714646?v=4",
+      "profile": "https://github.com/ingjavierpinilla",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
