@@ -134,7 +134,7 @@ def _create_response_container_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for ResponseContainers."""
 
-    async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Any) -> StarletteResponse:
         normalized_headers = {**_normalize_headers(headers), **data.headers}
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         response = data.to_response(app=app, headers=normalized_headers, status_code=status_code, media_type=media_type)
@@ -150,7 +150,7 @@ def _create_response_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlite Responses."""
 
-    async def handler(data: Response, **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: Response, **kwargs: Any) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         for cookie in normalized_cookies:
             data.set_cookie(**cookie)
@@ -164,7 +164,7 @@ def _create_starlette_response_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlette Responses."""
 
-    async def handler(data: StarletteResponse, **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: StarletteResponse, **kwargs: Any) -> StarletteResponse:
         normalized_cookies = _normalize_cookies(cookies, [])
         for cookie in normalized_cookies:
             data.set_cookie(**cookie)
@@ -184,7 +184,7 @@ def _create_data_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for arbitrary data."""
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Dict[str, Any]) -> StarletteResponse:
+    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> StarletteResponse:
         data = await _normalize_response_data(data=data, plugins=plugins)
         normalized_cookies = _normalize_cookies(cookies, [])
         response = response_class(

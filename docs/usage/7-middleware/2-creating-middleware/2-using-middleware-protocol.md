@@ -9,7 +9,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: ASGIApp, **kwargs: dict[str, Any]):
+    def __init__(self, app: ASGIApp, **kwargs: Any):
         ...
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:

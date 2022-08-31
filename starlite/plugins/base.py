@@ -126,7 +126,7 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
         """
         raise NotImplementedError()
 
-    def from_dict(self, model_class: Type[ModelT], **kwargs: Dict[str, Any]) -> ModelT:
+    def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
         """Given a class supported by this plugin and a dict of values, create
         an instance of the class.
 
