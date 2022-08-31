@@ -33,6 +33,8 @@ Aside from `title` and `version`, both of which are **required**, you can pass t
 - `webhooks`: A string keyed dictionary of [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem] instances. #
 - `root_schema_site`: Dictates which schema site is served by default.
   The value should be one of `redoc`, `swagger`, `elements`, with the default be `redoc`.
+- `enabled_endpoints`: Dictates which schema site endpoints are enabled.
+  It may have the following values `redoc`, `swagger`, `elements`, `openapi.json`, `openapi.yaml`. By default, it enables all endpoints.
 
 ## Disabling Schema Generation
 
