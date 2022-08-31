@@ -26,7 +26,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
 
     @staticmethod
-    def _create_pydantic_model(model_class: Type[Model], **kwargs: Dict[str, Any]) -> "Type[PydanticModel]":
+    def _create_pydantic_model(model_class: Type[Model], **kwargs: Any) -> "Type[PydanticModel]":
         """Takes a tortoise model_class instance and convert it to a subclass
         of the tortoise PydanticModel.
 
