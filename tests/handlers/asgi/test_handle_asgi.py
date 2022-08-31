@@ -1,8 +1,8 @@
 from starlette.status import HTTP_200_OK
-from starlette.types import Receive, Scope, Send
 
 from starlite import Controller, MediaType, Response, asgi
 from starlite.testing import create_test_client
+from starlite.types import Receive, Scope, Send
 
 
 def test_handle_asgi() -> None:

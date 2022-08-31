@@ -16,9 +16,8 @@ from starlite.testing import create_test_client
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp
-
     from starlite.middleware.compression.base import CompressionMiddleware
+    from starlite.types import ASGIApp
 
 BrotliMode = Literal["text", "generic", "font"]
 

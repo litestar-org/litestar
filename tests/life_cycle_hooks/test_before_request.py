@@ -4,7 +4,7 @@ import pytest
 
 from starlite import Controller, HTTPRouteHandler, Request, Response, Router, get
 from starlite.testing import create_test_client
-from starlite.types import BeforeRequestHandler
+from starlite.types import BeforeRequestHookHandler
 
 
 def greet() -> dict:
@@ -92,10 +92,10 @@ def test_before_request_handler_called(handler: HTTPRouteHandler, expected: dict
     ],
 )
 def test_before_request_handler_resolution(
-    app_before_request_handler: Optional[BeforeRequestHandler],
-    router_before_request_handler: Optional[BeforeRequestHandler],
-    controller_before_request_handler: Optional[BeforeRequestHandler],
-    method_before_request_handler: Optional[BeforeRequestHandler],
+    app_before_request_handler: Optional[BeforeRequestHookHandler],
+    router_before_request_handler: Optional[BeforeRequestHookHandler],
+    controller_before_request_handler: Optional[BeforeRequestHookHandler],
+    method_before_request_handler: Optional[BeforeRequestHookHandler],
     expected: dict,
 ) -> None:
     class MyController(Controller):

@@ -10,17 +10,17 @@ from starlite.testing import create_test_client
 state: Dict[str, str] = {}
 
 if TYPE_CHECKING:
-    from starlite.types import AfterResponseHandler
+    from starlite.types import AfterResponseHookHandler
 
 
-def create_sync_test_handler(msg: str) -> "AfterResponseHandler":
+def create_sync_test_handler(msg: str) -> "AfterResponseHookHandler":
     def handler(_: Request) -> None:
         state["msg"] = msg
 
     return handler
 
 
-def create_async_test_handler(msg: str) -> "AfterResponseHandler":
+def create_async_test_handler(msg: str) -> "AfterResponseHookHandler":
     async def handler(_: Request) -> None:
         await sleep(0.001)
         state["msg"] = msg

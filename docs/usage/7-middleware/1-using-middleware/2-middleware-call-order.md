@@ -7,7 +7,7 @@ before controller level middleware, which will be called before route handler mi
 defined first the in the middleware list, will be called first. To illustrate this, consider the following test case:
 
 ```python
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlite.types import ASGIApp, Receive, Scope, Send
 
 from starlite import (
     Controller,

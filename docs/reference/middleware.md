@@ -4,6 +4,7 @@
     options:
         members:
             - __init__
+            - __call__
 
 ::: starlite.middleware.DefineMiddleware
     options:

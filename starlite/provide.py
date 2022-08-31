@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from starlite.types import Empty
 from starlite.utils import AsyncCallable, is_async_callable
@@ -29,7 +29,7 @@ class Provide:
         self.value: Any = Empty
         self.signature_model: Optional["Type[SignatureModel]"] = None
 
-    async def __call__(self, **kwargs: Dict[str, Any]) -> Any:
+    async def __call__(self, **kwargs: Any) -> Any:
         """Proxies call to 'self.proxy'."""
 
         if self.use_cache and self.value is not Empty:

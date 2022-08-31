@@ -1,27 +1,31 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Callable
 
 from typing_extensions import Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):  # pragma: no cover
-    def __init__(self, app: "ASGIApp", **kwargs: Dict[str, Any]):
-        """The MiddlewareProtocol is a PEP 544 Protocol that species the
-        requirements for an ASGI middleware.
+    def __init__(self, app: "ASGIApp", **kwargs: Any):
+        """Defines the requirements of a compliant ASGI middleware.
+
+        Middleware should assign the received `app` to `self` in order to reference it in
+        [`__call__()`][starlite.middleware.base.MiddlewareProtocol.__call__].
 
         Args:
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+            app: The next ASGI handler to call in the middleware stack.
             **kwargs: Any key value pairs that are required for the middleware.
         """
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The call method is the ASGIApp entry point. Once the middleware
-        finishes doing whatever it is meant to be doing,
+        """Executes the ASGI middleware.
 
-        it should call the next ASGI handler and await it - or await a response created in its closure.
+        Called by the previous middleware in the stack if a response is not awaited prior.
+
+        Upon completion, middleware should call the next ASGI handler and await it - or await a response created in its
+        closure.
 
         Args:
             scope: The ASGI connection scope.
@@ -58,13 +62,13 @@ class DefineMiddleware:
         self.kwargs = kwargs
 
     def __call__(self, app: "ASGIApp") -> "ASGIApp":
-        """
+        """Calls the middleware constructor or factory.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
 
         Returns:
             Calls 'self.middleware' and returns the ASGIApp created.
-
         """
+
         return self.middleware(*self.args, app=app, **self.kwargs)

@@ -25,7 +25,8 @@ if TYPE_CHECKING:
     from typing import Type
 
     from _pytest.logging import LogCaptureFixture
-    from starlette.types import ASGIApp, Receive, Scope, Send
+
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 
