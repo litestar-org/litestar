@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 def test_application_shutdown_hooks(caplog: "LogCaptureFixture") -> None:
     with caplog.at_level(logging.INFO), TestClient(app=shutdown_hooks.app):
-        assert len(caplog.messages) == 2
-        assert "shutdown sequence begin" in caplog.messages[0]
-        assert "shutdown sequence ended" in caplog.messages[1]
+        assert len(caplog.messages) == 0
+    assert len(caplog.messages) == 2
+    assert "shutdown sequence begin" in caplog.messages[0]
+    assert "shutdown sequence ended" in caplog.messages[1]
