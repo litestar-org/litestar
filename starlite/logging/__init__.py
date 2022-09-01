@@ -66,7 +66,7 @@ class LoggingConfig(BaseModel):
         config.dictConfig(self.dict(exclude_none=True))
 
 
-def _find_keys(node: dict | list, key: str) -> Any:
+def _find_keys(node: Union[List, Dict], key: str) -> Any:
     if isinstance(node, list):
         for list_entry in node:
             yield from _find_keys(list_entry, key)
