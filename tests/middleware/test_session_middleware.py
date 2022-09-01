@@ -85,7 +85,7 @@ def test_set_session_cookies() -> None:
     """Should set session cookies from session in response."""
     chunks_multiplier = 2
 
-    @get(path="/")
+    @get(path="/test")
     def handler(request: Request) -> None:
         # Create large session by keeping it multiple of CHUNK_SIZE. This will split the session into multiple cookies.
         # Then you only need to check if number of cookies set are more than the multiplying number.
@@ -96,7 +96,7 @@ def test_set_session_cookies() -> None:
         middleware=[DefineMiddleware(SessionMiddleware, config=SessionCookieConfig(secret=TEST_SECRET))],
     )
 
-    response = client.get("/")
+    response = client.get("/test")
     assert len(response.cookies) > chunks_multiplier
     # If it works for the multiple chunks of session, it works for the single chunk too. So, just check if "session-0"
     # exists.
@@ -116,7 +116,7 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
     # Test for large session data. If it works for multiple cookies, it works for single also.
     _session = create_session(size=4096)
 
-    @get(path="/")
+    @get(path="/test")
     def handler(request: Request) -> dict:
         nonlocal _session
         if mutate:
@@ -133,7 +133,7 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
     )
 
     response = client.get(
-        "/",
+        "/test",
         cookies={
             f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
         },
