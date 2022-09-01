@@ -156,4 +156,4 @@ def test_logger_startup(caplog: "LogCaptureFixture") -> None:
         test_picologging_logger = picologging.getLogger()
         test_picologging_handlers = test_picologging_logger.handlers
         assert isinstance(handlers[0].handlers[0], picologging.StreamHandler)  # type: ignore
-        assert isinstance(test_picologging_handlers[0].handlers[0], picologging.StreamHandler)  # type: ignore
+        assert isinstance(test_picologging_handlers[0].handlers[0], picologging.StreamHandler)

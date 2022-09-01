@@ -1,10 +1,15 @@
-from logging import config as standard_logging_config
+from logging import config
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
 
 from starlite.logging.standard import QueueListenerHandler
+
+try:
+    from picologging import config as picologging_config
+except ImportError:
+    picologging_config = None
 
 __all__ = ["LoggingConfig", "QueueListenerHandler"]
 
@@ -49,22 +54,24 @@ class LoggingConfig(BaseModel):
     except that the propagate setting will not be applicable."""
 
     def configure(self) -> None:
-        """Configured logger with the given configuration."""
-        for logging_class in _find_keys(self.handlers, "class"):
-            if "picologging" in logging_class:
-                from picologging import config as picologging_config
+        """Configured logger with the given configuration.
 
+        If the logger class contains the word `picologging`, we try to
+        import and set the dictConfig
+        """
+        for logging_class in _find_keys(self.handlers, "class"):
+            if "picologging" in logging_class and picologging_config:
                 picologging_config.dictConfig(self.dict(exclude_none=True))
                 break
-        standard_logging_config.dictConfig(self.dict(exclude_none=True))
+        config.dictConfig(self.dict(exclude_none=True))
 
 
-def _find_keys(node: dict | list, kv: str) -> Any:
+def _find_keys(node: dict | list, key: str) -> Any:
     if isinstance(node, list):
-        for i in node:
-            yield from _find_keys(i, kv)
+        for list_entry in node:
+            yield from _find_keys(list_entry, key)
     elif isinstance(node, dict):
-        if kv in node:
-            yield node[kv]
-        for j in node.values():
-            yield from _find_keys(j, kv)
+        if key in node:
+            yield node[key]
+        for dict_entry in node.values():
+            yield from _find_keys(dict_entry, key)
