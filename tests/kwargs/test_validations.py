@@ -16,6 +16,7 @@ from starlite import (
     websocket,
 )
 from starlite.constants import RESERVED_KWARGS
+from starlite.signature import SKIP_VALIDATION_NAMES
 
 
 def my_dependency() -> int:
@@ -90,7 +91,7 @@ def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
 
     # these kwargs are set to Any when the signature model is generated,
     # because pydantic can't handle generics for non pydantic classes. So these tests won't work for aliased parameters.
-    if reserved_kwarg not in ["socket", "request"]:
+    if reserved_kwarg not in SKIP_VALIDATION_NAMES:
         exec(f"async def test_fn({reserved_kwarg}: int = Parameter(query='my_param')) -> None: pass")
         handler_with_aliased_param = decorator("/")(locals()["test_fn"])
         with pytest.raises(ImproperlyConfiguredException):

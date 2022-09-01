@@ -39,6 +39,8 @@ if TYPE_CHECKING:
 
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
+SKIP_NAMES = {"self", "cls"}
+SKIP_VALIDATION_NAMES = {"request", "socket", "state"}
 
 
 class SignatureModel(BaseModel):
@@ -203,10 +205,6 @@ class SignatureModelFactory:
         "plugins",
         "signature",
     )
-    # names of fn params not included in signature model.
-    SKIP_NAMES = {"self", "cls"}
-    # names of params always typed `Any`.
-    SKIP_VALIDATION_NAMES = {"request", "socket"}
 
     def __init__(self, fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_names: Set[str]) -> None:
         if fn is None:
@@ -321,7 +319,7 @@ class SignatureModelFactory:
         Generator[SignatureParameter, None, None]
         """
         for name, parameter in self.signature.parameters.items():
-            if name in self.SKIP_NAMES:
+            if name in SKIP_NAMES:
                 continue
             yield SignatureParameter(self.fn_name, name, parameter)
 
@@ -335,7 +333,7 @@ class SignatureModelFactory:
         Returns:
             A boolean indicating whether injected values for this parameter should not be validated.
         """
-        return parameter.name in self.SKIP_VALIDATION_NAMES or should_skip_dependency_validation(parameter.default)
+        return parameter.name in SKIP_VALIDATION_NAMES or should_skip_dependency_validation(parameter.default)
 
     def create_signature_model(self) -> Type[SignatureModel]:
         """Constructs a `SignatureModel` type that represents the signature of

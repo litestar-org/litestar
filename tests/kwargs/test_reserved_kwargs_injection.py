@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional, Type, Union, cast
 
 import pytest
 from pydantic import BaseModel, Field
@@ -21,12 +21,18 @@ from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 
-def test_application_state_injection() -> None:
+class CustomState(State):
+    called: bool
+    msg: str
+
+
+@pytest.mark.parametrize("state_typing", [State, CustomState])
+def test_application_state_injection(state_typing: Union[Type[State], CustomState]) -> None:
     @get("/", media_type=MediaType.TEXT)
-    def route_handler(state: State) -> str:
+    def route_handler(state: state_typing) -> str:  # type: ignore
         assert state
-        state.called = True  # this should not modify the app state
-        return cast("str", state.msg)  # this shows injection worked
+        state.called = True  # type: ignore
+        return cast("str", state.msg)  # type: ignore
 
     with create_test_client(route_handler) as client:
         client.app.state.msg = "hello"
