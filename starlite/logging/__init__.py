@@ -1,10 +1,15 @@
 from logging import config
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Generator, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
 
 from starlite.logging.standard import QueueListenerHandler
+
+try:
+    from picologging import config as picologging_config
+except ImportError:
+    picologging_config = None
 
 __all__ = ["LoggingConfig", "QueueListenerHandler"]
 
@@ -49,5 +54,33 @@ class LoggingConfig(BaseModel):
     except that the propagate setting will not be applicable."""
 
     def configure(self) -> None:
-        """Configured logger with the given configuration."""
+        """Configured logger with the given configuration.
+
+        If the logger class contains the word `picologging`, we try to
+        import and set the dictConfig
+        """
+        for logging_class in find_keys(self.handlers, "class"):
+            if "picologging" in logging_class and picologging_config:
+                picologging_config.dictConfig(self.dict(exclude_none=True))
+                break
         config.dictConfig(self.dict(exclude_none=True))
+
+
+def find_keys(node: Union[List, Dict], key: str) -> Generator[Iterable, None, None]:
+    """Find Nested Keys with name
+    Search a dictionary for the presence of key
+    Args:
+        node (Union[List, Dict]): a dictionary to search
+        key (str): the dictionary key to find
+
+    Yields:
+        Generator[Iterable, None, None]: Value of dictionary key
+    """
+    if isinstance(node, list):
+        for list_entry in node:
+            yield from find_keys(list_entry, key)
+    elif isinstance(node, dict):
+        if key in node:
+            yield node[key]
+        for dict_entry in node.values():
+            yield from find_keys(dict_entry, key)
