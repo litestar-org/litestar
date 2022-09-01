@@ -1,4 +1,4 @@
-from logging import config
+from logging import config as standard_logging_config
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
@@ -50,4 +50,21 @@ class LoggingConfig(BaseModel):
 
     def configure(self) -> None:
         """Configured logger with the given configuration."""
-        config.dictConfig(self.dict(exclude_none=True))
+        for logging_class in _find_keys(self.handlers, "class"):
+            if "picologging" in logging_class:
+                from picologging import config as picologging_config
+
+                picologging_config.dictConfig(self.dict(exclude_none=True))
+                break
+        standard_logging_config.dictConfig(self.dict(exclude_none=True))
+
+
+def _find_keys(node: dict | list, kv: str) -> Any:
+    if isinstance(node, list):
+        for i in node:
+            yield from _find_keys(i, kv)
+    elif isinstance(node, dict):
+        if kv in node:
+            yield node[kv]
+        for j in node.values():
+            yield from _find_keys(j, kv)
