@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
-CHUNK_SIZE = 4096 - 512
+CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
 
 
@@ -70,7 +70,7 @@ class SessionCookieConfig(BaseModel):
     """Domain for which the cookie is valid."""
     secure: Optional[bool] = None
     """Https is required for the cookie."""
-    httponly: Optional[bool] = True
+    httponly: bool = True
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
@@ -187,9 +187,9 @@ class SessionMiddleware(MiddlewareProtocol):
                 for i, datum in enumerate(data, start=0):
                     headers.append(
                         "Set-Cookie",
-                        Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
-                        .to_header()
-                        .replace("Set-Cookie: ", ""),
+                        Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params).to_header(
+                            header=""
+                        ),
                     )
                 # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
                 # cookies, first check how many session cookies will not be overwritten in this upcoming response. If
@@ -201,9 +201,7 @@ class SessionMiddleware(MiddlewareProtocol):
                     for cookie_key in cookie_keys[len(data) :]:
                         headers.append(
                             "Set-Cookie",
-                            Cookie(value="null", key=cookie_key, expires=0, **cookie_params)
-                            .to_header()
-                            .replace("Set-Cookie: ", ""),
+                            Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
                         )
             await send(message)
 

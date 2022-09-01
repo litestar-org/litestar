@@ -1,14 +1,18 @@
 import secrets
 import time
+from base64 import b64decode, b64encode
 from os import urandom
 from typing import TYPE_CHECKING, Dict
 from unittest import mock
 
 import pytest
+from cryptography.exceptions import InvalidTag
+from orjson import dumps
 from pydantic import SecretBytes, ValidationError
 
 from starlite import DefineMiddleware, Request, get
 from starlite.middleware.session import (
+    AAD,
     CHUNK_SIZE,
     SessionCookieConfig,
     SessionMiddleware,
@@ -45,7 +49,7 @@ def test_config_validation(secret: bytes, should_raise: bool) -> None:
         SessionCookieConfig(secret=SecretBytes(secret))
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture()
 def session_middleware() -> SessionMiddleware:
     return SessionMiddleware(app=mock_asgi_app, config=SessionCookieConfig(secret=TEST_SECRET))
 
@@ -140,3 +144,23 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
     # them. So, the number of cookies in the response will be at least equal to or greater than the number of cookies
     # that were in the request.
     assert response.headers["set-cookie"].count("session") >= response.request.headers["Cookie"].count("session")
+
+
+def test_load_data_should_raise_invalid_tag_if_tampered_aad(session_middleware: SessionMiddleware) -> None:
+    """If AAD has been tampered with, the integrity of the data cannot be
+    verified and InavlidTag exception is raised."""
+    encrypted_session = session_middleware.dump_data(create_session())
+    # The attacker will tamper with the AAD to increase the expiry time of the cookie.
+    attacker_chosen_time = 300  # In seconds
+    fraudulent_associated_data = dumps(
+        {"expires_at": round(time.time()) + session_middleware.config.max_age + attacker_chosen_time}
+    )
+    decoded = b64decode(b"".join(encrypted_session))
+    aad_starts_from = decoded.find(AAD)
+    # The attacker removes the original AAD and attaches its own.
+    ciphertext = b64encode(decoded[:aad_starts_from] + AAD + fraudulent_associated_data)
+    # The attacker puts the data back to its original form.
+    encoded = [ciphertext[i : i + CHUNK_SIZE] for i in range(0, len(ciphertext), CHUNK_SIZE)]
+
+    with pytest.raises(InvalidTag):
+        session_middleware.load_data(encoded)

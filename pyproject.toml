@@ -34,6 +34,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
 brotli = { version = "*", optional = true }
+cryptography = { version = "*", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
@@ -47,6 +48,7 @@ typing-extensions = "*"
 
 [tool.poetry.dev-dependencies]
 brotli = "*"
+cryptography = "*"
 freezegun = "*"
 hypothesis = "*"
 jinja2 = "*"
@@ -63,13 +65,13 @@ sqlalchemy = "*"
 tortoise-orm = "*"
 tox = "*"
 uvicorn = "*"
-cryptography = "*"
 
 [tool.poetry.extras]
 testing = ["requests"]
 brotli = ["brotli"]
 picologging = ["picologging"]
-full = ["requests", "brotli", "picologging"]
+cryptography = ["cryptography"]
+full = ["requests", "brotli", "picologging", "cryptography"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
