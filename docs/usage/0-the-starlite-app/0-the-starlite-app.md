@@ -9,6 +9,9 @@ Creating an app is straightforward – the **only required arg is a list**
 of [Controllers](../1-routing/3-controllers.md#controllers), [Routers](../1-routing/2-routers.md)
 or [Route Handlers](../2-route-handlers/1-http-route-handlers.md):
 
+!!! important
+    This example requires Python 3.9 or later.
+
 ```py title="Hello World"
 --8<-- "examples/hello_world.py"
 ```
