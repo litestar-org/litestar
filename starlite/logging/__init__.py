@@ -1,5 +1,5 @@
 from logging import config
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Generator, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
@@ -59,19 +59,28 @@ class LoggingConfig(BaseModel):
         If the logger class contains the word `picologging`, we try to
         import and set the dictConfig
         """
-        for logging_class in _find_keys(self.handlers, "class"):
+        for logging_class in find_keys(self.handlers, "class"):
             if "picologging" in logging_class and picologging_config:
                 picologging_config.dictConfig(self.dict(exclude_none=True))
                 break
         config.dictConfig(self.dict(exclude_none=True))
 
 
-def _find_keys(node: Union[List, Dict], key: str) -> Any:
+def find_keys(node: Union[List, Dict], key: str) -> Generator[Iterable, None, None]:
+    """Find Nested Keys with name
+    Search a dictionary for the presence of key
+    Args:
+        node (Union[List, Dict]): a dictionary to search
+        key (str): the dictionary key to find
+
+    Yields:
+        Generator[Iterable, None, None]: Value of dictionary key
+    """
     if isinstance(node, list):
         for list_entry in node:
-            yield from _find_keys(list_entry, key)
+            yield from find_keys(list_entry, key)
     elif isinstance(node, dict):
         if key in node:
             yield node[key]
         for dict_entry in node.values():
-            yield from _find_keys(dict_entry, key)
+            yield from find_keys(dict_entry, key)
