@@ -68,7 +68,7 @@ class SessionCookieConfig(BaseModel):
     """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
     domain: Optional[str] = None
     """Domain for which the cookie is valid."""
-    secure: Optional[bool] = None
+    secure: bool = False
     """Https is required for the cookie."""
     httponly: bool = True
     """Forbids javascript to access the cookie via 'Document.cookie'."""
