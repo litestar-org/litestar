@@ -13,7 +13,7 @@ class QueueListenerHandler(QueueHandler):
 
         Args:
             handlers (list): list of handler names.
-            respect_handler_level (bool): A handler’s level is respected (compared with the level for the message) when
+            respect_handler_level (bool): A handler's level is respected (compared with the level for the message) when
                 deciding whether to pass messages to that handler.
         """
         super().__init__(queue)
