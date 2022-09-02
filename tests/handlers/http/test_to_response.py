@@ -26,6 +26,7 @@ from starlite import (
     Redirect,
     Response,
     ResponseHeader,
+    Request,
     Stream,
     Template,
     get,
@@ -139,6 +140,33 @@ async def test_to_response_returning_redirect_response() -> None:
         assert cookies[0] == "redirect-cookie=xyz; Path=/; SameSite=lax"
         assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
+
+
+@pytest.mark.xfail
+def test_to_response_returning_redirect_response_from_redirect() -> None:
+    @get(
+        path="/proxy",
+    )
+    def proxy() -> str:
+        return "redirected by before request hook"
+
+    def request_hook(request: Request) -> RedirectResponse:
+
+        return Redirect(
+            path="https://app.example.com"
+        ).to_response(headers={}, media_type="application/json", status_code=308, app=request.app)
+
+    @get(
+        path="/test",
+        before_request=request_hook
+    )
+    def handler() -> None:
+        ...
+
+    with create_test_client(route_handlers=[handler, proxy]) as client:
+        response = client.get("/test")
+        assert response.status_code == 200
+        assert response.json() == "redirected by before request hook"
 
 
 @pytest.mark.asyncio()
