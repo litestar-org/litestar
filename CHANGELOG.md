@@ -2,11 +2,17 @@
 
 [1.16.2]
 
-- fix `before_requiest` regression causing it to not handle returned responses from the hook.
+- fix `before_request` regression causing it to not handle returned responses from the hook.
 
 [1.16.1]
+- update `picologging` integration to use `picologging.dictConfig`
+- fix validation errors raised when using custom state
+
 
 [1.16.0]
+- add `exclude` parameter to `AbstractAuthenticationMiddleware`
+- allow disabling OpenAPI documentation sites and schema endpoints via config
+- simplify `KwargsModel`
 
 [1.15.0]
 
