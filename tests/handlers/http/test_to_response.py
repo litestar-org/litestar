@@ -2,7 +2,7 @@ from asyncio import sleep as async_sleep
 from json import loads
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Any, AsyncIterator, Generator, Iterator
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Generator, Iterator
 
 import pytest
 from pydantic import ValidationError
@@ -15,7 +15,7 @@ from starlette.responses import (
 )
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
-from starlette.status import HTTP_200_OK
+from starlette.status import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 
 from starlite import (
     Cookie,
@@ -24,9 +24,9 @@ from starlite import (
     HTTPRoute,
     MediaType,
     Redirect,
+    Request,
     Response,
     ResponseHeader,
-    Request,
     Stream,
     Template,
     get,
@@ -142,31 +142,24 @@ async def test_to_response_returning_redirect_response() -> None:
         assert response.background == background_task
 
 
-@pytest.mark.xfail
 def test_to_response_returning_redirect_response_from_redirect() -> None:
-    @get(
-        path="/proxy",
-    )
-    def proxy() -> str:
-        return "redirected by before request hook"
+    @get(path="/proxy")
+    def proxy_handler() -> Dict[str, str]:
+        return {"message": "redirected by before request hook"}
 
-    def request_hook(request: Request) -> RedirectResponse:
+    def before_request_hook_handler(request: Request) -> RedirectResponse:
+        return Redirect(path="/proxy").to_response(
+            headers={}, media_type="application/json", status_code=HTTP_308_PERMANENT_REDIRECT, app=request.app
+        )
 
-        return Redirect(
-            path="https://app.example.com"
-        ).to_response(headers={}, media_type="application/json", status_code=308, app=request.app)
+    @get(path="/test", before_request=before_request_hook_handler)
+    def redirect_handler() -> None:
+        raise AssertionError("this endpoint should not be reached")
 
-    @get(
-        path="/test",
-        before_request=request_hook
-    )
-    def handler() -> None:
-        ...
-
-    with create_test_client(route_handlers=[handler, proxy]) as client:
+    with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
         response = client.get("/test")
-        assert response.status_code == 200
-        assert response.json() == "redirected by before request hook"
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == {"message": "redirected by before request hook"}
 
 
 @pytest.mark.asyncio()
