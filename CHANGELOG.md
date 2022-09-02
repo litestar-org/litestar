@@ -1,5 +1,13 @@
 # Changelog
 
+[1.16.2]
+
+- fix `before_requiest` regression causing it to not handle returned responses from the hook.
+
+[1.16.1]
+
+[1.16.0]
+
 [1.15.0]
 
 - `examples/` directory and tests for complete documentation examples
