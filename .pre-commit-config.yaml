@@ -87,8 +87,6 @@ repos:
           [
             brotli,
             jinja2,
-            jinja2,
-            mako,
             mako,
             orjson,
             piccolo,

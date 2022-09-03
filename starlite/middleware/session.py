@@ -226,24 +226,19 @@ class SessionMiddleware(MiddlewareProtocol):
                             ).to_header(header=""),
                         )
                     # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
-                    # cookies, first check how many session cookies will not be overwritten in this upcoming response. If
-                    # leftover cookies are greater than or equal to 1, that means older session cookies have to be expired
-                    # and their names are in cookie_keys.
-                    cookies_left = len(cookie_keys) - len(data)
-                    if cookies_left >= 1:
-                        cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
-                        for cookie_key in cookie_keys[len(data) :]:
-                            headers.append(
-                                "Set-Cookie",
-                                Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
-                            )
+                    # cookies, first check how many session cookies will not be overwritten in this upcoming response.
+                    # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
+                    # expired and their names are in cookie_keys.
+                    cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
                 else:
-                    for cookie_key in cookie_keys:
-                        cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
-                        headers.append(
-                            "Set-Cookie",
-                            Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
-                        )
+                    cookies_to_clear = cookie_keys
+
+                for cookie_key in cookies_to_clear:
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                    headers.append(
+                        "Set-Cookie",
+                        Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                    )
 
             await send(message)
 
