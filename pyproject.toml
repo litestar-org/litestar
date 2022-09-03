@@ -65,7 +65,7 @@ sqlalchemy = "*"
 tortoise-orm = "*"
 tox = "*"
 uvicorn = "*"
-pyright = "^1.1.269"
+pyright = "*"
 
 [tool.poetry.extras]
 testing = ["requests"]
