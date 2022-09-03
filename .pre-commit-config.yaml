@@ -140,16 +140,12 @@ repos:
             types-redis,
             types-requests,
           ]
-  - repo: local
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.269
     hooks:
       - id: pyright
-        name: pyright
-        entry: pyright
-        language: python
-        types: [python]
-        additional_dependencies: [
-            pyright,
-            # required dependencies for type checking
+        additional_dependencies:
+          [
             brotli,
             cryptography,
             freezegun,
