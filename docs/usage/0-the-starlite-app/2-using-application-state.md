@@ -11,8 +11,8 @@ from `starlette.datastructures.State`. It is accessible via [Starlite.state][sta
 accessed via any application reference, such as:
 
 - `starlette.requests.HTTPConnection.app.state` (accessible inside middleware - see the example below).
-- [Request.app][starlite.connection.Request.app]
-- [Websocket.app][starlite.connection.WebSocket.app]
+- [Request.app][starlite.connection.Request]
+- [Websocket.app][starlite.connection.WebSocket]
 
 The following complete example demonstrates different patterns of accessing Application State:
 

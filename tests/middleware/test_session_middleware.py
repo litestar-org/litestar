@@ -2,15 +2,16 @@ import secrets
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 from unittest import mock
 
 import pytest
 from cryptography.exceptions import InvalidTag
 from orjson import dumps
 from pydantic import SecretBytes, ValidationError
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import DefineMiddleware, Request, get
+from starlite import HttpMethod, Request, get, route
 from starlite.middleware.session import (
     AAD,
     CHUNK_SIZE,
@@ -91,9 +92,11 @@ def test_set_session_cookies() -> None:
         # Then you only need to check if number of cookies set are more than the multiplying number.
         request.session.update(create_session(size=CHUNK_SIZE * chunks_multiplier))
 
+    config = SessionCookieConfig(secret=TEST_SECRET)
+
     client = create_test_client(
         route_handlers=[handler],
-        middleware=[DefineMiddleware(SessionMiddleware, config=SessionCookieConfig(secret=TEST_SECRET))],
+        middleware=[config.middleware],
     )
 
     response = client.get("/test")
@@ -127,9 +130,11 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
 
     ciphertext = session_middleware.dump_data(_session)
 
+    config = SessionCookieConfig(secret=TEST_SECRET)
+
     client = create_test_client(
         route_handlers=[handler],
-        middleware=[DefineMiddleware(SessionMiddleware, config=SessionCookieConfig(secret=TEST_SECRET))],
+        middleware=[config.middleware],
     )
 
     response = client.get(
@@ -164,3 +169,46 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(session_middleware: 
 
     with pytest.raises(InvalidTag):
         session_middleware.load_data(encoded)
+
+
+def test_session_middleware_not_installed_raises() -> None:
+    @get("/test")
+    def handler(request: Request) -> None:
+        if request.session:
+            raise AssertionError("this line should not be hit")
+
+    with create_test_client(handler) as client:
+        response = client.get("/test")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
+
+
+def test_integration() -> None:
+    session_config = SessionCookieConfig(secret=urandom(16))  # type: ignore[arg-type]
+
+    @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
+    def session_handler(request: Request) -> Optional[Dict[str, bool]]:
+        if request.method == HttpMethod.GET:
+            return {"has_session": request.session != {}}
+        if request.method == HttpMethod.DELETE:
+            request.clear_session()
+        else:
+            request.set_session({"username": "moishezuchmir"})
+        return None
+
+    with create_test_client(
+        route_handlers=[session_handler],
+        middleware=[session_config.middleware],
+    ) as client:
+        response = client.get("/session")
+        assert response.json() == {"has_session": False}
+
+        client.post("/session")
+
+        response = client.get("/session")
+        assert response.json() == {"has_session": True}
+
+        client.delete("/session")
+
+        response = client.get("/session")
+        assert response.json() == {"has_session": False}

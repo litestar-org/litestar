@@ -22,8 +22,9 @@ from typing_extensions import Literal
 
 from starlite.datastructures import Cookie
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.base import MiddlewareProtocol
+from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.response import Response
+from starlite.types import Empty
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -91,6 +92,35 @@ class SessionCookieConfig(BaseModel):
         if len(value.get_secret_value()) not in [16, 24, 32]:
             raise ValueError("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
         return value
+
+    @property
+    def middleware(self) -> DefineMiddleware:
+        """Use this property to insert the config into a middleware list on one
+        of the application layers.
+
+        Examples:
+
+            ```python
+            from os import urandom
+
+            from starlite import Starlite, Request, get
+            from starlite.middleware.session import SessionCookieConfig
+
+            session_config = SessionCookieConfig(secret=urandom(16))
+
+
+            @get("/")
+            def my_handler(request: Request) -> None:
+                ...
+
+
+            app = Starlite(route_handlers=[my_handler], middleware=[session_config.middleware])
+            ```
+
+        Returns:
+            An instance of DefineMiddleware including 'self' as the config kwarg value.
+        """
+        return DefineMiddleware(SessionMiddleware, config=self)
 
 
 class SessionMiddleware(MiddlewareProtocol):
@@ -182,27 +212,34 @@ class SessionMiddleware(MiddlewareProtocol):
             """
             if message["type"] == "http.response.start":
                 headers = MutableHeaders(scope=message)
-                data = self.dump_data(scope.get("session"))
-                cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
-                for i, datum in enumerate(data, start=0):
-                    headers.append(
-                        "Set-Cookie",
-                        Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params).to_header(
-                            header=""
-                        ),
-                    )
-                # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
-                # cookies, first check how many session cookies will not be overwritten in this upcoming response. If
-                # leftover cookies are greater than or equal to 1, that means older session cookies have to be expired
-                # and their names are in cookie_keys.
-                cookies_left = len(cookie_keys) - len(data)
-                if cookies_left >= 1:
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
-                    for cookie_key in cookie_keys[len(data) :]:
+                scope_session = scope.get("session")
+
+                should_clear_session = scope_session is Empty
+                if not should_clear_session:
+                    data = self.dump_data(scope_session)
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+                    for i, datum in enumerate(data, start=0):
                         headers.append(
                             "Set-Cookie",
-                            Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                            Cookie(
+                                value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params
+                            ).to_header(header=""),
                         )
+                    # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
+                    # cookies, first check how many session cookies will not be overwritten in this upcoming response.
+                    # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
+                    # expired and their names are in cookie_keys.
+                    cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
+                else:
+                    cookies_to_clear = cookie_keys
+
+                for cookie_key in cookies_to_clear:
+                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                    headers.append(
+                        "Set-Cookie",
+                        Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                    )
+
             await send(message)
 
         return wrapped_send
