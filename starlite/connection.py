@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, Union, cast
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.requests import Request as StarletteRequest
@@ -11,6 +11,8 @@ from starlite.parsers import parse_query_params
 from starlite.types import Empty
 
 if TYPE_CHECKING:
+    from pydantic import BaseModel
+    from starlette.requests import HTTPConnection
     from typing_extensions import Literal
 
     from starlite.app import Starlite
@@ -20,12 +22,8 @@ User = TypeVar("User")
 Auth = TypeVar("Auth")
 
 
-class Request(StarletteRequest, Generic[User, Auth]):
-    """The Starlite Request class."""
-
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
-        super().__init__(scope, receive, send)
-        self._json: Any = Empty
+class AppMixin:
+    scope: "Scope"
 
     @property
     def app(self) -> "Starlite":
@@ -35,12 +33,60 @@ class Request(StarletteRequest, Generic[User, Auth]):
         """
         return cast("Starlite", self.scope["app"])
 
+
+class SessionMixin:
+    scope: "Scope"
+
+    @property
+    def session(self) -> Dict[str, Any]:
+        """
+        Returns:
+            A dictionary representing the session value - if existing.
+
+        Raises:
+            ImproperlyConfiguredException: if session is not set in scope.
+        """
+        if "session" not in self.scope:
+            raise ImproperlyConfiguredException(
+                "'session' is not defined in scope, install a SessionMiddleware to set it"
+            )
+        return cast("Dict[str, Any]", self.scope["session"])
+
+    def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
+        """Helper method to set the session in scope.
+
+        If the [Starlite SessionMiddleware][starlite.middleware.base.session.SessionMiddleware] is
+        enabled, the session will be added to the response as a cookie header.
+
+        Args:
+            value: Dictionary or pydantic model instance for the session data.
+
+        Returns:
+            None.
+        """
+        self.scope.update(session=value)
+
+    def clear_session(self) -> None:
+        """Helper method to remove the session from scope.
+
+        If the [Starlite SessionMiddleware][starlite.middleware.base.session.SessionMiddleware] is
+        enabled, this will cause the session data to be cleared.
+
+        Returns:
+            None.
+        """
+        self.scope["session"] = Empty
+
+
+class AuthMixin(Generic[User, Auth]):
+    scope: "Scope"
+
     @property
     def user(self) -> User:
         """Allows access to user data.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
+            ImproperlyConfiguredException: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable User.
@@ -54,7 +100,7 @@ class Request(StarletteRequest, Generic[User, Auth]):
         """Allows access to auth data.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
+            ImproperlyConfiguredException: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
 
         Returns:
             A type correlating to the generic variable Auth.
@@ -63,18 +109,32 @@ class Request(StarletteRequest, Generic[User, Auth]):
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
         return cast("Auth", self.scope["auth"])
 
+
+class QueryParamMixin:
+    scope: "Scope"
+    _parsed_query: Dict[str, Any]
+
     @property
-    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
+    def query_params(self) -> Dict[str, Any]:
         """
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
-        return parse_query_params(self)
+        if not hasattr(self, "_parsed_query"):
+            self._parsed_query = parse_query_params(cast("HTTPConnection", self))
+        return self._parsed_query
+
+
+class Request(AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
+    """The Starlite Request class."""
+
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+        super().__init__(scope, receive, send)
+        self._json: Any = Empty
 
     @property
     def method(self) -> "Method":
         """
-
         Returns:
             The request [Method][starlite.types.Method]
         """
@@ -97,52 +157,10 @@ class Request(StarletteRequest, Generic[User, Auth]):
         return self._json
 
 
-class WebSocket(StarletteWebSocket, Generic[User, Auth]):
+class WebSocket(  # type: ignore[misc]
+    AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteWebSocket
+):
     """The Starlite WebSocket class."""
-
-    @property
-    def app(self) -> "Starlite":
-        """
-        Returns:
-            The [Starlite][starlite.app.Starlite] application instance
-        """
-        return cast("Starlite", self.scope["app"])
-
-    @property
-    def user(self) -> User:
-        """Allows access to user data.
-
-        Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
-
-        Returns:
-            A type correlating to the generic variable User.
-        """
-        if "user" not in self.scope:
-            raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
-        return cast("User", self.scope["user"])
-
-    @property
-    def auth(self) -> Auth:
-        """Allows access to auth data.
-
-        Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
-
-        Returns:
-            A type correlating to the generic variable Auth.
-        """
-        if "auth" not in self.scope:
-            raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
-        return cast("Auth", self.scope["auth"])
-
-    @property
-    def query_params(self) -> Dict[str, Any]:  # type: ignore[override]
-        """
-        Returns:
-            A normalized dict of query parameters. Multiple values for the same key are returned as a list.
-        """
-        return parse_query_params(self)
 
     async def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:  # type: ignore
         """Receives data and loads it into JSON using orson.
