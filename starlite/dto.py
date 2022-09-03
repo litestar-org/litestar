@@ -225,7 +225,9 @@ class DTOFactory:
             dto.dto_field_mapping[value] = key
         return dto
 
-    def _get_fields_from_source(self, source: Type[T]) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
+    def _get_fields_from_source(
+        self, source: Type[T]  # pyright: ignore
+    ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
         """Converts a `BaseModel` subclass, `dataclass` or any other type that
         has a plugin registered into a mapping of `str` to `ModelField`."""
         plugin: Optional[PluginProtocol] = None
