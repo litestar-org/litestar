@@ -59,3 +59,24 @@
     options:
         members:
             - __init__
+
+::: starlite.middleware.session.SessionCookieConfig
+    options:
+        members:
+            - secret
+            - key
+            - max_age
+            - scopes
+            - path
+            - domain
+            - secure
+            - httponly
+            - samesite
+            - middleware
+
+::: starlite.middleware.session.SessionMiddleware
+    options:
+        members:
+            - __init__
+            - dump_data
+            - load_data

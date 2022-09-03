@@ -4,18 +4,24 @@
     options:
         members:
             - app
-            - user
             - auth
-            - query_params
-            - method
+            - clear_session
             - json
+            - method
+            - query_params
+            - session
+            - set_session
+            - user
 
 ::: starlite.connection.WebSocket
     options:
         members:
             - app
-            - user
             - auth
+            - clear_session
             - query_params
             - receive_json
             - send_json
+            - session
+            - set_session
+            - user
