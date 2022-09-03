@@ -187,12 +187,12 @@ class Router:
     @property
     def route_handler_method_map(
         self,
-    ) -> Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
+    ) -> Dict[str, Union[ASGIRouteHandler, WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
         """
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: Dict[str, Union[WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]] = {}
+        route_map: Dict[str, Union[ASGIRouteHandler, WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]] = {}
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 if not isinstance(route_map.get(route.path), dict):
@@ -202,6 +202,23 @@ class Router:
                         route_map[route.path][method] = route_handler  # type: ignore
             else:
                 route_map[route.path] = cast("WebSocketRoute", route).route_handler
+        return route_map
+
+    @property
+    def route_handler_method_view(
+        self,
+    ) -> Dict[Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], str]:
+        """
+        Returns:
+             A dictionary mapping route handlers to paths
+        """
+        route_map: Dict[Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], str] = {}
+        for route in self.routes:
+            if isinstance(route, HTTPRoute):
+                for route_handler in route.route_handlers:
+                    route_map[route_handler] = route.path
+            else:
+                route_map[cast("WebSocketRoute", route).route_handler] = route.path
         return route_map
 
     @staticmethod
