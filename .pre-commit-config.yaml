@@ -85,22 +85,22 @@ repos:
         exclude: "^(?!starlite/)"
         additional_dependencies:
           [
+            brotli,
+            jinja2,
             jinja2,
             mako,
+            mako,
             orjson,
+            piccolo,
+            picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
             pyyaml,
-            starlette,
-            sqlalchemy,
             requests,
-            jinja2,
-            mako,
-            picologging,
+            sqlalchemy,
+            starlette,
             tortoise_orm,
-            piccolo,
-            brotli,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.0"
@@ -112,6 +112,7 @@ repos:
           [
             orjson,
             piccolo,
+            picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
@@ -119,7 +120,6 @@ repos:
             sqlalchemy,
             starlette,
             tortoise_orm,
-            picologging,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.971"
@@ -129,6 +129,7 @@ repos:
           [
             orjson,
             piccolo,
+            picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
@@ -138,13 +139,34 @@ repos:
             types-freezegun,
             types-redis,
             types-requests,
-            picologging,
           ]
   - repo: local
     hooks:
       - id: pyright
         name: pyright
-        entry: poetry run pyright -p .
-        language: system
-        pass_filenames: false
+        entry: pyright
+        language: python
         types: [python]
+        additional_dependencies: [
+            pyright,
+            # required dependencies for type checking
+            brotli,
+            cryptography,
+            freezegun,
+            hypothesis,
+            mako,
+            orjson,
+            piccolo,
+            picologging,
+            pydantic,
+            pydantic_factories,
+            pydantic_openapi_schema,
+            pytest,
+            requests,
+            sqlalchemy,
+            starlette,
+            types-PyYAML,
+            types-freezegun,
+            types-redis,
+            types-requests,
+          ]
