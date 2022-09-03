@@ -1,5 +1,9 @@
 # Changelog
 
+[1.17.0]
+
+- add `SessionMiddleware`.
+
 [1.16.2]
 
 - fix `before_request` regression causing it to not handle returned responses from the hook.

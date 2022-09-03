@@ -187,7 +187,7 @@ def test_integration() -> None:
     session_config = SessionCookieConfig(secret=urandom(16))  # type: ignore[arg-type]
 
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
-    def session_handler(request: Request) -> Optional[dict[str, bool]]:
+    def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
             return {"has_session": request.session != {}}
         if request.method == HttpMethod.DELETE:
