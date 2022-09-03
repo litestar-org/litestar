@@ -122,3 +122,12 @@ def test_register_router_on_itself() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         router.register(router)
+
+
+def test_route_handler_method_view() -> None:
+    @get(path="/test")
+    def handler() -> None:
+        ...
+
+    router = Router(path="/", route_handlers=[MyController, handler])
+    assert router.route_handler_method_view[handler] == "/test"
