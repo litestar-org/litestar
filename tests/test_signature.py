@@ -8,7 +8,7 @@ from pydantic.error_wrappers import ErrorWrapper
 from starlette.datastructures import URL
 from starlette.status import HTTP_204_NO_CONTENT
 
-from starlite import Provide, get
+from starlite import HTTPException, Provide, get
 from starlite.connection import WebSocket
 from starlite.exceptions import (
     ImproperlyConfiguredException,
@@ -90,7 +90,7 @@ def test_construct_exception(exc_type: Type[Exception], loc_errors: List[str], e
     request = create_test_request()
     errors = [ErrorWrapper(Exception(), loc) for loc in loc_errors]
     validation_error = ValidationError(errors=errors, model=BaseModel)
-    exc = model.construct_exception(connection=request, exc=validation_error)
+    exc = cast("HTTPException", model.construct_exception(connection=request, exc=validation_error))
 
     assert isinstance(exc, exc_type)
     assert request.method in exc.detail

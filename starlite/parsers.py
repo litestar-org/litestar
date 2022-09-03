@@ -21,7 +21,7 @@ _true_values = {"True", "true"}
 _false_values = {"False", "false"}
 
 
-def _query_param_reducer(acc: Dict[str, List[str]], cur: Tuple[str, str]) -> Dict[str, List[str]]:
+def _query_param_reducer(acc: Dict[str, List[Any]], cur: Tuple[str, str]) -> Dict[str, List[str]]:
     """
     Reducer function - acc is a dictionary, cur is a tuple of key + value
 

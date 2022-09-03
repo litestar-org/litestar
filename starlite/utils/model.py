@@ -27,5 +27,5 @@ def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
     if not isclass(dataclass) and hasattr(dataclass, "__class__"):
         dataclass = dataclass.__class__
     if not _dataclass_model_map.get(dataclass):
-        _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)
+        _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)  # pyright: ignore
     return _dataclass_model_map[dataclass]

@@ -24,7 +24,7 @@ class TemplateConfig(BaseModel):
     """
         A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol].
     """
-    engine_callback: Optional[Callable[[Any], Any]]
+    engine_callback: Optional[Callable[[Any], Any]] = None
     """
         A callback function that allows modifying the instantiated templating protocol.
     """

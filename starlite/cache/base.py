@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 @runtime_checkable
 class CacheBackendProtocol(Protocol):  # pragma: no cover
     @overload  # type: ignore[misc]
-    def get(self, key: str) -> Any:
+    def get(self, key: str) -> Any:  # pyright: ignore
         ...
 
     async def get(self, key: str) -> Any:
@@ -27,7 +27,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
 
     @overload  # type: ignore[misc]
-    def set(self, key: str, value: Any, expiration: int) -> Any:
+    def set(self, key: str, value: Any, expiration: int) -> Any:  # pyright: ignore
         ...
 
     async def set(self, key: str, value: Any, expiration: int) -> Any:
@@ -48,7 +48,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
 
     @overload  # type: ignore[misc]
-    def delete(self, key: str) -> Any:
+    def delete(self, key: str) -> Any:  # pyright: ignore
         ...
 
     async def delete(self, key: str) -> Any:
@@ -93,7 +93,7 @@ class Cache:
         Returns:
             Cached value if existing else `None`.
         """
-        if is_async_callable(self.backend.get):
+        if is_async_callable(self.backend.get):  # pyright: ignore
             return await self.backend.get(key)
 
         async with self.lock:
@@ -114,7 +114,7 @@ class Cache:
         Returns:
             Any
         """
-        if is_async_callable(self.backend.set):
+        if is_async_callable(self.backend.set):  # pyright: ignore
             return await self.backend.set(key, value, expiration or self.default_expiration)
 
         async with self.lock:
@@ -132,7 +132,7 @@ class Cache:
         Returns:
             Any
         """
-        if is_async_callable(self.backend.delete):
+        if is_async_callable(self.backend.delete):  # pyright: ignore
             return await self.backend.delete(key)
 
         async with self.lock:

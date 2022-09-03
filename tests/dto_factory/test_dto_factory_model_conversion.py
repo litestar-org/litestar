@@ -58,7 +58,7 @@ def test_conversion_from_model_instance(
         model_instance = model(
             first_name="moishe",
             last_name="zuchmir",
-            id=1,
+            id="1",
             optional="some-value",
             complex={"key": [{"key": "value"}]},
             pets=None,

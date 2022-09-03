@@ -27,5 +27,4 @@ __all__ = [
     "StarLiteException",
     "TemplateNotFoundException",
     "ValidationException",
-    "utils",
 ]

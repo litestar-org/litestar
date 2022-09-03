@@ -44,7 +44,7 @@ class HTTPException(StarletteHTTPException, StarLiteException):
     def __init__(
         self,
         *args: Any,
-        detail: Optional[str] = None,
+        detail: str = "",
         status_code: Optional[int] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ):

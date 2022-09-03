@@ -12,7 +12,7 @@ class TemplateProtocol(Protocol):  # pragma: no cover
     template into a string.
     """
 
-    def render(self, **context: Optional[Dict[str, Any]]) -> str:
+    def render(self, **context: Optional[Dict[str, Any]]) -> str:  # pyright: ignore
         """Returns the rendered template as a string.
 
         Args:
@@ -36,7 +36,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
             directory: Direct path or list of directory paths from which to serve templates.
         """
 
-    def get_template(self, template_name: str) -> T_co:
+    def get_template(self, template_name: str) -> T_co:  # pyright: ignore
         """
         Retrieves a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
