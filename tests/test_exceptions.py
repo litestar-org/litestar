@@ -44,7 +44,7 @@ def test_http_exception_str() -> None:
 @given(status_code=st.integers(min_value=400, max_value=404), detail=st.one_of(st.none(), st.text()))
 def test_http_exception(status_code: int, detail: Optional[str]) -> None:
     assert HTTPException().status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    result = HTTPException(status_code=status_code, detail=detail)
+    result = HTTPException(status_code=status_code, detail=detail or "")
     assert isinstance(result, StarLiteException)
     assert isinstance(result, StarletteHTTPException)
     assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
@@ -53,7 +53,7 @@ def test_http_exception(status_code: int, detail: Optional[str]) -> None:
 
 @given(detail=st.one_of(st.none(), st.text()))
 def test_improperly_configured_exception(detail: Optional[str]) -> None:
-    result = ImproperlyConfiguredException(detail=detail)
+    result = ImproperlyConfiguredException(detail=detail or "")
     assert result.__repr__() == f"{HTTP_500_INTERNAL_SERVER_ERROR} - {result.__class__.__name__} - {result.detail}"
     assert isinstance(result, HTTPException)
     assert isinstance(result, ValueError)

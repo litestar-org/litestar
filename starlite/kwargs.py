@@ -306,12 +306,13 @@ class KwargsModel:
             )
             if "data" in expected_reserved_kwargs and "data" in dependency_kwargs_model.expected_reserved_kwargs:
                 cls._validate_dependency_data(
-                    expected_form_data=expected_form_data, dependency_kwargs_model=dependency_kwargs_model
+                    expected_form_data=expected_form_data,  # pyright: ignore
+                    dependency_kwargs_model=dependency_kwargs_model,
                 )
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
 
         return KwargsModel(
-            expected_form_data=expected_form_data,
+            expected_form_data=expected_form_data,  # pyright: ignore
             expected_dependencies=expected_dependencies,
             expected_path_params=expected_path_parameters,
             expected_query_params=expected_query_parameters,

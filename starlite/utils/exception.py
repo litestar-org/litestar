@@ -1,5 +1,5 @@
 from inspect import getmro
-from typing import TYPE_CHECKING, Dict, Optional, Type, Union
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union, cast
 
 from starlette.exceptions import HTTPException
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
@@ -39,7 +39,7 @@ def get_exception_handler(
         return exception_handlers[exc.status_code]
     for cls in getmro(type(exc)):
         if cls in exception_handlers:
-            return exception_handlers[cls]
+            return exception_handlers[cast("Type[Exception]", cls)]
     if not isinstance(exc, HTTPException) and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers:
         return exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
     return None

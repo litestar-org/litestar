@@ -20,7 +20,7 @@ from starlite import (
     post,
     put,
 )
-from tests import Person, Pet, VanillaDataClassPerson
+from tests import Person, PersonFactory, Pet, VanillaDataClassPerson
 
 
 class PetException(HTTPException):
@@ -68,45 +68,49 @@ class PersonController(Controller):
         # cookie parameter
         cookie_value: int = Parameter(cookie="value"),
     ) -> List[Person]:
-        pass
+        return []
 
     @post(media_type=MediaType.TEXT)
     def create_person(self, data: Person, secret_header: str = Parameter(header="secret")) -> Person:
-        pass
+        return data
 
     @post(path="/bulk")
     def bulk_create_person(self, data: List[Person], secret_header: str = Parameter(header="secret")) -> List[Person]:
-        pass
+        return []
 
     @put(path="/bulk")
     def bulk_update_person(self, data: List[Person], secret_header: str = Parameter(header="secret")) -> List[Person]:
-        pass
+        return []
 
     @patch(path="/bulk")
     def bulk_partial_update_person(
         self, data: List[Partial[Person]], secret_header: str = Parameter(header="secret")
     ) -> List[Person]:
-        pass
+        return []
 
     @get(path="/{person_id:str}")
     def get_person_by_id(self, person_id: str) -> Person:
         """Description in docstring."""
+        return PersonFactory.build(id=person_id)
 
     @patch(path="/{person_id:str}", description="Description in decorator")
     def partial_update_person(self, person_id: str, data: Partial[Person]) -> Person:
         """Description in docstring."""
+        return PersonFactory.build(id=person_id)
 
     @put(path="/{person_id:str}")
     def update_person(self, person_id: str, data: Person) -> Person:
-        pass
+        return data
 
     @delete(path="/{person_id:str}")
     def delete_person(self, person_id: str) -> None:
-        pass
+        return None
 
     @get(path="/dataclass")
     def get_person_dataclass(self) -> VanillaDataClassPerson:
-        pass
+        return VanillaDataClassPerson(
+            first_name="Moishe", last_name="zuchmir", id="1", optional=None, complex={}, pets=None
+        )
 
 
 class PetController(Controller):
@@ -114,11 +118,11 @@ class PetController(Controller):
 
     @get()
     def pets(self) -> List[Pet]:
-        pass
+        return []
 
     @get(path="/owner-or-pet", response_headers={"x-my-tag": ResponseHeader(value="123")}, raises=[PetException])
     def get_pets_or_owners(self) -> List[Union[Person, Pet]]:
-        pass
+        return []
 
 
 constrained_numbers = [

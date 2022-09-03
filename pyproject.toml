@@ -65,6 +65,7 @@ sqlalchemy = "*"
 tortoise-orm = "*"
 tox = "*"
 uvicorn = "*"
+pyright = "^1.1.269"
 
 [tool.poetry.extras]
 testing = ["requests"]
@@ -142,3 +143,7 @@ asyncio_mode = "auto"
 
 [tool.pycln]
 all = true
+
+[tool.pyright]
+include = ["starlite", "tests", "examples"]
+exclude = ["starlite/plugins", "tests/plugins", "starlite/openapi", "tests/openapi"]

@@ -14,7 +14,7 @@ __all__ = ["create_exception_response"]
 
 class ExceptionResponseContent(BaseModel):
     detail: Optional[str]
-    extra: Optional[Union[Dict[str, Any], List[Any]]]
+    extra: Optional[Union[Dict[str, Any], List[Any]]] = None
     status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
 
 

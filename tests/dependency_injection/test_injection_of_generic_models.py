@@ -26,7 +26,7 @@ class Item(BaseModel):
 class DictStore(Store[Item]):
     """In-memory store implementation."""
 
-    def get(self, value_id: str) -> Optional[T]:
+    def get(self, value_id: str) -> Optional[Item]:
         return None
 
 

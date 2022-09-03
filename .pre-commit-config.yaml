@@ -140,3 +140,11 @@ repos:
             types-requests,
             picologging,
           ]
+  - repo: local
+    hooks:
+      - id: pyright
+        name: pyright
+        entry: poetry run pyright -p .
+        language: system
+        pass_filenames: false
+        types: [python]

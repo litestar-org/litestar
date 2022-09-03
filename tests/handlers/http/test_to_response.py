@@ -42,6 +42,58 @@ if TYPE_CHECKING:
     from typing import AsyncGenerator
 
 
+def my_generator() -> Generator[str, None, None]:
+    count = 0
+    while True:
+        count += 1
+        yield str(count)
+
+
+async def my_async_generator() -> "AsyncGenerator[str, None]":
+    count = 0
+    while True:
+        count += 1
+        yield str(count)
+
+
+class MySyncIterator:
+    def __init__(self) -> None:
+        self.delay = 0.01
+        self.i = 0
+        self.to = 0.1
+
+    def __iter__(self) -> Iterator[str]:
+        return self
+
+    def __next__(self) -> str:
+        i = self.i
+        if i >= self.to:
+            raise StopAsyncIteration
+        self.i += 1
+        if i:
+            sleep(self.delay)
+        return str(i)
+
+
+class MyAsyncIterator:
+    def __init__(self) -> None:
+        self.delay = 0.01
+        self.i = 0
+        self.to = 0.1
+
+    def __aiter__(self) -> AsyncIterator[str]:
+        return self
+
+    async def __anext__(self) -> str:
+        i = self.i
+        if i >= self.to:
+            raise StopAsyncIteration
+        self.i += 1
+        if i:
+            await async_sleep(self.delay)
+        return str(i)
+
+
 @pytest.mark.asyncio()
 async def test_to_response_async_await() -> None:
     @route(http_method=HttpMethod.POST, path="/person")
@@ -58,16 +110,6 @@ async def test_to_response_async_await() -> None:
         data=test_function.fn(data=person_instance), plugins=[], app=None  # type: ignore
     )
     assert loads(response.body) == person_instance.dict()
-
-
-async def slow_numbers(minimum: int, maximum: int) -> Any:
-    yield "<html><body><ul>"
-    for number in range(minimum, maximum + 1):
-        yield "<li>%d</li>" % number
-    yield "</ul></body></html>"
-
-
-generator = slow_numbers(1, 10)
 
 
 async def test_to_response_returning_starlite_response() -> None:
@@ -92,7 +134,7 @@ async def test_to_response_returning_starlite_response() -> None:
         HTMLResponse(content="<div><span/></div"),
         JSONResponse(status_code=HTTP_200_OK, content={}),
         RedirectResponse(url="/person"),
-        StreamingResponse(status_code=HTTP_200_OK, content=generator),
+        StreamingResponse(status_code=HTTP_200_OK, content=MySyncIterator()),
         FileResponse("./test_to_response.py"),
     ],
 )
@@ -197,58 +239,6 @@ async def test_to_response_returning_file_response() -> None:
         assert cookies[0] == "file-cookie=xyz; Path=/; SameSite=lax"
         assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
-
-
-def my_generator() -> Generator[int, None, None]:
-    count = 0
-    while True:
-        count += 1
-        yield count
-
-
-async def my_async_generator() -> "AsyncGenerator[int, None]":
-    count = 0
-    while True:
-        count += 1
-        yield count
-
-
-class MySyncIterator:
-    def __init__(self) -> None:
-        self.delay = 0.01
-        self.i = 0
-        self.to = 0.1
-
-    def __iter__(self) -> Iterator[int]:
-        return self
-
-    def __next__(self) -> int:
-        i = self.i
-        if i >= self.to:
-            raise StopAsyncIteration
-        self.i += 1
-        if i:
-            sleep(self.delay)
-        return i
-
-
-class MyAsyncIterator:
-    def __init__(self) -> None:
-        self.delay = 0.01
-        self.i = 0
-        self.to = 0.1
-
-    def __aiter__(self) -> AsyncIterator[int]:
-        return self
-
-    async def __anext__(self) -> int:
-        i = self.i
-        if i >= self.to:
-            raise StopAsyncIteration
-        self.i += 1
-        if i:
-            await async_sleep(self.delay)
-        return i
 
 
 @pytest.mark.asyncio()
