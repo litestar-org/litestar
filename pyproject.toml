@@ -94,6 +94,7 @@ disable = [
     "missing-module-docstring",
     "super-init-not-called",
     "too-few-public-methods",
+    "too-many-ancestors",
     "too-many-arguments",
     "too-many-branches",
     "too-many-instance-attributes",

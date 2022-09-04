@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
+from starlette.datastructures import URL, URLPath
 from starlette.requests import Request as StarletteRequest
 from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
@@ -125,7 +126,59 @@ class QueryParamMixin:
         return self._parsed_query
 
 
-class Request(AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
+class URLMixin:
+    scope: "Scope"
+    _base_url: URL
+    _url: URL
+
+    @property
+    def url(self) -> URL:
+        """
+
+        Returns:
+            A URL instance constructed from the request's scope.
+        """
+        if not hasattr(self, "_url"):
+            self._url = URL(scope=self.scope)
+        return self._url
+
+    @property
+    def base_url(self) -> URL:
+        """
+
+        Returns:
+            A URL instance constructed from the request's scope, representing only the base part
+            (host + domain + prefix) of the request.
+        """
+        if not hasattr(self, "_base_url"):
+            self._base_url = URL(
+                scope={
+                    **self.scope,
+                    "path": "/",
+                    "query_string": b"",
+                    "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
+                }
+            )
+        return self._base_url
+
+    def url_for(self, name: str) -> Optional[str]:
+        """
+
+        Args:
+            name: The 'name' of the request route handler.
+
+        Returns:
+            If a route handler with the given name is found, it returns a string representing the absolute url of the
+            route handler.
+        """
+        starlite_instance = cast("Starlite", self.scope["app"])
+        index = starlite_instance.get_handler_index_by_name(name)
+        if index:
+            return URLPath(index["path"]).make_absolute_url(self.base_url)
+        return None
+
+
+class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
     """The Starlite Request class."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
@@ -158,7 +211,7 @@ class Request(AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth]
 
 
 class WebSocket(  # type: ignore[misc]
-    AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteWebSocket
+    URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteWebSocket
 ):
     """The Starlite WebSocket class."""
 
