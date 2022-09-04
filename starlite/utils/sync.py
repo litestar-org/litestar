@@ -4,6 +4,7 @@ from typing import Awaitable, Callable, Generic, List, TypeVar, Union
 from anyio.to_thread import run_sync
 from typing_extensions import ParamSpec
 
+from starlite.utils.functional import FunctionWrapper
 from starlite.utils.predicates import is_async_callable
 
 P = ParamSpec("P")
@@ -22,9 +23,9 @@ class AsyncCallable(Generic[P, T]):
         """
         self.fn: Callable[P, Awaitable[T]]
         if is_async_callable(fn):
-            self.fn = fn
+            self.fn = FunctionWrapper(fn)
         else:
-            self.fn = partial(run_sync, fn)  # type:ignore[assignment]
+            self.fn = FunctionWrapper(partial(run_sync, fn))  # type: ignore
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         return await self.fn(*args, **kwargs)
