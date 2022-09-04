@@ -1,0 +1,69 @@
+from starlite.utils import FunctionWrapper
+
+
+def test_function_wrapper_wraps_method_correctly() -> None:
+    class MyClass:
+        def __init__(self) -> None:
+            self.value = 0
+
+        def my_method(self, value: int) -> None:
+            self.value = value
+
+    instance = MyClass()
+
+    wrapped_method = FunctionWrapper(instance.my_method)
+
+    wrapped_method(1)
+    assert instance.value == 1
+
+    wrapped_method(value=10)
+    assert instance.value == 10
+
+
+async def test_function_wrapper_wraps_async_method_correctly() -> None:
+    class MyClass:
+        def __init__(self) -> None:
+            self.value = 0
+
+        async def my_method(self, value: int) -> None:
+            self.value = value
+
+    instance = MyClass()
+
+    wrapped_method = FunctionWrapper(instance.my_method)
+
+    await wrapped_method(1)
+    assert instance.value == 1
+
+    await wrapped_method(value=10)
+    assert instance.value == 10
+
+
+def test_function_wrapper_wraps_function_correctly() -> None:
+    obj = {"value": 0}
+
+    def my_function(new_value: int) -> None:
+        obj["value"] = new_value
+
+    wrapped_function = FunctionWrapper(my_function)
+
+    wrapped_function(1)
+    assert obj["value"] == 1
+
+    wrapped_function(new_value=10)
+    assert obj["value"] == 10
+
+
+async def test_function_wrapper_wraps_async_function_correctly() -> None:
+    obj = {"value": 0}
+
+    async def my_function(new_value: int) -> None:
+        obj["value"] = new_value
+
+    wrapped_function = FunctionWrapper(my_function)
+
+    await wrapped_function(1)
+    assert obj["value"] == 1
+
+    await wrapped_function(new_value=10)
+    assert obj["value"] == 10

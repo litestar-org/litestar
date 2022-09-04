@@ -1,5 +1,6 @@
 from .dependency import is_dependency_field, should_skip_dependency_validation
 from .exception import get_exception_handler
+from .functional import FunctionWrapper
 from .model import convert_dataclass_to_model, create_parsed_model_field
 from .module_loading import import_string
 from .predicates import is_async_callable, is_class_and_subclass, is_optional_union
@@ -10,6 +11,7 @@ from .url import join_paths, normalize_path
 
 __all__ = [
     "AsyncCallable",
+    "FunctionWrapper",
     "convert_dataclass_to_model",
     "create_parsed_model_field",
     "create_template_engine",
