@@ -6,7 +6,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class FunctionWrapper(Generic[P, T]):
+class CallableWrapper(Generic[P, T]):
     def __init__(self, fn: Callable[P, T]):
         """
         Takes a callable, if it's a method - preserves its 'self' argument, otherwise wraps it in 'staticmethod'.

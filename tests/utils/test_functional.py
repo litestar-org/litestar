@@ -1,4 +1,4 @@
-from starlite.utils import FunctionWrapper
+from starlite.utils import CallableWrapper
 
 
 def test_function_wrapper_wraps_method_correctly() -> None:
@@ -11,7 +11,7 @@ def test_function_wrapper_wraps_method_correctly() -> None:
 
     instance = MyClass()
 
-    wrapped_method = FunctionWrapper(instance.my_method)
+    wrapped_method = CallableWrapper(instance.my_method)
 
     wrapped_method(1)
     assert instance.value == 1
@@ -30,7 +30,7 @@ async def test_function_wrapper_wraps_async_method_correctly() -> None:
 
     instance = MyClass()
 
-    wrapped_method = FunctionWrapper(instance.my_method)
+    wrapped_method = CallableWrapper(instance.my_method)
 
     await wrapped_method(1)
     assert instance.value == 1
@@ -45,7 +45,7 @@ def test_function_wrapper_wraps_function_correctly() -> None:
     def my_function(new_value: int) -> None:
         obj["value"] = new_value
 
-    wrapped_function = FunctionWrapper(my_function)
+    wrapped_function = CallableWrapper(my_function)
 
     wrapped_function(1)
     assert obj["value"] == 1
@@ -60,7 +60,7 @@ async def test_function_wrapper_wraps_async_function_correctly() -> None:
     async def my_function(new_value: int) -> None:
         obj["value"] = new_value
 
-    wrapped_function = FunctionWrapper(my_function)
+    wrapped_function = CallableWrapper(my_function)
 
     await wrapped_function(1)
     assert obj["value"] == 1
@@ -78,7 +78,7 @@ def test_function_wrapper_wraps_class_correctly() -> None:
 
     instance = MyCallable()
 
-    wrapped_class = FunctionWrapper(instance)
+    wrapped_class = CallableWrapper(instance)
 
     wrapped_class(1)
     assert instance.value == 1
@@ -96,7 +96,7 @@ async def test_function_wrapper_wraps_async_class_correctly() -> None:
 
     instance = MyCallable()
 
-    wrapped_class = FunctionWrapper(instance)
+    wrapped_class = CallableWrapper(instance)
 
     await wrapped_class(1)
     assert instance.value == 1
