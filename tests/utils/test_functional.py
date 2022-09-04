@@ -67,3 +67,39 @@ async def test_function_wrapper_wraps_async_function_correctly() -> None:
 
     await wrapped_function(new_value=10)
     assert obj["value"] == 10
+
+
+def test_function_wrapper_wraps_class_correctly() -> None:
+    class MyCallable:
+        value = 0
+
+        def __call__(self, new_value: int) -> None:
+            self.value = new_value
+
+    instance = MyCallable()
+
+    wrapped_class = FunctionWrapper(instance)
+
+    wrapped_class(1)
+    assert instance.value == 1
+
+    wrapped_class(new_value=10)
+    assert instance.value == 10
+
+
+async def test_function_wrapper_wraps_async_class_correctly() -> None:
+    class MyCallable:
+        value = 0
+
+        async def __call__(self, new_value: int) -> None:
+            self.value = new_value
+
+    instance = MyCallable()
+
+    wrapped_class = FunctionWrapper(instance)
+
+    await wrapped_class(1)
+    assert instance.value == 1
+
+    await wrapped_class(new_value=10)
+    assert instance.value == 10
