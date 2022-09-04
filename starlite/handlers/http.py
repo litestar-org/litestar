@@ -350,10 +350,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             name=name,
             opt=opt,
         )
-        self.after_request = after_request
-        self.after_response = after_response
+        self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
+        self.after_response = AsyncCallable(after_response) if after_response else None
         self.background = background
-        self.before_request = before_request
+        self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache = cache
         self.cache_key_builder = cache_key_builder
         self.media_type = media_type
@@ -438,12 +438,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             An optional [before request lifecycle hook handler][starlite.types.BeforeRequestHookHandler]
         """
         if self._resolved_before_request is Empty:
-            before_request_handlers = [
-                AsyncCallable(layer.before_request) for layer in self.ownership_layers if layer.before_request
+            before_request_handlers: List[AsyncCallable] = [
+                layer.before_request for layer in self.ownership_layers if layer.before_request  # type: ignore[misc]
             ]
             self._resolved_before_request = cast(
                 "Optional[BeforeRequestHookHandler]",
-                AsyncCallable(before_request_handlers[-1]) if before_request_handlers else None,
+                before_request_handlers[-1] if before_request_handlers else None,
             )
         return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
 
@@ -458,10 +458,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             An optional [after response lifecycle hook handler][starlite.types.AfterResponseHookHandler]
         """
         if self._resolved_after_response is Empty:
-            after_response_handlers = [layer.after_response for layer in self.ownership_layers if layer.after_response]
+            after_response_handlers: List[AsyncCallable] = [
+                layer.after_response for layer in self.ownership_layers if layer.after_response  # type: ignore[misc]
+            ]
             self._resolved_after_response = cast(
                 "Optional[AfterResponseHookHandler]",
-                AsyncCallable(after_response_handlers[-1]) if after_response_handlers else None,
+                after_response_handlers[-1] if after_response_handlers else None,
             )
 
         return cast("Optional[AfterResponseHookHandler]", self._resolved_after_response)
@@ -477,10 +479,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             Async Callable to handle an HTTP Request
         """
         if self._resolved_response_handler is Empty:
-            after_request_handlers = [layer.after_request for layer in self.ownership_layers if layer.after_request]
+            after_request_handlers: List[AsyncCallable] = [
+                layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
+            ]
             after_request = cast(
                 "Optional[AfterRequestHookHandler]",
-                AsyncCallable(after_request_handlers[-1]) if after_request_handlers else None,  # type: ignore[arg-type]
+                after_request_handlers[-1] if after_request_handlers else None,
             )
 
             media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type

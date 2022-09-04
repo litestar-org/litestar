@@ -6,7 +6,7 @@ import pytest
 from starlite.utils.predicates import is_async_callable
 
 
-class AsyncCallable:
+class AsyncTestCallable:
     async def __call__(self, param1: int, param2: int) -> None:
         ...
 
@@ -14,7 +14,7 @@ class AsyncCallable:
         ...
 
 
-class SyncCallable:
+class SyncTestCallable:
     def __call__(self, param1: int, param2: int) -> None:
         ...
 
@@ -30,8 +30,8 @@ def sync_func(param1: int, param2: int) -> None:
     ...
 
 
-async_callable = AsyncCallable()
-sync_callable = SyncCallable()
+async_callable = AsyncTestCallable()
+sync_callable = SyncTestCallable()
 
 
 @pytest.mark.parametrize(

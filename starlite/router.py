@@ -43,6 +43,7 @@ from starlite.utils import (
     normalize_path,
     unique,
 )
+from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.enums import HttpMethod
@@ -121,9 +122,9 @@ class Router:
             security: A list of dictionaries that will be added to the schema of all route handlers under the router.
             tags: A list of string tags that will be appended to the schema of all route handlers under the router.
         """
-        self.after_request = after_request
-        self.after_response = after_response
-        self.before_request = before_request
+        self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
+        self.after_response = AsyncCallable(after_response) if after_response else None
+        self.before_request = AsyncCallable(before_request) if before_request else None
         self.dependencies = dependencies or {}
         self.exception_handlers = exception_handlers or {}
         self.guards = guards or []

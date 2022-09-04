@@ -1,9 +1,8 @@
-import inspect
 from copy import copy
 from typing import TYPE_CHECKING, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
-from starlite.utils import normalize_path
+from starlite.utils import AsyncCallable, normalize_path
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -125,31 +124,20 @@ class Controller:
         Args:
             owner: An instance of 'Router'
         """
+
+        # Since functions set on classes are bound, we need replace the bound instance with the class version and wrap
+        # it to ensure it does not get bound.
+        for key in ("after_request", "after_response", "before_request"):
+            cls_value = getattr(type(self), key, None)
+            if callable(cls_value):
+                setattr(self, key, AsyncCallable(cls_value))
+
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner
-        self._unbind_lifecycle_hook_functions()
-
-    def _unbind_lifecycle_hook_functions(self) -> None:
-        """Functions assigned to class variables will be bound as instance
-        methods on instantiation of the controller. Left unchecked, this
-        results in a `TypeError` when the handlers are called as any function
-        satisfying the type annotation of the lifecycle hook attributes can
-        only receive a single positional argument, but will receive two
-        positional arguments if called as an instance method (`self` and the
-        hook argument)`.
-
-        Overwrites the bound method with the original function.
-        """
-        for hook_key in ("after_request", "after_response", "before_request"):
-            hook_class_var = getattr(type(self), hook_key, None)
-            if not hook_class_var:
-                continue
-            if inspect.isfunction(hook_class_var):
-                setattr(self, hook_key, hook_class_var)
 
     def get_route_handlers(self) -> List["BaseRouteHandler"]:
         """A getter for the controller's route handlers that sets their owner.
