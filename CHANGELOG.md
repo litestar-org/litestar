@@ -1,5 +1,10 @@
 # Changelog
 
+[1.17.1]
+
+- add `url_for` method similar to Starlette's
+- fix `AsyncCallabled` to ensure wrapped methods remain unbound
+
 [1.17.0]
 
 - add `SessionMiddleware`.
