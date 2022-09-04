@@ -35,9 +35,7 @@ async def test_request_valid_body_to_json() -> None:
         assert request_json == {"test": "valid"}
 
 
-@pytest.mark.xfail
 def test_request_resolve_url() -> None:
-
     @get(path="/proxy", name="proxy")
     def proxy() -> None:
         pass
