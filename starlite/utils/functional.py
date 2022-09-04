@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Generic, TypeVar, Union, cast
+from typing import Any, Callable, Dict, Generic, TypeVar, cast
 
 from typing_extensions import Literal, ParamSpec
 
@@ -14,11 +14,7 @@ class CallableWrapper(Generic[P, T]):
             fn: A callable to wrap.
         """
         self.self_ref: Any = None
-        self.fn: Union[Dict[Literal["wrapped"], Callable], Callable]
-        if hasattr(fn, "__self__"):
-            self.fn = {"wrapped": fn}
-        else:
-            self.fn = staticmethod(fn)
+        self.wrapper: Dict[Literal["fn"], Callable] = {"fn": fn}
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         """A proxy to the wrapped function's call method.
@@ -30,6 +26,5 @@ class CallableWrapper(Generic[P, T]):
         Returns:
             The return value of the wrapped function.
         """
-        if isinstance(self.fn, dict):
-            return cast("T", self.fn["wrapped"](*args, **kwargs))
-        return cast("T", self.fn(*args, **kwargs))
+        fn = self.wrapper["fn"]
+        return cast("T", fn(*args, **kwargs))
