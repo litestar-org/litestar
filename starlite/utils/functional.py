@@ -1,6 +1,6 @@
-from typing import Any, Callable, Dict, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Callable, Dict, Generic, TypeVar, Union, cast
 
-from typing_extensions import ParamSpec
+from typing_extensions import Literal, ParamSpec
 
 P = ParamSpec("P")
 T = TypeVar("T")
