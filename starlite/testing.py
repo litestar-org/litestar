@@ -7,7 +7,6 @@ from starlette.testclient import TestClient as StarletteTestClient
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
-from starlite.datastructures import State
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType
 from starlite.exceptions import MissingDependencyException
 
@@ -277,7 +276,8 @@ def create_test_client(
 
 
 def create_test_request(
-    app: Optional["Starlite"] = None,
+    app: Starlite = Starlite(route_handlers=[]),
+    auth: Any = None,
     content: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
     cookie: Optional[str] = None,
     headers: Optional[Dict[str, str]] = None,
@@ -289,11 +289,14 @@ def create_test_request(
     root_path: str = "/",
     scheme: str = "http",
     server: str = "test.org",
-) -> Request:
-    """
-    Create a [Request][starlite.connection.Request] instance using the passed in parameters.
+    user: Any = None,
+) -> Request[Any, Any]:
+    """Create a [Request][starlite.connection.Request] instance using the
+    passed in parameters.
+
     Args:
         app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
+        auth: A value for `request.scope["auth"]`
         content: A value for the request's body. Can be either a pydantic model instance or a string keyed dictionary.
         cookie: A string representing the cookie header. This value can include multiple cookies.
         headers: A string / string dictionary of headers.
@@ -305,14 +308,10 @@ def create_test_request(
         root_path: Root path for the server.
         scheme: Scheme for the server.
         server: Domain for the server.
-
+        user: A value for `request.scope["user"]`
     Returns:
         A [Request][starlite.connection.Request] instance.
     """
-
-    class App:
-        state = State()
-        plugins: List[Any] = []
 
     scope = dict(
         type="http",
@@ -322,33 +321,39 @@ def create_test_request(
         root_path=root_path,
         path=path,
         headers=[],
-        app=app or App(),
+        app=app,
+        user=user,
+        auth=auth,
     )
+
     if not headers:
         headers = {}
-    if query:
-        scope["query_string"] = urlencode(query, doseq=True)
     if cookie:
         headers[ParamType.COOKIE] = cookie
-    body = None
+    if query:
+        scope["query_string"] = urlencode(query, doseq=True)
+
+    body: Optional[bytes] = None
     if content:
         if isinstance(content, BaseModel):
             content = content.dict()
         if request_media_type == RequestEncodingType.JSON:
             body = dumps(content)
-            headers["Content-Type"] = RequestEncodingType.JSON.value
+            headers["Content-Type"] = str(RequestEncodingType.JSON.value)
         elif request_media_type == RequestEncodingType.MULTI_PART:
             body, content_type = RequestEncoder().multipart_encode(content)
             headers["Content-Type"] = content_type
         else:
             body = RequestEncoder().url_encode(content)
-            headers["Content-Type"] = RequestEncodingType.URL_ENCODED.value
+            headers["Content-Type"] = str(RequestEncodingType.URL_ENCODED.value)
+
     if headers:
         scope["headers"] = [
-            (key.lower().encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
+            ((key.lower()).encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
             for key, value in headers.items()
         ]
+
     request: Request[Any, Any] = Request(scope=scope)
     if body:
-        request._body = body
+        scope["_body"] = request._body = body  # pyright: ignore
     return request
