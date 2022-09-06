@@ -27,9 +27,11 @@ from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
+from starlite.logging import LoggingConfig
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
+from starlite.middleware.logging import LoggingMiddleware
 from starlite.plugins.base import PluginProtocol
 from starlite.provide import Provide
 from starlite.router import Router
@@ -112,6 +114,7 @@ class Starlite(Router):
         "cors_config",
         "csrf_config",
         "debug",
+        "logging_config",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -148,6 +151,7 @@ class Starlite(Router):
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
+        logging_config: Optional[LoggingConfig] = None,
         on_shutdown: Optional[List[LifeSpanHandler]] = None,
         on_startup: Optional[List[LifeSpanHandler]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
@@ -204,6 +208,7 @@ class Starlite(Router):
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
+            logging_config: Configures logging behaviour of the application
             middleware: A list of [Middleware][starlite.types.Middleware].
             on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application shutdown.
@@ -242,6 +247,10 @@ class Starlite(Router):
         self.compression_config = compression_config
         self.cors_config = cors_config
         self.csrf_config = csrf_config
+        self.logging_config = logging_config or LoggingConfig()
+        self.logging_config.configure()
+        self.openapi_config = openapi_config
+        self.static_files_config = static_files_config
         self.debug = debug
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
@@ -382,6 +391,7 @@ class Starlite(Router):
         they will wrap the router as well.
         """
         asgi_handler: "ASGIApp" = self.asgi_router
+        asgi_handler = LoggingMiddleware(app=asgi_handler, config=self.logging_config)
         if self.compression_config:
             asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:

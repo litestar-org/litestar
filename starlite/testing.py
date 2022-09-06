@@ -23,6 +23,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.logging import LoggingConfig
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -146,6 +147,7 @@ def create_test_client(
     dependencies: Optional["Dependencies"] = None,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
+    logging_config: Optional["LoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
     on_startup: Optional[List["LifeSpanHandler"]] = None,
@@ -258,6 +260,7 @@ def create_test_client(
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
+            logging_config=logging_config,
             middleware=middleware,
             on_shutdown=on_shutdown,
             on_startup=on_startup,
