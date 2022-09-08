@@ -256,7 +256,7 @@ class Router:
         """Validates that the value passed to the register method is
         supported."""
         if is_class_and_subclass(value, Controller):
-            return cast("Type[Controller]", value)(owner=self)
+            return value(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):
             raise ImproperlyConfiguredException(
                 "Unsupported value passed to `Router.register`. "
