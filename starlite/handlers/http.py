@@ -492,7 +492,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
 
-            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):
+            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore[misc]
                 handler = _create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,

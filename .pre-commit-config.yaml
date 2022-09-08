@@ -139,7 +139,7 @@ repos:
             types-requests,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.269
+    rev: v1.1.270
     hooks:
       - id: pyright
         additional_dependencies:

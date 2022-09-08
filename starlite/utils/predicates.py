@@ -2,7 +2,7 @@ import asyncio
 import functools
 import sys
 from inspect import isclass
-from typing import Any, Awaitable, Callable, TypeVar, Union
+from typing import Any, Awaitable, Callable, Type, TypeVar, Union
 
 from typing_extensions import ParamSpec, TypeGuard, get_args, get_origin
 
@@ -33,7 +33,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
     return asyncio.iscoroutinefunction(value) or (callable(value) and asyncio.iscoroutinefunction(value.__call__))  # type: ignore[operator]
 
 
-def is_class_and_subclass(value: Any, t_type: Any) -> bool:
+def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:
     """Return `True` if `value` is a `class` and is a subtype of `t_type`.
 
     See https://github.com/starlite-api/starlite/issues/367
