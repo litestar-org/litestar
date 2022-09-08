@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Any, Optional
 
 import pytest
@@ -16,25 +17,40 @@ except ImportError:
 def test_partial_pydantic_model() -> None:
     partial = Partial[Person]
 
-    assert partial.__fields__  # type: ignore
+    assert len(partial.__fields__) == len(Person.__fields__)  # type: ignore
 
     for field in partial.__fields__.values():  # type: ignore
         assert field.allow_none
         assert not field.required
 
-    for field in partial.__annotations__.values():
-        assert isinstance(field, GenericAlias)
-        assert type(None) in field.__args__
+    for annotation in partial.__annotations__.values():
+        assert isinstance(annotation, GenericAlias)
+        assert type(None) in annotation.__args__
+
+
+@pytest.mark.parametrize("cls", [VanillaDataClassPerson, PydanticDataClassPerson])
+def test_partial_dataclass(cls: Any) -> None:
+    partial = Partial[cls]  # type: ignore
+
+    assert len(partial.__dataclass_fields__) == len(cls.__dataclass_fields__)  # type: ignore
+
+    for field in partial.__dataclass_fields__.values():  # type: ignore
+        assert field.default is None
+        assert type(None) in field.type.__args__
+
+    for annotation in partial.__annotations__.values():
+        assert isinstance(annotation, GenericAlias)
+        assert type(None) in annotation.__args__
 
 
 def test_partial_pydantic_model_with_superclass() -> None:
     """Test that Partial returns the correct annotations for nested models."""
 
     class Parent(BaseModel):
-        foo: int
+        parent_attribute: int
 
     class Child(Parent):
-        bar: int
+        child_attribute: int
 
     partial_child = Partial[Child]
 
@@ -43,8 +59,31 @@ def test_partial_pydantic_model_with_superclass() -> None:
         assert not field.required
 
     assert partial_child.__annotations__ == {
-        "foo": Optional[int],
-        "bar": Optional[int],
+        "parent_attribute": Optional[int],
+        "child_attribute": Optional[int],
+    }
+
+
+def test_partial_dataclass_with_superclass() -> None:
+    """Test that Partial returns the correct annotations for nested models."""
+
+    @dataclasses.dataclass
+    class Parent:
+        parent_attribute: int
+
+    @dataclasses.dataclass
+    class Child(Parent):
+        child_attribute: int
+
+    partial_child = Partial[Child]
+
+    for field in partial_child.__dataclass_fields__.values():  # type: ignore
+        assert field.default is None
+        assert type(None) in field.type.__args__
+
+    assert partial_child.__annotations__ == {
+        "parent_attribute": Optional[int],
+        "child_attribute": Optional[int],
     }
 
 
