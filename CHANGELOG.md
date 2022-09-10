@@ -1,5 +1,10 @@
 # Changelog
 
+[1.18.0]
+
+- update `serializer` to handle `SecretStr`, `PurePath` and `PurePosixPath`.
+- update multipart handling to use [starlite-multipart](https://github.com/starlite-api/starlite-multipart).
+
 [1.17.2]
 
 - update `Partial` to support dataclasses.
