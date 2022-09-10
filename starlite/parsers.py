@@ -14,8 +14,9 @@ if TYPE_CHECKING:
     from typing import Union
 
     from pydantic.fields import ModelField
-    from starlette.datastructures import FormData
     from starlette.requests import HTTPConnection
+
+    from starlite.datastructures import FormMultiDict
 
 _true_values = {"True", "true"}
 _false_values = {"False", "false"}
@@ -55,7 +56,7 @@ def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
     )
 
 
-def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", field: "ModelField") -> Any:
+def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:
     """Transforms the multidict into a regular dict, try to load json on all
     non-file values.
 
@@ -63,13 +64,9 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormData", fi
     """
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
-        if not isinstance(value, (UploadFile, MultipartUploadFile)):
+        if not isinstance(value, MultipartUploadFile):
             with suppress(JSONDecodeError):
                 value = loads(value)
-        if isinstance(value, MultipartUploadFile) and not isinstance(value, UploadFile):
-            value = UploadFile(
-                filename=value.filename, file=value.file, content_type=value.content_type, headers=value.headers
-            )
         if values_dict.get(key):
             if isinstance(values_dict[key], list):
                 values_dict[key].append(value)

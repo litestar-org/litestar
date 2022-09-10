@@ -28,6 +28,7 @@ from pydantic.generics import GenericModel
 from pydantic_openapi_schema.v3_1_0 import Header
 from starlette.background import BackgroundTask as StarletteBackgroundTask
 from starlette.background import BackgroundTasks as StarletteBackgroundTasks
+from starlette.datastructures import ImmutableMultiDict
 from starlette.datastructures import State as StarletteStateClass
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
@@ -355,3 +356,15 @@ class UploadFile(MultipartUploadFile):
         """
         if field:
             field_schema.update({"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"})
+
+
+class FormMultiDict(ImmutableMultiDict[str, Any]):
+    async def close(self) -> None:
+        """Closes all files in the multi-dict.
+
+        Returns:
+            None
+        """
+        for _, value in self.multi_items():
+            if isinstance(value, UploadFile):
+                await value.close()

@@ -6,6 +6,8 @@
             - app
             - auth
             - clear_session
+            - content_type
+            - form
             - json
             - method
             - query_params

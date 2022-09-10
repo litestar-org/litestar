@@ -12,13 +12,16 @@ from typing import (
 from urllib.parse import parse_qsl
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
-from starlette.datastructures import URL, FormData, URLPath
+from starlette.datastructures import URL, URLPath
 from starlette.requests import Request as StarletteRequest
 from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
 from starlette.websockets import WebSocketState
-from starlite_multipart import MultipartFormDataParser, parse_options_header
+from starlite_multipart import MultipartFormDataParser
+from starlite_multipart import UploadFile as MultipartUploadFile
+from starlite_multipart import parse_options_header
 
+from starlite.datastructures import FormMultiDict, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
@@ -197,7 +200,7 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
         super().__init__(scope, receive, send)
         self._json: Any = Empty
-        self._form: Union[FormData, EmptyType] = Empty
+        self._form: Union[FormMultiDict, EmptyType] = Empty  # type: ignore[assignment]
 
     @property
     def method(self) -> "Method":
@@ -233,7 +236,7 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
             self._json = loads(body)
         return self._json
 
-    async def form(self) -> FormData:
+    async def form(self) -> FormMultiDict:  # type: ignore[override]
         """Method to retrieve form data from the request. If the request is
         either a 'multipart/form-data' or an 'application/x-www-form-
         urlencoded', this method will return a FormData instance populated with
@@ -247,16 +250,32 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
                 parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
-                self._form = FormData(await parser())
+                form_values = await parser()
+                form_values = [
+                    (
+                        k,
+                        UploadFile(
+                            filename=v.filename,
+                            content_type=v.content_type,
+                            headers=v.headers,
+                            file=v.file,  # type: ignore[arg-type]
+                        )
+                        if isinstance(v, MultipartUploadFile)
+                        else v,
+                    )
+                    for k, v in form_values
+                ]
+                self._form = FormMultiDict(form_values)
+
             elif content_type == RequestEncodingType.URL_ENCODED:
-                self._form = FormData(
+                self._form = FormMultiDict(
                     parse_qsl(
                         b"".join([chunk async for chunk in self.stream()]).decode(options.get("charset", "latin-1"))
                     )
                 )
             else:
-                self._form = FormData()
-        return cast("FormData", self._form)
+                self._form = FormMultiDict()
+        return cast("FormMultiDict", self._form)
 
 
 class WebSocket(  # type: ignore[misc]

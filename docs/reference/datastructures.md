@@ -70,3 +70,5 @@
             - value
 
 ::: starlite.datastructures.UploadFile
+
+::: starlite.datastructures.FormMultiDict

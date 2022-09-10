@@ -836,19 +836,14 @@ full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests"]
 
 [[package]]
 name = "starlite-multipart"
-version = "1.0.0"
+version = "1.1.0"
 description = "Toolkit for working with multipart/formdata messages."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
-develop = false
 
 [package.dependencies]
 anyio = "*"
-
-[package.source]
-type = "directory"
-url = "../multipart"
 
 [[package]]
 name = "targ"
@@ -1037,7 +1032,7 @@ testing = ["requests"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "a4cecd7c4f3a5183853b3f41032270bca59d6a26ab8377051273fdfd7a1821c7"
+content-hash = "5f13a0c5e6688eac26669c688265eb8ad88469269e406bfe74fa91bf2a52ca14"
 
 [metadata.files]
 aiosqlite = [
@@ -1780,7 +1775,10 @@ starlette = [
     {file = "starlette-0.20.4-py3-none-any.whl", hash = "sha256:c0414d5a56297d37f3db96a84034d61ce29889b9eaccf65eb98a0b39441fcaa3"},
     {file = "starlette-0.20.4.tar.gz", hash = "sha256:42fcf3122f998fefce3e2c5ad7e5edbf0f02cf685d646a83a08d404726af5084"},
 ]
-starlite-multipart = []
+starlite-multipart = [
+    {file = "starlite-multipart-1.1.0.tar.gz", hash = "sha256:bd5b25a614fadc237fe4da60f0c43c5e7d045a523d4e3685237047e1e228da87"},
+    {file = "starlite_multipart-1.1.0-py3-none-any.whl", hash = "sha256:c7b45545e70504b115f46a5046006a5bd41b1399cf829b9dede04af7a84b3981"},
+]
 targ = [
     {file = "targ-0.3.7-py3-none-any.whl", hash = "sha256:8bb472aa69f80732013c8f801df7deca3cb0ec4545acc256d1c1cd79c3fca4bd"},
     {file = "targ-0.3.7.tar.gz", hash = "sha256:7abed2da34079bd4bb782c3f17866745986927ea5e18af03d42f1dbca7473d09"},

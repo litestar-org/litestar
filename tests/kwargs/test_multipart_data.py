@@ -119,7 +119,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-def test_multipart_request_files(tmpdir):
+def test_multipart_request_files(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test.txt")
     with open(path1, "wb") as file:
         file.write(b"<file content>")
@@ -135,7 +135,7 @@ def test_multipart_request_files(tmpdir):
         }
 
 
-def test_multipart_request_files_with_content_type(tmpdir):
+def test_multipart_request_files_with_content_type(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test.txt")
     with open(path1, "wb") as file:
         file.write(b"<file content>")
@@ -151,7 +151,7 @@ def test_multipart_request_files_with_content_type(tmpdir):
         }
 
 
-def test_multipart_request_multiple_files(tmpdir):
+def test_multipart_request_multiple_files(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
     with open(path1, "wb") as file:
         file.write(b"<file1 content>")
@@ -161,7 +161,7 @@ def test_multipart_request_multiple_files(tmpdir):
         file.write(b"<file2 content>")
 
     with create_test_client(form_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
-        response = client.post("/form", files={"test1": f1, "test2": ("test2.txt", f2, "text/plain")})
+        response = client.post("/form", files={"test1": f1, "test2": ("test2.txt", f2, "text/plain")})  # type: ignore
         assert response.json() == {
             "test1": {
                 "filename": "test1.txt",
@@ -176,7 +176,7 @@ def test_multipart_request_multiple_files(tmpdir):
         }
 
 
-def test_multipart_request_multiple_files_with_headers(tmpdir):
+def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
     with open(path1, "wb") as file:
         file.write(b"<file1 content>")
@@ -211,7 +211,7 @@ def test_multipart_request_multiple_files_with_headers(tmpdir):
         }
 
 
-def test_multi_items(tmpdir):
+def test_multi_items(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
     with open(path1, "wb") as file:
         file.write(b"<file1 content>")
@@ -243,7 +243,7 @@ def test_multi_items(tmpdir):
         }
 
 
-def test_multipart_request_mixed_files_and_data():
+def test_multipart_request_mixed_files_and_data() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
             "/form",
@@ -276,7 +276,7 @@ def test_multipart_request_mixed_files_and_data():
         }
 
 
-def test_multipart_request_with_charset_for_filename():
+def test_multipart_request_with_charset_for_filename() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
             "/form",
@@ -299,7 +299,7 @@ def test_multipart_request_with_charset_for_filename():
         }
 
 
-def test_multipart_request_without_charset_for_filename():
+def test_multipart_request_without_charset_for_filename() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
             "/form",
@@ -322,7 +322,7 @@ def test_multipart_request_without_charset_for_filename():
         }
 
 
-def test_multipart_request_with_encoded_value():
+def test_multipart_request_with_encoded_value() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
             "/form",
@@ -338,31 +338,31 @@ def test_multipart_request_with_encoded_value():
         assert response.json() == {"value": "Transférer"}
 
 
-def test_urlencoded_request_data():
+def test_urlencoded_request_data() -> None:
     with create_test_client(form_handler) as client:
         response = client.post("/form", data={"some": "data"})
         assert response.json() == {"some": "data"}
 
 
-def test_no_request_data():
+def test_no_request_data() -> None:
     with create_test_client(form_handler) as client:
         response = client.post("/form")
         assert response.json() == {}
 
 
-def test_urlencoded_percent_encoding():
+def test_urlencoded_percent_encoding() -> None:
     with create_test_client(form_handler) as client:
         response = client.post("/form", data={"some": "da ta"})
         assert response.json() == {"some": "da ta"}
 
 
-def test_urlencoded_percent_encoding_keys():
+def test_urlencoded_percent_encoding_keys() -> None:
     with create_test_client(form_handler) as client:
         response = client.post("/form", data={"so me": "data"})
         assert response.json() == {"so me": "data"}
 
 
-def test_postman_multipart_form_data():
+def test_postman_multipart_form_data() -> None:
     postman_body = b'----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="attributes"; filename="test-attribute_5.tsv"\r\nContent-Type: text/tab-separated-values\r\n\r\n"Campaign ID"\t"Plate Set ID"\t"No"\n\r\n----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="fasta"; filename="test-sequence_correct_5.fasta"\r\nContent-Type: application/octet-stream\r\n\r\n>P23G01_IgG1-1411:H:Q10C3:1/1:NID18\r\nCAGGTATTGAA\r\n\r\n----------------------------850116600781883365617864--\r\n'  # noqa: E501
     postman_headers = {
         "Content-Type": "multipart/form-data; boundary=--------------------------850116600781883365617864",  # noqa: E501
