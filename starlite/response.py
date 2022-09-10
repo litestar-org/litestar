@@ -78,8 +78,6 @@ class Response(StarletteResponse, Generic[T]):
             return value.dict()
         if isinstance(value, SecretStr):
             return value.get_secret_value()
-        if isinstance(value, Enum):
-            return str(value.value)
         if isinstance(value, (PurePath, PurePosixPath)):
             return str(value)
         raise TypeError  # pragma: no cover
