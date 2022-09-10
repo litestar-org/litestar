@@ -384,6 +384,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "h0rn3t",
+      "name": "Eugene",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1213719?v=4",
+      "profile": "https://github.com/h0rn3t",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
