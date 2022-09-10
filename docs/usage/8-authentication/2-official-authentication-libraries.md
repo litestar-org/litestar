@@ -6,8 +6,8 @@ authentication libraries. This page will be updated as these are developed.
 ## Available
 
 - [Starlite-JWT](https://github.com/starlite-api/starlite-jwt) - an JWT authentication library.
+- [Starlite-Sessions](https://github.com/starlite-api/starlite-sessions) - a session-cookie based authentication library.
 
 ## Actively developed
 
 - Starlite-OIDC - an OpenID connect authentication library.
-- Starlite-Sessions - a session-cookie based authentication library.

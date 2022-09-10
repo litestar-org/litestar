@@ -101,7 +101,7 @@ repos:
             tortoise_orm,
           ]
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.0"
+    rev: "v2.15.2"
     hooks:
       - id: pylint
         exclude: "test_*"
