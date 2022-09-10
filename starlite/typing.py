@@ -1,14 +1,8 @@
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    cast,
-    get_type_hints,
-)
+from dataclasses import MISSING
+from dataclasses import Field as DataclassField
+from dataclasses import dataclass, is_dataclass
+from inspect import getmro
+from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar, get_type_hints
 
 from pydantic import BaseModel, create_model
 
@@ -21,35 +15,89 @@ try:
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T")
 
 
 class Partial(Generic[T]):
     """Partial is a special typing helper that takes a generic T, which must be
-    a subclass of pydantic's BaseModel.
+    a dataclass or pydantic model class,
 
     and returns to static type checkers a version of this T in which all fields - and nested fields - are optional.
     """
 
-    _models: Dict[Type[T], Any] = {}
+    _models: Dict[Type[T], Type[T]] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Modifies a given T subclass of BaseModel to be all optional."""
-        if not is_class_and_subclass(item, BaseModel):
-            raise ImproperlyConfiguredException(f"Partial[{item}] must be a subclass of BaseModel")
-        if not cls._models.get(item):
-            field_definitions: Dict[str, Tuple[Any, None]] = {}
-            # traverse the object's mro and get all annotations
-            # until we find a BaseModel.
-            for obj in item.mro():
-                if issubclass(obj, BaseModel):
-                    for field_name, field_type in get_type_hints(obj).items():
-                        # we modify the field annotations to make it optional
-                        if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
-                            field_definitions[field_name] = (Optional[field_type], None)
-                        else:
-                            field_definitions[field_name] = (field_type, None)
-                else:
-                    break
-            cls._models[item] = create_model(f"Partial{item.__name__}", **field_definitions)  # type: ignore
-        return cast("Type[T]", cls._models.get(item))
+        """Takes a pydantic model class or a dataclass and returns an all
+        optional version of that class.
+
+        Args:
+            item: A pydantic model or dataclass class.
+
+        Returns:
+            A pydantic model or dataclass.
+        """
+
+        if item not in cls._models:
+            if is_class_and_subclass(item, BaseModel):
+                cls._create_partial_pydantic_model(item=item)
+            elif is_dataclass(item):
+                cls._create_partial_dataclass(item=item)
+            else:
+                raise ImproperlyConfiguredException(
+                    "The type argument T passed to Partial[T] must be a dataclass or pydantic model class"
+                )
+
+        return cls._models[item]  # pyright: ignore
+
+    @classmethod
+    def _create_partial_pydantic_model(cls, item: Type[BaseModel]) -> None:
+        """Receives a pydantic model class and returns an all optional subclass
+        of it.
+
+        Args:
+            item: A pydantic model class.
+
+        Returns:
+            A pydantic model class.
+        """
+        field_definitions: Dict[str, Tuple[Any, None]] = {}
+        for field_name, field_type in get_type_hints(item).items():
+            if not isinstance(field_type, GenericAlias) or type(None) not in field_type.__args__:
+                field_definitions[field_name] = (Optional[field_type], None)
+            else:
+                field_definitions[field_name] = (field_type, None)
+
+        cls._models[item] = create_model(f"Partial{item.__name__}", __base__=item, **field_definitions)  # type: ignore
+
+    @classmethod
+    def _create_partial_dataclass(cls, item: Type[T]) -> None:
+        """Receives a dataclass class and returns an all optional subclass of
+        it.
+
+        Args:
+            item: A dataclass class.
+
+        Returns:
+            A dataclass class.
+        """
+        fields: Dict[str, DataclassField] = {}
+        for field_name, dataclass_field in item.__dataclass_fields__.items():  # type: ignore[attr-defined]
+            if not isinstance(dataclass_field.type, GenericAlias) or type(None) not in dataclass_field.type.__args__:
+                dataclass_field.type = Optional[dataclass_field.type]
+            if dataclass_field.default_factory is MISSING:
+                dataclass_field.default = None if dataclass_field.default is MISSING else dataclass_field.default
+            fields[field_name] = dataclass_field
+
+        partial_type: Type[T] = dataclass(  # pyright: ignore
+            type(f"Partial{item.__name__}", (item,), {"__dataclass_fields__": fields})
+        )
+        for ancestor in getmro(partial_type):
+            if hasattr(ancestor, "__annotations__"):
+                for field_name, annotation in ancestor.__annotations__.items():
+                    if not isinstance(annotation, GenericAlias) or type(None) not in annotation.__args__:
+                        partial_type.__annotations__[field_name] = Optional[annotation]
+                    else:
+                        partial_type.__annotations__[field_name] = annotation
+
+        cls._models[item] = partial_type
