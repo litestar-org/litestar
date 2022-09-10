@@ -32,6 +32,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
+python = ">=3.7,<4.0"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 orjson = "*"
@@ -39,8 +40,7 @@ picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
-python = ">=3.7,<4.0"
-python-multipart = "*"
+starlite-multipart = "*"
 pyyaml = "*"
 requests = { version = "*", optional = true }
 starlette = "*"

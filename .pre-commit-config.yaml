@@ -98,6 +98,7 @@ repos:
             requests,
             sqlalchemy,
             starlette,
+            starlite_multipart,
             tortoise_orm,
           ]
   - repo: https://github.com/pycqa/pylint
@@ -117,6 +118,7 @@ repos:
             pyyaml,
             sqlalchemy,
             starlette,
+            starlite_multipart,
             tortoise_orm,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -133,6 +135,7 @@ repos:
             pydantic_openapi_schema,
             sqlalchemy,
             starlette,
+            starlite_multipart,
             types-PyYAML,
             types-freezegun,
             types-redis,
@@ -162,4 +165,5 @@ repos:
             requests,
             sqlalchemy,
             starlette,
+            starlite_multipart,
           ]

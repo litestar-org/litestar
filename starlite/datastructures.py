@@ -29,10 +29,10 @@ from pydantic_openapi_schema.v3_1_0 import Header
 from starlette.background import BackgroundTask as StarletteBackgroundTask
 from starlette.background import BackgroundTasks as StarletteBackgroundTasks
 from starlette.datastructures import State as StarletteStateClass
-from starlette.datastructures import UploadFile as StarletteUploadFile
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.responses import Response as StarletteResponse
 from starlette.responses import StreamingResponse
+from starlite_multipart.datastructures import UploadFile as MultipartUploadFile
 from typing_extensions import Literal, ParamSpec
 
 from starlite.openapi.enums import OpenAPIType
@@ -341,7 +341,7 @@ class ResponseHeader(Header):
         raise ValueError("value must be set if documentation_only is false")
 
 
-class UploadFile(StarletteUploadFile):
+class UploadFile(MultipartUploadFile):
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
         """Creates a pydantic JSON schema.
