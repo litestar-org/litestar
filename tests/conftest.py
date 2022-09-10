@@ -1,10 +1,17 @@
 import os
 import pathlib
-from typing import AsyncGenerator, Callable
+import secrets
+from typing import TYPE_CHECKING, AsyncGenerator, Callable
 
 import pytest
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
+from pydantic import SecretBytes
+
+from starlite.middleware.session import SessionCookieConfig, SessionMiddleware
+
+if TYPE_CHECKING:
+    from starlette.types import Receive, Scope, Send
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -35,3 +42,26 @@ async def scaffold_piccolo() -> AsyncGenerator:
     await create_db_tables(*TABLES)
     yield
     await drop_db_tables(*TABLES)
+
+
+#############################
+# Session Middleware Fixtures
+#############################
+async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    pass
+
+
+@pytest.fixture()
+def session_middleware() -> SessionMiddleware:
+    return SessionMiddleware(app=mock_asgi_app, config=SessionCookieConfig(secret=SecretBytes(os.urandom(16))))
+
+
+@pytest.fixture()
+def session_test_cookies(session_middleware: SessionMiddleware) -> str:
+    # Put random data. If you are also handling session management then use session_middleware fixture and create
+    # session cookies with your own data.
+    _session = {"key": secrets.token_hex(16)}
+    cookies = ";".join(
+        f"session-{i}={serialize.decode('utf-8')}" for i, serialize in enumerate(session_middleware.dump_data(_session))
+    )
+    return cookies
