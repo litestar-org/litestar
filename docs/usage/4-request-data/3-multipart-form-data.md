@@ -1,12 +1,16 @@
 # MultiPart Form Data
 
-Multipart formdata supports complex formdata including file uploads.
+Multipart formdata supports complex data including file uploads and nested dictionaries.
+
+!!! note
+    Starlite uses a dedicated library for parsing multipart data -[starlite-multipart](https://github.com/starlite-api/starlite-multipart),
+    which offers strong performance and supports large file uploads.
 
 You can access data uploaded using a request with a `multipart/form-data` Content-Type header by specifying it in
 the `Body` function:
 
 ```python
-from starlite import Body, post, RequestEncodingType
+from starlite import Body, RequestEncodingType, post
 from pydantic import BaseModel
 
 
@@ -30,7 +34,7 @@ interface for working with files. Therefore, you need to type your file uploads 
 To access a single file simply type `data` as `UploadFile`:
 
 ```python
-from starlite import Body, UploadFile, post, RequestEncodingType
+from starlite import Body, UploadFile, RequestEncodingType, post
 
 
 @post(path="/file-upload")
@@ -44,8 +48,7 @@ To access multiple files with known filenames, you can use a pydantic model:
 
 ```python
 from pydantic import BaseModel, BaseConfig
-from starlette.datastructures import UploadFile
-from starlite import Body, post, RequestEncodingType
+from starlite import Body, RequestEncodingType, UploadFile, post
 
 
 class FormData(BaseModel):
@@ -66,8 +69,7 @@ async def handle_file_upload(
 If you do not care about parsing and validation and only want to access the form data as a dictionary, you can use a `dict` instead:
 
 ```python
-from starlette.datastructures import UploadFile
-from starlite import Body, post, RequestEncodingType
+from starlite import Body, RequestEncodingType, UploadFile, post
 
 
 @post(path="/file-upload")
@@ -80,8 +82,7 @@ async def handle_file_upload(
 Finally, you can also access the files as a list without the filenames:
 
 ```python
-from starlette.datastructures import UploadFile
-from starlite import Body, post, RequestEncodingType
+from starlite import Body, RequestEncodingType, UploadFile, post
 
 
 @post(path="/file-upload")
