@@ -4,7 +4,7 @@ Multipart formdata supports complex data including file uploads and nested dicti
 
 !!! note
     Starlite uses a dedicated library for parsing multipart data -[starlite-multipart](https://github.com/starlite-api/starlite-multipart),
-    which offers strong performance and support fast large file uploads.
+    which offers strong performance and supports large file uploads.
 
 You can access data uploaded using a request with a `multipart/form-data` Content-Type header by specifying it in
 the `Body` function:
