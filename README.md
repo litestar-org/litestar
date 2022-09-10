@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-41-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-42-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -274,8 +274,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/Chaoyingz"><img src="https://avatars.githubusercontent.com/u/32626585?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Chaoying</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Chaoyingz" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/infohash"><img src="https://avatars.githubusercontent.com/u/46137868?v=4?s=100" width="100px;" alt=""/><br /><sub><b>infohash</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=infohash" title="Code">💻</a></td>
       <td align="center"><a href="https://www.linkedin.com/in/john-ingles/"><img src="https://avatars.githubusercontent.com/u/35442886?v=4?s=100" width="100px;" alt=""/><br /><sub><b>John Ingles</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=john-ingles" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/h0rn3t"><img src="https://avatars.githubusercontent.com/u/1213719?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Eugene</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=h0rn3t" title="Tests">⚠️</a> <a href="https://github.com/starlite-api/starlite/commits?author=h0rn3t" title="Code">💻</a></td>
     </tr>
-  </tobdy>
+  </tbody>
 </table>
 
 <!-- markdownlint-restore -->
