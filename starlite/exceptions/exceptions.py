@@ -8,6 +8,7 @@ from starlette.status import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
+    HTTP_429_TOO_MANY_REQUESTS,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
@@ -104,6 +105,12 @@ class MethodNotAllowedException(HTTPException):
     this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
+
+
+class TooManyRequestsException(HTTPException):
+    """Request limits have been exceeded."""
+
+    status_code = HTTP_429_TOO_MANY_REQUESTS
 
 
 class InternalServerException(HTTPException):
