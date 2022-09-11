@@ -63,7 +63,7 @@ class LoggingConfig(BaseModel):
         """
         log_config_dict["formatters"]["rich"] = {"format": "%(name)s - %(message)s"}
 
-        log_config_dict["handlers"].pop("console", None)  # remove console handler if present
+        log_config_dict["handlers"].pop("console", None)
 
         log_config_dict["handlers"]["p_rich"] = {
             "class": "rich.logging.RichHandler",
