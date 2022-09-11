@@ -1,4 +1,4 @@
-from logging import config, getLogger
+from logging import config
 from typing import TYPE_CHECKING, Any, Dict, Generator, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
@@ -95,12 +95,6 @@ class LoggingConfig(BaseModel):
                 break
         else:  # no break
             config.dictConfig(log_config_dict)
-
-        # disable uvicorn errors from showing on the console
-        uvicorn_error = getLogger("uvicorn.error")
-        uvicorn_error.disabled = True
-        uvicorn_access = getLogger("uvicorn.access")
-        uvicorn_access.disabled = True
 
 
 def find_keys(node: Union[List, Dict], key: str) -> Generator[Iterable, None, None]:
