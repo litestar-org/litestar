@@ -59,7 +59,7 @@ class LoggingConfig(BaseModel):
         Args:
             log_config_dict: dict representation of LoggingConfig model
         Returns:
-            Dict[str,Any]: dict representation of LoggingConfig model with rich console logging in place of default console logging
+            dict representation of LoggingConfig model with rich console logging in place of default console logging
         """
         log_config_dict["formatters"]["rich"] = {"format": "%(name)s - %(message)s"}
 
