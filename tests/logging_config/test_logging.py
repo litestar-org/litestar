@@ -2,18 +2,20 @@ import logging
 from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
-from starlite import Starlite
+from starlite import Starlite, State
 from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
+state = State()
+
 
 @patch("logging.config.dictConfig")
 def test_logging_debug(dict_config_mock: Mock) -> None:
     config = LoggingConfig()
-    config.configure()
+    config.configure(state)
     assert dict_config_mock.mock_calls[0][1][0]["loggers"]["starlite"]["level"] == "INFO"
     dict_config_mock.reset_mock()
 
@@ -26,7 +28,7 @@ def test_logging_startup(dict_config_mock: Mock) -> None:
 
 
 config = LoggingConfig()
-config.configure()
+config.configure(state)
 logger = logging.getLogger()
 
 

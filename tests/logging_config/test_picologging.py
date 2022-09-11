@@ -4,12 +4,14 @@ from unittest.mock import Mock, patch
 
 import picologging
 
-from starlite import Starlite
+from starlite import Starlite, State
 from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
+
+state = State()
 
 
 @patch("logging.config.dictConfig")
@@ -27,7 +29,7 @@ def test_logging_debug(dict_config_mock: Mock) -> None:
             },
         }
     )
-    log_config.configure()
+    log_config.configure(state)
     assert dict_config_mock.mock_calls[0][1][0]["loggers"]["starlite"]["level"] == "INFO"
     dict_config_mock.reset_mock()
 
@@ -47,7 +49,7 @@ def test_picologging_dictconfig_debug(dict_config_mock: Mock) -> None:
             },
         }
     )
-    log_config.configure()
+    log_config.configure(state)
     assert dict_config_mock.mock_calls[0][1][0]["loggers"]["starlite"]["level"] == "INFO"
     dict_config_mock.reset_mock()
 
@@ -116,7 +118,8 @@ config = LoggingConfig(
         },
     }
 )
-config.configure()
+
+config.configure(state)
 picologger = picologging.getLogger()
 
 

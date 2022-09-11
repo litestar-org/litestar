@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -19,6 +19,7 @@ from starlite.config import (
     CompressionConfig,
     CORSConfig,
     CSRFConfig,
+    LoggingConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -112,12 +113,14 @@ class Starlite(Router):
         "cors_config",
         "csrf_config",
         "debug",
+        "log_config",
         "on_shutdown",
         "on_startup",
         "openapi_config",
         "openapi_schema",
         "plain_routes",
         "plugins",
+        "rich_logging",
         "route_map",
         "state",
         "static_files_config",
@@ -147,6 +150,7 @@ class Starlite(Router):
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
+        log_config: Optional[Dict[str, Any]] = None,
         middleware: Optional[List[Middleware]] = None,
         on_shutdown: Optional[List[LifeSpanHandler]] = None,
         on_startup: Optional[List[LifeSpanHandler]] = None,
@@ -156,6 +160,7 @@ class Starlite(Router):
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
+        rich_logging: bool = False,
         security: Optional[List[SecurityRequirement]] = None,
         static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
         tags: Optional[List[str]] = None,
@@ -204,6 +209,7 @@ class Starlite(Router):
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
+            log_config: A dict of str to configure the logger For detailed instructions consult [standard library docs](https://docs.python.org/3/library/logging.config.html).
             middleware: A list of [Middleware][starlite.types.Middleware].
             on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application shutdown.
@@ -217,6 +223,7 @@ class Starlite(Router):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            rich_logging: Enable console logging with rich. Requires pip install rich.
             route_handlers: A required list of route handlers, which can include instances of
                 [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or
                 any function decorated by the route handler decorators.
@@ -243,6 +250,7 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.csrf_config = csrf_config
         self.debug = debug
+        self.log_config = LoggingConfig(**log_config) if log_config is not None else LoggingConfig()
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
         self.openapi_config = openapi_config
@@ -251,6 +259,7 @@ class Starlite(Router):
         self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
+        self.rich_logging: bool = rich_logging
         self.state = State()
         self.static_files_config = static_files_config
         self.template_engine = create_template_engine(template_config)
@@ -288,6 +297,23 @@ class Starlite(Router):
             ):
                 self._static_paths.add(config.path)
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
+
+        if rich_logging:
+            try:
+                import rich  # pylint: disable=import-outside-toplevel
+
+                rich.reconfigure()  # make sure pycln doesn't remove this import attempt
+
+                self.state.rich_logging = self.rich_logging
+            except ImportError as exc:
+                raise ImproperlyConfiguredException(
+                    "rich logging set to True but rich module not found!  Install it with pip install rich."
+                ) from exc
+
+        if self.on_startup:
+            self.on_startup.extend([self.log_config.configure])
+        else:
+            self.on_startup = [self.log_config.configure]
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()

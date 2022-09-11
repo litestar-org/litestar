@@ -1,8 +1,11 @@
-from logging import config
-from typing import Any, Dict, Generator, Iterable, List, Optional, Union
+from logging import config, getLogger
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
+
+if TYPE_CHECKING:
+    from starlite.datastructures import State
 
 try:
     from picologging import config as picologging_config
@@ -49,17 +52,55 @@ class LoggingConfig(BaseModel):
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
 
-    def configure(self) -> None:
+    def _enable_rich_logging(self, log_config_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """Overwrite the default console log configuration with rich log
+        configuration.
+
+        Args:
+            log_config_dict (Dict[str,Any]): dict representation of LoggingConfig model
+        Returns:
+            Dict[str,Any]: dict representation of LoggingConfig model with rich console logging in place of default console logging
+        """
+        log_config_dict["formatters"]["rich"] = {"format": "%(name)s - %(message)s"}
+
+        log_config_dict["handlers"].pop("console", None)  # remove console handler if present
+
+        log_config_dict["handlers"]["p_rich"] = {
+            "class": "rich.logging.RichHandler",
+            "level": "DEBUG",
+            "rich_tracebacks": True,
+            "formatter": "rich",
+        }
+        if "cfg://handlers.console" in log_config_dict["handlers"]["queue_listener"]["handlers"]:
+            log_config_dict["handlers"]["queue_listener"]["handlers"].remove("cfg://handlers.console")
+
+        log_config_dict["handlers"]["queue_listener"]["handlers"].append("cfg://handlers.p_rich")
+
+        return log_config_dict
+
+    def configure(self, state: "State") -> None:
         """Configured logger with the given configuration.
 
         If the logger class contains the word `picologging`, we try to
         import and set the dictConfig
         """
+        log_config_dict = self.dict(exclude_none=True)
+
+        if getattr(state, "rich_logging", False):
+            log_config_dict = self._enable_rich_logging(log_config_dict)
+
         for logging_class in find_keys(self.handlers, "class"):
             if "picologging" in logging_class and picologging_config:
-                picologging_config.dictConfig(self.dict(exclude_none=True))
+                picologging_config.dictConfig(log_config_dict)
                 break
-        config.dictConfig(self.dict(exclude_none=True))
+        else:  # no break
+            config.dictConfig(log_config_dict)
+
+        # disable uvicorn errors from showing on the console
+        uvicorn_error = getLogger("uvicorn.error")
+        uvicorn_error.disabled = True
+        uvicorn_access = getLogger("uvicorn.access")
+        uvicorn_access.disabled = True
 
 
 def find_keys(node: Union[List, Dict], key: str) -> Generator[Iterable, None, None]:
