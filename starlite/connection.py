@@ -1,4 +1,15 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
+from urllib.parse import parse_qsl
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import URL, URLPath
@@ -6,10 +17,15 @@ from starlette.requests import Request as StarletteRequest
 from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
 from starlette.websockets import WebSocketState
+from starlite_multipart import MultipartFormDataParser
+from starlite_multipart import UploadFile as MultipartUploadFile
+from starlite_multipart import parse_options_header
 
+from starlite.datastructures import FormMultiDict, UploadFile
+from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty
+from starlite.types import Empty, EmptyType
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -184,6 +200,7 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
         super().__init__(scope, receive, send)
         self._json: Any = Empty
+        self._form: Union[FormMultiDict, EmptyType] = Empty  # type: ignore[assignment]
 
     @property
     def method(self) -> "Method":
@@ -192,6 +209,16 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
             The request [Method][starlite.types.Method]
         """
         return cast("Method", self.scope["method"])
+
+    @property
+    def content_type(self) -> Tuple[str, Dict[str, str]]:
+        """Parses the request's 'Content-Type' header, returning the header
+        value and any options as a dictionary.
+
+        Returns:
+            A tuple with the parsed value and a dictionary containing any options send in it.
+        """
+        return parse_options_header(self.headers.get("Content-Type"))
 
     async def json(self) -> Any:
         """Method to retrieve the json request body from the request.
@@ -208,6 +235,47 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
                 body = self.scope["_body"]
             self._json = loads(body)
         return self._json
+
+    async def form(self) -> FormMultiDict:  # type: ignore[override]
+        """Method to retrieve form data from the request. If the request is
+        either a 'multipart/form-data' or an 'application/x-www-form-
+        urlencoded', this method will return a FormData instance populated with
+        the values sent in the request. Otherwise, an empty instance is
+        returned.
+
+        Returns:
+            A FormData instance.
+        """
+        if self._form is Empty:
+            content_type, options = self.content_type
+            if content_type == RequestEncodingType.MULTI_PART:
+                parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
+                form_values = await parser()
+                form_values = [
+                    (
+                        k,
+                        UploadFile(
+                            filename=v.filename,
+                            content_type=v.content_type,
+                            headers=v.headers,
+                            file=v.file,  # type: ignore[arg-type]
+                        )
+                        if isinstance(v, MultipartUploadFile)
+                        else v,
+                    )
+                    for k, v in form_values
+                ]
+                self._form = FormMultiDict(form_values)
+
+            elif content_type == RequestEncodingType.URL_ENCODED:
+                self._form = FormMultiDict(
+                    parse_qsl(
+                        b"".join([chunk async for chunk in self.stream()]).decode(options.get("charset", "latin-1"))
+                    )
+                )
+            else:
+                self._form = FormMultiDict()
+        return cast("FormMultiDict", self._form)
 
 
 class WebSocket(  # type: ignore[misc]

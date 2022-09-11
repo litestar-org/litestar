@@ -1,3 +1,4 @@
+from pathlib import PurePath, PurePosixPath
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -12,7 +13,7 @@ from typing import (
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 from starlette.responses import Response as StarletteResponse
 from starlette.status import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -61,7 +62,7 @@ class Response(StarletteResponse, Generic[T]):
         self.cookies = cookies or []
 
     @staticmethod
-    def serializer(value: Any) -> Dict[str, Any]:
+    def serializer(value: Any) -> Union[Dict[str, Any], str]:
         """Serializer hook for orjson to handle pydantic models.
 
         This method can be overridden to extend json serialization.
@@ -74,6 +75,10 @@ class Response(StarletteResponse, Generic[T]):
         """
         if isinstance(value, BaseModel):
             return value.dict()
+        if isinstance(value, SecretStr):
+            return value.get_secret_value()
+        if isinstance(value, (PurePath, PurePosixPath)):
+            return str(value)
         raise TypeError  # pragma: no cover
 
     def render(self, content: Any) -> bytes:
