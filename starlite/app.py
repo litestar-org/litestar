@@ -299,23 +299,14 @@ class Starlite(Router):
                 self.register(asgi(path=config.path)(config.to_static_files_app()))
 
         if rich_logging:
-            try:
-                from rich import console as rich_console
-            except ImportError as exc:
-                rich_console = None
-                raise ImproperlyConfiguredException(
-                    "rich logging set to True but rich module not found!  Install it with pip install rich."
-                ) from exc
-            if rich_console:
-                log_config = {}
-                log_config["rich_logging"] = True
+            log_config = {"rich_logging": True}
 
-        self.log_config = LoggingConfig(**log_config) if log_config is not None else LoggingConfig()
+        log_config_defined: LoggingConfig = LoggingConfig(**log_config) if log_config is not None else LoggingConfig()
 
         if self.on_startup:
-            self.on_startup.extend([self.log_config.configure])
+            self.on_startup.extend([log_config_defined.configure])
         else:
-            self.on_startup = [self.log_config.configure]
+            self.on_startup = [log_config_defined.configure]
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()

@@ -1,9 +1,8 @@
 from logging import config
-from typing import TYPE_CHECKING, Any, Dict, Generator, Iterable, List, Optional, Union
+from typing import Any, Dict, Generator, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
-
 
 try:
     from picologging import config as picologging_config

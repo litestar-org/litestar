@@ -101,6 +101,7 @@ disable = [
     "too-many-lines",
     "too-many-locals",
     "too-many-return-statements",
+    "too-many-statements",
     "ungrouped-imports",
 ]
 enable = "useless-suppression"
