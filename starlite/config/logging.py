@@ -57,7 +57,7 @@ class LoggingConfig(BaseModel):
         configuration.
 
         Args:
-            log_config_dict (Dict[str,Any]): dict representation of LoggingConfig model
+            log_config_dict: dict representation of LoggingConfig model
         Returns:
             Dict[str,Any]: dict representation of LoggingConfig model with rich console logging in place of default console logging
         """
