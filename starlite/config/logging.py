@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, Iterable, List, Optional
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-if TYPE_CHECKING:
-    from starlite.datastructures import State
 
 try:
     from picologging import config as picologging_config
@@ -51,6 +49,8 @@ class LoggingConfig(BaseModel):
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
+    rich_logging: bool = False
+    """Whether rich console logging is to be used over the default"""
 
     def _enable_rich_logging(self, log_config_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Overwrite the default console log configuration with rich log
@@ -78,7 +78,7 @@ class LoggingConfig(BaseModel):
 
         return log_config_dict
 
-    def configure(self, state: "State") -> None:
+    def configure(self) -> None:
         """Configured logger with the given configuration.
 
         If the logger class contains the word `picologging`, we try to
@@ -86,7 +86,7 @@ class LoggingConfig(BaseModel):
         """
         log_config_dict = self.dict(exclude_none=True)
 
-        if getattr(state, "rich_logging", False):
+        if self.rich_logging:
             log_config_dict = self._enable_rich_logging(log_config_dict)
 
         for logging_class in find_keys(self.handlers, "class"):

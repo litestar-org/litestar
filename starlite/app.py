@@ -250,7 +250,7 @@ class Starlite(Router):
         self.cors_config = cors_config
         self.csrf_config = csrf_config
         self.debug = debug
-        self.log_config = LoggingConfig(**log_config) if log_config is not None else LoggingConfig()
+        self.log_config = log_config
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []
         self.openapi_config = openapi_config
@@ -300,15 +300,17 @@ class Starlite(Router):
 
         if rich_logging:
             try:
-                import rich  # pylint: disable=import-outside-toplevel
-
-                rich.reconfigure()  # make sure pycln doesn't remove this import attempt
-
-                self.state.rich_logging = self.rich_logging
+                from rich import console as rich_console
             except ImportError as exc:
+                rich_console = None
                 raise ImproperlyConfiguredException(
                     "rich logging set to True but rich module not found!  Install it with pip install rich."
                 ) from exc
+            if rich_console:
+                log_config = {}
+                log_config["rich_logging"] = True
+
+        self.log_config = LoggingConfig(**log_config) if log_config is not None else LoggingConfig()
 
         if self.on_startup:
             self.on_startup.extend([self.log_config.configure])
