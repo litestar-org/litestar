@@ -209,11 +209,12 @@ class LoggingConfig(BaseModel):
         If the logger class contains the word `picologging`, we try to
         import and set the dictConfig
         """
+        dict_config = {k: v for k, v in self.dict(exclude_none=True).items() if not k.startswith("middleware_")}
         for logging_class in find_keys(self.handlers, "class"):
             if "picologging" in logging_class and picologging_config:
-                picologging_config.dictConfig(self.dict(exclude_none=True))
+                picologging_config.dictConfig(dict_config)
                 break
-        config.dictConfig(self.dict(exclude_none=True))
+        config.dictConfig(dict_config)
 
     @property
     def middleware(self) -> DefineMiddleware:
