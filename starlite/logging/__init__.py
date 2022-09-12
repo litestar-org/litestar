@@ -1,4 +1,4 @@
-from starlite.config.logging import LoggingConfig
+from starlite.config.logging import LoggingConfig, LoggingMiddleware
 from starlite.logging.standard import QueueListenerHandler
 
-__all__ = ["LoggingConfig", "QueueListenerHandler"]
+__all__ = ["LoggingConfig", "LoggingMiddleware", "QueueListenerHandler"]
