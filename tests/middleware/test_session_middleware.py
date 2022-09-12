@@ -1,8 +1,8 @@
+import os
 import secrets
 import time
 from base64 import b64decode, b64encode
-from os import urandom
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import Dict, Optional
 from unittest import mock
 
 import pytest
@@ -20,25 +20,16 @@ from starlite.middleware.session import (
 )
 from starlite.testing import create_test_client
 
-if TYPE_CHECKING:
-    from starlette.types import Receive, Scope, Send
-
-TEST_SECRET = SecretBytes(urandom(16))
-
-
-async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-    pass
-
 
 @pytest.mark.parametrize(
     "secret, should_raise",
     [
-        [urandom(16), False],
-        [urandom(24), False],
-        [urandom(32), False],
-        [urandom(17), True],
-        [urandom(4), True],
-        [urandom(100), True],
+        [os.urandom(16), False],
+        [os.urandom(24), False],
+        [os.urandom(32), False],
+        [os.urandom(17), True],
+        [os.urandom(4), True],
+        [os.urandom(100), True],
         [b"", True],
     ],
 )
@@ -48,11 +39,6 @@ def test_config_validation(secret: bytes, should_raise: bool) -> None:
             SessionCookieConfig(secret=SecretBytes(secret))
     else:
         SessionCookieConfig(secret=SecretBytes(secret))
-
-
-@pytest.fixture()
-def session_middleware() -> SessionMiddleware:
-    return SessionMiddleware(app=mock_asgi_app, config=SessionCookieConfig(secret=TEST_SECRET))
 
 
 def create_session(size: int = 16) -> Dict[str, str]:
@@ -82,7 +68,7 @@ def test_load_data_should_return_empty_if_session_expired(
     assert plaintext == {}
 
 
-def test_set_session_cookies() -> None:
+def test_set_session_cookies(session_middleware: SessionMiddleware) -> None:
     """Should set session cookies from session in response."""
     chunks_multiplier = 2
 
@@ -92,14 +78,12 @@ def test_set_session_cookies() -> None:
         # Then you only need to check if number of cookies set are more than the multiplying number.
         request.session.update(create_session(size=CHUNK_SIZE * chunks_multiplier))
 
-    config = SessionCookieConfig(secret=TEST_SECRET)
-
-    client = create_test_client(
+    with create_test_client(
         route_handlers=[handler],
-        middleware=[config.middleware],
-    )
+        middleware=[session_middleware.config.middleware],
+    ) as client:
+        response = client.get("/test")
 
-    response = client.get("/test")
     assert len(response.cookies) > chunks_multiplier
     # If it works for the multiple chunks of session, it works for the single chunk too. So, just check if "session-0"
     # exists.
@@ -130,19 +114,17 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
 
     ciphertext = session_middleware.dump_data(_session)
 
-    config = SessionCookieConfig(secret=TEST_SECRET)
-
-    client = create_test_client(
+    with create_test_client(
         route_handlers=[handler],
-        middleware=[config.middleware],
-    )
-
-    response = client.get(
-        "/test",
-        cookies={
-            f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
-        },
-    )
+        middleware=[session_middleware.config.middleware],
+    ) as client:
+        response = client.get(
+            "/test",
+            cookies={
+                f"{session_middleware.config.key}-{i}": text.decode("utf-8")
+                for i, text in enumerate(ciphertext, start=0)
+            },
+        )
 
     assert response.json() == _session
     # The session cookie names that were in the request will also be present in its response to overwrite or to expire
@@ -183,9 +165,7 @@ def test_session_middleware_not_installed_raises() -> None:
         assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
 
 
-def test_integration() -> None:
-    session_config = SessionCookieConfig(secret=urandom(16))  # type: ignore[arg-type]
-
+def test_integration(session_middleware: SessionMiddleware) -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
     def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
@@ -198,7 +178,7 @@ def test_integration() -> None:
 
     with create_test_client(
         route_handlers=[session_handler],
-        middleware=[session_config.middleware],
+        middleware=[session_middleware.config.middleware],
     ) as client:
         response = client.get("/session")
         assert response.json() == {"has_session": False}
