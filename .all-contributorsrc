@@ -375,6 +375,25 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "john-ingles",
+      "name": "John Ingles",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35442886?v=4",
+      "profile": "https://www.linkedin.com/in/john-ingles/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "h0rn3t",
+      "name": "Eugene",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1213719?v=4",
+      "profile": "https://github.com/h0rn3t",
+      "contributions": [
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

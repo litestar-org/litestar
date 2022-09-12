@@ -17,6 +17,7 @@ from .config import (
     CompressionConfig,
     CORSConfig,
     CSRFConfig,
+    LoggingConfig,
     OpenAPIConfig,
     StaticFilesConfig,
     TemplateConfig,
@@ -57,7 +58,7 @@ from .handlers import (
     route,
     websocket,
 )
-from .logging import LoggingConfig, QueueListenerHandler
+from .logging import QueueListenerHandler
 from .middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
