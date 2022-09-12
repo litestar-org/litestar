@@ -78,12 +78,12 @@ def test_set_session_cookies(session_middleware: SessionMiddleware) -> None:
         # Then you only need to check if number of cookies set are more than the multiplying number.
         request.session.update(create_session(size=CHUNK_SIZE * chunks_multiplier))
 
-    client = create_test_client(
+    with create_test_client(
         route_handlers=[handler],
         middleware=[session_middleware.config.middleware],
-    )
+    ) as client:
+        response = client.get("/test")
 
-    response = client.get("/test")
     assert len(response.cookies) > chunks_multiplier
     # If it works for the multiple chunks of session, it works for the single chunk too. So, just check if "session-0"
     # exists.
@@ -114,17 +114,17 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
 
     ciphertext = session_middleware.dump_data(_session)
 
-    client = create_test_client(
+    with create_test_client(
         route_handlers=[handler],
         middleware=[session_middleware.config.middleware],
-    )
-
-    response = client.get(
-        "/test",
-        cookies={
-            f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
-        },
-    )
+    ) as client:
+        response = client.get(
+            "/test",
+            cookies={
+                f"{session_middleware.config.key}-{i}": text.decode("utf-8")
+                for i, text in enumerate(ciphertext, start=0)
+            },
+        )
 
     assert response.json() == _session
     # The session cookie names that were in the request will also be present in its response to overwrite or to expire
