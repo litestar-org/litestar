@@ -17,15 +17,7 @@ from starlite.plugins.base import PluginProtocol
 try:
     from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type
-    from sqlalchemy.dialects import (
-        firebird,
-        mssql,
-        mysql,
-        oracle,
-        postgresql,
-        sqlite,
-        sybase,
-    )
+    from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
     from sqlalchemy.orm import DeclarativeMeta, Mapper
     from sqlalchemy.sql.type_api import TypeEngine
 except ImportError as e:
@@ -134,9 +126,6 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlalchemy_type.UnicodeText: self.handle_string_type,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
             sqlalchemy_type.VARCHAR: self.handle_string_type,
-            # firebird
-            firebird.CHAR: self.handle_string_type,
-            firebird.VARCHAR: self.handle_string_type,
             # mssql
             mssql.BIT: lambda x: bool,
             mssql.DATETIME2: lambda x: datetime,
@@ -224,15 +213,6 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlite.DATETIME: lambda x: datetime,
             sqlite.JSON: lambda x: Json,
             sqlite.TIME: lambda x: time,
-            # sybase
-            sybase.BIT: lambda x: bool,
-            sybase.IMAGE: self.handle_string_type,
-            sybase.MONEY: lambda x: Decimal,
-            sybase.SMALLMONEY: lambda x: Decimal,
-            sybase.TINYINT: lambda x: int,
-            sybase.UNICHAR: self.handle_string_type,
-            sybase.UNITEXT: self.handle_string_type,
-            sybase.UNIVARCHAR: self.handle_string_type,
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
