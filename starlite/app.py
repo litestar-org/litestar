@@ -242,8 +242,6 @@ class Starlite(Router):
         self.compression_config = compression_config
         self.cors_config = cors_config
         self.csrf_config = csrf_config
-        self.openapi_config = openapi_config
-        self.static_files_config = static_files_config
         self.debug = debug
         self.on_shutdown = on_shutdown or []
         self.on_startup = on_startup or []

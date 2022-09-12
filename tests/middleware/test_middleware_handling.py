@@ -137,7 +137,7 @@ def test_setting_cors_middleware() -> None:
             cur = cast("ASGIApp", cur.app)  # type: ignore
         else:
             unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 5
+        assert len(unpacked_middleware) == 4
         cors_middleware = unpacked_middleware[1]
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.allow_headers == ["*", "accept", "accept-language", "content-language", "content-type"]
@@ -155,7 +155,7 @@ def test_trusted_hosts_middleware() -> None:
         cur = cast("ASGIApp", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 5
+    assert len(unpacked_middleware) == 4
     trusted_hosts_middleware = unpacked_middleware[1]
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
