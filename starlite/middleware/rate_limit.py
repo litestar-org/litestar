@@ -110,6 +110,30 @@ class ThrottleMiddleware:
         self.max_requests: int = rate_limit[1]
         self.rate_limit_unit: DurationUnit = rate_limit[0]
 
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        if scope["type"] == ScopeType.HTTP:
+            if not hasattr(self, "cache"):
+                self.cache = cast("Cache", scope["app"].cache)
+
+            request = Request[Any, Any](scope)
+            if await self.should_check_request(request=request):
+                key = self.cache_key_from_request(request=request)
+                cached_history = await self.retrieve_cached_history(key)
+                if len(cached_history) >= self.max_requests:
+                    raise TooManyRequestsException()
+                await self.set_cached_history(key=key, cached_history=cached_history)
+
+        await self.app(scope, receive, send)
+
     def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
         """
 
@@ -151,30 +175,6 @@ class ThrottleMiddleware:
         Returns:
         """
         await self.cache.set(key, dumps([int(time()), *cached_history]))
-
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
-        Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
-
-        Returns:
-            None
-        """
-        if scope["type"] == ScopeType.HTTP:
-            if not hasattr(self, "cache"):
-                self.cache = cast("Cache", scope["app"].cache)
-
-            request = Request[Any, Any](scope)
-            if await self.should_check_request(request=request):
-                key = self.cache_key_from_request(request=request)
-                cached_history = await self.retrieve_cached_history(key)
-                if len(cached_history) >= self.max_requests:
-                    raise TooManyRequestsException()
-                await self.set_cached_history(key=key, cached_history=cached_history)
-
-        await self.app(scope, receive, send)
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
         """

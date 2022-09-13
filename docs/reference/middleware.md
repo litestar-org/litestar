@@ -80,3 +80,20 @@
             - __init__
             - dump_data
             - load_data
+
+::: starlite.middleware.rate_limit.ThrottleConfig
+    options:
+        members:
+            - rate_limit
+            - exclude
+            - check_throttle_handler
+            - middleware
+
+::: starlite.middleware.rate_limit.ThrottleMiddleware
+    options:
+        members:
+            - __init__
+            - cache_key_from_request
+            - retrieve_cached_history
+            - set_cached_history
+            - should_check_request
