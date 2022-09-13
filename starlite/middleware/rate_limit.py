@@ -30,8 +30,10 @@ DURATION_VALUES: Dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3
 
 
 class ThrottleConfig(BaseModel):
-    excluded_paths: Optional[List[str]]
     rate_limit: Tuple[DurationUnit, int]
+    """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)"""
+    exclude: Optional[List[str]]
+    """A pattern or list of patterns to skip in the authentication middleware."""
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -45,7 +47,7 @@ class ThrottleConfig(BaseModel):
             from starlite.middleware import ThrottleConfig
 
             # limit to 10 requests per minute, excluding the schema path
-            throttle_config = ThrottleConfig(rate_limit=("minute", 10), excluded_paths=["/schema"])
+            throttle_config = ThrottleConfig(rate_limit=("minute", 10), exclude=["/schema"])
 
 
             @get("/")
@@ -63,17 +65,24 @@ class ThrottleConfig(BaseModel):
 
 
 class ThrottleMiddleware:
-    __slots__ = ("app", "excluded_paths", "cache", "rate_limit_unit", "max_requests")
+    __slots__ = ("app", "exclude", "cache", "rate_limit_unit", "max_requests")
 
     cache: "Cache"
 
     def __init__(
-        self, app: "ASGIApp", rate_limit: Tuple[DurationUnit, int], excluded_paths: Optional[List[str]] = None
+        self, app: "ASGIApp", rate_limit: Tuple[DurationUnit, int], exclude: Optional[List[str]] = None
     ) -> None:
+        """
+
+        Args:
+            app: The 'next' ASGI app to call.
+            rate_limit: A tuple containing a time unit.
+            exclude: A pattern or list of patterns to skip in the authentication middleware.
+        """
         self.app = app
         self.rate_limit_unit: DurationUnit = rate_limit[0]
         self.max_requests: int = rate_limit[1]
-        self.excluded_paths: Optional[Pattern[str]] = re.compile("|".join(excluded_paths)) if excluded_paths else None
+        self.exclude: Optional[Pattern[str]] = re.compile("|".join(exclude)) if exclude else None
 
     def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
         """
@@ -150,4 +159,4 @@ class ThrottleMiddleware:
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
         """
-        return not self.excluded_paths or not self.excluded_paths.findall(request.url.path)
+        return not self.exclude or not self.exclude.findall(request.url.path)
