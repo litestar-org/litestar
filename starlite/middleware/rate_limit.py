@@ -3,9 +3,10 @@ from time import time
 from typing import (
     TYPE_CHECKING,
     Any,
+    Awaitable,
+    Callable,
     Dict,
     List,
-    Literal,
     Optional,
     Pattern,
     Tuple,
@@ -13,12 +14,15 @@ from typing import (
 )
 
 from orjson import dumps, loads
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+from typing_extensions import Literal
 
 from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions.exceptions import TooManyRequestsException
 from starlite.middleware.base import DefineMiddleware
+from starlite.types import SyncOrAsyncUnion
+from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.cache import Cache
@@ -32,8 +36,25 @@ DURATION_VALUES: Dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3
 class ThrottleConfig(BaseModel):
     rate_limit: Tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)"""
-    exclude: Optional[List[str]]
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    exclude: Optional[List[str]] = None
+    """Optional list of patterns to skip in the authentication middleware."""
+    check_throttle_handler: Optional[Callable[[Request[Any, Any]], SyncOrAsyncUnion[bool]]] = None
+    """
+    Optional handler callable that receives the request instance, returning a boolean dictating whether or not the
+    request should be checked for rate limiting.
+    """
+
+    @validator("check_throttle_handler")
+    def validate_check_throttle_handler(cls, value: Callable) -> Callable:  # pylint: disable=no-self-argument
+        """
+
+        Args:
+            value: A callable.
+
+        Returns:
+            An instance of AsyncCallable
+        """
+        return AsyncCallable(value)
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -65,12 +86,16 @@ class ThrottleConfig(BaseModel):
 
 
 class ThrottleMiddleware:
-    __slots__ = ("app", "exclude", "cache", "rate_limit_unit", "max_requests")
+    __slots__ = ("app", "exclude", "cache", "rate_limit_unit", "max_requests", "check_throttle_handler")
 
     cache: "Cache"
 
     def __init__(
-        self, app: "ASGIApp", rate_limit: Tuple[DurationUnit, int], exclude: Optional[List[str]] = None
+        self,
+        app: "ASGIApp",
+        rate_limit: Tuple[DurationUnit, int],
+        exclude: Optional[List[str]] = None,
+        check_throttle_handler: Optional[Callable[[Request[Any, Any]], Awaitable[bool]]] = None,
     ) -> None:
         """
 
@@ -80,9 +105,10 @@ class ThrottleMiddleware:
             exclude: A pattern or list of patterns to skip in the authentication middleware.
         """
         self.app = app
-        self.rate_limit_unit: DurationUnit = rate_limit[0]
-        self.max_requests: int = rate_limit[1]
+        self.check_throttle_handler = check_throttle_handler
         self.exclude: Optional[Pattern[str]] = re.compile("|".join(exclude)) if exclude else None
+        self.max_requests: int = rate_limit[1]
+        self.rate_limit_unit: DurationUnit = rate_limit[0]
 
     def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
         """
@@ -110,7 +136,7 @@ class ThrottleMiddleware:
         if cached_string:
             history = cast("List[int]", loads(cached_string))
             duration = DURATION_VALUES[self.rate_limit_unit]
-            while history[-1] <= int(time()) - duration:
+            while history and history[-1] <= int(time()) - duration:
                 history.pop()
             return history
         return []
@@ -141,16 +167,16 @@ class ThrottleMiddleware:
                 self.cache = cast("Cache", scope["app"].cache)
 
             request = Request[Any, Any](scope)
-            if self.should_check_request(request=request):
+            if await self.should_check_request(request=request):
                 key = self.cache_key_from_request(request=request)
                 cached_history = await self.retrieve_cached_history(key)
-                if len(cached_history) < self.max_requests:
+                if len(cached_history) >= self.max_requests:
                     raise TooManyRequestsException()
                 await self.set_cached_history(key=key, cached_history=cached_history)
 
         await self.app(scope, receive, send)
 
-    def should_check_request(self, request: "Request[Any, Any]") -> bool:
+    async def should_check_request(self, request: "Request[Any, Any]") -> bool:
         """
 
         Args:
@@ -159,4 +185,8 @@ class ThrottleMiddleware:
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
         """
-        return not self.exclude or not self.exclude.findall(request.url.path)
+        if not self.exclude or not self.exclude.findall(request.url.path):
+            if self.check_throttle_handler:
+                return await self.check_throttle_handler(request)
+            return True
+        return False
