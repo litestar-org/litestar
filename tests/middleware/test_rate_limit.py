@@ -5,9 +5,12 @@ from orjson import dumps, loads
 from starlette.status import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 
 from starlite import Request, get
-from starlite.middleware.rate_limit import DURATION_VALUES, DurationUnit, ThrottleConfig
+from starlite.middleware.rate_limit import (
+    DURATION_VALUES,
+    DurationUnit,
+    RateLimitConfig,
+)
 from starlite.testing import create_test_client
-
 
 @pytest.mark.parametrize("unit", ["minute", "second", "hour", "day"])
 async def test_rate_limiting(unit: DurationUnit) -> None:
@@ -15,7 +18,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     def handler() -> None:
         return None
 
-    config = ThrottleConfig(rate_limit=(unit, 1))
+    config = RateLimitConfig(rate_limit=(unit, 1))
     cache_key = "ThrottleMiddleware::testclient"
 
     with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
@@ -40,7 +43,7 @@ def test_exclude() -> None:
     def handler() -> None:
         return None
 
-    config = ThrottleConfig(rate_limit=("second", 1), exclude=["excluded"])
+    config = RateLimitConfig(rate_limit=("second", 1), exclude=["excluded"])
 
     with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
         response = client.get("/excluded")
@@ -62,7 +65,7 @@ def test_check_throttle_handler() -> None:
     def check_throttle_handler(request: Request[Any, Any]) -> bool:
         return request.url.path == "/path1"
 
-    config = ThrottleConfig(rate_limit=("second", 1), check_throttle_handler=check_throttle_handler)
+    config = RateLimitConfig(rate_limit=("second", 1), check_throttle_handler=check_throttle_handler)
 
     with create_test_client(route_handlers=[handler1, handler2], middleware=[config.middleware]) as client:
         response = client.get("/path1")

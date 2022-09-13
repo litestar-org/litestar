@@ -81,7 +81,7 @@
             - dump_data
             - load_data
 
-::: starlite.middleware.rate_limit.ThrottleConfig
+::: starlite.middleware.rate_limit.RateLimitConfig
     options:
         members:
             - rate_limit
