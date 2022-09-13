@@ -86,6 +86,7 @@ repos:
         additional_dependencies:
           [
             brotli,
+            cryptography,
             jinja2,
             mako,
             orjson,
