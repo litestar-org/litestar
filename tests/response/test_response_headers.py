@@ -1,7 +1,11 @@
+from typing import Dict
+
 import pytest
 from pydantic import ValidationError
+from starlette.status import HTTP_201_CREATED
 
-from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get
+from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
+from starlite.testing import create_test_client
 
 
 def test_response_headers() -> None:
@@ -53,3 +57,18 @@ def test_response_headers_validation() -> None:
     ResponseHeader(documentation_only=True)
     with pytest.raises(ValidationError):
         ResponseHeader()
+
+
+def test_response_headers_rendering() -> None:
+    @post(
+        path="/test",
+        tags=["search"],
+        response_headers={"test-header": ResponseHeader(value="test value", description="test")},
+    )
+    def my_handler(data: Dict[str, str]) -> Dict[str, str]:
+        return data
+
+    with create_test_client(my_handler) as client:
+        response = client.post("/test", json={"hello": "world"})
+        assert response.status_code == HTTP_201_CREATED
+        assert response.headers.get("test-header") == "test value"
