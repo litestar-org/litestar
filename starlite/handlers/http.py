@@ -312,7 +312,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200' for mixed method or 'GET', 'PUT' and
                 'PATCH', '201' for 'POST' and '204' for 'DELETE'.
@@ -661,7 +661,7 @@ class get(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -786,7 +786,7 @@ class post(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '201' for 'POST'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -911,7 +911,7 @@ class put(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -1036,7 +1036,7 @@ class patch(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -1161,7 +1161,7 @@ class delete(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
-            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+            responses: A dictionary of additional status codes and a description of their expected content (which is
                 assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '204'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
