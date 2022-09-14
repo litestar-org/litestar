@@ -102,7 +102,7 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
 
 def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> None:
     @get("/test")
-    def handler() -> None:
+    def bla_handler() -> None:
         raise RuntimeError()
 
     async def after_exception_hook_handler(exc: Exception, scope: "Scope", state: "State") -> None:
@@ -111,7 +111,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         assert not state.called
         state.called = True
 
-    with create_test_client(handler, after_exception=after_exception_hook_handler) as client:
+    with create_test_client(bla_handler, after_exception=after_exception_hook_handler) as client:
         setattr(client.app.state, "called", False)  # noqa: B010
         assert not client.app.state.called
         response = client.get("/test")
