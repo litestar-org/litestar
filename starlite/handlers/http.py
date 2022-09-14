@@ -188,10 +188,11 @@ def _create_data_handler(
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> StarletteResponse:
         data = await _normalize_response_data(data=data, plugins=plugins)
         normalized_cookies = _normalize_cookies(cookies, [])
+        normalized_headers = _normalize_headers(headers)
         response = response_class(
             background=background,
             content=data,
-            headers=headers,
+            headers=normalized_headers,
             media_type=media_type,
             status_code=status_code,
         )

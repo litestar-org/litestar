@@ -75,7 +75,7 @@ repos:
             "flake8-noqa",
           ]
   - repo: https://github.com/johnfraney/flake8-markdown
-    rev: v0.3.0
+    rev: v0.4.0
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/ariebovenberg/slotscheck
@@ -142,7 +142,7 @@ repos:
             types-requests,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.270
+    rev: v1.1.271
     hooks:
       - id: pyright
         additional_dependencies:
