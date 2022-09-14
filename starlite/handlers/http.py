@@ -26,6 +26,7 @@ from starlette.status import (
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
+    AdditionalResponse,
     BackgroundTask,
     BackgroundTasks,
     File,
@@ -227,6 +228,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "response_cookies",
         "response_description",
         "response_headers",
+        "responses",
         "security",
         "status_code",
         "summary",
@@ -268,6 +270,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -309,6 +312,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200' for mixed method or 'GET', 'PUT' and
                 'PATCH', '201' for 'POST' and '204' for 'DELETE'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -373,6 +378,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.summary = summary
         self.tags = tags
         self.security = security
+        self.responses = responses
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: Union[Optional[AfterResponseHookHandler], EmptyType] = Empty
         self._resolved_before_request: Union[Optional[BeforeRequestHookHandler], EmptyType] = Empty
@@ -616,6 +622,7 @@ class get(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -654,6 +661,8 @@ class get(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
@@ -696,6 +705,7 @@ class get(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            responses=responses,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -737,6 +747,7 @@ class post(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -775,6 +786,8 @@ class post(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '201' for 'POST'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
@@ -817,6 +830,7 @@ class post(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            responses=responses,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -858,6 +872,7 @@ class put(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -896,6 +911,8 @@ class put(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
@@ -938,6 +955,7 @@ class put(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            responses=responses,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -979,6 +997,7 @@ class patch(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -1017,6 +1036,8 @@ class patch(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '200'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
@@ -1059,6 +1080,7 @@ class patch(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            responses=responses,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -1100,6 +1122,7 @@ class delete(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
+        responses: Optional[Dict[int, AdditionalResponse]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -1138,6 +1161,8 @@ class delete(HTTPRouteHandler):
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
                 instances.
+            responses: A dictioanry of additional status codes and a description of their exepcted content (which is
+                assumed to be 'application/json'). This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to '204'.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
@@ -1180,6 +1205,7 @@ class delete(HTTPRouteHandler):
             response_cookies=response_cookies,
             response_description=response_description,
             response_headers=response_headers,
+            responses=responses,
             security=security,
             status_code=status_code,
             summary=summary,

@@ -169,6 +169,24 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
         )
 
 
+def create_additional_responses(
+    route_handler: "HTTPRouteHandler", plugins: List["PluginProtocol"]
+) -> Iterator[Tuple[str, Response]]:
+    """Create the schema for additional responses, if any."""
+    if not route_handler.responses:
+        return
+
+    for status_code, additional_response in route_handler.responses.items():
+        model_field = create_parsed_model_field(additional_response.model)
+        schema = create_schema(
+            field=model_field, generate_examples=additional_response.generate_examples, plugins=plugins
+        )
+        yield str(status_code), Response(
+            description=additional_response.description,
+            content={MediaType.JSON: OpenAPISchemaMediaType(media_type_schema=schema)},
+        )
+
+
 def create_responses(
     route_handler: "HTTPRouteHandler",
     raises_validation_error: bool,
@@ -182,11 +200,16 @@ def create_responses(
             route_handler=route_handler,
             generate_examples=generate_examples,
             plugins=plugins,
-        )
+        ),
     }
     exceptions = route_handler.raises or []
     if raises_validation_error and ValidationException not in exceptions:
         exceptions.append(ValidationException)
     for status_code, response in create_error_responses(exceptions=exceptions):
         responses[status_code] = response
+
+    for status_code, response in create_additional_responses(route_handler, plugins):
+        if status_code not in responses:
+            responses[status_code] = response
+
     return responses or None

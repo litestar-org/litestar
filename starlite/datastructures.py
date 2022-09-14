@@ -368,3 +368,14 @@ class FormMultiDict(ImmutableMultiDict[str, Any]):
         for _, value in self.multi_items():
             if isinstance(value, UploadFile):
                 await value.close()
+
+
+class AdditionalResponse(BaseModel):
+    """Container type of additional responses"""
+
+    model: Type[BaseModel]
+    """A model that describes the content of the response"""
+    generate_examples: bool = True
+    """Generate examples for the response content"""
+    description: str = "Additional response"
+    """A description of the response"""
