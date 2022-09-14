@@ -371,7 +371,7 @@ class FormMultiDict(ImmutableMultiDict[str, Any]):
 
 
 class AdditionalResponse(BaseModel):
-    """Container type of additional responses"""
+    """Container type of additional responses."""
 
     model: Type[BaseModel]
     """A model that describes the content of the response"""
