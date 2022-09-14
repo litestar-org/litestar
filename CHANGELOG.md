@@ -1,5 +1,10 @@
 # Changelog
 
+[1.18.1]
+
+- fix `ResponseHeader` not being correctly encoded.
+- Update `SQLAlchemyPlugin` for v2.0 compatibility.
+
 [1.18.0]
 
 - update `serializer` to handle `SecretStr`, `PurePath` and `PurePosixPath`.
