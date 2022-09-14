@@ -209,33 +209,18 @@ class Router:
     @property
     def route_handler_method_view(
         self,
-    ) -> Dict[Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], List[str]]:
+    ) -> Dict[str, List[str]]:
         """
         Returns:
              A dictionary mapping route handlers to paths
         """
-        route_map: Dict[
-            Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], List[str]
-        ] = collections.defaultdict(list)
+        route_map: Dict[str, List[str]] = collections.defaultdict(list)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 for route_handler in route.route_handlers:
-                    source_route_handler = route_handler._source_route_handler  # pylint: disable=[protected-access]
-                    # The attribute "_source_route_handler" will be None for route handlers that are not defined on the
-                    # Controller. See "Controller.get_route_handlers" to see how this attribute is assigned a value.
-                    if source_route_handler is not None:
-                        route_map[source_route_handler].append(route.path)
-                    else:
-                        route_map[route_handler].append(route.path)
+                    route_map[route_handler.fn.__qualname__].append(route.path)  # type: ignore
             else:
-                web_socket_handler = cast("WebSocketRoute", route).route_handler
-                source_web_socket_handler = (
-                    web_socket_handler._source_route_handler  # pylint: disable=[protected-access]
-                )
-                if source_web_socket_handler is not None:
-                    route_map[source_web_socket_handler].append(route.path)
-                else:
-                    route_map[web_socket_handler].append(route.path)
+                route_map[cast("WebSocketRoute", route).route_handler.fn.__qualname__].append(route.path)  # type: ignore
         return route_map
 
     @staticmethod
