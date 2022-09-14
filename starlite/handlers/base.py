@@ -60,6 +60,7 @@ class BaseRouteHandler(Generic[T]):
         "owner",
         "paths",
         "signature_model",
+        "_source_route_handler",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -85,8 +86,13 @@ class BaseRouteHandler(Generic[T]):
         self.name = name
         self.opt: Dict[str, Any] = opt or {}
         self.owner: Optional[Union["Controller", "Router"]] = None
+        self._source_route_handler: Optional[Any] = None
         self.signature_model: Optional[Type["SignatureModel"]] = None
-        self.paths = {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
+        self.paths = (
+            {normalize_path(p) for p in path}
+            if path and isinstance(path, list)
+            else {normalize_path(path or "/")}  # type: ignore
+        )
 
     @property
     def dependency_name_set(self) -> Set[str]:

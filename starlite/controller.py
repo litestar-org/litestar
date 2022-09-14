@@ -155,5 +155,9 @@ class Controller:
             source_route_handler = cast("BaseRouteHandler", getattr(self, f_name))
             route_handler = copy(source_route_handler)
             route_handler.owner = self
+            # Because this object is the copy of the original route handler, assign source_route_handler to its
+            # private attribute. This is required to create a view map that decorators can use to resolve path of their
+            # decorated function. See "Router.route_handler_method_view".
+            route_handler._source_route_handler = source_route_handler  # pylint: disable=[protected-access]
             route_handlers.append(route_handler)
         return route_handlers

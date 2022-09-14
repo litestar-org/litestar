@@ -5,6 +5,7 @@ from starlite import (
     HttpMethod,
     ImproperlyConfiguredException,
     Router,
+    Starlite,
     WebSocket,
     get,
     patch,
@@ -125,9 +126,29 @@ def test_register_router_on_itself() -> None:
 
 
 def test_route_handler_method_view() -> None:
-    @get(path="/test")
+    @get(path="/root")
     def handler() -> None:
         ...
 
-    router = Router(path="/", route_handlers=[MyController, handler])
-    assert router.route_handler_method_view[handler] == "/test"
+    first_router = Router(path="/first", route_handlers=[MyController, handler])
+    second_router = Router(path="/second", route_handlers=[MyController, handler])
+
+    # Route handlers that are not defined on a controller have "_source_handler_attribute" to None, so None as a key
+    # should not exist in "route_handler_method_view" dictionary.
+    assert None not in first_router.route_handler_method_view
+
+    # Test routers.
+    assert first_router.route_handler_method_view[handler] == ["/first/root"]
+    assert second_router.route_handler_method_view[MyController.get_method] == ["/second/test"]
+
+    app = Starlite(route_handlers=[first_router, second_router])
+    # Test on Starlite instance. Test all of them to ensure that all of them are present in "route_handler_method_view"
+    # dictionary.
+    assert app.route_handler_method_view[handler] == ["/first/root", "/second/root"]
+    assert app.route_handler_method_view[MyController.get_method] == ["/first/test", "/second/test"]
+    assert app.route_handler_method_view[MyController.post_method] == ["/first/test", "/second/test"]
+    assert app.route_handler_method_view[MyController.get_by_id_method] == [
+        "/first/test/{id:int}",
+        "/second/test/{id:int}",
+    ]
+    assert app.route_handler_method_view[MyController.ws] == ["/first/test/socket", "/second/test/socket"]
