@@ -22,3 +22,11 @@
             - render_redoc
             - should_serve_endpoint
             - render_404_page
+
+::: starlite.openapi.datastructures.ResponseSpec
+    options:
+        members:
+            - model
+            - generate_examples
+            - description
+            - media_type
