@@ -30,6 +30,39 @@ You can also modify the generated schema for the route handler using the followi
   exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
   automatically for the schema if any validation is involved (e.g. there are parameters specified in the
   method/function).
+- `responses`: A dictionary of additional status codes and a description of their expected content.
+    The expected content should be based on a Pydantic model describing its structure. It can also include
+    a description and the expected media type. For example:
+    ```python
+    from datetime import datetime
+    from typing import Optional
+
+    from pydantic import BaseModel
+
+    from starlite import get
+    from starlite.openapi.datastructures import ResponseSpec
+
+
+    class Item(BaseModel):
+        ...
+
+
+    class ItemNotFound(BaseModel):
+        was_removed: bool
+        removed_at: Optional[datetime]
+
+
+    @get(
+        path="/items/{pk:int}",
+        responses={
+            404: ResponseSpec(
+                model=ItemNotFound, description="Item was removed or not found"
+            )
+        },
+    )
+    def retrieve_item(pk: int) -> Item:
+        ...
+    ```
 
 You can also specify `security` and `tags` on higher level of the application, e.g. on a controller, router or the app instance itself. For example:
 
