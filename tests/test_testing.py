@@ -4,6 +4,7 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from starlite import HttpMethod, RequestEncodingType, Starlite, State, get
+from starlite.datastructures import Cookie
 from starlite.testing import TestClient, create_test_request
 from tests import Person
 
@@ -70,3 +71,16 @@ def test_test_client() -> None:
     with TestClient(app=app) as client:
         client.get("/test")
         assert app.state.value == 1
+
+
+def test_create_test_request_with_cookies(session_test_cookies: str) -> None:
+    """Should accept either list of "Cookie" instance or as a string."""
+    request = create_test_request(
+        cookie=[Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
+    )
+    cookies = request.cookies
+    assert {"test", "starlite"}.issubset(cookies.keys())
+    assert cookies["Path"] == "/test"
+
+    request = create_test_request(cookie=session_test_cookies)
+    assert "session-0" in request.cookies
