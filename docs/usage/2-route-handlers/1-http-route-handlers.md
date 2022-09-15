@@ -88,7 +88,6 @@ And the following kwargs, which affect [OpenAPI schema generation](../12-openapi
 - `content_media_type`: A string designating the media-type of the content, e.g. "image/png".
 - `responses`: A dictionary of additional status codes and a description of their expected content.
 
-
 ### Semantic Handler Decorators
 
 Starlite also includes "semantic" decorators, that is, decorators the pre-set the `http_method` kwarg to a specific HTTP

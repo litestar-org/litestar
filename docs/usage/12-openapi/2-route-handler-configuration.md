@@ -33,6 +33,7 @@ You can also modify the generated schema for the route handler using the followi
 - `responses`: A dictionary of additional status codes and a description of their expected content.
     The expected content should be based on a Pydantic model describing its structure. It can also include
     a description and the expected media type. For example:
+
     ```python
     from datetime import datetime
     from typing import Optional
