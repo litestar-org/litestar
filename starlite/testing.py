@@ -22,6 +22,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.datastructures import Cookie
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -279,7 +280,7 @@ def create_test_request(
     app: Starlite = Starlite(route_handlers=[]),
     auth: Any = None,
     content: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-    cookie: Optional[str] = None,
+    cookie: Optional[Union[List["Cookie"], str]] = None,
     headers: Optional[Dict[str, str]] = None,
     http_method: HttpMethod = HttpMethod.GET,
     path: str = "",
@@ -298,7 +299,8 @@ def create_test_request(
         app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
         auth: A value for `request.scope["auth"]`
         content: A value for the request's body. Can be either a pydantic model instance or a string keyed dictionary.
-        cookie: A string representing the cookie header. This value can include multiple cookies.
+        cookie: A string representing the cookie header or a list of "Cookie" instances. This value can include multiple
+            cookies.
         headers: A string / string dictionary of headers.
         http_method: The request's HTTP method.
         path: The request's path.
@@ -328,8 +330,13 @@ def create_test_request(
 
     if not headers:
         headers = {}
-    if cookie:
+
+    if isinstance(cookie, list):
+        cookies = "; ".join(cook.to_header(header="") for cook in cookie)
+        headers[ParamType.COOKIE] = cookies
+    elif isinstance(cookie, str):
         headers[ParamType.COOKIE] = cookie
+
     if query:
         scope["query_string"] = urlencode(query, doseq=True)
 
