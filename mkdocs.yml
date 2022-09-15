@@ -113,6 +113,7 @@ nav:
               - usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md
               - usage/7-middleware/3-builtin-middlewares/4-compression-middleware.md
               - usage/7-middleware/3-builtin-middlewares/5-session-middleware.md
+              - usage/7-middleware/3-builtin-middlewares/6-rate-limit-middleware.md
       - Authentication:
           - usage/8-authentication/0-intro.md
           - usage/8-authentication/1-abstract-authentication-middleware.md

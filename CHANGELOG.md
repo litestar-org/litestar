@@ -1,9 +1,16 @@
 # Changelog
 
+[1.19.0]
+
+- add support for multiple responses documentation by @seladb.
+- add `media_type` to `ResponseContainer`.
+- add `RateLimitMiddleware`.
+- add support for multiple cookies in `create_test_request`.
+
 [1.18.1]
 
 - fix `ResponseHeader` not being correctly encoded.
-- Update `SQLAlchemyPlugin` for v2.0 compatibility.
+- update `SQLAlchemyPlugin` for v2.0 compatibility.
 
 [1.18.0]
 
