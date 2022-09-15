@@ -138,7 +138,9 @@ def _create_response_container_handler(
     async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Any) -> StarletteResponse:
         normalized_headers = {**_normalize_headers(headers), **data.headers}
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
-        response = data.to_response(app=app, headers=normalized_headers, status_code=status_code, media_type=media_type)
+        response = data.to_response(
+            app=app, headers=normalized_headers, status_code=status_code, media_type=data.media_type or media_type
+        )
         for cookie in normalized_cookies:
             response.set_cookie(**cookie)
         return await after_request(response) if after_request else response  # type: ignore
@@ -498,7 +500,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
-
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore[misc]
                 handler = _create_response_container_handler(
                     after_request=after_request,
