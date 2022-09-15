@@ -15,6 +15,7 @@ __all__ = ["create_exception_response"]
 class ExceptionResponseContent(BaseModel):
     detail: Optional[str]
     extra: Optional[Union[Dict[str, Any], List[Any]]] = None
+    headers: Optional[Dict[str, str]] = None
     status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -40,4 +41,5 @@ def create_exception_response(exc: Exception) -> Response:
         media_type=MediaType.JSON,
         content=content.dict(exclude_none=True),
         status_code=content.status_code,
+        headers=exc.headers if isinstance(exc, (HTTPException, StarletteHTTPException)) else None,
     )
