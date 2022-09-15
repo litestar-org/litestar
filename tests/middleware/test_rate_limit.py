@@ -1,3 +1,4 @@
+from time import time
 from typing import Any
 
 import pytest
@@ -7,6 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite import Request, get
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
+    CacheObject,
     DurationUnit,
     RateLimitConfig,
 )
@@ -26,15 +28,24 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         cache = client.app.cache
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-
         cached_value = await cache.get(cache_key)
-        cached_list = loads(cached_value)
-        assert len(cached_list) == 1
+        cache_object = CacheObject(**loads(cached_value))
+        assert len(cache_object.history) == 1
+
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "1"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "1"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        await cache.set(cache_key, dumps([cached_list[0] - DURATION_VALUES[unit]]))
+        cache_object.history = [cache_object.history[0] - DURATION_VALUES[unit]]
+        await cache.set(cache_key, dumps(cache_object))
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
