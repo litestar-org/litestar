@@ -1,3 +1,4 @@
+import collections
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -208,18 +209,18 @@ class Router:
     @property
     def route_handler_method_view(
         self,
-    ) -> Dict[Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], str]:
+    ) -> Dict[str, List[str]]:
         """
         Returns:
              A dictionary mapping route handlers to paths
         """
-        route_map: Dict[Union[ASGIRouteHandler, "HttpMethod", HTTPRouteHandler, WebsocketRouteHandler], str] = {}
+        route_map: Dict[str, List[str]] = collections.defaultdict(list)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 for route_handler in route.route_handlers:
-                    route_map[route_handler] = route.path
+                    route_map[route_handler.fn.__qualname__].append(route.path)  # type: ignore
             else:
-                route_map[cast("WebSocketRoute", route).route_handler] = route.path
+                route_map[cast("WebSocketRoute", route).route_handler.fn.__qualname__].append(route.path)  # type: ignore
         return route_map
 
     @staticmethod
