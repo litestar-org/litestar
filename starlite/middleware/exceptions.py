@@ -35,7 +35,16 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
         self.exception_handlers = exception_handlers
         self.debug = debug
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
         try:
             await self.app(scope, receive, send)
         except Exception as exc:  # pylint: disable=broad-except
