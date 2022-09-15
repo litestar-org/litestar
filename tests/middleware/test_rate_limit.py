@@ -50,6 +50,29 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.status_code == HTTP_200_OK
 
 
+async def test_reset() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=("second", 1))
+    cache_key = "RateLimitMiddleware::testclient"
+
+    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+        cache = client.app.cache
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        cached_value = await cache.get(cache_key)
+        cache_object = CacheObject(**loads(cached_value))
+        assert cache_object.reset == int(time() + 1)
+
+        cache_object.reset -= 2
+        await cache.set(cache_key, dumps(cache_object))
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
 def test_exclude() -> None:
     @get("/excluded")
     def handler() -> None:
