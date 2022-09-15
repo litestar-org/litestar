@@ -36,6 +36,7 @@ from starlette.responses import StreamingResponse
 from starlite_multipart.datastructures import UploadFile as MultipartUploadFile
 from typing_extensions import Literal, ParamSpec
 
+from starlite.enums import MediaType
 from starlite.openapi.enums import OpenAPIType
 
 P = ParamSpec("P")
@@ -44,7 +45,6 @@ if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
     from starlite.app import Starlite
-    from starlite.enums import MediaType
     from starlite.response import TemplateResponse
 
 
@@ -156,6 +156,8 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: List[Cookie] = []
     """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
+    media_type: Optional[Union[MediaType, str]] = None
+    """If defined, overrides the media type configured in the route decorator"""
 
     @abstractmethod
     def to_response(

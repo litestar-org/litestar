@@ -15,7 +15,7 @@ secret = SecretStr("secret_text")
 pure_path = PurePath("/path/to/file")
 
 
-class TestEnum(enum.Enum):
+class _TestEnum(enum.Enum):
     A = "alpha"
     B = "beta"
 
@@ -30,13 +30,15 @@ class TestEnum(enum.Enum):
         [PydanticDataClassPerson(**person.dict()), PydanticDataClassPerson, MediaType.JSON],
         ["abcdefg", str, MediaType.TEXT],
         ["<div/>", str, MediaType.HTML],
-        [{"enum": TestEnum.A}, Dict[str, TestEnum], MediaType.JSON],
+        [{"enum": _TestEnum.A}, Dict[str, _TestEnum], MediaType.JSON],
         [{"secret": secret}, Dict[str, SecretStr], MediaType.JSON],
         [{"pure_path": pure_path}, Dict[str, PurePath], MediaType.JSON],
     ],
 )
 def test_response_serialization(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)  # type: ignore[valid-type]
+    response = Response[response_type](  # type: ignore[valid-type]
+        content, media_type=media_type, status_code=HTTP_200_OK
+    )
     if media_type == MediaType.JSON:
         value = loads(response.body)
         if isinstance(value, dict) and "enum" in value:
