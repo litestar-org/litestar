@@ -26,7 +26,6 @@ from starlette.status import (
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
-    AdditionalResponse,
     BackgroundTask,
     BackgroundTasks,
     File,
@@ -40,6 +39,7 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.handlers.base import BaseRouteHandler
+from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
 from starlite.provide import Provide
 from starlite.response import Response
@@ -271,7 +271,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -623,7 +623,7 @@ class get(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -748,7 +748,7 @@ class post(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -873,7 +873,7 @@ class put(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -998,7 +998,7 @@ class patch(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
@@ -1123,7 +1123,7 @@ class delete(HTTPRouteHandler):
         operation_id: Optional[str] = None,
         raises: Optional[List[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, AdditionalResponse]] = None,
+        responses: Optional[Dict[int, ResponseSpec]] = None,
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,

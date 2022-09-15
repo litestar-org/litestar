@@ -13,7 +13,11 @@ from typing_extensions import get_args, get_origin
 
 from starlite.datastructures import Cookie, File, Redirect, Stream, Template
 from starlite.enums import MediaType
-from starlite.exceptions import HTTPException, ValidationException
+from starlite.exceptions import (
+    HTTPException,
+    ImproperlyConfiguredException,
+    ValidationException,
+)
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
@@ -183,7 +187,7 @@ def create_additional_responses(
         )
         yield str(status_code), Response(
             description=additional_response.description,
-            content={MediaType.JSON: OpenAPISchemaMediaType(media_type_schema=schema)},
+            content={additional_response.media_type: OpenAPISchemaMediaType(media_type_schema=schema)},
         )
 
 
@@ -209,7 +213,11 @@ def create_responses(
         responses[status_code] = response
 
     for status_code, response in create_additional_responses(route_handler, plugins):
-        if status_code not in responses:
-            responses[status_code] = response
+        if status_code in responses:
+            raise ImproperlyConfiguredException(
+                f"Additional response for status code {status_code} already exists in success or error responses"
+            )
+
+        responses[status_code] = response
 
     return responses or None
