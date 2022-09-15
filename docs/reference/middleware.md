@@ -87,9 +87,16 @@
             - rate_limit
             - exclude
             - check_throttle_handler
+            - middleware_class
+            - set_rate_limit_headers
+            - rate_limit_policy_header_key
+            - rate_limit_remaining_header_key
+            - rate_limit_reset_header_key
+            - rate_limit_limit_header_key
+            - cache_key_builder
             - middleware
 
-::: starlite.middleware.rate_limit.ThrottleMiddleware
+::: starlite.middleware.rate_limit.RateLimitMiddleware
     options:
         members:
             - __init__
@@ -97,3 +104,4 @@
             - retrieve_cached_history
             - set_cached_history
             - should_check_request
+            - create_response_headers

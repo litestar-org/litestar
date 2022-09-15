@@ -12,6 +12,7 @@ from starlite.middleware.rate_limit import (
 )
 from starlite.testing import create_test_client
 
+
 @pytest.mark.parametrize("unit", ["minute", "second", "hour", "day"])
 async def test_rate_limiting(unit: DurationUnit) -> None:
     @get("/")
@@ -19,7 +20,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         return None
 
     config = RateLimitConfig(rate_limit=(unit, 1))
-    cache_key = "ThrottleMiddleware::testclient"
+    cache_key = "RateLimitMiddleware::testclient"
 
     with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
         cache = client.app.cache
