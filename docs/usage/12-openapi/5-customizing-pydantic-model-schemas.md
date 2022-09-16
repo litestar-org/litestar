@@ -51,3 +51,7 @@ The above will result in an OpenAPI schema object that looks like this:
     },
 }
 ```
+
+!!! important
+    If you use multiple pydantic models that use the same name in the schema, you will need to use the `__schema_name__`
+    dunder to ensure each has a unique name in the schema, otherwise the schema components will be ambivalent.
