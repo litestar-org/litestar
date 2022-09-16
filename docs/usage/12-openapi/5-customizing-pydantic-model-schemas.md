@@ -3,7 +3,7 @@
 You can customize the OpenAPI schemas generated for pydantic models by following the guidelines in
 the [pydantic docs](https://pydantic-docs.helpmanual.io/usage/schema/).
 
-Assitionally, you can affect how pydantic models are translated into OpenAPI `components` by settings a special dunder attribute on the model called `__schema_name__`:
+Additionally, you can affect how pydantic models are translated into OpenAPI `components` by settings a special dunder attribute on the model called `__schema_name__`:
 
 ```py title="Customize Components Example"
 --8<-- "examples/openapi/customize_pydantic_model_name.py"
