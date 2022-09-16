@@ -394,6 +394,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "jonadaly",
+      "name": "Jon Daly",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26462826?v=4",
+      "profile": "https://github.com/jonadaly",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
