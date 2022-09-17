@@ -11,7 +11,16 @@ from orjson import dumps
 from pydantic import SecretBytes, ValidationError
 from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HttpMethod, Request, Response, get, post, route
+from starlite import (
+    HttpMethod,
+    Request,
+    Response,
+    WebSocket,
+    get,
+    post,
+    route,
+    websocket,
+)
 from starlite.middleware.session import (
     AAD,
     CHUNK_SIZE,
@@ -194,7 +203,7 @@ def test_integration(session_middleware: SessionMiddleware) -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_use_of_custom_response_serializer(session_middleware: SessionMiddleware) -> None:
+def test_use_of_custom_response_serializer_with_http_handler(session_middleware: SessionMiddleware) -> None:
     class Obj:
         inner: str
 
@@ -219,3 +228,32 @@ def test_use_of_custom_response_serializer(session_middleware: SessionMiddleware
     ) as client:
         response = client.post("/create-session")
         assert response.status_code == HTTP_201_CREATED
+
+
+async def test_use_of_custom_response_serializer_with_websocket_handler(session_middleware: SessionMiddleware) -> None:
+    class Obj:
+        inner: str
+
+    class MyResponse(Response):
+        @staticmethod
+        def serializer(value: Any) -> Union[Dict[str, Any], str]:
+            if isinstance(value, Obj):
+                return value.inner
+            raise TypeError()
+
+    @websocket("/create-session")
+    async def create_session_handler(socket: WebSocket) -> None:
+        await socket.accept()
+        obj = Obj()
+        obj.inner = "123Jeronimo"
+        socket.set_session({"value": obj})
+        await socket.send_json({"has_session": True})
+        await socket.close()
+
+    with create_test_client(
+        route_handlers=[create_session_handler],
+        middleware=[session_middleware.config.middleware],
+        response_class=MyResponse,
+    ).websocket_connect("/create-session") as ws:
+        data = ws.receive_json()
+        assert data == {"has_session": True}

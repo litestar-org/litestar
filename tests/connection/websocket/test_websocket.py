@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from starlette.websockets import WebSocketDisconnect
@@ -74,3 +74,16 @@ def test_websocket_receive_without_accept() -> None:
         str(exc)
         == """<ExceptionInfo WebSocketDisconnect(4500, '500 - InternalServerException - WebSocket is not connected. Need to call "accept" first.') tblen=3>"""
     )
+
+
+def test_route_handler_property() -> None:
+    value: Any = {}
+
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        value["handler"] = socket.route_handler
+        await socket.close()
+
+    with create_test_client(route_handlers=[handler]).websocket_connect("/"):
+        assert value["handler"] is handler

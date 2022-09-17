@@ -3,6 +3,7 @@ from .exception import get_exception_handler
 from .model import convert_dataclass_to_model, create_parsed_model_field
 from .module_loading import import_string
 from .predicates import is_async_callable, is_class_and_subclass, is_optional_union
+from .scope import get_serializer_from_scope
 from .sequence import find_index, unique
 from .sync import AsyncCallable
 from .templates import create_template_engine
@@ -15,6 +16,7 @@ __all__ = [
     "create_template_engine",
     "find_index",
     "get_exception_handler",
+    "get_serializer_from_scope",
     "import_string",
     "is_async_callable",
     "is_class_and_subclass",
