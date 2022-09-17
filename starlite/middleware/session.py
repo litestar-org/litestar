@@ -3,7 +3,7 @@ import contextlib
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional, Type, cast
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps
 from orjson.orjson import loads
@@ -22,6 +22,7 @@ from typing_extensions import Literal
 
 from starlite.datastructures import Cookie
 from starlite.exceptions import MissingDependencyException
+from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.response import Response
 from starlite.types import Empty
@@ -35,7 +36,7 @@ except ImportError as e:
 if TYPE_CHECKING:
     from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-    from starlite.app import Starlite
+    from starlite.types import RouteHandlerType
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
@@ -158,9 +159,9 @@ class SessionMiddleware(MiddlewareProtocol):
         Returns:
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
-
-        response_class = (
-            cast("Starlite", scope["app"]).response_class or Response if scope and "app" in scope else Response
+        route_handler = cast("Optional[RouteHandlerType]", (scope or {}).get("route_handler"))
+        response_class: Type[Response] = (
+            route_handler.resolve_response_class() if isinstance(route_handler, HTTPRouteHandler) else Response
         )
         serialized = dumps(data, default=response_class.serializer, option=OPT_SERIALIZE_NUMPY)
         associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})

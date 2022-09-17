@@ -61,11 +61,9 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
-    from starlite.handlers.asgi import ASGIRouteHandler
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, RouteHandlerType, Scope, Send
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -88,7 +86,7 @@ class HandlerIndex(TypedDict):
 
     path: str
     """Full route path to the route handler."""
-    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
+    handler: "RouteHandlerType"
     """Route handler instance."""
 
 
@@ -97,7 +95,7 @@ class HandlerNode(TypedDict):
 
     asgi_app: "ASGIApp"
     """ASGI App stack"""
-    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
+    handler: "RouteHandlerType"
     """Route handler instance."""
 
 
@@ -456,7 +454,7 @@ class Starlite(Router):
         Returns:
             None
         """
-        route_handlers: List[Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]] = []
+        route_handlers: List["RouteHandlerType"] = []
         if isinstance(route, (WebSocketRoute, ASGIRoute)):
             route_handlers.append(route.route_handler)
         else:
@@ -520,7 +518,7 @@ class Starlite(Router):
     def _build_route_middleware_stack(
         self,
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"],
+        route_handler: "RouteHandlerType",
     ) -> "ASGIApp":
         """Constructs a middleware stack that serves as the point of entry for
         each route."""
