@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Type, Union
 from uuid import UUID
 
 from typing_extensions import TypedDict
@@ -16,7 +16,7 @@ from starlite.utils import join_paths, normalize_path
 if TYPE_CHECKING:
     from starlite.enums import ScopeType
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.types import Method, Receive, Scope, Send
+    from starlite.types import Method, Receive, Send
 
 
 param_match_regex = re.compile(r"{(.*?)}")
@@ -86,7 +86,7 @@ class BaseRoute(ABC):
             self.methods.add("HEAD")
 
     @abstractmethod
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
+    async def handle(self, scope: Any, receive: "Receive", send: "Send") -> None:  # pragma: no cover
         """The route's ASGI App.
 
         Args:

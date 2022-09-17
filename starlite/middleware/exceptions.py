@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
     from starlette.responses import Response as StarletteResponse
 
-    from starlite.app import Starlite
     from starlite.types import ASGIApp, ExceptionHandlersMap, Receive, Scope, Send
 
 
@@ -48,7 +47,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
         try:
             await self.app(scope, receive, send)
         except Exception as exc:  # pylint: disable=broad-except
-            starlite_app = cast("Starlite", scope["app"])
+            starlite_app = scope["app"]
             for hook in starlite_app.after_exception:
                 await hook(exc, scope, starlite_app.state)
 
@@ -57,7 +56,7 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
                     get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
                 )
                 response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
-                await response(scope=scope, receive=receive, send=send)
+                await response(scope=scope, receive=receive, send=send)  # type: ignore[arg-type]
             else:
                 status_code = (
                     exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
@@ -72,6 +71,6 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
-            server_middleware = ServerErrorMiddleware(app=self)
+            server_middleware = ServerErrorMiddleware(app=self)  # type: ignore[arg-type]
             return server_middleware.debug_response(request=request, exc=exc)
         return create_exception_response(exc)

@@ -1,8 +1,6 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
-from starlette.requests import HTTPConnection
-
 from starlite import Provide, Request, Starlite, State, get
 
 if TYPE_CHECKING:
@@ -20,7 +18,7 @@ def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
     """A middleware can access application state via `scope`."""
 
     async def my_middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        state = HTTPConnection(scope).app.state
+        state = scope["app"].state
         logger.info("state value in middleware: %s", state.value)
         await app(scope, receive, send)
 

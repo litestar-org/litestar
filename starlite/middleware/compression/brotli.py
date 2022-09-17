@@ -77,8 +77,8 @@ class BrotliMiddleware:
                 await brotli_responder(scope, receive, send)
                 return
             if self.gzip_fallback and CompressionEncoding.GZIP in headers.get("Accept-Encoding", ""):
-                gzip_responder = GZipResponder(self.app, self.minimum_size)
-                await gzip_responder(scope, receive, send)
+                gzip_responder = GZipResponder(self.app, self.minimum_size)  # type: ignore[arg-type]
+                await gzip_responder(scope, receive, send)  # type: ignore[arg-type]
                 return
         await self.app(scope, receive, send)
 

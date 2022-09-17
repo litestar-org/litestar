@@ -87,7 +87,7 @@ class RateLimitMiddleware:
         """
         if scope["type"] == ScopeType.HTTP:
             if not hasattr(self, "cache"):
-                self.cache = cast("Cache", scope["app"].cache)
+                self.cache = scope["app"].cache
 
             request = Request[Any, Any](scope)
             if await self.should_check_request(request=request):

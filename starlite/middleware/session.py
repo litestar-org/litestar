@@ -34,7 +34,7 @@ except ImportError as e:
     raise MissingDependencyException("cryptography is not installed") from e
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
     from starlite.app import Starlite
 
@@ -261,7 +261,7 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         if scope["type"] in self.config.scopes:
             scope.setdefault("session", {})
-            connection = HTTPConnection(scope)
+            connection = HTTPConnection(scope)  # type: ignore[arg-type]
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
             if cookie_keys:
                 data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]

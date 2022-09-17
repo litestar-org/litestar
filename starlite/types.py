@@ -4,8 +4,11 @@ from typing import (
     Awaitable,
     Callable,
     Dict,
+    Iterable,
     List,
     MutableMapping,
+    Optional,
+    Tuple,
     Type,
     TypeVar,
     Union,
@@ -15,11 +18,13 @@ from pydantic.fields import FieldInfo
 from pydantic.typing import AnyCallable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import Response as StarletteResponse
-from typing_extensions import Literal
+from typing_extensions import Literal, TypedDict
 
+from starlite.enums import ScopeType
 from starlite.exceptions import HTTPException
 
 if TYPE_CHECKING:
+    from pydantic import BaseModel
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
 
@@ -58,8 +63,50 @@ else:
     WebSocket = Any
     WebsocketRouteHandler = Any
 
-# ASGI types - ported from 'starlette.types'
-Scope = MutableMapping[str, Any]
+
+class ASGIVersion(TypedDict):
+    spec_version: str
+    version: Literal["3.0"]
+
+
+class BaseScope(TypedDict):
+    app: "Starlite"
+    asgi: ASGIVersion
+    auth: Any
+    client: Optional[Tuple[str, int]]
+    extensions: Optional[Dict[str, Dict[object, object]]]
+    headers: Iterable[Tuple[bytes, bytes]]
+    http_version: str
+    path: str
+    path_params: Dict[str, str]
+    query_string: bytes
+    raw_path: bytes
+    root_path: str
+    route_handler: "RouteHandlerType"
+    scheme: str
+    server: Optional[Tuple[str, Optional[int]]]
+    session: Optional[Union["EmptyType", Dict[str, Any], "BaseModel"]]
+    state: Dict[str, Any]
+    user: Any
+
+
+class HTTPScope(BaseScope):
+    method: "Method"
+    type: Literal[ScopeType.HTTP]
+
+
+class WebSocketScope(BaseScope):
+    subprotocols: Iterable[str]
+    type: Literal[ScopeType.WEBSOCKET]
+
+
+class LifeSpanScope(TypedDict):
+    app: "Starlite"
+    asgi: ASGIVersion
+    type: Literal["lifespan"]
+
+
+Scope = Union[HTTPScope, WebSocketScope]
 Message = MutableMapping[str, Any]
 Receive = Callable[[], Awaitable[Message]]
 Send = Callable[[Message], Awaitable[None]]
@@ -95,7 +142,7 @@ Guard = Union[
 ]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[Starlite], SyncOrAsyncUnion[None]]
-Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
+Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]
 ]

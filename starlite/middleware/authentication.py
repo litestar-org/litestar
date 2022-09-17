@@ -67,7 +67,7 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
             await self.app(scope, receive, send)
         else:
             if scope["type"] in self.scopes:
-                auth_result = await self.authenticate_request(HTTPConnection(scope))
+                auth_result = await self.authenticate_request(HTTPConnection(scope))  # type: ignore[arg-type]
                 scope["user"] = auth_result.user
                 scope["auth"] = auth_result.auth
             await self.app(scope, receive, send)
