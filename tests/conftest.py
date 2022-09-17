@@ -62,6 +62,7 @@ def session_test_cookies(session_middleware: SessionMiddleware) -> str:
     # session cookies with your own data.
     _session = {"key": secrets.token_hex(16)}
     cookies = "; ".join(
-        f"session-{i}={serialize.decode('utf-8')}" for i, serialize in enumerate(session_middleware.dump_data(_session))
+        f"session-{i}={serialize.decode('utf-8')}"
+        for i, serialize in enumerate(session_middleware.dump_data(_session, {}))
     )
     return cookies
