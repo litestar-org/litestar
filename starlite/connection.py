@@ -33,10 +33,13 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
     from starlite.app import Starlite
-    from starlite.types import Method, Receive, RouteHandlerType, Scope, Send
+    from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
+    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
+    from starlite.types import Method, Receive, Scope, Send
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
+Handler = TypeVar("Handler")
 
 
 class AppMixin:
@@ -51,16 +54,16 @@ class AppMixin:
         return cast("Starlite", self.scope["app"])
 
 
-class RouteHandlerMixin:
+class RouteHandlerMixin(Generic[Handler]):
     scope: "Scope"
 
     @property
-    def route_handler(self) -> "RouteHandlerType":
+    def route_handler(self) -> Handler:
         """
         Returns:
             The target route handler
         """
-        return cast("RouteHandlerType", self.scope["route_handler"])
+        return cast("Handler", self.scope["route_handler"])
 
 
 class SessionMixin:
@@ -206,7 +209,7 @@ class URLMixin:
         return None
 
 
-class Request(URLMixin, AppMixin, RouteHandlerMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
+class Request(URLMixin, AppMixin, RouteHandlerMixin["HTTPRouteHandler"], SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
     """The Starlite Request class."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
@@ -294,7 +297,7 @@ class WebSocket(  # type: ignore[misc]
     URLMixin,
     AppMixin,
     SessionMixin,
-    RouteHandlerMixin,
+    RouteHandlerMixin["WebsocketRouteHandler"],
     Generic[User, Auth],
     AuthMixin[User, Auth],
     QueryParamMixin,
