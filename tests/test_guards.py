@@ -53,7 +53,7 @@ def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
         response = Response(media_type=MediaType.JSON, status_code=HTTP_200_OK, content={"hello": "world"})
-        await response(scope=scope, receive=receive, send=send)
+        await response(scope=scope, receive=receive, send=send)  # type: ignore[arg-type]
 
     with create_test_client(guards=[app_guard], route_handlers=[my_asgi_handler]) as client:
         response = client.get("/secret")

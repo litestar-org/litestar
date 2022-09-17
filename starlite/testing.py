@@ -71,7 +71,7 @@ class RequestEncoder(RequestEncodingMixin):
 
 
 class TestClient(StarletteTestClient):
-    app: Starlite
+    app: Starlite  # type: ignore[assignment]
     """
         Starlite application instance under test.
     """
@@ -98,7 +98,7 @@ class TestClient(StarletteTestClient):
             backend_options: 'anyio' options.
         """
         super().__init__(
-            app=app,
+            app=app,  # type: ignore[arg-type]
             base_url=base_url,
             raise_server_exceptions=raise_server_exceptions,
             root_path=root_path,
@@ -364,7 +364,7 @@ def create_test_request(
             for key, value in headers.items()
         ]
 
-    request: Request[Any, Any] = Request(scope=scope)
+    request: Request[Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
     if body:
         scope["_body"] = request._body = body  # pyright: ignore
     return request

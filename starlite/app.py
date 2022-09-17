@@ -46,6 +46,9 @@ from starlite.types import (
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
+    LifeSpanReceive,
+    LifeSpanScope,
+    LifeSpanSend,
     Middleware,
     ParametersMap,
     ResponseCookies,
@@ -299,7 +302,12 @@ class Starlite(Router):
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(
+        self,
+        scope: Union["Scope", "LifeSpanScope"],
+        receive: Union["Receive", "LifeSpanReceive"],
+        send: Union["Send", "LifeSpanSend"],
+    ) -> None:
         """The application entry point.
 
         Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
@@ -314,10 +322,10 @@ class Starlite(Router):
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
-            await self.asgi_router.lifespan(scope, receive, send)
+            await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, self._wrap_send(send))
+        await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -392,9 +400,9 @@ class Starlite(Router):
         if self.compression_config:
             asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:
-            asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)
+            asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)  # type: ignore
         if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())
+            asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())  # type: ignore
         if self.csrf_config:
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
@@ -525,7 +533,7 @@ class Starlite(Router):
 
         # we wrap the route.handle method in the ExceptionHandlerMiddleware
         asgi_handler = self._wrap_in_exception_handler(
-            app=route.handle, exception_handlers=route_handler.resolve_exception_handlers()
+            app=route.handle, exception_handlers=route_handler.resolve_exception_handlers()  # type: ignore[arg-type]
         )
 
         for middleware in route_handler.resolve_middleware():
@@ -533,11 +541,11 @@ class Starlite(Router):
                 handler, kwargs = middleware
                 asgi_handler = handler(app=asgi_handler, **kwargs)
             else:
-                asgi_handler = middleware(app=asgi_handler)
+                asgi_handler = middleware(app=asgi_handler)  # type: ignore
 
         # we wrap the entire stack again in ExceptionHandlerMiddleware
         return self._wrap_in_exception_handler(
-            app=asgi_handler, exception_handlers=route_handler.resolve_exception_handlers()
+            app=asgi_handler, exception_handlers=route_handler.resolve_exception_handlers()  # pyright: ignore
         )
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:

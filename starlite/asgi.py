@@ -171,7 +171,7 @@ class StarliteASGIRouter(StarletteRouter):
         """Given a scope object, retrieve the _asgi_handlers and _is_asgi
         values from correct trie node."""
 
-        path = cast("str", scope["path"]).strip()
+        path = scope["path"].strip()
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
@@ -208,7 +208,7 @@ class StarliteASGIRouter(StarletteRouter):
             node = asgi_handlers[ScopeType.WEBSOCKET]
         return node["asgi_app"], node["handler"]
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
         """The main entry point to the Router class."""
         try:
             asgi_handlers, is_asgi = self._parse_scope_to_route(scope=scope)

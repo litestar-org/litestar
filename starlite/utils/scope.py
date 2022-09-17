@@ -1,8 +1,7 @@
-from typing import TYPE_CHECKING, Any, Callable, Optional, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
-    from starlite.app import Starlite
-    from starlite.types import RouteHandlerType, Scope
+    from starlite.types import Scope
 
 
 def get_serializer_from_scope(scope: "Scope") -> Optional[Callable[[Any], Any]]:
@@ -15,9 +14,9 @@ def get_serializer_from_scope(scope: "Scope") -> Optional[Callable[[Any], Any]]:
         A serializer function
     """
 
-    route_handler = cast("RouteHandlerType", scope["route_handler"])
+    route_handler = scope["route_handler"]
     if hasattr(route_handler, "resolve_response_class"):
         return route_handler.resolve_response_class().serializer  # type: ignore
 
-    app = cast("Starlite", scope["app"])
+    app = scope["app"]
     return app.response_class.serializer if app.response_class else None

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
-    from starlite.types import AsyncAnyCallable, Receive, Scope, Send
+    from starlite.types import AsyncAnyCallable, Receive, Send, WebSocketScope
 
 
 class WebSocketRoute(BaseRoute):
@@ -42,7 +42,7 @@ class WebSocketRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
 
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: "WebSocketScope", receive: "Receive", send: "Send") -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then
         awaits the handler function.
 

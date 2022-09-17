@@ -10,10 +10,10 @@ def test_get_serializer_from_scope() -> None:
         def serializer(value: Any) -> Any:
             return value
 
-    assert get_serializer_from_scope({"app": Starlite([]), "route_handler": BaseRouteHandler()}) is None
+    assert get_serializer_from_scope({"app": Starlite([]), "route_handler": BaseRouteHandler()}) is None  # type: ignore
     assert (
         get_serializer_from_scope(
-            {"app": Starlite([], response_class=MyResponse), "route_handler": BaseRouteHandler(path="/")}
+            {"app": Starlite([], response_class=MyResponse), "route_handler": BaseRouteHandler(path="/")}  # type: ignore
         )
         is MyResponse.serializer
     )
@@ -21,7 +21,7 @@ def test_get_serializer_from_scope() -> None:
         get_serializer_from_scope(
             {
                 "app": Starlite([]),
-                "route_handler": HTTPRouteHandler(path="/", http_method=HttpMethod.GET, response_class=MyResponse),
+                "route_handler": HTTPRouteHandler(path="/", http_method=HttpMethod.GET, response_class=MyResponse),  # type: ignore
             }
         )
         is MyResponse.serializer

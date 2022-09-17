@@ -23,4 +23,4 @@ class GZipMiddleware(StarletteGzipMiddleware):
             minimum_size: Minimum size for the response body to affect compression.
             gzip_compress_level: The gzip compression level, value is in range from 1 to 9.
         """
-        super().__init__(app, minimum_size=minimum_size, compresslevel=gzip_compress_level)
+        super().__init__(app, minimum_size=minimum_size, compresslevel=gzip_compress_level)  # type: ignore[arg-type]

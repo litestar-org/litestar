@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
-    from starlite.types import Method, Receive, Scope, Send
+    from starlite.types import HTTPScope, Method, Receive, Scope, Send
 
 
 class HTTPRoute(BaseRoute):
@@ -51,7 +51,7 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:
         """ASGI app that creates a Request from the passed in args, determines
         which handler function to call and then handles the call.
 
@@ -73,7 +73,7 @@ class HTTPRoute(BaseRoute):
             scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
         )
 
-        await response(scope, receive, send)
+        await response(scope, receive, send)  # type: ignore[arg-type]
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
             await after_response_handler(request)  # type: ignore

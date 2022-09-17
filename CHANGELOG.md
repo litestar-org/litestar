@@ -1,8 +1,10 @@
 # Changelog
 
-[1.19.1]
+[1.20.0]
 
 - update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
+- update ASGI typings (`scope`, `receive`, `send`, `message` and `ASGIApp`) to use strong types derived from [asgiref](https://github.com/django/asgiref).
+- update `SessionMiddleware` to use custom serializer used on request.
 
 [1.19.0]
 
