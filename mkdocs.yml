@@ -131,6 +131,7 @@ nav:
           - usage/12-openapi/2-route-handler-configuration.md
           - usage/12-openapi/3-openapi-controller.md
           - usage/12-openapi/4-viewing-and-accessing-schema.md
+          - usage/12-openapi/5-customizing-pydantic-model-schemas.md
       - usage/13-lifecycle-hooks.md
       - usage/14-testing.md
       - usage/15-templating.md

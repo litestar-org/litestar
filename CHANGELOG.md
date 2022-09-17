@@ -1,5 +1,9 @@
 # Changelog
 
+[1.19.1]
+
+- update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
+
 [1.19.0]
 
 - add support for multiple responses documentation by @seladb.
