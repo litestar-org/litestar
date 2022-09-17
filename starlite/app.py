@@ -99,6 +99,15 @@ class HandlerNode(TypedDict):
     """Route handler instance."""
 
 
+class HandlerNode(TypedDict):
+    """This class encapsulates a route handler node."""
+
+    asgi_app: "ASGIApp"
+    """ASGI App stack"""
+    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
+    """Route handler instance."""
+
+
 class Starlite(Router):
     __slots__ = (
         "_init",
