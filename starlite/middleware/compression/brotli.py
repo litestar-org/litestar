@@ -1,17 +1,18 @@
 import io
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, cast
 
 from starlette.datastructures import Headers, MutableHeaders
-from starlette.middleware.gzip import GZipResponder, unattached_send
+from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
+from starlite.connection import empty_send
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
-
+    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.types.asgi_types import HTTPResponseStartEvent, Message
 
 try:
     import brotli
@@ -122,8 +123,8 @@ class BrotliResponder:
         """
         self.app = app
         self.minimum_size = minimum_size
-        self.send: "Send" = unattached_send
-        self.initial_message: "Message" = {}
+        self.send: "Send" = empty_send
+        self.initial_message: Optional["HTTPResponseStartEvent"] = None
         self.started = False
         self.br_buffer = io.BytesIO()
         self.quality = quality
@@ -142,33 +143,36 @@ class BrotliResponder:
         Args:
             message (Message): ASGI HTTP Message
         """
-        message_type = message["type"]
-        if message_type == "http.response.start":
+        if message["type"] == "http.response.start":
             # Don't send the initial message until we've determined how to
             # modify the outgoing headers correctly.
             self.initial_message = message
-        elif message_type == "http.response.body" and not self.started:
+            return
+
+        initial_message = cast("HTTPResponseStartEvent", self.initial_message)
+
+        if message["type"] == "http.response.body" and not self.started:
             self.started = True
             body = message.get("body", b"")
             more_body = message.get("more_body", False)
             if len(body) < self.minimum_size and not more_body:
                 # Don't apply Brotli to small outgoing responses.
-                await self.send(self.initial_message)
+                await self.send(initial_message)
                 await self.send(message)
             elif not more_body:
                 # Standard Brotli response.
                 body = self.br_file.process(body) + self.br_file.finish()
-                headers = MutableHeaders(raw=self.initial_message["headers"])
+                headers = MutableHeaders(raw=initial_message["headers"])
                 headers["Content-Encoding"] = CompressionEncoding.BROTLI
                 headers["Content-Length"] = str(len(body))
                 headers.add_vary_header("Accept-Encoding")
                 message["body"] = body
 
-                await self.send(self.initial_message)
+                await self.send(initial_message)
                 await self.send(message)
             else:
                 # Initial body in streaming Brotli response.
-                headers = MutableHeaders(raw=self.initial_message["headers"])
+                headers = MutableHeaders(raw=initial_message["headers"])
                 headers["Content-Encoding"] = CompressionEncoding.BROTLI
                 headers.add_vary_header("Accept-Encoding")
                 del headers["Content-Length"]
@@ -176,10 +180,9 @@ class BrotliResponder:
                 message["body"] = self.br_buffer.getvalue()
                 self.br_buffer.seek(0)
                 self.br_buffer.truncate()
-                await self.send(self.initial_message)
+                await self.send(initial_message)
                 await self.send(message)
-
-        elif message_type == "http.response.body":
+        elif message["type"] == "http.response.body":
             # Remaining body in streaming Brotli response.
             body = message.get("body", b"")
             more_body = message.get("more_body", False)

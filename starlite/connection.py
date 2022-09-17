@@ -14,7 +14,6 @@ from urllib.parse import parse_qsl
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import URL, URLPath
 from starlette.requests import Request as StarletteRequest
-from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
 from starlette.websockets import WebSocketState
 from starlite_multipart import MultipartFormDataParser
@@ -25,7 +24,7 @@ from starlite.datastructures import FormMultiDict, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty, EmptyType, HTTPScope, WebSocketScope
+from starlite.types import Empty, EmptyType, HTTPScope, Message, WebSocketScope
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -40,6 +39,27 @@ if TYPE_CHECKING:
 User = TypeVar("User")
 Auth = TypeVar("Auth")
 Handler = TypeVar("Handler")
+
+
+async def empty_receive() -> Any:
+    """Placeholder value.
+
+    Raises:
+        RuntimeError
+    """
+    raise RuntimeError()
+
+
+async def empty_send(message: Message) -> None:
+    """Placeholder value.
+
+    Args:
+        message: An ASGI message
+
+    Raises:
+        RuntimeError
+    """
+    raise RuntimeError()
 
 
 class AppMixin:
@@ -312,7 +332,7 @@ class WebSocket(  # type: ignore[misc]
 ):
     scope: "WebSocketScope"  # type: ignore[assignment]
 
-    def __init__(self, scope: "WebSocketScope", receive: "Receive", send: "Send") -> None:
+    def __init__(self, scope: "WebSocketScope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """The Starlite WebSocket class.
 
         Args:

@@ -46,7 +46,9 @@ from starlite.types import (
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
+    LifeSpanReceive,
     LifeSpanScope,
+    LifeSpanSend,
     Middleware,
     ParametersMap,
     ResponseCookies,
@@ -97,15 +99,6 @@ class HandlerNode(TypedDict):
     asgi_app: "ASGIApp"
     """ASGI App stack"""
     handler: "RouteHandlerType"
-    """Route handler instance."""
-
-
-class HandlerNode(TypedDict):
-    """This class encapsulates a route handler node."""
-
-    asgi_app: "ASGIApp"
-    """ASGI App stack"""
-    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
     """Route handler instance."""
 
 
@@ -309,7 +302,12 @@ class Starlite(Router):
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
 
-    async def __call__(self, scope: Union["Scope", "LifeSpanScope"], receive: "Receive", send: "Send") -> None:
+    async def __call__(
+        self,
+        scope: Union["Scope", "LifeSpanScope"],
+        receive: Union["Receive", "LifeSpanReceive"],
+        send: Union["Send", "LifeSpanSend"],
+    ) -> None:
         """The application entry point.
 
         Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
@@ -327,7 +325,7 @@ class Starlite(Router):
             await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, self._wrap_send(send))
+        await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
