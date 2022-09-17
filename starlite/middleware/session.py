@@ -3,7 +3,7 @@ import contextlib
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional, cast
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps
 from orjson.orjson import loads
@@ -36,6 +36,7 @@ except ImportError as e:
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
+    from starlite.app import Starlite
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
