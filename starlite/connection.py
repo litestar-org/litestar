@@ -41,7 +41,7 @@ Auth = TypeVar("Auth")
 Handler = TypeVar("Handler")
 
 
-async def empty_receive() -> Any:
+async def empty_receive() -> Any:  # pragma: no cover
     """Placeholder value.
 
     Raises:
@@ -50,11 +50,11 @@ async def empty_receive() -> Any:
     raise RuntimeError()
 
 
-async def empty_send(message: Message) -> None:
+async def empty_send(_: Message) -> None:  # pragma: no cover
     """Placeholder value.
 
     Args:
-        message: An ASGI message
+        _: An ASGI message
 
     Raises:
         RuntimeError
