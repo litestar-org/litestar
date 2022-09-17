@@ -2,16 +2,25 @@ import os
 import secrets
 import time
 from base64 import b64decode, b64encode
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, Union
 from unittest import mock
 
 import pytest
 from cryptography.exceptions import InvalidTag
 from orjson import dumps
 from pydantic import SecretBytes, ValidationError
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HttpMethod, Request, get, route
+from starlite import (
+    HttpMethod,
+    Request,
+    Response,
+    WebSocket,
+    get,
+    post,
+    route,
+    websocket,
+)
 from starlite.middleware.session import (
     AAD,
     CHUNK_SIZE,
@@ -192,3 +201,59 @@ def test_integration(session_middleware: SessionMiddleware) -> None:
 
         response = client.get("/session")
         assert response.json() == {"has_session": False}
+
+
+def test_use_of_custom_response_serializer_with_http_handler(session_middleware: SessionMiddleware) -> None:
+    class Obj:
+        inner: str
+
+    class MyResponse(Response):
+        @staticmethod
+        def serializer(value: Any) -> Union[Dict[str, Any], str]:
+            if isinstance(value, Obj):
+                return value.inner
+            raise TypeError()
+
+    @post("/create-session")
+    def create_session_handler(request: Request) -> None:
+        obj = Obj()
+        obj.inner = "123Jeronimo"
+        request.set_session({"value": obj})
+        return None
+
+    with create_test_client(
+        route_handlers=[create_session_handler],
+        middleware=[session_middleware.config.middleware],
+        response_class=MyResponse,
+    ) as client:
+        response = client.post("/create-session")
+        assert response.status_code == HTTP_201_CREATED
+
+
+async def test_use_of_custom_response_serializer_with_websocket_handler(session_middleware: SessionMiddleware) -> None:
+    class Obj:
+        inner: str
+
+    class MyResponse(Response):
+        @staticmethod
+        def serializer(value: Any) -> Union[Dict[str, Any], str]:
+            if isinstance(value, Obj):
+                return value.inner
+            raise TypeError()
+
+    @websocket("/create-session")
+    async def create_session_handler(socket: WebSocket) -> None:
+        await socket.accept()
+        obj = Obj()
+        obj.inner = "123Jeronimo"
+        socket.set_session({"value": obj})
+        await socket.send_json({"has_session": True})
+        await socket.close()
+
+    with create_test_client(
+        route_handlers=[create_session_handler],
+        middleware=[session_middleware.config.middleware],
+        response_class=MyResponse,
+    ).websocket_connect("/create-session") as ws:
+        data = ws.receive_json()
+        assert data == {"has_session": True}

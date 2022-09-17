@@ -11,6 +11,7 @@
             - json
             - method
             - query_params
+            - route_handler
             - session
             - set_session
             - user
@@ -23,6 +24,7 @@
             - clear_session
             - query_params
             - receive_json
+            - route_handler
             - send_json
             - session
             - set_session

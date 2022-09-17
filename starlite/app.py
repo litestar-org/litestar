@@ -61,11 +61,9 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
-    from starlite.handlers.asgi import ASGIRouteHandler
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, RouteHandlerType, Scope, Send
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -88,7 +86,16 @@ class HandlerIndex(TypedDict):
 
     path: str
     """Full route path to the route handler."""
-    handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]
+    handler: "RouteHandlerType"
+    """Route handler instance."""
+
+
+class HandlerNode(TypedDict):
+    """This class encapsulates a route handler node."""
+
+    asgi_app: "ASGIApp"
+    """ASGI App stack"""
+    handler: "RouteHandlerType"
     """Route handler instance."""
 
 
@@ -447,19 +454,17 @@ class Starlite(Router):
         Returns:
             None
         """
-        route_handlers: List[Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"]] = []
+        route_handlers: List["RouteHandlerType"] = []
         if isinstance(route, (WebSocketRoute, ASGIRoute)):
             route_handlers.append(route.route_handler)
         else:
             route_handlers.extend(cast("HTTPRoute", route).route_handlers)
 
-        for route_handler in route_handlers:
-            if route_handler.name in self._route_handler_index:
-                raise ImproperlyConfiguredException(
-                    f"route handler names must be unique - {route_handler.name} is not unique."
-                )
-            if route_handler.name:
-                self._route_handler_index[route_handler.name] = HandlerIndex(path=route.path, handler=route_handler)
+        for route_handler in filter(lambda x: x.name, route_handlers):
+            name = cast("str", route_handler.name)
+            if name in self._route_handler_index:
+                raise ImproperlyConfiguredException(f"route handler names must be unique - {name} is not unique.")
+            self._route_handler_index[name] = HandlerIndex(path=route.path, handler=route_handler)
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree
@@ -475,15 +480,24 @@ class Starlite(Router):
                 raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
             node["_static_path"] = route.path
             node["_is_asgi"] = True
-        asgi_handlers = cast("Dict[str, ASGIApp]", node["_asgi_handlers"])
+        asgi_handlers = cast("Dict[str, HandlerNode]", node["_asgi_handlers"])
         if isinstance(route, HTTPRoute):
             for method, handler_mapping in route.route_handler_map.items():
                 handler, _ = handler_mapping
-                asgi_handlers[method] = self._build_route_middleware_stack(route, handler)
+                asgi_handlers[method] = HandlerNode(
+                    asgi_app=self._build_route_middleware_stack(route, handler),
+                    handler=handler,
+                )
         elif isinstance(route, WebSocketRoute):
-            asgi_handlers["websocket"] = self._build_route_middleware_stack(route, route.route_handler)
+            asgi_handlers["websocket"] = HandlerNode(
+                asgi_app=self._build_route_middleware_stack(route, route.route_handler),
+                handler=route.route_handler,
+            )
         elif isinstance(route, ASGIRoute):
-            asgi_handlers["asgi"] = self._build_route_middleware_stack(route, route.route_handler)
+            asgi_handlers["asgi"] = HandlerNode(
+                asgi_app=self._build_route_middleware_stack(route, route.route_handler),
+                handler=route.route_handler,
+            )
             node["_is_asgi"] = True
 
     def _construct_route_map(self) -> None:
@@ -504,7 +518,7 @@ class Starlite(Router):
     def _build_route_middleware_stack(
         self,
         route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: Union["HTTPRouteHandler", "WebsocketRouteHandler", "ASGIRouteHandler"],
+        route_handler: "RouteHandlerType",
     ) -> "ASGIApp":
         """Constructs a middleware stack that serves as the point of entry for
         each route."""

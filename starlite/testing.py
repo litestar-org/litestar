@@ -38,6 +38,7 @@ if TYPE_CHECKING:
         LifeSpanHookHandler,
         Middleware,
         ParametersMap,
+        ResponseType,
         SingleOrList,
     )
 
@@ -153,6 +154,7 @@ def create_test_client(
     parameters: Optional["ParametersMap"] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
+    response_class: Optional["ResponseType"] = None,
     root_path: str = "",
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
@@ -232,6 +234,7 @@ def create_test_client(
         plugins: List of plugins.
         raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
             wrapping them in an HTTP response.
+        response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
         root_path: Path prefix for requests.
         static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
         template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
@@ -264,6 +267,7 @@ def create_test_client(
             openapi_config=openapi_config,
             parameters=parameters,
             plugins=plugins,
+            response_class=response_class,
             route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
             template_config=template_config,

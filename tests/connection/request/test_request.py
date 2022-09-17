@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -47,3 +48,15 @@ def test_request_resolve_url() -> None:
     with create_test_client(route_handlers=[proxy, root]) as client:
         response = client.get("/test")
         assert response.json() == {"url": "http://testserver/proxy"}
+
+
+def test_route_handler_property() -> None:
+    value: Any = {}
+
+    @get("/")
+    def handler(request: Request) -> None:
+        value["handler"] = request.route_handler
+
+    with create_test_client(route_handlers=[handler]) as client:
+        client.get("/")
+        assert value["handler"] is handler
