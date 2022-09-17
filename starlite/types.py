@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from starlite.controller import Controller  # noqa: TC004
     from starlite.datastructures import Cookie, ResponseHeader, State  # noqa: TC004
     from starlite.handlers import BaseRouteHandler  # noqa: TC004
+    from starlite.handlers.asgi import ASGIRouteHandler  # noqa: TC004
     from starlite.handlers.http import HTTPRouteHandler  # noqa: TC004
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: TC004
     from starlite.middleware.base import (  # noqa: TC004
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
     from starlite.response import Response  # noqa: TC004
     from starlite.router import Router  # noqa: TC004
 else:
+    ASGIRouteHandler = Any
     BaseHTTPMiddleware = Any
     BaseRouteHandler = Any
     Controller = Any
@@ -102,7 +104,7 @@ ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "st
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 ResponseType = Type[Response]
-
+RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
 
 __all__ = [
     "ASGIApp",
