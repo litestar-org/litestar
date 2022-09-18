@@ -9,7 +9,7 @@ from starlite.types import ExceptionHandlersMap, Guard
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
+    from starlite.types import AnyCallable
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):

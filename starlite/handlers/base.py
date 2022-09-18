@@ -31,12 +31,11 @@ from starlite.types import (
 from starlite.utils import AsyncCallable, normalize_path
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-    from starlette.requests import HTTPConnection
-
+    from starlite.connection import ASGIConnection
     from starlite.controller import Controller
     from starlite.router import Router
     from starlite.signature import SignatureModel
+    from starlite.types import AnyCallable
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -187,7 +186,7 @@ class BaseRouteHandler(Generic[T]):
             resolved_exception_handlers.update(layer.exception_handlers or {})
         return resolved_exception_handlers
 
-    async def authorize_connection(self, connection: "HTTPConnection") -> None:
+    async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensures the connection is authorized by running all the route guards
         in scope."""
         for guard in self.resolve_guards():

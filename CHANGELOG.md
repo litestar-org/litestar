@@ -256,7 +256,7 @@
 
 [1.2.5]
 
-- fix request.body being only readable once by setting the read result into scope.
+- fix 'request.body()' being only readable once by setting the read result into scope.
 
 [1.2.4]
 
@@ -378,7 +378,7 @@
 
 [0.2.1]
 
-- fixex regression in handler validation.
+- fixed regression in handler validation.
 
 [0.2.0]
 
@@ -387,7 +387,7 @@
 
 [0.1.6]
 
-- fixex monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore.
+- fixed monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore.
 
 [0.1.5]
 
@@ -395,8 +395,8 @@
 
 [0.1.4]
 
-- fixex update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic.
-- fixex include_in_schema for routes always being true.
+- fixed update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic.
+- fixed include_in_schema for routes always being true.
 
 [0.1.3]
 

@@ -19,6 +19,7 @@ from .callable_types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
     AfterResponseHookHandler,
+    AnyCallable,
     AsyncAnyCallable,
     BeforeMessageSendHookHandler,
     BeforeRequestHookHandler,
@@ -27,6 +28,7 @@ from .callable_types import (
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
+    Serializer,
 )
 from .composite import (
     Dependencies,
@@ -50,6 +52,7 @@ __all__ = [
     "AfterExceptionHookHandler",
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
+    "AnyCallable",
     "AsyncAnyCallable",
     "BeforeMessageSendHookHandler",
     "BeforeRequestHookHandler",
@@ -81,6 +84,7 @@ __all__ = [
     "RouteHandlerType",
     "Scope",
     "Send",
+    "Serializer",
     "SingleOrList",
     "SyncOrAsyncUnion",
     "WebSocketReceiveMessage",

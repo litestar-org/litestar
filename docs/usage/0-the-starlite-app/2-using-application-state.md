@@ -10,7 +10,8 @@ The Application State is an instance of [starlite.datastructures.State][starlite
 from `starlette.datastructures.State`. It is accessible via [Starlite.state][starlite.app.Starlite] and it can be
 accessed via any application reference, such as:
 
-- `starlette.requests.HTTPConnection.app.state` (accessible inside middleware - see the example below).
+- `starlite.connection.ASGIConnection.app.state` (accessible inside middleware - see the example below).
+- [ASGIConnection.app][starlite.connection.ASGIConnection]
 - [Request.app][starlite.connection.Request]
 - [Websocket.app][starlite.connection.WebSocket]
 

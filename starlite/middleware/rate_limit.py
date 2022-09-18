@@ -23,14 +23,14 @@ from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions.exceptions import TooManyRequestsException
 from starlite.middleware.base import DefineMiddleware
-from starlite.types import SyncOrAsyncUnion
+from starlite.types import Message, SyncOrAsyncUnion
 from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from typing import Awaitable
 
     from starlite.cache import Cache
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 DurationUnit = Literal["second", "minute", "hour", "day"]
 
@@ -179,6 +179,7 @@ class RateLimitMiddleware:
             cache_object: An instance of CacheObject.
 
         Returns:
+            None
         """
         cache_object.history = [int(time()), *cache_object.history]
         await self.cache.set(key, dumps(cache_object))

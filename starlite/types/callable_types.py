@@ -26,6 +26,7 @@ AfterRequestHookHandler = Union[
 ]
 AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
+AnyCallable = Callable[..., Any]
 BeforeMessageSendHookHandler = Callable[[Message, State], SyncOrAsyncUnion[None]]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
@@ -36,3 +37,4 @@ Guard = Union[
 ]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
+Serializer = Callable[[Any], Any]

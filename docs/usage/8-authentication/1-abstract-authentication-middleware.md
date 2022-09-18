@@ -6,13 +6,16 @@ add authentication to your app using this class as a basis, subclass it and impl
 `authenticate_request`:
 
 ```python
-from starlite import AbstractAuthenticationMiddleware, AuthenticationResult
-from starlette.requests import HTTPConnection
+from starlite import (
+    AbstractAuthenticationMiddleware,
+    AuthenticationResult,
+    ASGIConnection,
+)
 
 
 class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     async def authenticate_request(
-        self, connection: HTTPConnection
+        self, connection: ASGIConnection
     ) -> AuthenticationResult:
         # do something here.
         ...
@@ -106,11 +109,11 @@ from typing import cast, TYPE_CHECKING
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import HTTPConnection
 from starlite import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
     NotAuthorizedException,
+    ASGIConnection,
 )
 
 from app.db.models import User
@@ -124,7 +127,7 @@ API_KEY_HEADER = "X-API-KEY"
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     async def authenticate_request(
-            self, request: HTTPConnection
+            self, connection: ASGIConnection
     ) -> AuthenticationResult:
         """
         Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
@@ -132,14 +135,14 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         """
 
         # retrieve the auth header
-        auth_header = request.headers.get(API_KEY_HEADER)
+        auth_header = connection.headers.get(API_KEY_HEADER)
         if not auth_header:
             raise NotAuthorizedException()
 
         # decode the token, the result is a 'Token' model instance
         token = decode_jwt_token(encoded_token=auth_header)
 
-        engine = cast("AsyncEngine", request.app.state.postgres_connection)
+        engine = cast("AsyncEngine", connection.app.state.postgres_connection)
         async with AsyncSession(engine) as async_session:
             async with async_session.begin():
                 user = await async_session.execute(

@@ -17,11 +17,9 @@ from starlite.signature import get_signature_model
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
-    from starlite.types import HTTPScope, Method, Receive, Scope, Send
+    from starlite.types import AnyCallable, HTTPScope, Method, Receive, Scope, Send
 
 
 class HTTPRoute(BaseRoute):
@@ -51,7 +49,7 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
-    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
         """ASGI app that creates a Request from the passed in args, determines
         which handler function to call and then handles the call.
 

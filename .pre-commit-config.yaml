@@ -126,6 +126,7 @@ repos:
     rev: "v0.971"
     hooks:
       - id: mypy
+        exclude: "test_starlette_tests"
         additional_dependencies:
           [
             orjson,
@@ -146,6 +147,7 @@ repos:
     rev: v1.1.271
     hooks:
       - id: pyright
+        exclude: "test_starlette_tests"
         additional_dependencies:
           [
             brotli,

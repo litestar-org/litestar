@@ -2,10 +2,11 @@ from typing import Any, cast
 
 import brotli
 import pytest
+from starlette.datastructures import Headers
 from starlette.responses import PlainTextResponse
 from typing_extensions import Literal
 
-from starlite import get
+from starlite import WebSocket, get, websocket
 from starlite.config import CompressionConfig
 from starlite.datastructures import Stream
 from starlite.middleware.compression.brotli import BrotliMiddleware, CompressionEncoding
@@ -56,7 +57,7 @@ def test_gzip_middleware_from_enum() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     gzip_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 500
@@ -75,7 +76,7 @@ def test_gzip_middleware_custom_settings() -> None:
         cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     middleware = cast("Any", unpacked_middleware[1])
     gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
@@ -92,7 +93,7 @@ def test_gzip_middleware_set_from_string() -> None:
         cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     middleware = cast("Any", unpacked_middleware[1])
     gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
@@ -109,7 +110,7 @@ def test_brotli_middleware_from_string() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
@@ -209,7 +210,7 @@ def test_brotli_middleware_custom_settings() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3
@@ -249,3 +250,18 @@ def test_invalid_compression_middleware() -> None:
 )
 def test_brotli_middleware_brotli_mode_to_int(mode: BrotliMode, exp: int) -> None:
     assert BrotliMiddleware._brotli_mode_to_int(mode) == exp
+
+
+async def test_skips_for_websocket() -> None:
+    @websocket("/")
+    async def websocket_handler(socket: WebSocket) -> None:
+        data = await socket.receive_json()
+        await socket.send_json(data)
+        await socket.close()
+
+    with create_test_client(
+        route_handlers=[websocket_handler],
+        compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
+    ).websocket_connect("/") as ws:
+        headers = Headers(scope=ws.scope)
+        assert "Content-Encoding" not in headers

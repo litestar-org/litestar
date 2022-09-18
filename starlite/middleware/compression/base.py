@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from starlite.enums import ScopeType
 from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
@@ -17,7 +18,11 @@ class CompressionMiddleware(MiddlewareProtocol):
             app: The 'next' ASGI app to call.
             config: An instance of [CompressionConfig][starlite.config.CompressionConfig]
         """
+        self.app = app
         self.handler = config.to_middleware(app=app)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        return await self.handler(scope, receive, send)
+        if scope["type"] == ScopeType.HTTP:
+            await self.handler(scope, receive, send)
+        else:
+            await self.app(scope, receive, send)

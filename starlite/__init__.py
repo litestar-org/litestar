@@ -22,7 +22,7 @@ from .config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from .connection import Request, WebSocket
+from .connection import ASGIConnection, Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
 from .enums import (
@@ -42,7 +42,9 @@ from .exceptions import (
     PermissionDeniedException,
     ServiceUnavailableException,
     StarLiteException,
+    TooManyRequestsException,
     ValidationException,
+    WebSocketException,
 )
 from .handlers import (
     ASGIRouteHandler,
@@ -74,6 +76,7 @@ from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from .typing import Partial
 
 __all__ = [
+    "ASGIConnection",
     "ASGIRoute",
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
@@ -129,9 +132,11 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
+    "TooManyRequestsException",
     "UploadFile",
     "ValidationException",
     "WebSocket",
+    "WebSocketException",
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",

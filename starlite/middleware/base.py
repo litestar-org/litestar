@@ -3,21 +3,14 @@ from typing import TYPE_CHECKING, Any, Callable
 from typing_extensions import Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.types.asgi_types import ASGIApp, Receive, Scope, Send
 
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):  # pragma: no cover
-    def __init__(self, app: "ASGIApp", **kwargs: Any):
-        """Defines the requirements of a compliant ASGI middleware.
+    __slots__ = ("app",)
 
-        Middleware should assign the received `app` to `self` in order to reference it in
-        [`__call__()`][starlite.middleware.base.MiddlewareProtocol.__call__].
-
-        Args:
-            app: The next ASGI handler to call in the middleware stack.
-            **kwargs: Any key value pairs that are required for the middleware.
-        """
+    app: "ASGIApp"
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """Executes the ASGI middleware.

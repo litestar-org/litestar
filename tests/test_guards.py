@@ -19,10 +19,10 @@ from starlite.testing import create_test_client
 from starlite.types import Receive, Scope, Send
 
 if TYPE_CHECKING:
-    from starlette.requests import HTTPConnection
+    from starlite.connection import ASGIConnection
 
 
-async def local_guard(_: "HTTPConnection", route_handler: BaseRouteHandler) -> None:
+async def local_guard(_: "ASGIConnection", route_handler: BaseRouteHandler) -> None:
     if not route_handler.opt or not route_handler.opt.get("allow_all"):
         raise PermissionDeniedException("local")
 

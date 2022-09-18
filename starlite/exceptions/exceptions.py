@@ -38,6 +38,14 @@ class MissingDependencyException(StarLiteException, ImportError):
     """Missing optional dependency."""
 
 
+class WebSocketException(StarLiteException):
+    """Exception class for websocket related events."""
+
+    def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:
+        super().__init__(*args, detail=detail)
+        self.code = code
+
+
 class HTTPException(StarletteHTTPException, StarLiteException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
     """Default status code for the exception type"""

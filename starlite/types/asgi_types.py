@@ -233,6 +233,7 @@ LifeSpanSendMessage = Union[
 LifeSpanReceive = Callable[..., Awaitable[LifeSpanReceiveMessage]]
 LifeSpanSend = Callable[[LifeSpanSendMessage], Awaitable[None]]
 Message = Union[HTTPSendMessage, WebSocketSendMessage]
+ReceiveMessage = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
 Scope = Union[HTTPScope, WebSocketScope]
 Receive = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
 Send = Callable[[Message], Awaitable[None]]

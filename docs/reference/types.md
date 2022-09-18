@@ -1,7 +1,5 @@
 # types
 
-::: starlite.types.T
-
 ::: starlite.types.AfterExceptionHookHandler
 
 ::: starlite.types.AfterRequestHookHandler
