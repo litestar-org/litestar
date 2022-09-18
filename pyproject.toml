@@ -102,6 +102,7 @@ disable = [
     "too-many-locals",
     "too-many-return-statements",
     "ungrouped-imports",
+    "unused-import",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic","orjson","picologging"]

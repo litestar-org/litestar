@@ -61,9 +61,7 @@ class AbstractAuthenticationMiddleware(ABC):
         Returns:
             None
         """
-        if self.exclude and self.exclude.findall(scope["path"]):
-            await self.app(scope, receive, send)
-        if scope["type"] in self.scopes:
+        if (not self.exclude or not self.exclude.findall(scope["path"])) and scope["type"] in self.scopes:
             auth_result = await self.authenticate_request(ASGIConnection(scope))
             scope["user"] = auth_result.user
             scope["auth"] = auth_result.auth

@@ -49,7 +49,7 @@ class HTTPRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
         )
 
-    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
         """ASGI app that creates a Request from the passed in args, determines
         which handler function to call and then handles the call.
 

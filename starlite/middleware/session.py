@@ -259,7 +259,7 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         if scope["type"] in self.config.scopes:
             scope.setdefault("session", {})
-            connection = ASGIConnection[Any, "Scope", Any, Any](scope)
+            connection = ASGIConnection[Any, Any, Any](scope)
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
             if cookie_keys:
                 data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]

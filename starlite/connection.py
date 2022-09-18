@@ -1,12 +1,12 @@
-from typing import BinaryIO  # pylint: disable=unused-import
-from typing import MutableMapping  # pylint: disable=unused-import
 from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
+    BinaryIO,
     Dict,
     Generic,
     List,
+    MutableMapping,
     Optional,
     Tuple,
     TypeVar,
@@ -59,7 +59,6 @@ if TYPE_CHECKING:
 User = TypeVar("User")
 Auth = TypeVar("Auth")
 HandlerType = TypeVar("HandlerType")
-ScopeType = TypeVar("ScopeType", bound=Union["HTTPScope", "WebSocketScope", "Scope"])
 
 
 async def empty_receive() -> Any:  # pragma: no cover
@@ -83,19 +82,18 @@ async def empty_send(_: Message) -> None:  # pragma: no cover
     raise RuntimeError()
 
 
-class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
+class ASGIConnection(Generic[HandlerType, User, Auth]):
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
 
-    _base_url: URL
-    _url: URL
-    _parsed_query: Dict[str, Any]
-    _cookies: Dict[str, str]
-    _headers: Headers
-
-    def __init__(self, scope: ScopeType, receive: "Receive" = empty_receive, send: "Send" = empty_send):
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
         self.scope = scope
         self.receive = receive
         self.send = send
+        self._base_url: Union[Any, EmptyType] = scope.get("_base_url", Empty)
+        self._url: Union[Any, EmptyType] = scope.get("_url", Empty)
+        self._parsed_query: Union[Any, EmptyType] = scope.get("_parsed_query", Empty)
+        self._cookies: Union[Any, EmptyType] = scope.get("_cookies", Empty)
+        self._headers: Union[Any, EmptyType] = scope.get("_headers", Empty)
 
     @property
     def app(self) -> "Starlite":
@@ -114,17 +112,6 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
         return cast("HandlerType", self.scope["route_handler"])
 
     @property
-    def url(self) -> URL:
-        """
-
-        Returns:
-            A URL instance constructed from the request's scope.
-        """
-        if not hasattr(self, "_url"):
-            self._url = URL(scope=cast("MutableMapping[str, Any]", self.scope))
-        return self._url
-
-    @property
     def state(self) -> State:
         """
 
@@ -134,6 +121,17 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
         return State(self.scope["state"])
 
     @property
+    def url(self) -> URL:
+        """
+
+        Returns:
+            A URL instance constructed from the request's scope.
+        """
+        if self._url is Empty:
+            self._url = self.scope["_url"] = URL(scope=cast("MutableMapping[str, Any]", self.scope))  # type: ignore[typeddict-item]
+        return cast("URL", self._url)
+
+    @property
     def base_url(self) -> URL:
         """
 
@@ -141,8 +139,8 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
             A URL instance constructed from the request's scope, representing only the base part
             (host + domain + prefix) of the request.
         """
-        if not hasattr(self, "_base_url"):
-            self._base_url = URL(
+        if self._base_url is Empty:
+            self._base_url = self.scope["_base_url"] = URL(  # type: ignore[typeddict-item]
                 scope={
                     **self.scope,
                     "path": "/",
@@ -150,29 +148,18 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
                     "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
                 }
             )
-        return self._base_url
-
-    def url_for(self, name: str) -> Optional[str]:
-        """
-
-        Args:
-            name: The 'name' of the request route handler.
-
-        Returns:
-            If a route handler with the given name is found, it returns a string representing the absolute url of the
-            route handler.
-        """
-        starlite_instance = self.scope["app"]
-        index = starlite_instance.get_handler_index_by_name(name)
-        if index:
-            return URLPath(index["path"]).make_absolute_url(self.base_url)
-        return None
+        return cast("URL", self._base_url)
 
     @property
     def headers(self) -> Headers:
-        if not hasattr(self, "_headers"):
-            self._headers = Headers(scope=self.scope)
-        return self._headers
+        """
+
+        Returns:
+            A Headers instance with the request's scope["headers"] value.
+        """
+        if self._headers is Empty:
+            self._headers = self.scope["_base_url"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
+        return cast("Headers", self._headers)
 
     @property
     def query_params(self) -> Dict[str, Any]:
@@ -180,31 +167,42 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
-        if not hasattr(self, "_parsed_query"):
-            self._parsed_query = parse_query_params(self)
-        return self._parsed_query
+        if self._parsed_query is Empty:
+            self._parsed_query = self.scope["_parsed_query"] = parse_query_params(self)  # type: ignore[typeddict-item]
+        return cast("Dict[str, Any]", self._parsed_query)
 
     @property
     def path_params(self) -> Dict[str, Any]:
+        """
+
+        Returns:
+            A string keyed dictionary of path parameter values.
+        """
         return self.scope["path_params"]
 
     @property
     def cookies(self) -> Dict[str, str]:
-        if not hasattr(self, "_cookies"):
+        """
+        Returns:
+            Returns any cookies stored in the header as a parsed dictionary.
+        """
+        if self._cookies is Empty:
             cookies: Dict[str, str] = {}
-            cookie_header = self.headers.get("cookie")
-
+            cookie_header = self.scope["_cookies"] = self.headers.get("cookie")  # type: ignore[typeddict-item]
             if cookie_header:
                 cookies = cookie_parser(cookie_header)
             self._cookies = cookies
-        return self._cookies
+        return cast("Dict[str, str]", self._cookies)
 
     @property
     def client(self) -> Optional[Address]:
+        """
+
+        Returns:
+            A two tuple of the host name and port number.
+        """
         client = self.scope.get("client")
-        if isinstance(client, tuple):
-            return Address(host=client[0], port=client[1])
-        return None
+        return Address(*client) if client else None
 
     @property
     def auth(self) -> Auth:
@@ -274,11 +272,29 @@ class ASGIConnection(Generic[HandlerType, ScopeType, User, Auth]):
         """
         self.scope["session"] = Empty
 
+    def url_for(self, name: str) -> Optional[str]:
+        """
 
-class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", "HTTPScope", User, Auth]):
+        Args:
+            name: The 'name' of the request route handler.
+
+        Returns:
+            If a route handler with the given name is found, it returns a string representing the absolute url of the
+            route handler.
+        """
+        starlite_instance = self.scope["app"]
+        index = starlite_instance.get_handler_index_by_name(name)
+        if index:
+            return URLPath(index["path"]).make_absolute_url(self.base_url)
+        return None
+
+
+class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
     __slots__ = ("_json", "_form", "_body", "is_connected")
 
-    def __init__(self, scope: "HTTPScope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+    scope: "HTTPScope"
+
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
         """The Starlite Request class.
 
         Args:
@@ -324,6 +340,11 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", "HTTPScope
         return self._json
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
+        """Returns an async generator that streams chunks of bytes.
+
+        Returns:
+            An async generator.
+        """
         if not self.is_connected:
             yield self._body if isinstance(self._body, bytes) else b""
             yield b""
@@ -344,6 +365,10 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", "HTTPScope
         yield b""
 
     async def body(self) -> bytes:
+        """
+        Returns:
+            A byte-string representing the body of the request.
+        """
         if self._body is Empty:
             chunks = []
             async for chunk in self.stream():
@@ -393,6 +418,15 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", "HTTPScope
         return cast("FormMultiDict", self._form)
 
     async def send_push_promise(self, path: str) -> None:
+        """Sends a push promise. This method requires the 'http.response.push'
+        extension to be sent from the ASGI server.
+
+        Args:
+            path: Path to send the promise to.
+
+        Returns:
+            None
+        """
         extensions: Dict[str, Dict[Any, Any]] = self.scope.get("extensions") or {}
         if "http.response.push" in extensions:
             raw_headers = []
@@ -400,15 +434,19 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", "HTTPScope
                 for value in self.headers.getlist(name):
                     raw_headers.append((name.encode("latin-1"), value.encode("latin-1")))
             await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})
+        else:
+            raise RuntimeError("cannot send a push promise because the ASGI server does not support it.")
 
 
 class WebSocket(
     Generic[User, Auth],
-    ASGIConnection["HTTPRouteHandler", "WebSocketScope", User, Auth],
+    ASGIConnection["HTTPRouteHandler", User, Auth],
 ):
     __slots__ = ("connection_state",)
 
-    def __init__(self, scope: "WebSocketScope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
+    scope: "WebSocketScope"
+
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """The Starlite WebSocket class.
 
         Args:
@@ -489,18 +527,50 @@ class WebSocket(
             await self.send(event)
 
     async def close(self, code: int = 1000, reason: Optional[str] = None) -> None:
+        """
+        Sends an 'websocket.close' event.
+        Args:
+            code: Status code.
+            reason: Reason for closing the connection
+
+        Returns:
+            None
+        """
         event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason or ""}
         await self.send(event)
 
     @overload
     async def receive_data(self, mode: "Literal['text']") -> str:
-        ...
+        """Overload of receive_data.
+
+        Args:
+            mode: Literal value 'text'
+
+        Returns:
+            A string.
+        """
 
     @overload
     async def receive_data(self, mode: "Literal['binary']") -> bytes:
-        ...
+        """Overload of receive_data.
+
+        Args:
+            mode: Literal value 'binary'
+
+        Returns:
+            A byte-string.
+        """
 
     async def receive_data(self, mode: "Literal['binary', 'text']") -> Union[str, bytes]:
+        """Receive an 'websocket.receive' event and returns the data stored on
+        it.
+
+        Args:
+            mode: The respective event key to use.
+
+        Returns:
+            The event's data.
+        """
         if self.connection_state == "init":
             await self.accept()
         message = cast("WebSocketReceiveEvent", (await self.receive()))
@@ -509,9 +579,19 @@ class WebSocket(
         return message.get("text") or "" if mode == "text" else message.get("bytes") or b""
 
     async def receive_text(self) -> str:
+        """Receives data as text.
+
+        Returns:
+            A string.
+        """
         return await self.receive_data(mode="text")
 
     async def receive_bytes(self) -> bytes:
+        """Receives data as bytes.
+
+        Returns:
+            A byte-string.
+        """
         return await self.receive_data(mode="binary")
 
     async def receive_json(
@@ -532,6 +612,16 @@ class WebSocket(
     async def send_data(
         self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
     ) -> None:
+        """Sends a 'websocket.send' event.
+
+        Args:
+            data: Data to send.
+            mode: The respective event key to use.
+            encoding: Encoding to use when converting bytes / str.
+
+        Returns:
+            None
+        """
         if self.connection_state == "init":
             await self.accept()
         event: "WebSocketSendEvent" = {"type": "websocket.send", "bytes": None, "text": None}

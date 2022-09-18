@@ -46,7 +46,7 @@ class WebSocketRoute(BaseRoute):
             handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
         )
 
-    async def handle(self, scope: "WebSocketScope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: "WebSocketScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
         """ASGI app that creates a WebSocket from the passed in args, and then
         awaits the handler function.
 

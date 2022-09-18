@@ -56,7 +56,7 @@ def test_gzip_middleware_from_enum() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     gzip_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(gzip_middleware, GZipMiddleware)
     assert gzip_middleware.minimum_size == 500
@@ -75,7 +75,7 @@ def test_gzip_middleware_custom_settings() -> None:
         cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     middleware = cast("Any", unpacked_middleware[1])
     gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
@@ -92,7 +92,7 @@ def test_gzip_middleware_set_from_string() -> None:
         cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     middleware = cast("Any", unpacked_middleware[1])
     gzip_middleware = middleware.handler
     assert isinstance(gzip_middleware, GZipMiddleware)
@@ -109,7 +109,7 @@ def test_brotli_middleware_from_string() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 5
@@ -209,7 +209,7 @@ def test_brotli_middleware_custom_settings() -> None:
         cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 2
+    assert len(unpacked_middleware) == 4
     brotli_middleware = unpacked_middleware[1].handler  # type: ignore
     assert isinstance(brotli_middleware, BrotliMiddleware)
     assert brotli_middleware.quality == 3

@@ -151,26 +151,36 @@ class BrotliResponder:
             Args:
                 message (Message): An ASGI Message.
             """
+
             if message["type"] == "http.response.start":
                 # Don't send the initial message until we've determined how to
                 # modify the outgoing headers correctly.
                 self.initial_message = message
-            elif message["type"] == "http.response.body" and not self.started:
-                initial_message = cast("HTTPResponseStartEvent", self.initial_message)
+                return
+
+            initial_message = cast("HTTPResponseStartEvent", self.initial_message)
+
+            if message["type"] == "http.response.body" and not self.started:
                 self.started = True
                 body = message.get("body", b"")
                 more_body = message.get("more_body", False)
                 if len(body) < self.minimum_size and not more_body:
+                    # Don't apply Brotli to small outgoing responses.
                     await send(initial_message)
+                    await send(message)
                 elif not more_body:
+                    # Standard Brotli response.
                     body = self.br_file.process(body) + self.br_file.finish()
                     headers = MutableHeaders(raw=initial_message["headers"])
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers["Content-Length"] = str(len(body))
                     headers.add_vary_header("Accept-Encoding")
                     message["body"] = body
+
                     await send(initial_message)
+                    await send(message)
                 else:
+                    # Initial body in streaming Brotli response.
                     headers = MutableHeaders(raw=initial_message["headers"])
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers.add_vary_header("Accept-Encoding")
@@ -180,17 +190,21 @@ class BrotliResponder:
                     self.br_buffer.seek(0)
                     self.br_buffer.truncate()
                     await send(initial_message)
+                    await send(message)
             elif message["type"] == "http.response.body":
+                # Remaining body in streaming Brotli response.
                 body = message.get("body", b"")
+                more_body = message.get("more_body", False)
                 self.br_buffer.write(self.br_file.process(body) + self.br_file.flush())
-                if not message.get("more_body", False):
+                if not more_body:
                     self.br_buffer.write(self.br_file.finish())
+
                 message["body"] = self.br_buffer.getvalue()
 
                 self.br_buffer.seek(0)
                 self.br_buffer.truncate()
-                if not message.get("more_body", False):
+                if not more_body:
                     self.br_buffer.close()
-            await send(message)
+                await send(message)
 
         return send_wrapper

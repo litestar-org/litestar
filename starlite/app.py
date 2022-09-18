@@ -582,9 +582,11 @@ class Starlite(Router):
             An ASGI send function.
         """
         if self.before_send:
+
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
                     await hook(message, self.state)
                 await send(message)
+
             return wrapped_send
         return send
