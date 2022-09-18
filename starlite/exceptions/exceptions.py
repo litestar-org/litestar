@@ -38,6 +38,10 @@ class MissingDependencyException(StarLiteException, ImportError):
     """Missing optional dependency."""
 
 
+class WebSocketException(StarLiteException):
+    """Exception class for websocket related errors."""
+
+
 class HTTPException(StarletteHTTPException, StarLiteException):
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
     """Default status code for the exception type"""

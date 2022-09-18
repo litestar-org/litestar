@@ -160,7 +160,7 @@ def test_request_stream_then_body() -> None:
             chunks += chunk
         try:
             body = await request.body()
-        except RuntimeError:
+        except InternalServerException:
             body = b"<stream consumed>"
         response = Response(
             content={"body": body.decode(), "stream": chunks.decode()},

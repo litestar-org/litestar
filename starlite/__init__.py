@@ -44,6 +44,7 @@ from .exceptions import (
     StarLiteException,
     TooManyRequestsException,
     ValidationException,
+    WebSocketException,
 )
 from .handlers import (
     ASGIRouteHandler,
@@ -135,6 +136,7 @@ __all__ = [
     "UploadFile",
     "ValidationException",
     "WebSocket",
+    "WebSocketException",
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",

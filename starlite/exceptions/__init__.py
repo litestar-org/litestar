@@ -13,6 +13,7 @@ from .exceptions import (
     TemplateNotFoundException,
     TooManyRequestsException,
     ValidationException,
+    WebSocketException,
 )
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     "TemplateNotFoundException",
     "TooManyRequestsException",
     "ValidationException",
+    "WebSocketException",
 ]

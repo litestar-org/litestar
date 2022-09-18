@@ -24,6 +24,7 @@ from starlite_multipart import parse_options_header
 from starlite.datastructures import FormMultiDict, State, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
+from starlite.exceptions.exceptions import WebSocketException
 from starlite.parsers import parse_query_params
 from starlite.types import (
     Empty,
@@ -354,7 +355,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             return
 
         if not self.is_connected:
-            raise RuntimeError("stream consumed")
+            raise InternalServerException("stream consumed")
 
         while self.is_connected:
             event = await self.receive()
@@ -473,7 +474,7 @@ class WebSocket(
 
         async def wrapped_receive() -> "ReceiveMessage":
             if self.connection_state == "disconnect":
-                raise RuntimeError()
+                raise WebSocketException(detail="connection is disconnected")
             message = await receive()
             if message["type"] == "websocket.connect":
                 self.connection_state = "connect"
@@ -497,7 +498,7 @@ class WebSocket(
 
         async def wrapped_send(message: Message) -> None:
             if self.connection_state == "disconnect":
-                raise RuntimeError()
+                raise WebSocketException(detail="connection is disconnected")
             await send(message)
 
         return wrapped_send
@@ -579,7 +580,7 @@ class WebSocket(
             await self.accept()
         message = cast("WebSocketReceiveEvent", (await self.receive()))
         if self.connection_state == "disconnect":
-            raise RuntimeError()
+            raise WebSocketException(detail="connection is disconnected")
         return message.get("text") or "" if mode == "text" else message.get("bytes") or b""
 
     async def receive_text(self) -> str:
