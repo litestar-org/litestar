@@ -142,29 +142,29 @@ repos:
             types-redis,
             types-requests,
           ]
-#  - repo: https://github.com/RobertCraigie/pyright-python
-#    rev: v1.1.271
-#    hooks:
-#      - id: pyright
-#        additional_dependencies:
-#          [
-#            brotli,
-#            cryptography,
-#            freezegun,
-#            hypothesis,
-#            jinja2,
-#            mako,
-#            orjson,
-#            piccolo,
-#            picologging,
-#            pydantic,
-#            pydantic_factories,
-#            pydantic_openapi_schema,
-#            pytest,
-#            pyyaml,
-#            redis,
-#            requests,
-#            sqlalchemy,
-#            starlette,
-#            starlite_multipart,
-#          ]
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.271
+    hooks:
+      - id: pyright
+        additional_dependencies:
+          [
+            brotli,
+            cryptography,
+            freezegun,
+            hypothesis,
+            jinja2,
+            mako,
+            orjson,
+            piccolo,
+            picologging,
+            pydantic,
+            pydantic_factories,
+            pydantic_openapi_schema,
+            pytest,
+            pyyaml,
+            redis,
+            requests,
+            sqlalchemy,
+            starlette,
+            starlite_multipart,
+          ]
