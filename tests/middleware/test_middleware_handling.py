@@ -16,6 +16,7 @@ from starlite import (
     Request,
     Response,
     Router,
+    ScopeType,
     get,
     post,
 )
@@ -38,7 +39,7 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
         self.kwarg = kwarg
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        if scope["type"] == "http":
+        if scope["type"] == ScopeType.HTTP:
             request: Request = Request(scope=scope, receive=receive)
             body = await request.json()
             logger.info(f"test logging: {request.method}, {request.url}, {body}")
@@ -74,7 +75,7 @@ def handler() -> None:
         BaseMiddlewareRequestLoggingMiddleware,
         Middleware(MiddlewareWithArgsAndKwargs, kwarg="123Jeronimo"),
         Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
-        DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),
+        DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),  # type: ignore[arg-type]
         DefineMiddleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
 )
@@ -84,7 +85,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         assert app.middleware == [middleware]
 
         unpacked_middleware = []
-        cur = client.app.route_map["/"]["_asgi_handlers"]["GET"]
+        cur = client.app.route_map["/"]["_asgi_handlers"]["GET"]["asgi_app"]
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast("ASGIApp", cur.app)
@@ -134,11 +135,11 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("ASGIApp", cur.app)  # type: ignore
+            cur = cast("Any", cur.app)  # type: ignore
         else:
             unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
-        cors_middleware = unpacked_middleware[1]
+        cors_middleware = cast("Any", unpacked_middleware[1])
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.allow_headers == ["*", "accept", "accept-language", "content-language", "content-type"]
         assert cors_middleware.allow_methods == ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
@@ -152,11 +153,11 @@ def test_trusted_hosts_middleware() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("ASGIApp", cur.app)  # type: ignore
+        cur = cast("Any", cur.app)  # type: ignore
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 4
-    trusted_hosts_middleware = unpacked_middleware[1]
+    trusted_hosts_middleware = cast("Any", unpacked_middleware[1])
     assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
     assert trusted_hosts_middleware.allowed_hosts == ["*"]
 

@@ -13,7 +13,7 @@ To contribute code changes or update the documentation, please follow these step
 
 ## Code Contribution Guidelines
 
-1. if you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
+1. If you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
    is mandatory and tests should be well written.
 2. All public functions and methods should be documented with a doc string. The project uses
    the [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
@@ -81,6 +81,16 @@ against different python versions. To achieve this you can use the `tox` config 
 - Force recreate tox environments: `$ poetry run tox -r`
 - Run specific tox environment: `$ poetry run tox -e py37`
 - Run pre-commit only: `$ poetry run tox -e lint`
+
+Note that these commands may be quite slow to run the first time as environments are created and dependencies installed,
+but subsequent runs should be much faster.
+
+### Checking test coverage
+
+You can check the unit test coverage by running: `$ poetry run pytest tests examples --cov=.`
+
+Coverage should be 100% for any code you touch. Note that coverage will also be reported on your PR by the `SonarCloud`
+tool.
 
 ## Release workflow (Maintainers only)
 

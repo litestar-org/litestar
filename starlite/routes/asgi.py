@@ -50,7 +50,7 @@ class ASGIRoute(BaseRoute):
         """
 
         if self.route_handler.resolve_guards():
-            connection = HTTPConnection(scope=scope, receive=receive)
+            connection = HTTPConnection(scope=scope, receive=receive)  # type: ignore[arg-type]
             await self.route_handler.authorize_connection(connection=connection)
 
         fn = cast("AnyCallable", self.route_handler.fn)

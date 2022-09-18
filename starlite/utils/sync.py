@@ -20,6 +20,7 @@ class AsyncCallable(Generic[P, T]):
         Args:
             fn: Callable to wrap - can be any sync or async callable.
         """
+
         self.wrapped_callable: Dict[Literal["fn"], Callable] = {
             "fn": fn if is_async_callable(fn) else async_partial(fn)
         }

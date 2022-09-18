@@ -25,6 +25,7 @@ from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.response import Response
 from starlite.types import Empty
+from starlite.utils import get_serializer_from_scope
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -33,7 +34,8 @@ except ImportError as e:
     raise MissingDependencyException("cryptography is not installed") from e
 
 if TYPE_CHECKING:
-    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 NONCE_SIZE = 12
@@ -140,13 +142,14 @@ class SessionMiddleware(MiddlewareProtocol):
         self.config = config
         self.aesgcm = AESGCM(config.secret.get_secret_value())
 
-    def dump_data(self, data: Any) -> List[bytes]:
+    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
         """Given orjson serializable data, including pydantic models and numpy
         types, dump it into a bytes string, encrypt, encode and split it into
         chunks of the desirable size.
 
         Args:
             data: Data to serialize, encrypt, encode and chunk.
+            scope: The ASGI connection scope.
 
         Notes:
             - The returned list is composed of a chunks of a single base64 encoded
@@ -155,7 +158,8 @@ class SessionMiddleware(MiddlewareProtocol):
         Returns:
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
-        serialized = dumps(data, default=Response.serializer, option=OPT_SERIALIZE_NUMPY)
+        serializer = (get_serializer_from_scope(scope) if scope else None) or Response.serializer
+        serialized = dumps(data, default=serializer, option=OPT_SERIALIZE_NUMPY)
         associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
         encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
@@ -216,7 +220,7 @@ class SessionMiddleware(MiddlewareProtocol):
 
                 should_clear_session = scope_session is Empty
                 if not should_clear_session:
-                    data = self.dump_data(scope_session)
+                    data = self.dump_data(scope_session, scope=scope)
                     cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
                     for i, datum in enumerate(data, start=0):
                         headers.append(
@@ -256,7 +260,7 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         if scope["type"] in self.config.scopes:
             scope.setdefault("session", {})
-            connection = HTTPConnection(scope)
+            connection = HTTPConnection(scope)  # type: ignore[arg-type]
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
             if cookie_keys:
                 data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]

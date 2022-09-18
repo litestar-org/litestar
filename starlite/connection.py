@@ -14,7 +14,6 @@ from urllib.parse import parse_qsl
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import URL, URLPath
 from starlette.requests import Request as StarletteRequest
-from starlette.requests import empty_receive, empty_send
 from starlette.websockets import WebSocket as StarletteWebSocket
 from starlette.websockets import WebSocketState
 from starlite_multipart import MultipartFormDataParser
@@ -25,7 +24,7 @@ from starlite.datastructures import FormMultiDict, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty, EmptyType
+from starlite.types import Empty, EmptyType, HTTPScope, Message, WebSocketScope
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -33,10 +32,34 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
     from starlite.app import Starlite
+    from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
+    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Method, Receive, Scope, Send
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
+Handler = TypeVar("Handler")
+
+
+async def empty_receive() -> Any:  # pragma: no cover
+    """Placeholder value.
+
+    Raises:
+        RuntimeError
+    """
+    raise RuntimeError()
+
+
+async def empty_send(_: Message) -> None:  # pragma: no cover
+    """Placeholder value.
+
+    Args:
+        _: An ASGI message
+
+    Raises:
+        RuntimeError
+    """
+    raise RuntimeError()
 
 
 class AppMixin:
@@ -48,7 +71,19 @@ class AppMixin:
         Returns:
             The [Starlite][starlite.app.Starlite] application instance
         """
-        return cast("Starlite", self.scope["app"])
+        return self.scope["app"]
+
+
+class RouteHandlerMixin(Generic[Handler]):
+    scope: "Scope"
+
+    @property
+    def route_handler(self) -> Handler:
+        """
+        Returns:
+            The target route handler
+        """
+        return cast("Handler", self.scope["route_handler"])
 
 
 class SessionMixin:
@@ -81,7 +116,7 @@ class SessionMixin:
         Returns:
             None.
         """
-        self.scope.update(session=value)
+        self.scope["session"] = value
 
     def clear_session(self) -> None:
         """Helper method to remove the session from scope.
@@ -155,7 +190,7 @@ class URLMixin:
             A URL instance constructed from the request's scope.
         """
         if not hasattr(self, "_url"):
-            self._url = URL(scope=self.scope)
+            self._url = URL(scope=self.scope)  # type: ignore[arg-type]
         return self._url
 
     @property
@@ -187,18 +222,25 @@ class URLMixin:
             If a route handler with the given name is found, it returns a string representing the absolute url of the
             route handler.
         """
-        starlite_instance = cast("Starlite", self.scope["app"])
+        starlite_instance = self.scope["app"]
         index = starlite_instance.get_handler_index_by_name(name)
         if index:
             return URLPath(index["path"]).make_absolute_url(self.base_url)
         return None
 
 
-class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
-    """The Starlite Request class."""
+class Request(URLMixin, AppMixin, RouteHandlerMixin["HTTPRouteHandler"], SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteRequest):  # type: ignore[misc]
+    scope: "HTTPScope"  # type: ignore[assignment]
 
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
-        super().__init__(scope, receive, send)
+    def __init__(self, scope: "HTTPScope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+        """The Starlite Request class.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+        """
+        super().__init__(scope, receive, send)  # type: ignore[arg-type]
         self._json: Any = Empty
         self._form: Union[FormMultiDict, EmptyType] = Empty  # type: ignore[assignment]
 
@@ -208,7 +250,7 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
         Returns:
             The request [Method][starlite.types.Method]
         """
-        return cast("Method", self.scope["method"])
+        return self.scope["method"]
 
     @property
     def content_type(self) -> Tuple[str, Dict[str, str]]:
@@ -230,9 +272,9 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
         """
         if self._json is Empty:
             if "_body" not in self.scope:
-                body = self.scope["_body"] = (await self.body()) or b"null"
+                body = self.scope["_body"] = (await self.body()) or b"null"  # type: ignore[typeddict-item]
             else:
-                body = self.scope["_body"]
+                body = self.scope["_body"]  # type: ignore[typeddict-item]
             self._json = loads(body)
         return self._json
 
@@ -279,9 +321,27 @@ class Request(URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[U
 
 
 class WebSocket(  # type: ignore[misc]
-    URLMixin, AppMixin, SessionMixin, Generic[User, Auth], AuthMixin[User, Auth], QueryParamMixin, StarletteWebSocket
+    URLMixin,
+    AppMixin,
+    SessionMixin,
+    RouteHandlerMixin["WebsocketRouteHandler"],
+    Generic[User, Auth],
+    AuthMixin[User, Auth],
+    QueryParamMixin,
+    StarletteWebSocket,
 ):
-    """The Starlite WebSocket class."""
+    scope: "WebSocketScope"  # type: ignore[assignment]
+
+    def __init__(self, scope: "WebSocketScope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
+        """The Starlite WebSocket class.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+        """
+        super().__init__(scope, receive, send)  # type: ignore[arg-type]
+        self.scope = scope
 
     async def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:  # type: ignore
         """Receives data and loads it into JSON using orson.

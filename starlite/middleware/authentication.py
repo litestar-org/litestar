@@ -54,11 +54,20 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
             self.exclude = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
         if self.exclude and self.exclude.findall(scope["path"]):
             await self.app(scope, receive, send)
         else:
             if scope["type"] in self.scopes:
-                auth_result = await self.authenticate_request(HTTPConnection(scope))
+                auth_result = await self.authenticate_request(HTTPConnection(scope))  # type: ignore[arg-type]
                 scope["user"] = auth_result.user
                 scope["auth"] = auth_result.auth
             await self.app(scope, receive, send)

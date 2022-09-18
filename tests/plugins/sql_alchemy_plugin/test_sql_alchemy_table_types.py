@@ -47,15 +47,7 @@ from sqlalchemy import (
     Unicode,
     UnicodeText,
 )
-from sqlalchemy.dialects import (
-    firebird,
-    mssql,
-    mysql,
-    oracle,
-    postgresql,
-    sqlite,
-    sybase,
-)
+from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
 from sqlalchemy.orm import registry
 from sqlalchemy.sql.functions import now
 
@@ -116,9 +108,6 @@ class DeclarativeModel(SQLAlchemyBase):
     UnicodeText_column = Column(UnicodeText)
     VARBINARY_column = Column(VARBINARY)
     VARCHAR_column = Column(VARCHAR)
-    # firebird
-    firebird_CHAR_column = Column(firebird.CHAR)
-    firebird_VARCHAR_column = Column(firebird.VARCHAR)
     # mssql
     mssql_BIT_column = Column(mssql.BIT)
     mssql_DATETIME2_column = Column(mssql.DATETIME2)
@@ -206,15 +195,6 @@ class DeclarativeModel(SQLAlchemyBase):
     sqlite_DATETIME_column = Column(sqlite.DATETIME)
     sqlite_JSON_column = Column(sqlite.JSON)
     sqlite_TIME_column = Column(sqlite.TIME)
-    # sybase
-    sybase_BIT_column = Column(sybase.BIT)
-    sybase_IMAGE_column = Column(sybase.IMAGE)
-    sybase_MONEY_column = Column(sybase.MONEY)
-    sybase_SMALLMONEY_column = Column(sybase.SMALLMONEY)
-    sybase_TINYINT_column = Column(sybase.TINYINT)
-    sybase_UNICHAR_column = Column(sybase.UNICHAR)
-    sybase_UNITEXT_column = Column(sybase.UNITEXT)
-    sybase_UNIVARCHAR_column = Column(sybase.UNIVARCHAR)
 
 
 imperative_model = Table(

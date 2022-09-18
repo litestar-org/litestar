@@ -23,7 +23,7 @@ middleware = ExceptionHandlerMiddleware(dummy_app, False, {})
 
 def test_default_handle_http_exception_handling_extra_object() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
+        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="starlite_exception", extra={"key": "value"}),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -36,7 +36,7 @@ def test_default_handle_http_exception_handling_extra_object() -> None:
 
 def test_default_handle_http_exception_handling_extra_none() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
+        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="starlite_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -45,7 +45,7 @@ def test_default_handle_http_exception_handling_extra_none() -> None:
 
 def test_default_handle_starlite_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
+        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="starlite_exception"),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -54,7 +54,7 @@ def test_default_handle_starlite_http_exception_handling() -> None:
 
 def test_default_handle_starlite_http_exception_extra_list() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
+        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         HTTPException(detail="starlite_exception", extra=["extra-1", "extra-2"]),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -67,7 +67,7 @@ def test_default_handle_starlite_http_exception_extra_list() -> None:
 
 def test_default_handle_starlette_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}),
+        Request(scope={"type": "http", "method": "GET"}),  # type: ignore
         StarletteHTTPException(detail="starlite_exception", status_code=HTTP_500_INTERNAL_SERVER_ERROR),
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
@@ -79,7 +79,7 @@ def test_default_handle_starlette_http_exception_handling() -> None:
 
 def test_default_handle_python_http_exception_handling() -> None:
     response = middleware.default_http_exception_handler(
-        Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")
+        Request(scope={"type": "http", "method": "GET"}), AttributeError("oops")  # type: ignore
     )
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert json.loads(response.body) == {
@@ -97,7 +97,7 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
         return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR, media_type=MediaType.JSON)
 
     app = Starlite(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
-    assert app.route_map["/"]["_asgi_handlers"]["GET"].exception_handlers == {Exception: exception_handler}
+    assert app.route_map["/"]["_asgi_handlers"]["GET"]["asgi_app"].exception_handlers == {Exception: exception_handler}
 
 
 def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> None:

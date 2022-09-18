@@ -33,9 +33,16 @@ from starlite.exceptions import (
 )
 
 if TYPE_CHECKING:
-    from starlite.app import Starlite
+    from starlite.app import HandlerNode, Starlite
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import ASGIApp, LifeSpanHandler, Receive, Scope, Send
+    from starlite.types import (
+        ASGIApp,
+        LifeSpanHandler,
+        Receive,
+        RouteHandlerType,
+        Scope,
+        Send,
+    )
 
 
 class PathParamNode:
@@ -160,11 +167,11 @@ class StarliteASGIRouter(StarletteRouter):
                 f"unable to parse path parameters {','.join(request_path_parameter_values)}"
             ) from e
 
-    def _parse_scope_to_route(self, scope: "Scope") -> Tuple[Dict[str, "ASGIApp"], bool]:
+    def _parse_scope_to_route(self, scope: "Scope") -> Tuple[Dict[str, "HandlerNode"], bool]:
         """Given a scope object, retrieve the _asgi_handlers and _is_asgi
         values from correct trie node."""
 
-        path = cast("str", scope["path"]).strip()
+        path = scope["path"].strip()
         if path != "/" and path.endswith("/"):
             path = path.rstrip("/")
         if path in self.app.plain_routes:
@@ -181,29 +188,35 @@ class StarliteASGIRouter(StarletteRouter):
             else {}
         )
 
-        asgi_handlers = cast("Dict[str, ASGIApp]", current_node["_asgi_handlers"])
+        asgi_handlers = cast("Dict[str, HandlerNode]", current_node["_asgi_handlers"])
         is_asgi = cast("bool", current_node["_is_asgi"])
         return asgi_handlers, is_asgi
 
     @staticmethod
-    def _resolve_asgi_app(scope: "Scope", asgi_handlers: Dict[str, "ASGIApp"], is_asgi: bool) -> "ASGIApp":
-        """Given a scope, retrieves the correct ASGI App for the route."""
+    def _resolve_handler_node(
+        scope: "Scope", asgi_handlers: Dict[str, "HandlerNode"], is_asgi: bool
+    ) -> Tuple["ASGIApp", "RouteHandlerType"]:
+        """Given a scope, returns the ASGI App and route handler for the
+        route."""
         if is_asgi:
-            return asgi_handlers[ScopeType.ASGI]
-        if scope["type"] == ScopeType.HTTP:
+            node = asgi_handlers[ScopeType.ASGI]
+        elif scope["type"] == ScopeType.HTTP:
             if scope["method"] not in asgi_handlers:
                 raise MethodNotAllowedException()
-            return asgi_handlers[scope["method"]]
-        return asgi_handlers[ScopeType.WEBSOCKET]
+            node = asgi_handlers[scope["method"]]
+        else:
+            node = asgi_handlers[ScopeType.WEBSOCKET]
+        return node["asgi_app"], node["handler"]
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
         """The main entry point to the Router class."""
         try:
             asgi_handlers, is_asgi = self._parse_scope_to_route(scope=scope)
-            asgi_handler = self._resolve_asgi_app(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
+            asgi_app, handler = self._resolve_handler_node(scope=scope, asgi_handlers=asgi_handlers, is_asgi=is_asgi)
         except KeyError as e:
             raise NotFoundException() from e
-        await asgi_handler(scope, receive, send)
+        scope["route_handler"] = handler
+        await asgi_app(scope, receive, send)
 
     async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
         """Determines whether the lifecycle handler expects an argument, and if

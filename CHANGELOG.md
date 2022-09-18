@@ -1,5 +1,23 @@
 # Changelog
 
+[1.20.0]
+
+- update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
+- update ASGI typings (`scope`, `receive`, `send`, `message` and `ASGIApp`) to use strong types derived from [asgiref](https://github.com/django/asgiref).
+- update `SessionMiddleware` to use custom serializer used on request.
+
+[1.19.0]
+
+- add support for multiple responses documentation by @seladb.
+- add `media_type` to `ResponseContainer`.
+- add `RateLimitMiddleware`.
+- add support for multiple cookies in `create_test_request`.
+
+[1.18.1]
+
+- fix `ResponseHeader` not being correctly encoded.
+- update `SQLAlchemyPlugin` for v2.0 compatibility.
+
 [1.18.0]
 
 - update `serializer` to handle `SecretStr`, `PurePath` and `PurePosixPath`.

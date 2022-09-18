@@ -8,6 +8,7 @@ from starlette.status import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
+    HTTP_429_TOO_MANY_REQUESTS,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
@@ -46,6 +47,7 @@ class HTTPException(StarletteHTTPException, StarLiteException):
         *args: Any,
         detail: str = "",
         status_code: Optional[int] = None,
+        headers: Optional[Dict[str, str]] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ):
         """Base exception for HTTP error responses.
@@ -53,17 +55,20 @@ class HTTPException(StarletteHTTPException, StarLiteException):
         These exceptions carry information to construct an HTTP response.
 
         Args:
-            *args (Any): if `detail` kwarg not provided, first arg should be error detail.
-            detail (str | None, optional): explicit detail kwarg should be specified if first `arg` is not the detail `str`.
-            status_code (int | None, optional): override the exception type default status code.
-            extra (dict[str, Any], list[Any] | None, optional): extra info for HTTP response.
+            *args: if `detail` kwarg not provided, first arg should be error detail.
+            detail: explicit detail kwarg should be specified if first `arg` is not the detail `str`.
+            status_code: override the exception type default status code.
+            headers: headers to set on the response.
+            extra: extra info for HTTP response.
         """
         if not detail:
             detail = args[0] if args else HTTPStatus(status_code or self.status_code).phrase
             args = args[1:]
-        self.extra = extra
         super().__init__(status_code or self.status_code, *args)
+
+        self.extra = extra
         self.detail = detail
+        self.headers = headers
         self.args = (f"{self.status_code}: {self.detail}", *args)
 
     def __repr__(self) -> str:
@@ -104,6 +109,12 @@ class MethodNotAllowedException(HTTPException):
     this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
+
+
+class TooManyRequestsException(HTTPException):
+    """Request limits have been exceeded."""
+
+    status_code = HTTP_429_TOO_MANY_REQUESTS
 
 
 class InternalServerException(HTTPException):

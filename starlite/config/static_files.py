@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, cast
 
 from pydantic import BaseModel, DirectoryPath, constr, validator
 from starlette.staticfiles import StaticFiles
@@ -57,4 +57,4 @@ class StaticFilesConfig(BaseModel):
             directory=str(self.directories[0]),
         )
         static_files.all_directories = self.directories  # type: ignore[assignment]
-        return static_files
+        return cast("ASGIApp", static_files)

@@ -115,7 +115,7 @@ class TestGetConnectionMethodAndUrl:
     def test_websocket(self) -> None:
         obj = cast("Any", object())
         scope = {"type": "websocket", "path": "/", "headers": []}
-        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=obj, send=obj)
+        web_socket: WebSocket[Any, Any] = WebSocket(scope=scope, receive=obj, send=obj)  # type: ignore
         assert SignatureModel.get_connection_method_and_url(web_socket) == ("websocket", URL("/"))
 
     def test_request(self) -> None:

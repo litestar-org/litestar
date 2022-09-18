@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+import pytest
+from pydantic import BaseModel
 from starlette.status import (
     HTTP_200_OK,
     HTTP_307_TEMPORARY_REDIRECT,
@@ -21,11 +23,14 @@ from starlite import (
 )
 from starlite.exceptions import (
     HTTPException,
+    ImproperlyConfiguredException,
     PermissionDeniedException,
     ValidationException,
 )
+from starlite.openapi.datastructures import ResponseSpec
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.responses import (
+    create_additional_responses,
     create_error_responses,
     create_responses,
     create_success_response,
@@ -209,3 +214,54 @@ def test_create_success_response_template() -> None:
     response = create_success_response(template_handler, True, plugins=[])
     assert response.description == "Request fulfilled, document follows"
     assert response.content[MediaType.HTML]  # type: ignore
+
+
+def test_create_additional_responses() -> None:
+    class ServerError(BaseModel):
+        pass
+
+    class AuthenticationError(BaseModel):
+        pass
+
+    @get(
+        responses={
+            401: ResponseSpec(model=AuthenticationError, description="Authentication error"),
+            500: ResponseSpec(model=ServerError, generate_examples=False, media_type=MediaType.TEXT),
+        }
+    )
+    def handler() -> Person:
+        pass
+
+    responses = create_additional_responses(handler, plugins=[])
+
+    first_response = next(responses)
+    assert first_response[0] == "401"
+    assert first_response[1].description == "Authentication error"
+    media_type_schema = first_response[1].content["application/json"].media_type_schema  # type: ignore
+    assert media_type_schema.schema_class is AuthenticationError  # type: ignore
+    assert media_type_schema.examples  # type: ignore
+
+    second_response = next(responses)
+    assert second_response[0] == "500"
+    assert second_response[1].description == "Additional response"
+    media_type_schema = second_response[1].content["text/plain"].media_type_schema  # type: ignore
+    assert media_type_schema.schema_class is ServerError  # type: ignore
+    assert not media_type_schema.examples  # type: ignore
+
+    with pytest.raises(StopIteration):
+        next(responses)
+
+
+def test_additional_responses_overlap_with_other_responses() -> None:
+    class OkResponse(BaseModel):
+        pass
+
+    @get(responses={200: ResponseSpec(model=OkResponse)})
+    def handler() -> Person:
+        pass
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match="Additional response for status code 200 already exists in success or error responses",
+    ):
+        create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])

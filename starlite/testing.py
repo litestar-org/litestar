@@ -22,6 +22,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.datastructures import Cookie
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
         LifeSpanHookHandler,
         Middleware,
         ParametersMap,
+        ResponseType,
         SingleOrList,
     )
 
@@ -69,7 +71,7 @@ class RequestEncoder(RequestEncodingMixin):
 
 
 class TestClient(StarletteTestClient):
-    app: Starlite
+    app: Starlite  # type: ignore[assignment]
     """
         Starlite application instance under test.
     """
@@ -96,7 +98,7 @@ class TestClient(StarletteTestClient):
             backend_options: 'anyio' options.
         """
         super().__init__(
-            app=app,
+            app=app,  # type: ignore[arg-type]
             base_url=base_url,
             raise_server_exceptions=raise_server_exceptions,
             root_path=root_path,
@@ -152,6 +154,7 @@ def create_test_client(
     parameters: Optional["ParametersMap"] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
+    response_class: Optional["ResponseType"] = None,
     root_path: str = "",
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
@@ -231,6 +234,7 @@ def create_test_client(
         plugins: List of plugins.
         raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
             wrapping them in an HTTP response.
+        response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
         root_path: Path prefix for requests.
         static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
         template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
@@ -263,6 +267,7 @@ def create_test_client(
             openapi_config=openapi_config,
             parameters=parameters,
             plugins=plugins,
+            response_class=response_class,
             route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
             template_config=template_config,
@@ -279,7 +284,7 @@ def create_test_request(
     app: Starlite = Starlite(route_handlers=[]),
     auth: Any = None,
     content: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-    cookie: Optional[str] = None,
+    cookie: Optional[Union[List["Cookie"], str]] = None,
     headers: Optional[Dict[str, str]] = None,
     http_method: HttpMethod = HttpMethod.GET,
     path: str = "",
@@ -298,7 +303,8 @@ def create_test_request(
         app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
         auth: A value for `request.scope["auth"]`
         content: A value for the request's body. Can be either a pydantic model instance or a string keyed dictionary.
-        cookie: A string representing the cookie header. This value can include multiple cookies.
+        cookie: A string representing the cookie header or a list of "Cookie" instances. This value can include multiple
+            cookies.
         headers: A string / string dictionary of headers.
         http_method: The request's HTTP method.
         path: The request's path.
@@ -328,8 +334,13 @@ def create_test_request(
 
     if not headers:
         headers = {}
-    if cookie:
+
+    if isinstance(cookie, list):
+        cookies = "; ".join(cook.to_header(header="") for cook in cookie)
+        headers[ParamType.COOKIE] = cookies
+    elif isinstance(cookie, str):
         headers[ParamType.COOKIE] = cookie
+
     if query:
         scope["query_string"] = urlencode(query, doseq=True)
 
@@ -353,7 +364,7 @@ def create_test_request(
             for key, value in headers.items()
         ]
 
-    request: Request[Any, Any] = Request(scope=scope)
+    request: Request[Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
     if body:
         scope["_body"] = request._body = body  # pyright: ignore
     return request
