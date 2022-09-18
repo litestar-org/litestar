@@ -1,6 +1,7 @@
 from typing import (
     TYPE_CHECKING,
     Any,
+    Dict,
     Generic,
     List,
     Optional,
@@ -106,7 +107,7 @@ class WebSocket(
     async def accept(
         self,
         subprotocols: Optional[str] = None,
-        headers: Optional[Union[Headers, List[Tuple[bytes, bytes]]]] = None,
+        headers: Optional[Union[Headers, Dict[str, Any], List[Tuple[bytes, bytes]]]] = None,
     ) -> None:
         """Accepts the incoming connection. This method should be called before
         receiving data.
@@ -121,6 +122,9 @@ class WebSocket(
         if self.connection_state == "init":
             await self.receive()
             _headers: List[Tuple[bytes, bytes]] = headers if isinstance(headers, list) else []
+
+            if isinstance(headers, dict):
+                _headers = Headers(headers=headers).raw
 
             if isinstance(headers, Headers):
                 _headers = headers.raw

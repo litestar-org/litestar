@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from starlette.datastructures import Headers
 
 from starlite import websocket
 from starlite.connection import WebSocket
@@ -36,3 +37,16 @@ def test_route_handler_property() -> None:
 
     with create_test_client(route_handlers=[handler]).websocket_connect("/"):
         assert value["handler"] is handler
+
+
+@pytest.mark.parametrize(
+    "headers", [[(b"test", b"hello-world")], {"test": "hello-world"}, Headers(headers={"test": "hello-world"})]
+)
+async def test_accept_set_headers(headers: Any) -> None:
+    @websocket("/")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept(headers=headers)
+        await socket.close()
+
+    with create_test_client(route_handlers=[handler]).websocket_connect("/") as ws:
+        ws.receive()

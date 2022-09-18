@@ -1,5 +1,5 @@
 import sys
-from typing import Any
+from typing import Any, Dict
 from unittest.mock import patch
 
 import pytest
@@ -42,8 +42,9 @@ def test_request_resolve_url() -> None:
         pass
 
     @get(path="/test")
-    def root(request: Request) -> dict:
-        return {"url": request.url_for("proxy")}
+    def root(request: Request) -> Dict[str, str]:
+        assert request.url_for("none") is None
+        return {"url": request.url_for("proxy") or ""}
 
     with create_test_client(route_handlers=[proxy, root]) as client:
         response = client.get("/test")
