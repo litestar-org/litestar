@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
-HandlerType = TypeVar("HandlerType")
+Handler = TypeVar("Handler")
 
 
 async def empty_receive() -> Any:  # pragma: no cover
@@ -42,10 +42,17 @@ async def empty_send(_: "Message") -> None:  # pragma: no cover
     raise RuntimeError()
 
 
-class ASGIConnection(Generic[HandlerType, User, Auth]):
+class ASGIConnection(Generic[Handler, User, Auth]):
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+        """The base ASGI connection container.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+        """
         self.scope = scope
         self.receive = receive
         self.send = send
@@ -64,12 +71,12 @@ class ASGIConnection(Generic[HandlerType, User, Auth]):
         return self.scope["app"]
 
     @property
-    def route_handler(self) -> HandlerType:
+    def route_handler(self) -> Handler:
         """
         Returns:
             The target route handler instance.
         """
-        return cast("HandlerType", self.scope["route_handler"])
+        return cast("Handler", self.scope["route_handler"])
 
     @property
     def state(self) -> State:
@@ -210,7 +217,7 @@ class ASGIConnection(Generic[HandlerType, User, Auth]):
     def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
         """Helper method to set the session in scope.
 
-        If the [Starlite SessionMiddleware][starlite.middleware.base.session.SessionMiddleware] is
+        If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is
         enabled, the session will be added to the response as a cookie header.
 
         Args:
@@ -224,7 +231,7 @@ class ASGIConnection(Generic[HandlerType, User, Auth]):
     def clear_session(self) -> None:
         """Helper method to remove the session from scope.
 
-        If the [Starlite SessionMiddleware][starlite.middleware.base.session.SessionMiddleware] is
+        If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is
         enabled, this will cause the session data to be cleared.
 
         Returns:

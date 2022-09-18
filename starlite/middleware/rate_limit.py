@@ -179,6 +179,7 @@ class RateLimitMiddleware:
             cache_object: An instance of CacheObject.
 
         Returns:
+            None
         """
         cache_object.history = [int(time()), *cache_object.history]
         await self.cache.set(key, dumps(cache_object))

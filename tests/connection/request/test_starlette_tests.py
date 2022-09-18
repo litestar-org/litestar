@@ -201,8 +201,8 @@ def test_request_raw_path() -> None:
 
 
 def test_request_without_setting_receive() -> None:
-    """If Request is instantiated without the receive channel, then .body() is
-    not available."""
+    """If Request is instantiated without the 'receive' channel, then .body()
+    is not available."""
 
     async def app(scope: Any, receive: "Receive", send: "Send") -> None:
         request = Request(scope)
