@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from starlite.types import Scope
+    from starlite.types import Scope, Serializer
 
 
-def get_serializer_from_scope(scope: "Scope") -> Optional[Callable[[Any], Any]]:
+def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
     """
     Utility that returns a serializer given a scope object.
     Args:

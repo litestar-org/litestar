@@ -13,7 +13,7 @@ from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlite.config import CSRFConfig
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, HTTPSendMessage, Message, Receive, Scope, Send
 
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
@@ -33,7 +33,6 @@ class CSRFMiddleware(MiddlewareProtocol):
             app: The 'next' ASGI app to call.
             config: The CSRFConfig instance.
         """
-        super().__init__(app)
         self.app = app
         self.config = config
 
@@ -56,30 +55,40 @@ class CSRFMiddleware(MiddlewareProtocol):
         existing_csrf_token = request.headers.get(self.config.header_name)
 
         if request.method in self.config.safe_methods:
-
-            async def send_wrapper(message: "Message") -> None:
-                """Send function that wraps the original send to inject a
-                cookie.
-
-                Args:
-                    message: An ASGI 'Message'
-
-                Returns:
-                    None
-                """
-                if csrf_cookie is None and message["type"] == "http.response.start":
-                    message.setdefault("headers", [])
-                    self._set_cookie_if_needed(message)
-
-                await send(message)
-
-            await self.app(scope, receive, send_wrapper)
+            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 
-    def _set_cookie_if_needed(self, message: "Message") -> None:
+    def create_send_wrapper(self, send: "Send", csrf_cookie: Optional[str]) -> "Send":
+        """Wraps 'send' to handle CSRF validation.
+
+        Args:
+            send: The ASGI send function.
+            csrf_cookie: CSRF cookie.
+
+        Returns:
+            An ASGI send function.
+        """
+
+        async def send_wrapper(message: "Message") -> None:
+            """Send function that wraps the original send to inject a cookie.
+
+            Args:
+                message: An ASGI 'Message'
+
+            Returns:
+                None
+            """
+            if csrf_cookie is None and message["type"] == "http.response.start":
+                message.setdefault("headers", [])
+                self._set_cookie_if_needed(message)
+            await send(message)
+
+        return send_wrapper
+
+    def _set_cookie_if_needed(self, message: "HTTPSendMessage") -> None:
         headers = MutableHeaders(scope=message)
         if "set-cookie" not in headers:
             cookie = Cookie(

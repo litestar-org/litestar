@@ -22,7 +22,7 @@ from .config import (
     StaticFilesConfig,
     TemplateConfig,
 )
-from .connection import Request, WebSocket
+from .connection import ASGIConnection, Request, WebSocket
 from .controller import Controller
 from .dto import DTOFactory
 from .enums import (
@@ -74,6 +74,7 @@ from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from .typing import Partial
 
 __all__ = [
+    "ASGIConnection",
     "ASGIRoute",
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",

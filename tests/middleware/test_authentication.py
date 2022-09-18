@@ -20,7 +20,7 @@ from starlite.middleware.base import DefineMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlette.requests import HTTPConnection
+    from starlite.connection import ASGIConnection
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -43,8 +43,8 @@ state: Dict[str, AuthenticationResult] = {}
 
 
 class AuthMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(self, request: "HTTPConnection") -> AuthenticationResult:
-        param = request.headers.get("Authorization")
+    async def authenticate_request(self, connection: "ASGIConnection") -> AuthenticationResult:
+        param = connection.headers.get("Authorization")
         if param in state:
             return state.pop(param)
         raise PermissionDeniedException("unauthenticated")

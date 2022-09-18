@@ -26,11 +26,11 @@ from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
 
-    from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.responses import Responses
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
+    from starlite.types import AnyCallable
 
 
 def create_cookie_schema(cookie: Cookie) -> Schema:

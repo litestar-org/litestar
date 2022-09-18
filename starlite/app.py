@@ -60,13 +60,20 @@ from starlite.utils.sync import as_async_callable_list
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
     from starlite.handlers.base import BaseRouteHandler
     from starlite.routes.base import PathParameterDefinition
-    from starlite.types import ASGIApp, Message, Receive, RouteHandlerType, Scope, Send
+    from starlite.types import (
+        AnyCallable,
+        ASGIApp,
+        Message,
+        Receive,
+        RouteHandlerType,
+        Scope,
+        Send,
+    )
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -575,11 +582,9 @@ class Starlite(Router):
             An ASGI send function.
         """
         if self.before_send:
-
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
                     await hook(message, self.state)
                 await send(message)
-
             return wrapped_send
         return send

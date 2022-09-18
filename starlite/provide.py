@@ -6,9 +6,8 @@ from starlite.utils import AsyncCallable, is_async_callable
 if TYPE_CHECKING:
     from typing import Type
 
-    from pydantic.typing import AnyCallable
-
     from starlite.signature import SignatureModel
+    from starlite.types import AnyCallable
 
 
 class Provide:

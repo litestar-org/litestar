@@ -1,17 +1,15 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from starlette.requests import HTTPConnection
 from starlette.routing import get_name
 
+from starlite.connection import ASGIConnection
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.routes.base import BaseRoute
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-
     from starlite.handlers.asgi import ASGIRouteHandler
-    from starlite.types import Receive, Scope, Send
+    from starlite.types import AnyCallable, Receive, Scope, Send
 
 
 class ASGIRoute(BaseRoute):
@@ -50,7 +48,7 @@ class ASGIRoute(BaseRoute):
         """
 
         if self.route_handler.resolve_guards():
-            connection = HTTPConnection(scope=scope, receive=receive)  # type: ignore[arg-type]
+            connection = ASGIConnection["ASGIRouteHandler", "Scope", Any, Any](scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
 
         fn = cast("AnyCallable", self.route_handler.fn)

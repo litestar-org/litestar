@@ -17,11 +17,9 @@ from starlite.signature import get_signature_model
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
-    from starlite.types import HTTPScope, Method, Receive, Scope, Send
+    from starlite.types import AnyCallable, HTTPScope, Method, Receive, Scope, Send
 
 
 class HTTPRoute(BaseRoute):

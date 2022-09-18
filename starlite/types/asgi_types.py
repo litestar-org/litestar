@@ -67,7 +67,7 @@ class BaseScope(TypedDict):
     asgi: ASGIVersion
     auth: Any
     client: Optional[Tuple[str, int]]
-    extensions: Optional[Dict[str, Dict[object, object]]]
+    extensions: Optional[Dict[str, Dict[Any, Any]]]
     headers: List[Tuple[bytes, bytes]]
     http_version: str
     path: str
@@ -230,10 +230,14 @@ LifeSpanSendMessage = Union[
     LifeSpanShutdownCompleteEvent,
     LifeSpanShutdownFailedEvent,
 ]
+
 LifeSpanReceive = Callable[..., Awaitable[LifeSpanReceiveMessage]]
 LifeSpanSend = Callable[[LifeSpanSendMessage], Awaitable[None]]
-Message = Union[HTTPSendMessage, WebSocketSendMessage]
+
 Scope = Union[HTTPScope, WebSocketScope]
 Receive = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
-Send = Callable[[Message], Awaitable[None]]
+Send = Callable[[Union[HTTPSendMessage, WebSocketSendMessage]], Awaitable[None]]
+Message = Union[HTTPSendMessage, WebSocketSendMessage]
+ReceiveMessage = Union[HTTPReceiveMessage, WebSocketReceiveMessage]
+
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]

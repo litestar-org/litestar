@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from typing import Union
 
     from pydantic.fields import ModelField
-    from starlette.requests import HTTPConnection
 
+    from starlite.connection import ASGIConnection
     from starlite.datastructures import FormMultiDict
 
 _true_values = {"True", "true"}
@@ -42,7 +42,7 @@ def _query_param_reducer(acc: Dict[str, List[Any]], cur: Tuple[str, str]) -> Dic
     return acc
 
 
-def parse_query_params(connection: "HTTPConnection") -> Dict[str, Any]:
+def parse_query_params(connection: "ASGIConnection") -> Dict[str, Any]:
     """Parses and normalize a given connection's query parameters into a
     regular dictionary."""
     query_string = cast("Union[str, bytes]", connection.scope.get("query_string", ""))

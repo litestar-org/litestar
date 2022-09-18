@@ -3,12 +3,8 @@ from typing import TYPE_CHECKING, Any, Dict, cast
 from pydantic import BaseModel, conint
 from typing_extensions import Literal
 
-from starlite.utils import import_string
-
 if TYPE_CHECKING:
-    from typing import Type
 
-    from starlite.middleware.base import MiddlewareProtocol
     from starlite.types import ASGIApp
 
 
@@ -77,7 +73,7 @@ class CompressionConfig(BaseModel):
 
         return super().dict(*args, **kwargs)
 
-    def to_middleware(self, app: "ASGIApp") -> "MiddlewareProtocol":
+    def to_middleware(self, app: "ASGIApp") -> "ASGIApp":
         """Creates a middleware instance from the config.
 
         Args:
@@ -87,11 +83,14 @@ class CompressionConfig(BaseModel):
             A middleware instance
         """
         if self.backend == "gzip":
-            handler = cast(
-                "Type[MiddlewareProtocol]", import_string("starlite.middleware.compression.gzip.GZipMiddleware")
+            from starlite.middleware.compression.gzip import (  # pylint: disable=import-outside-toplevel
+                GZipMiddleware,
             )
-        else:
-            handler = cast(
-                "Type[MiddlewareProtocol]", import_string("starlite.middleware.compression.brotli.BrotliMiddleware")
-            )
-        return handler(app=app, **self.dict())
+
+            return cast("ASGIApp", GZipMiddleware(app=app, **self.dict()))
+
+        from starlite.middleware.compression.brotli import (  # pylint: disable=import-outside-toplevel
+            BrotliMiddleware,
+        )
+
+        return BrotliMiddleware(app=app, **self.dict())

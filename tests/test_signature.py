@@ -22,9 +22,9 @@ from tests.plugins.test_base import AModel, APlugin
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
-    from pydantic.typing import AnyCallable
 
     from starlite.plugins.base import PluginProtocol
+    from starlite.types import AnyCallable
 
 
 def make_signature_model(
