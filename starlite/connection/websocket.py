@@ -12,6 +12,7 @@ from typing import (
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import Headers
+from starlette.status import WS_1000_NORMAL_CLOSURE
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -29,6 +30,8 @@ if TYPE_CHECKING:
 
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Message, Serializer, WebSocketScope
+    from starlite.types.asgi_types import WebSocketDisconnectEvent  # nopycln: import
+    from starlite.types.asgi_types import WebSocketReceiveEvent  # nopycln: import
     from starlite.types.asgi_types import (
         Receive,
         ReceiveMessage,
@@ -36,7 +39,6 @@ if TYPE_CHECKING:
         Send,
         WebSocketAcceptEvent,
         WebSocketCloseEvent,
-        WebSocketReceiveEvent,
         WebSocketSendEvent,
     )
 
@@ -103,17 +105,18 @@ class WebSocket(
 
     async def accept(
         self,
-        sub_protocol: Optional[str] = None,
+        subprotocols: Optional[str] = None,
         headers: Optional[Union[Headers, List[Tuple[bytes, bytes]]]] = None,
     ) -> None:
         """Accepts the incoming connection. This method should be called before
         receiving data.
 
         Args:
-            sub_protocol:
-            headers:
+            subprotocols: Websocket sub-protocol to use.
+            headers: Headers to set on the data sent.
 
         Returns:
+            None
         """
         if self.connection_state == "init":
             await self.receive()
@@ -124,12 +127,12 @@ class WebSocket(
 
             event: "WebSocketAcceptEvent" = {
                 "type": "websocket.accept",
-                "subprotocol": sub_protocol,
+                "subprotocol": subprotocols,
                 "headers": _headers,
             }
             await self.send(event)
 
-    async def close(self, code: int = 1000, reason: Optional[str] = None) -> None:
+    async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: Optional[str] = None) -> None:
         """
         Sends an 'websocket.close' event.
         Args:
@@ -176,10 +179,12 @@ class WebSocket(
         """
         if self.connection_state == "init":
             await self.accept()
-        message = cast("WebSocketReceiveEvent", (await self.receive()))
+        event = cast("Union['WebSocketReceiveEvent', 'WebSocketDisconnectEvent']", await self.receive())
+        if event["type"] == "websocket.disconnect":
+            raise WebSocketException(detail="disconnect event", code=event["code"])
         if self.connection_state == "disconnect":
             raise WebSocketException(detail="connection is disconnected")
-        return message.get("text") or "" if mode == "text" else message.get("bytes") or b""
+        return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     async def receive_text(self) -> str:
         """Receives data as text.

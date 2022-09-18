@@ -6,8 +6,8 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.connection import Request
 from starlite.enums import ScopeType
+from starlite.exceptions import WebSocketException
 from starlite.exceptions.utils import create_exception_response
-from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from starlite.types.asgi_types import WebSocketCloseEvent
 
 
-class ExceptionHandlerMiddleware(MiddlewareProtocol):
+class ExceptionHandlerMiddleware:
     def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap"):
         """This middleware is used to wrap an ASGIApp inside a try catch block
         and handles any exceptions raised.
@@ -58,14 +58,19 @@ class ExceptionHandlerMiddleware(MiddlewareProtocol):
                 )
                 response = exception_handler(Request(scope=scope, receive=receive, send=send), e)
                 await response(scope=scope, receive=receive, send=send)  # type: ignore[arg-type]
-            else:
-                status_code = e.status_code if isinstance(e, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
-                # The 4000+ code range for websockets is customizable, hence we simply add it to the http status code
-                status_code += 4000
-                reason = repr(e)
+                return
 
-                event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": status_code, "reason": reason}
-                await send(event)
+            if isinstance(e, WebSocketException):
+                code = e.code
+                reason = e.detail
+            elif isinstance(e, StarletteHTTPException):
+                code = e.status_code + 4000
+                reason = e.detail
+            else:
+                code = HTTP_500_INTERNAL_SERVER_ERROR + 4000
+                reason = repr(e)
+            event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason}
+            await send(event)
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "StarletteResponse":
         """Default handler for exceptions subclassed from HTTPException."""

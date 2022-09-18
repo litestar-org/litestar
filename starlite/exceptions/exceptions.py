@@ -39,7 +39,11 @@ class MissingDependencyException(StarLiteException, ImportError):
 
 
 class WebSocketException(StarLiteException):
-    """Exception class for websocket related errors."""
+    """Exception class for websocket related events."""
+
+    def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:
+        super().__init__(*args, detail=detail)
+        self.code = code
 
 
 class HTTPException(StarletteHTTPException, StarLiteException):
