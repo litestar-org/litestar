@@ -2,11 +2,9 @@ from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
-    BinaryIO,
     Dict,
     Generic,
     List,
-    MutableMapping,
     Optional,
     Tuple,
     TypeVar,
@@ -25,7 +23,7 @@ from starlite_multipart import parse_options_header
 
 from starlite.datastructures import FormMultiDict, State, UploadFile
 from starlite.enums import RequestEncodingType
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, InternalServerException
 from starlite.parsers import parse_query_params
 from starlite.types import (
     Empty,
@@ -38,6 +36,8 @@ from starlite.types import (
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
+    from typing import BinaryIO, MutableMapping
+
     from pydantic import BaseModel
     from typing_extensions import Literal
 
@@ -305,9 +305,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._json: Union[Any, EmptyType] = scope.get("_json", Empty)
-        self._form: Union[Any, EmptyType] = scope.get("_form", Empty)
         self._body: Union[Any, EmptyType] = scope.get("_body", Empty)
+        self._form: Union[Any, EmptyType] = scope.get("_form", Empty)
+        self._json: Union[Any, EmptyType] = scope.get("_json", Empty)
 
     @property
     def method(self) -> "Method":
@@ -344,24 +344,30 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
         Returns:
             An async generator.
+
+        Raises:
+            RuntimeError: if the stream is already consumed
         """
-        if not self.is_connected:
-            yield self._body if isinstance(self._body, bytes) else b""
+        if isinstance(self._body, bytes):
+            yield self._body
             yield b""
             return
 
+        if not self.is_connected:
+            raise RuntimeError("stream consumed")
+
         while self.is_connected:
             event = await self.receive()
-            if event["type"] == "http.disconnect":
-                self.is_connected = False
-                return
             if event["type"] == "http.request":
                 body = event.get("body", b"")
                 if body:
                     yield body
                 if not event.get("more_body", False):
                     break
+            if event["type"] == "http.disconnect":
+                raise InternalServerException("client disconnected prematurely")
 
+        self.is_connected = False
         yield b""
 
     async def body(self) -> bytes:
@@ -434,8 +440,6 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
                 for value in self.headers.getlist(name):
                     raw_headers.append((name.encode("latin-1"), value.encode("latin-1")))
             await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})
-        else:
-            raise RuntimeError("cannot send a push promise because the ASGI server does not support it.")
 
 
 class WebSocket(

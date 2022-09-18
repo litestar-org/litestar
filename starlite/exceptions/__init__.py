@@ -11,6 +11,7 @@ from .exceptions import (
     ServiceUnavailableException,
     StarLiteException,
     TemplateNotFoundException,
+    TooManyRequestsException,
     ValidationException,
 )
 
@@ -26,5 +27,6 @@ __all__ = [
     "ServiceUnavailableException",
     "StarLiteException",
     "TemplateNotFoundException",
+    "TooManyRequestsException",
     "ValidationException",
 ]

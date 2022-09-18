@@ -42,6 +42,7 @@ from .exceptions import (
     PermissionDeniedException,
     ServiceUnavailableException,
     StarLiteException,
+    TooManyRequestsException,
     ValidationException,
 )
 from .handlers import (
@@ -130,6 +131,7 @@ __all__ = [
     "Stream",
     "Template",
     "TemplateConfig",
+    "TooManyRequestsException",
     "UploadFile",
     "ValidationException",
     "WebSocket",
