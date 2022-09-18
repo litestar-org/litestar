@@ -6,7 +6,7 @@ from starlette.requests import cookie_parser
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty, EmptyType, Message
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from typing import MutableMapping
@@ -14,9 +14,7 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
     from starlite.app import Starlite
-    from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
-    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
-    from starlite.types.asgi_types import Receive, Scope, Send
+    from starlite.types.asgi_types import Message, Receive, Scope, Send
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
@@ -32,7 +30,7 @@ async def empty_receive() -> Any:  # pragma: no cover
     raise RuntimeError()
 
 
-async def empty_send(_: Message) -> None:  # pragma: no cover
+async def empty_send(_: "Message") -> None:  # pragma: no cover
     """Placeholder value.
 
     Args:
@@ -51,11 +49,11 @@ class ASGIConnection(Generic[HandlerType, User, Auth]):
         self.scope = scope
         self.receive = receive
         self.send = send
-        self._base_url: Union[Any, EmptyType] = scope.get("_base_url", Empty)
-        self._url: Union[Any, EmptyType] = scope.get("_url", Empty)
-        self._parsed_query: Union[Any, EmptyType] = scope.get("_parsed_query", Empty)
-        self._cookies: Union[Any, EmptyType] = scope.get("_cookies", Empty)
-        self._headers: Union[Any, EmptyType] = scope.get("_headers", Empty)
+        self._base_url: Any = scope.get("_base_url", Empty)
+        self._url: Any = scope.get("_url", Empty)
+        self._parsed_query: Any = scope.get("_parsed_query", Empty)
+        self._cookies: Any = scope.get("_cookies", Empty)
+        self._headers: Any = scope.get("_headers", Empty)
 
     @property
     def app(self) -> "Starlite":

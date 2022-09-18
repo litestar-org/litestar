@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cast
 from urllib.parse import parse_qsl
 
 from orjson import loads
@@ -17,13 +17,13 @@ from starlite.connection.base import (
 from starlite.datastructures import FormMultiDict, UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
-from starlite.types import Empty, EmptyType, HTTPScope
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from typing import BinaryIO
 
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
-    from starlite.types.asgi_types import Method, Receive, Scope, Send
+    from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
 
 
 class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
@@ -42,9 +42,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._body: Union[Any, EmptyType] = scope.get("_body", Empty)
-        self._form: Union[Any, EmptyType] = scope.get("_form", Empty)
-        self._json: Union[Any, EmptyType] = scope.get("_json", Empty)
+        self._body: Any = scope.get("_body", Empty)
+        self._form: Any = scope.get("_form", Empty)
+        self._json: Any = scope.get("_json", Empty)
 
     @property
     def method(self) -> "Method":
