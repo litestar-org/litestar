@@ -10,8 +10,8 @@ try:
     from jinja2 import Environment, FileSystemLoader
     from jinja2 import Template as JinjaTemplate
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
-except ImportError as exc:
-    raise MissingDependencyException("jinja2 is not installed") from exc
+except ImportError as e:
+    raise MissingDependencyException("jinja2 is not installed") from e
 
 
 class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
@@ -39,5 +39,5 @@ class JinjaTemplateEngine(TemplateEngineProtocol[JinjaTemplate]):
         """
         try:
             return self.engine.get_template(name=template_name)
-        except JinjaTemplateNotFound as e:
-            raise TemplateNotFoundException(template_name=template_name) from e
+        except JinjaTemplateNotFound as exc:
+            raise TemplateNotFoundException(template_name=template_name) from exc
