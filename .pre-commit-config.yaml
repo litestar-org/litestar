@@ -85,6 +85,7 @@ repos:
         exclude: "^(?!starlite/)"
         additional_dependencies:
           [
+            cleo,
             brotli,
             cryptography,
             jinja2,
@@ -110,6 +111,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            cleo,
             orjson,
             piccolo,
             picologging,
@@ -129,6 +131,7 @@ repos:
         exclude: "test_starlette_tests"
         additional_dependencies:
           [
+            cleo,
             orjson,
             piccolo,
             picologging,
@@ -150,6 +153,7 @@ repos:
         exclude: "test_starlette_tests"
         additional_dependencies:
           [
+            cleo,
             brotli,
             cryptography,
             freezegun,

@@ -1,7 +1,12 @@
+from inspect import getfullargspec
+from typing import TYPE_CHECKING
+
 from cleo.application import Application
 
 import commands
-from starlite import Starlite
+
+if TYPE_CHECKING:
+    from starlite.app import Starlite
 
 
 class Cli:
@@ -18,14 +23,16 @@ class Cli:
             cli.run()
     """
 
-    def __init__(self, app: Starlite):
+    def __init__(self, app: "Starlite"):
         self.st_app = app
         self.cli_ = Application()
         for command in commands.__all__:
             cli_command = getattr(commands, command)
-            try:
+
+            arg_spec = getfullargspec(cli_command)
+            if "app" in arg_spec.args:
                 self.cli_.add(cli_command(self.st_app))
-            except Exception:
+            else:
                 self.cli_.add(cli_command())  # pylint: disable = no-value-for-parameter
 
     def run(self) -> int:

@@ -1,7 +1,10 @@
+from typing import TYPE_CHECKING
+
 from cleo.commands.command import Command
 from cleo.helpers import argument, option
 
-from starlite import Starlite
+if TYPE_CHECKING:
+    from starlite.app import Starlite
 
 
 class ListRoutes(Command):  # type: ignore
@@ -10,7 +13,7 @@ class ListRoutes(Command):  # type: ignore
     arguments: list[argument] = []
     options: list[option] = []
 
-    def __init__(self, app: Starlite) -> None:
+    def __init__(self, app: "Starlite") -> None:
         self.app = app
         super().__init__()
 
