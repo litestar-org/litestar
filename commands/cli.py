@@ -1,5 +1,3 @@
-from typing import Any
-
 from cleo.application import Application
 
 import commands
@@ -20,16 +18,17 @@ class Cli:
             cli.run()
     """
 
-    def __init__(self, starletapp: Starlite):
-        self.st_app = starletapp
-        self.cli = Application()
+    def __init__(self, app: Starlite):
+        self.st_app = app
+        self.cli_ = Application()
         for command in commands.__all__:
             cli_command = getattr(commands, command)
             try:
-                self.cli.add(cli_command(self.st_app))
+                self.cli_.add(cli_command(self.st_app))
             except Exception:
-                self.cli.add(cli_command())  # pylint: disable = no-value-for-parameter
+                self.cli_.add(cli_command())  # pylint: disable = no-value-for-parameter
 
-    def run(self) -> int | Any:
+    def run(self) -> int:
         """start Cleo."""
-        return self.cli.run()
+        errorcode: int = self.cli_.run()
+        return errorcode
