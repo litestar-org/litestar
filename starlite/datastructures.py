@@ -92,12 +92,12 @@ class State(Mapping[str, Any]):
         ```python
         from starlite import State
 
-        state_dict = {"first": 1, "second": 2, "third": 3}
+        state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
         state = State(state_dict)
 
         # state can be accessed using '.' notation
-        assert state.first == 1
-        del state.first
+        assert state.fourth == 4
+        del state.fourth
 
         # state implements the Mapping type:
         assert len(state) == 3
