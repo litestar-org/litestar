@@ -52,6 +52,7 @@ except ImportError as e:
 __all__ = [
     "TestClient",
     "create_test_client",
+    "RequestFactory",
     "create_test_request",
 ]
 
@@ -278,6 +279,188 @@ def create_test_client(
         raise_server_exceptions=raise_server_exceptions,
         root_path=root_path,
     )
+
+
+class RequestFactory:
+    def __init__(
+        self,
+        app: Starlite = Starlite(route_handlers=[]),
+        server: str = "test.org",
+        port: int = 3000,
+        root_path: str = "",
+    ):
+        self.app = app
+        self.server = server
+        self.port = port
+        self.root_path = root_path
+
+    def _create_scope(
+        self,
+        path: str,
+        http_method: HttpMethod,
+        user: Any = None,
+        auth: Any = None,
+    ) -> Dict[str, Any]:
+        return dict(
+            type="http",
+            method=http_method,
+            server=(self.server, self.port),
+            root_path=self.root_path.rstrip("/"),
+            path=path,
+            headers=[],
+            app=self.app,
+            user=user,
+            auth=auth,
+        )
+
+    @classmethod
+    def _create_cookie_header(
+        cls, headers: Dict[str, str], cookies: Optional[Union[List["Cookie"], str]] = None
+    ) -> None:
+        if not cookies:
+            return None
+
+        if isinstance(cookies, list):
+            cookie_header = "; ".join(cookie.to_header(header="") for cookie in cookies)
+            headers[ParamType.COOKIE] = cookie_header
+        elif isinstance(cookies, str):
+            headers[ParamType.COOKIE] = cookies
+
+    def _build_headers(
+        self,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+    ) -> List[Tuple[bytes, bytes]]:
+        headers = headers or {}
+        self._create_cookie_header(headers, cookies)
+        return [
+            ((key.lower()).encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
+            for key, value in headers.items()
+        ]
+
+    def _create_request_with_data(
+        self,
+        http_method: HttpMethod,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+        request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
+    ) -> Request[Any, Any]:
+        scope = self._create_scope(path, http_method, user, auth)
+
+        headers = headers or {}
+        if data:
+            if isinstance(data, BaseModel):
+                data = data.dict()
+            if request_media_type == RequestEncodingType.JSON:
+                body = dumps(data)
+                headers["Content-Type"] = str(RequestEncodingType.JSON.value)
+            elif request_media_type == RequestEncodingType.MULTI_PART:
+                body, content_type = RequestEncoder().multipart_encode(data)
+                headers["Content-Type"] = content_type
+            else:
+                body = RequestEncoder().url_encode(data)
+                headers["Content-Type"] = str(RequestEncodingType.URL_ENCODED.value)
+            scope["_body"] = body
+
+        self._create_cookie_header(headers, cookies)
+        scope["headers"] = self._build_headers(headers)
+        return Request(scope=scope)
+
+    def get(
+        self,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+    ) -> Request[Any, Any]:
+        scope = self._create_scope(path, HttpMethod.GET, user, auth)
+
+        if query_params:
+            scope["query_string"] = urlencode(query_params, doseq=True).encode()
+
+        scope["headers"] = self._build_headers(headers, cookies)
+        return Request(scope=scope)
+
+    def post(
+        self,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+        request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
+    ) -> Request[Any, Any]:
+        return self._create_request_with_data(
+            HttpMethod.POST,
+            path,
+            headers,
+            cookies,
+            user,
+            auth,
+            request_media_type,
+            data,
+        )
+
+    def put(
+        self,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+        request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
+    ) -> Request[Any, Any]:
+        return self._create_request_with_data(
+            HttpMethod.PUT,
+            path,
+            headers,
+            cookies,
+            user,
+            auth,
+            request_media_type,
+            data,
+        )
+
+    def patch(
+        self,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+        request_media_type: RequestEncodingType = RequestEncodingType.JSON,
+        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
+    ) -> Request[Any, Any]:
+        return self._create_request_with_data(
+            HttpMethod.PATCH,
+            path,
+            headers,
+            cookies,
+            user,
+            auth,
+            request_media_type,
+            data,
+        )
+
+    def delete(
+        self,
+        path: str,
+        headers: Optional[Dict[str, str]] = None,
+        cookies: Optional[Union[List["Cookie"], str]] = None,
+        user: Any = None,
+        auth: Any = None,
+    ):
+        scope = self._create_scope(path, HttpMethod.DELETE, user, auth)
+        scope["headers"] = self._build_headers(headers, cookies)
+        return Request(scope=scope)
 
 
 def create_test_request(
