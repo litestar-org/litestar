@@ -5,8 +5,7 @@ from base64 import b64decode, b64encode
 from os import urandom
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
 
-from orjson import OPT_SERIALIZE_NUMPY, dumps
-from orjson.orjson import loads
+from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import (
     BaseConfig,
     BaseModel,
