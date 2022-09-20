@@ -16,7 +16,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Mapping,
+    MutableMapping,
     Optional,
     Type,
     TypeVar,
@@ -74,7 +74,7 @@ class BackgroundTasks(StarletteBackgroundTasks):
         super().__init__(tasks=tasks)
 
 
-class State(Mapping[str, Any]):
+class State(MutableMapping[str, Any]):
 
     __slots__ = ("_state",)
 
@@ -82,7 +82,7 @@ class State(Mapping[str, Any]):
 
     def __init__(self, state: Optional[Dict[str, Any]] = None):
         """An object meant to store arbitrary state. It can be accessed using
-        dot notation while exposition dict like functionalities.
+        dot notation while exposing dict like functionalities.
 
         Args:
              state: An optional string keyed dict for the initial state.
@@ -105,6 +105,10 @@ class State(Mapping[str, Any]):
         assert not "fourth" in state
         assert state["first"] == 1
         assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+
+        state["fourth"] = 4
+        assert "fourth" in state
+        del state["fourth"]
 
         # state implements __bool__
         assert state  # state is true when it has values.
@@ -143,6 +147,31 @@ class State(Mapping[str, Any]):
             A value from the wrapped state instance.
         """
         return self._state[key]
+
+    def __delitem__(self, key: str) -> None:
+        """
+        Args:
+            key: Key to access.
+
+        Raises:
+            KeyError
+
+        Returns:
+            None
+        """
+        del self._state[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        """
+
+        Args:
+            key: Key to set.
+            value: Value to set.
+
+        Returns:
+            None
+        """
+        self._state[key] = value
 
     def __iter__(self) -> Iterator[str]:
         """
