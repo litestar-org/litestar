@@ -9,9 +9,7 @@ from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-
-    from starlite.types import AsyncAnyCallable
+    from starlite.types import AnyCallable, AsyncAnyCallable
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):

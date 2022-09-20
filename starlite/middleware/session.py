@@ -3,10 +3,9 @@ import contextlib
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, List, Optional, cast
 
-from orjson import OPT_SERIALIZE_NUMPY, dumps
-from orjson.orjson import loads
+from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import (
     BaseConfig,
     BaseModel,
@@ -17,15 +16,15 @@ from pydantic import (
     validator,
 )
 from starlette.datastructures import MutableHeaders
-from starlette.requests import HTTPConnection
 from typing_extensions import Literal
 
+from starlite.connection import ASGIConnection
 from starlite.datastructures import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
-from starlite.response import Response
 from starlite.types import Empty
 from starlite.utils import get_serializer_from_scope
+from starlite.utils.serialization import default_serializer
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -137,7 +136,6 @@ class SessionMiddleware(MiddlewareProtocol):
             app: The 'next' ASGI app to call.
             config: SessionCookieConfig instance.
         """
-        super().__init__(app)
         self.app = app
         self.config = config
         self.aesgcm = AESGCM(config.secret.get_secret_value())
@@ -158,7 +156,7 @@ class SessionMiddleware(MiddlewareProtocol):
         Returns:
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
-        serializer = (get_serializer_from_scope(scope) if scope else None) or Response.serializer
+        serializer = (get_serializer_from_scope(scope) if scope else None) or default_serializer
         serialized = dumps(data, default=serializer, option=OPT_SERIALIZE_NUMPY)
         associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
@@ -166,7 +164,7 @@ class SessionMiddleware(MiddlewareProtocol):
         encoded = b64encode(nonce + encrypted + AAD + associated_data)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
 
-    def load_data(self, data: List[bytes]) -> Any:
+    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
         """Given a list of strings, decodes them into the session object.
 
         Args:
@@ -177,17 +175,13 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
-
-        associated_data = None
         aad_starts_from = decoded.find(AAD)
-        if aad_starts_from != -1:
-            associated_data = decoded[aad_starts_from:].replace(AAD, b"")
-
-        encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
-        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
-
-        session_validation = loads(associated_data)["expires_at"] > round(time.time())
-        return loads(decrypted) if session_validation else {}
+        associated_data = decoded[aad_starts_from:].replace(AAD, b"") if aad_starts_from != -1 else None
+        if associated_data and loads(associated_data)["expires_at"] > round(time.time()):
+            encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
+            decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
+            return cast("Dict[str, Any]", loads(decrypted))
+        return {}
 
     def create_send_wrapper(
         self, scope: "Scope", send: "Send", cookie_keys: List[str]
@@ -260,7 +254,7 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         if scope["type"] in self.config.scopes:
             scope.setdefault("session", {})
-            connection = HTTPConnection(scope)  # type: ignore[arg-type]
+            connection = ASGIConnection[Any, Any, Any](scope)
             cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
             if cookie_keys:
                 data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]

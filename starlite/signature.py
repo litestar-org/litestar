@@ -34,8 +34,9 @@ from starlite.utils import (
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
-    from pydantic.typing import AnyCallable
     from starlette.datastructures import URL
+
+    from starlite.types import AnyCallable
 
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}

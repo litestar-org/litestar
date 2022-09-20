@@ -10,8 +10,8 @@ try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
     from mako.lookup import TemplateLookup
     from mako.template import Template as MakoTemplate
-except ImportError as exc:
-    raise MissingDependencyException("mako is not installed") from exc
+except ImportError as e:
+    raise MissingDependencyException("mako is not installed") from e
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
@@ -38,5 +38,5 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         """
         try:
             return self.engine.get_template(template_name)
-        except MakoTemplateNotFound as e:
-            raise TemplateNotFoundException(template_name=template_name) from e
+        except MakoTemplateNotFound as exc:
+            raise TemplateNotFoundException(template_name=template_name) from exc

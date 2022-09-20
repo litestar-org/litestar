@@ -10,12 +10,12 @@ from starlite.openapi.responses import create_responses
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
-    from pydantic.typing import AnyCallable
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
+    from starlite.types import AnyCallable
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:

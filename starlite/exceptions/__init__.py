@@ -11,7 +11,9 @@ from .exceptions import (
     ServiceUnavailableException,
     StarLiteException,
     TemplateNotFoundException,
+    TooManyRequestsException,
     ValidationException,
+    WebSocketException,
 )
 
 __all__ = [
@@ -26,5 +28,7 @@ __all__ = [
     "ServiceUnavailableException",
     "StarLiteException",
     "TemplateNotFoundException",
+    "TooManyRequestsException",
     "ValidationException",
+    "WebSocketException",
 ]

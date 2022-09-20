@@ -61,11 +61,9 @@ from starlite.types import (
 from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
-    from pydantic.typing import AnyCallable
-
     from starlite.app import Starlite
     from starlite.plugins import PluginProtocol
-    from starlite.types import AsyncAnyCallable
+    from starlite.types import AnyCallable, AsyncAnyCallable
 
 
 def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:

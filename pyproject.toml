@@ -102,6 +102,7 @@ disable = [
     "too-many-locals",
     "too-many-return-statements",
     "ungrouped-imports",
+    "unused-import",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic","orjson","picologging"]
@@ -116,7 +117,7 @@ max-line-length = "120"
 ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
-good-names = "_,__,i,e,k,v,fn,get,post,put,patch,delete,route,asgi,websocket,Dependency,Body,Parameter"
+good-names = "_,__,i,e,k,v,fn,get,post,put,patch,delete,route,asgi,websocket,Dependency,Body,Parameter,HandlerType,ScopeType,Auth,User"
 no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test|^_.*)$"
 
 
@@ -134,6 +135,7 @@ exclude_lines = [
     'pragma: no cover',
     'if TYPE_CHECKING:',
     'except ImportError as e:',
+    'except ImportError:',
     '\.\.\.'
 ]
 

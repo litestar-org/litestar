@@ -63,7 +63,7 @@ def sub_path_handler() -> None:
 app.register(sub_path_handler)
 ```
 
-Since the app instance is attached to all instances of `HTTPConnection`, `Request` and `WebSocket` objects, you can in
+Since the app instance is attached to all instances of `ASGIConnection`, `Request` and `WebSocket` objects, you can in
 effect call the `.register` method inside route handler functions, middlewares and even injected dependencies. For example:
 
 ```python

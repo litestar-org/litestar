@@ -3,10 +3,9 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Union
 
 from pydantic import BaseConfig, BaseModel
-from starlette.requests import HTTPConnection
 
+from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
-from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Receive, Scope, Send
@@ -28,7 +27,7 @@ class AuthenticationResult(BaseModel):
         arbitrary_types_allowed = True
 
 
-class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
+class AbstractAuthenticationMiddleware(ABC):
     scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """
     Scopes supported by the middleware.
@@ -47,7 +46,6 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             exclude: A pattern or list of patterns to skip in the authentication middleware.
         """
-        super().__init__(app)
         self.app = app
         self.exclude: Optional[Pattern[str]] = None
         if exclude:
@@ -63,24 +61,21 @@ class AbstractAuthenticationMiddleware(ABC, MiddlewareProtocol):
         Returns:
             None
         """
-        if self.exclude and self.exclude.findall(scope["path"]):
-            await self.app(scope, receive, send)
-        else:
-            if scope["type"] in self.scopes:
-                auth_result = await self.authenticate_request(HTTPConnection(scope))  # type: ignore[arg-type]
-                scope["user"] = auth_result.user
-                scope["auth"] = auth_result.auth
-            await self.app(scope, receive, send)
+        if (not self.exclude or not self.exclude.findall(scope["path"])) and scope["type"] in self.scopes:
+            auth_result = await self.authenticate_request(ASGIConnection(scope))
+            scope["user"] = auth_result.user
+            scope["auth"] = auth_result.auth
+        await self.app(scope, receive, send)
 
     @abstractmethod
-    async def authenticate_request(self, connection: HTTPConnection) -> AuthenticationResult:  # pragma: no cover
+    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:  # pragma: no cover
         """This method must be overridden by subclasses. It receives the http
         connection and returns an instance of.
 
         [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].
 
         Args:
-            connection: A Starlette 'HTTPConnection' instance.
+            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
 
         Raises:
             If authentication fail: either an [NotAuthorizedException][starlite.exceptions.NotAuthorizedException] or
