@@ -7,11 +7,13 @@ from .internal_types import StarliteType
 if TYPE_CHECKING:
     from starlette.responses import Response as StarletteResponse  # noqa: TC004
 
+    from starlite.config import AppConfig  # noqa: TC004
     from starlite.connection import Request, WebSocket  # noqa: TC004
     from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers import HTTPRouteHandler, WebsocketRouteHandler  # noqa: TC004
     from starlite.response import Response  # noqa: TC004
 else:
+    AppConfig = Any
     HTTPRouteHandler = Any
     Request = Any
     Response = Any
@@ -37,4 +39,5 @@ Guard = Union[
 ]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
+OnAppConfigHandler = Callable[[AppConfig], AppConfig]
 Serializer = Callable[[Any], Any]
