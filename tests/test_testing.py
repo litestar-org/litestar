@@ -1,5 +1,5 @@
 import json
-from typing import Any, Callable
+from typing import Any, Callable, Dict, Union
 
 import pytest
 from hypothesis import HealthCheck, given, settings
@@ -67,20 +67,20 @@ def test_create_test_request(
 
 
 def test_request_factory_no_cookie_header() -> None:
-    headers = {}
+    headers: Dict[str, str] = dict()
     RequestFactory._create_cookie_header(headers, None)
     assert headers == {}
 
 
 def test_request_factory_str_cookie_header() -> None:
-    headers = {}
+    headers: Dict[str, str] = dict()
     cookie_as_str = "test=cookie; starlite=cookie"
     RequestFactory._create_cookie_header(headers, cookie_as_str)
     assert headers[ParamType.COOKIE] == cookie_as_str
 
 
 def test_request_factory_cookie_list_header() -> None:
-    headers = {}
+    headers: Dict[str, str] = dict()
     cookie_list = [Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
     RequestFactory._create_cookie_header(headers, cookie_list)
     assert headers[ParamType.COOKIE] == "test=cookie; Path=/; SameSite=lax; starlite=cookie; Path=/test; SameSite=lax"
@@ -103,7 +103,7 @@ def test_request_factory_build_headers() -> None:
 
 
 @pytest.mark.parametrize("data", [person, person.dict()])
-async def test_request_factory_create_with_data(data) -> None:
+async def test_request_factory_create_with_data(data: Union[Person, Dict[str, Any]]) -> None:
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
@@ -173,7 +173,7 @@ def test_request_factory_create_with_params() -> None:
 def test_request_factory_get() -> None:
     query_params = {"p1": "a", "p2": 2, "p3": ["c", "d"]}
     headers = {"header1": "value1"}
-    request = RequestFactory().get("/", headers=headers, query_params=query_params)
+    request = RequestFactory().get("/", headers=headers, query_params=query_params)  # type: ignore[arg-type]
     assert request.method == HttpMethod.GET
     assert request.url == f"{_DEFAULT_REQUEST_FACTORY_URL}?p1=a&p2=2&p3=c&p3=d"
     assert len(request.headers.keys()) == 1

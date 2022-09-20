@@ -368,7 +368,7 @@ class RequestFactory:
 
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
-        return Request(scope=scope)
+        return Request(scope=scope)  # type: ignore[arg-type]
 
     def get(
         self,
@@ -385,7 +385,7 @@ class RequestFactory:
             scope["query_string"] = urlencode(query_params, doseq=True).encode()
 
         scope["headers"] = self._build_headers(headers, cookies)
-        return Request(scope=scope)
+        return Request(scope=scope)  # type: ignore[arg-type]
 
     def post(
         self,
@@ -457,10 +457,10 @@ class RequestFactory:
         cookies: Optional[Union[List["Cookie"], str]] = None,
         user: Any = None,
         auth: Any = None,
-    ):
+    ) -> Request[Any, Any]:
         scope = self._create_scope(path, HttpMethod.DELETE, user, auth)
         scope["headers"] = self._build_headers(headers, cookies)
-        return Request(scope=scope)
+        return Request(scope=scope)  # type: ignore[arg-type]
 
 
 def create_test_request(
