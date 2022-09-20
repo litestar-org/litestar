@@ -3,7 +3,7 @@ import contextlib
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, List, Optional
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, List, Optional, cast
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import (
@@ -164,7 +164,7 @@ class SessionMiddleware(MiddlewareProtocol):
         encoded = b64encode(nonce + encrypted + AAD + associated_data)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
 
-    def load_data(self, data: List[bytes]) -> Any:
+    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
         """Given a list of strings, decodes them into the session object.
 
         Args:
@@ -175,17 +175,13 @@ class SessionMiddleware(MiddlewareProtocol):
         """
         decoded = b64decode(b"".join(data))
         nonce = decoded[:NONCE_SIZE]
-
-        associated_data = None
         aad_starts_from = decoded.find(AAD)
-        if aad_starts_from != -1:
-            associated_data = decoded[aad_starts_from:].replace(AAD, b"")
-
-        encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
-        decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
-
-        session_validation = loads(associated_data)["expires_at"] > round(time.time())
-        return loads(decrypted) if session_validation else {}
+        associated_data = decoded[aad_starts_from:].replace(AAD, b"") if aad_starts_from != -1 else None
+        if associated_data and loads(associated_data)["expires_at"] > round(time.time()):
+            encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
+            decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
+            return cast("Dict[str, Any]", loads(decrypted))
+        return {}
 
     def create_send_wrapper(
         self, scope: "Scope", send: "Send", cookie_keys: List[str]
