@@ -1,6 +1,6 @@
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -11,6 +11,8 @@ from starlite.datastructures import UploadFile
 from starlite.enums import RequestEncodingType
 
 if TYPE_CHECKING:
+    from typing import Union
+
     from pydantic.fields import ModelField
 
     from starlite.connection import ASGIConnection
