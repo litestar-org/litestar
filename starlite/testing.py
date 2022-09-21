@@ -289,6 +289,51 @@ class RequestFactory:
         port: int = 3000,
         root_path: str = "",
     ):
+        """A factory object to create [Request][starlite.connection.Request]
+        instances.
+
+        Args:
+             app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
+             server: The server's domain.
+             port: The server's port.
+             root_path: Root path for the server.
+
+        Examples:
+
+        ```python
+        from starlite import RequestEncodingType, Starlite
+        from starlite.testing import RequestFactory
+
+        from tests import PersonFactory
+
+        my_app = Starlite(route_handlers=[])
+        my_server = "starlite.org"
+
+        # Create a GET request
+        query_params = {"id": 1}
+        get_user_request = RequestFactory(app=my_app, server=my_server).get(
+            "/person", query_params=query_params
+        )
+
+        # Create a POST request
+        new_person = PersonFactory.build()
+        create_user_request = RequestFactory(app=my_app, server=my_server).post(
+            "/person", data=person
+        )
+
+        # Create a request with a special header
+        headers = {"header1": "value1"}
+        request_with_header = RequestFactory(app=my_app, server=my_server).get(
+            "/person", query_params=query_params, headers=headers
+        )
+
+        # Create a request with a media type
+        request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
+            "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
+        )
+        ```
+        """
+
         self.app = app
         self.server = server
         self.port = port
@@ -301,6 +346,17 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
     ) -> Dict[str, Any]:
+        """Create the scope for the [Request][starlite.connection.Request].
+
+        Args:
+            path: The request's path.
+            http_method: The request's HTTP method.
+            user: A value for `request.scope["user"]`
+            auth: A value for `request.scope["auth"]`
+        Returns:
+            A dictionary that can be passed as a scope to the [Request][starlite.connection.Request] c'tor.
+        """
+
         return dict(
             type="http",
             method=http_method,
@@ -317,6 +373,14 @@ class RequestFactory:
     def _create_cookie_header(
         cls, headers: Dict[str, str], cookies: Optional[Union[List["Cookie"], str]] = None
     ) -> None:
+        """Create the cookie header and add it to the `headers` dictionary.
+
+        Args:
+            headers: A dictionary of headers, the cookie header will be added to it.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+        """
+
         if not cookies:
             return None
 
@@ -331,6 +395,17 @@ class RequestFactory:
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
     ) -> List[Tuple[bytes, bytes]]:
+        """Build a list of encoded headers that can be passed to the request
+        scope.
+
+        Args:
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+        Returns:
+            A list of encoded headers that can be passed to the request scope.
+        """
+
         headers = headers or {}
         self._create_cookie_header(headers, cookies)
         return [
@@ -349,6 +424,24 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
     ) -> Request[Any, Any]:
+        """Create a [Request][starlite.connection.Request] instance that has
+        body (data)
+
+        Args:
+            http_method: The request's HTTP method.
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`
+            auth: A value for `request.scope["auth"]`
+            request_media_type: The 'Content-Type' header of the request.
+            data: A value for the request's body. Can be either a pydantic model instance
+                or a string keyed dictionary.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         scope = self._create_scope(path, http_method, user, auth)
 
         headers = headers or {}
@@ -379,6 +472,20 @@ class RequestFactory:
         auth: Any = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
     ) -> Request[Any, Any]:
+        """Create a GET [Request][starlite.connection.Request] instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            query_params: A dictionary of values from which the request's query will be generated.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         scope = self._create_scope(path, HttpMethod.GET, user, auth)
 
         if query_params:
@@ -397,6 +504,22 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
     ) -> Request[Any, Any]:
+        """Create a POST [Request][starlite.connection.Request] instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            request_media_type: The 'Content-Type' header of the request.
+            data: A value for the request's body. Can be either a pydantic model instance
+                or a string keyed dictionary.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         return self._create_request_with_data(
             HttpMethod.POST,
             path,
@@ -418,6 +541,22 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
     ) -> Request[Any, Any]:
+        """Create a PUT [Request][starlite.connection.Request] instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            request_media_type: The 'Content-Type' header of the request.
+            data: A value for the request's body. Can be either a pydantic model instance
+                or a string keyed dictionary.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         return self._create_request_with_data(
             HttpMethod.PUT,
             path,
@@ -439,6 +578,22 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
     ) -> Request[Any, Any]:
+        """Create a PATCH [Request][starlite.connection.Request] instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            request_media_type: The 'Content-Type' header of the request.
+            data: A value for the request's body. Can be either a pydantic model instance
+                or a string keyed dictionary.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         return self._create_request_with_data(
             HttpMethod.PATCH,
             path,
@@ -458,6 +613,19 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
     ) -> Request[Any, Any]:
+        """Create a POST [Request][starlite.connection.Request] instance.
+
+        Args:
+            path: The request's path.
+            headers: A dictionary of headers.
+            cookies: A string representing the cookie header or a list of "Cookie" instances.
+                This value can include multiple cookies.
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+        Returns:
+            A [Request][starlite.connection.Request] instance
+        """
+
         scope = self._create_scope(path, HttpMethod.DELETE, user, auth)
         scope["headers"] = self._build_headers(headers, cookies)
         return Request(scope=scope)  # type: ignore[arg-type]
