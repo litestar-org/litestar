@@ -343,6 +343,7 @@ class RequestFactory:
         self,
         path: str,
         http_method: HttpMethod,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
     ) -> Dict[str, Any]:
@@ -351,6 +352,7 @@ class RequestFactory:
         Args:
             path: The request's path.
             http_method: The request's HTTP method.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`
             auth: A value for `request.scope["auth"]`
         Returns:
@@ -365,6 +367,7 @@ class RequestFactory:
             path=path,
             headers=[],
             app=self.app,
+            session=session,
             user=user,
             auth=auth,
         )
@@ -419,6 +422,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
@@ -433,6 +437,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`
             auth: A value for `request.scope["auth"]`
             request_media_type: The 'Content-Type' header of the request.
@@ -442,7 +447,7 @@ class RequestFactory:
             A [Request][starlite.connection.Request] instance
         """
 
-        scope = self._create_scope(path, http_method, user, auth)
+        scope = self._create_scope(path, http_method, session, user, auth)
 
         headers = headers or {}
         if data:
@@ -468,6 +473,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
@@ -479,6 +485,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             query_params: A dictionary of values from which the request's query will be generated.
@@ -486,7 +493,7 @@ class RequestFactory:
             A [Request][starlite.connection.Request] instance
         """
 
-        scope = self._create_scope(path, HttpMethod.GET, user, auth)
+        scope = self._create_scope(path, HttpMethod.GET, session, user, auth)
 
         if query_params:
             scope["query_string"] = urlencode(query_params, doseq=True).encode()
@@ -499,6 +506,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
@@ -511,6 +519,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
@@ -525,6 +534,7 @@ class RequestFactory:
             path,
             headers,
             cookies,
+            session,
             user,
             auth,
             request_media_type,
@@ -536,6 +546,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
@@ -548,6 +559,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
@@ -562,6 +574,7 @@ class RequestFactory:
             path,
             headers,
             cookies,
+            session,
             user,
             auth,
             request_media_type,
@@ -573,6 +586,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
@@ -585,6 +599,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             request_media_type: The 'Content-Type' header of the request.
@@ -599,6 +614,7 @@ class RequestFactory:
             path,
             headers,
             cookies,
+            session,
             user,
             auth,
             request_media_type,
@@ -610,6 +626,7 @@ class RequestFactory:
         path: str,
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
+        session: Optional[Dict[str, Any]] = None,
         user: Any = None,
         auth: Any = None,
     ) -> Request[Any, Any]:
@@ -620,13 +637,14 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+            session: A dictionary of session data.
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
         Returns:
             A [Request][starlite.connection.Request] instance
         """
 
-        scope = self._create_scope(path, HttpMethod.DELETE, user, auth)
+        scope = self._create_scope(path, HttpMethod.DELETE, session, user, auth)
         scope["headers"] = self._build_headers(headers, cookies)
         return Request(scope=scope)  # type: ignore[arg-type]
 

@@ -160,7 +160,8 @@ def test_request_factory_create_with_params() -> None:
     path = "/path"
     user = User()
     auth = Auth()
-    request = RequestFactory(app, server, port, root_path).get(path, user=user, auth=auth)
+    session = {"param1": "a", "param2": 2}
+    request = RequestFactory(app, server, port, root_path).get(path, session=session, user=user, auth=auth)
     assert request.app == app
     assert request.base_url == f"http://{server}:{port}{root_path}/"
     assert request.url == f"http://{server}:{port}{root_path}{path}"
@@ -168,6 +169,7 @@ def test_request_factory_create_with_params() -> None:
     assert request.query_params == {}
     assert request.user == user
     assert request.auth == auth
+    assert request.session == session
 
 
 def test_request_factory_get() -> None:
