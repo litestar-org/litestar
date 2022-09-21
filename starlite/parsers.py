@@ -1,6 +1,6 @@
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union, cast
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -11,8 +11,6 @@ from starlite.datastructures import UploadFile
 from starlite.enums import RequestEncodingType
 
 if TYPE_CHECKING:
-    from typing import Union
-
     from pydantic.fields import ModelField
 
     from starlite.connection import ASGIConnection
@@ -67,11 +65,11 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
         if not isinstance(value, MultipartUploadFile):
             with suppress(JSONDecodeError):
                 value = loads(value)
-        if values_dict.get(key):
-            if isinstance(values_dict[key], list):
-                values_dict[key].append(value)
-            else:
-                values_dict[key] = [values_dict[key], value]
+        existing_value = values_dict.get(key)
+        if isinstance(existing_value, list):
+            values_dict[key].append(value)
+        elif existing_value:
+            values_dict[key] = [existing_value, value]
         else:
             values_dict[key] = value
     if media_type == RequestEncodingType.MULTI_PART:
