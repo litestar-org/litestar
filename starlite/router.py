@@ -166,9 +166,7 @@ class Router:
                 self.routes.append(route)
             else:
                 existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
-                route_handlers = unique(
-                    list(cast("Dict[HttpMethod, HTTPRouteHandler]", handler_or_method_map).values())
-                )
+                route_handlers = unique(list(handler_or_method_map.values()))
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers))
                     existing_route_index = find_index(
@@ -223,32 +221,49 @@ class Router:
                 route_map[cast("WebSocketRoute", route).route_handler.fn.__qualname__].append(route.path)  # type: ignore
         return route_map
 
-    @staticmethod
+    RouteHandlerMap = ItemsView[
+        str, Union[WebsocketRouteHandler, ASGIRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]
+    ]
+
+    @classmethod
     def _map_route_handlers(
+        cls,
         value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict["HttpMethod", HTTPRouteHandler]]]:
-        """Maps route handlers to http methods."""
-        handlers_map: Dict[str, Any] = {}
-        if isinstance(value, BaseRouteHandler):
-            for path in value.paths:
-                if isinstance(value, HTTPRouteHandler):
-                    handlers_map[path] = {http_method: value for http_method in value.http_methods}
-                elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
-                    handlers_map[path] = value
-        elif isinstance(value, Router):
+    ) -> RouteHandlerMap:
+        """Maps route handlers to HTTP methods."""
+        if isinstance(value, Router):
+            handlers_map: Dict[str, Any] = {}
             handlers_map = value.route_handler_method_map
-        else:
-            # we are dealing with a controller
-            for route_handler in value.get_route_handlers():
-                for handler_path in route_handler.paths:
-                    path = join_paths([value.path, handler_path]) if handler_path else value.path
-                    if isinstance(route_handler, HTTPRouteHandler):
-                        if not isinstance(handlers_map.get(path), dict):
-                            handlers_map[path] = {}
-                        for http_method in route_handler.http_methods:
-                            handlers_map[path][http_method] = route_handler
-                    else:
-                        handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
+            return handlers_map.items()
+        if isinstance(value, BaseRouteHandler):
+            return cls._map_route_handlers_for_base_route_handler(value)
+        # we are dealing with a controller
+        return cls._map_route_handlers_for_controller(value)
+
+    @staticmethod
+    def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> RouteHandlerMap:
+        """Maps route handlers to HTTP methods for an input
+        BaseRouteHandler."""
+        handlers_map: Dict[str, Any] = {}
+        for path in value.paths:
+            if isinstance(value, HTTPRouteHandler):
+                handlers_map[path] = {http_method: value for http_method in value.http_methods}
+            elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
+                handlers_map[path] = value
+        return handlers_map.items()
+
+    @staticmethod
+    def _map_route_handlers_for_controller(value: Controller) -> RouteHandlerMap:
+        """Maps route handlers to HTTP methods for an input Controller."""
+        handlers_map: Dict[str, Any] = collections.defaultdict(dict)
+        for route_handler in value.get_route_handlers():
+            for handler_path in route_handler.paths:
+                path = join_paths([value.path, handler_path]) if handler_path else value.path
+                if isinstance(route_handler, HTTPRouteHandler):
+                    for http_method in route_handler.http_methods:
+                        handlers_map[path][http_method] = route_handler
+                else:
+                    handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
         return handlers_map.items()
 
     def _validate_registration_value(
