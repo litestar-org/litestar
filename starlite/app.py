@@ -174,7 +174,7 @@ class Starlite(Router):
         static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
         tags: Optional[List[str]] = None,
         template_config: Optional["TemplateConfig"] = None,
-    ):
+    ) -> None:
         """The Starlite application.
 
         `Starlite` is the root level of the app - it has the base path of "/" and all root level
