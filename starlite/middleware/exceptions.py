@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class ExceptionHandlerMiddleware:
-    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap"):
+    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
         """This middleware is used to wrap an ASGIApp inside a try catch block
         and handles any exceptions raised.
 

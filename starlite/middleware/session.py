@@ -129,7 +129,7 @@ class SessionMiddleware(MiddlewareProtocol):
         self,
         app: "ASGIApp",
         config: SessionCookieConfig,
-    ):
+    ) -> None:
         """Starlite SessionMiddleware.
 
         Args:

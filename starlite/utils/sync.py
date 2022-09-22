@@ -13,7 +13,7 @@ T = TypeVar("T")
 class AsyncCallable(Generic[P, T]):
     __slots__ = ("args", "kwargs", "wrapped_callable")
 
-    def __init__(self, fn: Callable[P, T]):
+    def __init__(self, fn: Callable[P, T]) -> None:
         """Utility class that wraps a callable and ensures it can be called as
         an async function.
 

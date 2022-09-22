@@ -64,7 +64,7 @@ class BaseRoute(ABC):
         path: str,
         scope_type: "ScopeType",
         methods: Optional[List["Method"]] = None,
-    ):
+    ) -> None:
         """This is the base Route class used by Starlite. It's an abstract
         class meant to be extended.
 

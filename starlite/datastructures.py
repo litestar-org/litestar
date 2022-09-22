@@ -64,7 +64,7 @@ class BackgroundTask(StarletteBackgroundTask):
 
 
 class BackgroundTasks(StarletteBackgroundTasks):
-    def __init__(self, tasks: List[BackgroundTask]):
+    def __init__(self, tasks: List[BackgroundTask]) -> None:
         """A container for multiple 'background' task functions. Background
         tasks are called once a Response finishes.
 
@@ -80,7 +80,7 @@ class State(MutableMapping[str, Any]):
 
     _state: Dict[str, Any]
 
-    def __init__(self, state: Optional[Dict[str, Any]] = None):
+    def __init__(self, state: Optional[Dict[str, Any]] = None) -> None:
         """An object meant to store arbitrary state. It can be accessed using
         dot notation while exposing dict like functionalities.
 
