@@ -68,7 +68,9 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 class Cache:
     __slots__ = ("backend", "lock", "default_expiration", "key_builder")
 
-    def __init__(self, backend: CacheBackendProtocol, default_expiration: int, cache_key_builder: "CacheKeyBuilder") -> None:
+    def __init__(
+        self, backend: CacheBackendProtocol, default_expiration: int, cache_key_builder: "CacheKeyBuilder"
+    ) -> None:
         """This class wraps a provided CacheBackend and ensures it is called in
         an async thread-safe fashion. This enables the use of normal sync
         libraries (such as the standard Redis python client) for caching
