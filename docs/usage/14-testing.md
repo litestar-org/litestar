@@ -261,7 +261,7 @@ We could thus test the guard function like so:
 ```python title="tests/guards/test_secret_token_guard.py"
 import pytest
 
-from starlite import NotAuthorizedException, HttpMethod
+from starlite import NotAuthorizedException
 from starlite.testing import RequestFactory
 
 from my_app.guards import secret_token_guard
