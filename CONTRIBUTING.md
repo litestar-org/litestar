@@ -87,7 +87,7 @@ but subsequent runs should be much faster.
 
 ### Checking test coverage
 
-You can check the unit test coverage by running: `$ poetry run pytest tests examples --cov=.`
+You can check the unit test coverage by running: `$ poetry run pytest tests examples --cov=starlite --cov=examples`
 
 Coverage should be 100% for any code you touch. Note that coverage will also be reported on your PR by the `SonarCloud`
 tool.
