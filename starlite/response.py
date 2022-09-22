@@ -38,7 +38,7 @@ class Response(StarletteResponse, Generic[T]):
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
-    ):
+    ) -> None:
         """The response class is used to return an HTTP response.
 
         Args:
@@ -112,7 +112,7 @@ class TemplateResponse(Response):
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
-    ):
+    ) -> None:
         """Handles the rendering of a given template into a bytes string.
 
         Args:

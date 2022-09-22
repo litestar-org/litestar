@@ -22,7 +22,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         guards: Optional[List[Guard]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> None:
         """ASGI Route Handler decorator. Use this decorator to decorate ASGI
         apps.
 

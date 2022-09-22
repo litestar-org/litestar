@@ -31,7 +31,7 @@ class WebSocketRoute(BaseRoute):
         *,
         path: str,
         route_handler: "WebsocketRouteHandler",
-    ):
+    ) -> None:
         """This class handles a single Websocket Route.
 
         Args:

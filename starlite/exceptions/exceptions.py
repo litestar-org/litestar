@@ -57,7 +57,7 @@ class HTTPException(StarletteHTTPException, StarLiteException):
         status_code: Optional[int] = None,
         headers: Optional[Dict[str, str]] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
-    ):
+    ) -> None:
         """Base exception for HTTP error responses.
 
         These exceptions carry information to construct an HTTP response.

@@ -37,7 +37,7 @@ class AbstractAuthenticationMiddleware(ABC):
         self,
         app: "ASGIApp",
         exclude: Optional[Union[str, List[str]]] = None,
-    ):
+    ) -> None:
         """This is an abstract AuthenticationMiddleware that allows users to
         create their own AuthenticationMiddleware by extending it and
         overriding the 'authenticate_request' method.

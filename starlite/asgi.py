@@ -68,7 +68,7 @@ class StarliteASGIRouter(StarletteRouter):
         app: "Starlite",
         on_shutdown: List["LifeSpanHandler"],
         on_startup: List["LifeSpanHandler"],
-    ):
+    ) -> None:
         self.app = app
         super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
