@@ -10,6 +10,16 @@
     options:
         separate_signature: false  # black fails to format
 
+::: starlite.testing.RequestFactory
+    options:
+        members:
+            - __init__
+            - get
+            - post
+            - put
+            - patch
+            - delete
+
 ::: starlite.testing.create_test_request
     options:
         separate_signature: false  # black fails to format
