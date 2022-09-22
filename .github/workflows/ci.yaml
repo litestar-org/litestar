@@ -40,7 +40,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
+            v1-venv-${{ runner.os }}
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
@@ -115,6 +118,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
+            v1-venv-${{ runner.os }}
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
