@@ -7,7 +7,7 @@ from starlette.testclient import TestClient as StarletteTestClient
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
-from starlite.enums import HttpMethod, ParamType, RequestEncodingType
+from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from starlite.exceptions import MissingDependencyException
 
 if TYPE_CHECKING:
@@ -360,7 +360,7 @@ class RequestFactory:
         """
 
         return dict(
-            type="http",
+            type=ScopeType.HTTP,
             method=http_method,
             server=(self.server, self.port),
             root_path=self.root_path.rstrip("/"),
