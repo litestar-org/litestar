@@ -85,7 +85,7 @@ class TestClient(StarletteTestClient):
         root_path: str = "",
         backend: "Literal['asyncio', 'trio' ]" = "asyncio",
         backend_options: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> None:
         """A client implementation providing a context manager for testing
         applications.
 
@@ -288,7 +288,7 @@ class RequestFactory:
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
-    ):
+    ) -> None:
         """A factory object to create [Request][starlite.connection.Request]
         instances.
 

@@ -275,7 +275,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
         with multiple methods.
 
@@ -626,7 +626,7 @@ class get(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
 
@@ -751,7 +751,7 @@ class post(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """POST Route Decorator. Use this decorator to decorate an HTTP handler
         for POST requests.
 
@@ -876,7 +876,7 @@ class put(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """PUT Route Decorator. Use this decorator to decorate an HTTP handler
         for PUT requests.
 
@@ -1001,7 +1001,7 @@ class patch(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """PATCH Route Decorator. Use this decorator to decorate an HTTP
         handler for PATCH requests.
 
@@ -1126,7 +1126,7 @@ class delete(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """DELETE Route Decorator. Use this decorator to decorate an HTTP
         handler for DELETE requests.
 

@@ -24,7 +24,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> None:
         """WebSocket Route Handler decorator. Use this decorator to decorate
         websocket handler functions.
 

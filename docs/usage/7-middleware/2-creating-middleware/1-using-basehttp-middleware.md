@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class MyRequestLoggingMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: ASGIApp, my_kwarg: str):
+    def __init__(self, app: ASGIApp, my_kwarg: str) -> None:
         super().__init__(app=app)
         self.my_kwarg = my_kwarg
 

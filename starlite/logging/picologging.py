@@ -7,7 +7,7 @@ from starlite.logging.standard import resolve_handlers
 
 
 class QueueListenerHandler(QueueHandler):  # type: ignore
-    def __init__(self, handlers: List[Any], respect_handler_level: bool = False, queue: Queue = Queue(-1)):
+    def __init__(self, handlers: List[Any], respect_handler_level: bool = False, queue: Queue = Queue(-1)) -> None:
         """Configures queue listener and handler to support non-blocking
         logging configuration.
 
