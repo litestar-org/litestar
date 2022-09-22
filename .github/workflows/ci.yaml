@@ -45,7 +45,6 @@ jobs:
             v1-venv-${{ runner.os }}-${{ matrix.python-version }}
             v1-venv-${{ runner.os }}
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV

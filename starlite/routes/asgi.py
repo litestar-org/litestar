@@ -20,7 +20,7 @@ class ASGIRoute(BaseRoute):
         *,
         path: str,
         route_handler: "ASGIRouteHandler",
-    ):
+    ) -> None:
         """This class handles a single ASGI Route.
 
         Args:

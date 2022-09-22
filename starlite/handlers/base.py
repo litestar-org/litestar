@@ -72,7 +72,7 @@ class BaseRouteHandler(Generic[T]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> None:
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
         self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty

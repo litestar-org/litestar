@@ -80,7 +80,7 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         security: Optional[List[SecurityRequirement]] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """The Starlite Router class.
 
         A Router instance is used to group controller, routers and route handler functions under a shared path fragment.

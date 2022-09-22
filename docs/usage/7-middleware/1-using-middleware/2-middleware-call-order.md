@@ -25,7 +25,7 @@ def test_middleware_call_order() -> None:
 
     def create_test_middleware(middleware_id: int) -> type[MiddlewareProtocol]:
         class TestMiddleware(MiddlewareProtocol):
-            def __init__(self, app: ASGIApp):
+            def __init__(self, app: ASGIApp) -> None:
                 self.app = app
 
             async def __call__(
