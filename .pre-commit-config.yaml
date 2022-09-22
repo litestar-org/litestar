@@ -147,7 +147,7 @@ repos:
             types-requests,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.271
+    rev: v1.1.272
     hooks:
       - id: pyright
         exclude: "test_starlette_tests"
