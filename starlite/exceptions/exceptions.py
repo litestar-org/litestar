@@ -15,7 +15,7 @@ from starlette.status import (
 
 
 class StarLiteException(Exception):
-    def __init__(self, *args: Any, detail: str = ""):
+    def __init__(self, *args: Any, detail: str = "") -> None:
         """Base `starlite` exception.
 
         Args:
@@ -139,7 +139,7 @@ class ServiceUnavailableException(HTTPException):
 
 
 class TemplateNotFoundException(InternalServerException):
-    def __init__(self, *args: Any, template_name: str):
+    def __init__(self, *args: Any, template_name: str) -> None:
         """Referenced template could not be found.
 
         Args:

@@ -21,7 +21,7 @@ class Provide:
 
     __slots__ = ("dependency", "use_cache", "value", "signature_model")
 
-    def __init__(self, dependency: "AnyCallable", use_cache: bool = False, sync_to_thread: bool = False):
+    def __init__(self, dependency: "AnyCallable", use_cache: bool = False, sync_to_thread: bool = False) -> None:
 
         self.dependency = cast("AnyCallable", AsyncCallable(dependency) if sync_to_thread else dependency)
         self.use_cache = use_cache

@@ -9,7 +9,7 @@ from starlite.types import ASGIApp, Scope, Receive, Send
 
 
 class MiddlewareProtocol(Protocol):
-    def __init__(self, app: ASGIApp, **kwargs: Any):
+    def __init__(self, app: ASGIApp, **kwargs: Any) -> None:
         ...
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class MyRequestLoggingMiddleware(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)
         self.app = app
 
@@ -70,7 +70,7 @@ from starlite.middleware.base import MiddlewareProtocol
 
 
 class RedirectMiddleware(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)
         self.app = app
 
@@ -111,7 +111,7 @@ from starlite.types import ASGIApp
 
 
 class ProcessTimeHeader(MiddlewareProtocol):
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)
         self.app = app
 
