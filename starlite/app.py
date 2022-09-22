@@ -60,7 +60,7 @@ if TYPE_CHECKING:
         LifeSpanSend,
         Message,
         Middleware,
-        OnAppConfigHandler,
+        OnAppInitHandler,
         ParametersMap,
         Receive,
         ResponseCookies,
@@ -161,7 +161,7 @@ class Starlite(Router):
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
         middleware: Optional[List["Middleware"]] = None,
-        on_app_config: Optional[List["OnAppConfigHandler"]] = None,
+        on_app_init: Optional[List["OnAppInitHandler"]] = None,
         on_shutdown: Optional[List["LifeSpanHandler"]] = None,
         on_startup: Optional[List["LifeSpanHandler"]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
@@ -219,6 +219,10 @@ class Starlite(Router):
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            on_app_init: A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
+                an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
+                the parameters passed to [Starlite][starlite.app.Starlite], and must return an instance of same. If more
+                than one handler is registered they are called in the order they are provided.
             on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application shutdown.
             on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
@@ -252,7 +256,7 @@ class Starlite(Router):
         self.state = State()
 
         # creates app config object from parameters
-        app_conf = AppConfig(
+        config = AppConfig(
             route_handlers=route_handlers,
             after_exception=after_exception,
             after_request=after_request,
@@ -286,43 +290,43 @@ class Starlite(Router):
             tags=tags,
             template_config=template_config,
         )
-        for handler in on_app_config or []:
-            app_conf = handler(app_conf)
+        for handler in on_app_init or []:
+            config = handler(config)
 
-        self.after_exception = as_async_callable_list(app_conf.after_exception) if app_conf.after_exception else []
-        self.after_shutdown = as_async_callable_list(app_conf.after_shutdown) if app_conf.after_shutdown else []
-        self.after_startup = as_async_callable_list(app_conf.after_startup) if app_conf.after_startup else []
-        self.allowed_hosts = app_conf.allowed_hosts
-        self.before_send = as_async_callable_list(app_conf.before_send) if app_conf.before_send else []
-        self.before_shutdown = as_async_callable_list(app_conf.before_shutdown) if app_conf.before_shutdown else []
-        self.before_startup = as_async_callable_list(app_conf.before_startup) if app_conf.before_startup else []
-        self.cache = app_conf.cache_config.to_cache()
-        self.compression_config = app_conf.compression_config
-        self.cors_config = app_conf.cors_config
-        self.csrf_config = app_conf.csrf_config
-        self.debug = app_conf.debug
-        self.on_shutdown = app_conf.on_shutdown or []
-        self.on_startup = app_conf.on_startup or []
-        self.openapi_config = app_conf.openapi_config
-        self.plugins = app_conf.plugins or []
-        self.static_files_config = app_conf.static_files_config
-        self.template_engine = create_template_engine(app_conf.template_config)
+        self.after_exception = as_async_callable_list(config.after_exception) if config.after_exception else []
+        self.after_shutdown = as_async_callable_list(config.after_shutdown) if config.after_shutdown else []
+        self.after_startup = as_async_callable_list(config.after_startup) if config.after_startup else []
+        self.allowed_hosts = config.allowed_hosts
+        self.before_send = as_async_callable_list(config.before_send) if config.before_send else []
+        self.before_shutdown = as_async_callable_list(config.before_shutdown) if config.before_shutdown else []
+        self.before_startup = as_async_callable_list(config.before_startup) if config.before_startup else []
+        self.cache = config.cache_config.to_cache()
+        self.compression_config = config.compression_config
+        self.cors_config = config.cors_config
+        self.csrf_config = config.csrf_config
+        self.debug = config.debug
+        self.on_shutdown = config.on_shutdown or []
+        self.on_startup = config.on_startup or []
+        self.openapi_config = config.openapi_config
+        self.plugins = config.plugins or []
+        self.static_files_config = config.static_files_config
+        self.template_engine = create_template_engine(config.template_config)
         super().__init__(
-            after_request=app_conf.after_request,
-            after_response=app_conf.after_response,
-            before_request=app_conf.before_request,
-            dependencies=app_conf.dependencies,
-            exception_handlers=app_conf.exception_handlers,
-            guards=app_conf.guards,
-            middleware=app_conf.middleware,
-            parameters=app_conf.parameters,
+            after_request=config.after_request,
+            after_response=config.after_response,
+            before_request=config.before_request,
+            dependencies=config.dependencies,
+            exception_handlers=config.exception_handlers,
+            guards=config.guards,
+            middleware=config.middleware,
+            parameters=config.parameters,
             path="",
-            response_class=app_conf.response_class,
-            response_cookies=app_conf.response_cookies,
-            response_headers=app_conf.response_headers,
-            route_handlers=app_conf.route_handlers,
-            security=app_conf.security,
-            tags=app_conf.tags,
+            response_class=config.response_class,
+            response_cookies=config.response_cookies,
+            response_headers=config.response_headers,
+            route_handlers=config.route_handlers,
+            security=config.security,
+            tags=config.tags,
         )
         self._init = True
 
@@ -337,11 +341,11 @@ class Starlite(Router):
             self.register(self.openapi_config.openapi_controller)
 
         if self.static_files_config:
-            for config in (
+            for static_config in (
                 self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
             ):
-                self._static_paths.add(config.path)
-                self.register(asgi(path=config.path)(config.to_static_files_app()))
+                self._static_paths.add(static_config.path)
+                self.register(asgi(path=static_config.path)(static_config.to_static_files_app()))
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()

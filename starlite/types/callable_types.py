@@ -39,5 +39,5 @@ Guard = Union[
 ]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
-OnAppConfigHandler = Callable[[AppConfig], AppConfig]
+OnAppInitHandler = Callable[[AppConfig], AppConfig]
 Serializer = Callable[[Any], Any]

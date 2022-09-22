@@ -12,7 +12,6 @@ from starlite.router import Router
 @pytest.fixture()
 def app_config_object() -> AppConfig:
     return AppConfig(
-        route_handlers=[],
         after_exception=None,
         after_request=None,
         after_response=None,
@@ -40,6 +39,7 @@ def app_config_object() -> AppConfig:
         response_class=None,
         response_cookies=None,
         response_headers=None,
+        route_handlers=[],
         security=None,
         static_files_config=None,
         tags=None,
@@ -47,28 +47,20 @@ def app_config_object() -> AppConfig:
     )
 
 
-@pytest.fixture()
-def starlite_signature() -> inspect.Signature:
-    return inspect.signature(Starlite)
-
-
-def test_app_params_defined_on_app_config_object(starlite_signature: inspect.Signature) -> None:
+def test_app_params_defined_on_app_config_object() -> None:
     """Ensures that all parameters to the `Starlite` constructor are present on
     the `AppConfig` object."""
+    starlite_signature = inspect.signature(Starlite)
     app_config_fields = AppConfig.__fields__
     for name in starlite_signature.parameters:
-        if name == "on_app_config":
+        if name == "on_app_init":
             continue
         assert name in app_config_fields
     # ensure there are not fields defined on AppConfig that aren't in the Starlite signature
     assert not (app_config_fields.keys() - starlite_signature.parameters.keys())
 
 
-def test_app_config_object_used(
-    starlite_signature: inspect.Signature,
-    app_config_object: AppConfig,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytest.MonkeyPatch) -> None:
     """Ensure that the properties on the `AppConfig` object are accessed within
     the `Starlite` constructor."""
 
@@ -90,7 +82,7 @@ def test_app_config_object_used(
     monkeypatch.setattr(Router, "__init__", MagicMock())
 
     # instantiates the app with an `on_app_config` that returns our patched `AppConfig` object.
-    Starlite(route_handlers=[], debug=False, on_app_config=[MagicMock(return_value=app_config_object)])
+    Starlite(route_handlers=[], debug=False, on_app_init=[MagicMock(return_value=app_config_object)])
 
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
     for mock in property_mocks:
