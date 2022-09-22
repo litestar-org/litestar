@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Callable, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Type, Union
 
 from typing_extensions import Literal
+
+from starlite.types import Method
 
 if TYPE_CHECKING:
     from starlite.app import Starlite  # noqa: TC004
@@ -24,3 +26,4 @@ StarliteType = Starlite
 RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
 ResponseType = Type[Response]
 ControllerRouterHandler = Union[Type[Controller], RouteHandlerType, Router, Callable[..., Any]]
+RouteHandlerMapItem = Union[WebsocketRouteHandler, ASGIRouteHandler, Dict[Method, HTTPRouteHandler]]

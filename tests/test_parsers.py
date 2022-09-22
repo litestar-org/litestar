@@ -1,8 +1,9 @@
 from pydantic import BaseConfig
 from pydantic.fields import ModelField
 
-from starlite import RequestEncodingType, parsers
+from starlite import RequestEncodingType
 from starlite.datastructures import FormMultiDict
+from starlite.parsers import parse_form_data, parse_query_params
 from starlite.testing import create_test_request
 
 
@@ -15,7 +16,7 @@ def test_parse_query_params() -> None:
         "polluting": False,
     }
     request = create_test_request(query=query)  # type: ignore
-    result = parsers.parse_query_params(connection=request)
+    result = parse_query_params(connection=request)
     assert result == {
         "value": ["10"],
         "veggies": ["tomato", "potato", "aubergine"],
@@ -37,7 +38,7 @@ def test_parse_form_data() -> None:
             ("polluting", False),
         ]
     )
-    result = parsers.parse_form_data(
+    result = parse_form_data(
         media_type=RequestEncodingType.MULTI_PART,
         form_data=form_data,
         field=ModelField(name="test", type_=int, class_validators=None, model_config=BaseConfig),
