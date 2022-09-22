@@ -3,6 +3,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Mapping,
     NamedTuple,
     Optional,
     Set,
@@ -24,6 +25,7 @@ from pydantic.fields import (
     ModelField,
     Undefined,
 )
+from starlette.datastructures import URL
 
 from starlite.constants import (
     EXTRA_KEY_IS_PARAMETER,
@@ -332,51 +334,48 @@ class KwargsModel:
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
         """
-        reserved_kwargs: Dict[str, Any] = {}
         connection_query_params = {k: self._sequence_or_scalar_param(k, v) for k, v in connection.query_params.items()}
-        if self.expected_reserved_kwargs:
-            if "state" in self.expected_reserved_kwargs:
-                reserved_kwargs["state"] = connection.app.state.copy()
-            if "headers" in self.expected_reserved_kwargs:
-                reserved_kwargs["headers"] = connection.headers
-            if "cookies" in self.expected_reserved_kwargs:
-                reserved_kwargs["cookies"] = connection.cookies
-            if "query" in self.expected_reserved_kwargs:
-                reserved_kwargs["query"] = connection_query_params
-            if "request" in self.expected_reserved_kwargs:
-                reserved_kwargs["request"] = connection
-            if "socket" in self.expected_reserved_kwargs:
-                reserved_kwargs["socket"] = connection
-            if "data" in self.expected_reserved_kwargs:
-                reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
-        try:
-            path_params = {
-                param.field_name: connection.path_params[param.field_alias]
-                if param.is_required
-                else connection.path_params.get(param.field_alias, param.default_value)
-                for param in self.expected_path_params
-            }
-            query_params = {
-                param.field_name: connection_query_params[param.field_alias]
-                if param.is_required
-                else connection_query_params.get(param.field_alias, param.default_value)
-                for param in self.expected_query_params
-            }
-            header_params = {
-                param.field_name: connection.headers[param.field_alias]
-                if param.is_required
-                else connection.headers.get(param.field_alias, param.default_value)
-                for param in self.expected_header_params
-            }
-            cookie_params = {
-                param.field_name: connection.cookies[param.field_alias]
-                if param.is_required
-                else connection.cookies.get(param.field_alias, param.default_value)
-                for param in self.expected_cookie_params
-            }
-            return {**reserved_kwargs, **path_params, **query_params, **header_params, **cookie_params}
-        except KeyError as e:
-            raise ValidationException(f"Missing required parameter {e.args[0]} for url {connection.url}") from e
+
+        path_params = self._collect_params(
+            params=connection.path_params, expected=self.expected_path_params, url=connection.url
+        )
+        query_params = self._collect_params(
+            params=connection_query_params, expected=self.expected_query_params, url=connection.url
+        )
+        header_params = self._collect_params(
+            params=connection.headers, expected=self.expected_header_params, url=connection.url
+        )
+        cookie_params = self._collect_params(
+            params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
+        )
+
+        if not self.expected_reserved_kwargs:
+            return {**path_params, **query_params, **header_params, **cookie_params}
+
+        reserved_kwargs: Dict[str, Any] = {}
+        if "state" in self.expected_reserved_kwargs:
+            reserved_kwargs["state"] = connection.app.state.copy()
+        if "headers" in self.expected_reserved_kwargs:
+            reserved_kwargs["headers"] = connection.headers
+        if "cookies" in self.expected_reserved_kwargs:
+            reserved_kwargs["cookies"] = connection.cookies
+        if "query" in self.expected_reserved_kwargs:
+            reserved_kwargs["query"] = connection_query_params
+        if "request" in self.expected_reserved_kwargs:
+            reserved_kwargs["request"] = connection
+        if "socket" in self.expected_reserved_kwargs:
+            reserved_kwargs["socket"] = connection
+        if "data" in self.expected_reserved_kwargs:
+            reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
+        return {**reserved_kwargs, **path_params, **query_params, **header_params, **cookie_params}
+
+    @staticmethod
+    def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:
+        """Collects request params, checking for missing required values."""
+        missing_params = [p.field_alias for p in expected if p.is_required and p.field_alias not in params]
+        if missing_params:
+            raise ValidationException(f"Missing required parameter(s) {', '.join(missing_params)} for url {url}")
+        return {p.field_name: params.get(p.field_alias, p.default_value) for p in expected}
 
     async def resolve_dependency(
         self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any

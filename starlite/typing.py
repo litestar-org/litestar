@@ -81,6 +81,31 @@ class Partial(Generic[T]):
         Returns:
             A dataclass class.
         """
+        fields: Dict[str, DataclassField] = cls._create_optional_field_map(item)
+        partial_type: Type[T] = dataclass(  # pyright: ignore
+            type(f"Partial{item.__name__}", (item,), {"__dataclass_fields__": fields})
+        )
+        annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
+        for ancestor in annotated_ancestors:
+            for field_name, annotation in ancestor.__annotations__.items():
+                if not isinstance(annotation, GenericAlias) or type(None) not in annotation.__args__:
+                    partial_type.__annotations__[field_name] = Optional[annotation]
+                else:
+                    partial_type.__annotations__[field_name] = annotation
+
+        cls._models[item] = partial_type
+
+    @staticmethod
+    def _create_optional_field_map(item: Type[T]) -> Dict[str, DataclassField]:
+        """Creates a map of field name to optional dataclass Fields for a given
+        dataclass.
+
+        Args:
+            item: A dataclass class.
+
+        Returns:
+            A map of field name to optional dataclass fields.
+        """
         fields: Dict[str, DataclassField] = {}
         for field_name, dataclass_field in item.__dataclass_fields__.items():  # type: ignore[attr-defined]
             if not isinstance(dataclass_field.type, GenericAlias) or type(None) not in dataclass_field.type.__args__:
@@ -88,16 +113,4 @@ class Partial(Generic[T]):
             if dataclass_field.default_factory is MISSING:
                 dataclass_field.default = None if dataclass_field.default is MISSING else dataclass_field.default
             fields[field_name] = dataclass_field
-
-        partial_type: Type[T] = dataclass(  # pyright: ignore
-            type(f"Partial{item.__name__}", (item,), {"__dataclass_fields__": fields})
-        )
-        for ancestor in getmro(partial_type):
-            if hasattr(ancestor, "__annotations__"):
-                for field_name, annotation in ancestor.__annotations__.items():
-                    if not isinstance(annotation, GenericAlias) or type(None) not in annotation.__args__:
-                        partial_type.__annotations__[field_name] = Optional[annotation]
-                    else:
-                        partial_type.__annotations__[field_name] = annotation
-
-        cls._models[item] = partial_type
+        return fields

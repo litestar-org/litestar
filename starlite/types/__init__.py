@@ -45,6 +45,7 @@ from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
     ResponseType,
+    RouteHandlerMapItem,
     RouteHandlerType,
 )
 
@@ -83,6 +84,7 @@ __all__ = [
     "ResponseCookies",
     "ResponseHeadersMap",
     "ResponseType",
+    "RouteHandlerMapItem",
     "RouteHandlerType",
     "Scope",
     "Send",

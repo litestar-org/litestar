@@ -226,8 +226,8 @@ def test_get_item(item: Item):
 
 ## Creating a Test Request
 
-Another helper is `create_test_request`, which creates an instance of `starlite.connection.Request`. The use case for
-this helper is when you need to test logic that expects to receive a request object.
+Another helper is the `RequestFactory` class, which creates instances of `starlite.connection.Request`.
+The use case for this helper is when you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples
 from the [guards](9-guards.md) documentation:
@@ -261,14 +261,14 @@ We could thus test the guard function like so:
 ```python title="tests/guards/test_secret_token_guard.py"
 import pytest
 
-from starlite import NotAuthorizedException, HttpMethod
-from starlite.testing import create_test_request
+from starlite import NotAuthorizedException
+from starlite.testing import RequestFactory
 
 from my_app.guards import secret_token_guard
 from my_app.secret import secret_endpoint
 
 
-request = create_test_request(http_method=HttpMethod.GET)
+request = RequestFactory().get("/")
 
 
 def test_secret_token_guard_failure_scenario():
@@ -284,8 +284,49 @@ def test_secret_token_guard_success_scenario():
     secret_token_guard(request=request, route_handler=copied_endpoint_handler)
 ```
 
-Aside from `http_method`, which is **required**, you can pass the following optional kwargs to `create_test_request`:
+The `RequestFactory` constructor accepts the following parameters:
 
+- `app`: An instance of `starlite.app.Starlite`.
+- `server`: The server's domain. Defaults to `test.org`.
+- `port`: The server's port. Defaults to `3000`.
+- `root_path`: Root path for the server. Defaults to `/`.
+
+It exposes methods for all supported HTTP methods:
+
+- `RequestFactory().get()`
+- `RequestFactory().post()`
+- `RequestFactory().put()`
+- `RequestFactory().patch()`
+- `RequestFactory().delete()`
+
+All of these methods accept the following parameters:
+
+- `path`: The request's path. This parameter is **required**.
+- `headers`: A dictionary of headers. Defaults to `None`.
+- `cookies`: A string representing the cookie header or a list of `starlite.datastructures.Cookie` instances.
+  This value can include multiple cookies. Defaults to `None`.
+- `session`: A dictionary of session data. Defaults to `None`.
+- `user`: A value for `request.scope["user"]`. Defaults to `None`.
+- `auth`: A value for `request.scope["auth"]`. Defaults to `None`.
+
+In addition, the following methods accepts a few more parameters:
+
+- `RequestFactory().get()`:
+
+  - `query_params`: A dictionary of values from which the request's query will be generated.
+    Defaults to `None`.
+
+- `RequestFactory().post()`, `RequestFactory().put()`, `RequestFactory().patch()`:
+
+  - `request_media_type`: The 'Content-Type' header of the request. Defaults to `None`.
+  - `data`: A value for the request's body. Can be either a pydantic model instance
+    or a string keyed dictionary. Defaults to `None`.
+
+Aside from `RequestFactory`, there is an alternative for creating request objects.
+There is a method called `create_test_request` which was used before `RequestFactory` was created.
+This method accepts the following parameters:
+
+- `http_method`: a **required** parameter.
 - `scheme`: "http" or "https". Defaults to `http`.
 - `server`: Server domain. Defaults to `test.org`.
 - `port`: Request port. Defaults to `3000`.

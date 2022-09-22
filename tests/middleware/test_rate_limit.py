@@ -100,7 +100,7 @@ def test_check_throttle_handler() -> None:
     def check_throttle_handler(request: Request[Any, Any]) -> bool:
         return request.url.path == "/path1"
 
-    config = RateLimitConfig(rate_limit=("second", 1), check_throttle_handler=check_throttle_handler)
+    config = RateLimitConfig(rate_limit=("minute", 1), check_throttle_handler=check_throttle_handler)
 
     with create_test_client(route_handlers=[handler1, handler2], middleware=[config.middleware]) as client:
         response = client.get("/path1")
