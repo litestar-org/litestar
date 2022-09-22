@@ -132,7 +132,7 @@ class DTO(GenericModel, Generic[T]):
 
 
 class DTOFactory:
-    def __init__(self, plugins: Optional[List[PluginProtocol]] = None):
+    def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
         """Create [`DTO`][starlite.dto.DTO] types from pydantic models,
         dataclasses and other types supported via plugins.
 
