@@ -33,6 +33,10 @@ class PersonFactory(ModelFactory[Person]):
     __model__ = Person
 
 
+class PetFactory(ModelFactory[Pet]):
+    __model__ = Pet
+
+
 @vanilla_dataclass
 class VanillaDataClassPerson:
     first_name: str
