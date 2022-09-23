@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -45,7 +45,7 @@ class AppConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    after_exception: Optional[SingleOrList[AfterExceptionHookHandler]]
+    after_exception: SingleOrList[AfterExceptionHookHandler]
     """
     An application level [exception hook handler][starlite.types.AfterExceptionHookHandler] or list thereof. This hook
     is called after an exception occurs. In difference to exception handlers, it is not meant to return a response -
@@ -62,17 +62,17 @@ class AppConfig(BaseModel):
     A sync or async function called after the response has been awaited. It receives the
     [Request][starlite.connection.Request] object and should not return any values.
     """
-    after_shutdown: Optional[SingleOrList[LifeSpanHookHandler]]
+    after_shutdown: SingleOrList[LifeSpanHookHandler]
     """
     An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or list thereof. This hook is
     called during the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
     """
-    after_startup: Optional[SingleOrList[LifeSpanHookHandler]]
+    after_startup: SingleOrList[LifeSpanHookHandler]
     """
     An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or list thereof. This hook is
     called during the ASGI startup, after all callables in the 'on_startup' list have been called.
     """
-    allowed_hosts: Optional[List[str]]
+    allowed_hosts: List[str]
     """
     A list of allowed hosts - enables the builtin allowed hosts middleware.
     """
@@ -82,17 +82,17 @@ class AppConfig(BaseModel):
     [Request][starlite.connection.Request] instance and any non-`None` return value is used for the response, bypassing
     the route handler.
     """
-    before_send: Optional[SingleOrList[BeforeMessageSendHookHandler]]
+    before_send: SingleOrList[BeforeMessageSendHookHandler]
     """
     An application level [before send hook handler][starlite.types.BeforeMessageSendHookHandler] or list thereof. This
     hook is called when the ASGI send function is called.
     """
-    before_shutdown: Optional[SingleOrList[LifeSpanHookHandler]]
+    before_shutdown: SingleOrList[LifeSpanHookHandler]
     """
     An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or list thereof. This hook is
     called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
     """
-    before_startup: Optional[SingleOrList[LifeSpanHookHandler]]
+    before_startup: SingleOrList[LifeSpanHookHandler]
     """
     An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or list thereof. This hook is
     called during the ASGI startup, before any callables in the 'on_startup' list have been called.
@@ -117,27 +117,27 @@ class AppConfig(BaseModel):
     """
     If `True`, app errors rendered as HTML with a stack trace.
     """
-    dependencies: Optional[Dict[str, Provide]]
+    dependencies: Dict[str, Provide]
     """
     A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
     """
-    exception_handlers: Optional[ExceptionHandlersMap]
+    exception_handlers: ExceptionHandlersMap
     """
     A dictionary that maps handler functions to status codes and/or exception types.
     """
-    guards: Optional[List[Guard]]
+    guards: List[Guard]
     """
     A list of [Guard][starlite.types.Guard] callables.
     """
-    middleware: Optional[List[Middleware]]
+    middleware: List[Middleware]
     """
     A list of [Middleware][starlite.types.Middleware].
     """
-    on_shutdown: Optional[List[LifeSpanHandler]]
+    on_shutdown: List[LifeSpanHandler]
     """
     A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during application shutdown.
     """
-    on_startup: Optional[List[LifeSpanHandler]]
+    on_startup: List[LifeSpanHandler]
     """
     A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during application startup.
     """
@@ -145,11 +145,11 @@ class AppConfig(BaseModel):
     """
     Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
     """
-    parameters: Optional[ParametersMap]
+    parameters: ParametersMap
     """
     A mapping of [Parameter][starlite.params.Parameter] definitions available to all application paths.
     """
-    plugins: Optional[List[PluginProtocol]]
+    plugins: List[PluginProtocol]
     """
     List of [PluginProtocol][starlite.plugins.base.PluginProtocol].
     """
@@ -157,11 +157,11 @@ class AppConfig(BaseModel):
     """
     A custom subclass of [starlite.response.Response] to be used as the app's default response.
     """
-    response_cookies: Optional[ResponseCookies]
+    response_cookies: ResponseCookies
     """
     A list of [Cookie](starlite.datastructures.Cookie] instances.
     """
-    response_headers: Optional[ResponseHeadersMap]
+    response_headers: ResponseHeadersMap
     """
     A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
     """
@@ -170,16 +170,16 @@ class AppConfig(BaseModel):
     A required list of route handlers, which can include instances of [Router][starlite.router.Router], subclasses of
     [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
     """
-    security: Optional[List[SecurityRequirement]]
+    security: List[SecurityRequirement]
     """
     A list of dictionaries that will be added to the schema of all route handlers in the application. See
     [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
     """
-    static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]]
+    static_files_config: SingleOrList[StaticFilesConfig]
     """
     An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig].
     """
-    tags: Optional[List[str]]
+    tags: List[str]
     """
     A list of string tags that will be appended to the schema of all route handlers under the application.
     """
