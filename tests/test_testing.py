@@ -1,69 +1,68 @@
 import json
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Dict, List, Union
 
 import pytest
-from hypothesis import HealthCheck, given, settings
-from hypothesis import strategies as st
 from pydantic import BaseModel
 
 from starlite import HttpMethod, RequestEncodingType, Starlite, State, get
 from starlite.datastructures import Cookie
 from starlite.enums import ParamType
 from starlite.testing import RequestFactory, TestClient, create_test_request
-from tests import Person, PersonFactory
+from tests import Pet, PetFactory
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
-person = PersonFactory.build()
+pet = PetFactory.build()
 
 
-@settings(suppress_health_check=HealthCheck.all())
-@given(
-    http_method=st.sampled_from(HttpMethod),
-    scheme=st.text(),
-    server=st.text(),
-    port=st.integers(),
-    root_path=st.text(),
-    path=st.text(),
-    query=st.one_of(
-        st.none(),
-        st.dictionaries(keys=st.text(), values=st.one_of(st.lists(st.text()), st.text())),
-    ),
-    headers=st.one_of(st.none(), st.dictionaries(keys=st.text(), values=st.text())),
-    cookie=st.one_of(st.none(), st.text()),
-    content=st.one_of(
-        st.none(),
-        st.builds(Person),
-        st.dictionaries(keys=st.text(), values=st.builds(dict)),
-    ),
-    request_media_type=st.sampled_from(RequestEncodingType),
-)
-def test_create_test_request(
-    http_method: Any,
-    scheme: Any,
-    server: Any,
-    port: Any,
-    root_path: Any,
-    path: Any,
-    query: Any,
-    headers: Any,
-    cookie: Any,
-    content: Any,
-    request_media_type: Any,
-) -> None:
-    create_test_request(
+@pytest.mark.parametrize("http_method", list(HttpMethod))
+async def test_create_test_request(http_method: HttpMethod) -> None:
+    app = Starlite(route_handlers=[])
+    server = "starlite.api"
+    port = 5000
+    scheme = "https"
+    root_path = "/root"
+    path = "/path"
+    headers = {"header1": "value1"}
+    cookie = "test=cookie; starlite=cookie"
+    query_params: Dict[str, Union[str, List[str]]] = {"p1": "a"}
+    content = pet
+    request_media_type = RequestEncodingType.URL_ENCODED
+
+    request = create_test_request(
+        app=app,
         http_method=http_method,
         scheme=scheme,
         server=server,
         port=port,
         root_path=root_path,
         path=path,
-        query=query,
+        query=query_params,
         headers=headers,
         cookie=cookie,
         content=content,
         request_media_type=request_media_type,
     )
+
+    assert request.method == http_method
+    assert request.app == app
+    assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
+    assert all([header in request.headers for header in headers.keys()])
+    assert request.headers[ParamType.COOKIE] == cookie
+
+    expected_url = f"{scheme}://{server}:{port}{root_path}{path}"
+    if http_method == HttpMethod.GET:
+        expected_url += "?" + "".join([f"{key}={value}" for key, value in query_params.items()])
+    assert request.url == expected_url
+
+    if http_method in [HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH]:
+        assert request.content_type[0] == request_media_type.value
+        body = await request.body()
+        assert body.decode() == "&".join([f"{key}={value}" for key, value in pet.dict().items()])
+    else:
+        assert not request.content_type[0]
+        with pytest.raises(RuntimeError):
+            await request.body()
 
 
 def test_request_factory_no_cookie_header() -> None:
@@ -102,25 +101,25 @@ def test_request_factory_build_headers() -> None:
         assert headers[decoded_key] == decoded_value
 
 
-@pytest.mark.parametrize("data", [person, person.dict()])
-async def test_request_factory_create_with_data(data: Union[Person, Dict[str, Any]]) -> None:
+@pytest.mark.parametrize("data", [pet, pet.dict()])
+async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]) -> None:
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
         data=data,
     )
     body = await request.body()
-    assert json.loads(body.decode()) == person.dict()
+    assert json.loads(body.decode()) == pet.dict()
 
 
 @pytest.mark.parametrize(
     "request_media_type, verify_data",
     [
-        [RequestEncodingType.JSON, lambda data: json.loads(data) == person.dict()],
+        [RequestEncodingType.JSON, lambda data: json.loads(data) == pet.dict()],
         [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
         [
             RequestEncodingType.URL_ENCODED,
-            lambda data: "&".join([f"{key}={value}" for key, value in person.dict().items()]),
+            lambda data: data == "&".join([f"{key}={value}" for key, value in pet.dict().items()]),
         ],
     ],
 )
@@ -130,7 +129,7 @@ async def test_request_factory_create_with_content_type(
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=person,
+        data=pet,
         request_media_type=request_media_type,
     )
     assert request.headers["Content-Type"].startswith(request_media_type.value)
@@ -160,11 +159,12 @@ def test_request_factory_create_with_params() -> None:
     path = "/path"
     user = User()
     auth = Auth()
+    scheme = "https"
     session = {"param1": "a", "param2": 2}
-    request = RequestFactory(app, server, port, root_path).get(path, session=session, user=user, auth=auth)
+    request = RequestFactory(app, server, port, root_path, scheme).get(path, session=session, user=user, auth=auth)
     assert request.app == app
-    assert request.base_url == f"http://{server}:{port}{root_path}/"
-    assert request.url == f"http://{server}:{port}{root_path}{path}"
+    assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
+    assert request.url == f"{scheme}://{server}:{port}{root_path}{path}"
     assert request.method == HttpMethod.GET
     assert request.query_params == {}
     assert request.user == user
@@ -201,13 +201,13 @@ def test_request_factory_delete() -> None:
 )
 async def test_request_factory_post_put_patch(factory: Callable, method: HttpMethod) -> None:
     headers = {"header1": "value1"}
-    request = factory("/", headers=headers, data=person)
+    request = factory("/", headers=headers, data=pet)
     assert request.method == method
     # Headers should include "header1" and "Content-Type"
     assert len(request.headers.keys()) == 2
     assert request.headers.get("header1") == "value1"
     body = await request.body()
-    assert json.loads(body) == person.dict()
+    assert json.loads(body) == pet.dict()
 
 
 def test_test_client() -> None:
@@ -223,16 +223,3 @@ def test_test_client() -> None:
     with TestClient(app=app) as client:
         client.get("/test")
         assert app.state.value == 1
-
-
-def test_create_test_request_with_cookies(session_test_cookies: str) -> None:
-    """Should accept either list of "Cookie" instance or as a string."""
-    request = create_test_request(
-        cookie=[Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
-    )
-    cookies = request.cookies
-    assert {"test", "starlite"}.issubset(cookies.keys())
-    assert cookies["Path"] == "/test"
-
-    request = create_test_request(cookie=session_test_cookies)
-    assert "session-0" in request.cookies

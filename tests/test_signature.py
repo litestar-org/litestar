@@ -17,7 +17,7 @@ from starlite.exceptions import (
 )
 from starlite.params import Dependency
 from starlite.signature import SignatureModel, SignatureModelFactory
-from starlite.testing import create_test_client, create_test_request
+from starlite.testing import RequestFactory, create_test_client
 from tests.plugins.test_base import AModel, APlugin
 
 if TYPE_CHECKING:
@@ -43,7 +43,7 @@ def test_parses_values_from_connection_kwargs_with_plugin() -> None:
 
     model = make_signature_model(fn, plugins=[APlugin()])
     arbitrary_a = {"name": 1}
-    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a=arbitrary_a, b=1)
+    result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get("/"), a=arbitrary_a, b=1)
     assert result == {"a": AModel(name="1"), "b": 1}
 
 
@@ -55,7 +55,7 @@ def test_parses_values_from_connection_kwargs_without_plugin() -> None:
         pass
 
     model = make_signature_model(fn)
-    result = model.parse_values_from_connection_kwargs(connection=create_test_request(), a={"name": "my name"})
+    result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get("/"), a={"name": "my name"})
     assert result == {"a": MyModel(name="my name")}
 
 
@@ -65,7 +65,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
 
     model = make_signature_model(fn)
     with pytest.raises(ValidationException):
-        model.parse_values_from_connection_kwargs(connection=create_test_request(), a="not an int")
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get("/"), a="not an int")
 
 
 def test_resolve_field_value() -> None:
@@ -87,7 +87,7 @@ def test_construct_exception(exc_type: Type[Exception], loc_errors: List[str], e
         pass
 
     model = make_signature_model(fn, provided_dependency_names={"a"})
-    request = create_test_request()
+    request = RequestFactory().get("/")
     errors = [ErrorWrapper(Exception(), loc) for loc in loc_errors]
     validation_error = ValidationError(errors=errors, model=BaseModel)
     exc = cast("HTTPException", model.construct_exception(connection=request, exc=validation_error))
@@ -119,7 +119,7 @@ class TestGetConnectionMethodAndUrl:
         assert SignatureModel.get_connection_method_and_url(web_socket) == ("websocket", URL("/"))
 
     def test_request(self) -> None:
-        request = create_test_request()
+        request = RequestFactory().get("/")
         assert SignatureModel.get_connection_method_and_url(request) == (request.method, request.url)
 
 
