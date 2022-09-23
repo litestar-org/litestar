@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):
-    def __init__(self, app: "ASGIApp"):
+    def __init__(self, app: "ASGIApp") -> None:
         self.app = app
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:

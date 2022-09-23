@@ -33,7 +33,7 @@ class HTTPRoute(BaseRoute):
         *,
         path: str,
         route_handlers: List["HTTPRouteHandler"],
-    ):
+    ) -> None:
         """This class handles a multiple HTTP Routes.
 
         Args:

@@ -31,7 +31,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     scope: "HTTPScope"
 
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send):
+    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """The Starlite Request class.
 
         Args:

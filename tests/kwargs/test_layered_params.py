@@ -104,7 +104,7 @@ def test_layered_parameters_validation(parameter: str) -> None:
         )
 
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert f"Missing required parameter {parameter}" in response.json()["detail"]
+        assert f"Missing required parameter(s) {parameter}" in response.json()["detail"]
 
 
 def test_layered_parameters_defaults_and_overrides() -> None:

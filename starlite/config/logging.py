@@ -1,13 +1,46 @@
-from logging import config
-from typing import Any, Dict, Generator, Iterable, List, Optional, Union
+from importlib.util import find_spec
+from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from orjson import dumps
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-try:
-    from picologging import config as picologging_config
-except ImportError:
-    picologging_config = None
+from starlite.exceptions import MissingDependencyException
+
+default_handlers: Dict[str, Dict[str, Any]] = {
+    "console": {
+        "class": "logging.StreamHandler",
+        "level": "DEBUG",
+        "formatter": "standard",
+    },
+    "queue_listener": {
+        "class": "starlite.QueueListenerHandler",
+        "handlers": ["cfg://handlers.console"],
+    },
+}
+
+default_picologging_handlers: Dict[str, Dict[str, Any]] = {
+    "console": {
+        "class": "picologging.StreamHandler",
+        "level": "DEBUG",
+        "formatter": "standard",
+    },
+    "queue_listener": {
+        "class": "starlite.logging.picologging.QueueListenerHandler",
+        "handlers": ["cfg://handlers.console"],
+    },
+}
+
+
+def set_default_handlers() -> Dict[str, Dict[str, Any]]:
+    """
+
+    Returns:
+        The default handlers for the config.
+    """
+    if find_spec("picologging"):
+        return default_picologging_handlers
+    return default_handlers
 
 
 class LoggingConfig(BaseModel):
@@ -29,14 +62,7 @@ class LoggingConfig(BaseModel):
     formatters: Dict[str, Dict[str, Any]] = {
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
-    handlers: Dict[str, Dict[str, Any]] = {
-        "console": {
-            "class": "logging.StreamHandler",
-            "level": "DEBUG",
-            "formatter": "standard",
-        },
-        "queue_listener": {"class": "starlite.QueueListenerHandler", "handlers": ["cfg://handlers.console"]},
-    }
+    handlers: Dict[str, Dict[str, Any]] = Field(default_factory=set_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance."""
     loggers: Dict[str, Dict[str, Any]] = {
         "starlite": {
@@ -55,28 +81,15 @@ class LoggingConfig(BaseModel):
         If the logger class contains the word `picologging`, we try to
         import and set the dictConfig
         """
-        for logging_class in find_keys(self.handlers, "class"):
-            if "picologging" in logging_class and picologging_config:
-                picologging_config.dictConfig(self.dict(exclude_none=True))
-                break
-        config.dictConfig(self.dict(exclude_none=True))
-
-
-def find_keys(node: Union[List, Dict], key: str) -> Generator[Iterable, None, None]:
-    """Find Nested Keys with name
-    Search a dictionary for the presence of key
-    Args:
-        node (Union[List, Dict]): a dictionary to search
-        key (str): the dictionary key to find
-
-    Yields:
-        Generator[Iterable, None, None]: Value of dictionary key
-    """
-    if isinstance(node, list):
-        for list_entry in node:
-            yield from find_keys(list_entry, key)
-    elif isinstance(node, dict):
-        if key in node:
-            yield node[key]
-        for dict_entry in node.values():
-            yield from find_keys(dict_entry, key)
+        try:
+            if "picologging" in str(dumps(self.handlers)):
+                from picologging.config import (  # pylint: disable=import-outside-toplevel
+                    dictConfig,
+                )
+            else:
+                from logging.config import (  # type: ignore[no-redef]  # pylint: disable=import-outside-toplevel
+                    dictConfig,
+                )
+            dictConfig(self.dict(exclude_none=True))
+        except ImportError as e:  # pragma: no cover
+            raise MissingDependencyException("picologging is not installed") from e

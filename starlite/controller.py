@@ -117,7 +117,7 @@ class Controller:
         A list of dictionaries that to the schema of all route handlers under the controller.
     """
 
-    def __init__(self, owner: "Router"):
+    def __init__(self, owner: "Router") -> None:
         """The controller init method should only be called by routers as part
         of controller registration.
 

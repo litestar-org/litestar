@@ -24,7 +24,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self,
         app: "ASGIApp",
         config: "CSRFConfig",
-    ):
+    ) -> None:
         """CSRF Middleware class.
 
         This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.

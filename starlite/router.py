@@ -1,15 +1,5 @@
 import collections
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    ItemsView,
-    List,
-    Optional,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Dict, ItemsView, List, Optional, Type, Union, cast
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -36,6 +26,7 @@ from starlite.types import (
     ResponseCookies,
     ResponseHeadersMap,
     ResponseType,
+    RouteHandlerMapItem,
 )
 from starlite.utils import (
     find_index,
@@ -47,7 +38,6 @@ from starlite.utils import (
 from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
-    from starlite.enums import HttpMethod
     from starlite.routes import BaseRoute
 
 
@@ -90,7 +80,7 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         security: Optional[List[SecurityRequirement]] = None,
         tags: Optional[List[str]] = None,
-    ):
+    ) -> None:
         """The Starlite Router class.
 
         A Router instance is used to group controller, routers and route handler functions under a shared path fragment.
@@ -166,9 +156,7 @@ class Router:
                 self.routes.append(route)
             else:
                 existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
-                route_handlers = unique(
-                    list(cast("Dict[HttpMethod, HTTPRouteHandler]", handler_or_method_map).values())
-                )
+                route_handlers = unique(list(handler_or_method_map.values()))
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers))
                     existing_route_index = find_index(
@@ -189,12 +177,12 @@ class Router:
     @property
     def route_handler_method_map(
         self,
-    ) -> Dict[str, Union[ASGIRouteHandler, WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]]:
+    ) -> Dict[str, RouteHandlerMapItem]:
         """
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: Dict[str, Union[ASGIRouteHandler, WebsocketRouteHandler, Dict["HttpMethod", HTTPRouteHandler]]] = {}
+        route_map: Dict[str, RouteHandlerMapItem] = {}
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 if not isinstance(route_map.get(route.path), dict):
@@ -223,33 +211,56 @@ class Router:
                 route_map[cast("WebSocketRoute", route).route_handler.fn.__qualname__].append(route.path)  # type: ignore
         return route_map
 
-    @staticmethod
+    @classmethod
     def _map_route_handlers(
+        cls,
         value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, Union[WebsocketRouteHandler, ASGIRoute, Dict["HttpMethod", HTTPRouteHandler]]]:
-        """Maps route handlers to http methods."""
-        handlers_map: Dict[str, Any] = {}
+    ) -> ItemsView[str, RouteHandlerMapItem]:
+        """Maps route handlers to HTTP methods."""
+        if isinstance(value, Router):
+            return value.route_handler_method_map.items()
         if isinstance(value, BaseRouteHandler):
-            for path in value.paths:
-                if isinstance(value, HTTPRouteHandler):
-                    handlers_map[path] = {http_method: value for http_method in value.http_methods}
-                elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
-                    handlers_map[path] = value
-        elif isinstance(value, Router):
-            handlers_map = value.route_handler_method_map
-        else:
-            # we are dealing with a controller
-            for route_handler in value.get_route_handlers():
-                for handler_path in route_handler.paths:
-                    path = join_paths([value.path, handler_path]) if handler_path else value.path
-                    if isinstance(route_handler, HTTPRouteHandler):
-                        if not isinstance(handlers_map.get(path), dict):
-                            handlers_map[path] = {}
-                        for http_method in route_handler.http_methods:
-                            handlers_map[path][http_method] = route_handler
-                    else:
-                        handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
+            return cls._map_route_handlers_for_base_route_handler(value)
+        # we are dealing with a controller
+        return cls._map_route_handlers_for_controller(value)
+
+    @staticmethod
+    def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> ItemsView[str, RouteHandlerMapItem]:
+        """Maps route handlers to HTTP methods for an input
+        BaseRouteHandler."""
+        handlers_map: Dict[str, RouteHandlerMapItem] = {}
+        for path in value.paths:
+            if isinstance(value, HTTPRouteHandler):
+                handlers_map[path] = {http_method: value for http_method in value.http_methods}
+            elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
+                handlers_map[path] = value
         return handlers_map.items()
+
+    @classmethod
+    def _map_route_handlers_for_controller(cls, value: Controller) -> ItemsView[str, RouteHandlerMapItem]:
+        """Maps route handlers to HTTP methods for an input Controller."""
+        handlers_map: Dict[str, RouteHandlerMapItem] = {}
+        for route_handler in value.get_route_handlers():
+            for handler_path in route_handler.paths:
+                path = join_paths([value.path, handler_path]) if handler_path else value.path
+                if isinstance(route_handler, HTTPRouteHandler):
+                    handlers_map[path] = cls._create_http_handler_item(handlers_map, route_handler, path)
+                else:
+                    handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
+        return handlers_map.items()
+
+    @staticmethod
+    def _create_http_handler_item(
+        handlers_map: Dict[str, RouteHandlerMapItem], route_handler: HTTPRouteHandler, path: str
+    ) -> RouteHandlerMapItem:
+        """Creates a dict of HTTP method to route handler for a single
+        controller path."""
+        handler_item: Optional[RouteHandlerMapItem] = handlers_map.get(path)
+        if not isinstance(handler_item, dict):
+            handler_item = {}
+        for http_method in route_handler.http_methods:
+            handler_item[http_method] = route_handler
+        return handler_item
 
     def _validate_registration_value(
         self, value: ControllerRouterHandler
