@@ -3,73 +3,67 @@ from typing import Any, Protocol
 
 class Logger(Protocol):  # pragma: no cover
     def debug(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'debug' level.
+        """Outputs a log message at 'DEBUG' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def info(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'info' level.
+        """Outputs a log message at 'INFO' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def warning(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'warn' level.
+        """Outputs a log message at 'WARN' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def warn(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'warn' level.
+        """Outputs a log message at 'WARN' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def error(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'error' level.
-        Args:
-             event: String value to log
-             **kwargs: Any kwargs.
-        """
+        """Outputs a log message at 'ERROR' level.
 
-    def err(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'error' level.
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def fatal(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'ical' level.
+        """Outputs a log message at 'CRITICAL' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def exception(self, event: str, **kwargs: Any) -> Any:
-        """
-        Logs a message with level 'error' on this logger. The arguments are interpreted as for debug(). Exception info is added to the logging message. This method should only be called from an exception handler.
+        """Logs a message with level 'ERROR' on this logger. The arguments are
+        interpreted as for debug(). Exception info is added to the logging
+        message.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
 
     def critical(self, event: str, **kwargs: Any) -> Any:
-        """
-        Outputs a log message at 'ical' level.
+        """Outputs a log message at 'CRITICAL' level.
+
         Args:
-             event: String value to log
+             event: Log message.
              **kwargs: Any kwargs.
         """
