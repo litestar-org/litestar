@@ -257,7 +257,6 @@ class Starlite(Router):
 
         # creates app config object from parameters
         config = AppConfig(
-            route_handlers=route_handlers,
             after_exception=after_exception or [],
             after_request=after_request,
             after_response=after_response,
@@ -285,6 +284,7 @@ class Starlite(Router):
             response_class=response_class,
             response_cookies=response_cookies or [],
             response_headers=response_headers or {},
+            route_handlers=route_handlers,
             security=security or [],
             static_files_config=static_files_config or [],
             tags=tags or [],
@@ -333,7 +333,7 @@ class Starlite(Router):
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
-        for route_handler in route_handlers:
+        for route_handler in config.route_handlers:
             self.register(route_handler)
 
         if self.openapi_config:
