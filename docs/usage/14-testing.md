@@ -290,6 +290,7 @@ The `RequestFactory` constructor accepts the following parameters:
 - `server`: The server's domain. Defaults to `test.org`.
 - `port`: The server's port. Defaults to `3000`.
 - `root_path`: Root path for the server. Defaults to `/`.
+- `scheme`: Scheme for the server. Defaults to `"http"`.
 
 It exposes methods for all supported HTTP methods:
 

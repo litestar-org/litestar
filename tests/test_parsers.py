@@ -1,5 +1,5 @@
 from starlite.parsers import parse_query_params
-from starlite.testing import create_test_request
+from starlite.testing import RequestFactory
 
 
 def test_parse_query_params() -> None:
@@ -10,7 +10,7 @@ def test_parse_query_params() -> None:
         "healthy": True,
         "polluting": False,
     }
-    request = create_test_request(query=query)  # type: ignore
+    request = RequestFactory().get("/", query_params=query)  # type: ignore[arg-type]
     result = parse_query_params(connection=request)
     assert result == {
         "value": ["10"],

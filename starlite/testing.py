@@ -288,6 +288,7 @@ class RequestFactory:
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
+        scheme: str = "http",
     ):
         """A factory object to create [Request][starlite.connection.Request]
         instances.
@@ -297,6 +298,7 @@ class RequestFactory:
              server: The server's domain.
              port: The server's port.
              root_path: Root path for the server.
+             scheme: Scheme for the server.
 
         Examples:
 
@@ -338,6 +340,7 @@ class RequestFactory:
         self.server = server
         self.port = port
         self.root_path = root_path
+        self.scheme = scheme
 
     def _create_scope(
         self,
@@ -362,6 +365,7 @@ class RequestFactory:
         return dict(
             type=ScopeType.HTTP,
             method=http_method,
+            scheme=self.scheme,
             server=(self.server, self.port),
             root_path=self.root_path.rstrip("/"),
             path=path,
@@ -688,52 +692,60 @@ def create_test_request(
         A [Request][starlite.connection.Request] instance.
     """
 
-    scope = dict(
-        type="http",
-        method=http_method,
-        scheme=scheme,
-        server=(server, port),
-        root_path=root_path,
-        path=path,
-        headers=[],
+    request_factory = RequestFactory(
         app=app,
-        user=user,
-        auth=auth,
+        server=server,
+        port=port,
+        root_path=root_path,
+        scheme=scheme,
     )
 
-    if not headers:
-        headers = {}
+    if http_method == HttpMethod.GET:
+        return request_factory.get(
+            path=path or "/",
+            headers=headers,
+            cookies=cookie,
+            user=user,
+            auth=auth,
+            query_params=query,
+        )
+    elif http_method == HttpMethod.POST:
+        return request_factory.post(
+            path=path or "/",
+            headers=headers,
+            cookies=cookie,
+            user=user,
+            auth=auth,
+            request_media_type=request_media_type,
+            data=content,
+        )
+    elif http_method == HttpMethod.PUT:
+        return request_factory.put(
+            path=path or "/",
+            headers=headers,
+            cookies=cookie,
+            user=user,
+            auth=auth,
+            request_media_type=request_media_type,
+            data=content,
+        )
+    elif http_method == HttpMethod.PATCH:
+        return request_factory.patch(
+            path=path or "/",
+            headers=headers,
+            cookies=cookie,
+            user=user,
+            auth=auth,
+            request_media_type=request_media_type,
+            data=content,
+        )
+    elif http_method == HttpMethod.DELETE:
+        return request_factory.delete(
+            path=path or "/",
+            headers=headers,
+            cookies=cookie,
+            user=user,
+            auth=auth,
+        )
 
-    if isinstance(cookie, list):
-        cookies = "; ".join(cook.to_header(header="") for cook in cookie)
-        headers[ParamType.COOKIE] = cookies
-    elif isinstance(cookie, str):
-        headers[ParamType.COOKIE] = cookie
-
-    if query:
-        scope["query_string"] = urlencode(query, doseq=True)
-
-    body: Optional[bytes] = None
-    if content:
-        if isinstance(content, BaseModel):
-            content = content.dict()
-        if request_media_type == RequestEncodingType.JSON:
-            body = dumps(content)
-            headers["Content-Type"] = str(RequestEncodingType.JSON.value)
-        elif request_media_type == RequestEncodingType.MULTI_PART:
-            body, content_type = RequestEncoder().multipart_encode(content)
-            headers["Content-Type"] = content_type
-        else:
-            body = RequestEncoder().url_encode(content)
-            headers["Content-Type"] = str(RequestEncodingType.URL_ENCODED.value)
-
-    if headers:
-        scope["headers"] = [
-            ((key.lower()).encode("latin-1", errors="ignore"), value.encode("latin-1", errors="ignore"))
-            for key, value in headers.items()
-        ]
-
-    request: Request[Any, Any] = Request(scope=scope)  # type: ignore[arg-type]
-    if body:
-        scope["_body"] = request._body = body  # pyright: ignore
-    return request
+    raise ValueError(f"Cannot create request for HTTP method {http_method.value}")
