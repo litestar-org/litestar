@@ -1,5 +1,14 @@
 # Changelog
 
+[1.21.0]
+
+- Internal implementations of `HTTPConnection`, `Request` and `WebSocket`.
+- `State` object implements `MutableMapping` interface, attribute access/mutation, `copy()` and `dict()` methods.
+- Adds `testing.RequestFactory` helper class for constructing `Request` objects.
+- Consistent typing of `__init__()` method return annotations.
+- Cleanup logging config and fix default handlers.
+- Adds `on_app_init` hook.
+
 [1.20.0]
 
 - update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
