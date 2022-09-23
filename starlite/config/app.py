@@ -28,7 +28,7 @@ from .cache import CacheConfig
 from .compression import CompressionConfig
 from .cors import CORSConfig
 from .csrf import CSRFConfig
-from .logging import LoggingConfig
+from .logging import BaseLoggingConfig
 from .openapi import OpenAPIConfig
 from .static_files import StaticFilesConfig
 from .template import TemplateConfig
@@ -130,9 +130,9 @@ class AppConfig(BaseModel):
     """
     A list of [Guard][starlite.types.Guard] callables.
     """
-    logging_config: Optional[LoggingConfig]
+    logging_config: Optional[BaseLoggingConfig]
     """
-    A logging config instance.
+    An instance of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig] subclass.
     """
     middleware: List[Middleware]
     """

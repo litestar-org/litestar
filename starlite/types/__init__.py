@@ -34,7 +34,6 @@ from .callable_types import (
 from .composite import (
     Dependencies,
     ExceptionHandlersMap,
-    Logger,
     Middleware,
     ParametersMap,
     ResponseCookies,
@@ -49,6 +48,7 @@ from .internal_types import (
     RouteHandlerMapItem,
     RouteHandlerType,
 )
+from .protocols import Logger
 
 __all__ = [
     "ASGIApp",

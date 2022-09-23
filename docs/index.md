@@ -51,16 +51,16 @@ To install the extras required for the built-in [Testing](./usage/14-testing.md)
 pip install starlite[testing]
 ```
 
-To install the extras required for logging with [Picologging](./usage/0-the-starlite-app/4-logging.md#picologging-integration):
-
-```shell
-pip install starlite[picologging]
-```
-
 To install the extras required for using the [Brotli Compression Middleware](usage/7-middleware/0-middleware-intro.md#brotli):
 
 ```shell
 pip install starlite[brotli]
+```
+
+To install the extras required for using the [Session Middleware](usage/7-middleware/3-builtin-middlewares/5-session-middleware.md):
+
+```shell
+pip install starlite[cryptography]
 ```
 
 And to install all of the above:

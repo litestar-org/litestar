@@ -846,6 +846,22 @@ python-versions = ">=3.7,<4.0"
 anyio = "*"
 
 [[package]]
+name = "structlog"
+version = "22.1.0"
+description = "Structured Logging for Python"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
+
+[package.extras]
+dev = ["cogapp", "coverage[toml]", "freezegun (>=0.2.8)", "furo", "myst-parser", "pre-commit", "pretend", "pytest (>=6.0)", "pytest-asyncio (>=0.17)", "rich", "simplejson", "sphinx", "sphinx-notfound-page", "sphinxcontrib-mermaid", "tomli", "twisted"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-mermaid", "twisted"]
+tests = ["coverage[toml]", "freezegun (>=0.2.8)", "pretend", "pytest (>=6.0)", "pytest-asyncio (>=0.17)", "simplejson"]
+
+[[package]]
 name = "targ"
 version = "0.3.7"
 description = "Build a Python CLI for your app, just using type hints and docstrings."
@@ -1025,14 +1041,13 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [extras]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["requests", "brotli", "picologging", "cryptography"]
-picologging = ["picologging"]
+full = ["requests", "brotli", "cryptography"]
 testing = ["requests"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "5f13a0c5e6688eac26669c688265eb8ad88469269e406bfe74fa91bf2a52ca14"
+content-hash = "d7f2c2851c9da0b573bcf9b5ac179a2141f82a614499cd5231e744002e607737"
 
 [metadata.files]
 aiosqlite = [
@@ -1778,6 +1793,10 @@ starlette = [
 starlite-multipart = [
     {file = "starlite-multipart-1.1.0.tar.gz", hash = "sha256:bd5b25a614fadc237fe4da60f0c43c5e7d045a523d4e3685237047e1e228da87"},
     {file = "starlite_multipart-1.1.0-py3-none-any.whl", hash = "sha256:c7b45545e70504b115f46a5046006a5bd41b1399cf829b9dede04af7a84b3981"},
+]
+structlog = [
+    {file = "structlog-22.1.0-py3-none-any.whl", hash = "sha256:760d37b8839bd4fe1747bed7b80f7f4de160078405f4b6a1db9270ccbfce6c30"},
+    {file = "structlog-22.1.0.tar.gz", hash = "sha256:94b29b1d62b2659db154f67a9379ec1770183933d6115d21f21aa25cfc9a7393"},
 ]
 targ = [
     {file = "targ-0.3.7-py3-none-any.whl", hash = "sha256:8bb472aa69f80732013c8f801df7deca3cb0ec4545acc256d1c1cd79c3fca4bd"},

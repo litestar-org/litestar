@@ -1,12 +1,9 @@
-from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Type, Union
 
 from .asgi_types import ASGIApp
 from .callable_types import ExceptionHandler
 
 if TYPE_CHECKING:
-    from logging import Logger as StandardLogger  # noqa: TC004
-
     from pydantic.fields import FieldInfo  # noqa: TC004
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
@@ -18,10 +15,6 @@ if TYPE_CHECKING:
     )
     from starlite.provide import Provide  # noqa: TC004
 
-    if find_spec("picologging"):
-        from picologging import Logger as PicoLogger  # noqa: TC004
-    else:
-        PicoLogger = StandardLogger
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
@@ -31,8 +24,7 @@ else:
     Provide = Any
     ResponseHeader = Any
     StarletteMiddleware = Any
-    StandardLogger = Any
-    PicoLogger = Any
+
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
@@ -43,4 +35,3 @@ Middleware = Union[
 ParametersMap = Dict[str, FieldInfo]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
-Logger = Union[StandardLogger, PicoLogger]

@@ -1,5 +1,17 @@
+from abc import ABC, abstractmethod
 from importlib.util import find_spec
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+)
 
 from orjson import dumps
 from pydantic import BaseModel, Field
@@ -9,7 +21,18 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.types import Logger
+
+if TYPE_CHECKING:
+    from starlite.types import Logger
+
+try:
+    from structlog.types import BindableLogger, Context, Processor, WrappedLogger
+except ImportError:
+    BindableLogger = Any  # type: ignore
+    Context = Any  # type: ignore
+    Processor = Any  # type: ignore
+    WrappedLogger = Any  # type: ignore
+
 
 default_handlers: Dict[str, Dict[str, Any]] = {
     "console": {
@@ -52,19 +75,41 @@ def get_logger_placeholder(_: str) -> Any:
     Raises:
         ImproperlyConfiguredException
     """
-    raise ImproperlyConfiguredException("'logging_config.configure' must be called before calling 'get_logger'")
+    raise ImproperlyConfiguredException(
+        "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
+    )
 
 
-class LoggingConfig(BaseModel):
-    """Convenience `pydantic` model for configuring logging.
+class BaseLoggingConfig(ABC):  # pragma: no cover
+    """Abstract class that should be extended by logging configs."""
 
-    For detailed instructions consult [standard library docs](https://docs.python.org/3/library/logging.config.html).
+    __slots__ = ()
+
+    @abstractmethod
+    def configure(self) -> Callable[[str], "Logger"]:
+        """Configured logger with the given configuration.
+
+        Returns:
+            A 'logging.getLogger' like function.
+        """
+        raise NotImplementedError("abstract method")
+
+
+class LoggingConfig(BaseLoggingConfig, BaseModel):
+    """Configuration class for standard logging.
+
+    Notes:
+        - If 'picologging' is installed it will be used by default.
     """
 
     version: Literal[1] = 1
     """The only valid value at present is 1."""
     incremental: bool = False
-    """Whether the configuration is to be interpreted as incremental to the existing configuration. """
+    """Whether the configuration is to be interpreted as incremental to the existing configuration.
+
+    Notes:
+        - This option is ignored for 'picologging'
+        """
     disable_existing_loggers: bool = False
     """Whether any existing non-root loggers are to be disabled."""
     filters: Optional[Dict[str, Dict[str, Any]]] = None
@@ -86,14 +131,12 @@ class LoggingConfig(BaseModel):
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
-    get_logger: Callable[[str], Logger] = get_logger_placeholder
-    """A function that returns a logger. E.g. the stdlib 'getLogger'."""
 
-    def configure(self) -> None:
+    def configure(self) -> Callable[[str], "Logger"]:
         """Configured logger with the given configuration.
 
-        If the logger class contains the word `picologging`, we try to
-        import and set the dictConfig
+        Returns:
+            A 'logging.getLogger' like function.
         """
         try:
             if "picologging" in str(dumps(self.handlers)):
@@ -102,12 +145,47 @@ class LoggingConfig(BaseModel):
                     config,
                     getLogger,
                 )
+
+                values = self.dict(exclude_none=True, exclude={"incremental"})
             else:
                 from logging import (  # type: ignore[no-redef]  # pylint: disable=import-outside-toplevel
                     config,
                     getLogger,
                 )
-            config.dictConfig(self.dict(exclude_none=True))
-            self.get_logger = getLogger  # type: ignore
+
+                values = self.dict(exclude_none=True)
+            config.dictConfig(values)
+            return cast("Callable[[str], Logger]", getLogger)
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("picologging is not installed") from e
+
+
+class StructLoggingConfig(BaseLoggingConfig, BaseModel):
+    """Configuration class for structlog.
+
+    Notes:
+        - requires 'structlog' to be installed.
+    """
+
+    processors: Optional[Iterable[Processor]] = None  # pyright: ignore
+    wrapper_class: Optional[Type[BindableLogger]] = None  # pyright: ignore
+    context_class: Optional[Type[Context]] = None  # pyright: ignore
+    logger_factory: Optional[Callable[..., WrappedLogger]] = None
+    cache_logger_on_first_use: bool = False
+
+    def configure(self) -> Callable[[str], "Logger"]:
+        """Configured logger with the given configuration.
+
+        Returns:
+            A 'logging.getLogger' like function.
+        """
+        try:
+            from structlog import (  # pylint: disable=import-outside-toplevel
+                configure,
+                get_logger,
+            )
+
+            configure(**self.dict())
+            return get_logger
+        except ImportError as e:  # pragma: no cover
+            raise MissingDependencyException("structlog is not installed") from e
