@@ -6,7 +6,7 @@ from starlette.requests import cookie_parser
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty
+from starlite.types import Empty, Logger
 
 if TYPE_CHECKING:
     from typing import MutableMapping
@@ -213,6 +213,18 @@ class ASGIConnection(Generic[Handler, User, Auth]):
                 "'session' is not defined in scope, install a SessionMiddleware to set it"
             )
         return cast("Dict[str, Any]", self.scope["session"])
+
+    @property
+    def logger(self) -> Logger:
+        """
+
+        Returns:
+            A 'Logger' instance.
+
+        Raises:
+            ImproperlyConfiguredException: if 'log_config' has not been passed to the Starlite constructor.
+        """
+        return self.app.get_logger(__name__)
 
     def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
         """Helper method to set the session in scope.
