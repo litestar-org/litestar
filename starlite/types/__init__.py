@@ -28,6 +28,7 @@ from .callable_types import (
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
+    OnAppInitHandler,
     Serializer,
 )
 from .composite import (
@@ -76,6 +77,7 @@ __all__ = [
     "Message",
     "Method",
     "Middleware",
+    "OnAppInitHandler",
     "ParametersMap",
     "Receive",
     "ReservedKwargs",

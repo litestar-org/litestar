@@ -1,8 +1,6 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
-from pydantic import validate_arguments
-from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -14,15 +12,7 @@ from starlite.asgi import (
     RouteMapNode,
     StarliteASGIRouter,
 )
-from starlite.config import (
-    CacheConfig,
-    CompressionConfig,
-    CORSConfig,
-    CSRFConfig,
-    OpenAPIConfig,
-    StaticFilesConfig,
-    TemplateConfig,
-)
+from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import asgi
@@ -30,49 +20,56 @@ from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
-from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
-from starlite.types import (
-    AfterExceptionHookHandler,
-    AfterRequestHookHandler,
-    AfterResponseHookHandler,
-    BeforeMessageSendHookHandler,
-    BeforeRequestHookHandler,
-    ControllerRouterHandler,
-    ExceptionHandlersMap,
-    Guard,
-    LifeSpanHandler,
-    LifeSpanHookHandler,
-    LifeSpanReceive,
-    LifeSpanScope,
-    LifeSpanSend,
-    Middleware,
-    ParametersMap,
-    ResponseCookies,
-    ResponseHeadersMap,
-    ResponseType,
-    SingleOrList,
-)
 from starlite.utils.sync import as_async_callable_list
 from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
+    from starlite.config import (
+        CompressionConfig,
+        CORSConfig,
+        CSRFConfig,
+        StaticFilesConfig,
+        TemplateConfig,
+    )
     from starlite.handlers.base import BaseRouteHandler
+    from starlite.plugins.base import PluginProtocol
+    from starlite.provide import Provide
     from starlite.routes.base import PathParameterDefinition
     from starlite.types import (
+        AfterExceptionHookHandler,
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
         AnyCallable,
         ASGIApp,
+        BeforeMessageSendHookHandler,
+        BeforeRequestHookHandler,
+        ControllerRouterHandler,
+        ExceptionHandlersMap,
+        Guard,
+        LifeSpanHandler,
+        LifeSpanHookHandler,
+        LifeSpanReceive,
+        LifeSpanScope,
+        LifeSpanSend,
         Message,
+        Middleware,
+        OnAppInitHandler,
+        ParametersMap,
         Receive,
+        ResponseCookies,
+        ResponseHeadersMap,
+        ResponseType,
         RouteHandlerType,
         Scope,
         Send,
+        SingleOrList,
     )
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
@@ -141,42 +138,42 @@ class Starlite(Router):
         "template_engine",
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        route_handlers: List[ControllerRouterHandler],
+        route_handlers: List["ControllerRouterHandler"],
         *,
-        after_exception: Optional[SingleOrList[AfterExceptionHookHandler]] = None,
-        after_request: Optional[AfterRequestHookHandler] = None,
-        after_response: Optional[AfterResponseHookHandler] = None,
-        after_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
-        after_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
+        after_request: Optional["AfterRequestHookHandler"] = None,
+        after_response: Optional["AfterResponseHookHandler"] = None,
+        after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+        after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
         allowed_hosts: Optional[List[str]] = None,
-        before_request: Optional[BeforeRequestHookHandler] = None,
-        before_send: Optional[SingleOrList[BeforeMessageSendHookHandler]] = None,
-        before_shutdown: Optional[SingleOrList[LifeSpanHookHandler]] = None,
-        before_startup: Optional[SingleOrList[LifeSpanHookHandler]] = None,
+        before_request: Optional["BeforeRequestHookHandler"] = None,
+        before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
+        before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+        before_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
-        compression_config: Optional[CompressionConfig] = None,
-        cors_config: Optional[CORSConfig] = None,
-        csrf_config: Optional[CSRFConfig] = None,
+        compression_config: Optional["CompressionConfig"] = None,
+        cors_config: Optional["CORSConfig"] = None,
+        csrf_config: Optional["CSRFConfig"] = None,
         debug: bool = False,
-        dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Middleware]] = None,
-        on_shutdown: Optional[List[LifeSpanHandler]] = None,
-        on_startup: Optional[List[LifeSpanHandler]] = None,
+        dependencies: Optional[Dict[str, "Provide"]] = None,
+        exception_handlers: Optional["ExceptionHandlersMap"] = None,
+        guards: Optional[List["Guard"]] = None,
+        middleware: Optional[List["Middleware"]] = None,
+        on_app_init: Optional[List["OnAppInitHandler"]] = None,
+        on_shutdown: Optional[List["LifeSpanHandler"]] = None,
+        on_startup: Optional[List["LifeSpanHandler"]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        parameters: Optional[ParametersMap] = None,
-        plugins: Optional[List[PluginProtocol]] = None,
-        response_class: Optional[ResponseType] = None,
-        response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
-        security: Optional[List[SecurityRequirement]] = None,
-        static_files_config: Optional[Union[StaticFilesConfig, List[StaticFilesConfig]]] = None,
+        parameters: Optional["ParametersMap"] = None,
+        plugins: Optional[List["PluginProtocol"]] = None,
+        response_class: Optional["ResponseType"] = None,
+        response_cookies: Optional["ResponseCookies"] = None,
+        response_headers: Optional["ResponseHeadersMap"] = None,
+        security: Optional[List["SecurityRequirement"]] = None,
+        static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
         tags: Optional[List[str]] = None,
-        template_config: Optional[TemplateConfig] = None,
+        template_config: Optional["TemplateConfig"] = None,
     ) -> None:
         """The Starlite application.
 
@@ -222,6 +219,10 @@ class Starlite(Router):
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            on_app_init: A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
+                an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
+                the parameters passed to [Starlite][starlite.app.Starlite], and must return an instance of same. If more
+                than one handler is registered they are called in the order they are provided.
             on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application shutdown.
             on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
@@ -243,68 +244,108 @@ class Starlite(Router):
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
-
+        # set pre-initialized values
         self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
-        self.after_exception = as_async_callable_list(after_exception) if after_exception else []
-        self.after_shutdown = as_async_callable_list(after_shutdown) if after_shutdown else []
-        self.after_startup = as_async_callable_list(after_startup) if after_startup else []
-        self.allowed_hosts = allowed_hosts
-        self.before_send = as_async_callable_list(before_send) if before_send else []
-        self.before_shutdown = as_async_callable_list(before_shutdown) if before_shutdown else []
-        self.before_startup = as_async_callable_list(before_startup) if before_startup else []
-        self.cache = cache_config.to_cache()
-        self.compression_config = compression_config
-        self.cors_config = cors_config
-        self.csrf_config = csrf_config
-        self.debug = debug
-        self.on_shutdown = on_shutdown or []
-        self.on_startup = on_startup or []
-        self.openapi_config = openapi_config
         self.openapi_schema: Optional["OpenAPI"] = None
         self.plain_routes: Set[str] = set()
-        self.plugins = plugins or []
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
-        self.static_files_config = static_files_config
-        self.template_engine = create_template_engine(template_config)
-        super().__init__(
+
+        # creates app config object from parameters
+        config = AppConfig(
+            after_exception=after_exception or [],
             after_request=after_request,
             after_response=after_response,
+            after_shutdown=after_shutdown or [],
+            after_startup=after_startup or [],
+            allowed_hosts=allowed_hosts or [],
             before_request=before_request,
-            dependencies=dependencies,
-            exception_handlers=exception_handlers,
-            guards=guards,
-            middleware=middleware,
-            parameters=parameters,
-            path="",
+            before_startup=before_startup or [],
+            before_send=before_send or [],
+            before_shutdown=before_shutdown or [],
+            cache_config=cache_config,
+            compression_config=compression_config,
+            cors_config=cors_config,
+            csrf_config=csrf_config,
+            debug=debug,
+            dependencies=dependencies or {},
+            exception_handlers=exception_handlers or {},
+            guards=guards or [],
+            middleware=middleware or [],
+            on_shutdown=on_shutdown or [],
+            on_startup=on_startup or [],
+            openapi_config=openapi_config,
+            parameters=parameters or {},
+            plugins=plugins or [],
             response_class=response_class,
-            response_cookies=response_cookies,
-            response_headers=response_headers,
+            response_cookies=response_cookies or [],
+            response_headers=response_headers or {},
             route_handlers=route_handlers,
-            security=security,
-            tags=tags,
+            security=security or [],
+            static_files_config=static_files_config or [],
+            tags=tags or [],
+            template_config=template_config,
+        )
+        for handler in on_app_init or []:
+            config = handler(config)
+
+        self.after_exception = as_async_callable_list(config.after_exception)
+        self.after_shutdown = as_async_callable_list(config.after_shutdown)
+        self.after_startup = as_async_callable_list(config.after_startup)
+        self.allowed_hosts = config.allowed_hosts
+        self.before_send = as_async_callable_list(config.before_send)
+        self.before_shutdown = as_async_callable_list(config.before_shutdown)
+        self.before_startup = as_async_callable_list(config.before_startup)
+        self.cache = config.cache_config.to_cache()
+        self.compression_config = config.compression_config
+        self.cors_config = config.cors_config
+        self.csrf_config = config.csrf_config
+        self.debug = config.debug
+        self.on_shutdown = config.on_shutdown
+        self.on_startup = config.on_startup
+        self.openapi_config = config.openapi_config
+        self.plugins = config.plugins
+        self.static_files_config = config.static_files_config
+        self.template_engine = create_template_engine(config.template_config)
+        super().__init__(
+            after_request=config.after_request,
+            after_response=config.after_response,
+            before_request=config.before_request,
+            dependencies=config.dependencies,
+            exception_handlers=config.exception_handlers,
+            guards=config.guards,
+            middleware=config.middleware,
+            parameters=config.parameters,
+            path="",
+            response_class=config.response_class,
+            response_cookies=config.response_cookies,
+            response_headers=config.response_headers,
+            # route handlers are registered below
+            route_handlers=[],
+            security=config.security,
+            tags=config.tags,
         )
         self._init = True
 
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
-        for route_handler in route_handlers:
+        for route_handler in config.route_handlers:
             self.register(route_handler)
 
         if self.openapi_config:
             self.openapi_schema = self.openapi_config.create_openapi_schema_model(self)
             self.register(self.openapi_config.openapi_controller)
-        if self.static_files_config:
-            for config in (
-                self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
-            ):
-                self._static_paths.add(config.path)
-                self.register(asgi(path=config.path)(config.to_static_files_app()))
+
+        for static_config in (
+            self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
+        ):
+            self._static_paths.add(static_config.path)
+            self.register(asgi(path=static_config.path)(static_config.to_static_files_app()))
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
@@ -334,7 +375,7 @@ class Starlite(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
 
-    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
+    def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
         dynamically add endpoints to an application.
 
@@ -414,7 +455,7 @@ class Starlite(Router):
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
-    def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: ExceptionHandlersMap) -> "ASGIApp":
+    def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: "ExceptionHandlersMap") -> "ASGIApp":
         """Wraps the given ASGIApp in an instance of
         ExceptionHandlerMiddleware."""
         return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
