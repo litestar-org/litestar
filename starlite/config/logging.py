@@ -24,6 +24,7 @@ from starlite.exceptions import (
 
 if TYPE_CHECKING:
     from starlite.types import Logger
+    from starlite.types.callable_types import GetLogger
 
 try:
     from structlog.types import BindableLogger, Context, Processor, WrappedLogger
@@ -86,7 +87,7 @@ class BaseLoggingConfig(ABC):  # pragma: no cover
     __slots__ = ()
 
     @abstractmethod
-    def configure(self) -> Callable[[str], "Logger"]:
+    def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.
 
         Returns:
@@ -132,7 +133,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
 
-    def configure(self) -> Callable[[str], "Logger"]:
+    def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.
 
         Returns:
@@ -173,7 +174,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
     logger_factory: Optional[Callable[..., WrappedLogger]] = None
     cache_logger_on_first_use: bool = False
 
-    def configure(self) -> Callable[[str], "Logger"]:
+    def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.
 
         Returns:

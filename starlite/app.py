@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -74,6 +74,7 @@ if TYPE_CHECKING:
         Send,
         SingleOrList,
     )
+    from starlite.types.callable_types import GetLogger
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -257,7 +258,7 @@ class Starlite(Router):
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
         self.openapi_schema: Optional["OpenAPI"] = None
-        self.get_logger: Callable[[str], "Logger"] = get_logger_placeholder
+        self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
         self.plain_routes: Set[str] = set()
         self.route_map: RouteMapNode = {}

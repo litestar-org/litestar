@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, cast
+from typing import Any, List
 
 
 def resolve_handlers(handlers: List[Any]) -> List[Any]:
@@ -15,4 +15,4 @@ def resolve_handlers(handlers: List[Any]) -> List[Any]:
     Notes:
         Due to missing typing in 'typeshed' we cannot type this as ConvertingList for now.
     """
-    return cast("List[Callable]", [handlers[i] for i in range(len(handlers))])
+    return [handlers[i] for i in range(len(handlers))]

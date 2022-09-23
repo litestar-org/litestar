@@ -224,7 +224,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         Raises:
             ImproperlyConfiguredException: if 'log_config' has not been passed to the Starlite constructor.
         """
-        return self.app.get_logger(__name__)
+        return self.app.get_logger()
 
     def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
         """Helper method to set the session in scope.
