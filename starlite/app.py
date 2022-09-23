@@ -324,7 +324,7 @@ class Starlite(Router):
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
-            route_handlers=config.route_handlers,
+            route_handlers=[],
             security=config.security,
             tags=config.tags,
         )
