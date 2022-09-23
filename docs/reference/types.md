@@ -32,6 +32,8 @@
 
 ::: starlite.types.Middleware
 
+::: starlite.types.OnAppInitHandler
+
 ::: starlite.types.ParametersMap
 
 ::: starlite.types.ReservedKwargs

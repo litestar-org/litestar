@@ -1,3 +1,4 @@
+from .app import AppConfig
 from .cache import CacheConfig
 from .compression import CompressionConfig
 from .cors import CORSConfig
@@ -8,6 +9,7 @@ from .static_files import StaticFilesConfig
 from .template import TemplateConfig
 
 __all__ = [
+    "AppConfig",
     "CacheConfig",
     "CORSConfig",
     "CSRFConfig",

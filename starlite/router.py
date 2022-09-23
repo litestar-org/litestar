@@ -127,7 +127,7 @@ class Router:
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
         self.routes: List["BaseRoute"] = []
-        self.security = security
+        self.security = security or []
         self.tags = tags or []
 
         for route_handler in route_handlers or []:
