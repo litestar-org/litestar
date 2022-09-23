@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
 from starlite import Starlite
+from starlite.config import LoggingConfig
 from starlite.config.logging import default_handlers
-from starlite.logging import LoggingConfig
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:

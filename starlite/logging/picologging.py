@@ -3,7 +3,7 @@ from typing import Any, List
 
 from picologging.handlers import QueueHandler, QueueListener
 
-from starlite.logging.standard import resolve_handlers
+from starlite.logging.utils import resolve_handlers
 
 
 class QueueListenerHandler(QueueHandler):  # type: ignore

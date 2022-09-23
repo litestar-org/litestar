@@ -1,11 +1,15 @@
 from importlib.util import find_spec
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from orjson import dumps
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from starlite.exceptions import MissingDependencyException
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    MissingDependencyException,
+)
+from starlite.types import Logger
 
 default_handlers: Dict[str, Dict[str, Any]] = {
     "console": {
@@ -14,7 +18,7 @@ default_handlers: Dict[str, Dict[str, Any]] = {
         "formatter": "standard",
     },
     "queue_listener": {
-        "class": "starlite.QueueListenerHandler",
+        "class": "starlite.logging.standard.QueueListenerHandler",
         "handlers": ["cfg://handlers.console"],
     },
 }
@@ -41,6 +45,14 @@ def set_default_handlers() -> Dict[str, Dict[str, Any]]:
     if find_spec("picologging"):
         return default_picologging_handlers
     return default_handlers
+
+
+def get_logger_placeholder(_: str) -> Any:
+    """
+    Raises:
+        ImproperlyConfiguredException
+    """
+    raise ImproperlyConfiguredException("'logging_config.configure' must be called before calling 'get_logger'")
 
 
 class LoggingConfig(BaseModel):
@@ -74,6 +86,8 @@ class LoggingConfig(BaseModel):
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
+    get_logger: Callable[[str], Logger] = get_logger_placeholder
+    """A function that returns a logger. E.g. the stdlib 'getLogger'."""
 
     def configure(self) -> None:
         """Configured logger with the given configuration.
@@ -83,13 +97,17 @@ class LoggingConfig(BaseModel):
         """
         try:
             if "picologging" in str(dumps(self.handlers)):
-                from picologging.config import (  # pylint: disable=import-outside-toplevel
-                    dictConfig,
+
+                from picologging import (  # pylint: disable=import-outside-toplevel
+                    config,
+                    getLogger,
                 )
             else:
-                from logging.config import (  # type: ignore[no-redef]  # pylint: disable=import-outside-toplevel
-                    dictConfig,
+                from logging import (  # type: ignore[no-redef]  # pylint: disable=import-outside-toplevel
+                    config,
+                    getLogger,
                 )
-            dictConfig(self.dict(exclude_none=True))
+            config.dictConfig(self.dict(exclude_none=True))
+            self.get_logger = getLogger  # type: ignore
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("picologging is not installed") from e

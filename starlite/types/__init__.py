@@ -34,6 +34,7 @@ from .callable_types import (
 from .composite import (
     Dependencies,
     ExceptionHandlersMap,
+    Logger,
     Middleware,
     ParametersMap,
     ResponseCookies,
@@ -74,6 +75,7 @@ __all__ = [
     "LifeSpanReceive",
     "LifeSpanScope",
     "LifeSpanSend",
+    "Logger",
     "Message",
     "Method",
     "Middleware",

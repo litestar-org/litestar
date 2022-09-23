@@ -30,6 +30,7 @@ def app_config_object() -> AppConfig:
         dependencies={},
         exception_handlers={},
         guards=[],
+        logging_config=None,
         middleware=[],
         on_shutdown=[],
         on_startup=[],

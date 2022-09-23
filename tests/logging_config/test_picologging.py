@@ -6,8 +6,8 @@ import picologging
 import pytest
 
 from starlite import Starlite
+from starlite.config import LoggingConfig
 from starlite.config.logging import default_handlers, default_picologging_handlers
-from starlite.logging import LoggingConfig
 from starlite.logging.picologging import QueueListenerHandler
 from starlite.testing import TestClient, create_test_client
 

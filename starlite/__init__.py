@@ -60,7 +60,6 @@ from .handlers import (
     route,
     websocket,
 )
-from .logging import QueueListenerHandler
 from .middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
@@ -116,7 +115,6 @@ __all__ = [
     "PermissionDeniedException",
     "PluginProtocol",
     "Provide",
-    "QueueListenerHandler",
     "Redirect",
     "Request",
     "RequestEncodingType",
