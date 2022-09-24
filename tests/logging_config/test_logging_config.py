@@ -146,3 +146,19 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
     get_logger = logging_config.configure()
     root_logger = get_logger()
     isinstance(root_logger.handlers[0], listener)  # type: ignore
+
+
+@pytest.mark.parametrize(
+    "handlers, listener",
+    [
+        [default_handlers, StandardQueueListenerHandler],
+        [default_picologging_handlers, PicologgingQueueListenerHandler],
+    ],
+)
+def test_customizing_handler(handlers: Any, listener: Any) -> None:
+    handlers["queue_listener"]["handlers"] = ["cfg://handlers.console"]
+
+    logging_config = LoggingConfig(handlers=handlers)
+    get_logger = logging_config.configure()
+    root_logger = get_logger()
+    isinstance(root_logger.handlers[0], listener)  # type: ignore

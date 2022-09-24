@@ -1,13 +1,17 @@
 # Changelog
 
+[1.21.1]
+
+- update logging configs and add `StructLoggingConfig`.
+
 [1.21.0]
 
-- Internal implementations of `HTTPConnection`, `Request` and `WebSocket`.
-- `State` object implements `MutableMapping` interface, attribute access/mutation, `copy()` and `dict()` methods.
-- Adds `testing.RequestFactory` helper class for constructing `Request` objects.
-- Consistent typing of `__init__()` method return annotations.
-- Cleanup logging config and fix default handlers.
-- Adds `on_app_init` hook.
+- add `on_app_init` hook.
+- add `testing.RequestFactory` helper class for constructing `Request` objects.
+- refactor logging config and fix default handlers.
+- update `State` object implements `MutableMapping` interface, attribute access/mutation, `copy()` and `dict()` methods.
+- update internal implementations of `HTTPConnection`, `Request` and `WebSocket`.
+- update typing of `__init__()` method return annotations.
 
 [1.20.0]
 
@@ -138,7 +142,7 @@
 
 [1.8.0]
 
-- \*_breaking_ replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic)
+- breaking: replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic)
   with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
 - add [Stoplights Elements](https://stoplight.io/open-source/elements) OpenAPI support @aedify-swi
 
