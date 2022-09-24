@@ -43,3 +43,5 @@
 ::: starlite.types.ResponseHeadersMap
 
 ::: starlite.types.ResponseType
+
+::: starlite.types.Logger
