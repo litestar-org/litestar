@@ -145,13 +145,33 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         """
         Ensures that 'queue_listener' is always set
         Args:
-            value: Defined handlers dict.
+            value: A handlers dict.
 
         Returns:
             A handlers dict.
         """
         if "queue_listener" not in value:
             value["queue_listener"] = get_default_handlers()["queue_listener"]
+        return value
+
+    @validator("loggers", always=True)
+    def validate_loggers(  # pylint: disable=no-self-argument
+        cls, value: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Dict[str, Any]]:
+        """Ensures that the 'starlite' logger is always set.
+
+        Args:
+            value: A loggers dict.
+
+        Returns:
+            A loggers dict.
+        """
+
+        if "starlite" not in value:
+            value["starlite"] = {
+                "level": "INFO",
+                "handlers": ["queue_listener"],
+            }
         return value
 
     def configure(self) -> "GetLogger":

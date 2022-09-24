@@ -129,8 +129,9 @@ def test_connection_logger(handlers: Any, listener: Any) -> None:
 
 
 def test_validation() -> None:
-    logging_config = LoggingConfig(handlers={})
+    logging_config = LoggingConfig(handlers={}, loggers={})
     assert logging_config.handlers["queue_listener"] == get_default_handlers()["queue_listener"]
+    assert logging_config.loggers["starlite"]
 
 
 @pytest.mark.parametrize(

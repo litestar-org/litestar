@@ -13,6 +13,7 @@ from starlite.datastructures import (
 
 from .app import Starlite
 from .config import (
+    BaseLoggingConfig,
     CacheConfig,
     CompressionConfig,
     CORSConfig,
@@ -20,6 +21,7 @@ from .config import (
     LoggingConfig,
     OpenAPIConfig,
     StaticFilesConfig,
+    StructLoggingConfig,
     TemplateConfig,
 )
 from .connection import ASGIConnection, Request, WebSocket
@@ -82,6 +84,7 @@ __all__ = [
     "AuthenticationResult",
     "BackgroundTask",
     "BackgroundTasks",
+    "BaseLoggingConfig",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
@@ -128,6 +131,7 @@ __all__ = [
     "State",
     "StaticFilesConfig",
     "Stream",
+    "StructLoggingConfig",
     "Template",
     "TemplateConfig",
     "TooManyRequestsException",
