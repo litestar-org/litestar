@@ -12,9 +12,8 @@ def normalize_path(path: str) -> str:
     Returns:
         Path string
     """
-    path = path.rstrip("/")
-    if not path.startswith("/"):
-        path = "/" + path
+    path = path.strip("/")
+    path = "/" + path
     path = re.sub("//+", "/", path)
     return path
 
