@@ -48,6 +48,7 @@ from .internal_types import (
     RouteHandlerMapItem,
     RouteHandlerType,
 )
+from .protocols import Logger
 
 __all__ = [
     "ASGIApp",
@@ -74,6 +75,7 @@ __all__ = [
     "LifeSpanReceive",
     "LifeSpanScope",
     "LifeSpanSend",
+    "Logger",
     "Message",
     "Method",
     "Middleware",

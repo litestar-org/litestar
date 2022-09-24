@@ -13,6 +13,7 @@ from starlite.asgi import (
     StarliteASGIRouter,
 )
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
+from starlite.config.logging import get_logger_placeholder
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import asgi
@@ -32,6 +33,7 @@ if TYPE_CHECKING:
 
     from starlite.asgi import ComponentsSet, PathParamPlaceholderType
     from starlite.config import (
+        BaseLoggingConfig,
         CompressionConfig,
         CORSConfig,
         CSRFConfig,
@@ -58,6 +60,7 @@ if TYPE_CHECKING:
         LifeSpanReceive,
         LifeSpanScope,
         LifeSpanSend,
+        Logger,
         Message,
         Middleware,
         OnAppInitHandler,
@@ -71,6 +74,7 @@ if TYPE_CHECKING:
         Send,
         SingleOrList,
     )
+    from starlite.types.callable_types import GetLogger
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """
@@ -126,6 +130,8 @@ class Starlite(Router):
         "cors_config",
         "csrf_config",
         "debug",
+        "get_logger",
+        "logger",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -160,6 +166,7 @@ class Starlite(Router):
         dependencies: Optional[Dict[str, "Provide"]] = None,
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
+        logging_config: Optional["BaseLoggingConfig"] = None,
         middleware: Optional[List["Middleware"]] = None,
         on_app_init: Optional[List["OnAppInitHandler"]] = None,
         on_shutdown: Optional[List["LifeSpanHandler"]] = None,
@@ -218,6 +225,7 @@ class Starlite(Router):
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
+            logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
             middleware: A list of [Middleware][starlite.types.Middleware].
             on_app_init: A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
                 an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
@@ -250,6 +258,8 @@ class Starlite(Router):
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
         self.openapi_schema: Optional["OpenAPI"] = None
+        self.get_logger: "GetLogger" = get_logger_placeholder
+        self.logger: Optional["Logger"] = None
         self.plain_routes: Set[str] = set()
         self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
@@ -264,9 +274,9 @@ class Starlite(Router):
             after_startup=after_startup or [],
             allowed_hosts=allowed_hosts or [],
             before_request=before_request,
-            before_startup=before_startup or [],
             before_send=before_send or [],
             before_shutdown=before_shutdown or [],
+            before_startup=before_startup or [],
             cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -275,6 +285,7 @@ class Starlite(Router):
             dependencies=dependencies or {},
             exception_handlers=exception_handlers or {},
             guards=guards or [],
+            logging_config=logging_config,
             middleware=middleware or [],
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
@@ -311,6 +322,7 @@ class Starlite(Router):
         self.plugins = config.plugins
         self.static_files_config = config.static_files_config
         self.template_engine = create_template_engine(config.template_config)
+
         super().__init__(
             after_request=config.after_request,
             after_response=config.after_response,
@@ -336,6 +348,10 @@ class Starlite(Router):
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
+
+        if config.logging_config:
+            self.get_logger = config.logging_config.configure()
+            self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
             self.openapi_schema = self.openapi_config.create_openapi_schema_model(self)

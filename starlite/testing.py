@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
     from starlite.config import (
+        BaseLoggingConfig,
         CacheConfig,
         CompressionConfig,
         CORSConfig,
@@ -148,6 +149,7 @@ def create_test_client(
     dependencies: Optional["Dependencies"] = None,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
+    logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
     on_startup: Optional[List["LifeSpanHandler"]] = None,
@@ -224,6 +226,7 @@ def create_test_client(
         dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
         exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
         guards: A list of [Guard][starlite.types.Guard] callables.
+        logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
         middleware: A list of [Middleware][starlite.types.Middleware].
         on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
             application shutdown.
@@ -262,6 +265,7 @@ def create_test_client(
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
+            logging_config=logging_config,
             middleware=middleware,
             on_shutdown=on_shutdown,
             on_startup=on_startup,

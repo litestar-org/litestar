@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers import HTTPRouteHandler, WebsocketRouteHandler  # noqa: TC004
     from starlite.response import Response  # noqa: TC004
+    from starlite.types.protocols import Logger  # noqa: TC004
 else:
     AppConfig = Any
     HTTPRouteHandler = Any
@@ -21,6 +22,7 @@ else:
     State = Any
     WebSocket = Any
     WebsocketRouteHandler = Any
+    Logger = Any
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
@@ -41,3 +43,4 @@ LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], S
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
 OnAppInitHandler = Callable[[AppConfig], AppConfig]
 Serializer = Callable[[Any], Any]
+GetLogger = Callable[..., Logger]

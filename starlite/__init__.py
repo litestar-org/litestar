@@ -13,6 +13,7 @@ from starlite.datastructures import (
 
 from .app import Starlite
 from .config import (
+    BaseLoggingConfig,
     CacheConfig,
     CompressionConfig,
     CORSConfig,
@@ -20,6 +21,7 @@ from .config import (
     LoggingConfig,
     OpenAPIConfig,
     StaticFilesConfig,
+    StructLoggingConfig,
     TemplateConfig,
 )
 from .connection import ASGIConnection, Request, WebSocket
@@ -60,7 +62,6 @@ from .handlers import (
     route,
     websocket,
 )
-from .logging import QueueListenerHandler
 from .middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
@@ -83,6 +84,7 @@ __all__ = [
     "AuthenticationResult",
     "BackgroundTask",
     "BackgroundTasks",
+    "BaseLoggingConfig",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
@@ -116,7 +118,6 @@ __all__ = [
     "PermissionDeniedException",
     "PluginProtocol",
     "Provide",
-    "QueueListenerHandler",
     "Redirect",
     "Request",
     "RequestEncodingType",
@@ -130,6 +131,7 @@ __all__ = [
     "State",
     "StaticFilesConfig",
     "Stream",
+    "StructLoggingConfig",
     "Template",
     "TemplateConfig",
     "TooManyRequestsException",
