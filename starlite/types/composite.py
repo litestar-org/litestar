@@ -14,6 +14,7 @@ if TYPE_CHECKING:
         MiddlewareProtocol,
     )
     from starlite.provide import Provide  # noqa: TC004
+
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
@@ -23,6 +24,7 @@ else:
     Provide = Any
     ResponseHeader = Any
     StarletteMiddleware = Any
+
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]

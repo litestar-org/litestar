@@ -150,7 +150,6 @@ nav:
       - reference/exceptions.md
       - reference/enums.md
       - reference/handlers.md
-      - reference/logging.md
       - reference/middleware.md
       - reference/openapi.md
       - reference/params.md

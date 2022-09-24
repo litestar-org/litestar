@@ -122,6 +122,7 @@ repos:
             sqlalchemy,
             starlette,
             starlite_multipart,
+            structlog,
             tortoise_orm,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -141,6 +142,7 @@ repos:
             sqlalchemy,
             starlette,
             starlite_multipart,
+            structlog,
             types-PyYAML,
             types-freezegun,
             types-redis,
@@ -173,4 +175,5 @@ repos:
             sqlalchemy,
             starlette,
             starlite_multipart,
+            structlog,
           ]

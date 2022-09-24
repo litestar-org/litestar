@@ -1,26 +1,30 @@
 # Changelog
 
+[1.21.1]
+
+- add `StructLoggingConfig`.
+
 [1.21.0]
 
-- Internal implementations of `HTTPConnection`, `Request` and `WebSocket`.
-- `State` object implements `MutableMapping` interface, attribute access/mutation, `copy()` and `dict()` methods.
-- Adds `testing.RequestFactory` helper class for constructing `Request` objects.
-- Consistent typing of `__init__()` method return annotations.
-- Cleanup logging config and fix default handlers.
-- Adds `on_app_init` hook.
+- add `on_app_init` hook.
+- add `testing.RequestFactory` helper class for constructing `Request` objects.
+- refactor logging config and fix default handlers.
+- update `State` object implements `MutableMapping` interface, attribute access/mutation, `copy()` and `dict()` methods.
+- update internal implementations of `HTTPConnection`, `Request` and `WebSocket`.
+- update typing of `__init__()` method return annotations.
 
 [1.20.0]
 
-- update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
 - update ASGI typings (`scope`, `receive`, `send`, `message` and `ASGIApp`) to use strong types derived from [asgiref](https://github.com/django/asgiref).
 - update `SessionMiddleware` to use custom serializer used on request.
+- update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
 
 [1.19.0]
 
-- add support for multiple responses documentation by @seladb.
-- add `media_type` to `ResponseContainer`.
 - add `RateLimitMiddleware`.
+- add `media_type` to `ResponseContainer`.
 - add support for multiple cookies in `create_test_request`.
+- add support for multiple responses documentation by @seladb.
 
 [1.18.1]
 
@@ -51,30 +55,30 @@
 
 [1.16.1]
 
-- update `picologging` integration to use `picologging.dictConfig`.
 - fix validation errors raised when using custom state.
+- update `picologging` integration to use `picologging.dictConfig`.
 
 [1.16.0]
 
 - add `exclude` parameter to `AbstractAuthenticationMiddleware`.
-- allow disabling OpenAPI documentation sites and schema endpoints via config.
-- simplify `KwargsModel`.
+- add options to disable OpenAPI documentation sites and schema endpoints via config.
+- refactor `KwargsModel`.
 
 [1.15.0]
 
-- `examples/` directory and tests for complete documentation examples.
+- add `examples/` directory and tests for complete documentation examples.
 - replace `pydantic-openapi-schema` import from `v3_0_3` with import from `v3_10_0`.
 
 [1.14.1]
 
 - fix OpenAPI schema for `UploadFile`.
-- integrate OpenAPI security definitions into OpenAPI configuration.
 - remove empty aliases from field parameters.
+- update OpenAPI security definitions into OpenAPI configuration.
 
 [1.14.0]
 
-- refactor: Simplified and improved brotli middleware typing.
-- update: Extended `PluginProtocol` with an `on_app_init` method.
+- refactored brotli middleware typing.
+- update Extended `PluginProtocol` with an `on_app_init` method.
 
 [1.13.1]
 
@@ -82,40 +86,40 @@
 
 [1.13.0]
 
-- fix: remove duplicated detail in `HTTPException.__str__()`.
-- fix: removed imports causing `MissingDependencyException` where `brotli` not installed and not required.
-- update: Add `skip_validation` flag to `Dependency` function.
-- update: Export starlite cookie to header and use it in CSRF middleware and OpenAPI response @seladb.
-- update: cache protocol, cache backend integration including locking for sync access.
-- update: consistent eager evaluation of async callables across the codebase.
+- fix remove duplicated detail in `HTTPException.__str__()`.
+- fix removed imports causing `MissingDependencyException` where `brotli` not installed and not required.
+- update Add `skip_validation` flag to `Dependency` function.
+- update Export starlite cookie to header and use it in CSRF middleware and OpenAPI response @seladb.
+- update cache protocol, cache backend integration including locking for sync access.
+- update consistent eager evaluation of async callables across the codebase.
 
 [1.12.0]
 
-- fix: handling of "\*" in routes by @waweber.
-- update: middleware typing and addition of `DefineMiddleware`.
+- fix handling of "\*" in routes by @waweber.
+- update middleware typing and addition of `DefineMiddleware`.
 
 [1.11.1]
 
-- hotfix: Exception raised by `issubclass` check.
+- hotfix Exception raised by `issubclass` check.
 
 [1.11.0]
 
-- update: OpenAPIController to use render methods and configurable `root` class var @mobiusxs.
-- fix: `UploadFile` OpenAPI schema exception.
-- fix: `Stream` handling of generators.
-- refactor: http and path param parsing.
+- fix `Stream` handling of generators.
+- fix `UploadFile` OpenAPI schema exception.
+- refactor http and path param parsing.
+- update OpenAPIController to use render methods and configurable `root` class var @mobiusxs.
 
 [1.10.1]
 
-- fix: regression in StaticFiles of resolution of index.html in `html_mode=True`.
+- fix regression in StaticFiles of resolution of index.html in `html_mode=True`.
 
 [1.10.0]
 
-- breaking: update handling of status code <100, 204 or 304.
-- fix: adding only new routes to the route_map by @Dr-Emann.
-- refactor: tidy up exceptions.
-- refactor: update `to_response` and datastructures.
-- refactor: update installation extras.
+- breaking update handling of status code <100, 204 or 304.
+- fix adding only new routes to the route_map by @Dr-Emann.
+- refactor tidy up exceptions.
+- refactor update `to_response` and datastructures.
+- refactor update installation extras.
 
 [1.9.2]
 
@@ -124,11 +128,11 @@
 [1.9.1]
 
 - add CSRF Middleware and config, @seladb.
-- create starlite ports of BackgroundTask and BackgroundTasks in `starlite.datastructures`.
+- add starlite ports of BackgroundTask and BackgroundTasks in `starlite.datastructures`.
 
 [1.9.0]
 
-- ass support for [picologging](https://github.com/microsoft/picologging).
+- add support for [picologging](https://github.com/microsoft/picologging).
 - update response headers, handling of cookies and handling of responses.
 
 [1.8.1]
@@ -138,9 +142,8 @@
 
 [1.8.0]
 
-- \*_breaking_ replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic)
-  with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
 - add [Stoplights Elements](https://stoplight.io/open-source/elements) OpenAPI support @aedify-swi
+- breaking replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic) with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
 
 [1.7.3]
 
@@ -148,8 +151,8 @@
 
 [1.7.2]
 
-- update `Partial` to annotate fields of nested classes @Harry-Lees.
 - add `OpenAPIConfig.use_handler_docstring` param.
+- update `Partial` to annotate fields of nested classes @Harry-Lees.
 
 [1.7.1]
 
@@ -162,8 +165,8 @@
 
 [1.6.2]
 
-- update error handling,
 - remove `exrex` from second hand dependencies.
+- update error handling,
 
 [1.6.1]
 
@@ -179,8 +182,8 @@
 
 [1.5.3]
 
-- update path param validation during registration @danesolberg.
 - fix route handler exception resolution.
+- update path param validation during registration @danesolberg.
 
 [1.5.2]
 
@@ -189,17 +192,17 @@
 [1.5.1]
 
 - add gzip middleware support.
-- raise exception on routes with duplicate path parameters @danesolberg.
 - fix dependency validation failure returning 400 (instead of 500).
+- fix raise exception on routes with duplicate path parameters @danesolberg.
 
 [1.5.0]
 
+- add `requests` as optional dependency @Bobronium.
 - add layered middleware support.
-- update exception handlers to work in layers.
 - fix CORS headers and middlewares not processing exceptions.
-- fix order of exception handlers.
 - fix OpenAPI array items being double nested.
-- make `requests` and optional dependency @Bobronium.
+- fix order of exception handlers.
+- update exception handlers to work in layers.
 
 [1.4.2]
 
@@ -208,18 +211,18 @@
 
 [1.4.1]
 
-- fix `Provide` properly detects async `@classmethod` as async callables.
-- fix `None` return value from handler with `204` has empty response content.
-- update exception handlers to be configurable at each layer of the application.
 - add better detection of async callables.
+- fix `None` return value from handler with `204` has empty response content.
+- fix `Provide` properly detects async `@classmethod` as async callables.
+- update exception handlers to be configurable at each layer of the application.
 
 [1.4.0]
 
-- update Starlette to 0.20.3.
-- add test for generic model injection @Goldziher.
-- add selective deduplication of openapi parameters @peterschutt.
-- add raise `ImproperConfiguredException` when user-defined generic type resolved as openapi parameter @peterschutt.
 - add dependency function @peterschutt.
+- add raise `ImproperConfiguredException` when user-defined generic type resolved as openapi parameter @peterschutt.
+- add selective deduplication of openapi parameters @peterschutt.
+- add test for generic model injection @Goldziher.
+- update Starlette to 0.20.3.
 
 [1.3.9]
 
@@ -235,12 +238,12 @@
 
 [1.3.6]
 
-- updated validation errors to return more useful json objects.
+- update validation errors to return more useful json objects.
 
 [1.3.5]
 
-- update Starlette to 0.20.1.
 - add memoization to openAPI schema.
+- update Starlette to 0.20.1.
 
 [1.3.4]
 
@@ -261,7 +264,7 @@
 
 [1.3.0]
 
-- updated middleware call order @slavugan.
+- update middleware call order @slavugan.
 
 [1.2.5]
 
@@ -269,12 +272,12 @@
 
 [1.2.4]
 
-- updated `Starlette` to version `0.19.0`.
+- update `Starlette` to version `0.19.0`.
 
 [1.2.3]
 
-- update `LoggingConfig` to be non-blocking @madlad33.
 - fix regression in error handling, returning 404 instead of 500.
+- update `LoggingConfig` to be non-blocking @madlad33.
 
 [1.2.2]
 
@@ -290,136 +293,135 @@
 
 [1.1.1]
 
-- added tags support to Controller @tclasen.
-- updated OpenAPI operationIds to be more humanized @tclasen.
+- add tags support to Controller @tclasen.
+- update OpenAPI operationIds to be more humanized @tclasen.
 
 [1.1.0]
 
-- added response caching support.
+- add response caching support.
 
 [1.0.5]
 
-- fixed typing of `Partial` @to-ph.
+- fix typing of `Partial` @to-ph.
 
 [1.0.4]
 
-- updated `Request.state` to be defined already in the application @ashwinvin.
+- update `Request.state` to be defined already in the application @ashwinvin.
 
 [1.0.3]
 
-- added argument validation on `Parameter` and `Body`.
+- add argument validation on `Parameter` and `Body`.
 
 [1.0.2]
 
-- fixed lifecycle injection of application state into class methods.
+- fix lifecycle injection of application state into class methods.
 
 [1.0.1]
 
-- fixed `MissingDependencyException` inheritance chain.
-- fixed `ValidationException` missing as export in `__init__` method.
+- fix `MissingDependencyException` inheritance chain.
+- fix `ValidationException` missing as export in `__init__` method.
 
 [1.0.0]
 
-- added template support @ashwinvin.
-- updated `starlite.request` by renaming it to `starlite.connection`.
-- updated the kwarg parsing and data injection logic to compute required kwargs for each route handler during
-  application bootstrap.
-- updated the redoc UI path from `/schema/redoc` to `/schema` @yudjinn.
+- add template support @ashwinvin.
+- update `starlite.request` by renaming it to `starlite.connection`.
+- update the kwarg parsing and data injection logic to compute required kwargs for each route handler during application bootstrap.
+- update the redoc UI path from `/schema/redoc` to `/schema` @yudjinn.
 
 [0.7.2]
 
 - add missing support for starlette background tasks.
-- fixed error with static files not working with root route.
-- fixed function signature modelling ignoring non-annotated fields.
-- fixed headers being case-sensitive.
+- fix error with static files not working with root route.
+- fix function signature modelling ignoring non-annotated fields.
+- fix headers being case-sensitive.
 
 [0.7.1]
 
-- updated handling of paths without parameters.
+- update handling of paths without parameters.
 
 [0.7.0]
 
-- added `@asgi` route handler decorator.
-- updated query parameters parsing.
-- updated request-response cycle handling.
-- updated rewrote route resolution.
+- add `@asgi` route handler decorator.
+- update query parameters parsing.
+- update request-response cycle handling.
+- update rewrote route resolution.
 
 [0.6.0]
 
-- added support for multiple paths per route handler.
-- added support for static files.
-- updated `DTOFactory`.
-- updated `PluginProtocol` - added `from_dict` methods.
-- updated `SQLAlchemyPlugin`.
-- updated dependency injection to allow for dependency injection into dependencies.
-- updated lifecycle support to allow for application state injection.
-- updated route handlers and dependencies to allow for application state injection.
+- add support for multiple paths per route handler.
+- add support for static files.
+- update `DTOFactory`.
+- update `PluginProtocol` - add `from_dict` methods.
+- update `SQLAlchemyPlugin`.
+- update dependency injection to allow for dependency injection into dependencies.
+- update lifecycle support to allow for application state injection.
+- update route handlers and dependencies to allow for application state injection.
 
 [0.5.0]
 
-- updated BaseRoute to not inherit from Starlette, allowing for optimization using `_slots_`.
-- updated RouteHandlers from being pydantic models to being custom classes, allowing for optimization using `_slots_`.
-- updated base path handling in controllers @vincentsarago.
+- update BaseRoute to not inherit from Starlette, allowing for optimization using `_slots_`.
+- update RouteHandlers from being pydantic models to being custom classes, allowing for optimization using `_slots_`.
+- update base path handling in controllers @vincentsarago.
 
 [0.4.3]
 
-- fixed dto factory handling of forward refs.
+- fix dto factory handling of forward refs.
 
 [0.4.2]
 
-- fixed Parameter default not being respected.
+- fix Parameter default not being respected.
 
 [0.4.1]
 
-- added support for `before_request` and `after_request` hooks.
-- fixed sql_alchemy requirement not being isolated to the plugin only.
+- add support for `before_request` and `after_request` hooks.
+- fix sql_alchemy requirement not being isolated to the plugin only.
 
 [0.4.0]
 
-- added `DTOFactory`.
-- added `SQLAlchemyPlugin`.
-- added plugin support.
-- fixed orjson compatibility @vincentsarago.
+- add `DTOFactory`.
+- add `SQLAlchemyPlugin`.
+- add plugin support.
+- fix orjson compatibility @vincentsarago.
 
 [0.3.0]
 
-- updated openapi configuration.
+- update openapi configuration.
 
 [0.2.1]
 
-- fixed regression in handler validation.
+- fix regression in handler validation.
 
 [0.2.0]
 
-- added support for websockets.
-- updated multipart data handling to support mixed fields.
+- add support for websockets.
+- update multipart data handling to support mixed fields.
 
 [0.1.6]
 
-- fixed monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore.
+- fix monkey patch "openapi-schema-pydantic" to change Schema.Config.extra to Extra.ignore.
 
 [0.1.5]
 
-- fixed monkey patch "openapi-schema-pydantic" to change Schema.extra to Extra.ignore.
+- fix monkey patch "openapi-schema-pydantic" to change Schema.extra to Extra.ignore.
 
 [0.1.4]
 
-- fixed update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic.
-- fixed include_in_schema for routes always being true.
+- fix include_in_schema for routes always being true.
+- fix update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic.
 
 [0.1.3]
 
-- updated dependencies to use pydantic-factories v1.0.0.
-- added `NotFoundException`.
+- add `NotFoundException`.
+- update dependencies to use pydantic-factories v1.0.0.
 
 [0.1.2]
 
-- fixed _requests_ not being included in project dependencies.
-- updated pydantic to v1.9.0.
+- fix _requests_ not being included in project dependencies.
+- update pydantic to v1.9.0.
 
 [0.1.1]
 
-- added missing exports to **init**.
+- add missing exports to **init**.
 
 [0.1.0]
 
