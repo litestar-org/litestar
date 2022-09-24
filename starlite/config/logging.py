@@ -73,7 +73,7 @@ def get_default_handlers() -> Dict[str, Dict[str, Any]]:
     return default_handlers
 
 
-def get_logger_placeholder(_: str) -> Any:
+def get_logger_placeholder(_: str) -> Any:  # pragma: no cover
     """
     Raises:
         ImproperlyConfiguredException
