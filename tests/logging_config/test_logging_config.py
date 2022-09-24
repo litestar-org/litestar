@@ -6,7 +6,11 @@ from starlette.status import HTTP_200_OK
 
 from starlite import Request, get
 from starlite.config import LoggingConfig
-from starlite.config.logging import default_handlers, default_picologging_handlers
+from starlite.config.logging import (
+    default_handlers,
+    default_picologging_handlers,
+    get_default_handlers,
+)
 from starlite.logging.picologging import (
     QueueListenerHandler as PicologgingQueueListenerHandler,
 )
@@ -122,3 +126,22 @@ def test_connection_logger(handlers: Any, listener: Any) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.json()["isinstance"]
+
+
+def test_validation() -> None:
+    logging_config = LoggingConfig(handlers={})
+    assert logging_config.handlers["queue_listener"] == get_default_handlers()["queue_listener"]
+
+
+@pytest.mark.parametrize(
+    "handlers, listener",
+    [
+        [default_handlers, StandardQueueListenerHandler],
+        [default_picologging_handlers, PicologgingQueueListenerHandler],
+    ],
+)
+def test_root_logger(handlers: Any, listener: Any) -> None:
+    logging_config = LoggingConfig(handlers=handlers)
+    get_logger = logging_config.configure()
+    root_logger = get_logger()
+    isinstance(root_logger.handlers[0], listener)  # type: ignore

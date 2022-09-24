@@ -14,7 +14,7 @@ from typing import (
 )
 
 from orjson import dumps
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing_extensions import Literal
 
 from starlite.exceptions import (
@@ -43,7 +43,8 @@ default_handlers: Dict[str, Dict[str, Any]] = {
     },
     "queue_listener": {
         "class": "starlite.logging.standard.QueueListenerHandler",
-        "handlers": ["cfg://handlers.console"],
+        "level": "DEBUG",
+        "formatter": "standard",
     },
 }
 
@@ -55,12 +56,13 @@ default_picologging_handlers: Dict[str, Dict[str, Any]] = {
     },
     "queue_listener": {
         "class": "starlite.logging.picologging.QueueListenerHandler",
-        "handlers": ["cfg://handlers.console"],
+        "level": "DEBUG",
+        "formatter": "standard",
     },
 }
 
 
-def set_default_handlers() -> Dict[str, Dict[str, Any]]:
+def get_default_handlers() -> Dict[str, Dict[str, Any]]:
     """
 
     Returns:
@@ -110,7 +112,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
 
     Notes:
         - This option is ignored for 'picologging'
-        """
+    """
     disable_existing_loggers: bool = False
     """Whether any existing non-root loggers are to be disabled."""
     filters: Optional[Dict[str, Dict[str, Any]]] = None
@@ -120,7 +122,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     formatters: Dict[str, Dict[str, Any]] = {
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
-    handlers: Dict[str, Dict[str, Any]] = Field(default_factory=set_default_handlers)
+    handlers: Dict[str, Dict[str, Any]] = Field(default_factory=get_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance."""
     loggers: Dict[str, Dict[str, Any]] = {
         "starlite": {
@@ -129,9 +131,28 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         },
     }
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding Logger instance."""
-    root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {"handlers": ["queue_listener"], "level": "INFO"}
+    root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {
+        "handlers": ["queue_listener", "console"],
+        "level": "INFO",
+    }
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
     except that the propagate setting will not be applicable."""
+
+    @validator("handlers", always=True)
+    def validate_handlers(  # pylint: disable=no-self-argument
+        cls, value: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Ensures that 'queue_listener' is always set
+        Args:
+            value: Defined handlers dict.
+
+        Returns:
+            A handlers dict.
+        """
+        if "queue_listener" not in value:
+            value["queue_listener"] = get_default_handlers()["queue_listener"]
+        return value
 
     def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.

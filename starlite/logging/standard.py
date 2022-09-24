@@ -1,21 +1,16 @@
 import atexit
+from io import StringIO
+from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
-from typing import Any, List
-
-from starlite.logging.utils import resolve_handlers
 
 
 class QueueListenerHandler(QueueHandler):
-    def __init__(self, handlers: List[Any]) -> None:
+    def __init__(self) -> None:
         """Configures queue listener and handler to support non-blocking
-        logging configuration.
-
-        Args:
-            handlers (list): list of handler names.
-        """
+        logging configuration."""
         super().__init__(Queue(-1))
-        self.listener = QueueListener(self.queue, *resolve_handlers(handlers))
+        self.listener = QueueListener(self.queue, StreamHandler(StringIO()))
         self.listener.start()
 
         atexit.register(self.listener.stop)
