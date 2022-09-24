@@ -7,6 +7,7 @@ from starlite.utils.url import join_paths, normalize_path
     "base,fragment, expected",
     [
         ("/path/", "sub", "/path/sub"),
+        ("/path/", "/sub/", "/path/sub"),
         ("path/", "sub", "/path/sub"),
         ("path", "sub", "/path/sub"),
         ("/path/", "sub/", "/path/sub"),
