@@ -69,7 +69,15 @@ def test_dictconfig_startup(dict_config_class: str, handlers: Any) -> None:
 
 
 @pytest.mark.parametrize("logger", [LoggingConfig(handlers=default_handlers).configure()("starlite")])
-def test_queue_logger(logger: "Logger", caplog: "LogCaptureFixture") -> None:
+def test_standard_queue_listener_logger(logger: "Logger", caplog: "LogCaptureFixture") -> None:
+    with caplog.at_level("INFO"):
+        logger.info("Testing now!")
+        assert "Testing now!" in caplog.text
+
+
+@pytest.mark.xfail(reason="see: https://github.com/microsoft/picologging/issues/90")
+@pytest.mark.parametrize("logger", [LoggingConfig(handlers=default_picologging_handlers).configure()("starlite")])
+def test_picologging_queue_listener_logger(logger: "Logger", caplog: "LogCaptureFixture") -> None:
     with caplog.at_level("INFO"):
         logger.info("Testing now!")
         assert "Testing now!" in caplog.text
