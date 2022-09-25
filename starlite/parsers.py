@@ -1,6 +1,6 @@
 from contextlib import suppress
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 from urllib.parse import parse_qsl
 
 from orjson import JSONDecodeError, loads
@@ -11,11 +11,9 @@ from starlite.datastructures import UploadFile
 from starlite.enums import RequestEncodingType
 
 if TYPE_CHECKING:
-    from typing import Union
 
     from pydantic.fields import ModelField
 
-    from starlite.connection import ASGIConnection
     from starlite.datastructures import FormMultiDict
 
 _true_values = {"True", "true"}
@@ -42,18 +40,18 @@ def _query_param_reducer(acc: Dict[str, List[Any]], cur: Tuple[str, str]) -> Dic
     return acc
 
 
-def parse_query_params(connection: "ASGIConnection") -> Dict[str, Any]:
+def parse_query_params(query_string: bytes) -> Dict[str, List[str]]:
     """Parses and normalize a given connection's query parameters into a
-    regular dictionary."""
-    query_string = cast("Union[str, bytes]", connection.scope.get("query_string", ""))
+    regular dictionary.
 
-    return reduce(
-        _query_param_reducer,
-        parse_qsl(
-            query_string if isinstance(query_string, str) else query_string.decode("latin-1"), keep_blank_values=True
-        ),
-        {},
-    )
+    Args:
+        query_string: A byte-string containing a query
+
+    Returns:
+        A string keyed dictionary of values.
+    """
+
+    return reduce(_query_param_reducer, parse_qsl(query_string.decode("utf-8"), keep_blank_values=True), {})
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:

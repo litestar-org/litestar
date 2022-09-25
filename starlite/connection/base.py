@@ -1,4 +1,14 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from starlette.datastructures import URL, Address, Headers, URLPath
 from starlette.requests import cookie_parser
@@ -129,14 +139,14 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return cast("Headers", self._headers)
 
     @property
-    def query_params(self) -> Dict[str, Any]:
+    def query_params(self) -> Dict[str, List[str]]:
         """
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
         if self._parsed_query is Empty:
-            self._parsed_query = self.scope["_parsed_query"] = parse_query_params(self)  # type: ignore[typeddict-item]
-        return cast("Dict[str, Any]", self._parsed_query)
+            self._parsed_query = self.scope["_parsed_query"] = parse_query_params(self.scope.get("query_string", b""))  # type: ignore[typeddict-item]
+        return cast("Dict[str, List[str]]", self._parsed_query)
 
     @property
     def path_params(self) -> Dict[str, Any]:

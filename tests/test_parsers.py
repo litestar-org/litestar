@@ -16,7 +16,7 @@ def test_parse_query_params() -> None:
         "polluting": False,
     }
     request = RequestFactory().get("/", query_params=query)  # type: ignore[arg-type]
-    result = parse_query_params(connection=request)
+    result = parse_query_params(query_string=request.scope.get("query_string", b""))
     assert result == {
         "value": ["10"],
         "veggies": ["tomato", "potato", "aubergine"],
