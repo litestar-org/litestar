@@ -4,23 +4,24 @@ from typing import (
     Callable,
     Coroutine,
     Dict,
+    List,
     Literal,
     Tuple,
     Union,
     cast,
 )
 
+from starlette.datastructures import Headers
 from typing_extensions import TypedDict
 
 from starlite.connection import Request
 from starlite.datastructures import UploadFile
-from starlite.enums import HttpMethod, MediaType, RequestEncodingType
+from starlite.enums import HttpMethod, RequestEncodingType
 
 if TYPE_CHECKING:
-    from starlette.responses import Response as StarletteResponse
-
     from starlite.connection import ASGIConnection
     from starlite.types import Method
+    from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 RequestExtractorField = Literal[
     "path", "method", "content_type", "headers", "cookies", "query", "path_params", "body", "scheme", "client"
@@ -258,18 +259,17 @@ class ConnectionDataExtractor:
 class ExtractedResponseData(TypedDict, total=False):
     body: bytes
     status_code: int
-    media_type: Union[str, MediaType]
-    headers: Dict[str, str]
+    headers: Union[List[Tuple[bytes, bytes]], Dict[str, str]]
 
 
 class ResponseDataExtractor:
-    __slots__ = ("extractors",)
+    __slots__ = ("extractors", "parse_headers")
 
     def __init__(
         self,
+        parse_headers: bool = True,
         extract_body: bool = True,
         extract_status_code: bool = True,
-        extract_media_type: bool = True,
         extract_headers: bool = True,
     ):
         """A utility class that extracts data from.
@@ -277,76 +277,69 @@ class ResponseDataExtractor:
         [Response][starlite.response.Response] instances.
 
         Args:
+            parse_headers
             extract_body:
             extract_status_code:
-            extract_media_type:
             extract_headers:
         """
-        self.extractors: Dict[ResponseExtractorField, Callable[["StarletteResponse"], Any]] = {}
+        self.parse_headers = parse_headers
+        self.extractors: Dict[
+            ResponseExtractorField, Callable[[Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]], Any]
+        ] = {}
         if extract_body:
             self.extractors["body"] = self.extract_response_body
         if extract_status_code:
             self.extractors["status_code"] = self.extract_status_code
-        if extract_media_type:
-            self.extractors["media_type"] = self.extract_media_type
         if extract_headers:
             self.extractors["headers"] = self.extract_headers
 
-    def __call__(self, response: "StarletteResponse") -> ExtractedResponseData:
+    def __call__(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> ExtractedResponseData:
         """Extracts data from the response, returning a dictionary of values.
 
         Args:
-            response: A Starlette or Starlite [Response][starlite.response.Response] instance.
+            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
 
         Returns:
             A string keyed dictionary of extracted values.
         """
-        return cast("ExtractedResponseData", {key: extractor(response) for key, extractor in self.extractors.items()})
+        return cast("ExtractedResponseData", {key: extractor(messages) for key, extractor in self.extractors.items()})
 
     @staticmethod
-    def extract_response_body(response: "StarletteResponse") -> bytes:
+    def extract_response_body(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> bytes:
         """
 
         Args:
-            response: A Starlette or Starlite [Response][starlite.response.Response] instance.
+            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
 
         Returns:
             The Response's body as a byte-string.
         """
-        return response.body
+        return messages[1]["body"]
 
     @staticmethod
-    def extract_status_code(response: "StarletteResponse") -> int:
+    def extract_status_code(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> int:
         """
 
         Args:
-            response: A Starlette or Starlite [Response][starlite.response.Response] instance.
+            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
 
         Returns:
             The Response's status-code.
         """
-        return response.status_code
+        return messages[0]["status"]
 
-    @staticmethod
-    def extract_media_type(response: "StarletteResponse") -> Union[str, MediaType]:
+    def extract_headers(
+        self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]
+    ) -> Union[List[Tuple[bytes, bytes]], Dict[str, str]]:
         """
 
         Args:
-            response: A Starlette or Starlite [Response][starlite.response.Response] instance.
-
-        Returns:
-            The Response's media_type.
-        """
-        return response.media_type or MediaType.JSON
-
-    @staticmethod
-    def extract_headers(response: "StarletteResponse") -> Dict[str, str]:
-        """
-
-        Args:
-            response: A Starlette or Starlite [Response][starlite.response.Response] instance.
+            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
 
         Returns:
             The Response's headers.
         """
-        return dict(response.headers)
+        headers = messages[0]["headers"]
+        if self.parse_headers:
+            return dict(Headers(raw=headers))
+        return headers
