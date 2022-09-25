@@ -214,19 +214,19 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     request_cookie_keys_to_obfuscate: Set[str] = {"session"}
     """
-    Request cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Request cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
     request_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
     """
-    Request header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Request header keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
     response_cookie_keys_to_obfuscate: Set[str] = {"session"}
     """
-    Response cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Response cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
     response_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
     """
-    Response header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Response header keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
     request_log_message: str = "HTTP Request"
     """

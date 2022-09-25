@@ -110,8 +110,8 @@ class ConnectionDataExtractor:
             extract_path_params: Whether to extract path parameters.
             extract_query: Whether to extract query parameters.
             extract_scheme: Whether to extract the http scheme.
-            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
-            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****'.
+            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
             parse_body: Whether to parse the body value or return the raw byte string, (for requests only).
             parse_query: Whether to parse query parameters or return the raw byte string.
         """
@@ -316,8 +316,8 @@ class ResponseDataExtractor:
             extract_cookies: Whether to extract the cookies.
             extract_headers: Whether to extract the headers.
             extract_status_code: Whether to extract the status code.
-            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
-            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
+            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****'.
         """
         self.obfuscate_headers = obfuscate_headers or set()
         self.obfuscate_cookies = obfuscate_cookies or set()
