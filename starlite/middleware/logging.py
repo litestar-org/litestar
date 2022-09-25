@@ -1,18 +1,7 @@
 import re
 from collections import OrderedDict
 from inspect import isawaitable
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Set, Union
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
@@ -29,7 +18,6 @@ from starlite.utils.extractors import (
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Logger, Message, Receive, Scope, Send
-    from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 try:
     from structlog._config import BoundLoggerLazyProxy
@@ -38,19 +26,6 @@ try:
 except ImportError:
     BoundLoggerLazyProxy = object  # type: ignore
     structlog_installed = False  # pylint: disable=invalid-name
-
-
-def obfuscate(value: Dict[str, str], fields_to_obfuscate: Set[str]) -> Dict[str, str]:
-    """
-    Args:
-        value: A dictionary of strings
-        fields_to_obfuscate: keys to obfuscate
-
-    Returns:
-        A dictionary with obfuscated strings
-
-    """
-    return {k: v if k not in fields_to_obfuscate else "*" * len(v) for k, v in value}  # type: ignore
 
 
 class LoggingMiddlewareConfig(BaseModel):
@@ -62,13 +37,21 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     Name of the logger to retrieve using `app.get_logger("<name>")`.
     """
-    obfuscate_cookies: Set[str] = {"session"}
+    request_cookie_keys_to_obfuscate: Set[str] = {"session"}
     """
-    Cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Request cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
     """
-    obfuscate_headers: Set[str] = {"Authorization", "X-API-KEY"}
+    request_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
     """
-    Header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    Request header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    """
+    response_cookie_keys_to_obfuscate: Set[str] = {"session"}
+    """
+    Response cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    """
+    response_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
+    """
+    Response header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
     """
     request_log_message: str = "HTTP Request"
     """
@@ -88,13 +71,29 @@ class LoggingMiddlewareConfig(BaseModel):
         "path_params",
         "body",
     )
+    """
+    Fields to extract and log from the request.
+
+    Notes:
+        -  The order of fields in the iterable determines the order of the log message logged out.
+            Thus, re-arranging the log-message is as simple as changing the iterable.
+        -  To turn off logging of requests, use and empty iterable.
+
+    """
     response_log_fields: Iterable[ResponseExtractorField] = (
         "status_code",
-        "method",
-        "media_type",
+        "cookies",
         "headers",
         "body",
     )
+    """
+    Fields to extract and log from the response. The order of fields in the iterable determines the order of the log message logged out.
+
+    Notes:
+        -  The order of fields in the iterable determines the order of the log message logged out.
+            Thus, re-arranging the log-message is as simple as changing the iterable.
+        -  To turn off logging of responses, use and empty iterable.
+    """
 
 
 class LoggingMiddleware(MiddlewareProtocol):
@@ -118,23 +117,27 @@ class LoggingMiddleware(MiddlewareProtocol):
             else None
         )
         self.request_extractor = ConnectionDataExtractor(
-            parse_body=self.is_struct_logger,
-            extract_scheme="scheme" in self.config.request_log_fields,
-            extract_client="client" in self.config.request_log_fields,
-            extract_path="path" in self.config.request_log_fields,
-            extract_method="method" in self.config.request_log_fields,
-            extract_content_type="content_type" in self.config.request_log_fields,
-            extract_headers="headers" in self.config.request_log_fields,
-            extract_cookies="cookies" in self.config.request_log_fields,
-            extract_query="query" in self.config.request_log_fields,
-            extract_path_params="path_params" in self.config.request_log_fields,
             extract_body="body" in self.config.request_log_fields,
+            extract_client="client" in self.config.request_log_fields,
+            extract_content_type="content_type" in self.config.request_log_fields,
+            extract_cookies="cookies" in self.config.request_log_fields,
+            extract_headers="headers" in self.config.request_log_fields,
+            extract_method="method" in self.config.request_log_fields,
+            extract_path="path" in self.config.request_log_fields,
+            extract_path_params="path_params" in self.config.request_log_fields,
+            extract_query="query" in self.config.request_log_fields,
+            extract_scheme="scheme" in self.config.request_log_fields,
+            obfuscate_cookies=self.config.request_cookie_keys_to_obfuscate,
+            obfuscate_headers=self.config.request_headers_to_obfuscate,
+            parse_body=self.is_struct_logger,
+            parse_query=self.is_struct_logger,
         )
         self.response_extractor = ResponseDataExtractor(
-            parse_headers=True,
             extract_body="body" in self.config.response_log_fields,
-            extract_status_code="status_code" in self.config.response_log_fields,
             extract_headers="headers" in self.config.response_log_fields,
+            extract_status_code="status_code" in self.config.response_log_fields,
+            obfuscate_cookies=self.config.response_cookie_keys_to_obfuscate,
+            obfuscate_headers=self.config.response_headers_to_obfuscate,
         )
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -172,7 +175,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: "Scope") -> None:
-        """
+        """Handles extracting the response data and logging the message.
 
         Args:
             scope: The ASGI connection scope.
@@ -180,9 +183,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         Returns:
             None
         """
-        extracted_data = self.extract_response_data(
-            messages=(scope["state"]["http.response.start"], scope["state"]["http.response.body"])
-        )
+        extracted_data = self.extract_response_data(scope=scope)
         self.log_message(values=extracted_data)
 
     def log_message(self, values: OrderedDict[str, Any]) -> None:
@@ -212,19 +213,13 @@ class LoggingMiddleware(MiddlewareProtocol):
 
         data: OrderedDict[str, Any] = OrderedDict([("message", self.config.request_log_message)])
         extracted_data = self.request_extractor(connection=request)
+        serializer = get_serializer_from_scope(request.scope) or default_serializer
         for key in self.config.request_log_fields:
             if key in extracted_data:
                 value = extracted_data[key]  # pyright: ignore
                 if key == "body" and request.method != HttpMethod.GET:
                     data[key] = await value if isawaitable(value) else value
-                elif key in {"headers", "cookies"}:
-                    obfuscate_keys = (
-                        self.config.obfuscate_headers if key == "headers" else self.config.obfuscate_cookies
-                    )
-                    if obfuscate_keys:
-                        value = obfuscate(cast("Dict[str, str]", value), obfuscate_keys)
-                if isinstance(value, (dict, list, tuple)) and not self.is_struct_logger:
-                    serializer = get_serializer_from_scope(request.scope) or default_serializer
+                if not self.is_struct_logger and isinstance(value, (dict, list, tuple)):
                     data[key] = str(
                         dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
                     )
@@ -232,22 +227,25 @@ class LoggingMiddleware(MiddlewareProtocol):
                     data[key] = value
         return data
 
-    def extract_response_data(
-        self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]
-    ) -> OrderedDict[str, Any]:
+    def extract_response_data(self, scope: "Scope") -> OrderedDict[str, Any]:
         """
         Extracts data from the response.
         Args:
-            messages: A tuple of ASGI messages.
+            scope: The ASGI connection scope.
 
         Returns:
             An OrderedDict.
         """
         data: OrderedDict[str, Any] = OrderedDict([("message", self.config.response_log_message)])
-        extracted_data = self.response_extractor(messages=messages)
-
+        extracted_data = self.response_extractor(
+            messages=(scope["state"]["http.response.start"], scope["state"]["http.response.body"])
+        )
+        serializer = get_serializer_from_scope(scope) or default_serializer
         for key in self.config.response_log_fields:
-            data[key] = extracted_data.get(key)
+            value = extracted_data.get(key)
+            if not self.is_struct_logger and isinstance(value, (dict, list, tuple)):
+                data[key] = str(dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS))
+            data[key] = value
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":

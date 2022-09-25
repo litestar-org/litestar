@@ -4,13 +4,14 @@ from typing import (
     Callable,
     Coroutine,
     Dict,
-    List,
+    Optional,
+    Set,
     Tuple,
     Union,
     cast,
 )
 
-from starlette.datastructures import Headers
+from starlette.requests import cookie_parser
 from typing_extensions import Literal, TypedDict
 
 from starlite.connection import Request
@@ -22,11 +23,34 @@ if TYPE_CHECKING:
     from starlite.types import Method
     from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
+
+def obfuscate(values: Dict[str, Any], fields_to_obfuscate: Set[str]) -> Dict[str, Any]:
+    """
+    Args:
+        values: A dictionary of strings
+        fields_to_obfuscate: keys to obfuscate
+
+    Returns:
+        A dictionary with obfuscated strings
+
+    """
+    if not fields_to_obfuscate:
+        return values
+
+    output = {}
+    for key, value in values.items():
+        if any(field.lower() == key.lower() for field in fields_to_obfuscate):
+            output[key] = "*****"
+        else:
+            output[key] = value
+    return output
+
+
 RequestExtractorField = Literal[
     "path", "method", "content_type", "headers", "cookies", "query", "path_params", "body", "scheme", "client"
 ]
 
-ResponseExtractorField = Literal["status_code", "method", "media_type", "headers", "body"]
+ResponseExtractorField = Literal["status_code", "method", "headers", "body", "cookies"]
 
 
 class ExtractedRequestData(TypedDict, total=False):
@@ -43,7 +67,14 @@ class ExtractedRequestData(TypedDict, total=False):
 
 
 class ConnectionDataExtractor:
-    __slots__ = ("connection_extractors", "request_extractors", "parse_body", "parse_query")
+    __slots__ = (
+        "connection_extractors",
+        "request_extractors",
+        "parse_body",
+        "parse_query",
+        "obfuscate_headers",
+        "obfuscate_cookies",
+    )
 
     def __init__(
         self,
@@ -57,6 +88,8 @@ class ConnectionDataExtractor:
         extract_path_params: bool = True,
         extract_query: bool = True,
         extract_scheme: bool = True,
+        obfuscate_cookies: Optional[Set[str]] = None,
+        obfuscate_headers: Optional[Set[str]] = None,
         parse_body: bool = False,
         parse_query: bool = False,
     ):
@@ -67,21 +100,25 @@ class ConnectionDataExtractor:
         [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket] instance.
 
         Args:
-            extract_body: For requests only, extract body.
-            extract_client: Extract the client (host, port) mapping.
-            extract_content_type: Extract the content type and any options.
-            extract_cookies: Extract cookies.
-            extract_headers: Extract headers.
-            extract_method: For requests only, extract the HTTP method.
-            extract_path: Extract the path.
-            extract_path_params: Extract path parameters.
-            extract_query: Extract query parameters.
-            extract_scheme: Extract the http scheme.
-            parse_body: For requests only, whether to parse the body value or return the raw byte string.
+            extract_body: Whether to extract body, (for requests only).
+            extract_client: Whether to extract the client (host, port) mapping.
+            extract_content_type: Whether to extract the content type and any options.
+            extract_cookies: Whether to extract cookies.
+            extract_headers: Whether to extract headers.
+            extract_method: Whether to extract the HTTP method, (for requests only).
+            extract_path: Whether to extract the path.
+            extract_path_params: Whether to extract path parameters.
+            extract_query: Whether to extract query parameters.
+            extract_scheme: Whether to extract the http scheme.
+            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+            parse_body: Whether to parse the body value or return the raw byte string, (for requests only).
             parse_query: Whether to parse query parameters or return the raw byte string.
         """
         self.parse_body = parse_body
         self.parse_query = parse_query
+        self.obfuscate_headers = obfuscate_headers or set()
+        self.obfuscate_cookies = obfuscate_cookies or set()
         self.connection_extractors: Dict[str, Callable[["ASGIConnection[Any, Any, Any]"], Any]] = {}
         self.request_extractors: Dict[RequestExtractorField, Callable[["Request[Any, Any]"], Any]] = {}
         if extract_scheme:
@@ -160,8 +197,7 @@ class ConnectionDataExtractor:
         """
         return connection.scope["path"]
 
-    @staticmethod
-    def extract_headers(connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
+    def extract_headers(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
         """
 
         Args:
@@ -170,10 +206,9 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's headers.
         """
-        return dict(connection.headers)
+        return obfuscate(dict(connection.headers), self.obfuscate_headers)
 
-    @staticmethod
-    def extract_cookies(connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
+    def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
         """
 
         Args:
@@ -182,7 +217,7 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's cookies.
         """
-        return connection.cookies
+        return obfuscate(connection.cookies, self.obfuscate_cookies)
 
     def extract_query(self, connection: "ASGIConnection[Any, Any, Any]") -> Any:
         """
@@ -258,30 +293,34 @@ class ConnectionDataExtractor:
 class ExtractedResponseData(TypedDict, total=False):
     body: bytes
     status_code: int
-    headers: Union[List[Tuple[bytes, bytes]], Dict[str, str]]
+    headers: Dict[str, str]
+    cookies: Dict[str, str]
 
 
 class ResponseDataExtractor:
-    __slots__ = ("extractors", "parse_headers")
+    __slots__ = ("extractors", "parse_headers", "obfuscate_headers", "obfuscate_cookies")
 
     def __init__(
         self,
-        parse_headers: bool = True,
         extract_body: bool = True,
-        extract_status_code: bool = True,
+        extract_cookies: bool = True,
         extract_headers: bool = True,
+        extract_status_code: bool = True,
+        obfuscate_cookies: Optional[Set[str]] = None,
+        obfuscate_headers: Optional[Set[str]] = None,
     ):
-        """A utility class that extracts data from.
-
-        [Response][starlite.response.Response] instances.
+        """A utility class that extracts data from response messages.
 
         Args:
-            parse_headers
-            extract_body:
-            extract_status_code:
-            extract_headers:
+            extract_body: Whether to extract the body.
+            extract_cookies: Whether to extract the cookies.
+            extract_headers: Whether to extract the headers.
+            extract_status_code: Whether to extract the status code.
+            obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+            obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
         """
-        self.parse_headers = parse_headers
+        self.obfuscate_headers = obfuscate_headers or set()
+        self.obfuscate_cookies = obfuscate_cookies or set()
         self.extractors: Dict[
             ResponseExtractorField, Callable[[Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]], Any]
         ] = {}
@@ -291,13 +330,16 @@ class ResponseDataExtractor:
             self.extractors["status_code"] = self.extract_status_code
         if extract_headers:
             self.extractors["headers"] = self.extract_headers
+        if extract_cookies:
+            self.extractors["cookies"] = self.extract_cookies
 
     def __call__(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> ExtractedResponseData:
         """Extracts data from the response, returning a dictionary of values.
 
         Args:
-            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
-
+            messages: A tuple containing
+                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
+                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
         Returns:
             A string keyed dictionary of extracted values.
         """
@@ -308,8 +350,9 @@ class ResponseDataExtractor:
         """
 
         Args:
-            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
-
+            messages: A tuple containing
+                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
+                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
         Returns:
             The Response's body as a byte-string.
         """
@@ -320,25 +363,52 @@ class ResponseDataExtractor:
         """
 
         Args:
-            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
-
+            messages: A tuple containing
+                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
+                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
         Returns:
             The Response's status-code.
         """
         return messages[0]["status"]
 
-    def extract_headers(
-        self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]
-    ) -> Union[List[Tuple[bytes, bytes]], Dict[str, str]]:
+    def extract_headers(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
         """
 
         Args:
-            messages: A tuple containing [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent] and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+            messages: A tuple containing
+                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
+                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+        Returns:
+            The Response's headers dict.
+        """
+        return obfuscate(
+            {
+                key.decode("latin-1"): value.decode("latin-1")
+                for key, value in filter(lambda x: x[0].lower() != b"set-cookie", messages[0]["headers"])
+            },
+            self.obfuscate_headers,
+        )
+
+    def extract_cookies(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
+        """
+
+        Args:
+            messages: A tuple containing
+                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
+                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
 
         Returns:
-            The Response's headers.
+            The Response's cookies dict.
         """
-        headers = messages[0]["headers"]
-        if self.parse_headers:
-            return dict(Headers(raw=headers))
-        return headers
+        output: Dict[str, str] = {}
+        cookie_string = ";".join(
+            list(
+                map(
+                    lambda x: x[1].decode("latin-1"),
+                    filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"]),
+                )
+            )
+        )
+        if cookie_string:
+            return obfuscate(cookie_parser(cookie_string), self.obfuscate_cookies)
+        return output
