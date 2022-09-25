@@ -4,33 +4,30 @@ from inspect import isawaitable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Iterable,
     List,
     Literal,
     Optional,
     Set,
-    Tuple,
     Union,
+    cast,
 )
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
-from starlite import (
-    ASGIConnection,
-    HttpMethod,
-    Request,
-    RequestEncodingType,
-    ScopeType,
-    UploadFile,
-)
+from starlite import HttpMethod, Request, ScopeType
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils import default_serializer, get_serializer_from_scope
+from starlite.utils.extractors import (
+    ConnectionDataExtractor,
+    RequestExtractorField,
+    ResponseExtractorField,
+)
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Logger, Method, Receive, Scope, Send
+    from starlite.types import ASGIApp, Logger, Receive, Scope, Send
 
 try:
     from structlog._config import BoundLoggerLazyProxy
@@ -54,219 +51,6 @@ def obfuscate(value: Dict[str, str], fields_to_obfuscate: Set[str]) -> Dict[str,
     return {k: v if k not in fields_to_obfuscate else "*" * len(v) for k, v in value}  # type: ignore
 
 
-class ConnectionDataExtractor:
-    __slots__ = ("connection_extractors", "request_extractors", "parse_body", "parse_query")
-
-    def __init__(
-        self,
-        parse_body: bool = False,
-        parse_query: bool = False,
-        extract_scheme: bool = True,
-        extract_client: bool = True,
-        extract_path: bool = True,
-        extract_method: bool = True,
-        extract_content_type: bool = True,
-        extract_headers: bool = True,
-        extract_cookies: bool = True,
-        extract_query: bool = True,
-        extract_path_params: bool = True,
-        extract_body: bool = True,
-    ):
-        """A utility class that extracts data from an.
-
-        [ASGIConnection][starlite.connection.ASGIConnection],
-
-        [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket] instance.
-
-        Args:
-            parse_body: For requests only, whether to parse the body value or return the raw byte string.
-            parse_query: Whether to parse query parameters or return the raw byte string.
-            extract_scheme: Extract the http scheme.
-            extract_client: Extract the client (host, port) mapping.
-            extract_path: Extract the path.
-            extract_method: For requests only, extract the HTTP method.
-            extract_content_type: Extract the content type and any options.
-            extract_headers: Extract headers.
-            extract_cookies: Extract cookies.
-            extract_query: Extract query parameters.
-            extract_path_params: Extract path parameters.
-            extract_body: For requests only, extract body.
-        """
-        self.parse_body = parse_body
-        self.parse_query = parse_query
-        self.connection_extractors: Dict[str, Callable[[ASGIConnection[Any, Any, Any]], Any]] = {}
-        self.request_extractors: Dict[str, Callable[[Request[Any, Any]], Any]] = {}
-        if extract_scheme:
-            self.connection_extractors["scheme"] = self.extract_scheme
-        if extract_client:
-            self.connection_extractors["client"] = self.extract_client
-        if extract_path:
-            self.connection_extractors["path"] = self.extract_path
-        if extract_headers:
-            self.connection_extractors["headers"] = self.extract_headers
-        if extract_cookies:
-            self.connection_extractors["cookies"] = self.extract_cookies
-        if extract_query:
-            self.connection_extractors["query"] = self.extract_query
-        if extract_path_params:
-            self.connection_extractors["path_params"] = self.extract_path_params
-        if extract_method:
-            self.request_extractors["method"] = self.extract_method
-        if extract_content_type:
-            self.request_extractors["content_type"] = self.extract_content_type
-        if extract_body:
-            self.request_extractors["body"] = self.extract_body
-
-    def __call__(self, connection: ASGIConnection[Any, Any, Any]) -> Dict[str, Any]:
-        """Extracts data from the connection, returning a dictionary of values.
-
-        Notes:
-            - The value for 'body' - if present - is an unresolved Coroutine and as such should be awaited by the receiver.
-        Args:
-            connection: An ASGI connection or its subclasses.
-
-        Returns:
-            A string keyed dictionary of extracted values.
-        """
-
-        extractors = (
-            {**self.connection_extractors, **self.request_extractors}  # type: ignore
-            if isinstance(connection, Request)
-            else self.connection_extractors
-        )
-        return {key: extractor(connection) for key, extractor in extractors.items()}
-
-    @staticmethod
-    def extract_scheme(connection: ASGIConnection[Any, Any, Any]) -> str:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            The connection's scope["scheme"] value
-        """
-        return connection.scope["scheme"]
-
-    @staticmethod
-    def extract_client(connection: ASGIConnection[Any, Any, Any]) -> Tuple[str, int]:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            The connection's scope["client"] value or a default value.
-        """
-        return connection.scope.get("client") or ("", 0)
-
-    @staticmethod
-    def extract_path(connection: ASGIConnection[Any, Any, Any]) -> str:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            The connection's scope["path"] value
-        """
-        return connection.scope["path"]
-
-    @staticmethod
-    def extract_headers(connection: ASGIConnection[Any, Any, Any]) -> Dict[str, str]:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            A dictionary with the connection's headers.
-        """
-        return dict(connection.headers)
-
-    @staticmethod
-    def extract_cookies(connection: ASGIConnection[Any, Any, Any]) -> Dict[str, str]:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            A dictionary with the connection's cookies.
-        """
-        return connection.cookies
-
-    def extract_query(self, connection: ASGIConnection[Any, Any, Any]) -> Any:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            Either a dictionary with the connection's parsed query string or the raw query byte-string.
-        """
-        return connection.query_params if self.parse_query else connection.scope.get("query_string", b"")
-
-    @staticmethod
-    def extract_path_params(connection: ASGIConnection[Any, Any, Any]) -> Dict[str, Any]:
-        """
-
-        Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
-
-        Returns:
-            A dictionary with the connection's path parameters.
-        """
-        return connection.path_params
-
-    @staticmethod
-    def extract_method(request: Request[Any, Any]) -> "Method":
-        """
-
-        Args:
-            request: A [Request][starlite.connection.Request] instance.
-
-        Returns:
-            The request's scope["method"] value.
-        """
-        return request.scope["method"]
-
-    @staticmethod
-    def extract_content_type(request: Request[Any, Any]) -> Tuple[str, Dict[str, str]]:
-        """
-
-        Args:
-            request: A [Request][starlite.connection.Request] instance.
-
-        Returns:
-            A tuple containing the request's parsed 'Content-Type' header.
-        """
-        return request.content_type
-
-    async def extract_body(self, request: Request[Any, Any]) -> Any:
-        """
-
-        Args:
-            request: A [Request][starlite.connection.Request] instance.
-
-        Returns:
-            Either the parsed request body or the raw byte-string.
-        """
-        if request.method != HttpMethod.GET:
-            if not self.parse_body:
-                return await request.body()
-            request_encoding_type = request.content_type[0]
-            if request_encoding_type == RequestEncodingType.JSON:
-                return await request.json()
-            form_data = await request.form()
-            if request_encoding_type == RequestEncodingType.URL_ENCODED:
-                return dict(form_data)
-            output: Dict[str, Any] = {}
-            for key, value in form_data.multi_items():
-                output[key] = repr(value) if isinstance(value, UploadFile) else value
-            return output
-
-
 class LoggingMiddlewareConfig(BaseModel):
     exclude: Optional[Union[str, List[str]]] = None
     log_json: bool = structlog_installed
@@ -276,7 +60,7 @@ class LoggingMiddlewareConfig(BaseModel):
     obfuscate_headers: Set[str] = {"Authorization", "X-API-KEY"}
     request_log_message: str = "HTTP Request"
     response_log_message: str = "HTTP Response"
-    request_log_fields: Iterable[str] = (
+    request_log_fields: Iterable[RequestExtractorField] = (
         "path",
         "method",
         "content_type",
@@ -286,12 +70,11 @@ class LoggingMiddlewareConfig(BaseModel):
         "path_params",
         "body",
     )
-    response_log_field: Iterable[str] = (
+    response_log_field: Iterable[ResponseExtractorField] = (
         "status_code",
         "method",
-        "content_type",
+        "media_type",
         "headers",
-        "cookies",
         "body",
     )
 
@@ -397,16 +180,21 @@ class LoggingMiddleware(MiddlewareProtocol):
         data: OrderedDict[str, Any] = OrderedDict([("message", "")])
         extracted_data = self.extractor(connection=request)
         for key in self.config.request_log_fields:
-            value = extracted_data[key]
-            if key == "data" and request.method != HttpMethod.GET:
-                data[key] = await value if isawaitable(value) else value
-            elif key in {"headers", "cookies"}:
-                obfuscate_keys = self.config.obfuscate_headers if key == "headers" else self.config.obfuscate_cookies
-                if obfuscate_keys:
-                    value = obfuscate(value, obfuscate_keys)
-            if isinstance(value, (dict, list, tuple)) and not (self.config.log_json or self.is_struct_logger):
-                serializer = get_serializer_from_scope(request.scope) or default_serializer
-                data[key] = str(dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS))
-            else:
-                data[key] = value
+            if key in extracted_data:
+                value = extracted_data[key]  # pyright: ignore
+                if key == "body" and request.method != HttpMethod.GET:
+                    data[key] = await value if isawaitable(value) else value
+                elif key in {"headers", "cookies"}:
+                    obfuscate_keys = (
+                        self.config.obfuscate_headers if key == "headers" else self.config.obfuscate_cookies
+                    )
+                    if obfuscate_keys:
+                        value = obfuscate(cast("Dict[str, str]", value), obfuscate_keys)
+                if isinstance(value, (dict, list, tuple)) and not (self.config.log_json or self.is_struct_logger):
+                    serializer = get_serializer_from_scope(request.scope) or default_serializer
+                    data[key] = str(
+                        dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+                    )
+                else:
+                    data[key] = value
         return data

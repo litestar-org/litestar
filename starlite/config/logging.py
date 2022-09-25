@@ -28,10 +28,9 @@ if TYPE_CHECKING:
     from starlite.types.callable_types import GetLogger
 
 try:
-    from structlog.types import BindableLogger, Context, Processor, WrappedLogger
+    from structlog.types import BindableLogger, Processor, WrappedLogger
 except ImportError:
     BindableLogger = Any  # type: ignore
-    Context = Any  # type: ignore
     Processor = Any  # type: ignore
     WrappedLogger = Any  # type: ignore
 
