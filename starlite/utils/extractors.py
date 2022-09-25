@@ -5,14 +5,13 @@ from typing import (
     Coroutine,
     Dict,
     List,
-    Literal,
     Tuple,
     Union,
     cast,
 )
 
 from starlette.datastructures import Headers
-from typing_extensions import TypedDict
+from typing_extensions import Literal, TypedDict
 
 from starlite.connection import Request
 from starlite.datastructures import UploadFile
