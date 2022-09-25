@@ -1,5 +1,9 @@
 # Changelog
 
+[1.21.2]
+
+- fix regression in accessing `request.headers` due to caching.
+
 [1.21.1]
 
 - add `StructLoggingConfig`.
