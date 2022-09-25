@@ -7,7 +7,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Literal,
     Optional,
     Set,
     Tuple,
@@ -56,13 +55,29 @@ def obfuscate(value: Dict[str, str], fields_to_obfuscate: Set[str]) -> Dict[str,
 
 class LoggingMiddlewareConfig(BaseModel):
     exclude: Optional[Union[str, List[str]]] = None
-    log_json: bool = structlog_installed
-    log_level: Literal["DEBUG", "INFO"] = "INFO"
+    """
+    List of paths to exclude from logging.
+    """
     logger_name: str = "starlite"
+    """
+    Name of the logger to retrieve using `app.get_logger("<name>")`.
+    """
     obfuscate_cookies: Set[str] = {"session"}
+    """
+    Cookie keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    """
     obfuscate_headers: Set[str] = {"Authorization", "X-API-KEY"}
+    """
+    Header keys to obfuscate. Obfuscated values are replaced with '*****' (max 10 char length).
+    """
     request_log_message: str = "HTTP Request"
+    """
+    Log message to prepend when logging a request.
+    """
     response_log_message: str = "HTTP Response"
+    """
+    Log message to prepend when logging a response.
+    """
     request_log_fields: Iterable[RequestExtractorField] = (
         "path",
         "method",
@@ -103,7 +118,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             else None
         )
         self.request_extractor = ConnectionDataExtractor(
-            parse_body=self.config.log_json,
+            parse_body=self.is_struct_logger,
             extract_scheme="scheme" in self.config.request_log_fields,
             extract_client="client" in self.config.request_log_fields,
             extract_path="path" in self.config.request_log_fields,
@@ -154,7 +169,7 @@ class LoggingMiddleware(MiddlewareProtocol):
 
         """
         extracted_data = await self.extract_request_data(request=Request[Any, Any](scope))
-        self.log_message(message=self.config.request_log_message, scope=scope, values=extracted_data)
+        self.log_message(values=extracted_data)
 
     def log_response(self, scope: "Scope") -> None:
         """
@@ -168,14 +183,12 @@ class LoggingMiddleware(MiddlewareProtocol):
         extracted_data = self.extract_response_data(
             messages=(scope["state"]["http.response.start"], scope["state"]["http.response.body"])
         )
-        self.log_message(message=self.config.response_log_message, scope=scope, values=extracted_data)
+        self.log_message(values=extracted_data)
 
-    def log_message(self, message: str, scope: "Scope", values: OrderedDict[str, Any]) -> None:
+    def log_message(self, values: OrderedDict[str, Any]) -> None:
         """
 
         Args:
-            message: Log Message.
-            scope: The ASGI connection scope.
             values: Extract values to log.
 
         Returns:
@@ -183,16 +196,10 @@ class LoggingMiddleware(MiddlewareProtocol):
 
         """
         if self.is_struct_logger:
-            del values["message"]
+            message = values.pop("message")
             self.logger.info(message, **values)
-            return
-
-        values["message"] = message
-        if self.config.log_json:
-            serializer = get_serializer_from_scope(scope) or default_serializer
-            self.logger.info(str(dumps(values, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)))
-            return
-        self.logger.info(", ".join([f"{key}={value}" for key, value in values.items()]))
+        else:
+            self.logger.info(", ".join([f"{key}={value}" for key, value in values.items()]))
 
     async def extract_request_data(self, request: "Request") -> OrderedDict[str, Any]:
         """Creates a dictionary of values for the message.
@@ -203,7 +210,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             An OrderedDict.
         """
 
-        data: OrderedDict[str, Any] = OrderedDict([("message", "")])
+        data: OrderedDict[str, Any] = OrderedDict([("message", self.config.request_log_message)])
         extracted_data = self.request_extractor(connection=request)
         for key in self.config.request_log_fields:
             if key in extracted_data:
@@ -216,7 +223,7 @@ class LoggingMiddleware(MiddlewareProtocol):
                     )
                     if obfuscate_keys:
                         value = obfuscate(cast("Dict[str, str]", value), obfuscate_keys)
-                if isinstance(value, (dict, list, tuple)) and not (self.config.log_json or self.is_struct_logger):
+                if isinstance(value, (dict, list, tuple)) and not self.is_struct_logger:
                     serializer = get_serializer_from_scope(request.scope) or default_serializer
                     data[key] = str(
                         dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
@@ -236,7 +243,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         Returns:
             An OrderedDict.
         """
-        data: OrderedDict[str, Any] = OrderedDict()
+        data: OrderedDict[str, Any] = OrderedDict([("message", self.config.response_log_message)])
         extracted_data = self.response_extractor(messages=messages)
 
         for key in self.config.response_log_fields:
@@ -244,7 +251,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
-        """Creates a send wrapper, which handles logging response data.
+        """Creates a 'send' wrapper, which handles logging response data.
 
         Args:
             scope: The ASGI connection scope.
