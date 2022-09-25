@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
-    __slots__ = ("_json", "_form", "_body", "is_connected")
+    __slots__ = ("_json", "_form", "_body", "_content_type", "is_connected")
 
     scope: "HTTPScope"
 
@@ -45,6 +45,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         self._body: Any = scope.get("_body", Empty)
         self._form: Any = scope.get("_form", Empty)
         self._json: Any = scope.get("_json", Empty)
+        self._content_type: Any = scope.get("_content_type", Empty)
 
     @property
     def method(self) -> "Method":
@@ -62,7 +63,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         Returns:
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
-        return parse_options_header(self.headers.get("Content-Type"))
+        if self._content_type is Empty:
+            self._content_type = self.scope["_content_type"] = parse_options_header(self.headers.get("Content-Type"))  # type: ignore[typeddict-item]
+        return cast("Tuple[str, Dict[str, str]]", self._content_type)
 
     async def json(self) -> Any:
         """Method to retrieve the json request body from the request.
@@ -73,7 +76,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             An arbitrary value
         """
         if self._json is Empty:
-            self._json = self.scope["_json"] = loads((await self.body()) or b"null")  # type: ignore
+            self._json = self.scope["_json"] = loads((await self.body()) or b"null")  # type: ignore[typeddict-item]
         return self._json
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
@@ -116,7 +119,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             chunks = []
             async for chunk in self.stream():
                 chunks.append(chunk)
-            self._body = self.scope["_body"] = b"".join(chunks)  # type: ignore
+            self._body = self.scope["_body"] = b"".join(chunks)  # type: ignore[typeddict-item]
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
@@ -148,16 +151,16 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
                     )
                     for k, v in form_values
                 ]
-                self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore
+                self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore[typeddict-item]
 
             elif content_type == RequestEncodingType.URL_ENCODED:
-                self._form = self.scope["_form"] = FormMultiDict(  # type: ignore
+                self._form = self.scope["_form"] = FormMultiDict(  # type: ignore[typeddict-item]
                     parse_qsl(
                         b"".join([chunk async for chunk in self.stream()]).decode(options.get("charset", "latin-1"))
                     )
                 )
             else:
-                self._form = self.scope["_form"] = FormMultiDict()  # type: ignore
+                self._form = self.scope["_form"] = FormMultiDict()  # type: ignore[typeddict-item]
         return cast("FormMultiDict", self._form)
 
     async def send_push_promise(self, path: str) -> None:

@@ -125,7 +125,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A Headers instance with the request's scope["headers"] value.
         """
         if self._headers is Empty:
-            self._headers = self.scope["_base_url"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
+            self._headers = self.scope["_headers"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
         return cast("Headers", self._headers)
 
     @property
@@ -155,10 +155,10 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._cookies is Empty:
             cookies: Dict[str, str] = {}
-            cookie_header = self.scope["_cookies"] = self.headers.get("cookie")  # type: ignore[typeddict-item]
+            cookie_header = self.headers.get("cookie")
             if cookie_header:
                 cookies = cookie_parser(cookie_header)
-            self._cookies = cookies
+            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
         return cast("Dict[str, str]", self._cookies)
 
     @property
