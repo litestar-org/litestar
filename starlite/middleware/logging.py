@@ -109,7 +109,7 @@ def create_extractors(
     return extractors
 
 
-class RequestLoggingConfig(BaseModel):
+class LoggingMiddlewareConfig(BaseModel):
     logger_name: str = "starlite"
     obfuscate_headers: Set[str] = {"Authorization", "X-API-KEY"}
     obfuscate_cookies: Set[str] = {"session"}
@@ -131,17 +131,17 @@ class RequestLoggingConfig(BaseModel):
     log_json: bool = structlog_installed
 
 
-class RequestLoggingMiddleware(MiddlewareProtocol):
+class LoggingMiddleware(MiddlewareProtocol):
     __slots__ = ("config", "logger", "exclude", "extractors", "is_struct_logger")
 
     logger: "Logger"
 
-    def __init__(self, app: "ASGIApp", config: "RequestLoggingConfig") -> None:
-        """RequestLoggingMiddleware.
+    def __init__(self, app: "ASGIApp", config: "LoggingMiddlewareConfig") -> None:
+        """LoggingMiddleware.
 
         Args:
             app: The 'next' ASGI app to call.
-            config: An instance of RequestLoggingConfig.
+            config: An instance of LoggingMiddlewareConfig.
         """
         self.app = app
         self.is_struct_logger = False
