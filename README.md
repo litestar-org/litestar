@@ -44,6 +44,21 @@ Check out the [Starlite documentation 📚](https://starlite-api.github.io/starl
 pip install starlite
 ```
 
+## Quick Start
+
+```python
+from starlite import Starlite, get
+
+
+@get("/")
+def hello_world() -> dict[str, str]:
+    """Keeping the tradition alive with hello world."""
+    return {"hello": "world"}
+
+
+app = Starlite(route_handlers=[hello_world])
+```
+
 ## Core Features
 
 - Both functional and OOP python support
