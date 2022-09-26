@@ -40,7 +40,7 @@ def test_csrf_successful_flow() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
+        csrf_token: Optional[str] = response.cookies.get("csrftoken")
         assert csrf_token is not None
 
         set_cookie_header = response.headers.get("set-cookie")
@@ -67,7 +67,7 @@ def test_unsafe_method_fails_without_csrf_header(method: str) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
+        csrf_token: Optional[str] = response.cookies.get("csrftoken")
         assert csrf_token is not None
 
         response = client.request(method, "/")
@@ -82,7 +82,7 @@ def test_invalid_csrf_token() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        csrf_token: Optional[str] = response.cookies.get("csrftoken")  # type: ignore[no-untyped-call]
+        csrf_token: Optional[str] = response.cookies.get("csrftoken")
         assert csrf_token is not None
 
         response = client.post("/", headers={"x-csrftoken": csrf_token + "invalid"})
@@ -131,7 +131,7 @@ def test_custom_csrf_config() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
-        csrf_token: Optional[str] = response.cookies.get("custom-csrftoken")  # type: ignore[no-untyped-call]
+        csrf_token: Optional[str] = response.cookies.get("custom-csrftoken")
         assert csrf_token is not None
 
         set_cookie_header = response.headers.get("set-cookie")

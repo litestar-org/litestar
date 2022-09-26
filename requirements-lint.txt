@@ -10,7 +10,6 @@ pytest-cov
 pytest-dotenv
 types-redis
 types-pyyaml
-types-requests
 types-python-jose
 flake8
 flake8-type-checking
@@ -31,3 +30,4 @@ tox
 mkdocs
 mkdocstrings
 mkdocstrings-python
+httpx
