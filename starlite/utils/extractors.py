@@ -206,7 +206,9 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's headers.
         """
-        return obfuscate(dict(connection.headers), self.obfuscate_headers)
+        return obfuscate(
+            {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}, self.obfuscate_headers
+        )
 
     def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
         """
