@@ -209,7 +209,7 @@ from starlite import MediaType, NotFoundException, Response, get
 import anyio
 
 
-@get(path="/", opt={"exclude_from_auth": True})
+@get(path="/", exclude_from_auth=True)
 async def site_index() -> Response:
     """Site index"""
     exists = await anyio.Path("index.html").exists()

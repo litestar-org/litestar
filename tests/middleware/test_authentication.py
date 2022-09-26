@@ -161,9 +161,9 @@ def test_authentication_middleware_exclude() -> None:
 
 
 def test_authentication_middleware_exclude_from_auth() -> None:
-    auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south"])
+    auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"])
 
-    @get("/north/{value:int}", opt={"exclude_from_auth": True})
+    @get("/north/{value:int}", exclude_from_auth=True)
     def north_handler(value: int) -> Dict[str, int]:
         return {"value": value}
 
@@ -175,14 +175,21 @@ def test_authentication_middleware_exclude_from_auth() -> None:
     def west_handler() -> None:
         return None
 
+    @get("/east", exclude_from_auth=True)
+    def east_handler() -> None:
+        return None
+
     with create_test_client(
-        route_handlers=[north_handler, south_handler, west_handler],
+        route_handlers=[north_handler, south_handler, west_handler, east_handler],
         middleware=[auth_mw],
     ) as client:
         response = client.get("/north/1")
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/south")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/east")
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/west")

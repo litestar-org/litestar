@@ -20,6 +20,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         *,
         dependencies: Optional[Dependencies] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
@@ -31,6 +32,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         Args:
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
@@ -46,6 +48,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             name=name,
             opt=opt,
         )
+        self.exclude_from_auth = exclude_from_auth
 
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
         """Replaces a function with itself."""

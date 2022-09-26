@@ -61,9 +61,9 @@ class AbstractAuthenticationMiddleware(ABC):
         Returns:
             None
         """
-        excluded_from_auth = scope["route_handler"].opt.get("exclude_from_auth", False)
+        exclude_from_auth = scope["route_handler"].exclude_from_auth
         if (
-            not excluded_from_auth
+            not exclude_from_auth
             and (not self.exclude or not self.exclude.findall(scope["path"]))
             and scope["type"] in self.scopes
         ):

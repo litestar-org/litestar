@@ -220,6 +220,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "content_media_type",
         "deprecated",
         "description",
+        "exclude_from_auth",
         "http_method",
         "include_in_schema",
         "media_type",
@@ -250,6 +251,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache: Union[bool, int] = False,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        exclude_from_auth: Optional[bool] = False,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]],
@@ -299,6 +301,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             http_method: An [http method string][starlite.types.Method], a member of the enum
                 [HttpMethod][starlite.enums.HttpMethod] or a list of these that correlates to the methods the
@@ -362,6 +365,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache = cache
         self.cache_key_builder = cache_key_builder
+        self.exclude_from_auth = exclude_from_auth
         self.media_type = media_type
         self.response_class = response_class
         self.response_cookies = response_cookies
@@ -603,6 +607,7 @@ class get(HTTPRouteHandler):
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
@@ -650,6 +655,7 @@ class get(HTTPRouteHandler):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
@@ -691,6 +697,7 @@ class get(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            exclude_from_auth=exclude_from_auth,
             guards=guards,
             http_method=HttpMethod.GET,
             include_in_schema=include_in_schema,
@@ -728,6 +735,7 @@ class post(HTTPRouteHandler):
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
@@ -775,6 +783,7 @@ class post(HTTPRouteHandler):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
@@ -816,6 +825,7 @@ class post(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            exclude_from_auth=exclude_from_auth,
             guards=guards,
             http_method=HttpMethod.POST,
             include_in_schema=include_in_schema,
@@ -853,6 +863,7 @@ class put(HTTPRouteHandler):
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
@@ -900,6 +911,7 @@ class put(HTTPRouteHandler):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
@@ -941,6 +953,7 @@ class put(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            exclude_from_auth=exclude_from_auth,
             guards=guards,
             http_method=HttpMethod.PUT,
             include_in_schema=include_in_schema,
@@ -978,6 +991,7 @@ class patch(HTTPRouteHandler):
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
@@ -1025,6 +1039,7 @@ class patch(HTTPRouteHandler):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
@@ -1066,6 +1081,7 @@ class patch(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            exclude_from_auth=exclude_from_auth,
             guards=guards,
             http_method=HttpMethod.PATCH,
             include_in_schema=include_in_schema,
@@ -1103,6 +1119,7 @@ class delete(HTTPRouteHandler):
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
+        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
         middleware: Optional[List[Middleware]] = None,
@@ -1150,6 +1167,7 @@ class delete(HTTPRouteHandler):
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
                 valid IANA Media-Type.
@@ -1191,6 +1209,7 @@ class delete(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            exclude_from_auth=exclude_from_auth,
             guards=guards,
             http_method=HttpMethod.DELETE,
             include_in_schema=include_in_schema,
