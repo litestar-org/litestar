@@ -89,7 +89,7 @@ def test_request_body_multi_part(t_type: Type[Any]) -> None:
         assert data
 
     with create_test_client(test_method) as client:
-        response = client.post(test_path, files=data)
+        response = client.post(test_path, files={k: str(v).encode("utf-8") for k, v in data.items()})
         assert response.status_code == HTTP_201_CREATED
 
 
@@ -114,7 +114,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
         response = client.post(
             "/form",
             files={"image": ("image.png", b"data")},
-            data=[("tags", "1"), ("tags", "2"), ("tags", "3"), ("profile", person.json())],
+            data={"tags": ["1", "2", "3"], "profile": person.json()},
         )
         assert response.status_code == HTTP_201_CREATED
 
@@ -130,7 +130,7 @@ def test_multipart_request_files(tmpdir: Any) -> None:
             "test": {
                 "filename": "test.txt",
                 "content": "<file content>",
-                "content_type": "",
+                "content_type": "text/plain",
             }
         }
 
@@ -161,18 +161,10 @@ def test_multipart_request_multiple_files(tmpdir: Any) -> None:
         file.write(b"<file2 content>")
 
     with create_test_client(form_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
-        response = client.post("/form", files={"test1": f1, "test2": ("test2.txt", f2, "text/plain")})  # type: ignore
+        response = client.post("/form", files={"test1": f1, "test2": ("test2.txt", f2, "text/plain")})
         assert response.json() == {
-            "test1": {
-                "filename": "test1.txt",
-                "content": "<file1 content>",
-                "content_type": "",
-            },
-            "test2": {
-                "filename": "test2.txt",
-                "content": "<file2 content>",
-                "content_type": "text/plain",
-            },
+            "test1": {"filename": "test1.txt", "content": "<file1 content>", "content_type": "text/plain"},
+            "test2": {"filename": "test2.txt", "content": "<file2 content>", "content_type": "text/plain"},
         }
 
 
@@ -200,12 +192,9 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "content": "<file2 content>",
                 "content_type": "text/plain",
                 "headers": [
-                    [
-                        "Content-Disposition",
-                        'form-data; name="test2"; filename="test2.txt"',
-                    ],
-                    ["Content-Type", "text/plain"],
+                    ["Content-Disposition", 'form-data; name="test2"; filename="test2.txt"'],
                     ["x-custom", "f2"],
+                    ["Content-Type", "text/plain"],
                 ],
             },
         }
@@ -223,22 +212,14 @@ def test_multi_items(tmpdir: Any) -> None:
     with create_test_client(form_multi_item_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
         response = client.post(
             "/form",
-            data=[("test1", "abc")],
+            data={"test1": "abc"},
             files=[("test1", f1), ("test1", ("test2.txt", f2, "text/plain"))],
         )
         assert response.json() == {
             "test1": [
                 "abc",
-                {
-                    "filename": "test1.txt",
-                    "content": "<file1 content>",
-                    "content_type": "",
-                },
-                {
-                    "filename": "test2.txt",
-                    "content": "<file2 content>",
-                    "content_type": "text/plain",
-                },
+                {"filename": "test1.txt", "content": "<file1 content>", "content_type": "text/plain"},
+                {"filename": "test2.txt", "content": "<file2 content>", "content_type": "text/plain"},
             ]
         }
 

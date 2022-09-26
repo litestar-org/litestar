@@ -205,5 +205,5 @@ def test_special_chars(
         response = client.get(request_path)
         assert response.status_code == expected_status_code
 
-        if response.ok:
+        if response.status_code == HTTP_200_OK:
             assert response.text == expected_param

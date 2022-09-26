@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from urllib.parse import urlencode
 
-from orjson import dumps
+from orjson import dumps, loads
 from pydantic import BaseModel
 from starlette.testclient import TestClient as StarletteTestClient
 
@@ -9,6 +9,7 @@ from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from starlite.exceptions import MissingDependencyException
+from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
     from typing_extensions import Literal
@@ -44,7 +45,12 @@ if TYPE_CHECKING:
     )
 
 try:
-    from requests.models import RequestEncodingMixin
+    from httpx._content import (
+        encode_json,
+        encode_multipart_data,
+        encode_urlencoded_data,
+    )
+    from httpx._types import FileTypes  # noqa: TC002
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -56,20 +62,6 @@ __all__ = [
     "RequestFactory",
     "create_test_request",
 ]
-
-
-class RequestEncoder(RequestEncodingMixin):
-    def multipart_encode(self, data: Dict[str, Any]) -> Tuple[bytes, str]:
-        class ForceMultipartDict(dict):
-            # code borrowed from here:
-            # https://github.com/encode/starlette/blob/d222b87cb4601ecda5d642ab504a14974d364db4/tests/test_formparsers.py#L14
-            def __bool__(self) -> bool:
-                return True
-
-        return self._encode_files(ForceMultipartDict(), data)  # type: ignore
-
-    def url_encode(self, data: Dict[str, Any]) -> bytes:
-        return self._encode_params(data).encode("utf-8")  # type: ignore
 
 
 class TestClient(StarletteTestClient):
@@ -108,22 +100,17 @@ class TestClient(StarletteTestClient):
             backend_options=backend_options,
         )
 
-    def __enter__(self, *args: Any, **kwargs: Dict[str, Any]) -> "TestClient":
+    def __enter__(self) -> "TestClient":
         """Starlette's `TestClient.__enter__()` return value is strongly typed
         to return their own `TestClient`, i.e., not-generic to support
         subclassing.
 
-        We override here to provide a nicer typing experience for our users.
-
-        Args:
-            *args : Any
-            **kwargs : Any
-                `*args, **kwargs` passed straight through to `Starlette.testing.TestClient.__enter__()`
+        We override here to provide a nicer typing experience for our user
 
         Returns:
             TestClient
         """
-        return super().__enter__(*args, **kwargs)  # type:ignore[return-value]
+        return super().__enter__()  # pyright: ignore
 
 
 def create_test_client(
@@ -435,6 +422,7 @@ class RequestFactory:
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
+        files: Optional[Union[Dict[str, FileTypes], List[Tuple[str, FileTypes]]]] = None,
     ) -> Request[Any, Any]:
         """Create a [Request][starlite.connection.Request] instance that has
         body (data)
@@ -462,16 +450,16 @@ class RequestFactory:
             if isinstance(data, BaseModel):
                 data = data.dict()
             if request_media_type == RequestEncodingType.JSON:
-                body = dumps(data)
-                headers["Content-Type"] = str(RequestEncodingType.JSON.value)
+                encoding_headers, stream = encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                body, content_type = RequestEncoder().multipart_encode(data)
-                headers["Content-Type"] = content_type
+                encoding_headers, stream = encode_multipart_data(data, files=files or [])
             else:
-                body = RequestEncoder().url_encode(data)
-                headers["Content-Type"] = str(RequestEncodingType.URL_ENCODED.value)
+                encoding_headers, stream = encode_urlencoded_data(loads(dumps(data, default=default_serializer)))
+            headers.update(encoding_headers)
+            body = b""
+            for chunk in stream:
+                body += chunk
             scope["_body"] = body
-
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)  # type: ignore[arg-type]
