@@ -10,7 +10,7 @@ repos:
         exclude: "\\.idea/(.)*"
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.1
+    rev: v2.38.2
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
@@ -96,7 +96,7 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pyyaml,
-            requests,
+            httpx,
             sqlalchemy,
             starlette,
             starlite_multipart,
@@ -143,13 +143,12 @@ repos:
             types-PyYAML,
             types-freezegun,
             types-redis,
-            types-requests,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.272
     hooks:
       - id: pyright
-        exclude: "test_starlette_tests"
+        exclude: "tests"
         additional_dependencies:
           [
             brotli,
@@ -167,7 +166,7 @@ repos:
             pytest,
             pyyaml,
             redis,
-            requests,
+            httpx,
             sqlalchemy,
             starlette,
             starlite_multipart,

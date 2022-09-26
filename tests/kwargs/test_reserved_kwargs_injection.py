@@ -157,7 +157,7 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
             return None
 
     with create_test_client(MyController) as client:
-        response = client.request(http_method, test_path, params=query_params_instance.dict())
+        response = client.request(http_method, test_path, params=query_params_instance.dict(exclude_none=True))
         assert response.status_code == expected_status_code
 
 
