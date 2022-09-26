@@ -259,24 +259,37 @@ class DTOFactory:
             if field_name in exclude:
                 continue
             field_type = get_field_type(model_field=model_field)
-            if field_name in field_mapping:
-                field_name, field_type = self._remap_field(field_mapping, field_name, field_type)
-                if ModelFactory.is_constrained_field(field_type):
-                    field_definitions[field_name] = (field_type, ...)
-                elif model_field.field_info.default not in (Undefined, None, ...):
-                    field_definitions[field_name] = (field_type, model_field.default)
-                elif model_field.required or not model_field.allow_none:
-                    field_definitions[field_name] = (field_type, ...)
-                else:
-                    field_definitions[field_name] = (field_type, None)
-            else:
-                # prevents losing Optional
-                field_type = Optional[field_type] if model_field.allow_none else field_type
-                if ModelFactory.is_constrained_field(field_type):
-                    field_definitions[field_name] = (field_type, ...)
-                else:
-                    field_definitions[field_name] = (field_type, model_field.field_info)
+            self._populate_single_field_definition(
+                field_definitions, field_mapping, field_name, field_type, model_field
+            )
         return field_definitions
+
+    @classmethod
+    def _populate_single_field_definition(
+        cls,
+        field_definitions: Dict[str, Tuple[Any, Any]],
+        field_mapping: Dict[str, Union[str, Tuple[str, Any]]],
+        field_name: str,
+        field_type: Any,
+        model_field: ModelField,
+    ) -> None:
+        if field_name in field_mapping:
+            field_name, field_type = cls._remap_field(field_mapping, field_name, field_type)
+            if ModelFactory.is_constrained_field(field_type):
+                field_definitions[field_name] = (field_type, ...)
+            elif model_field.field_info.default not in (Undefined, None, ...):
+                field_definitions[field_name] = (field_type, model_field.default)
+            elif model_field.required or not model_field.allow_none:
+                field_definitions[field_name] = (field_type, ...)
+            else:
+                field_definitions[field_name] = (field_type, None)
+        else:
+            # prevents losing Optional
+            field_type = Optional[field_type] if model_field.allow_none else field_type
+            if ModelFactory.is_constrained_field(field_type):
+                field_definitions[field_name] = (field_type, ...)
+            else:
+                field_definitions[field_name] = (field_type, model_field.field_info)
 
     @staticmethod
     def _remap_field(
