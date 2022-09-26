@@ -119,7 +119,7 @@ async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]
         [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
         [
             RequestEncodingType.URL_ENCODED,
-            lambda data: data == "&".join([f"{key}={value}" for key, value in pet.dict().items()]),
+            lambda data: data == "&".join([f"{key}={value}" for key, value in pet.dict(exclude_none=True).items()]),
         ],
     ],
 )
@@ -129,12 +129,12 @@ async def test_request_factory_create_with_content_type(
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
-        data=pet,
+        data=pet.dict(),
         request_media_type=request_media_type,
     )
     assert request.headers["Content-Type"].startswith(request_media_type.value)
     body = await request.body()
-    assert verify_data(body.decode())
+    assert verify_data(body.decode("utf-8"))
 
 
 def test_request_factory_create_with_default_params() -> None:
@@ -204,7 +204,7 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     request = factory("/", headers=headers, data=pet)
     assert request.method == method
     # Headers should include "header1" and "Content-Type"
-    assert len(request.headers.keys()) == 2
+    assert len(request.headers.keys()) == 3
     assert request.headers.get("header1") == "value1"
     body = await request.body()
     assert json.loads(body) == pet.dict()

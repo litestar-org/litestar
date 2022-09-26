@@ -9,7 +9,7 @@ Testing is a first class citizen in Starlite, which offers several powerful test
 ## Test Client
 
 Starlite extends the Starlette testing client, which in turn is built using
-the [requests](https://docs.python-requests.org/en/latest/) library. To use the test client you should pass to it an
+the [httpx](https://github.com/encode/httpx) library. To use the test client you should pass to it an
 instance of Starlite as the `app` kwarg.
 
 Let's say we have a very simple app with a health check endpoint:

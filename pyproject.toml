@@ -42,7 +42,7 @@ pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 starlite-multipart = "*"
 pyyaml = "*"
-requests = { version = "*", optional = true }
+httpx = { version = "*", optional = true }
 starlette = "*"
 typing-extensions = "*"
 
@@ -60,7 +60,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 redis = "*"
-requests = "*"
+httpx = "*"
 sqlalchemy = "*"
 structlog = "*"
 tortoise-orm = "*"
@@ -68,10 +68,10 @@ tox = "*"
 uvicorn = "*"
 
 [tool.poetry.extras]
-testing = ["requests"]
+testing = ["httpx"]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["requests", "brotli", "cryptography"]
+full = ["httpx", "brotli", "cryptography"]
 
 
 [build-system]
