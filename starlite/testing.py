@@ -352,6 +352,8 @@ class RequestFactory:
         Returns:
             A dictionary that can be passed as a scope to the [Request][starlite.connection.Request] c'tor.
         """
+        if session is None:
+            session = {}
 
         return dict(
             type=ScopeType.HTTP,
