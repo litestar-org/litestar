@@ -984,22 +984,6 @@ mypy-extensions = ">=0.3.0"
 typing-extensions = ">=3.7.4"
 
 [[package]]
-name = "uvicorn"
-version = "0.18.3"
-description = "The lightning-fast ASGI server."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-click = ">=7.0"
-h11 = ">=0.8"
-typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
-
-[package.extras]
-standard = ["colorama (>=0.4)", "httptools (>=0.4.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.0)"]
-
-[[package]]
 name = "virtualenv"
 version = "20.16.5"
 description = "Virtual Python Environment builder"
@@ -1054,7 +1038,7 @@ testing = ["httpx"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "89ba7f01084b6d24bd01ea0e9fced08cabc68f84c307b5262553bc0f9f745569"
+content-hash = "9fd9045648d30d4378530b4d505435fc53e958340bd26e1763a4c270b325a6b5"
 
 [metadata.files]
 aiosqlite = [
@@ -1863,10 +1847,6 @@ typing-inspect = [
     {file = "typing_inspect-0.6.0-py2-none-any.whl", hash = "sha256:de08f50a22955ddec353876df7b2545994d6df08a2f45d54ac8c05e530372ca0"},
     {file = "typing_inspect-0.6.0-py3-none-any.whl", hash = "sha256:3b98390df4d999a28cf5b35d8b333425af5da2ece8a4ea9e98f71e7591347b4f"},
     {file = "typing_inspect-0.6.0.tar.gz", hash = "sha256:8f1b1dd25908dbfd81d3bebc218011531e7ab614ba6e5bf7826d887c834afab7"},
-]
-uvicorn = [
-    {file = "uvicorn-0.18.3-py3-none-any.whl", hash = "sha256:0abd429ebb41e604ed8d2be6c60530de3408f250e8d2d84967d85ba9e86fe3af"},
-    {file = "uvicorn-0.18.3.tar.gz", hash = "sha256:9a66e7c42a2a95222f76ec24a4b754c158261c4696e683b9dadc72b590e0311b"},
 ]
 virtualenv = [
     {file = "virtualenv-20.16.5-py3-none-any.whl", hash = "sha256:d07dfc5df5e4e0dbc92862350ad87a36ed505b978f6c39609dc489eadd5b0d27"},

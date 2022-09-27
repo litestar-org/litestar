@@ -58,4 +58,8 @@ class CacheConfig(BaseModel):
         Returns:
             An instance of [Cache][starlite.cache.base.Cache]
         """
-        return Cache(backend=self.backend or SimpleCacheBackend(), default_expiration=self.expiration, cache_key_builder=self.cache_key_builder)  # type: ignore
+        return Cache(
+            backend=self.backend or SimpleCacheBackend(),
+            default_expiration=self.expiration,
+            cache_key_builder=self.cache_key_builder,
+        )

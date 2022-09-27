@@ -683,6 +683,8 @@ class get(HTTPRouteHandler):
             tags: A list of string tags that will be appended to the OpenAPI schema.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -811,6 +813,8 @@ class post(HTTPRouteHandler):
             tags: A list of string tags that will be appended to the OpenAPI schema.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -939,6 +943,8 @@ class put(HTTPRouteHandler):
             tags: A list of string tags that will be appended to the OpenAPI schema.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1067,6 +1073,8 @@ class patch(HTTPRouteHandler):
             tags: A list of string tags that will be appended to the OpenAPI schema.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1195,6 +1203,8 @@ class delete(HTTPRouteHandler):
             tags: A list of string tags that will be appended to the OpenAPI schema.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
