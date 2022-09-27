@@ -1,7 +1,16 @@
 import re
-from collections import OrderedDict
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Set, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    List,
+    Optional,
+    OrderedDict,
+    Set,
+    Type,
+    Union,
+)
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
