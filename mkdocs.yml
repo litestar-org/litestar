@@ -65,6 +65,7 @@ nav:
           - usage/2-route-handlers/2-websocket-route-handlers.md
           - usage/2-route-handlers/3-asgi-route-handlers.md
           - usage/2-route-handlers/4-route-handler-indexing.md
+          - usage/2-route-handlers/5-handler-opts.md
       - Parameters:
           - usage/3-parameters/0-path-parameters.md
           - usage/3-parameters/1-query-parameters.md
