@@ -1,5 +1,12 @@
 # Changelog
 
+[1.22.0]
+
+- breaking: update Starlette to version `0.21.0`. This version changes the TestClient to use `httpx` instead of `requests`, which is a breaking change.
+- breaking: remove `create_test_request`
+- add \*\*kwargs support to route handlers.
+- fix add default empty session to `RequestFactory`.
+
 [1.21.2]
 
 - fix regression in accessing `request.headers` due to caching.

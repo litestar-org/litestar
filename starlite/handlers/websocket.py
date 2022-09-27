@@ -24,6 +24,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> None:
         """WebSocket Route Handler decorator. Use this decorator to decorate
         websocket handler functions.
@@ -36,6 +37,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         super().__init__(
             path,
@@ -45,6 +47,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            **kwargs,
         )
 
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":

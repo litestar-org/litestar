@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.21.2"
+version = "1.22.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>", "Peter Schutt <peter.github@proton.me>", "Cody Fincher <cody.fincher@gmail.com>"]
@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries",
@@ -35,15 +36,15 @@ packages = [
 python = ">=3.7,<4.0"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
+httpx = { version = "*", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
-starlite-multipart = "*"
 pyyaml = "*"
-httpx = { version = "*", optional = true }
 starlette = "*"
+starlite-multipart = "*"
 typing-extensions = "*"
 cleo = "^0.8.1"
 
@@ -51,6 +52,7 @@ cleo = "^0.8.1"
 brotli = "*"
 cryptography = "*"
 freezegun = "*"
+httpx = "*"
 hypothesis = "*"
 jinja2 = "*"
 mako = "*"
@@ -61,12 +63,10 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 redis = "*"
-httpx = "*"
 sqlalchemy = "*"
 structlog = "*"
 tortoise-orm = "*"
 tox = "*"
-uvicorn = "*"
 
 [tool.poetry.extras]
 testing = ["httpx"]
