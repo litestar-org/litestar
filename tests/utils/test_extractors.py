@@ -1,15 +1,18 @@
-from typing import Any
+from typing import Any, List
 
 import pytest
+from starlette.status import HTTP_200_OK
 
-from starlite import Cookie, Request
+from starlite import Cookie, MediaType, Request, Response
+from starlite.connection import empty_receive
 from starlite.testing import RequestFactory
 from starlite.utils import ConnectionDataExtractor
+from starlite.utils.extractors import ResponseDataExtractor
 
 factory = RequestFactory()
 
 
-async def test_request_extractor() -> None:
+async def test_connection_data_extractor() -> None:
     request = factory.post(
         path="/a/b/c",
         headers={"Common": "abc", "Special": "123", "Content-Type": "application/json; charset=utf-8"},
@@ -66,3 +69,30 @@ def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str)
     extractor = ConnectionDataExtractor(obfuscate_cookies={"special"})
     extracted_data = extractor(req)
     assert extracted_data["cookies"] == {"Path": "/", "SameSite": "lax", key: "*****"}
+
+
+async def test_response_data_extractor() -> None:
+    headers = {"common": "abc", "special": "123", "content-type": "application/json; charset=utf-8"}
+    cookies = [Cookie(key="regular"), Cookie(key="auth")]
+    response = Response(
+        media_type=MediaType.JSON,
+        status_code=HTTP_200_OK,
+        content={"hello": "world"},
+        headers=headers,
+    )
+    for cookie in cookies:
+        response.set_cookie(**cookie.dict(exclude={"documentation_only", "description"}))
+    extractor = ResponseDataExtractor()
+    messages: List["Any"] = []
+
+    async def send(message: "Any") -> None:
+        messages.append(message)
+
+    await response({}, empty_receive, send)
+
+    assert len(messages) == 2
+    extracted_data = extractor(messages)  # type: ignore
+    assert extracted_data["status_code"] == HTTP_200_OK
+    assert extracted_data["body"] == b'{"hello":"world"}'
+    assert extracted_data["headers"] == {**headers, "content-length": "17"}
+    assert extracted_data["cookies"] == {"Path": "/", "SameSite": "lax", "auth": "None", "regular": "None"}

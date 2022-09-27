@@ -666,7 +666,7 @@ class RequestFactory:
         """
 
         scope = self._create_scope(
-            path=path, http_method=HttpMethod.GET, session=session, user=user, auth=auth, query_params=query_params
+            path=path, http_method=HttpMethod.DELETE, session=session, user=user, auth=auth, query_params=query_params
         )
         scope["headers"] = self._build_headers(headers, cookies)
         return Request(scope=scope)  # type: ignore[arg-type]
