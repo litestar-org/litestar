@@ -3,7 +3,6 @@ from typing import Any, Optional
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from pydantic import ValidationError
 from pydantic.main import BaseModel
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
@@ -102,5 +101,5 @@ def test_semantic_route_handlers_disallow_http_method_assignment(
     assert result.http_method == http_method
     assert result.status_code == expected_status_code
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         sub(http_method=HttpMethod.GET if http_method != HttpMethod.GET else HttpMethod.POST)

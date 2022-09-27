@@ -72,6 +72,7 @@ class BaseRouteHandler(Generic[T]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> None:
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
@@ -90,6 +91,7 @@ class BaseRouteHandler(Generic[T]):
             if path and isinstance(path, list)
             else {normalize_path(path or "/")}  # type: ignore
         )
+        self.opt.update(**kwargs)
 
     @property
     def dependency_name_set(self) -> Set[str]:

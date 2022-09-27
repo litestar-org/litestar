@@ -275,6 +275,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
         with multiple methods.
@@ -330,6 +331,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
@@ -355,6 +357,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            **kwargs,
         )
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
@@ -626,6 +629,7 @@ class get(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
@@ -677,7 +681,10 @@ class get(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -711,6 +718,7 @@ class get(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            **kwargs,
         )
 
 
@@ -751,6 +759,7 @@ class post(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """POST Route Decorator. Use this decorator to decorate an HTTP handler
         for POST requests.
@@ -802,7 +811,10 @@ class post(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -836,6 +848,7 @@ class post(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            **kwargs,
         )
 
 
@@ -876,6 +889,7 @@ class put(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """PUT Route Decorator. Use this decorator to decorate an HTTP handler
         for PUT requests.
@@ -927,7 +941,10 @@ class put(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -961,6 +978,7 @@ class put(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            **kwargs,
         )
 
 
@@ -1001,6 +1019,7 @@ class patch(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """PATCH Route Decorator. Use this decorator to decorate an HTTP
         handler for PATCH requests.
@@ -1052,7 +1071,10 @@ class patch(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1086,6 +1108,7 @@ class patch(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            **kwargs,
         )
 
 
@@ -1126,6 +1149,7 @@ class delete(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """DELETE Route Decorator. Use this decorator to decorate an HTTP
         handler for DELETE requests.
@@ -1177,7 +1201,10 @@ class delete(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        if "http_method" in kwargs:
+            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1211,4 +1238,5 @@ class delete(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            **kwargs,
         )

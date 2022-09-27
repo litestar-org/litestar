@@ -1,5 +1,5 @@
 import json
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, Dict, Union
 
 import pytest
 from pydantic import BaseModel
@@ -7,62 +7,12 @@ from pydantic import BaseModel
 from starlite import HttpMethod, RequestEncodingType, Starlite, State, get
 from starlite.datastructures import Cookie
 from starlite.enums import ParamType
-from starlite.testing import RequestFactory, TestClient, create_test_request
+from starlite.testing import RequestFactory, TestClient
 from tests import Pet, PetFactory
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
 pet = PetFactory.build()
-
-
-@pytest.mark.parametrize("http_method", list(HttpMethod))
-async def test_create_test_request(http_method: HttpMethod) -> None:
-    app = Starlite(route_handlers=[])
-    server = "starlite.api"
-    port = 5000
-    scheme = "https"
-    root_path = "/root"
-    path = "/path"
-    headers = {"header1": "value1"}
-    cookie = "test=cookie; starlite=cookie"
-    query_params: Dict[str, Union[str, List[str]]] = {"p1": "a"}
-    content = pet
-    request_media_type = RequestEncodingType.URL_ENCODED
-
-    request = create_test_request(
-        app=app,
-        http_method=http_method,
-        scheme=scheme,
-        server=server,
-        port=port,
-        root_path=root_path,
-        path=path,
-        query=query_params,
-        headers=headers,
-        cookie=cookie,
-        content=content,
-        request_media_type=request_media_type,
-    )
-
-    assert request.method == http_method
-    assert request.app == app
-    assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
-    assert all([header in request.headers for header in headers.keys()])
-    assert request.headers[ParamType.COOKIE] == cookie
-
-    expected_url = f"{scheme}://{server}:{port}{root_path}{path}"
-    if http_method == HttpMethod.GET:
-        expected_url += "?" + "".join([f"{key}={value}" for key, value in query_params.items()])
-    assert request.url == expected_url
-
-    if http_method in [HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH]:
-        assert request.content_type[0] == request_media_type.value
-        body = await request.body()
-        assert body.decode() == "&".join([f"{key}={value}" for key, value in pet.dict().items()])
-    else:
-        assert not request.content_type[0]
-        with pytest.raises(RuntimeError):
-            await request.body()
 
 
 def test_request_factory_no_cookie_header() -> None:
