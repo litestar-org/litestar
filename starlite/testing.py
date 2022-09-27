@@ -60,7 +60,6 @@ __all__ = [
     "TestClient",
     "create_test_client",
     "RequestFactory",
-    "create_test_request",
 ]
 
 
@@ -645,101 +644,3 @@ class RequestFactory:
         scope = self._create_scope(path, HttpMethod.DELETE, session, user, auth)
         scope["headers"] = self._build_headers(headers, cookies)
         return Request(scope=scope)  # type: ignore[arg-type]
-
-
-def create_test_request(
-    app: Starlite = Starlite(route_handlers=[]),
-    auth: Any = None,
-    content: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-    cookie: Optional[Union[List["Cookie"], str]] = None,
-    headers: Optional[Dict[str, str]] = None,
-    http_method: HttpMethod = HttpMethod.GET,
-    path: str = "",
-    port: int = 3000,
-    query: Optional[Dict[str, Union[str, List[str]]]] = None,
-    request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-    root_path: str = "/",
-    scheme: str = "http",
-    server: str = "test.org",
-    user: Any = None,
-) -> Request[Any, Any]:
-    """Create a [Request][starlite.connection.Request] instance using the
-    passed in parameters.
-
-    Args:
-        app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
-        auth: A value for `request.scope["auth"]`
-        content: A value for the request's body. Can be either a pydantic model instance or a string keyed dictionary.
-        cookie: A string representing the cookie header or a list of "Cookie" instances. This value can include multiple
-            cookies.
-        headers: A string / string dictionary of headers.
-        http_method: The request's HTTP method.
-        path: The request's path.
-        port: The request's port.
-        query: A string keyed dictionary of values from which the request's query will be generated.
-        request_media_type: The 'Content-Type' header of the request.
-        root_path: Root path for the server.
-        scheme: Scheme for the server.
-        server: Domain for the server.
-        user: A value for `request.scope["user"]`
-    Returns:
-        A [Request][starlite.connection.Request] instance.
-    """
-
-    request_factory = RequestFactory(
-        app=app,
-        server=server,
-        port=port,
-        root_path=root_path,
-        scheme=scheme,
-    )
-
-    if http_method == HttpMethod.GET:
-        return request_factory.get(
-            path=path or "/",
-            headers=headers,
-            cookies=cookie,
-            user=user,
-            auth=auth,
-            query_params=query,
-        )
-    elif http_method == HttpMethod.POST:
-        return request_factory.post(
-            path=path or "/",
-            headers=headers,
-            cookies=cookie,
-            user=user,
-            auth=auth,
-            request_media_type=request_media_type,
-            data=content,
-        )
-    elif http_method == HttpMethod.PUT:
-        return request_factory.put(
-            path=path or "/",
-            headers=headers,
-            cookies=cookie,
-            user=user,
-            auth=auth,
-            request_media_type=request_media_type,
-            data=content,
-        )
-    elif http_method == HttpMethod.PATCH:
-        return request_factory.patch(
-            path=path or "/",
-            headers=headers,
-            cookies=cookie,
-            user=user,
-            auth=auth,
-            request_media_type=request_media_type,
-            data=content,
-        )
-    elif http_method == HttpMethod.DELETE:
-        return request_factory.delete(
-            path=path or "/",
-            headers=headers,
-            cookies=cookie,
-            user=user,
-            auth=auth,
-        )
-
-    raise ValueError(f"Cannot create request for HTTP method {http_method.value}")
