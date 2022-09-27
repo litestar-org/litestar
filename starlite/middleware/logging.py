@@ -30,11 +30,11 @@ if TYPE_CHECKING:
     from starlite.types import ASGIApp, Logger, Message, Receive, Scope, Send
 
 try:
-    from structlog._config import BoundLoggerLazyProxy
+    from structlog.types import BindableLogger
 
     structlog_installed = True  # pylint: disable=invalid-name
 except ImportError:
-    BoundLoggerLazyProxy = object  # type: ignore
+    BindableLogger = object  # type: ignore
     structlog_installed = False  # pylint: disable=invalid-name
 
 
@@ -96,7 +96,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         if scope["type"] == ScopeType.HTTP and (not self.exclude or not self.exclude.findall(scope["path"])):
             if not hasattr(self, "logger"):
                 self.logger = scope["app"].get_logger(self.config.logger_name)
-                self.is_struct_logger = structlog_installed and isinstance(self.logger, BoundLoggerLazyProxy)
+                self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
             if self.config.request_log_fields:
                 await self.log_request(scope=scope)
             if self.config.response_log_fields:
@@ -138,11 +138,12 @@ class LoggingMiddleware(MiddlewareProtocol):
             None
 
         """
+        message = values.pop("message")
         if self.is_struct_logger:
-            message = values.pop("message")
+
             self.logger.info(message, **values)
         else:
-            self.logger.info(", ".join([f"{key}={value}" for key, value in values.items()]))
+            self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
     async def extract_request_data(self, request: "Request") -> OrderedDict[str, Any]:
         """Creates a dictionary of values for the message.
@@ -159,14 +160,15 @@ class LoggingMiddleware(MiddlewareProtocol):
         for key in self.config.request_log_fields:
             if key in extracted_data:
                 value = extracted_data[key]  # pyright: ignore
-                if key == "body" and request.method != HttpMethod.GET:
-                    data[key] = await value if isawaitable(value) else value
-                if not self.is_struct_logger and isinstance(value, (dict, list, tuple)):
-                    data[key] = str(
-                        dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-                    )
-                else:
-                    data[key] = value
+                if request.method == HttpMethod.GET and key == "body":
+                    continue
+                if isawaitable(value):
+                    value = await value
+                if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+                    value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+                if isinstance(value, bytes):
+                    value = value.decode("utf-8")
+                data[key] = value
         return data
 
     def extract_response_data(self, scope: "Scope") -> OrderedDict[str, Any]:
@@ -186,8 +188,13 @@ class LoggingMiddleware(MiddlewareProtocol):
         for key in self.config.response_log_fields:
             value = extracted_data.get(key)
             if not self.is_struct_logger and isinstance(value, (dict, list, tuple)):
-                data[key] = str(dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS))
-            data[key] = value
+                data[key] = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS).decode(
+                    "utf-8"
+                )
+            elif isinstance(value, bytes):
+                data[key] = value.decode("utf-8")
+            else:
+                data[key] = value
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
