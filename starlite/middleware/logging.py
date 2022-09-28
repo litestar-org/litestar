@@ -148,15 +148,14 @@ class LoggingMiddleware(MiddlewareProtocol):
         serializer = get_serializer_from_scope(request.scope) or default_serializer
         extracted_data = self.request_extractor(connection=request)
         for key in self.config.request_log_fields:
-            if key in extracted_data:
-                value = extracted_data[key]  # pyright: ignore
-                if isawaitable(value):
-                    value = await value
-                if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
-                    value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-                if isinstance(value, bytes):
-                    value = value.decode("utf-8")
-                data[key] = value
+            value = extracted_data.get(key)
+            if isawaitable(value):
+                value = await value
+            if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+                value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            data[key] = value
         return data
 
     def extract_response_data(self, scope: "Scope") -> Dict[str, Any]:
