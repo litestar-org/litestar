@@ -526,6 +526,9 @@ class UploadFile(MultipartUploadFile):
         if field:
             field_schema.update({"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"})
 
+    def __repr__(self) -> str:
+        return f"{self.filename} - {self.content_type}"
+
 
 class FormMultiDict(ImmutableMultiDict[str, Any]):
     async def close(self) -> None:

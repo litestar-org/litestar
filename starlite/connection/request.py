@@ -125,12 +125,12 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
     async def form(self) -> FormMultiDict:
         """Method to retrieve form data from the request. If the request is
         either a 'multipart/form-data' or an 'application/x-www-form-
-        urlencoded', this method will return a FormData instance populated with
-        the values sent in the request. Otherwise, an empty instance is
+        urlencoded', this method will return a FormMultiDict instance populated
+        with the values sent in the request. Otherwise, an empty instance is
         returned.
 
         Returns:
-            A FormData instance.
+            A FormMultiDict instance.
         """
         if self._form is Empty:
             content_type, options = self.content_type

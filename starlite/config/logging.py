@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from importlib.util import find_spec
+from logging import INFO
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -27,10 +28,9 @@ if TYPE_CHECKING:
     from starlite.types.callable_types import GetLogger
 
 try:
-    from structlog.types import BindableLogger, Context, Processor, WrappedLogger
+    from structlog.types import BindableLogger, Processor, WrappedLogger
 except ImportError:
     BindableLogger = Any  # type: ignore
-    Context = Any  # type: ignore
     Processor = Any  # type: ignore
     WrappedLogger = Any  # type: ignore
 
@@ -202,6 +202,55 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
             raise MissingDependencyException("picologging is not installed") from e
 
 
+def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright: ignore
+    """Sets the default processors for structlog.
+
+    Returns:
+        An optional list of processors.
+    """
+    try:
+        import structlog  # pylint: disable=import-outside-toplevel
+
+        return [
+            structlog.contextvars.merge_contextvars,
+            structlog.processors.add_log_level,
+            structlog.processors.format_exc_info,
+            structlog.processors.TimeStamper(fmt="iso", utc=True),
+            structlog.processors.JSONRenderer(serializer=dumps),
+        ]
+    except ImportError:  # pragma: no cover
+        return None
+
+
+def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignore
+    """Sets the default wrapper class for structlog.
+
+    Returns:
+        An optional wrapper class.
+    """
+
+    try:
+        import structlog  # pylint: disable=import-outside-toplevel
+
+        return structlog.make_filtering_bound_logger(INFO)
+    except ImportError:  # pragma: no cover
+        return None
+
+
+def default_logger_factory() -> Optional[Callable[..., WrappedLogger]]:
+    """Sets the default logger factory for structlog.
+
+    Returns:
+        An optional logger factory.
+    """
+    try:
+        import structlog  # pylint: disable=import-outside-toplevel
+
+        return structlog.BytesLoggerFactory()
+    except ImportError:  # pragma: no cover
+        return None
+
+
 class StructLoggingConfig(BaseLoggingConfig, BaseModel):
     """Configuration class for structlog.
 
@@ -209,11 +258,16 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
         - requires 'structlog' to be installed.
     """
 
-    processors: Optional[Iterable[Processor]] = None  # pyright: ignore
-    wrapper_class: Optional[Type[BindableLogger]] = None  # pyright: ignore
-    context_class: Optional[Type[Context]] = None  # pyright: ignore
-    logger_factory: Optional[Callable[..., WrappedLogger]] = None
-    cache_logger_on_first_use: bool = False
+    processors: Optional[Iterable[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
+    """Iterable of structlog logging processors."""
+    wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
+    """Structlog bindable logger."""
+    context_class: Optional[Dict[str, Any]] = None
+    """Context class (a 'contextvar' context) for the logger"""
+    logger_factory: Optional[Callable[..., WrappedLogger]] = Field(default_factory=default_logger_factory)
+    """Logger factory to use."""
+    cache_logger_on_first_use: bool = True
+    """Whether to cache the logger configuration and reuse. """
 
     def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.
@@ -227,7 +281,8 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
                 get_logger,
             )
 
-            configure(**self.dict())
+            # we now configure structlog
+            configure(**self.dict(exclude={"standard_lib_logging_config"}))
             return get_logger
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("structlog is not installed") from e
