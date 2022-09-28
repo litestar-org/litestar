@@ -45,6 +45,7 @@ pyyaml = "*"
 requests = { version = "*", optional = true }
 starlette = "*"
 typing-extensions = "*"
+cleo = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 brotli = "*"
