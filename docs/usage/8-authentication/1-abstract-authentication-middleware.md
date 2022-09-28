@@ -205,8 +205,17 @@ async def my_route_handler(socket: WebSocket[User, Token]) -> None:
 And if you'd like to exclude individual routes outside of the configured
 
 ```python
-from starlite import MediaType, NotFoundException, Response, get
 import anyio
+from starlite import Starlite, MediaType, NotFoundException, Response, get
+from starlite.middleware.base import DefineMiddleware
+
+from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
+
+# you can optionally exclude certain paths from authentication.
+# the following excludes all routes mounted at or under `/schema*`
+# additionally,
+# you can modify the default exclude key of "exclude_from_auth", by overriding the `exclude_from_auth_key` parameter on the Authentication Middleware
+auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
 
 
 @get(path="/", exclude_from_auth=True)
@@ -218,6 +227,9 @@ async def site_index() -> Response:
             content = await file.read()
             return Response(content=content, status_code=200, media_type=MediaType.HTML)
     raise NotFoundException("Site index was not found")
+
+
+app = Starlite(request_handlers=[site_index], middleware=[auth_mw])
 ```
 
 And of course use the same kind of mechanism for dependencies:

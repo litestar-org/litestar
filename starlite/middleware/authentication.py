@@ -37,8 +37,7 @@ class AbstractAuthenticationMiddleware(ABC):
         self,
         app: "ASGIApp",
         exclude: Optional[Union[str, List[str]]] = None,
-        exclude_from_auth_key: str = "exclude_from_auth"
-
+        exclude_from_auth_key: str = "exclude_from_auth",
     ) -> None:
         """This is an abstract AuthenticationMiddleware that allows users to
         create their own AuthenticationMiddleware by extending it and
