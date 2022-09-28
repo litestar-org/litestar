@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
     from typing_extensions import Literal
 
+MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
+
 
 class OpenAPIController(Controller):
     """Controller for OpenAPI endpoints."""
@@ -62,7 +64,7 @@ class OpenAPIController(Controller):
             ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
         """
         if not request.app.openapi_schema:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
         return request.app.openapi_schema
 
     def should_serve_endpoint(self, request: Request) -> bool:
@@ -130,7 +132,7 @@ class OpenAPIController(Controller):
             A Response instance with the YAML object rendered into a string.
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
             return Response(
@@ -157,7 +159,7 @@ class OpenAPIController(Controller):
             A Response instance with the JSON object rendered into a string.
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
             return Response(
@@ -190,7 +192,7 @@ class OpenAPIController(Controller):
         """
         config = request.app.openapi_config
         if not config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
@@ -213,7 +215,7 @@ class OpenAPIController(Controller):
             response: With a rendered swagger documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
             return Response(content=self.render_swagger_ui(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
@@ -235,7 +237,7 @@ class OpenAPIController(Controller):
             A response with a rendered stoplight elements documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
             return Response(
@@ -255,7 +257,7 @@ class OpenAPIController(Controller):
             A response with a rendered redoc documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Starlite has not been instantiated with OpenAPIConfig")
+            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
             return Response(content=self.render_redoc(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)

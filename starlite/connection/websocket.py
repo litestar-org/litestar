@@ -43,6 +43,8 @@ if TYPE_CHECKING:
         WebSocketSendEvent,
     )
 
+DISCONNECT_MESSAGE = "connection is disconnected"
+
 
 class WebSocket(
     Generic[User, Auth],
@@ -75,7 +77,7 @@ class WebSocket(
 
         async def wrapped_receive() -> "ReceiveMessage":
             if self.connection_state == "disconnect":
-                raise WebSocketException(detail="connection is disconnected")
+                raise WebSocketException(detail=DISCONNECT_MESSAGE)
             message = await receive()
             if message["type"] == "websocket.connect":
                 self.connection_state = "connect"
@@ -99,7 +101,7 @@ class WebSocket(
 
         async def wrapped_send(message: "Message") -> None:
             if self.connection_state == "disconnect":
-                raise WebSocketException(detail="connection is disconnected")
+                raise WebSocketException(detail=DISCONNECT_MESSAGE)  # pragma: no cover
             await send(message)
 
         return wrapped_send
@@ -187,7 +189,7 @@ class WebSocket(
         if event["type"] == "websocket.disconnect":
             raise WebSocketException(detail="disconnect event", code=event["code"])
         if self.connection_state == "disconnect":
-            raise WebSocketException(detail="connection is disconnected")
+            raise WebSocketException(detail=DISCONNECT_MESSAGE)
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     async def receive_text(self) -> str:
