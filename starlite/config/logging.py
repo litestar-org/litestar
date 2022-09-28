@@ -259,10 +259,15 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
     """
 
     processors: Optional[Iterable[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
+    """Iterable of structlog logging processors."""
     wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
+    """Structlog bindable logger."""
     context_class: Optional[Dict[str, Any]] = None
+    """Context class (a 'contextvar' context) for the logger"""
     logger_factory: Optional[Callable[..., WrappedLogger]] = Field(default_factory=default_logger_factory)
+    """Logger factory to use."""
     cache_logger_on_first_use: bool = True
+    """Whether to cache the logger configuration and reuse. """
 
     def configure(self) -> "GetLogger":
         """Configured logger with the given configuration.
@@ -276,7 +281,8 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
                 get_logger,
             )
 
-            configure(**self.dict())
+            # we now configure structlog
+            configure(**self.dict(exclude={"standard_lib_logging_config"}))
             return get_logger
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("structlog is not installed") from e

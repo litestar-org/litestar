@@ -3,7 +3,7 @@ from typing import Any, List
 import pytest
 from starlette.status import HTTP_200_OK
 
-from starlite import Cookie, MediaType, Request, Response
+from starlite import Cookie, MediaType, Request, RequestEncodingType, Response
 from starlite.connection import empty_receive
 from starlite.testing import RequestFactory
 from starlite.utils import ConnectionDataExtractor
@@ -43,10 +43,20 @@ def test_parse_query() -> None:
     assert ConnectionDataExtractor(parse_query=False)(request)["query"] == request.scope["query_string"]
 
 
-async def test_parse_data() -> None:
+async def test_parse_json_data() -> None:
     request = factory.post(path="/a/b/c", data={"hello": "world"})
     assert await ConnectionDataExtractor(parse_body=True)(request)["body"] == await request.json()
     assert await ConnectionDataExtractor(parse_body=False)(request)["body"] == await request.body()
+
+
+async def test_parse_form_data() -> None:
+    request = factory.post(path="/a/b/c", data={"file": b"123"}, request_media_type=RequestEncodingType.MULTI_PART)
+    assert await ConnectionDataExtractor(parse_body=True)(request)["body"] == dict(await request.form())
+
+
+async def test_parse_url_encoded() -> None:
+    request = factory.post(path="/a/b/c", data={"key": "123"}, request_media_type=RequestEncodingType.URL_ENCODED)
+    assert await ConnectionDataExtractor(parse_body=True)(request)["body"] == dict(await request.form())
 
 
 @pytest.mark.parametrize(
