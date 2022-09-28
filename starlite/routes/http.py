@@ -4,21 +4,23 @@ from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 from anyio.to_thread import run_sync
-from starlette.responses import Response as StarletteResponse
+from starlette.responses import RedirectResponse
 from starlette.routing import get_name
 
 from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
 from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
+    from starlette.responses import Response as StarletteResponse
+
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
+    from starlite.response import Response
     from starlite.types import AnyCallable, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -143,7 +145,7 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        if isinstance(response_data, (Response, StarletteResponse)):
+        if isinstance(response_data, RedirectResponse):
             return response_data
 
         return await route_handler.to_response(

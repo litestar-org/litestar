@@ -19,7 +19,3 @@
             - put
             - patch
             - delete
-
-::: starlite.testing.create_test_request
-    options:
-        separate_signature: false  # black fails to format
