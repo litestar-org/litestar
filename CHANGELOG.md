@@ -1,5 +1,11 @@
 # Changelog
 
+[1.23.0]
+
+- add `LoggingMiddleware`.
+- add support for configurable `exclude_from_auth` to `AbstractAuthenticationMiddleware`.
+- refactor to reduce cognitive complexity of code and increase performance.
+
 [1.22.0]
 
 - add `**kwargs` support to route handlers.
