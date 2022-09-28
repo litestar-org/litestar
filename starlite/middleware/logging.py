@@ -59,7 +59,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             extract_path_params="path_params" in self.config.request_log_fields,
             extract_query="query" in self.config.request_log_fields,
             extract_scheme="scheme" in self.config.request_log_fields,
-            obfuscate_cookies=self.config.request_cookie_keys_to_obfuscate,
+            obfuscate_cookies=self.config.request_cookies_to_obfuscate,
             obfuscate_headers=self.config.request_headers_to_obfuscate,
             parse_body=self.is_struct_logger,
             parse_query=self.is_struct_logger,
@@ -68,7 +68,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             extract_body="body" in self.config.response_log_fields,
             extract_headers="headers" in self.config.response_log_fields,
             extract_status_code="status_code" in self.config.response_log_fields,
-            obfuscate_cookies=self.config.response_cookie_keys_to_obfuscate,
+            obfuscate_cookies=self.config.response_cookies_to_obfuscate,
             obfuscate_headers=self.config.response_headers_to_obfuscate,
         )
 
@@ -216,7 +216,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     Name of the logger to retrieve using `app.get_logger("<name>")`.
     """
-    request_cookie_keys_to_obfuscate: Set[str] = {"session"}
+    request_cookies_to_obfuscate: Set[str] = {"session"}
     """
     Request cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
@@ -224,7 +224,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     Request header keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
-    response_cookie_keys_to_obfuscate: Set[str] = {"session"}
+    response_cookies_to_obfuscate: Set[str] = {"session"}
     """
     Response cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
     """
