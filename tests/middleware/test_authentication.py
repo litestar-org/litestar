@@ -194,3 +194,39 @@ def test_authentication_middleware_exclude_from_auth() -> None:
 
         response = client.get("/west")
         assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
+    auth_mw = DefineMiddleware(AuthMiddleware, exclude=["south", "east"], exclude_from_auth_key="my_exclude_key")
+
+    @get("/north/{value:int}", my_exclude_key=True)
+    def north_handler(value: int) -> Dict[str, int]:
+        return {"value": value}
+
+    @get("/south")
+    def south_handler() -> None:
+        return None
+
+    @get("/west")
+    def west_handler() -> None:
+        return None
+
+    @get("/east", my_exclude_key=True)
+    def east_handler() -> None:
+        return None
+
+    with create_test_client(
+        route_handlers=[north_handler, south_handler, west_handler, east_handler],
+        middleware=[auth_mw],
+    ) as client:
+        response = client.get("/north/1")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/south")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/east")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/west")
+        assert response.status_code == HTTP_403_FORBIDDEN

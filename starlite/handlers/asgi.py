@@ -19,7 +19,6 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         path: Union[Optional[str], Optional[List[str]]] = None,
         *,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        exclude_from_auth: Optional[bool] = False,
         guards: Optional[List[Guard]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -30,7 +29,6 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
         Args:
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            exclude_from_auth: A boolean flag dictating whether the route should be excluded from the AuthenticationMiddleware.
             guards: A list of [Guard][starlite.types.Guard] callables.
             name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
