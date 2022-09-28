@@ -684,6 +684,7 @@ class get(HTTPRouteHandler):
         """
         if "http_method" in kwargs:
             raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
+
         super().__init__(
             after_request=after_request,
             after_response=after_response,
