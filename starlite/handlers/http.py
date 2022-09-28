@@ -65,6 +65,8 @@ if TYPE_CHECKING:
     from starlite.plugins import PluginProtocol
     from starlite.types import AnyCallable, AsyncAnyCallable
 
+MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
+
 
 def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
     """Given two lists of cookies, ensures the uniqueness of cookies by key and
@@ -107,21 +109,18 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     if isawaitable(data):
         data = await data
 
-    if plugins:
-        plugin = get_plugin_for_value(value=data, plugins=plugins)
-        if plugin:
-            if is_async_callable(plugin.to_dict):
-                if isinstance(data, (list, tuple)):
-                    data = [await plugin.to_dict(datum) for datum in data]
-                else:
-                    data = await plugin.to_dict(data)
-            else:
-                if isinstance(data, (list, tuple)):
-                    data = [plugin.to_dict(datum) for datum in data]
-                else:
-                    data = plugin.to_dict(data)
+    plugin = get_plugin_for_value(value=data, plugins=plugins)
+    if not plugin:
+        return data
 
-    return data
+    if is_async_callable(plugin.to_dict):
+        if isinstance(data, (list, tuple)):
+            return [await plugin.to_dict(datum) for datum in data]
+        return await plugin.to_dict(data)
+
+    if isinstance(data, (list, tuple)):
+        return [plugin.to_dict(datum) for datum in data]
+    return plugin.to_dict(data)
 
 
 def _create_response_container_handler(
@@ -684,7 +683,8 @@ class get(HTTPRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
-            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
+            raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
+
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -814,7 +814,7 @@ class post(HTTPRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
-            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
+            raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -944,7 +944,7 @@ class put(HTTPRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
-            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
+            raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1074,7 +1074,7 @@ class patch(HTTPRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
-            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
+            raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
@@ -1204,7 +1204,7 @@ class delete(HTTPRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
-            raise ImproperlyConfiguredException("semantic route handlers cannot define http_method")
+            raise ImproperlyConfiguredException(MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP)
         super().__init__(
             after_request=after_request,
             after_response=after_response,
