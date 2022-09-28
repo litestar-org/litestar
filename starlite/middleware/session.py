@@ -208,35 +208,38 @@ class SessionMiddleware(MiddlewareProtocol):
             Returns:
                 None
             """
-            if message["type"] == "http.response.start":
-                headers = MutableHeaders(scope=message)
-                scope_session = scope.get("session")
+            if message["type"] != "http.response.start":
+                await send(message)
+                return
 
-                should_clear_session = scope_session is Empty
-                if not should_clear_session:
-                    data = self.dump_data(scope_session, scope=scope)
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
-                    for i, datum in enumerate(data, start=0):
-                        headers.append(
-                            "Set-Cookie",
-                            Cookie(
-                                value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params
-                            ).to_header(header=""),
-                        )
-                    # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
-                    # cookies, first check how many session cookies will not be overwritten in this upcoming response.
-                    # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
-                    # expired and their names are in cookie_keys.
-                    cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
-                else:
-                    cookies_to_clear = cookie_keys
+            headers = MutableHeaders(scope=message)
+            scope_session = scope.get("session")
 
-                for cookie_key in cookies_to_clear:
-                    cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+            should_clear_session = scope_session is Empty
+            if not should_clear_session:
+                data = self.dump_data(scope_session, scope=scope)
+                cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+                for i, datum in enumerate(data, start=0):
                     headers.append(
                         "Set-Cookie",
-                        Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                        Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params).to_header(
+                            header=""
+                        ),
                     )
+                # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
+                # cookies, first check how many session cookies will not be overwritten in this upcoming response.
+                # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
+                # expired and their names are in cookie_keys.
+                cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
+            else:
+                cookies_to_clear = cookie_keys
+
+            for cookie_key in cookies_to_clear:
+                cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+                headers.append(
+                    "Set-Cookie",
+                    Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                )
 
             await send(message)
 
