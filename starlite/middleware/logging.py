@@ -1,22 +1,12 @@
 import re
 from inspect import isawaitable
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Iterable,
-    List,
-    Optional,
-    OrderedDict,
-    Set,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
 from starlite.connection import Request
-from starlite.enums import HttpMethod, ScopeType
+from starlite.enums import ScopeType
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.utils import default_serializer, get_serializer_from_scope
 from starlite.utils.extractors import (
@@ -93,7 +83,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             None
         """
 
-        if scope["type"] == ScopeType.HTTP and (not self.exclude or not self.exclude.findall(scope["path"])):
+        if scope["type"] == ScopeType.HTTP and not (self.exclude and self.exclude.findall(scope["path"])):
             if not hasattr(self, "logger"):
                 self.logger = scope["app"].get_logger(self.config.logger_name)
                 self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
@@ -128,7 +118,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         extracted_data = self.extract_response_data(scope=scope)
         self.log_message(values=extracted_data)
 
-    def log_message(self, values: OrderedDict[str, Any]) -> None:
+    def log_message(self, values: Dict[str, Any]) -> None:
         """
 
         Args:
@@ -145,7 +135,7 @@ class LoggingMiddleware(MiddlewareProtocol):
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
-    async def extract_request_data(self, request: "Request") -> OrderedDict[str, Any]:
+    async def extract_request_data(self, request: "Request") -> Dict[str, Any]:
         """Creates a dictionary of values for the message.
 
         Args:
@@ -154,14 +144,12 @@ class LoggingMiddleware(MiddlewareProtocol):
             An OrderedDict.
         """
 
-        data: OrderedDict[str, Any] = OrderedDict([("message", self.config.request_log_message)])
-        extracted_data = self.request_extractor(connection=request)
+        data: Dict[str, Any] = {"message": self.config.request_log_message}
         serializer = get_serializer_from_scope(request.scope) or default_serializer
+        extracted_data = self.request_extractor(connection=request)
         for key in self.config.request_log_fields:
             if key in extracted_data:
                 value = extracted_data[key]  # pyright: ignore
-                if request.method == HttpMethod.GET and key == "body":
-                    continue
                 if isawaitable(value):
                     value = await value
                 if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
@@ -171,7 +159,7 @@ class LoggingMiddleware(MiddlewareProtocol):
                 data[key] = value
         return data
 
-    def extract_response_data(self, scope: "Scope") -> OrderedDict[str, Any]:
+    def extract_response_data(self, scope: "Scope") -> Dict[str, Any]:
         """
         Extracts data from the response.
         Args:
@@ -180,21 +168,21 @@ class LoggingMiddleware(MiddlewareProtocol):
         Returns:
             An OrderedDict.
         """
-        data: OrderedDict[str, Any] = OrderedDict([("message", self.config.response_log_message)])
-        extracted_data = self.response_extractor(
-            messages=(scope["state"]["http.response.start"], scope["state"]["http.response.body"])
-        )
+        data: Dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope) or default_serializer
+        extracted_data = self.response_extractor(
+            messages=(
+                scope["state"]["http.response.start"],
+                scope["state"]["http.response.body"],
+            )
+        )
         for key in self.config.response_log_fields:
             value = extracted_data.get(key)
-            if not self.is_struct_logger and isinstance(value, (dict, list, tuple)):
-                data[key] = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS).decode(
-                    "utf-8"
-                )
-            elif isinstance(value, bytes):
-                data[key] = value.decode("utf-8")
-            else:
-                data[key] = value
+            if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+                value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            data[key] = value
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":

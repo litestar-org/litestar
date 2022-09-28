@@ -34,16 +34,11 @@ def obfuscate(values: Dict[str, Any], fields_to_obfuscate: Set[str]) -> Dict[str
         A dictionary with obfuscated strings
 
     """
-    if not fields_to_obfuscate:
-        return values
 
-    output = {}
-    for key, value in values.items():
-        if any(field.lower() == key.lower() for field in fields_to_obfuscate):
-            output[key] = "*****"
-        else:
-            output[key] = value
-    return output
+    for key in values:
+        if key.lower() in fields_to_obfuscate:
+            values[key] = "*****"
+    return values
 
 
 RequestExtractorField = Literal[
@@ -117,8 +112,8 @@ class ConnectionDataExtractor:
         """
         self.parse_body = parse_body
         self.parse_query = parse_query
-        self.obfuscate_headers = obfuscate_headers or set()
-        self.obfuscate_cookies = obfuscate_cookies or set()
+        self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
+        self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
         self.connection_extractors: Dict[str, Callable[["ASGIConnection[Any, Any, Any]"], Any]] = {}
         self.request_extractors: Dict[RequestExtractorField, Callable[["Request[Any, Any]"], Any]] = {}
         if extract_scheme:
@@ -206,9 +201,8 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's headers.
         """
-        return obfuscate(
-            {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}, self.obfuscate_headers
-        )
+        headers = {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}
+        return obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
 
     def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
         """
@@ -219,7 +213,7 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's cookies.
         """
-        return obfuscate(connection.cookies, self.obfuscate_cookies)
+        return obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
 
     def extract_query(self, connection: "ASGIConnection[Any, Any, Any]") -> Any:
         """
@@ -321,8 +315,8 @@ class ResponseDataExtractor:
             obfuscate_cookies: cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
             obfuscate_headers: headers keys to obfuscate. Obfuscated values are replaced with '*****'.
         """
-        self.obfuscate_headers = obfuscate_headers or set()
-        self.obfuscate_cookies = obfuscate_cookies or set()
+        self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
+        self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
         self.extractors: Dict[
             ResponseExtractorField, Callable[[Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]], Any]
         ] = {}
@@ -383,12 +377,17 @@ class ResponseDataExtractor:
         Returns:
             The Response's headers dict.
         """
-        return obfuscate(
-            {
-                key.decode("latin-1"): value.decode("latin-1")
-                for key, value in filter(lambda x: x[0].lower() != b"set-cookie", messages[0]["headers"])
-            },
-            self.obfuscate_headers,
+        headers = {
+            key.decode("latin-1"): value.decode("latin-1")
+            for key, value in filter(lambda x: x[0].lower() != b"set-cookie", messages[0]["headers"])
+        }
+        return (
+            obfuscate(
+                headers,
+                self.obfuscate_headers,
+            )
+            if self.obfuscate_headers
+            else headers
         )
 
     def extract_cookies(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
@@ -402,7 +401,6 @@ class ResponseDataExtractor:
         Returns:
             The Response's cookies dict.
         """
-        output: Dict[str, str] = {}
         cookie_string = ";".join(
             list(
                 map(
@@ -412,5 +410,6 @@ class ResponseDataExtractor:
             )
         )
         if cookie_string:
-            return obfuscate(cookie_parser(cookie_string), self.obfuscate_cookies)
-        return output
+            parsed_cookies = cookie_parser(cookie_string)
+            return obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies
+        return {}
