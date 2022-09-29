@@ -36,14 +36,14 @@ packages = [
 python = ">=3.7,<4.0"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
-httpx = { version = "*", optional = true }
+httpx = { version = ">=0.22", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 pyyaml = "*"
-starlette = "*"
+starlette = ">=0.21"
 starlite-multipart = "*"
 typing-extensions = "*"
 
@@ -51,7 +51,7 @@ typing-extensions = "*"
 brotli = "*"
 cryptography = "*"
 freezegun = "*"
-httpx = "*"
+httpx = ">=0.22"
 hypothesis = "*"
 jinja2 = "*"
 mako = "*"
