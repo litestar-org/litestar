@@ -34,13 +34,18 @@ async def test_connection_data_extractor() -> None:
     assert extracted_data["scheme"] == request.scope["scheme"]
 
 
-def test_parse_query() -> None:
+async def test_parse_query() -> None:
     request = factory.post(
         path="/a/b/c",
         query_params={"first": ["1", "2", "3"], "second": ["jeronimo"]},
     )
-    assert ConnectionDataExtractor(parse_query=True)(request)["query"] == request.query_params
-    assert ConnectionDataExtractor(parse_query=False)(request)["query"] == request.scope["query_string"]
+    parsed_extracted_data = ConnectionDataExtractor(parse_query=True)(request)
+    unparsed_extracted_data = ConnectionDataExtractor(parse_query=False)(request)
+    assert parsed_extracted_data["query"] == request.query_params
+    assert unparsed_extracted_data["query"] == request.scope["query_string"]
+    # Close to avoid warnings about un-awaited coroutines.
+    parsed_extracted_data["body"].close()
+    unparsed_extracted_data["body"].close()
 
 
 async def test_parse_json_data() -> None:
@@ -66,6 +71,8 @@ def test_request_extraction_header_obfuscation(req: Request[Any, Any]) -> None:
     extractor = ConnectionDataExtractor(obfuscate_headers={"special"})
     extracted_data = extractor(req)
     assert extracted_data["headers"] == {"special": "*****"}
+    # Close to avoid warnings about un-awaited coroutines.
+    extracted_data["body"].close()
 
 
 @pytest.mark.parametrize(
@@ -79,6 +86,8 @@ def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str)
     extractor = ConnectionDataExtractor(obfuscate_cookies={"special"})
     extracted_data = extractor(req)
     assert extracted_data["cookies"] == {"Path": "/", "SameSite": "lax", key: "*****"}
+    # Close to avoid warnings about un-awaited coroutines.
+    extracted_data["body"].close()
 
 
 async def test_response_data_extractor() -> None:

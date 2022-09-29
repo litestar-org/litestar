@@ -127,12 +127,12 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
         route_handlers=[handler],
         middleware=[session_middleware.config.middleware],
     ) as client:
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {
+            f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
+        }
         response = client.get(
             "/test",
-            cookies={
-                f"{session_middleware.config.key}-{i}": text.decode("utf-8")
-                for i, text in enumerate(ciphertext, start=0)
-            },
         )
 
     assert response.json() == _session

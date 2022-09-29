@@ -27,7 +27,10 @@ def test_handle_websocket_params_parsing() -> None:
 
     client = create_test_client(route_handlers=websocket_handler)
 
-    with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}, cookies={"cookie": "yum"}) as ws:
+    # Set cookies on the client to avoid warnings about per-request cookies.
+    client.cookies = {"cookie": "yum"}
+
+    with client.websocket_connect("/1?qp=1", headers={"some-header": "abc"}) as ws:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data
