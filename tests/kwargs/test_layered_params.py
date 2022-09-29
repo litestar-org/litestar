@@ -49,11 +49,13 @@ def test_layered_parameters_injected_correctly() -> None:
             "app3": Parameter(bool, required=False),
         },
     ) as client:
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"app4": "jeronimo"}
+
         query = {"controller1": "99", "controller3": "tuna", "router1": "albatross", "app2": ["x", "y"]}
         headers = {"router3": "10"}
-        cookies = {"app4": "jeronimo"}
 
-        response = client.get("/router/controller/1", params=query, headers=headers, cookies=cookies)
+        response = client.get("/router/controller/1", params=query, headers=headers)
         assert response.json() == {"message": "ok"}
         assert response.status_code == HTTP_200_OK
 
@@ -96,12 +98,10 @@ def test_layered_parameters_validation(parameter: str) -> None:
         else:
             del query[parameter]
 
-        response = client.get(
-            "/router/controller/1",
-            params=query,
-            headers=headers,
-            cookies=cookies,
-        )
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = cookies
+
+        response = client.get("/router/controller/1", params=query, headers=headers)
 
         assert response.status_code == HTTP_400_BAD_REQUEST
         assert f"Missing required parameter(s) {parameter}" in response.json()["detail"]
