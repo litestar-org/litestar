@@ -34,7 +34,7 @@ async def test_connection_data_extractor() -> None:
     assert extracted_data["scheme"] == request.scope["scheme"]
 
 
-async def test_parse_query() -> None:
+def test_parse_query() -> None:
     request = factory.post(
         path="/a/b/c",
         query_params={"first": ["1", "2", "3"], "second": ["jeronimo"]},
