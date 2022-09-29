@@ -1,5 +1,9 @@
 # Changelog
 
+[1.23.1]
+
+- fix `httpx` being a required dependency.
+
 [1.23.0]
 
 - add `LoggingMiddleware`.
