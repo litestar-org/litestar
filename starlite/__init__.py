@@ -74,7 +74,6 @@ from .provide import Provide
 from .response import Response
 from .router import Router
 from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from .testing import RequestFactory, TestClient, create_test_client
 from .typing import Partial
 
 __all__ = [
@@ -122,7 +121,6 @@ __all__ = [
     "Redirect",
     "Request",
     "RequestEncodingType",
-    "RequestFactory",
     "Response",
     "ResponseHeader",
     "Router",
@@ -136,7 +134,6 @@ __all__ = [
     "StructLoggingConfig",
     "Template",
     "TemplateConfig",
-    "TestClient",
     "TooManyRequestsException",
     "UploadFile",
     "ValidationException",
@@ -145,7 +142,6 @@ __all__ = [
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",
-    "create_test_client",
     "delete",
     "get",
     "patch",
