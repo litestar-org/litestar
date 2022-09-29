@@ -423,6 +423,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jtraub",
+      "name": "Konstantin Mikhailov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/153191?v=4",
+      "profile": "https://github.com/jtraub",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
