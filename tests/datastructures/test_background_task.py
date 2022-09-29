@@ -2,7 +2,8 @@ from typing import List
 
 from starlette.status import HTTP_200_OK
 
-from starlite import BackgroundTask, BackgroundTasks, create_test_client, get
+from starlite import BackgroundTask, BackgroundTasks, get
+from starlite.testing import create_test_client
 
 
 async def test_background_tasks() -> None:
