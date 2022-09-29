@@ -10,11 +10,11 @@ from starlite import (
     MediaType,
     Response,
     StructLoggingConfig,
-    create_test_client,
     get,
 )
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
