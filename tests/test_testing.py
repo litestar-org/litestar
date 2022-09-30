@@ -1,12 +1,14 @@
 import json
+import os
 from typing import Any, Callable, Dict, Union
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretBytes
 
-from starlite import HttpMethod, RequestEncodingType, Starlite, State, get
+from starlite import HttpMethod, Request, RequestEncodingType, Starlite, State, get
 from starlite.datastructures import Cookie
 from starlite.enums import ParamType
+from starlite.middleware.session import SessionCookieConfig
 from starlite.testing import RequestFactory, TestClient
 from tests import Pet, PetFactory
 
@@ -160,16 +162,20 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     assert json.loads(body) == pet.dict()
 
 
-def test_test_client() -> None:
+@pytest.mark.parametrize("enable_session, session_data", [(True, {"user": "test-user"}), (False, {})])
+def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None:
     def start_up_handler(state: State) -> None:
         state.value = 1
 
     @get(path="/test")
-    def test_handler(state: State) -> None:
+    def test_handler(state: State, request: Request) -> None:
         assert state.value == 1
+        assert request.session == session_data
 
-    app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler])
+    session_config = SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+    app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
-    with TestClient(app=app) as client:
-        client.get("/test")
+    with TestClient(app=app, session_config=session_config if enable_session else None) as client:
+        cookies = client.create_session_cookies(session_data=session_data)
+        client.get("/test", cookies=cookies)
         assert app.state.value == 1
