@@ -401,7 +401,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/26462826?v=4",
       "profile": "https://github.com/jonadaly",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -421,6 +422,15 @@
       "profile": "https://github.com/sorasful",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "jtraub",
+      "name": "Konstantin Mikhailov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/153191?v=4",
+      "profile": "https://github.com/jtraub",
+      "contributions": [
+        "doc"
       ]
     }
   ],

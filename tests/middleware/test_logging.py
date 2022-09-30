@@ -10,11 +10,11 @@ from starlite import (
     MediaType,
     Response,
     StructLoggingConfig,
-    create_test_client,
     get,
 )
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
@@ -39,8 +39,10 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture") -> None:
     with create_test_client(
         route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]
     ) as client, caplog.at_level(INFO):
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"request-cookie": "abc"}
         client.app.get_logger = get_logger
-        response = client.get("/", headers={"request-header": "1"}, cookies={"request-cookie": "abc"})
+        response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
@@ -64,7 +66,9 @@ def test_logging_middleware_struct_logger() -> None:
         middleware=[LoggingMiddlewareConfig().middleware],
         logging_config=StructLoggingConfig(),
     ) as client, capture_logs() as cap_logs:
-        response = client.get("/", headers={"request-header": "1"}, cookies={"request-cookie": "abc"})
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"request-cookie": "abc"}
+        response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(cap_logs) == 2
         assert cap_logs[0] == {

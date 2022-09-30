@@ -6,6 +6,7 @@ To use the `starlite.plugins.tortoise_orm.TortoiseORMPlugin` import it and pass 
 from typing import cast
 
 from tortoise import Model, Tortoise, fields
+from tortoise.connection import connections
 
 from starlite import Starlite, get, post
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
@@ -67,6 +68,10 @@ async def init_tortoise() -> None:
     await Tortoise.generate_schemas()
 
 
+async def shutdown_tortoise() -> None:
+    await connections.close_all()
+
+
 @get("/tournaments")
 async def get_tournaments() -> list[Tournament]:
     tournaments = await Tournament.all()
@@ -90,6 +95,7 @@ async def create_tournament(data: Tournament) -> Tournament:
 app = Starlite(
     route_handlers=[get_tournament, get_tournaments, create_tournament],
     on_startup=[init_tortoise],
+    on_shutdown=[shutdown_tortoise],
     plugins=[TortoiseORMPlugin()],
 )
 ```

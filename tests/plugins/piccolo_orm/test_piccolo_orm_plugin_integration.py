@@ -41,5 +41,5 @@ async def test_create_piccolo_table_instance(scaffold_piccolo: Callable) -> None
         data["band_1"] = band_1.id  # type: ignore[attr-defined]
         data["band_2"] = band_2.id  # type: ignore[attr-defined]
         data["venue"] = venue.id  # type: ignore[attr-defined]
-        response = client.post("/concert", data=dumps(data))
+        response = client.post("/concert", content=dumps(data))
         assert response.status_code == HTTP_201_CREATED

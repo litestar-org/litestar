@@ -150,7 +150,7 @@ def create_test_client(
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
 ) -> TestClient:
-    """Creates a Starlite app instance and initializes a.
+    """Creates a Starlite app instance and initializes it.
 
     [TestClient][starlite.testing.TestClient] with it.
 
