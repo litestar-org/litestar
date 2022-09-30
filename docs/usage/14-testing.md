@@ -309,6 +309,9 @@ All of these methods accept the following parameters:
 - `session`: A dictionary of session data. Defaults to `None`.
 - `user`: A value for `request.scope["user"]`. Defaults to `None`.
 - `auth`: A value for `request.scope["auth"]`. Defaults to `None`.
+- `state`: Arbitrary request state.
+- `path_params`: A string keyed dictionary of path parameter values.
+- `http_version`: HTTP version. Defaults to "1.1".
 
 In addition, the following methods accepts a few more parameters:
 
@@ -322,20 +325,3 @@ In addition, the following methods accepts a few more parameters:
   - `request_media_type`: The 'Content-Type' header of the request. Defaults to `None`.
   - `data`: A value for the request's body. Can be either a pydantic model instance
     or a string keyed dictionary. Defaults to `None`.
-
-Aside from `RequestFactory`, there is an alternative for creating request objects.
-There is a method called `create_test_request` which was used before `RequestFactory` was created.
-This method accepts the following parameters:
-
-- `http_method`: a **required** parameter.
-- `scheme`: "http" or "https". Defaults to `http`.
-- `server`: Server domain. Defaults to `test.org`.
-- `port`: Request port. Defaults to `3000`.
-- `root_path`: Root path. Defaults to `/`.
-- `path`: Path. Defaults to empty string.
-- `query`: A string keyed dictionary of query parameters - can contain lists. Defaults to `None`.
-- `headers`: A string keyed dictionary of header parameters. Defaults to `None`.
-- `cookie`: A string representing a cookie. Defaults to `None`.
-- `content`: A dictionary or a pydantic model that forms the request body. Defaults to `None`.
-- `request_media_type`: Media type of the request, defaults to `RequestEncodingType.JSON`.
-- `app`: An instance of Starlite to set as `request.app`. Defaults to `None`.
