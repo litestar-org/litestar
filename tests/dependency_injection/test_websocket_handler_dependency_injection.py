@@ -20,13 +20,13 @@ async def router_second_dependency() -> bool:
 
 def controller_first_dependency(headers: Dict[str, Any]) -> dict:
     assert headers
-    return dict()
+    return {}
 
 
 async def controller_second_dependency(socket: WebSocket) -> dict:
     assert socket
     await sleep(0.1)
-    return dict()
+    return {}
 
 
 def local_method_first_dependency(query_param: int) -> int:

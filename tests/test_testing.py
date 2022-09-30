@@ -18,20 +18,20 @@ pet = PetFactory.build()
 
 
 def test_request_factory_no_cookie_header() -> None:
-    headers: Dict[str, str] = dict()
+    headers: Dict[str, str] = {}
     RequestFactory._create_cookie_header(headers, None)
     assert headers == {}
 
 
 def test_request_factory_str_cookie_header() -> None:
-    headers: Dict[str, str] = dict()
+    headers: Dict[str, str] = {}
     cookie_as_str = "test=cookie; starlite=cookie"
     RequestFactory._create_cookie_header(headers, cookie_as_str)
     assert headers[ParamType.COOKIE] == cookie_as_str
 
 
 def test_request_factory_cookie_list_header() -> None:
-    headers: Dict[str, str] = dict()
+    headers: Dict[str, str] = {}
     cookie_list = [Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
     RequestFactory._create_cookie_header(headers, cookie_list)
     assert headers[ParamType.COOKIE] == "test=cookie; Path=/; SameSite=lax; starlite=cookie; Path=/test; SameSite=lax"

@@ -92,7 +92,7 @@ def create_success_response(
                 )
             },
         )
-    elif signature.return_annotation in [File, Stream]:
+    elif signature.return_annotation in (File, Stream):
         response = Response(
             content={
                 route_handler.media_type: OpenAPISchemaMediaType(

@@ -29,7 +29,7 @@ def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_
     @get(path=test_path)
     def test_method(special_header: t_type = param) -> None:  # type: ignore
         if special_header:
-            assert special_header in [param_dict.get("special-header"), int(param_dict.get("special-header"))]  # type: ignore
+            assert special_header in (param_dict.get("special-header"), int(param_dict.get("special-header")))  # type: ignore
 
     with create_test_client(test_method) as client:
         response = client.get(test_path, headers=param_dict)
@@ -51,5 +51,5 @@ def test_header_param_example() -> None:
         assert token == test_token
 
     with create_test_client(my_method) as client:
-        response = client.get(f"/users/{str(uuid4())}/", headers={"X-API-KEY": test_token})
+        response = client.get(f"/users/{uuid4()}/", headers={"X-API-KEY": test_token})
         assert response.status_code == HTTP_200_OK

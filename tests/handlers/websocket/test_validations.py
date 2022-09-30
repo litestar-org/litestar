@@ -14,7 +14,7 @@ def test_websocket_handler_function_validation() -> None:
         websocket(path="/")(fn_without_socket_arg)  # type: ignore
 
     def fn_with_return_annotation(socket: WebSocket) -> dict:
-        return dict()
+        return {}
 
     with pytest.raises(ImproperlyConfiguredException):
         websocket(path="/")(fn_with_return_annotation)  # type: ignore

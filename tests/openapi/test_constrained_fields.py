@@ -32,7 +32,7 @@ def test_create_collection_constrained_field_schema(field_type: Any) -> None:
 
 def test_create_collection_constrained_field_schema_sub_fields() -> None:
     field_type = List[Union[str, int]]
-    for pydantic_fn in [conlist, conset]:
+    for pydantic_fn in (conlist, conset):
         schema = create_collection_constrained_field_schema(
             field_type=pydantic_fn(field_type, min_items=1, max_items=10),  # type: ignore
             sub_fields=create_parsed_model_field(field_type).sub_fields,
