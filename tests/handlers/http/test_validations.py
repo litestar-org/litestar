@@ -28,7 +28,7 @@ from tests import Person
 
 def test_route_handler_validation_http_method() -> None:
     # doesn't raise for http methods
-    for value in [*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))]:
+    for value in (*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))):
         assert route(http_method=value)  # type: ignore
 
     # raises for invalid values
@@ -53,7 +53,7 @@ def test_route_handler_validation_response_class() -> None:
 
     # raises otherwise
     with pytest.raises(ValidationError):
-        HTTPRouteHandler(http_method=HttpMethod.GET, response_class=dict())  # type: ignore
+        HTTPRouteHandler(http_method=HttpMethod.GET, response_class={})  # type: ignore
 
 
 @pytest.mark.asyncio()

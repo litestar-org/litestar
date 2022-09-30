@@ -130,7 +130,7 @@ class BaseRoute(ABC):
                 "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
             )
         param_name, param_type = (p.strip() for p in param.split(":"))
-        if len(param_name) == 0:
+        if not param_name:
             raise ImproperlyConfiguredException("Path parameter names should be of length greater than zero")
         if param_type not in param_type_map:
             raise ImproperlyConfiguredException(

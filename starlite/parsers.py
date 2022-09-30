@@ -75,6 +75,6 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     if media_type == RequestEncodingType.MULTI_PART:
         if field.shape is SHAPE_LIST:
             return list(values_dict.values())
-        if field.shape is SHAPE_SINGLETON and field.type_ in [UploadFile, MultipartUploadFile] and values_dict:
+        if field.shape is SHAPE_SINGLETON and field.type_ in (UploadFile, MultipartUploadFile) and values_dict:
             return list(values_dict.values())[0]
     return values_dict

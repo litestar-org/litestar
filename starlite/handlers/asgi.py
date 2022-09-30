@@ -53,7 +53,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
-        if any(key not in signature.parameters for key in ["scope", "send", "receive"]):
+        if any(key not in signature.parameters for key in ("scope", "send", "receive")):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )

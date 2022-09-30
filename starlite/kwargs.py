@@ -281,10 +281,10 @@ class KwargsModel:
         data_model_field = signature_model.__fields__.get("data")
         if data_model_field:
             media_type = data_model_field.field_info.extra.get("media_type")
-            if media_type in [
+            if media_type in (
                 RequestEncodingType.MULTI_PART,
                 RequestEncodingType.URL_ENCODED,
-            ]:
+            ):
                 expected_form_data = (media_type, data_model_field)
 
         for dependency in expected_dependencies:
@@ -487,11 +487,11 @@ class KwargsModel:
             *list(layered_parameters.keys()),
         }
 
-        for intersection in [
+        for intersection in (
             path_parameters.intersection(dependency_keys)
             or path_parameters.intersection(parameter_names)
             or dependency_keys.intersection(parameter_names)
-        ]:
+        ):
             if intersection:
                 raise ImproperlyConfiguredException(
                     f"Kwarg resolution ambiguity detected for the following keys: {', '.join(intersection)}. "

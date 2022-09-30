@@ -210,7 +210,7 @@ def create_schema(
         schema = Schema(
             oneOf=[
                 Schema(type=OpenAPIType.NULL),
-                *(non_optional_schema.oneOf if non_optional_schema.oneOf else [non_optional_schema]),
+                *(non_optional_schema.oneOf or [non_optional_schema]),
             ]
         )
     elif is_union(field):
