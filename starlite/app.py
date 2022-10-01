@@ -132,6 +132,7 @@ class Starlite(Router):
         "debug",
         "get_logger",
         "logger",
+        "logging_config",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -322,6 +323,7 @@ class Starlite(Router):
         self.plugins = config.plugins
         self.static_files_config = config.static_files_config
         self.template_engine = create_template_engine(config.template_config)
+        self.logging_config = config.logging_config
 
         super().__init__(
             after_request=config.after_request,
@@ -349,8 +351,8 @@ class Starlite(Router):
         for route_handler in config.route_handlers:
             self.register(route_handler)
 
-        if config.logging_config:
-            self.get_logger = config.logging_config.configure()
+        if self.logging_config:
+            self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
