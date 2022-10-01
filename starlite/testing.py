@@ -5,10 +5,13 @@ from orjson import dumps, loads
 from pydantic import BaseModel
 from starlette.testclient import TestClient as StarletteTestClient
 
+from starlite import get
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from starlite.exceptions import MissingDependencyException
+from starlite.types import HTTPScope, RouteHandlerType
+from starlite.types.asgi_types import ASGIVersion
 from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
@@ -271,10 +274,15 @@ def create_test_client(
     )
 
 
+@get("/")
+def _default_route_handler() -> None:
+    ...
+
+
 class RequestFactory:
     def __init__(
         self,
-        app: Starlite = Starlite(route_handlers=[]),
+        app: Starlite = Starlite(route_handlers=[_default_route_handler]),
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
@@ -340,24 +348,40 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-    ) -> Dict[str, Any]:
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
+    ) -> HTTPScope:
         """Create the scope for the [Request][starlite.connection.Request].
 
         Args:
             path: The request's path.
             http_method: The request's HTTP method.
             session: A dictionary of session data.
-            user: A value for `request.scope["user"]`
-            auth: A value for `request.scope["auth"]`
+            user: A value for `request.scope["user"]`.
+            auth: A value for `request.scope["auth"]`.
+            query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
+
         Returns:
             A dictionary that can be passed as a scope to the [Request][starlite.connection.Request] c'tor.
         """
         if session is None:
             session = {}
 
-        return dict(
+        if state is None:
+            state = {}
+
+        if path_params is None:
+            path_params = {}
+
+        return HTTPScope(
             type=ScopeType.HTTP,
-            method=http_method,
+            method=http_method.value,
             scheme=self.scheme,
             server=(self.server, self.port),
             root_path=self.root_path.rstrip("/"),
@@ -368,8 +392,14 @@ class RequestFactory:
             user=user,
             auth=auth,
             query_string=urlencode(query_params, doseq=True).encode() if query_params else b"",
-            path_params=[],
+            path_params=path_params,
             client=(self.server, self.port),
+            state=state,
+            asgi=ASGIVersion(spec_version="3.0", version="3.0"),
+            http_version=http_version or "1.1",
+            raw_path=path.encode("ascii"),
+            route_handler=route_handler or _default_route_handler,
+            extensions={},
         )
 
     @classmethod
@@ -405,6 +435,7 @@ class RequestFactory:
             headers: A dictionary of headers.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
+
         Returns:
             A list of encoded headers that can be passed to the request scope.
         """
@@ -429,6 +460,10 @@ class RequestFactory:
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
         files: Optional[Union[Dict[str, FileTypes], List[Tuple[str, FileTypes]]]] = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a [Request][starlite.connection.Request] instance that has
         body (data)
@@ -446,13 +481,26 @@ class RequestFactory:
             data: A value for the request's body. Can be either a pydantic model instance
                 or a string keyed dictionary.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
         """
 
         scope = self._create_scope(
-            path=path, http_method=http_method, session=session, user=user, auth=auth, query_params=query_params
+            path=path,
+            http_method=http_method,
+            session=session,
+            user=user,
+            auth=auth,
+            query_params=query_params,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
 
         headers = headers or {}
@@ -469,10 +517,10 @@ class RequestFactory:
             body = b""
             for chunk in stream:
                 body += chunk
-            scope["_body"] = body
+            scope["_body"] = body  # type: ignore[typeddict-item]
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
-        return Request(scope=scope)  # type: ignore[arg-type]
+        return Request(scope=scope)
 
     def get(
         self,
@@ -483,6 +531,10 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a GET [Request][starlite.connection.Request] instance.
 
@@ -495,17 +547,30 @@ class RequestFactory:
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
         """
 
         scope = self._create_scope(
-            path=path, http_method=HttpMethod.GET, session=session, user=user, auth=auth, query_params=query_params
+            path=path,
+            http_method=HttpMethod.GET,
+            session=session,
+            user=user,
+            auth=auth,
+            query_params=query_params,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
 
         scope["headers"] = self._build_headers(headers, cookies)
-        return Request(scope=scope)  # type: ignore[arg-type]
+        return Request(scope=scope)
 
     def post(
         self,
@@ -518,6 +583,10 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
@@ -533,6 +602,10 @@ class RequestFactory:
             data: A value for the request's body. Can be either a pydantic model instance
                 or a string keyed dictionary.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -549,6 +622,10 @@ class RequestFactory:
             request_media_type=request_media_type,
             session=session,
             user=user,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
 
     def put(
@@ -562,6 +639,10 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a PUT [Request][starlite.connection.Request] instance.
 
@@ -577,6 +658,10 @@ class RequestFactory:
             data: A value for the request's body. Can be either a pydantic model instance
                 or a string keyed dictionary.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -593,6 +678,10 @@ class RequestFactory:
             request_media_type=request_media_type,
             session=session,
             user=user,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
 
     def patch(
@@ -606,6 +695,10 @@ class RequestFactory:
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
         data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a PATCH [Request][starlite.connection.Request] instance.
 
@@ -621,6 +714,10 @@ class RequestFactory:
             data: A value for the request's body. Can be either a pydantic model instance
                 or a string keyed dictionary.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -637,6 +734,10 @@ class RequestFactory:
             request_media_type=request_media_type,
             session=session,
             user=user,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
 
     def delete(
@@ -648,6 +749,10 @@ class RequestFactory:
         user: Any = None,
         auth: Any = None,
         query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
+        state: Optional[Dict[str, Any]] = None,
+        path_params: Optional[Dict[str, str]] = None,
+        http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
@@ -660,13 +765,26 @@ class RequestFactory:
             user: A value for `request.scope["user"]`.
             auth: A value for `request.scope["auth"]`.
             query_params: A dictionary of values from which the request's query will be generated.
+            state: Arbitrary request state.
+            path_params: A string keyed dictionary of path parameter values.
+            http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
         """
 
         scope = self._create_scope(
-            path=path, http_method=HttpMethod.DELETE, session=session, user=user, auth=auth, query_params=query_params
+            path=path,
+            http_method=HttpMethod.DELETE,
+            session=session,
+            user=user,
+            auth=auth,
+            query_params=query_params,
+            state=state,
+            path_params=path_params,
+            http_version=http_version,
+            route_handler=route_handler,
         )
         scope["headers"] = self._build_headers(headers, cookies)
-        return Request(scope=scope)  # type: ignore[arg-type]
+        return Request(scope=scope)

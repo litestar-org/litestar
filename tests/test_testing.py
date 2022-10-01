@@ -92,7 +92,12 @@ def test_request_factory_create_with_default_params() -> None:
     assert isinstance(request.app, Starlite)
     assert request.url == request.base_url == _DEFAULT_REQUEST_FACTORY_URL
     assert request.method == HttpMethod.GET
-    assert request.query_params == {}
+    assert not request.query_params
+    assert not request.state
+    assert not request.path_params
+    assert request.route_handler
+    assert request.scope["http_version"] == "1.1"
+    assert request.scope["raw_path"] == b"/"
 
 
 def test_request_factory_create_with_params() -> None:
@@ -101,6 +106,10 @@ def test_request_factory_create_with_params() -> None:
 
     class Auth(BaseModel):
         pass
+
+    @get("/path")
+    def handler() -> None:
+        ...
 
     app = Starlite(route_handlers=[])
     server = "starlite.org"
@@ -111,7 +120,19 @@ def test_request_factory_create_with_params() -> None:
     auth = Auth()
     scheme = "https"
     session = {"param1": "a", "param2": 2}
-    request = RequestFactory(app, server, port, root_path, scheme).get(path, session=session, user=user, auth=auth)
+    state = {"weather": "sunny"}
+    path_params = {"param": "a"}
+    request = RequestFactory(app, server, port, root_path, scheme).get(
+        path,
+        session=session,
+        user=user,
+        auth=auth,
+        state=state,
+        path_params=path_params,
+        http_version="2.0",
+        route_handler=handler,
+    )
+
     assert request.app == app
     assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
     assert request.url == f"{scheme}://{server}:{port}{root_path}{path}"
@@ -120,6 +141,11 @@ def test_request_factory_create_with_params() -> None:
     assert request.user == user
     assert request.auth == auth
     assert request.session == session
+    assert request.state.weather == "sunny"
+    assert request.path_params == path_params
+    assert request.route_handler == handler
+    assert request.scope["http_version"] == "2.0"
+    assert request.scope["raw_path"] == path.encode("ascii")
 
 
 def test_request_factory_get() -> None:
