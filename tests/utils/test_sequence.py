@@ -16,6 +16,6 @@ def test_unique() -> None:
         pass
 
     unique_functions = unique([x, x, y, y])
-    assert unique_functions == [x, y]
+    assert unique_functions == [x, y] or [y, x]
     my_list: list = []
     assert sorted(unique([my_list, my_list, my_list])) == sorted([my_list])
