@@ -23,6 +23,7 @@ from starlite.exceptions import (
     MissingDependencyException,
 )
 from starlite.plugins.base import PluginProtocol
+from starlite.provide import Provide
 
 try:
     from sqlalchemy import inspect
@@ -69,9 +70,11 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             None
         """
         if self._config is not None:
-            self._config.create_engine(state=app.state)
-            self._config.config_sql_alchemy_logging(app.logging_config)
+            app.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
             app.middleware = [self._config.middleware, *app.middleware]
+            app.on_shutdown.append(self._config.on_shutdown)
+            self._config.config_sql_alchemy_logging(app.logging_config)
+            self._config.update_app_state(state=app.state)
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":

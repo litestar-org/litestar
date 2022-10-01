@@ -324,6 +324,28 @@ class KwargsModel:
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
+    def _collect_reserved_kwargs(
+        self, connection: Union["WebSocket", "Request"], connection_query_params: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, Any]:
+        reserved_kwargs: Dict[str, Any] = {}
+        if "state" in self.expected_reserved_kwargs:
+            reserved_kwargs["state"] = connection.app.state.copy()
+        if "headers" in self.expected_reserved_kwargs:
+            reserved_kwargs["headers"] = connection.headers
+        if "cookies" in self.expected_reserved_kwargs:
+            reserved_kwargs["cookies"] = connection.cookies
+        if "query" in self.expected_reserved_kwargs:
+            reserved_kwargs["query"] = connection_query_params
+        if "request" in self.expected_reserved_kwargs:
+            reserved_kwargs["request"] = connection
+        if "socket" in self.expected_reserved_kwargs:
+            reserved_kwargs["socket"] = connection
+        if "data" in self.expected_reserved_kwargs:
+            reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
+        if "scope" in self.expected_reserved_kwargs:
+            reserved_kwargs["scope"] = connection.scope
+        return reserved_kwargs
+
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are
         not resolved to ensure this function is sync.
@@ -351,23 +373,13 @@ class KwargsModel:
 
         if not self.expected_reserved_kwargs:
             return {**path_params, **query_params, **header_params, **cookie_params}
-
-        reserved_kwargs: Dict[str, Any] = {}
-        if "state" in self.expected_reserved_kwargs:
-            reserved_kwargs["state"] = connection.app.state.copy()
-        if "headers" in self.expected_reserved_kwargs:
-            reserved_kwargs["headers"] = connection.headers
-        if "cookies" in self.expected_reserved_kwargs:
-            reserved_kwargs["cookies"] = connection.cookies
-        if "query" in self.expected_reserved_kwargs:
-            reserved_kwargs["query"] = connection_query_params
-        if "request" in self.expected_reserved_kwargs:
-            reserved_kwargs["request"] = connection
-        if "socket" in self.expected_reserved_kwargs:
-            reserved_kwargs["socket"] = connection
-        if "data" in self.expected_reserved_kwargs:
-            reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
-        return {**reserved_kwargs, **path_params, **query_params, **header_params, **cookie_params}
+        return {
+            **self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params),
+            **path_params,
+            **query_params,
+            **header_params,
+            **cookie_params,
+        }
 
     @staticmethod
     def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:

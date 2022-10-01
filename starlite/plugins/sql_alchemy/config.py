@@ -1,21 +1,34 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel
+from pydantic.generics import GenericModel
 from sqlalchemy.orm import Query, Session
 from typing_extensions import Literal
 
+from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware
 from starlite.utils import default_serializer
-
-from ... import BaseLoggingConfig, LoggingConfig
 
 try:
     from sqlalchemy import create_engine
     from sqlalchemy.engine import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
     from sqlalchemy.future import Engine as FutureEngine
+    from sqlalchemy.orm import sessionmaker
     from sqlalchemy.pool import Pool
 
     from .middleware import SQLAlchemySessionMiddleware
@@ -24,6 +37,9 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from starlite.datastructures import State
+    from starlite.types import Scope
+
+T = TypeVar("T", Session, AsyncSession)
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
@@ -52,7 +68,7 @@ class SQLAlchemySessionConfig(BaseModel):
     autoflush: Optional[bool] = None
     future: Optional[bool] = None
     autocommit: Optional[bool] = None
-    expire_on_commit: bool = True
+    expire_on_commit: bool = False
     twophase: Optional[bool] = None
     binds: Optional[Any] = None
     enable_baked_queries: Optional[bool] = None
@@ -95,18 +111,20 @@ class SQLAlchemyEngineConfig(BaseModel):
     strategy: Optional[str] = None
 
 
-class SQLAlchemyConfig(BaseModel):
+class SQLAlchemyConfig(GenericModel, Generic[T]):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
     connection_string: str
     middleware_class: Type[SQLAlchemySessionMiddleware] = SQLAlchemySessionMiddleware
-    create_engine_callable: Callable[[str, Any], Union[Engine, FutureEngine]] = create_engine
-    create_async_engine_callable: Callable[[str, Any], AsyncEngine] = create_async_engine
+    create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
+    create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
     create_async_engine: bool = True
-    session_class: Optional[Union[Type[Session], Type[AsyncSession]]] = None
+    session_class: Optional[Type[T]] = None
     session_scope_key: str = "db_session"
+    session_maker_app_state_key: str = "session_maker"
     engine_app_state_key: str = "db_engine"
+    dependency_key: str = "db_session"
     session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
 
@@ -117,18 +135,28 @@ class SQLAlchemyConfig(BaseModel):
             An instance of DefineMiddleware populated by 'self.middleware_class' and config args for the session.
 
         """
-        if not self.session_class:
-            session_class = AsyncSession if self.create_async_engine else Session
-        else:
-            session_class = self.session_class
         return DefineMiddleware(
             self.middleware_class,
-            engine_app_state_key=self.engine_app_state_key,
-            session_class=session_class,
-            **self.session_config.dict(exclude_none=True)
+            session_scope_key=self.session_scope_key,
         )
 
-    def create_engine(self, state: "State") -> None:
+    def create_db_session_dependency(self, state: "State", scope: "Scope") -> T:
+        """
+
+        Args:
+            state: The 'application.state' instance.
+            scope: The current connection's scope.
+
+        Returns:
+            A session instance T.
+        """
+        session = scope.get(self.session_scope_key)
+        if not session:
+            session_maker = cast("sessionmaker", state[self.session_maker_app_state_key])
+            session = scope[self.session_scope_key] = session_maker()  # type: ignore
+        return cast("T", session)
+
+    def update_app_state(self, state: "State") -> None:
         """Create a DB engine and stores it in the application state.
 
         Args:
@@ -137,12 +165,36 @@ class SQLAlchemyConfig(BaseModel):
         Returns:
             None
         """
-        engine_config: Dict[str, Any] = self.engine_config.dict(exclude_none=True, exclude={"future"})
-        state[self.engine_app_state_key] = (
-            self.create_async_engine_callable(self.connection_string, **engine_config)  # type: ignore
-            if self.create_async_engine
-            else self.create_engine_callable(self.connection_string, future=self.engine_config.future, **engine_config)  # type: ignore
+        create_engine_callable = (
+            self.create_async_engine_callable if self.create_async_engine else self.create_engine_callable
         )
+        create_engine_kwargs = self.engine_config.dict(
+            exclude_none=True, exclude={"future"} if self.create_async_engine else {}
+        )
+        session_maker_kwargs = self.session_config.dict(
+            exclude_none=True, exclude={"future"} if self.create_async_engine else {}
+        )
+        session_class = self.session_class or (AsyncSession if self.create_async_engine else Session)
+        engine = state[self.engine_app_state_key] = create_engine_callable(
+            self.connection_string, **create_engine_kwargs
+        )
+        state[self.session_maker_app_state_key] = sessionmaker(engine, class_=session_class, **session_maker_kwargs)
+
+    async def on_shutdown(self, state: "State") -> None:
+        """Disposes of the SQLAlchemy engine.
+
+        Args:
+            state: The 'application.state' instance.
+
+        Returns:
+            None
+        """
+        engine = cast("Union[Engine, AsyncEngine]", state[self.engine_app_state_key])
+        if isinstance(engine, AsyncEngine):
+            await engine.dispose()
+        else:
+            engine.dispose()
+        del state[self.engine_app_state_key]
 
     def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
         """Adds the SQLAlchemy loggers to the logging config. Currently working
