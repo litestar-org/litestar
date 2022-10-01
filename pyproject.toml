@@ -46,6 +46,7 @@ pyyaml = "*"
 starlette = ">=0.21"
 starlite-multipart = "*"
 typing-extensions = "*"
+cleo = "^0.8.1"
 
 [tool.poetry.group.dev.dependencies]
 brotli = "*"
