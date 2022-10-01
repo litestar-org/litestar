@@ -156,7 +156,7 @@ def test_create_signature_validation() -> None:
 def test_create_function_signature_model_ignore_return_annotation() -> None:
     @get(path="/health", status_code=HTTP_204_NO_CONTENT)
     async def health_check() -> None:
-        return
+        return None
 
     signature_model_type = SignatureModelFactory(
         health_check.fn, [], set()  # type:ignore[arg-type]

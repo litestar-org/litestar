@@ -1,4 +1,5 @@
 from os import path
+from pathlib import Path
 from typing import Any, Dict, List, Type
 
 import pytest
@@ -121,8 +122,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
 
 def test_multipart_request_files(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test.txt")
-    with open(path1, "wb") as file:
-        file.write(b"<file content>")
+    Path(path1).write_bytes(b"<file content>")
 
     with create_test_client(form_handler) as client, open(path1, "rb") as f:
         response = client.post("/form", files={"test": f})
@@ -137,8 +137,7 @@ def test_multipart_request_files(tmpdir: Any) -> None:
 
 def test_multipart_request_files_with_content_type(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test.txt")
-    with open(path1, "wb") as file:
-        file.write(b"<file content>")
+    Path(path1).write_bytes(b"<file content>")
 
     with create_test_client(form_handler) as client, open(path1, "rb") as f:
         response = client.post("/form", files={"test": ("test.txt", f, "text/plain")})
@@ -153,12 +152,10 @@ def test_multipart_request_files_with_content_type(tmpdir: Any) -> None:
 
 def test_multipart_request_multiple_files(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
-    with open(path1, "wb") as file:
-        file.write(b"<file1 content>")
+    Path(path1).write_bytes(b"<file1 content>")
 
     path2 = path.join(tmpdir, "test2.txt")
-    with open(path2, "wb") as file:
-        file.write(b"<file2 content>")
+    Path(path2).write_bytes(b"<file2 content>")
 
     with create_test_client(form_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
         response = client.post("/form", files={"test1": f1, "test2": ("test2.txt", f2, "text/plain")})
@@ -170,12 +167,10 @@ def test_multipart_request_multiple_files(tmpdir: Any) -> None:
 
 def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
-    with open(path1, "wb") as file:
-        file.write(b"<file1 content>")
+    Path(path1).write_bytes(b"<file1 content>")
 
     path2 = path.join(tmpdir, "test2.txt")
-    with open(path2, "wb") as file:
-        file.write(b"<file2 content>")
+    Path(path2).write_bytes(b"<file2 content>")
 
     with create_test_client(form_with_headers_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
         response = client.post(
@@ -202,12 +197,10 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
 
 def test_multi_items(tmpdir: Any) -> None:
     path1 = path.join(tmpdir, "test1.txt")
-    with open(path1, "wb") as file:
-        file.write(b"<file1 content>")
+    Path(path1).write_bytes(b"<file1 content>")
 
     path2 = path.join(tmpdir, "test2.txt")
-    with open(path2, "wb") as file:
-        file.write(b"<file2 content>")
+    Path(path2).write_bytes(b"<file2 content>")
 
     with create_test_client(form_multi_item_handler) as client, open(path1, "rb") as f1, open(path2, "rb") as f2:
         response = client.post(

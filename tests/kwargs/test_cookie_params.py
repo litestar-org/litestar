@@ -37,7 +37,7 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, expecte
     @get(path=test_path)
     def test_method(special_cookie: t_type = param) -> None:  # type: ignore
         if special_cookie:
-            assert special_cookie in [param_dict.get("special-cookie"), int(param_dict.get("special-cookie"))]  # type: ignore
+            assert special_cookie in (param_dict.get("special-cookie"), int(param_dict.get("special-cookie")))  # type: ignore
 
     with create_test_client(test_method) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.

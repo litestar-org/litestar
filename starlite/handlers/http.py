@@ -580,7 +580,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 f"Redirect responses should have one of "
                 f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             )
-        if is_class_and_subclass(return_annotation, File) and self.media_type in [MediaType.JSON, MediaType.HTML]:
+        if is_class_and_subclass(return_annotation, File) and self.media_type in (MediaType.JSON, MediaType.HTML):
             self.media_type = MediaType.TEXT
         if "socket" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")

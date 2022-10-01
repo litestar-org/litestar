@@ -162,7 +162,7 @@ from starlite.middleware.base import DefineMiddleware
 from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 # you can optionally exclude certain paths from authentication.
 # the following excludes all routes mounted at or under `/schema*`
-auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
+auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
 app = Starlite(request_handlers=[...], middleware=[auth_mw])
 ```
@@ -215,7 +215,7 @@ from my_app.security.authentication_middleware import JWTAuthenticationMiddlewar
 # the following excludes all routes mounted at or under `/schema*`
 # additionally,
 # you can modify the default exclude key of "exclude_from_auth", by overriding the `exclude_from_auth_key` parameter on the Authentication Middleware
-auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, excluded="schema")
+auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
 
 @get(path="/", exclude_from_auth=True)

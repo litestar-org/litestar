@@ -1,5 +1,5 @@
-import pathlib
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Type, Union
 
 import pytest
@@ -36,9 +36,8 @@ def engine_test(request: Any) -> EngineTest:
 
 
 @pytest.fixture()
-def index_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRouteHandler:
-    with open(template_dir / "index.html", "w") as f:
-        f.write(engine_test.index_template)
+def index_handler(engine_test: EngineTest, template_dir: Path) -> HTTPRouteHandler:
+    Path(template_dir / "index.html").write_text(engine_test.index_template)
 
     @get(path="/")
     def index_handler() -> Template:
@@ -48,11 +47,10 @@ def index_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRo
 
 
 @pytest.fixture()
-def nested_path_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> HTTPRouteHandler:
+def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> HTTPRouteHandler:
     nested_path = template_dir / "nested-dir"
     nested_path.mkdir()
-    with open(nested_path / "nested.html", "w") as f:
-        f.write(engine_test.nested_template)
+    Path(nested_path / "nested.html").write_text(engine_test.nested_template)
 
     @get(path="/nested")
     def nested_path_handler() -> Template:
@@ -62,7 +60,7 @@ def nested_path_handler(engine_test: EngineTest, template_dir: pathlib.Path) -> 
 
 
 @pytest.fixture()
-def template_config(engine_test: EngineTest, template_dir: pathlib.Path) -> TemplateConfig:
+def template_config(engine_test: EngineTest, template_dir: Path) -> TemplateConfig:
     return TemplateConfig(engine=engine_test.engine, directory=template_dir)
 
 
@@ -93,9 +91,8 @@ def test_raise_for_invalid_template_name(template_config: TemplateConfig) -> Non
         assert response.json() == {"detail": "Template invalid.html not found.", "status_code": 500}
 
 
-def test_no_context(template_dir: pathlib.Path, template_config: TemplateConfig) -> None:
-    with open(template_dir / "index.html", "w") as file:
-        file.write("<html>This works!</html>")
+def test_no_context(template_dir: Path, template_config: TemplateConfig) -> None:
+    Path(template_dir / "index.html").write_text("<html>This works!</html>")
 
     @get(path="/")
     def index() -> Template:

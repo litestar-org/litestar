@@ -78,6 +78,24 @@ repos:
     rev: v0.4.0
     hooks:
       - id: flake8-markdown
+  - repo: https://github.com/dosisod/refurb
+    rev: 66e6874c
+    hooks:
+      - id: refurb
+        args: [--ignore, "120", --ignore, "128"]
+        additional_dependencies:
+          [
+            orjson,
+            piccolo,
+            picologging,
+            pydantic,
+            pydantic_factories,
+            pydantic_openapi_schema,
+            sqlalchemy,
+            starlette,
+            starlite_multipart,
+            structlog,
+          ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
     hooks:

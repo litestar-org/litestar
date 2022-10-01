@@ -29,7 +29,7 @@ def test_asgi_handler_validation() -> None:
         asgi(path="/")(fn_without_send_arg)
 
     async def fn_with_return_annotation(scope: "Scope", receive: "Receive", send: "Send") -> dict:
-        return dict()
+        return {}
 
     with pytest.raises(ImproperlyConfiguredException):
         asgi(path="/")(fn_with_return_annotation)
