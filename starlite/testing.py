@@ -120,7 +120,7 @@ class TestClient(StarletteTestClient):
         """
         return super().__enter__()  # pyright: ignore
 
-    def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
         """Creates raw session cookies that are loaded into session by the
         Session Middleware. It simulates cookies the same way as if they are
         coming from the browser. Your tests must set up session middleware to
