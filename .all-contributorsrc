@@ -432,6 +432,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "devmitch",
+      "name": "Mitchell Henry",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17354727?v=4",
+      "profile": "http://linkedin.com/in/mitchell-henry334/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
