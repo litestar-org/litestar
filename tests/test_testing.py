@@ -95,6 +95,7 @@ def test_request_factory_create_with_default_params() -> None:
     assert not request.query_params
     assert not request.state
     assert not request.path_params
+    assert request.route_handler
     assert request.scope["http_version"] == "1.1"
     assert request.scope["raw_path"] == b"/"
 
@@ -105,6 +106,10 @@ def test_request_factory_create_with_params() -> None:
 
     class Auth(BaseModel):
         pass
+
+    @get("/path")
+    def handler() -> None:
+        ...
 
     app = Starlite(route_handlers=[])
     server = "starlite.org"
@@ -118,7 +123,14 @@ def test_request_factory_create_with_params() -> None:
     state = {"weather": "sunny"}
     path_params = {"param": "a"}
     request = RequestFactory(app, server, port, root_path, scheme).get(
-        path, session=session, user=user, auth=auth, state=state, path_params=path_params, http_version="2.0"
+        path,
+        session=session,
+        user=user,
+        auth=auth,
+        state=state,
+        path_params=path_params,
+        http_version="2.0",
+        route_handler=handler,
     )
 
     assert request.app == app
@@ -131,6 +143,7 @@ def test_request_factory_create_with_params() -> None:
     assert request.session == session
     assert request.state.weather == "sunny"
     assert request.path_params == path_params
+    assert request.route_handler == handler
     assert request.scope["http_version"] == "2.0"
     assert request.scope["raw_path"] == path.encode("ascii")
 

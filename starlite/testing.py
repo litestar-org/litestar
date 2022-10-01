@@ -5,11 +5,12 @@ from orjson import dumps, loads
 from pydantic import BaseModel
 from starlette.testclient import TestClient as StarletteTestClient
 
+from starlite import get
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from starlite.exceptions import MissingDependencyException
-from starlite.types import HTTPScope
+from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
 from starlite.utils import default_serializer
 
@@ -273,10 +274,15 @@ def create_test_client(
     )
 
 
+@get("/")
+def _default_route_handler() -> None:
+    ...
+
+
 class RequestFactory:
     def __init__(
         self,
-        app: Starlite = Starlite(route_handlers=[]),
+        app: Starlite = Starlite(route_handlers=[_default_route_handler]),
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
@@ -345,6 +351,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> HTTPScope:
         """Create the scope for the [Request][starlite.connection.Request].
 
@@ -358,6 +365,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A dictionary that can be passed as a scope to the [Request][starlite.connection.Request] c'tor.
@@ -390,7 +398,7 @@ class RequestFactory:
             asgi=ASGIVersion(spec_version="3.0", version="3.0"),
             http_version=http_version or "1.1",
             raw_path=path.encode("ascii"),
-            route_handler=None,  # type: ignore[typeddict-item]
+            route_handler=route_handler or _default_route_handler,
             extensions={},
         )
 
@@ -455,6 +463,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a [Request][starlite.connection.Request] instance that has
         body (data)
@@ -475,6 +484,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -490,6 +500,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
 
         headers = headers or {}
@@ -523,6 +534,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a GET [Request][starlite.connection.Request] instance.
 
@@ -538,6 +550,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -553,6 +566,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
 
         scope["headers"] = self._build_headers(headers, cookies)
@@ -572,6 +586,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
@@ -590,6 +605,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -609,6 +625,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
 
     def put(
@@ -625,6 +642,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a PUT [Request][starlite.connection.Request] instance.
 
@@ -643,6 +661,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -662,6 +681,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
 
     def patch(
@@ -678,6 +698,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a PATCH [Request][starlite.connection.Request] instance.
 
@@ -696,6 +717,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -715,6 +737,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
 
     def delete(
@@ -729,6 +752,7 @@ class RequestFactory:
         state: Optional[Dict[str, Any]] = None,
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
+        route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
@@ -744,6 +768,7 @@ class RequestFactory:
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.
             http_version: HTTP version. Defaults to "1.1".
+            route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
             A [Request][starlite.connection.Request] instance
@@ -759,6 +784,7 @@ class RequestFactory:
             state=state,
             path_params=path_params,
             http_version=http_version,
+            route_handler=route_handler,
         )
         scope["headers"] = self._build_headers(headers, cookies)
         return Request(scope=scope)

@@ -312,6 +312,7 @@ All of these methods accept the following parameters:
 - `state`: Arbitrary request state.
 - `path_params`: A string keyed dictionary of path parameter values.
 - `http_version`: HTTP version. Defaults to "1.1".
+- `route_handler`: A route handler instance or method. If not provided a default handler is set.
 
 In addition, the following methods accepts a few more parameters:
 
