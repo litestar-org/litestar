@@ -327,6 +327,15 @@ class KwargsModel:
     def _collect_reserved_kwargs(
         self, connection: Union["WebSocket", "Request"], connection_query_params: Dict[str, Union[str, List[str]]]
     ) -> Dict[str, Any]:
+        """
+
+        Args:
+            connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+            connection_query_params: The query params dct.
+
+        Returns:
+            A dictionary of values correlating to reserved kwargs.
+        """
         reserved_kwargs: Dict[str, Any] = {}
         if "state" in self.expected_reserved_kwargs:
             reserved_kwargs["state"] = connection.app.state.copy()
