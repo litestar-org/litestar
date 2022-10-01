@@ -110,6 +110,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            cleo,
             orjson,
             piccolo,
             picologging,
@@ -151,6 +152,7 @@ repos:
         exclude: "tests"
         additional_dependencies:
           [
+            cleo,
             brotli,
             cryptography,
             freezegun,

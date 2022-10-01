@@ -1,7 +1,7 @@
 from inspect import getfullargspec
 from typing import TYPE_CHECKING
 
-from cleo.application import Application
+from cleo import Application
 
 import commands
 
@@ -9,15 +9,15 @@ if TYPE_CHECKING:
     from starlite.app import Starlite
 
 
-class Cli:
-    """CLI Add CLI commands using cleo https://github.com/python-poetry/cleo .
-    New commands should be placed in the commands folder and added in
-    __init__.py. usage example:
+class CLI:
+    """Add CLI commands using cleo https://github.com/python-poetry/cleo . New
+    commands should be placed in the commands folder and added in __init__.py.
+    usage example:
 
     # ...
     app = Starlite(route_handlers=[hello_world])
     if __name__ == '__main__':
-        from commands.cli import Cli
+        from commands.cli import CLI
         cli = Cli(app)
         cli.run()
     """
