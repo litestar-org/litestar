@@ -40,8 +40,7 @@ You can also modify the generated schema for the route handler using the followi
 
     from pydantic import BaseModel
 
-    from starlite import get
-    from starlite.openapi.datastructures import ResponseSpec
+    from starlite import ResponseSpec, get
 
 
     class Item(BaseModel):

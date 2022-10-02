@@ -1,4 +1,4 @@
-# app
+# The Starlite Application
 
 ::: starlite.app.Starlite
     options:

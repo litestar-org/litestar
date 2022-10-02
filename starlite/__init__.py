@@ -68,6 +68,7 @@ from .middleware.authentication import (
 )
 from .middleware.base import DefineMiddleware, MiddlewareProtocol
 from .openapi.controller import OpenAPIController
+from .openapi.datastructures import ResponseSpec
 from .params import Body, Dependency, Parameter
 from .plugins import PluginProtocol
 from .provide import Provide
@@ -123,6 +124,7 @@ __all__ = [
     "RequestEncodingType",
     "Response",
     "ResponseHeader",
+    "ResponseSpec",
     "Router",
     "ScopeType",
     "ServiceUnavailableException",

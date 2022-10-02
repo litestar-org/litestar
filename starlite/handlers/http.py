@@ -97,7 +97,7 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
 
 async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -> Any:
     """Normalizes the response's data by awaiting any async values and
-    resolving and plugins.
+    resolving plugins.
 
     Args:
         data: An arbitrary value
