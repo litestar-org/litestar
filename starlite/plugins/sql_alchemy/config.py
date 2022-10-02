@@ -141,7 +141,9 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy 'create_engine' function.
         """
-        engine_excluded_fields: Set[str] = {"future"} if self.create_async_engine else set()
+        engine_excluded_fields: Set[str] = (
+            {"future", "logging_level"} if self.create_async_engine else {"logging_level"}
+        )
 
         if not self.engine_supports_json:
             engine_excluded_fields.update({"json_deserializer", "json_serializer"})
@@ -233,11 +235,10 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         """
         if isinstance(logging_config, LoggingConfig):
             engine_logger = self.engine_config.logging_name or "sqlalchemy.engine"
-            logging_level = self.engine_config.logging_level or "WARNING"
-            pool_logger = self.engine_config.logging_name or "sqlalchemy.pool"
+            pool_logger = self.engine_config.pool_logging_name or "sqlalchemy.pool"
             for logger in ("sqlalchemy", engine_logger, pool_logger):
                 if logger not in logging_config.loggers:
                     logging_config.loggers[logger] = {
-                        "level": logging_level,
+                        "level": self.engine_config.logging_level or "WARNING",
                         "handlers": logging_config.loggers["starlite"]["handlers"],
                     }
