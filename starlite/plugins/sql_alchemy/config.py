@@ -3,20 +3,16 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Generic,
     List,
     Optional,
     Set,
     Type,
-    TypeVar,
     Union,
     cast,
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel
-from pydantic.generics import GenericModel
-from sqlalchemy.orm import Query, Session
 from typing_extensions import Literal
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
@@ -28,7 +24,7 @@ try:
     from sqlalchemy.engine import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
     from sqlalchemy.future import Engine as FutureEngine
-    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.orm import Query, Session, sessionmaker
     from sqlalchemy.pool import Pool
 
 except ImportError as e:
@@ -37,8 +33,6 @@ except ImportError as e:
 if TYPE_CHECKING:
     from starlite.datastructures import State
     from starlite.types import Message, Scope
-
-T = TypeVar("T", Session, AsyncSession)
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
@@ -71,19 +65,24 @@ class SQLAlchemySessionConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    bind: Optional[Any] = None
-    autoflush: Optional[bool] = None
-    future: Optional[bool] = None
     autocommit: Optional[bool] = None
-    expire_on_commit: bool = False
-    twophase: Optional[bool] = None
+    autoflush: Optional[bool] = None
+    bind: Optional[Any] = None
     binds: Optional[Any] = None
     enable_baked_queries: Optional[bool] = None
+    expire_on_commit: bool = False
+    future: Optional[bool] = None
     info: Optional[Dict[str, Any]] = None
     query_cls: Optional[Type[Query]] = None
+    twophase: Optional[bool] = None
 
 
 class SQLAlchemyEngineConfig(BaseModel):
+    """This class represents the SQLAlchemy Engine configuration.
+
+    For details see: https://docs.sqlalchemy.org/en/14/core/engines.html
+    """
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -118,21 +117,76 @@ class SQLAlchemyEngineConfig(BaseModel):
     strategy: Optional[str] = None
 
 
-class SQLAlchemyConfig(GenericModel, Generic[T]):
+class SQLAlchemyConfig(BaseModel):
+    """This class represents the SQLAlchemy sessionmaker configuration.
+
+    For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
+    """
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
     connection_string: str
-    create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
+    """Database connection string in one of the formats supported by SQLAlchemy.
+
+    Notes:
+    - For async connections, the connection string must include the correct async prefix.
+        e.g. 'postgresql+asyncpg://...' instead of 'postgresql://', and for sync connections its the opposite.
+    """
+    use_async_engine: bool = True
+    """
+    Dictate whether the engine created is an async connection or not.
+
+    Notes:
+    - This option must correlate to the type of 'connection_string'. That is, an async connection string required an
+        async connection and vice versa.
+    """
     create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
-    create_async_engine: bool = True
-    session_class: Optional[Type[T]] = None
-    session_maker_app_state_key: str = "session_maker"
-    engine_app_state_key: str = "db_engine"
+    """
+    Callable that creates an 'AsyncEngine' instance or instance of its subclass.
+    """
+    create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
+    """
+    Callable that creates an 'Engine' or 'FutureEngine' instance or instance of its subclass.
+    """
     dependency_key: str = "db_session"
-    session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
+    """
+    Key to use for the dependency injection of database sessions.
+    """
+    engine_app_state_key: str = "db_engine"
+    """
+    Key under which to store the SQLAlchemy engine in the application [State][starlite.datastructures.State] instance.
+    """
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
-    engine_supports_json: bool = True
+    """
+    Configuration for the SQLAlchemy engine. The configuration options are documented in the SQLAlchemy documentation.
+    """
+    set_json_serializers: bool = True
+    """
+    A boolean flag dictating whether to set 'orjson' based serializer/deserializer functions.
+
+    Notes:
+    - Some databases or some versions of some databases do not have a JSON column type. E.g. some older versions of
+        SQLite for example. In this case this flag should be false or an error will be raised by SQLAlchemy.
+    """
+    session_class: Optional[Union[Type[Session], Type[AsyncSession]]] = None
+    """
+    The session class to use. If not set, the session class will default to 'sqlalchemy.orm.Session' for sync
+        connections and 'sqlalchemy.ext.asyncio.AsyncSession' for async ones.
+    """
+    session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
+    """
+    Configuration options for the 'sessionmaker'. The configuration options are documented in the
+        SQLAlchemy documentation.
+    """
+    session_maker: Type[sessionmaker] = sessionmaker
+    """
+    Sessionmaker class to use.
+    """
+    session_maker_app_state_key: str = "session_maker"
+    """
+    Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State] instance.
+    """
 
     @property
     def engine_config_dict(self) -> Dict[str, Any]:
@@ -141,16 +195,14 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy 'create_engine' function.
         """
-        engine_excluded_fields: Set[str] = (
-            {"future", "logging_level"} if self.create_async_engine else {"logging_level"}
-        )
+        engine_excluded_fields: Set[str] = {"future", "logging_level"} if self.use_async_engine else {"logging_level"}
 
-        if not self.engine_supports_json:
+        if not self.set_json_serializers:
             engine_excluded_fields.update({"json_deserializer", "json_serializer"})
 
         return self.engine_config.dict(exclude_none=True, exclude=engine_excluded_fields)
 
-    def create_db_session_dependency(self, state: "State", scope: "Scope") -> T:
+    def create_db_session_dependency(self, state: "State", scope: "Scope") -> Union[Session, AsyncSession]:
         """
 
         Args:
@@ -164,7 +216,7 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         if not session:
             session_maker = cast("sessionmaker", state[self.session_maker_app_state_key])
             session = scope[SESSION_SCOPE_KEY] = session_maker()  # type: ignore
-        return cast("T", session)
+        return cast("Union[Session, AsyncSession]", session)
 
     def update_app_state(self, state: "State") -> None:
         """Create a DB engine and stores it in the application state.
@@ -176,16 +228,18 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
             None
         """
         create_engine_callable = (
-            self.create_async_engine_callable if self.create_async_engine else self.create_engine_callable
+            self.create_async_engine_callable if self.use_async_engine else self.create_engine_callable
         )
         session_maker_kwargs = self.session_config.dict(
-            exclude_none=True, exclude={"future"} if self.create_async_engine else set()
+            exclude_none=True, exclude={"future"} if self.use_async_engine else set()
         )
-        session_class = self.session_class or (AsyncSession if self.create_async_engine else Session)
+        session_class = self.session_class or (AsyncSession if self.use_async_engine else Session)
         engine = state[self.engine_app_state_key] = create_engine_callable(
             self.connection_string, **self.engine_config_dict
         )
-        state[self.session_maker_app_state_key] = sessionmaker(engine, class_=session_class, **session_maker_kwargs)
+        state[self.session_maker_app_state_key] = self.session_maker(
+            engine, class_=session_class, **session_maker_kwargs
+        )
 
     async def on_shutdown(self, state: "State") -> None:
         """Disposes of the SQLAlchemy engine.

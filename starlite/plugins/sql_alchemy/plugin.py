@@ -53,8 +53,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         ORM types.
 
         Args:
-            config: Optional SQLAlchemy configuration. If passed, the plugin will establish a DB connection and set
-                middleware and dependencies.
+            config: Optional [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig] instance. If passed,
+                the plugin will establish a DB connection and hook handlers and dependencies.
         """
         self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
         self._config = config
@@ -96,7 +96,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         types.
 
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
             An appropriate string tyoe
@@ -109,7 +109,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> "Type":
         """Handles the SQLAlchemy non-int Numeric types.
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
             An appropriate numerical type
@@ -121,7 +121,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def handle_list_type(self, column_type: sqlalchemy_type.ARRAY) -> Any:
         """Handles the SQLAlchemy Array type.
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
             An appropriate list type
@@ -138,7 +138,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         """Handles the SQLAlchemy Tuple type.
 
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
             An appropriate tuple type
@@ -151,7 +151,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         """Handles the SQLAlchemy Enum types.
 
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
             An appropriate enum type
@@ -303,7 +303,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         """Given a 'Column.type' value, return a type supported by pydantic.
 
         Args:
-            column_type: The of the SQLColumn.
+            column_type: The type of the SQLColumn.
 
         Returns:
              A pydantic supported type.
