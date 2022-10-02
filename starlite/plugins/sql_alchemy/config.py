@@ -6,6 +6,7 @@ from typing import (
     Generic,
     List,
     Optional,
+    Set,
     Type,
     TypeVar,
     Union,
@@ -42,6 +43,12 @@ T = TypeVar("T", Session, AsyncSession)
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
 SESSION_SCOPE_KEY = "_sql_alchemy_db_session"
+SESSION_TERMINUS_ASGI_EVENTS = {
+    "http.response.start",
+    "http.disconnect",
+    "websocket.disconnect",
+    "websocket.close",
+}
 
 
 def serializer(value: Any) -> str:
@@ -125,6 +132,21 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
     dependency_key: str = "db_session"
     session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
+    engine_supports_json: bool = True
+
+    @property
+    def engine_config_dict(self) -> Dict[str, Any]:
+        """
+
+        Returns:
+            A string keyed dict of config kwargs for the SQLAlchemy 'create_engine' function.
+        """
+        engine_excluded_fields: Set[str] = {"future"} if self.create_async_engine else set()
+
+        if not self.engine_supports_json:
+            engine_excluded_fields.update({"json_deserializer", "json_serializer"})
+
+        return self.engine_config.dict(exclude_none=True, exclude=engine_excluded_fields)
 
     def create_db_session_dependency(self, state: "State", scope: "Scope") -> T:
         """
@@ -154,15 +176,12 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         create_engine_callable = (
             self.create_async_engine_callable if self.create_async_engine else self.create_engine_callable
         )
-        create_engine_kwargs = self.engine_config.dict(
-            exclude_none=True, exclude={"future"} if self.create_async_engine else {}
-        )
         session_maker_kwargs = self.session_config.dict(
-            exclude_none=True, exclude={"future"} if self.create_async_engine else {}
+            exclude_none=True, exclude={"future"} if self.create_async_engine else set()
         )
         session_class = self.session_class or (AsyncSession if self.create_async_engine else Session)
         engine = state[self.engine_app_state_key] = create_engine_callable(
-            self.connection_string, **create_engine_kwargs
+            self.connection_string, **self.engine_config_dict
         )
         state[self.session_maker_app_state_key] = sessionmaker(engine, class_=session_class, **session_maker_kwargs)
 
@@ -195,12 +214,7 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
 
         """
         session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
-        if session and message["type"] in {
-            "http.response.start",
-            "http.disconnect",
-            "websocket.disconnect",
-            "websocket.close",
-        }:
+        if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
             if isinstance(session, AsyncSession):
                 await session.close()
             else:

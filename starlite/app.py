@@ -253,8 +253,6 @@ class Starlite(Router):
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
-        # set pre-initialized values
-        self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
@@ -343,8 +341,6 @@ class Starlite(Router):
             security=config.security,
             tags=config.tags,
         )
-        self._init = True
-
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
@@ -404,8 +400,6 @@ class Starlite(Router):
         Returns:
             None
         """
-        if not self._init:
-            return
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
