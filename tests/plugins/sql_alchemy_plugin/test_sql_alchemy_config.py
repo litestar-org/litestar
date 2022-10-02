@@ -12,6 +12,7 @@ from starlite.plugins.sql_alchemy.config import (
     SESSION_TERMINUS_ASGI_EVENTS,
     SQLAlchemyConfig,
     SQLAlchemyEngineConfig,
+    serializer,
 )
 from starlite.testing import RequestFactory, create_test_client
 from starlite.types import Scope
@@ -102,3 +103,7 @@ def test_logging_config(engine_logger: Optional[str], pool_logger: Optional[str]
         "level": logging_level or "WARNING",
         "handlers": ["queue_listener"],
     }
+
+
+def test_default_serializer_returns_string() -> None:
+    assert serializer({"hello": "world"}) == '{"hello":"world"}'
