@@ -1,5 +1,6 @@
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -15,7 +16,7 @@ from starlite.asgi import (
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.datastructures.state import State
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
@@ -24,7 +25,7 @@ from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
-from starlite.utils.sync import as_async_callable_list
+from starlite.utils import as_async_callable_list, join_paths
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -89,7 +90,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 class HandlerIndex(TypedDict):
     """This class is used to map route handler names to a mapping of path +
-    route handler.
+    route handler + path parsed into components.
 
     It's used in the 'get_handler_index_by_name' utility method.
     """
@@ -98,6 +99,8 @@ class HandlerIndex(TypedDict):
     """Full route path to the route handler."""
     handler: "RouteHandlerType"
     """Route handler instance."""
+    path_components: List[Union[str, "PathParameterDefinition"]]
+    """Parsed route path"""
 
 
 class HandlerNode(TypedDict):
@@ -448,6 +451,57 @@ class Starlite(Router):
         """
         return self._route_handler_index.get(name)
 
+    def route_reverse(self, name: str, **kwargs: Any) -> Optional[str]:
+        """Receives a route handler name, path parameter values and returns an
+        optional url path to the handler with filled path parameters.
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+
+
+            @get("/group/{group_id:int}/user/{user_id:int}", name="get_memebership_details")
+            def get_membership_details(group_id: int, user_id: int) -> None:
+                pass
+
+
+            app = Starlite(route_handlers=[get_membership_details])
+
+            path = app.route_reverse("get_memebership_details", user_id=100, group_id=10)
+
+            # /group/10/user/100
+            ```
+        Args:
+            name: A route handler unique name.
+            **kwargs: actual values for path parameters in the route
+
+        Raises:
+            ValidationException: If path parameters are missing in **kwargs or have wrong type.
+
+        Returns:
+            A fully formatted url path or None.
+        """
+        handler_index = self.get_handler_index_by_name(name)
+        if handler_index is None:
+            return None
+
+        allow_str_instead = [datetime, date, time, timedelta, float, Path]
+        output: List[str] = []
+        for component in handler_index["path_components"]:
+            if isinstance(component, dict):
+                val = kwargs.get(component["name"])
+                if not (
+                    isinstance(val, component["type"]) or (type(val) in allow_str_instead and isinstance(val, str))
+                ):
+                    raise ValidationException(
+                        f"Received type for path parameter {component['name']} doesn't match declared type {component['type']}"
+                    )
+                output.append(str(val))
+            else:
+                output.append(component)
+
+        return join_paths(output)
+
     def _create_asgi_handler(self) -> "ASGIApp":
         """Creates an ASGIApp that wraps the ASGI router inside an exception
         handler.
@@ -531,7 +585,9 @@ class Starlite(Router):
             name = cast("str", route_handler.name)
             if name in self._route_handler_index:
                 raise ImproperlyConfiguredException(f"route handler names must be unique - {name} is not unique.")
-            self._route_handler_index[name] = HandlerIndex(path=route.path, handler=route_handler)
+            self._route_handler_index[name] = HandlerIndex(
+                path=route.path, handler=route_handler, path_components=route.path_components
+            )
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree
