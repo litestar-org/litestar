@@ -31,7 +31,9 @@ AfterRequestHookHandler = Union[
 AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 AnyCallable = Callable[..., Any]
-BeforeMessageSendHookHandler = Callable[[Message, State], SyncOrAsyncUnion[None]]
+BeforeMessageSendHookHandler = Union[
+    Callable[[Message, State, Scope], SyncOrAsyncUnion[None]], Callable[[Message, State], SyncOrAsyncUnion[None]]
+]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
 ExceptionHandler = Callable[[Request, Exception], StarletteResponse]

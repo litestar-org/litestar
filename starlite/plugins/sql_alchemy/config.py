@@ -20,7 +20,6 @@ from typing_extensions import Literal
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.base import DefineMiddleware
 from starlite.utils import default_serializer
 
 try:
@@ -31,17 +30,18 @@ try:
     from sqlalchemy.orm import sessionmaker
     from sqlalchemy.pool import Pool
 
-    from .middleware import SQLAlchemySessionMiddleware
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 if TYPE_CHECKING:
     from starlite.datastructures import State
-    from starlite.types import Scope
+    from starlite.types import Message, Scope
 
 T = TypeVar("T", Session, AsyncSession)
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
+
+SESSION_SCOPE_KEY = "_sql_alchemy_db_session"
 
 
 def serializer(value: Any) -> str:
@@ -116,29 +116,15 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         arbitrary_types_allowed = True
 
     connection_string: str
-    middleware_class: Type[SQLAlchemySessionMiddleware] = SQLAlchemySessionMiddleware
     create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
     create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
     create_async_engine: bool = True
     session_class: Optional[Type[T]] = None
-    session_scope_key: str = "db_session"
     session_maker_app_state_key: str = "session_maker"
     engine_app_state_key: str = "db_engine"
     dependency_key: str = "db_session"
     session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
-
-    @property
-    def middleware(self) -> DefineMiddleware:
-        """
-        Returns:
-            An instance of DefineMiddleware populated by 'self.middleware_class' and config args for the session.
-
-        """
-        return DefineMiddleware(
-            self.middleware_class,
-            session_scope_key=self.session_scope_key,
-        )
 
     def create_db_session_dependency(self, state: "State", scope: "Scope") -> T:
         """
@@ -150,10 +136,10 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         Returns:
             A session instance T.
         """
-        session = scope.get(self.session_scope_key)
+        session = scope.get(SESSION_SCOPE_KEY)
         if not session:
             session_maker = cast("sessionmaker", state[self.session_maker_app_state_key])
-            session = scope[self.session_scope_key] = session_maker()  # type: ignore
+            session = scope[SESSION_SCOPE_KEY] = session_maker()  # type: ignore
         return cast("T", session)
 
     def update_app_state(self, state: "State") -> None:
@@ -195,6 +181,31 @@ class SQLAlchemyConfig(GenericModel, Generic[T]):
         else:
             engine.dispose()
         del state[self.engine_app_state_key]
+
+    @staticmethod
+    async def before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
+        """
+        Handles closing and cleaning up sessions before sending.
+        Args:
+            message:
+            _:
+            scope:
+
+        Returns:
+
+        """
+        session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
+        if session and message["type"] in {
+            "http.response.start",
+            "http.disconnect",
+            "websocket.disconnect",
+            "websocket.close",
+        }:
+            if isinstance(session, AsyncSession):
+                await session.close()
+            else:
+                session.close()
+            del scope[SESSION_SCOPE_KEY]  # type: ignore
 
     def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
         """Adds the SQLAlchemy loggers to the logging config. Currently working

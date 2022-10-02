@@ -1,6 +1,6 @@
 from starlite import Starlite
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from starlite.plugins.sql_alchemy.config import SQLAlchemyConfig
+from starlite.plugins.sql_alchemy.config import SESSION_SCOPE_KEY, SQLAlchemyConfig
 from starlite.testing import RequestFactory, create_test_client
 
 
@@ -17,7 +17,7 @@ def test_dependency_creates_session() -> None:
     request = RequestFactory().get("/")
     session = config.create_db_session_dependency(state=app.state, scope=request.scope)
     assert session
-    assert request.scope[config.session_scope_key]  # type: ignore
+    assert request.scope[SESSION_SCOPE_KEY]  # type: ignore
 
 
 def test_on_shutdown() -> None:

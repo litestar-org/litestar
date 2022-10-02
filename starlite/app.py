@@ -391,7 +391,7 @@ class Starlite(Router):
             await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
+        await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -631,7 +631,7 @@ class Starlite(Router):
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
 
-    def _wrap_send(self, send: "Send") -> "Send":
+    def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
         """Wraps the ASGI send and handles any 'before send' hooks.
 
         Args:
@@ -644,7 +644,10 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    await hook(message, self.state)
+                    if hook.num_expected_args > 2:
+                        await hook(message, self.state, scope)
+                    else:
+                        await hook(message, self.state)
                 await send(message)
 
             return wrapped_send
