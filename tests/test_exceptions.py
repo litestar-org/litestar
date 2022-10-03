@@ -11,8 +11,8 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     StarLiteException,
     ValidationException,
-    utils,
 )
+from starlite.utils.exception import create_exception_response
 
 
 @given(detail=st.one_of(st.none(), st.text()))
@@ -46,7 +46,6 @@ def test_http_exception(status_code: int, detail: Optional[str]) -> None:
     assert HTTPException().status_code == HTTP_500_INTERNAL_SERVER_ERROR
     result = HTTPException(status_code=status_code, detail=detail or "")
     assert isinstance(result, StarLiteException)
-    assert isinstance(result, StarletteHTTPException)
     assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
     assert str(result) == f"{result.status_code}: {result.detail}".strip()
 
@@ -68,23 +67,23 @@ def test_validation_exception() -> None:
 
 def test_create_exception_response_utility_starlite_http_exception() -> None:
     exc = HTTPException(detail="starlite http exception", status_code=HTTP_400_BAD_REQUEST, extra=["any"])
-    response = utils.create_exception_response(exc)
+    response = create_exception_response(exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"detail":"starlite http exception","extra":["any"],"status_code":400}'
+    assert response.body == b'{"status_code":400,"detail":"starlite http exception","extra":["any"]}'
 
 
 def test_create_exception_response_utility_starlette_http_exception() -> None:
     exc = StarletteHTTPException(detail="starlette http exception", status_code=HTTP_400_BAD_REQUEST)
-    response = utils.create_exception_response(exc)
+    response = create_exception_response(exc)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"detail":"starlette http exception","status_code":400}'
+    assert response.body == b'{"status_code":400,"detail":"starlette http exception"}'
 
 
 def test_create_exception_response_utility_non_http_exception() -> None:
     exc = RuntimeError("yikes")
-    response = utils.create_exception_response(exc)
+    response = create_exception_response(exc)
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.media_type == MediaType.JSON
-    assert response.body == b'{"detail":"RuntimeError(\'yikes\')","status_code":500}'
+    assert response.body == b'{"status_code":500,"detail":"RuntimeError(\'yikes\')"}'

@@ -25,7 +25,6 @@ from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.utils.sync import as_async_callable_list
-from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -320,7 +319,7 @@ class Starlite(Router):
         self.openapi_config = config.openapi_config
         self.plugins = config.plugins
         self.static_files_config = config.static_files_config
-        self.template_engine = create_template_engine(config.template_config)
+        self.template_engine = config.template_config.to_engine() if config.template_config else None
         self.logging_config = config.logging_config
 
         super().__init__(

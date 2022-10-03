@@ -105,6 +105,7 @@ disable = [
     "too-many-locals",
     "too-many-return-statements",
     "ungrouped-imports",
+    "unnecessary-ellipsis",
     "unused-import",
 ]
 enable = "useless-suppression"

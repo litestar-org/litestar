@@ -1,4 +1,4 @@
-# router
+# Router
 
 ::: starlite.router.Router
     options:

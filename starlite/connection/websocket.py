@@ -22,7 +22,7 @@ from starlite.connection.base import (
     empty_receive,
     empty_send,
 )
-from starlite.exceptions.exceptions import WebSocketException
+from starlite.exceptions import WebSocketException
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:

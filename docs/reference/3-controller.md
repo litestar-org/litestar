@@ -1,4 +1,4 @@
-# controller
+# Controller
 
 ::: starlite.controller.Controller
     options:

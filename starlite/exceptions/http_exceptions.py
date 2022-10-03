@@ -13,42 +13,18 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-
-class StarLiteException(Exception):
-    def __init__(self, *args: Any, detail: str = "") -> None:
-        """Base `starlite` exception.
-
-        Args:
-            *args (Any): args are cast to `str` before passing to `Exception.__init__()`
-            detail (str, optional): detail of the exception.
-        """
-        self.detail = detail
-        super().__init__(*(str(arg) for arg in args if arg), detail)
-
-    def __repr__(self) -> str:
-        if self.detail:
-            return f"{self.__class__.__name__} - {self.detail}"
-        return self.__class__.__name__
-
-    def __str__(self) -> str:
-        return " ".join(self.args).strip()
-
-
-class MissingDependencyException(StarLiteException, ImportError):
-    """Missing optional dependency."""
-
-
-class WebSocketException(StarLiteException):
-    """Exception class for websocket related events."""
-
-    def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:
-        super().__init__(*args, detail=detail)
-        self.code = code
+from starlite.exceptions.base_exceptions import StarLiteException
 
 
 class HTTPException(StarletteHTTPException, StarLiteException):
-    status_code = HTTP_500_INTERNAL_SERVER_ERROR
-    """Default status code for the exception type"""
+    status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
+    """Exception status code."""
+    detail: str
+    """Exception details or message."""
+    headers: Optional[Dict[str, str]]
+    """Headers to attach to the response."""
+    extra: Optional[Union[Dict[str, Any], List[Any]]]
+    """An extra mapping to attach to the exception."""
 
     def __init__(
         self,
@@ -64,15 +40,17 @@ class HTTPException(StarletteHTTPException, StarLiteException):
 
         Args:
             *args: if `detail` kwarg not provided, first arg should be error detail.
-            detail: explicit detail kwarg should be specified if first `arg` is not the detail `str`.
-            status_code: override the exception type default status code.
-            headers: headers to set on the response.
-            extra: extra info for HTTP response.
+            detail: Exception details or message. Will default to args[0] if not provided.
+            status_code: Exception HTTP status code.
+            headers: Headers to set on the response.
+            extra: An extra mapping to attach to the exception.
         """
+
+        super().__init__(status_code or self.status_code)
+
         if not detail:
-            detail = args[0] if args else HTTPStatus(status_code or self.status_code).phrase
+            detail = args[0] if args else HTTPStatus(self.status_code).phrase
             args = args[1:]
-        super().__init__(status_code or self.status_code, *args)
 
         self.extra = extra
         self.detail = detail

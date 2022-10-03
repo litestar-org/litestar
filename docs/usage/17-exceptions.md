@@ -171,7 +171,7 @@ layers for this purpose.
 #### Logging Exception Handler
 
 !!! note
-    The [create_exception_response][starlite.exceptions.utils.create_exception_response] function is used internally to produce default error responses if no
+    The [create_exception_response][starlite.utils.create_exception_response] function is used internally to produce default error responses if no
     handler has been registered to a route. This is available as part of the public API of Starlite so that you can
     apply it wherever necessary to ensure consistent error responses across your application.
 
@@ -179,7 +179,7 @@ layers for this purpose.
 import logging
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.responses import Response
-from starlite.exceptions.utils import create_exception_response
+from starlite.utils import create_exception_response
 from starlite.types import Request
 from starlite import Starlite
 

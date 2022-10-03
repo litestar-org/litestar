@@ -19,5 +19,12 @@ def normalize_path(path: str) -> str:
 
 
 def join_paths(paths: Iterable[str]) -> str:
-    """Normalizes and joins path fragments."""
+    """Normalizes and joins path fragments.
+
+    Args:
+        paths: An iterable of path fragments.
+
+    Returns:
+        A normalized joined path string.
+    """
     return normalize_path("/".join(paths))

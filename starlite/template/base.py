@@ -1,10 +1,9 @@
-from typing import Any, Dict, List, Optional, TypeVar, Union
+from typing import Any, List, TypeVar, Union
 
 from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, runtime_checkable
 
 
-@runtime_checkable
 class TemplateProtocol(Protocol):  # pragma: no cover
     """Protocol Defining a 'Template'.
 
@@ -12,15 +11,16 @@ class TemplateProtocol(Protocol):  # pragma: no cover
     template into a string.
     """
 
-    def render(self, **context: Optional[Dict[str, Any]]) -> str:  # pyright: ignore
+    def render(self, *args: Any, **kwargs: Any) -> str:
         """Returns the rendered template as a string.
 
         Args:
-            **context: A string keyed mapping of values passed to the TemplateEngine
+            **kwargs: A string keyed mapping of values passed to the TemplateEngine
 
         Returns:
             The rendered template string
         """
+        ...
 
 
 T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
@@ -35,8 +35,9 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
         """
+        ...
 
-    def get_template(self, template_name: str) -> T_co:  # pyright: ignore
+    def get_template(self, template_name: str) -> T_co:
         """
         Retrieves a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
@@ -46,5 +47,6 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
             Template instance
 
         Raises:
-            [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]
+            [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]: if no template is found.
         """
+        ...

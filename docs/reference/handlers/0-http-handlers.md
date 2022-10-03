@@ -1,18 +1,9 @@
-# handlers
-
-::: starlite.handlers.ASGIRouteHandler
-    options:
-        members:
-            - __init__
-
-::: starlite.handlers.asgi
-
-::: starlite.handlers.HTTPRouteHandler
-    options:
-        members:
-            - __init__
+# HTTP Route Handler Decorators
 
 ::: starlite.handlers.route
+    options:
+        members:
+            - __init__
 
 ::: starlite.handlers.get
     options:
@@ -38,10 +29,3 @@
     options:
         members:
             - __init__
-
-::: starlite.handlers.WebsocketRouteHandler
-    options:
-        members:
-            - __init__
-
-::: starlite.handlers.websocket
