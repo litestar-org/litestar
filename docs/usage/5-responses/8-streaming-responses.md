@@ -28,13 +28,5 @@ def stream_time() -> Stream:
 
 ## The Stream Class
 
-`Stream` is a container class used to generate streaming responses and their respective OpenAPI documentation. You can
-pass the following kwargs to it:
-
-- `iterator`: A sync or async iterator instance, iterator class, generator or callable returning a generator, **required**.
-- `background`: A callable wrapped in an instance of `starlite.datastructures.BackgroundTask` or a list
-  of `BackgroundTask` instances wrapped in `starlite.datastructures.BackgroundTasks`. The callable(s) will be called after
-  the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
-  handler will not be executed.
-- `headers`: A string/string dictionary of response headers. Header keys are insensitive.
-- `cookies`: A list of `Cookie` instances. See [response-cookies](5-response-cookies.md).
+`Stream` is a container class used to generate streaming responses and their respective OpenAPI documentation.
+See the [API Reference][starlite.datastructures.Stream] for full details on the `Stream` class and the kwargs it accepts.

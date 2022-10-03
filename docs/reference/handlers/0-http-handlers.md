@@ -1,5 +1,10 @@
 # HTTP Route Handler Decorators
 
+::: starlite.handlers.HTTPRouteHandler
+    options:
+        members:
+            - __init__
+
 ::: starlite.handlers.route
     options:
         members:

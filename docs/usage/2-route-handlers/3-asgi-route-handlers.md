@@ -68,12 +68,4 @@ You can read more about these in the [ASGI specification](https://asgi.readthedo
 Additionally, ASGI route handler functions **must** be async functions. This is enforced using inspection, and if the
 function is not an async function, an informative exception will be raised.
 
-## ASGI Route Handler Kwargs
-
-Aside from `path`, the `asgi` route handler accepts the following optional kwargs:
-
-- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
-  See [exception-handlers](../17-exceptions#exception-handling).
-- `guards`: A list of [guards](../9-guards.md).
-- `name`: A unique name that identifies the route handler. See: [route handler indexing](4-route-handler-indexing.md).
-- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
+See the [API Reference][starlite.handlers.ASGIRouteHandler] for full details on the `asgi` decorator and the kwargs it accepts.

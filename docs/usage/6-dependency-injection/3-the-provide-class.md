@@ -24,12 +24,7 @@ def my_handler(my_dep: int) -> None:
     ...
 ```
 
-`Provide` receives the following parameters:
-
-- `dependency`: **required**, a callable function, method or class to be injected as a dependency. This parameter can be
-  provided as either an arg or a kwarg.
-- `use_cache`: boolean flag dictating whether to cache the return value of the dependency. Defaults to False.
-- `sync_to_thread`: boolean flag dictating whether to run sync dependencies in an async thread. Defaults to False.
+See the [API Reference][starlite.datastructures.Provide] for full details on the `Provide` class and the kwargs it accepts.
 
 !!! important
     If `Provide.use_cache` is true, the return value of the function will be memoized the first time it is called and

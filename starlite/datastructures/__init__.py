@@ -13,7 +13,7 @@ from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import State
 from starlite.datastructures.upload_file import UploadFile
 
-__all__ = [
+__all__ = (
     "BackgroundTask",
     "BackgroundTasks",
     "Cookie",
@@ -27,4 +27,4 @@ __all__ = [
     "Stream",
     "Template",
     "UploadFile",
-]
+)

@@ -94,21 +94,7 @@ Set-Cookie: my-cookie=456; Path=/; SameSite=lax
 ## The Cookie Class
 
 Starlite exports the class `starlite.datastructures.Cookie`. This is a pydantic model that allows you to define the
-following kwargs:
-
-- `key`: Key for the cookie. A value for this kwarg is **required**.
-- `value`: String value for the cookie. Defaults to `""`.
-- `max_age`: Maximal age before the cookie is invalidated. Defaults to `None`.
-- `expires`: Expiration date as unix MS timestamp. Defaults to `None`.
-- `path`: Path fragment that must exist in the request url for the cookie to be valid. Defaults to `/`.
-- `domain`: Domain for which the cookie is valid.
-- `secure`: Flag dictating whether https is required for the cookie. Defaults to `False`.
-- `httponly`: Forbids javascript to access the cookie via 'Document.cookie'. Defaults to `False`.
-- `samesite`: Controls whether a cookie is sent with cross-site requests. Values can be `strict`, `lax` and `none`.
-  Defaults to `lax`.
-- `description`: Description of the response cookie header for OpenAPI documentation. Defaults to `""`.
-- `documentation_only`: Flag dictating whether the Cookie instance is for OpenAPI documentation only. Defaults
-  to `False`.
+a cookie. See the [API Reference][starlite.datastructures.Cookie] for full details on the `Cookie` class and the kwargs it accepts.
 
 ## Dynamic Cookies
 

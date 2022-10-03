@@ -42,17 +42,6 @@ if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
     from starlite.types import ReservedKwargs
 
-# Shapes corresponding to sequences
-SEQ_SHAPES = {
-    SHAPE_LIST,
-    SHAPE_SET,
-    SHAPE_SEQUENCE,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
-    SHAPE_DEQUE,
-    SHAPE_FROZENSET,
-}
-
 
 class ParameterDefinition(NamedTuple):
     """Tuple defining a kwarg representing a request parameter."""
@@ -172,6 +161,16 @@ class KwargsModel:
         Returns:
             A Tuple of sets
         """
+        sequence_shapes = {
+            SHAPE_LIST,
+            SHAPE_SET,
+            SHAPE_SEQUENCE,
+            SHAPE_TUPLE,
+            SHAPE_TUPLE_ELLIPSIS,
+            SHAPE_DEQUE,
+            SHAPE_FROZENSET,
+        }
+
         expected_dependencies = {
             cls._create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
@@ -186,7 +185,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
                 for field_name, model_field in layered_parameters.items()
                 if field_name not in ignored_keys and field_name not in signature_model_fields
@@ -197,7 +196,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
                 for field_name, model_field in signature_model_fields.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
@@ -228,7 +227,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
             )
         return param_definitions, expected_dependencies

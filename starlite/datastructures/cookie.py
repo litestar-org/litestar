@@ -47,6 +47,7 @@ class Cookie(BaseModel):
             simple_cookie[self.key]["max-age"] = self.max_age
         cookie_dict = self.dict()
         for key in ("expires", "path", "domain", "secure", "httponly", "samesite"):
-            if cookie_dict[key] is not None:
-                simple_cookie[self.key][key] = cookie_dict[key]
+            value = cookie_dict[key]
+            if value is not None:
+                simple_cookie[self.key][key] = value
         return simple_cookie.output(**kwargs).strip()

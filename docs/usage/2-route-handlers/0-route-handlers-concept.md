@@ -85,16 +85,15 @@ The following sources can be accessed using annotated function kwargs:
 
 Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
 
-- `state`: injects a copy of the application `state`.
+- `cookies`: injects the request `cookies` as a parsed dictionary.
 - `headers`: injects the request `headers` as an instance of `starlette.datastructures.Headers` - which is a case-insensitive mapping.
 - `query`: injects the request `query_params` as a parsed dictionary.
-- `cookies`: injects the request `cookies` as a parsed dictionary.
-- As well as:
-
 - `request`: injects the `starlite.connection.Request` instance. Available only for [http route handlers](1-http-route-handlers.md)
+- `scope`: injects the ASGI scope dictionary.
 - `socket`: injects the `starlite.connection.WebSocket` instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
+- `state`: injects a copy of the application `state`.
 
-For example:
+- For example:
 
 ```python
 from typing import Any, Dict

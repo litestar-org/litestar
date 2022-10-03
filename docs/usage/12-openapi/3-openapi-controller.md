@@ -37,13 +37,5 @@ app = Starlite(
 )
 ```
 
-## Controller Class Attributes
-
-The [OpenAPIController][starlite.openapi.controller.OpenAPIController] class defines the following class attributes that
-can be customized by subclassing::
-
-- `style`: base css for the page.
-- `favicon_url`: url pointing at a `.ico` file to use as a favicon.
-- `redoc_version`: version of redoc to use.
-- `swagger_ui_version`: version of Swagger-UI to use.
-- `stoplight_elements_version`: version of Stoplight Elements to use.
+See the [API Reference][starlite.openapi.controller.OpenAPIController] for full details on the `OpenAPIController` class
+and the kwargs it accepts.

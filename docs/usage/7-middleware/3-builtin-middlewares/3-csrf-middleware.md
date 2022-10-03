@@ -33,18 +33,4 @@ csrf_config = CSRFConfig(secret="my-secret")
 app = Starlite(route_handlers=[...], csrf_config=csrf_config)
 ```
 
-You can pass the following kwargs to `CSRFConfig`:
-
-- `secret` - this is the only mandatory parameter, it's a string that is used to create an HMAC to sign the CSRF token
-- `cookie_name` - the CSRF cookie name, set to `csrftoken` by default
-- `cookie_path` - the CSRF cookie path, set to `/` by default
-- `header_name` - the header that will be expected in each request, has a default value of `x-csrftoken`
-- `cookie_secure` - a boolean value indicating whether to set the `Secure` attribute on the cookie, set to `False`
-  by default
-- `cookie_httponly` - a boolean value indicating whether to set the `HttpOnly` attribute on the cookie, set to `False`
-  by default
-- `cookie_samesite` - the value that will be set in the `SameSite` attribute of the cookie. Can have one of the
-  values `lax`, `secure`, `none`. Has a default of `lax`
-- `cookie_domain` - specifies which hosts can receive the cookie. Has a default value of `None` which means it
-  defaults to the same host that set the cookie
-- `safe_methods` - a set of "safe methods" that can set the cookie. The default values are `GET` and `HEAD`
+See the [API Reference][starlite.config.CSRFConfig] for full details on the `CSRFConfig` class and the kwargs it accepts.

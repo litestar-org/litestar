@@ -14,7 +14,7 @@ from .http_exceptions import (
 )
 from .websocket_exceptions import WebSocketException
 
-__all__ = [
+__all__ = (
     "MissingDependencyException",
     "StarLiteException",
     "HTTPException",
@@ -29,4 +29,4 @@ __all__ = [
     "ServiceUnavailableException",
     "TemplateNotFoundException",
     "WebSocketException",
-]
+)

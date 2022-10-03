@@ -175,18 +175,14 @@ class Router:
         return routes
 
     @property
-    def route_handler_method_map(
-        self,
-    ) -> Dict[str, RouteHandlerMapItem]:
+    def route_handler_method_map(self) -> Dict[str, RouteHandlerMapItem]:
         """
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: Dict[str, RouteHandlerMapItem] = {}
+        route_map: Dict[str, RouteHandlerMapItem] = collections.defaultdict(dict)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
-                if not isinstance(route_map.get(route.path), dict):
-                    route_map[route.path] = {}
                 for route_handler in route.route_handlers:
                     for method in route_handler.http_methods:
                         route_map[route.path][method] = route_handler  # type: ignore

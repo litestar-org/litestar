@@ -288,11 +288,14 @@ class SQLAlchemyConfig(BaseModel):
             None.
         """
         if isinstance(logging_config, LoggingConfig):
-            engine_logger = self.engine_config.logging_name or "sqlalchemy.engine"
-            pool_logger = self.engine_config.pool_logging_name or "sqlalchemy.pool"
-            for logger in ("sqlalchemy", engine_logger, pool_logger):
+            logger_settings = {
+                "level": self.engine_config.logging_level or "WARNING",
+                "handlers": logging_config.loggers["starlite"]["handlers"],
+            }
+            for logger in (
+                "sqlalchemy",
+                self.engine_config.logging_name or "sqlalchemy.engine",
+                self.engine_config.pool_logging_name or "sqlalchemy.pool",
+            ):
                 if logger not in logging_config.loggers:
-                    logging_config.loggers[logger] = {
-                        "level": self.engine_config.logging_level or "WARNING",
-                        "handlers": logging_config.loggers["starlite"]["handlers"],
-                    }
+                    logging_config.loggers[logger] = logger_settings

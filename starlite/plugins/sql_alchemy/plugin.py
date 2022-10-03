@@ -415,10 +415,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         pydantic_model = self._model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
             model_class=model_class
         )
-        kwargs: Dict[str, Any] = {}
-        for field in pydantic_model.__fields__:
-            kwargs[field] = getattr(model_instance, field)
-        return pydantic_model(**kwargs).dict()
+        return pydantic_model(**{field: getattr(model_instance, field) for field in pydantic_model.__fields__}).dict()
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
         """Given a dictionary of kwargs, return an instance of the given

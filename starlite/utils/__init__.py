@@ -13,7 +13,7 @@ from .sequence import find_index, unique
 from .serialization import default_serializer
 from .sync import AsyncCallable, as_async_callable_list, async_partial
 
-__all__ = [
+__all__ = (
     "AsyncCallable",
     "ConnectionDataExtractor",
     "ExceptionResponseContent",
@@ -36,4 +36,4 @@ __all__ = [
     "obfuscate",
     "should_skip_dependency_validation",
     "unique",
-]
+)

@@ -79,7 +79,7 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/dosisod/refurb
-    rev: 66e6874c
+    rev: v1.2.0
     hooks:
       - id: refurb
         args: [--ignore, "120", --ignore, "128"]

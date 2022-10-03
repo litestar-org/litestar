@@ -29,64 +29,7 @@ def my_endpoint() -> None:
 The `route` decorator **requires** an `http_method` kwarg, which is a member of the enum `starlite.enums.HttpMethod` or
 a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
 
-Additionally, you can pass the following optional kwargs:
-
-- `status_code`: the status code for a success response. If not
-  specified, [a default value will be used](../5-responses/0-responses-intro.md#status-codes).
-- `media_type`: A string or a member of the enum `starlite.enums.MediaType`, which specifies the MIME Media Type for the
-  response. Defaults to `MediaType.JSON`. See [media-type](../5-responses/0-responses-intro.md#media-type).
-- `response_class`: A custom response class to be used as the app default.
-  See [using-custom-responses](../5-responses/0-responses-intro.md#using-custom-responses).
-- `response_headers`: A dictionary of `ResponseHeader` instances.
-  See [response-headers](../5-responses/0-responses-intro.md#response-headers).
-- `response_cookies`: A list of `Cookie` instances. See [response-cookies](../5-responses/5-response-cookies.md)
-- `dependencies`: A dictionary mapping dependency providers.
-  See [dependency-injection](../6-dependency-injection/0-dependency-injection-intro.md).
-- `opt`: String keyed dictionary of arbitrary value that can be used by [guards](../9-guards.md).
-- `guards`: A list of [guards](../9-guards.md).
-- `middleware`: A list of [middlewares](../7-middleware/0-middleware-intro.md).
-- `name`: A unique name that identifies the route handler. See: [route handler indexing](4-route-handler-indexing.md).
-- `before_request`: a sync or async callable executed before a `Request` is passed to a route handler (method) on the
-  controller. If the callable returns a value, the request will not reach the route handler, and instead this value
-  will be used.
-- `after_request`: a sync or async callable to execute before the `Response` is returned. The callable receives the
-  `Response` object and it must return a `Response` object.
-- `after_response`: a sync or async callable executed after the `Response` is returned. The callable receives the
-  original `Request` object, and should return `None`.
-  `Respose` object and it must return a `Response` object.
-- `background`: A callable wrapped in an instance of `starlite.datastructures.BackgroundTask` or a list
-  of `BackgroundTask` instances wrapped in `starlite.datastructures.BackgroundTasks`. The callable(s) will be called after
-  the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
-  handler will not be executed.
-- `sync_to_thread`: A boolean dictating whether the handler function will be executed in a worker thread or the main
-  event loop. This has an effect only for sync handler functions.
-  See [using sync handler functions](#using-sync-handler-functions).
-- `exception_handlers`: A dictionary mapping exceptions or exception codes to handler functions.
-  See [exception-handlers](../17-exceptions#exception-handling).
-- `cache`: Enables response caching if configured on the application level. Valid values are 'true' or a number
-  of seconds (e.g. '120') to cache the response. See [caching](../16-caching.md)
-- `cache_key_builder`: A cache key building function. Allows for customization of the cache key if caching is
-  configured on the application level. See [caching](../16-caching.md)
-
-And the following kwargs, which affect [OpenAPI schema generation](../12-openapi/0-openapi-intro.md)
-
-- `include_in_schema`: A boolean flag dictating whether the given route handler will appear in the generated OpenAPI
-  schema. Defaults to `True`.
-- `tags`: a list of openapi-pydantic `Tag` models, which correlate to the
-- [tag specification](https://spec.openapis.org/oas/latest.html#tag-object).
-- `summary`: Text used for the route's schema _summary_ section.
-- `description`: Text used for the route's schema _description_ section.
-- `response_description`: Text used for the route's response schema _description_ section.
-- `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` of the wrapped
-  function.
-- `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
-  to `False`.
-- `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
-  exceptions raised within the route handler's function/method. The Starlite `ValidationException` will be added
-  automatically for the schema if any validation is involved.
-- `content_encoding`: A string describing the encoding of the content, e.g. "base64".
-- `content_media_type`: A string designating the media-type of the content, e.g. "image/png".
-- `responses`: A dictionary of additional status codes and a description of their expected content.
+See the [API Reference][starlite.handlers.HTTPRouteHandler] for full details on the `route` decorator and the kwargs it accepts.
 
 ### Semantic Handler Decorators
 

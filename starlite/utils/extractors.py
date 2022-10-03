@@ -280,10 +280,9 @@ class ConnectionDataExtractor:
             form_data = await request.form()
             if request_encoding_type == RequestEncodingType.URL_ENCODED:
                 return dict(form_data)
-            output: Dict[str, Any] = {}
-            for key, value in form_data.multi_items():
-                output[key] = repr(value) if isinstance(value, UploadFile) else value
-            return output
+            return {
+                key: repr(value) if isinstance(value, UploadFile) else value for key, value in form_data.multi_items()
+            }
 
 
 class ExtractedResponseData(TypedDict, total=False):

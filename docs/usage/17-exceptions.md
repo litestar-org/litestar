@@ -16,14 +16,8 @@ For other configuration issues, Starlite will raise `ImproperlyConfiguredExcepti
 ## Application Exceptions
 
 For application exceptions, Starlite uses the class `HTTPException`, which inherits from both `StarliteException`
-and `starlette.exceptions.HTTPException`. This class receives three
-optional kwargs:
-
-- `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
-- `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
-- `extra`: Either a dictionary or a list of arbitrary values.
-
-The default exception handler will serialize `HTTPExceptions` into a json response with the following structure:
+and `starlette.exceptions.HTTPException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
+the `HTTPException` class and the kwargs it accepts.
 
 ```json
 {
@@ -33,7 +27,7 @@ The default exception handler will serialize `HTTPExceptions` into a json respon
 }
 ```
 
-Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use:
+Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use, such as:
 
 - `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
 - `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
@@ -45,6 +39,8 @@ Starlite also offers several pre-configured **exception subclasses** with pre-se
 
 When a value fails `pydantic` validation, the result will be a `ValidationException` with the `extra` key set to the
 pydantic validation errors. Thus, this data will be made available for the API consumers by default.
+
+See the [API Reference section for exceptions](../reference/exceptions/0-base-exceptions.md) for full reference.
 
 ## Exception Handling
 

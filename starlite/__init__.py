@@ -79,7 +79,7 @@ from .response import Response
 from .router import Router
 from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 
-__all__ = [
+__all__ = (
     "ASGIConnection",
     "ASGIRoute",
     "ASGIRouteHandler",
@@ -155,4 +155,4 @@ __all__ = [
     "put",
     "route",
     "websocket",
-]
+)

@@ -319,9 +319,7 @@ class SignatureModelFactory:
         -------
         Generator[SignatureParameter, None, None]
         """
-        for name, parameter in self.signature.parameters.items():
-            if name in SKIP_NAMES:
-                continue
+        for name, parameter in filter(lambda x: x[0] not in SKIP_NAMES, self.signature.parameters.items()):
             yield SignatureParameter(self.fn_name, name, parameter)
 
     def should_skip_parameter_validation(self, parameter: SignatureParameter) -> bool:

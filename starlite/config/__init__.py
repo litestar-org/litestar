@@ -8,7 +8,7 @@ from .openapi import OpenAPIConfig
 from .static_files import StaticFilesConfig
 from .template import TemplateConfig
 
-__all__ = [
+__all__ = (
     "AppConfig",
     "BaseLoggingConfig",
     "CORSConfig",
@@ -20,4 +20,4 @@ __all__ = [
     "StaticFilesConfig",
     "StructLoggingConfig",
     "TemplateConfig",
-]
+)

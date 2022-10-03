@@ -75,7 +75,7 @@ from .internal_types import (
 from .partial import Partial
 from .protocols import Logger
 
-__all__ = [
+__all__ = (
     "ASGIApp",
     "ASGIApp",
     "ASGIVersion",
@@ -158,4 +158,4 @@ __all__ = [
     "WebSocketSendEvent",
     "WebSocketSendMessage",
     "WebSocketSendMessage",
-]
+)
