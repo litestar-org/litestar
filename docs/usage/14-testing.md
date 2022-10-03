@@ -71,6 +71,50 @@ def test_health_check(test_client: TestClient):
         assert response.text == "healthy"
 ```
 
+### Create Session Cookies
+
+If you are using **Session Middleware** for session persistence across requests then your route handlers may expect
+preloaded session when you are mocking request to the route handler. To mock request with session cookies, you can use
+`TestClient.create_session_cookies` to mock session. The session middleware will then load session from the session
+cookies that you provide.
+
+`TestClient.create_session_cookies` accepts the following arguments:
+
+- session_data: You can pass dictionary to this argument to preload the session.
+
+It is recommended to create a fixture for `SessionCookieConfig` as it will be used to set up session middleware and is
+also passed as an argument to the `TestClient` whenever you need to mock request. The `secret` should remain the same
+throughout the test session, so set fixture `scope` to `"class"`.
+
+```python title="tests/test_route_handlers.py
+import os
+
+import pytest
+from pydantic import SecretBytes
+from starlite.middleware.session import SessionCookieConfig
+from starlite.testing import TestClient
+
+from my_app.main import app
+
+
+class TestClass:
+
+    @pytest.fixture(scope="class")
+    def session_config(self) -> SessionCookieConfig:
+        return SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+
+    def test_something(self, session_config: SessionCookieConfig) -> None:
+        with TestClient(app=app, session_config=session_config) as client:
+            cookies = client.create_session_cookies(session_data={"user": "test_user"})
+            # Pass raw cookies to the request.
+            response = client.get(url="/my_route", cookies=cookies)
+            # Call another route handler by passing cookies from the previous response.
+            client.get(url="/next_route", cookies=response.cookies)
+```
+
+As session middleware is enabled, the response will contain raw session cookies which you can pass it again to another
+mock request when calling the chain of route handlers.
+
 !!! important
     Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
     `on_startup` and `on_shutdown`.
