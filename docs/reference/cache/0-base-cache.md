@@ -1,4 +1,4 @@
-# cache
+# Cache Backend Protocol
 
 ::: starlite.cache.CacheBackendProtocol
     options:
@@ -15,10 +15,3 @@
             - set
             - delete
             - build_cache_key
-
-::: starlite.cache.SimpleCacheBackend
-    options:
-        members:
-            - get
-            - set
-            - delete

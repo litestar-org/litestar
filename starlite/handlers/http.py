@@ -25,9 +25,9 @@ from starlette.status import (
 )
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import (
-    BackgroundTask,
-    BackgroundTasks,
+from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
+from starlite.datastructures.provide import Provide
+from starlite.datastructures.response_containers import (
     File,
     Redirect,
     ResponseContainer,
@@ -41,7 +41,6 @@ from starlite.exceptions import (
 from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
-from starlite.provide import Provide
 from starlite.response import Response
 from starlite.types import (
     AfterRequestHookHandler,
@@ -297,7 +296,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             http_method: An [http method string][starlite.types.Method], a member of the enum
@@ -651,7 +650,7 @@ class get(HTTPRouteHandler):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -782,7 +781,7 @@ class post(HTTPRouteHandler):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -912,7 +911,7 @@ class put(HTTPRouteHandler):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -1042,7 +1041,7 @@ class patch(HTTPRouteHandler):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -1172,7 +1171,7 @@ class delete(HTTPRouteHandler):
                 of seconds (e.g. '120') to cache the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a

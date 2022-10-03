@@ -1,6 +1,6 @@
 # ASGI Route Handler Decorators
 
-::: starlite.handlers.asgi    
+::: starlite.handlers.asgi
     options:
         members:
             - __init__

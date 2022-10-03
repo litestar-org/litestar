@@ -3,8 +3,8 @@ from typing import Dict, List, Optional
 from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
+from starlite.datastructures.provide import Provide
 from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
 from starlite.types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
@@ -120,7 +120,7 @@ class AppConfig(BaseModel):
     """
     dependencies: Dict[str, Provide]
     """
-    A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+    A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
     """
     exception_handlers: ExceptionHandlersMap
     """

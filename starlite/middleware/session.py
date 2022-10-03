@@ -19,7 +19,7 @@ from starlette.datastructures import MutableHeaders
 from typing_extensions import Literal
 
 from starlite.connection import ASGIConnection
-from starlite.datastructures import Cookie
+from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.types import Empty

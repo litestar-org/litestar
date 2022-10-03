@@ -11,13 +11,15 @@ from .predicates import is_async_callable, is_class_and_subclass, is_optional_un
 from .scope import get_serializer_from_scope
 from .sequence import find_index, unique
 from .serialization import default_serializer
-from .sync import AsyncCallable
+from .sync import AsyncCallable, as_async_callable_list, async_partial
 
 __all__ = [
     "AsyncCallable",
     "ConnectionDataExtractor",
     "ExceptionResponseContent",
     "ResponseDataExtractor",
+    "as_async_callable_list",
+    "async_partial",
     "convert_dataclass_to_model",
     "create_exception_response",
     "create_parsed_model_field",

@@ -13,10 +13,10 @@ from typing import (
 from starlette.datastructures import URL, Address, Headers, URLPath
 from starlette.requests import cookie_parser
 
-from starlite.datastructures import State
+from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_query_params
-from starlite.types import Empty, Logger
+from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
     from typing import MutableMapping
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.types.asgi_types import Message, Receive, Scope, Send
+    from starlite.types.protocols import Logger
 
 User = TypeVar("User")
 Auth = TypeVar("Auth")
@@ -225,7 +226,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return cast("Dict[str, Any]", self.scope["session"])
 
     @property
-    def logger(self) -> Logger:
+    def logger(self) -> "Logger":
         """
 
         Returns:

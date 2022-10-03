@@ -4,4 +4,3 @@
     options:
         members:
             - __init__
-

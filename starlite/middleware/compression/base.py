@@ -16,7 +16,7 @@ class CompressionMiddleware(MiddlewareProtocol):
 
         Args:
             app: The 'next' ASGI app to call.
-            config: An instance of [CompressionConfig][starlite.config.CompressionConfig].
+            config: An instance of CompressionConfig.
         """
         self.app = app
         self.handler = config.to_middleware(app=app)

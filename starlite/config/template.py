@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Type, Union
+from typing import Any, Callable, List, Optional, Type, Union
 
 from pydantic import BaseConfig, BaseModel, DirectoryPath
 
@@ -24,7 +24,7 @@ class TemplateConfig(BaseModel):
     """
         A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol].
     """
-    engine_callback: Optional[Callable[[TemplateEngineProtocol], None]] = None
+    engine_callback: Optional[Callable[[Any], None]] = None
     """
         A callback function that allows modifying the instantiated templating protocol.
     """
@@ -32,6 +32,6 @@ class TemplateConfig(BaseModel):
     def to_engine(self) -> "TemplateEngineProtocol":
         """Instantiates the template engine."""
         template_engine = self.engine(self.directory)
-        if self.engine_callback:
-            self.engine_callback(template_engine)
+        if callable(self.engine_callback):
+            self.engine_callback(template_engine)  # pylint: disable=not-callable
         return template_engine

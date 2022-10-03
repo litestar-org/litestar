@@ -1,4 +1,4 @@
-# dto
+# DTO
 
 ::: starlite.dto.DTO
     options:

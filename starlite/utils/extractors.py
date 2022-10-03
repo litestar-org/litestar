@@ -15,7 +15,7 @@ from starlette.requests import cookie_parser
 from typing_extensions import Literal, TypedDict
 
 from starlite.connection import Request
-from starlite.datastructures import UploadFile
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
 
 if TYPE_CHECKING:

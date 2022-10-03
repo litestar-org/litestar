@@ -17,8 +17,8 @@ from pydantic import BaseConfig, Extra, validate_arguments
 from pydantic.fields import ModelField, Undefined
 
 from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
+from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.provide import Provide
 from starlite.types import (
     Dependencies,
     Empty,

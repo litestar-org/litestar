@@ -1,6 +1,6 @@
-# provide
+# Provide
 
-::: starlite.provide.Provide
+::: starlite.datastructures.Provide
     options:
         include:
             - __init__

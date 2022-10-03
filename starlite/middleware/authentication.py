@@ -86,8 +86,7 @@ class AbstractAuthenticationMiddleware(ABC):
             connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
 
         Raises:
-            Either an [NotAuthorizedException][starlite.exceptions.NotAuthorizedException] or
-                [PermissionDeniedException][starlite.exceptions.PermissionDeniedException]: if authentication fails.
+            NotAuthorizedException | PermissionDeniedException: if authentication fails.
 
         Returns:
             An instance of [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].

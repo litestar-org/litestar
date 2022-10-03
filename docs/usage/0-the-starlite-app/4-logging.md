@@ -37,7 +37,7 @@ the part of the user. That is, if `picologging` is present the previous example 
 
 ## Using StructLog
 
-[StructLog](https://www.structlog.org/en/stable/) is a versatile structured logging library. Starlite ships with a dedicated
+[StructLog](https://www.structlog.org/en/stable/) is a powerful structured-logging library. Starlite ships with a dedicated
 logging config for using it:
 
 ```python

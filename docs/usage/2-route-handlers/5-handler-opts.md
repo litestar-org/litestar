@@ -16,7 +16,7 @@ request (`request.route_handler.opt`), or using the ASGI scope object directly (
 
 ## Passing **kwargs to handlers
 
-Building on `opts`, you can pass any arbitrary kwarg to the route handler decorator and it will be automatically set
+Building on `opts`, you can pass any arbitrary kwarg to the route handler decorator, and it will be automatically set
 as a key in the opt dictionary:
 
 ```python

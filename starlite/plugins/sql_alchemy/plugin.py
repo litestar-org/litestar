@@ -18,12 +18,12 @@ from uuid import UUID
 from pydantic import BaseModel, Json, conint, constr, create_model
 from pydantic_factories import ModelFactory
 
+from starlite.datastructures.provide import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
 from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
 from starlite.utils import AsyncCallable
 
 try:
@@ -99,7 +99,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             column_type: The type of the SQLColumn.
 
         Returns:
-            An appropriate string tyoe
+            An appropriate string type
         """
         if column_type.length is not None:
             return constr(max_length=column_type.length)

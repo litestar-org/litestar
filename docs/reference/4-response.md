@@ -1,4 +1,4 @@
-# response
+# Responses
 
 ::: starlite.response.Response
     options:

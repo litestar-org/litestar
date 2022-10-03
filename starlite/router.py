@@ -5,6 +5,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
+from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -12,7 +13,6 @@ from starlite.handlers import (
     HTTPRouteHandler,
     WebsocketRouteHandler,
 )
-from starlite.provide import Provide
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHookHandler,
@@ -94,7 +94,7 @@ class Router:
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].

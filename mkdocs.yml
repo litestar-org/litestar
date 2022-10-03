@@ -140,11 +140,17 @@ nav:
       - usage/15-templating.md
       - usage/16-caching.md
       - usage/17-exceptions.md
-  - Reference:
+  - API Reference:
       - reference/0-api-reference-intro.md
       - reference/1-app.md
       - reference/2-router.md
       - reference/3-controller.md
+      - reference/4-response.md
+      - reference/5-dto.md
+      - reference/6-enums.md
+      - Cache:
+          - reference/cache/0-base-cache.md
+          - reference/cache/1-simple-cache.md
       - Config:
           - reference/config/0-app-config.md
           - reference/config/1-cache-config.md
@@ -168,6 +174,7 @@ nav:
           - reference/datastructures/5-response-containers.md
           - reference/datastructures/6-upload-file.md
           - reference/datastructures/7-form-multi-dict.md
+          - reference/datastructures/8-provide.md
       - Exceptions:
           - reference/exceptions/0-base-exceptions.md
           - reference/exceptions/1-http-exceptions.md
@@ -201,6 +208,9 @@ nav:
           - reference/template/0-base.md
           - reference/template/1-jinja.md
           - reference/template/2-mako.md
+      - Testing:
+          - reference/testing/0-test-client.md
+          - reference/testing/1-request-factory.md
       - Types:
           - reference/types/0-types-intro.md
           - reference/types/1-callable-types.md
@@ -208,6 +218,7 @@ nav:
           - reference/types/3-helper-types.md
           - reference/types/4-protocol-types.md
           - reference/types/5-composite-types.md
+          - reference/types/6-partial-types.md
       - Utils:
           - reference/utils/0-predicate-utils.md
           - reference/utils/1-sync-utils.md
@@ -217,14 +228,6 @@ nav:
           - reference/utils/5-sequence-utils.md
           - reference/utils/6-path-utils.md
           - reference/utils/7-serialization-utils.md
-      - reference/cache.md
-      - reference/dto.md
-      - reference/enums.md
-      - reference/handlers.md
-      - reference/provide.md
-      - reference/response.md
-      - reference/testing.md
-      - reference/typing.md
   - migration.md
 extra:
   social:

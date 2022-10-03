@@ -14,7 +14,7 @@ from starlite.asgi import (
 )
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
-from starlite.datastructures import State
+from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -39,9 +39,9 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.datastructures.provide import Provide
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.provide import Provide
     from starlite.routes.base import PathParameterDefinition
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -222,7 +222,7 @@ class Starlite(Router):
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].

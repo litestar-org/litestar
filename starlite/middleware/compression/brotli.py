@@ -6,9 +6,9 @@ from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
-from starlite import MiddlewareProtocol
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
+from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, Send
