@@ -11,7 +11,7 @@ from pydantic_openapi_schema.v3_1_0.schema import Schema
 from starlette.routing import get_name
 from typing_extensions import get_args, get_origin
 
-from starlite.datastructures import Cookie, File, Redirect, Stream, Template
+from starlite.datastructures.response_containers import File, Redirect, Stream, Template
 from starlite.enums import MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -28,12 +28,13 @@ if TYPE_CHECKING:
 
     from pydantic_openapi_schema.v3_1_0.responses import Responses
 
+    from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.types import AnyCallable
 
 
-def create_cookie_schema(cookie: Cookie) -> Schema:
+def create_cookie_schema(cookie: "Cookie") -> Schema:
     """
     Given a Cookie instance, return its corresponding OpenAPI schema
     Args:

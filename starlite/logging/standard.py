@@ -14,7 +14,7 @@ class QueueListenerHandler(QueueHandler):
         logging configuration.
 
         Args:
-            handlers: Optional 'CovertingList'
+            handlers: Optional 'ConvertingList'
         """
         super().__init__(Queue(-1))
         if handlers:

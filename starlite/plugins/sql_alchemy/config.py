@@ -31,7 +31,7 @@ except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 if TYPE_CHECKING:
-    from starlite.datastructures import State
+    from starlite.datastructures.state import State
     from starlite.types import Message, Scope
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]

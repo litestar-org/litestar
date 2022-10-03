@@ -21,7 +21,7 @@ from typing_extensions import Literal
 
 from starlite.connection import Request
 from starlite.enums import ScopeType
-from starlite.exceptions.exceptions import TooManyRequestsException
+from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import DefineMiddleware
 from starlite.types import Message, SyncOrAsyncUnion
 from starlite.utils import AsyncCallable

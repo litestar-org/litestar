@@ -15,7 +15,7 @@ class QueueListenerHandler(QueueHandler):  # type: ignore[misc]
         logging configuration.
 
         Args:
-            handlers: Optional 'CovertingList'
+            handlers: Optional 'ConvertingList'
 
         Notes:
             - Requires `picologging` to be installed.

@@ -66,7 +66,7 @@ class Controller:
     """
     dependencies: Optional["Dependencies"]
     """
-        dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+        dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
     """
     exception_handlers: Optional["ExceptionHandlersMap"]
     """

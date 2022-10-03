@@ -32,10 +32,10 @@ from starlite.constants import (
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
+from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
-from starlite.provide import Provide
 from starlite.signature import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:

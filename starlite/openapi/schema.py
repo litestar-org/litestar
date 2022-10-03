@@ -21,7 +21,7 @@ from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
-from starlite.datastructures import UploadFile
+from starlite.datastructures.upload_file import UploadFile
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,

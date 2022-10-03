@@ -140,34 +140,94 @@ nav:
       - usage/15-templating.md
       - usage/16-caching.md
       - usage/17-exceptions.md
-  - Reference:
-      - reference/important.md
+  - API Reference:
+      - reference/0-api-reference-intro.md
+      - reference/1-app.md
+      - reference/2-router.md
+      - reference/3-controller.md
+      - reference/4-response.md
+      - reference/5-dto.md
+      - reference/6-enums.md
+      - Cache:
+          - reference/cache/0-base-cache.md
+          - reference/cache/1-simple-cache.md
+      - Config:
+          - reference/config/0-app-config.md
+          - reference/config/1-cache-config.md
+          - reference/config/2-cors-config.md
+          - reference/config/3-csrf-config.md
+          - reference/config/4-compression-config
+          - reference/config/5-openapi-config.md
+          - reference/config/6-static-files-config.md
+          - reference/config/7-template-config.md
+          - reference/config/8-logging-config.md
+      - Connection:
+          - reference/connection/0-asgi-connection.md
+          - reference/connection/1-request.md
+          - reference/connection/2-websocket.md
+      - Datastructures:
+          - reference/datastructures/0-state.md
+          - reference/datastructures/1-cookie.md
+          - reference/datastructures/2-template.md
+          - reference/datastructures/3-response-header.md
+          - reference/datastructures/4-background.md
+          - reference/datastructures/5-response-containers.md
+          - reference/datastructures/6-upload-file.md
+          - reference/datastructures/7-form-multi-dict.md
+          - reference/datastructures/8-provide.md
+      - Exceptions:
+          - reference/exceptions/0-base-exceptions.md
+          - reference/exceptions/1-http-exceptions.md
+          - reference/exceptions/2-websocket-exceptions.md
+      - Handlers:
+          - reference/handlers/0-http-handlers.md
+          - reference/handlers/1-websocket-handlers.md
+          - reference/handlers/2-asgi-handlers.md
+      - Middleware:
+          - reference/middleware/0-base.md
+          - reference/middleware/1-authentication-middleware.md
+          - reference/middleware/2-logging-middleware.md
+          - reference/middleware/3-rate-limit-middleware.md
+          - reference/middleware/4-session-middleware.md
+          - reference/middleware/5-compression-middleware.md
+          - reference/middleware/6-csrf-middleware.md
+          - reference/middleware/7-exceptions-middleware.md
+      - OpenAPI:
+          - reference/openapi/0-openapi-controller.md
+          - reference/openapi/1-openapi-response-spec.md
+      - Parameters:
+          - reference/params/0-parameter.md
+          - reference/params/1-body.md
+          - reference/params/2-dependency.md
       - Plugins:
           - reference/plugins/0-plugin-protocol.md
           - reference/plugins/1-sqlalchemy-plugin.md
           - reference/plugins/2-piccolo-orm-plugin.md
           - reference/plugins/3-tortoise-orm-plugin.md
-      - reference/app.md
-      - reference/cache.md
-      - reference/config.md
-      - reference/connection.md
-      - reference/controller.md
-      - reference/datastructures.md
-      - reference/dto.md
-      - reference/exceptions.md
-      - reference/enums.md
-      - reference/handlers.md
-      - reference/middleware.md
-      - reference/openapi.md
-      - reference/params.md
-
-      - reference/provide.md
-      - reference/response.md
-      - reference/router.md
-      - reference/template.md
-      - reference/testing.md
-      - reference/types.md
-      - reference/typing.md
+      - Templating:
+          - reference/template/0-base.md
+          - reference/template/1-jinja.md
+          - reference/template/2-mako.md
+      - Testing:
+          - reference/testing/0-test-client.md
+          - reference/testing/1-request-factory.md
+      - Types:
+          - reference/types/0-types-intro.md
+          - reference/types/1-callable-types.md
+          - reference/types/2-asgi-types.md
+          - reference/types/3-helper-types.md
+          - reference/types/4-protocol-types.md
+          - reference/types/5-composite-types.md
+          - reference/types/6-partial-types.md
+      - Utils:
+          - reference/utils/0-predicate-utils.md
+          - reference/utils/1-sync-utils.md
+          - reference/utils/2-scope-utils.md
+          - reference/utils/3-exception-utils.md
+          - reference/utils/4-extractor-utils.md
+          - reference/utils/5-sequence-utils.md
+          - reference/utils/6-path-utils.md
+          - reference/utils/7-serialization-utils.md
   - migration.md
 extra:
   social:

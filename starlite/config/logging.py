@@ -145,10 +145,10 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         """
         Ensures that 'queue_listener' is always set
         Args:
-            value: A handlers dict.
+            value: A dict of route handlers.
 
         Returns:
-            A handlers dict.
+            A dict of route handlers.
         """
         if "queue_listener" not in value:
             value["queue_listener"] = get_default_handlers()["queue_listener"]
@@ -161,10 +161,10 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         """Ensures that the 'starlite' logger is always set.
 
         Args:
-            value: A loggers dict.
+            value: A dict of loggers.
 
         Returns:
-            A loggers dict.
+            A dict of loggers.
         """
 
         if "starlite" not in value:

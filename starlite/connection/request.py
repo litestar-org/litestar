@@ -14,7 +14,8 @@ from starlite.connection.base import (
     empty_receive,
     empty_send,
 )
-from starlite.datastructures import FormMultiDict, UploadFile
+from starlite.datastructures.form_multi_dict import FormMultiDict
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
 from starlite.types import Empty
