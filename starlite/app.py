@@ -132,6 +132,7 @@ class Starlite(Router):
         "debug",
         "get_logger",
         "logger",
+        "logging_config",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -252,8 +253,6 @@ class Starlite(Router):
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
-        # set pre-initialized values
-        self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
@@ -322,6 +321,7 @@ class Starlite(Router):
         self.plugins = config.plugins
         self.static_files_config = config.static_files_config
         self.template_engine = create_template_engine(config.template_config)
+        self.logging_config = config.logging_config
 
         super().__init__(
             after_request=config.after_request,
@@ -341,16 +341,14 @@ class Starlite(Router):
             security=config.security,
             tags=config.tags,
         )
-        self._init = True
-
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
 
-        if config.logging_config:
-            self.get_logger = config.logging_config.configure()
+        if self.logging_config:
+            self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
@@ -389,7 +387,7 @@ class Starlite(Router):
             await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
+        await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -402,8 +400,6 @@ class Starlite(Router):
         Returns:
             None
         """
-        if not self._init:
-            return
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
@@ -629,7 +625,7 @@ class Starlite(Router):
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
 
-    def _wrap_send(self, send: "Send") -> "Send":
+    def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
         """Wraps the ASGI send and handles any 'before send' hooks.
 
         Args:
@@ -642,7 +638,10 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    await hook(message, self.state)
+                    if hook.num_expected_args > 2:
+                        await hook(message, self.state, scope)
+                    else:
+                        await hook(message, self.state)
                 await send(message)
 
             return wrapped_send

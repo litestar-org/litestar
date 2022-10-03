@@ -142,6 +142,11 @@ nav:
       - usage/17-exceptions.md
   - Reference:
       - reference/important.md
+      - Plugins:
+          - reference/plugins/0-plugin-protocol.md
+          - reference/plugins/1-sqlalchemy-plugin.md
+          - reference/plugins/2-piccolo-orm-plugin.md
+          - reference/plugins/3-tortoise-orm-plugin.md
       - reference/app.md
       - reference/cache.md
       - reference/config.md
@@ -155,7 +160,7 @@ nav:
       - reference/middleware.md
       - reference/openapi.md
       - reference/params.md
-      - reference/plugins.md
+
       - reference/provide.md
       - reference/response.md
       - reference/router.md

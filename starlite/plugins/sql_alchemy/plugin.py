@@ -2,7 +2,17 @@ from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from inspect import isclass
 from ipaddress import IPv4Network, IPv6Network
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 from uuid import UUID
 
 from pydantic import BaseModel, Json, conint, constr, create_model
@@ -13,6 +23,8 @@ from starlite.exceptions import (
     MissingDependencyException,
 )
 from starlite.plugins.base import PluginProtocol
+from starlite.provide import Provide
+from starlite.utils import AsyncCallable
 
 try:
     from sqlalchemy import inspect
@@ -23,42 +35,97 @@ try:
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
-if TYPE_CHECKING:
-    from typing import Type
 
+if TYPE_CHECKING:
     from typing_extensions import TypeGuard
+
+    from starlite.app import Starlite
+    from starlite.plugins.sql_alchemy.config import SQLAlchemyConfig
 
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
-    """Support (de)serialization and OpenAPI generation for SQLAlchemy ORM
-    types."""
+    __slots__ = ("_model_namespace_map", "_config")
 
-    def __init__(self) -> None:
-        # a map object that maps SQLAlchemy entity qualified names to pydantic BaseModel subclasses
-        self.model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
+    def __init__(self, config: Optional["SQLAlchemyConfig"] = None) -> None:
+        """A Plugin for SQLAlchemy.
+
+        Support (de)serialization and OpenAPI generation for SQLAlchemy
+        ORM types.
+
+        Args:
+            config: Optional [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig] instance. If passed,
+                the plugin will establish a DB connection and hook handlers and dependencies.
+        """
+        self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
+        self._config = config
+
+    def on_app_init(self, app: "Starlite") -> None:
+        """Executed on the application's init process. If config has been
+        passed to the plugin, it will initialize SQLAlchemy and add the
+        dependencies as expected.
+
+        Args:
+            app: The [Starlite][starlite.app.Starlite] application instance.
+
+        Returns:
+            None
+        """
+        if self._config is not None:
+            app.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
+            app.before_send.append(AsyncCallable(self._config.before_send_handler))
+            app.on_shutdown.append(self._config.on_shutdown)
+            self._config.config_sql_alchemy_logging(app.logging_config)
+            self._config.update_app_state(state=app.state)
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
-        """This plugin supports only SQLAlchemy declarative models."""
+        """A typeguard that tests whether values are subclasses of SQLAlchemy's
+        'DeclarativeMeta' class.
+
+        Args:
+            value: An arbitrary type to test.
+
+        Returns:
+            A boolean typeguard.
+        """
         return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
 
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
         """Handles the SQLAlchemy String types, including Blob and Binary
-        types."""
+        types.
+
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+            An appropriate string tyoe
+        """
         if column_type.length is not None:
             return constr(max_length=column_type.length)
         return str
 
     @staticmethod
     def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> "Type":
-        """Handles the SQLAlchemy non-int Numeric types."""
+        """Handles the SQLAlchemy non-int Numeric types.
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+            An appropriate numerical type
+        """
         if column_type.asdecimal:
             return Decimal
         return float
 
     def handle_list_type(self, column_type: sqlalchemy_type.ARRAY) -> Any:
-        """Handles the SQLAlchemy Array type."""
+        """Handles the SQLAlchemy Array type.
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+            An appropriate list type
+        """
         list_type: Any = self.get_pydantic_type(column_type=column_type.item_type)
 
         dimensions = column_type.dimensions or 1
@@ -68,13 +135,27 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return list_type
 
     def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:
-        """Handles the SQLAlchemy Tuple type."""
+        """Handles the SQLAlchemy Tuple type.
+
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+            An appropriate tuple type
+        """
         types = [self.get_pydantic_type(column_type=t) for t in column_type.types]
         return Tuple[tuple(types)]
 
     @staticmethod
     def handle_enum(column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
-        """Handles the SQLAlchemy Enum types."""
+        """Handles the SQLAlchemy Enum types.
+
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+            An appropriate enum type
+        """
         return column_type.enum_class
 
     @property
@@ -83,6 +164,9 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
         This method is separated to allow for easy overriding in
         subclasses.
+
+        Returns
+            A dictionary mapping SQLAlchemy types to callables.
         """
         return {
             sqlalchemy_type.ARRAY: self.handle_list_type,
@@ -216,7 +300,14 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
-        """Given a 'Column.type' value, return a type supported by pydantic."""
+        """Given a 'Column.type' value, return a type supported by pydantic.
+
+        Args:
+            column_type: The type of the SQLColumn.
+
+        Returns:
+             A pydantic supported type.
+        """
 
         column_type_class = column_type if isclass(column_type) else column_type.__class__
         if issubclass(column_type_class, TypeEngine):
@@ -232,20 +323,35 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     @staticmethod
     def parse_model(model_class: DeclarativeMeta) -> Mapper:
         """Validates that the passed in model_class is an SQLAlchemy
-        declarative model, and returns a Mapper of it."""
+        declarative model, and returns a Mapper of it.
+
+        Args:
+            model_class: An SQLAlchemy declarative class.
+
+        Returns:
+            An SQLAlchemy inspection 'Mapper'.
+        """
         if not isinstance(model_class, DeclarativeMeta):
             raise ImproperlyConfiguredException(
                 "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
             )
         return inspect(model_class)
 
-    def to_pydantic_model_class(self, model_class: DeclarativeMeta, **kwargs: Any) -> "Type[BaseModel]":
+    def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
         """Generates a pydantic model for a given SQLAlchemy declarative table
-        and any nested relations."""
+        and any nested relations.
+
+        Args:
+            model_class: An SQLAlchemy declarative class instance.
+            **kwargs: Kwargs to pass to the model.
+
+        Returns:
+            A pydantic model instance.
+        """
 
         mapper = self.parse_model(model_class=model_class)
         model_name = mapper.class_.__qualname__
-        if model_name not in self.model_namespace_map:
+        if model_name not in self._model_namespace_map:
             field_definitions: Dict[str, Any] = {}
             for name, column in mapper.columns.items():
                 if column.default and type(column.default.arg) in ModelFactory.get_provider_map():
@@ -268,30 +374,45 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                         else:
                             field_definitions[name] = (Optional[related_model_name], None)
                         # if the names are not identical, these are different SQLAlchemy entities
-                        if related_model_name != model_name and related_model_name not in self.model_namespace_map:
+                        if related_model_name != model_name and related_model_name not in self._model_namespace_map:
                             related_entity_classes.append(related_entity_class)
                     # we are treating back-references as any to avoid infinite recursion
                     else:
                         field_definitions[name] = (Any, None)
-            self.model_namespace_map[model_name] = create_model(model_name, **field_definitions)
+            self._model_namespace_map[model_name] = create_model(model_name, **field_definitions)
             for related_entity_class in related_entity_classes:
                 self.to_pydantic_model_class(model_class=related_entity_class)
-        model = self.model_namespace_map[model_name]
-        model.update_forward_refs(**self.model_namespace_map)
+        model = self._model_namespace_map[model_name]
+        model.update_forward_refs(**self._model_namespace_map)
         return model
 
     def from_pydantic_model_instance(
         self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
         """Create an instance of a given model_class using the values stored in
-        the given pydantic_model_instance."""
+        the given pydantic_model_instance.
+
+        Args:
+            model_class: A declarative table class.
+            pydantic_model_instance: A pydantic model instance.
+
+        Returns:
+            A declarative meta table instance.
+        """
         return model_class(**pydantic_model_instance.dict())
 
-    def to_dict(self, model_instance: Any) -> Dict[str, Any]:
+    def to_dict(self, model_instance: "DeclarativeMeta") -> Dict[str, Any]:
         """Given a model instance, convert it to a dict of values that can be
-        serialized."""
-        model_class = model_instance.__class__
-        pydantic_model = self.model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
+        serialized.
+
+        Args:
+            model_instance: An SQLAlchemy declarative table instance.
+
+        Returns:
+            A string keyed dict of values.
+        """
+        model_class = type(model_instance)
+        pydantic_model = self._model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
             model_class=model_class
         )
         kwargs: Dict[str, Any] = {}
@@ -301,5 +422,13 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
         """Given a dictionary of kwargs, return an instance of the given
-        model_class."""
+        model_class.
+
+        Args:
+            model_class: A declarative table class.
+            **kwargs: Kwargs to instantiate the table with.
+
+        Returns:
+            An instantiated table instance.
+        """
         return model_class(**kwargs)

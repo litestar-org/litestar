@@ -48,9 +48,11 @@ starlite-multipart = "*"
 typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
+aiosqlite = "*"
 brotli = "*"
 cryptography = "*"
 freezegun = "*"
+greenlet = "*"
 httpx = ">=0.22"
 hypothesis = "*"
 jinja2 = "*"

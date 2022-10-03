@@ -1,4 +1,5 @@
 from functools import partial
+from inspect import getfullargspec, ismethod
 from typing import Any, Callable, Dict, Generic, List, TypeVar, Union, cast
 
 from anyio.to_thread import run_sync
@@ -11,7 +12,7 @@ T = TypeVar("T")
 
 
 class AsyncCallable(Generic[P, T]):
-    __slots__ = ("args", "kwargs", "wrapped_callable")
+    __slots__ = ("args", "kwargs", "wrapped_callable", "is_method", "num_expected_args")
 
     def __init__(self, fn: Callable[P, T]) -> None:
         """Utility class that wraps a callable and ensures it can be called as
@@ -21,6 +22,8 @@ class AsyncCallable(Generic[P, T]):
             fn: Callable to wrap - can be any sync or async callable.
         """
 
+        self.is_method = ismethod(fn)
+        self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
         self.wrapped_callable: Dict[Literal["fn"], Callable] = {
             "fn": fn if is_async_callable(fn) else async_partial(fn)
         }

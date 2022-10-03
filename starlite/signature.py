@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 SKIP_NAMES = {"self", "cls"}
-SKIP_VALIDATION_NAMES = {"request", "socket", "state"}
+SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope"}
 
 
 class SignatureModel(BaseModel):
