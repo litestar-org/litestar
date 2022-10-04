@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Any, Optional, cast
 
 from starlite.types import Empty
-from starlite.utils import AsyncCallable, is_async_callable
+from starlite.utils.predicates import is_async_callable
+from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from typing import Type

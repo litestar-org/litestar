@@ -1,3 +1,18 @@
+from starlite.app import Starlite
+from starlite.config import (
+    BaseLoggingConfig,
+    CacheConfig,
+    CompressionConfig,
+    CORSConfig,
+    CSRFConfig,
+    LoggingConfig,
+    OpenAPIConfig,
+    StaticFilesConfig,
+    StructLoggingConfig,
+    TemplateConfig,
+)
+from starlite.connection import ASGIConnection, Request, WebSocket
+from starlite.controller import Controller
 from starlite.datastructures import (
     BackgroundTask,
     BackgroundTasks,
@@ -13,32 +28,15 @@ from starlite.datastructures import (
     Template,
     UploadFile,
 )
-from starlite.types.partial import Partial
-
-from .app import Starlite
-from .config import (
-    BaseLoggingConfig,
-    CacheConfig,
-    CompressionConfig,
-    CORSConfig,
-    CSRFConfig,
-    LoggingConfig,
-    OpenAPIConfig,
-    StaticFilesConfig,
-    StructLoggingConfig,
-    TemplateConfig,
-)
-from .connection import ASGIConnection, Request, WebSocket
-from .controller import Controller
-from .dto import DTOFactory
-from .enums import (
+from starlite.dto import DTOFactory
+from starlite.enums import (
     HttpMethod,
     MediaType,
     OpenAPIMediaType,
     RequestEncodingType,
     ScopeType,
 )
-from .exceptions import (
+from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
     InternalServerException,
@@ -52,7 +50,7 @@ from .exceptions import (
     ValidationException,
     WebSocketException,
 )
-from .handlers import (
+from starlite.handlers import (
     ASGIRouteHandler,
     BaseRouteHandler,
     HTTPRouteHandler,
@@ -66,18 +64,19 @@ from .handlers import (
     route,
     websocket,
 )
-from .middleware.authentication import (
+from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
-from .middleware.base import DefineMiddleware, MiddlewareProtocol
-from .openapi.controller import OpenAPIController
-from .openapi.datastructures import ResponseSpec
-from .params import Body, Dependency, Parameter
-from .plugins import PluginProtocol
-from .response import Response
-from .router import Router
-from .routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
+from starlite.openapi.controller import OpenAPIController
+from starlite.openapi.datastructures import ResponseSpec
+from starlite.params import Body, Dependency, Parameter
+from starlite.plugins import PluginProtocol
+from starlite.response import Response
+from starlite.router import Router
+from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.types.partial import Partial
 
 __all__ = (
     "ASGIConnection",

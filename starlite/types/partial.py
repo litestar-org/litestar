@@ -7,7 +7,7 @@ from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar, get_type_
 from pydantic import BaseModel, create_model
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import is_class_and_subclass
+from starlite.utils.predicates import is_class_and_subclass
 
 try:
     # python 3.9 changed these variable
