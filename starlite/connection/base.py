@@ -275,5 +275,5 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         starlite_instance = self.scope["app"]
         index = starlite_instance.get_handler_index_by_name(name)
         if index:
-            return URLPath(index["path"]).make_absolute_url(self.base_url)
+            return URLPath(index["paths"][0]).make_absolute_url(self.base_url)
         return None

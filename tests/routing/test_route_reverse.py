@@ -29,7 +29,14 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
     def handler2() -> None:
         return None
 
-    router = Router("router-path/", route_handlers=[handler, handler_no_params])
+    @decorator(
+        ["/handler3", "/handler3/{str_param:str}/", "/handler3/{str_param:str}/{int_param:int}/"],
+        name="multiple-default-params",
+    )  # type: ignore
+    def handler3(str_param: str = "default", int_param: int = 0) -> None:
+        return None
+
+    router = Router("router-path/", route_handlers=[handler, handler_no_params, handler3])
     router_with_param = Router("router-with-param/{router_param:str}", route_handlers=[handler2])
     app = Starlite(route_handlers=[router, router_with_param])
 
