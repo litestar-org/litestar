@@ -5,6 +5,7 @@
         members:
             - __init__
             - __enter__
+            - create_session_cookies
 
 ::: starlite.testing.create_test_client
     options:

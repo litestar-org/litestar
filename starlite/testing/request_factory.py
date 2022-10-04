@@ -280,7 +280,7 @@ class RequestFactory:
 
     def get(
         self,
-        path: str,
+        path: str = "/",
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
         session: Optional[Dict[str, Any]] = None,
@@ -330,7 +330,7 @@ class RequestFactory:
 
     def post(
         self,
-        path: str,
+        path: str = "/",
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
         session: Optional[Dict[str, Any]] = None,
@@ -386,7 +386,7 @@ class RequestFactory:
 
     def put(
         self,
-        path: str,
+        path: str = "/",
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
         session: Optional[Dict[str, Any]] = None,
@@ -442,7 +442,7 @@ class RequestFactory:
 
     def patch(
         self,
-        path: str,
+        path: str = "/",
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
         session: Optional[Dict[str, Any]] = None,
@@ -498,7 +498,7 @@ class RequestFactory:
 
     def delete(
         self,
-        path: str,
+        path: str = "/",
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
         session: Optional[Dict[str, Any]] = None,
