@@ -3,23 +3,19 @@ from urllib.parse import urlencode
 
 from orjson import dumps, loads
 from pydantic import BaseModel
-from starlette.testclient import TestClient as StarletteTestClient
 
 from starlite.app import Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from starlite.exceptions import MissingDependencyException
 from starlite.handlers.http import get
-from starlite.middleware.session import SessionMiddleware
 from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
 from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
     from starlite.datastructures.cookie import Cookie
-    from starlite.middleware.session import SessionCookieConfig
 
 try:
     from httpx._content import (
@@ -32,103 +28,6 @@ except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
     ) from e
-
-
-class TestClient(StarletteTestClient):
-    app: Starlite  # type: ignore[assignment]
-    """
-        Starlite application instance under test.
-    """
-
-    def __init__(
-        self,
-        app: Starlite,
-        base_url: str = "http://testserver",
-        raise_server_exceptions: bool = True,
-        root_path: str = "",
-        backend: "Literal['asyncio', 'trio' ]" = "asyncio",
-        backend_options: Optional[Dict[str, Any]] = None,
-        session_config: Optional["SessionCookieConfig"] = None,
-    ) -> None:
-        """A client implementation providing a context manager for testing
-        applications.
-
-        Args:
-            app: The instance of [Starlite][starlite.app.Starlite] under test.
-            base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
-            raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
-                wrapping them in an HTTP response.
-            root_path: Path prefix for requests.
-            backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: 'anyio' options.
-            session_config: Configuration for Session Middleware class to create raw session cookies for request to the
-                route handlers.
-        """
-        self.session = SessionMiddleware(app=app, config=session_config) if session_config else None
-        super().__init__(
-            app=app,  # type: ignore[arg-type]
-            base_url=base_url,
-            raise_server_exceptions=raise_server_exceptions,
-            root_path=root_path,
-            backend=backend,
-            backend_options=backend_options,
-        )
-
-    def __enter__(self) -> "TestClient":
-        """Starlette's `TestClient.__enter__()` return value is strongly typed
-        to return their own `TestClient`, i.e., not-generic to support
-        subclassing.
-
-        We override here to provide a nicer typing experience for our user
-
-        Returns:
-            TestClient
-        """
-        return super().__enter__()  # pyright: ignore
-
-    def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
-        """Creates raw session cookies that are loaded into session by the
-        Session Middleware. It simulates cookies the same way as if they are
-        coming from the browser. Your tests must set up session middleware to
-        load raw session cookies into the session.
-
-        Examples:
-
-            ```python
-            import os
-
-            import pytest
-            from pydantic import SecretBytes
-            from starlite.middleware.session import SessionCookieConfig
-            from starlite.testing import TestClient
-
-
-            @pytest.fixture(scope="class")
-            def session_config(self) -> SessionCookieConfig:
-                return SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
-
-
-            @pytest.fixture()
-            def app(self, session_config: SessionCookieConfig) -> Starlite:
-                @get(path="/test")
-                def my_handler() -> None:
-                    pass
-
-                # Set up session middleware.
-                return Starlite(route_handlers=[my_handler], middleware=[session_config.middleware])
-
-
-            def test_something(app: Starlite, session_config: SessionCookieConfig) -> None:
-                with TestClient(app=app, session_config=session_config) as client:
-                    cookies = client.create_session_cookies(session_data={"user": "test_user"})
-                    # Pass raw cookies to the request.
-                    client.get(url="/test", cookies=cookies)
-            ```
-        """
-        if self.session is None:
-            return {}
-        encoded_data = self.session.dump_data(data=session_data)
-        return {f"{self.session.config.key}-{i}": chunk.decode("utf-8") for i, chunk in enumerate(encoded_data)}
 
 
 @get("/")
