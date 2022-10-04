@@ -14,7 +14,7 @@ from starlite.asgi import (
 )
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
-from starlite.datastructures import State
+from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
@@ -25,7 +25,6 @@ from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.utils.sync import as_async_callable_list
-from starlite.utils.templates import create_template_engine
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -40,9 +39,9 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.datastructures.provide import Provide
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.provide import Provide
     from starlite.routes.base import PathParameterDefinition
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -132,6 +131,7 @@ class Starlite(Router):
         "debug",
         "get_logger",
         "logger",
+        "logging_config",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -222,7 +222,7 @@ class Starlite(Router):
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.provide.Provide] instances.
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
@@ -252,8 +252,6 @@ class Starlite(Router):
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
-        # set pre-initialized values
-        self._init = False
         self._registered_routes: Set[BaseRoute] = set()
         self._route_handler_index: Dict[str, HandlerIndex] = {}
         self._static_paths: Set[str] = set()
@@ -321,7 +319,8 @@ class Starlite(Router):
         self.openapi_config = config.openapi_config
         self.plugins = config.plugins
         self.static_files_config = config.static_files_config
-        self.template_engine = create_template_engine(config.template_config)
+        self.template_engine = config.template_config.to_engine() if config.template_config else None
+        self.logging_config = config.logging_config
 
         super().__init__(
             after_request=config.after_request,
@@ -341,16 +340,14 @@ class Starlite(Router):
             security=config.security,
             tags=config.tags,
         )
-        self._init = True
-
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
 
-        if config.logging_config:
-            self.get_logger = config.logging_config.configure()
+        if self.logging_config:
+            self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
@@ -389,7 +386,7 @@ class Starlite(Router):
             await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
-        await self.asgi_handler(scope, receive, self._wrap_send(send))  # type: ignore[arg-type]
+        await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
         """Registers a route handler on the app. This method can be used to
@@ -402,8 +399,6 @@ class Starlite(Router):
         Returns:
             None
         """
-        if not self._init:
-            return
         routes = super().register(value=value)
         for route in routes:
             if isinstance(route, HTTPRoute):
@@ -629,7 +624,7 @@ class Starlite(Router):
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
 
-    def _wrap_send(self, send: "Send") -> "Send":
+    def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
         """Wraps the ASGI send and handles any 'before send' hooks.
 
         Args:
@@ -642,7 +637,10 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    await hook(message, self.state)
+                    if hook.num_expected_args > 2:
+                        await hook(message, self.state, scope)
+                    else:
+                        await hook(message, self.state)
                 await send(message)
 
             return wrapped_send

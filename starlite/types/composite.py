@@ -8,12 +8,13 @@ if TYPE_CHECKING:
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
 
-    from starlite.datastructures import Cookie, ResponseHeader  # noqa: TC004
+    from starlite.datastructures.cookie import Cookie  # noqa: TC004
+    from starlite.datastructures.provide import Provide  # noqa: TC004
+    from starlite.datastructures.response_header import ResponseHeader  # noqa: TC004
     from starlite.middleware.base import (  # noqa: TC004
         DefineMiddleware,
         MiddlewareProtocol,
     )
-    from starlite.provide import Provide  # noqa: TC004
 
 else:
     BaseHTTPMiddleware = Any

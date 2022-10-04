@@ -22,10 +22,10 @@ def test_handler_raise_for_no_template_engine() -> None:
 def test_engine_passed_to_callback(template_dir: "pathlib.Path") -> None:
     received_engine: Optional[JinjaTemplateEngine] = None
 
-    def callback(engine: JinjaTemplateEngine) -> JinjaTemplateEngine:
+    def callback(engine: JinjaTemplateEngine) -> None:
         nonlocal received_engine
         received_engine = engine
-        return engine
+        return None
 
     app = Starlite(
         route_handlers=[],

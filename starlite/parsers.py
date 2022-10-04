@@ -7,14 +7,14 @@ from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
 from starlite_multipart.datastructures import UploadFile as MultipartUploadFile
 
-from starlite.datastructures import UploadFile
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import RequestEncodingType
 
 if TYPE_CHECKING:
 
     from pydantic.fields import ModelField
 
-    from starlite.datastructures import FormMultiDict
+    from starlite.datastructures.form_multi_dict import FormMultiDict
 
 _true_values = {"True", "true"}
 _false_values = {"False", "false"}

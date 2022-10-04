@@ -27,13 +27,5 @@ To return a redirect response you should do the following:
 
 ## The Redirect Class
 
-`Redirect` is a container class used to generate redirect responses and their respective OpenAPI documentation. You can
-pass the following kwargs to it:
-
-- `path`: Redirection path, **required**.
-- `background`: A callable wrapped in an instance of `starlite.datastructures.BackgroundTask` or a list
-  of `BackgroundTask` instances wrapped in `starlite.datastructures.BackgroundTasks`. The callable(s) will be called after
-  the response is executed. Note - if you return a value from a `before_request` hook, background tasks passed to the
-  handler will not be executed.
-- `headers`: A string/string dictionary of response headers. Header keys are insensitive.
-- `cookies`: A list of `Cookie` instances. See [response-cookies](5-response-cookies.md).
+`Redirect` is a container class used to generate redirect responses and their respective OpenAPI documentation.
+See the [API Reference][starlite.datastructures.Redirect] for full details on the `Redirect` class and the kwargs it accepts.

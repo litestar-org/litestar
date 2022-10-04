@@ -1,7 +1,6 @@
 import re
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from inspect import getfullargspec, isawaitable, ismethod
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -31,6 +30,7 @@ from starlite.exceptions import (
     NotFoundException,
     ValidationException,
 )
+from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.app import HandlerNode, Starlite
@@ -226,13 +226,12 @@ class StarliteASGIRouter(StarletteRouter):
         Args:
             handler (LifeSpanHandler): sync or async callable that may or may not have an argument.
         """
-        arg_spec = getfullargspec(handler)
-        if (not ismethod(handler) and len(arg_spec.args) == 1) or (ismethod(handler) and len(arg_spec.args) == 2):
-            value = handler(self.app.state)  # type:ignore[call-arg]
+        async_callable = AsyncCallable(handler)  # type: ignore
+
+        if async_callable.num_expected_args > 0:
+            await async_callable(self.app.state)  # type: ignore[arg-type]
         else:
-            value = handler()  # type:ignore[call-arg]
-        if isawaitable(value):
-            await value
+            await async_callable()
 
     async def startup(self) -> None:
         """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined

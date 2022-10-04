@@ -24,7 +24,14 @@ class TemplateConfig(BaseModel):
     """
         A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol].
     """
-    engine_callback: Optional[Callable[[Any], Any]] = None
+    engine_callback: Optional[Callable[[Any], None]] = None
     """
         A callback function that allows modifying the instantiated templating protocol.
     """
+
+    def to_engine(self) -> "TemplateEngineProtocol":
+        """Instantiates the template engine."""
+        template_engine = self.engine(self.directory)
+        if callable(self.engine_callback):
+            self.engine_callback(template_engine)  # pylint: disable=not-callable
+        return template_engine

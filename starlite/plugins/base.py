@@ -24,6 +24,8 @@ ModelT = TypeVar("ModelT")
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
+    __slots__ = ()
+
     def on_app_init(self, app: "Starlite") -> None:
         """Receives the Starlite application instance before `init` is
         finalized and allows the plugin to update various attributes.

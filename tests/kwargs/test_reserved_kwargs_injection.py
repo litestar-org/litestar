@@ -18,6 +18,7 @@ from starlite import (
     put,
 )
 from starlite.testing import create_test_client
+from starlite.types import Scope
 from tests import Person, PersonFactory
 
 
@@ -213,6 +214,31 @@ def test_request(decorator: Any, http_method: Any, expected_status_code: Any) ->
         @decorator()
         def test_method(self, request: Request) -> None:
             assert isinstance(request, Request)
+
+    with create_test_client(MyController) as client:
+        response = client.request(http_method, test_path)
+        assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
+    test_path = "/person"
+
+    class MyController(Controller):
+        path = test_path
+
+        @decorator()
+        def test_method(self, scope: Scope) -> None:
+            assert isinstance(scope, dict)
 
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)

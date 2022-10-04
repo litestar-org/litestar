@@ -107,13 +107,8 @@ class TestClass:
         with TestClient(app=app, session_config=session_config) as client:
             cookies = client.create_session_cookies(session_data={"user": "test_user"})
             # Pass raw cookies to the request.
-            response = client.get(url="/my_route", cookies=cookies)
-            # Call another route handler by passing cookies from the previous response.
-            client.get(url="/next_route", cookies=response.cookies)
+            client.get(url="/my_route", cookies=cookies)
 ```
-
-As session middleware is enabled, the response will contain raw session cookies which you can pass it again to another
-mock request when calling the chain of route handlers.
 
 !!! important
     Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's

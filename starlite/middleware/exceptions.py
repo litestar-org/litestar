@@ -7,7 +7,7 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
-from starlite.exceptions.utils import create_exception_response
+from starlite.utils import create_exception_response
 from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:

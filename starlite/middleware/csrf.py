@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from starlette.datastructures import MutableHeaders
 
 from starlite.connection import Request
-from starlite.datastructures import Cookie
+from starlite.datastructures.cookie import Cookie
 from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol

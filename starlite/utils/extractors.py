@@ -15,7 +15,7 @@ from starlette.requests import cookie_parser
 from typing_extensions import Literal, TypedDict
 
 from starlite.connection import Request
-from starlite.datastructures import UploadFile
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
 
 if TYPE_CHECKING:
@@ -280,10 +280,9 @@ class ConnectionDataExtractor:
             form_data = await request.form()
             if request_encoding_type == RequestEncodingType.URL_ENCODED:
                 return dict(form_data)
-            output: Dict[str, Any] = {}
-            for key, value in form_data.multi_items():
-                output[key] = repr(value) if isinstance(value, UploadFile) else value
-            return output
+            return {
+                key: repr(value) if isinstance(value, UploadFile) else value for key, value in form_data.multi_items()
+            }
 
 
 class ExtractedResponseData(TypedDict, total=False):

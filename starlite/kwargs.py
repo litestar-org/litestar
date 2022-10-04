@@ -32,26 +32,15 @@ from starlite.constants import (
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
+from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
-from starlite.provide import Provide
 from starlite.signature import SignatureModel, get_signature_model
 
 if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
     from starlite.types import ReservedKwargs
-
-# Shapes corresponding to sequences
-SEQ_SHAPES = {
-    SHAPE_LIST,
-    SHAPE_SET,
-    SHAPE_SEQUENCE,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
-    SHAPE_DEQUE,
-    SHAPE_FROZENSET,
-}
 
 
 class ParameterDefinition(NamedTuple):
@@ -172,6 +161,16 @@ class KwargsModel:
         Returns:
             A Tuple of sets
         """
+        sequence_shapes = {
+            SHAPE_LIST,
+            SHAPE_SET,
+            SHAPE_SEQUENCE,
+            SHAPE_TUPLE,
+            SHAPE_TUPLE_ELLIPSIS,
+            SHAPE_DEQUE,
+            SHAPE_FROZENSET,
+        }
+
         expected_dependencies = {
             cls._create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
@@ -186,7 +185,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
                 for field_name, model_field in layered_parameters.items()
                 if field_name not in ignored_keys and field_name not in signature_model_fields
@@ -197,7 +196,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=model_field.field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
                 for field_name, model_field in signature_model_fields.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
@@ -228,7 +227,7 @@ class KwargsModel:
                     field_name=field_name,
                     field_info=field_info,
                     path_parameters=path_parameters,
-                    is_sequence=model_field.shape in SEQ_SHAPES,
+                    is_sequence=model_field.shape in sequence_shapes,
                 )
             )
         return param_definitions, expected_dependencies
@@ -324,6 +323,37 @@ class KwargsModel:
             sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
+    def _collect_reserved_kwargs(
+        self, connection: Union["WebSocket", "Request"], connection_query_params: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, Any]:
+        """
+
+        Args:
+            connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+            connection_query_params: The query params dct.
+
+        Returns:
+            A dictionary of values correlating to reserved kwargs.
+        """
+        reserved_kwargs: Dict[str, Any] = {}
+        if "state" in self.expected_reserved_kwargs:
+            reserved_kwargs["state"] = connection.app.state.copy()
+        if "headers" in self.expected_reserved_kwargs:
+            reserved_kwargs["headers"] = connection.headers
+        if "cookies" in self.expected_reserved_kwargs:
+            reserved_kwargs["cookies"] = connection.cookies
+        if "query" in self.expected_reserved_kwargs:
+            reserved_kwargs["query"] = connection_query_params
+        if "request" in self.expected_reserved_kwargs:
+            reserved_kwargs["request"] = connection
+        if "socket" in self.expected_reserved_kwargs:
+            reserved_kwargs["socket"] = connection
+        if "data" in self.expected_reserved_kwargs:
+            reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
+        if "scope" in self.expected_reserved_kwargs:
+            reserved_kwargs["scope"] = connection.scope
+        return reserved_kwargs
+
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are
         not resolved to ensure this function is sync.
@@ -351,23 +381,13 @@ class KwargsModel:
 
         if not self.expected_reserved_kwargs:
             return {**path_params, **query_params, **header_params, **cookie_params}
-
-        reserved_kwargs: Dict[str, Any] = {}
-        if "state" in self.expected_reserved_kwargs:
-            reserved_kwargs["state"] = connection.app.state.copy()
-        if "headers" in self.expected_reserved_kwargs:
-            reserved_kwargs["headers"] = connection.headers
-        if "cookies" in self.expected_reserved_kwargs:
-            reserved_kwargs["cookies"] = connection.cookies
-        if "query" in self.expected_reserved_kwargs:
-            reserved_kwargs["query"] = connection_query_params
-        if "request" in self.expected_reserved_kwargs:
-            reserved_kwargs["request"] = connection
-        if "socket" in self.expected_reserved_kwargs:
-            reserved_kwargs["socket"] = connection
-        if "data" in self.expected_reserved_kwargs:
-            reserved_kwargs["data"] = self._get_request_data(request=cast("Request", connection))
-        return {**reserved_kwargs, **path_params, **query_params, **header_params, **cookie_params}
+        return {
+            **self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params),
+            **path_params,
+            **query_params,
+            **header_params,
+            **cookie_params,
+        }
 
     @staticmethod
     def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:

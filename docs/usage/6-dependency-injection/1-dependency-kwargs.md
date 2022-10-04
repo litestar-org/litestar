@@ -9,7 +9,7 @@ can [inject into route handlers](../2-route-handlers/1-http-route-handlers.md#ht
 
 ```python
 from starlite import Controller, Provide, patch
-from starlite.typing import Partial
+from starlite.types.partial import Partial
 from pydantic import BaseModel, UUID4
 
 

@@ -82,16 +82,13 @@ class AbstractAuthenticationMiddleware(ABC):
         """This method must be overridden by subclasses. It receives the http
         connection and returns an instance of.
 
-        [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].
-
         Args:
             connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
 
         Raises:
-            If authentication fail: either an [NotAuthorizedException][starlite.exceptions.NotAuthorizedException] or
-                [PermissionDeniedException][starlite.exceptions.PermissionDeniedException] instance.
+            NotAuthorizedException | PermissionDeniedException: if authentication fails.
 
         Returns:
-            [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult]
+            An instance of [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].
         """
         raise NotImplementedError("authenticate_request must be overridden by subclasses")

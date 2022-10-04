@@ -5,8 +5,6 @@
 <img alt="Starlite logo" src="./images/SVG/starlite-banner.svg" width="100%" height="auto">
 
 <center>
-![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)

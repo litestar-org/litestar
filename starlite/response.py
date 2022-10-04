@@ -23,7 +23,7 @@ from starlite.utils.serialization import default_serializer
 T = TypeVar("T")
 
 if TYPE_CHECKING:
-    from starlite.datastructures import BackgroundTask, BackgroundTasks
+    from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
     from starlite.types import ResponseCookies
 

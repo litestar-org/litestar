@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
     from starlite.config import AppConfig  # noqa: TC004
     from starlite.connection import Request, WebSocket  # noqa: TC004
-    from starlite.datastructures import State  # noqa: TC004
+    from starlite.datastructures.state import State  # noqa: TC004
     from starlite.handlers import HTTPRouteHandler, WebsocketRouteHandler  # noqa: TC004
     from starlite.response import Response  # noqa: TC004
     from starlite.types.protocols import Logger  # noqa: TC004
@@ -31,7 +31,9 @@ AfterRequestHookHandler = Union[
 AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 AnyCallable = Callable[..., Any]
-BeforeMessageSendHookHandler = Callable[[Message, State], SyncOrAsyncUnion[None]]
+BeforeMessageSendHookHandler = Union[
+    Callable[[Message, State, Scope], SyncOrAsyncUnion[None]], Callable[[Message, State], SyncOrAsyncUnion[None]]
+]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
 ExceptionHandler = Callable[[Request, Exception], StarletteResponse]

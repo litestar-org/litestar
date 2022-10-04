@@ -1,6 +1,13 @@
 # SQL-Alchemy Plugin
 
-To use the `starlite.plugins.sql_alchemy.SQLAlchemyPlugin` import it and pass it to the `Starlite` constructor:
+Starlite offers extensive support for `SQLAlchemy` using with the `SQLAlchemyPlugin`. This plugin offers support for
+SQLAlchemy declarative models, which can be used as if they were pydantic models. Additionally, you can pass optional
+configuration to the plugin to create a DB engine / connection and setup DB sessions dependency injection.
+
+## Basic Use
+
+You can simply pass an instance of `SQLAlchemyPlugin` without passing config to the Starlite constructor. This will
+extend support for serialization, deserialization and DTO creation for SQLAlchemy declarative models:
 
 ```python
 from starlite import Starlite
@@ -40,7 +47,8 @@ app = Starlite(
 
 ## Handling of Relationships
 
-The SQLAlchemy plugin handles relationships by traversing and recursively converting the related tables into pydantic models.
+The SQLAlchemy plugin handles relationships by traversing and recursively converting the related tables into pydantic
+models.
 This approach, while powerful, poses some difficulties. For example, consider these two tables:
 
 ```python
@@ -69,7 +77,52 @@ class User(Base):
 
 The `User` table references the `Pet` table, which back references the `User` table. Hence, the resulting pydantic model
 will include a circular reference. To avoid this, the plugin sets relationships of this kind in the pydantic model type
-`Any` with a default of `None`. This means you can provide any value for them - or none at all, and validation will not break.
+`Any` with a default of `None`. This means you can provide any value for them - or none at all, and validation will not
+break.
 
 Additionally, all relationships are defined as `Optional` in the pydantic model, following the assumption you might not
 send complete data structures using the API.
+
+## SQLAlchemy Config
+
+You can also pass an instance of [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig] to the plugin
+constructor:
+
+```python
+from starlite import Starlite
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin, SQLAlchemyConfig
+
+from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlite import post
+
+Base = declarative_base()
+
+
+class Company(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    worth = Column(Float)
+
+
+@post(path="/companies")
+async def create_company(data: Company, async_session: AsyncSession) -> Company:
+    ...
+
+
+app = Starlite(
+    route_handlers=[],
+    plugins=[
+        SQLAlchemyPlugin(
+            config=SQLAlchemyConfig(
+                connection_string="sqlite+aiosqlite://", dependency_key="async_session"
+            )
+        ),
+    ],
+)
+```
+
+In the above, the `SQLAlchemyPlugin` will establish a db connection using the given connection string, and add an
+dependency injection under the `async_session` key on the application level. See
+the [API Reference][starlite.config.SQLAlchemyConfig] for a full reference of the `SQLAlchemyConfig` kwargs.

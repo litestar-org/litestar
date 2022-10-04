@@ -3,7 +3,7 @@ from .base import BaseRouteHandler
 from .http import HTTPRouteHandler, delete, get, patch, post, put, route
 from .websocket import WebsocketRouteHandler, websocket
 
-__all__ = [
+__all__ = (
     "ASGIRouteHandler",
     "BaseRouteHandler",
     "HTTPRouteHandler",
@@ -16,4 +16,4 @@ __all__ = [
     "put",
     "route",
     "websocket",
-]
+)

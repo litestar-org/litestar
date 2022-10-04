@@ -1,5 +1,10 @@
 # Changelog
 
+[1.24.0]
+
+- update `RequestFactory`.
+- update `SQLAlchemyPlugin` to support connection and dependency injection.
+
 [1.23.1]
 
 - fix `httpx` being a required dependency.

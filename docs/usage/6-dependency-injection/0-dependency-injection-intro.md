@@ -57,7 +57,7 @@ app = Starlite(
 The above example illustrates how dependencies are declared on the different layers of the application.
 
 Dependencies are callables - sync or async functions, methods or class instances that implement the `__call__` method -
-that are wrapped inside an instance of the `starlite.provide.Provide` class.
+that are wrapped inside an instance of the `starlite.datastructures.Provide` class.
 
 ## Pre-requisites and Scope
 

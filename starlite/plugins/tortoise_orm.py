@@ -66,13 +66,11 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         parameter_name = kwargs.pop("parameter_name", None)
         if parameter_name == "data":
             if model_class not in self._data_models_map:
-                fields_to_exclude: List[str] = []
-                for (
-                    field_name,
-                    tortoise_model_field,
-                ) in model_class._meta.fields_map.items():  # pylint: disable=protected-access
-                    if isinstance(tortoise_model_field, (RelationalField, ReverseRelation)) or tortoise_model_field.pk:
-                        fields_to_exclude.append(field_name)
+                fields_to_exclude: List[str] = [
+                    field_name
+                    for field_name, tortoise_model_field in model_class._meta.fields_map.items()  # pylint: disable=protected-access
+                    if isinstance(tortoise_model_field, (RelationalField, ReverseRelation)) or tortoise_model_field.pk
+                ]
                 kwargs.update(
                     exclude=tuple(fields_to_exclude), exclude_readonly=True, name=f"{model_class.__name__}RequestBody"
                 )

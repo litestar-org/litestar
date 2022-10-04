@@ -16,14 +16,8 @@ For other configuration issues, Starlite will raise `ImproperlyConfiguredExcepti
 ## Application Exceptions
 
 For application exceptions, Starlite uses the class `HTTPException`, which inherits from both `StarliteException`
-and `starlette.exceptions.HTTPException`. This class receives three
-optional kwargs:
-
-- `detail`: The error message. Defaults to the "phrase" of the status code using `http.HttpStatus`.
-- `status_code`: A valid HTTP error status code (4xx or 5xx range). Defaults to 500.
-- `extra`: Either a dictionary or a list of arbitrary values.
-
-The default exception handler will serialize `HTTPExceptions` into a json response with the following structure:
+and `starlette.exceptions.HTTPException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
+the `HTTPException` class and the kwargs it accepts.
 
 ```json
 {
@@ -33,7 +27,7 @@ The default exception handler will serialize `HTTPExceptions` into a json respon
 }
 ```
 
-Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use:
+Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use, such as:
 
 - `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
 - `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
@@ -45,6 +39,8 @@ Starlite also offers several pre-configured **exception subclasses** with pre-se
 
 When a value fails `pydantic` validation, the result will be a `ValidationException` with the `extra` key set to the
 pydantic validation errors. Thus, this data will be made available for the API consumers by default.
+
+See the [API Reference section for exceptions](../reference/exceptions/0-base-exceptions.md) for full reference.
 
 ## Exception Handling
 
@@ -171,7 +167,7 @@ layers for this purpose.
 #### Logging Exception Handler
 
 !!! note
-    The [create_exception_response][starlite.exceptions.utils.create_exception_response] function is used internally to produce default error responses if no
+    The [create_exception_response][starlite.utils.create_exception_response] function is used internally to produce default error responses if no
     handler has been registered to a route. This is available as part of the public API of Starlite so that you can
     apply it wherever necessary to ensure consistent error responses across your application.
 
@@ -179,7 +175,7 @@ layers for this purpose.
 import logging
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from starlette.responses import Response
-from starlite.exceptions.utils import create_exception_response
+from starlite.utils import create_exception_response
 from starlite.types import Request
 from starlite import Starlite
 

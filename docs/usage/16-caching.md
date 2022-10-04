@@ -49,12 +49,8 @@ You can also specify the default cache key builder to use for the entire applica
 ## Configuring Caching
 
 You can configure caching behaviour on the application level by passing an instance of `CacheConfig` to the Starlite
-constructor. `CacheConfig` accepts 3 optional kwargs:
-
-- `backend`: the cache backend to use. Defaults to an instance of `starlite.cache.SimpleCacheBackend`.
-- `expiration`: the default expiration. Defaults to 60 seconds.
-- `cache_key_builder`: the default key builder function. As mentioned above, the default key builder uses the
-  request.url.path + its sorted query parameters.
+constructor. See the [API Reference][starlite.config.CacheConfig] for full details on the `CacheConfig` class and the
+kwargs it accepts.
 
 ### Registering a Cache Backend
 

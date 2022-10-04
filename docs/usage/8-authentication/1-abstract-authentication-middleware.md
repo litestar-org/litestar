@@ -202,7 +202,7 @@ async def my_route_handler(socket: WebSocket[User, Token]) -> None:
     assert isinstance(auth, Token)
 ```
 
-And if you'd like to exclude individual routes outside of the configured
+And if you'd like to exclude individual routes outside those configured:
 
 ```python
 import anyio
