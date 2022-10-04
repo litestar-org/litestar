@@ -3,7 +3,6 @@ from urllib.parse import urlencode
 
 from orjson import dumps, loads
 from pydantic import BaseModel
-from starlette.testclient import TestClient as StarletteTestClient
 
 from starlite.app import Starlite
 from starlite.connection import Request
@@ -15,7 +14,6 @@ from starlite.types.asgi_types import ASGIVersion
 from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
     from starlite.datastructures.cookie import Cookie
 
@@ -30,55 +28,6 @@ except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
     ) from e
-
-
-class TestClient(StarletteTestClient):
-    app: Starlite  # type: ignore[assignment]
-    """
-        Starlite application instance under test.
-    """
-
-    def __init__(
-        self,
-        app: Starlite,
-        base_url: str = "http://testserver",
-        raise_server_exceptions: bool = True,
-        root_path: str = "",
-        backend: "Literal['asyncio', 'trio' ]" = "asyncio",
-        backend_options: Optional[Dict[str, Any]] = None,
-    ) -> None:
-        """A client implementation providing a context manager for testing
-        applications.
-
-        Args:
-            app: The instance of [Starlite][starlite.app.Starlite] under test.
-            base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
-            raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
-                wrapping them in an HTTP response.
-            root_path: Path prefix for requests.
-            backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: 'anyio' options.
-        """
-        super().__init__(
-            app=app,  # type: ignore[arg-type]
-            base_url=base_url,
-            raise_server_exceptions=raise_server_exceptions,
-            root_path=root_path,
-            backend=backend,
-            backend_options=backend_options,
-        )
-
-    def __enter__(self) -> "TestClient":
-        """Starlette's `TestClient.__enter__()` return value is strongly typed
-        to return their own `TestClient`, i.e., not-generic to support
-        subclassing.
-
-        We override here to provide a nicer typing experience for our user
-
-        Returns:
-            TestClient
-        """
-        return super().__enter__()  # pyright: ignore
 
 
 @get("/")
