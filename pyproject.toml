@@ -11,21 +11,21 @@ repository = "https://github.com/starlite-api/starlite"
 documentation = "https://starlite-api.github.io/starlite"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi", "framework", "websocket"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Web Environment",
-    "License :: OSI Approved :: MIT License",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: Software Development",
-    "Typing :: Typed",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development",
+  "Typing :: Typed",
 ]
 include = ["CHANGELOG.md"]
 packages = [
@@ -45,6 +45,7 @@ pydantic-openapi-schema = "*"
 pyyaml = "*"
 starlette = ">=0.21"
 starlite-multipart = "*"
+structlog = { version = "*", optional = true }
 typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
@@ -73,7 +74,9 @@ tox = "*"
 testing = ["httpx"]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["httpx", "brotli", "cryptography"]
+full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
+picologging = ["picologging"]
+structlog = ["structlog"]
 
 
 [build-system]
@@ -90,23 +93,23 @@ multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
 disable = [
-    "cyclic-import",
-    "duplicate-code",
-    "line-too-long",
-    "missing-class-docstring",
-    "missing-module-docstring",
-    "super-init-not-called",
-    "too-few-public-methods",
-    "too-many-ancestors",
-    "too-many-arguments",
-    "too-many-branches",
-    "too-many-instance-attributes",
-    "too-many-lines",
-    "too-many-locals",
-    "too-many-return-statements",
-    "ungrouped-imports",
-    "unnecessary-ellipsis",
-    "unused-import",
+  "cyclic-import",
+  "duplicate-code",
+  "line-too-long",
+  "missing-class-docstring",
+  "missing-module-docstring",
+  "super-init-not-called",
+  "too-few-public-methods",
+  "too-many-ancestors",
+  "too-many-arguments",
+  "too-many-branches",
+  "too-many-instance-attributes",
+  "too-many-lines",
+  "too-many-locals",
+  "too-many-return-statements",
+  "ungrouped-imports",
+  "unnecessary-ellipsis",
+  "unused-import",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic","orjson","picologging"]

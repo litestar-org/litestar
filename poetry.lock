@@ -869,7 +869,7 @@ anyio = "*"
 name = "structlog"
 version = "22.1.0"
 description = "Structured Logging for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1032,13 +1032,15 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [extras]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["httpx", "brotli", "cryptography"]
+full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
+picologging = ["picologging"]
+structlog = ["structlog"]
 testing = ["httpx"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "e91c06e6a55f003dc46dff998306a18d0f7d3fb465df7a6895923900e2f816d4"
+content-hash = "7cdb7175ca7ddc683c5d7045ab5b28685cc615b1115e24758237b0e8a7233e57"
 
 [metadata.files]
 aiosqlite = [
