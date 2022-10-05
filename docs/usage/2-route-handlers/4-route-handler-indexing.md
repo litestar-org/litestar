@@ -1,9 +1,10 @@
 # Route Handler Indexing
 
 You can provide in all route handler decorators a `name` kwarg. The value for this kwarg **must be unique**, otherwise
-an exception will be raised. Once a route handler defines `name`, this value can be used to dynamically retrieve (i.e.
-during runtime) a mapping containing the route handler instance and paths, also it can be used to build a URL path
-for that handler:
+an exception will be raised. Default value for `name` is the value of
+[`__qualname__`](https://docs.python.org/3/library/stdtypes.html#definition.__qualname__) property of the route handler.
+`name` can be used to dynamically retrieve (i.e. during runtime) a mapping containing the route handler instance and
+paths, also it can be used to build a URL path for that handler:
 
 ```python
 from starlite import Starlite, Request, Redirect, NotFoundException, get

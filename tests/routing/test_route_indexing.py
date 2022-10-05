@@ -3,6 +3,7 @@ from typing import Any, Type
 import pytest
 
 from starlite import (
+    Controller,
     HTTPRouteHandler,
     ImproperlyConfiguredException,
     Router,
@@ -50,6 +51,43 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     assert handler_index["handler"] == websocket_handler
 
     assert app.get_handler_index_by_name("nope") is None
+
+
+@pytest.mark.parametrize("decorator", [get, post, patch, put, delete])
+def test_default_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
+    @decorator("/handler")  # type: ignore
+    def handler() -> None:
+        pass
+
+    @decorator("/named_handler", name="named_handler")  # type: ignore
+    def named_handler() -> None:
+        pass
+
+    class MyController(Controller):
+        path = "/test"
+
+        @decorator()  # type: ignore
+        def handler(self) -> None:
+            pass
+
+    router = Router("router/", route_handlers=[handler, named_handler, MyController])
+    app = Starlite(route_handlers=[router])
+
+    handler_index = app.get_handler_index_by_name(handler.fn.__qualname__)  # type: ignore
+    assert handler_index
+    assert handler_index["paths"] == ["/router/handler"]
+    assert handler_index["handler"] == handler
+    assert handler_index["qualname"] == handler.fn.__qualname__  # type: ignore
+
+    handler_index = app.get_handler_index_by_name(MyController.handler.fn.__qualname__)  # type: ignore
+    assert handler_index
+    assert handler_index["paths"] == ["/router/test"]
+    # we can not do an assertion on handlers in Controller subclasses
+    assert handler_index["qualname"] == MyController.handler.fn.__qualname__  # type: ignore
+
+    # test that passing route name overrides default name completely
+    handler_index = app.get_handler_index_by_name(named_handler.fn.__qualname__)  # type: ignore
+    assert handler_index is None
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])

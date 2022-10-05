@@ -495,7 +495,7 @@ class Starlite(Router):
         if handler_index is None:
             return None
 
-        allow_str_instead = [datetime, date, time, timedelta, float, Path]
+        allow_str_instead = {datetime, date, time, timedelta, float, Path}
         output: List[str] = []
 
         routes = sorted(
@@ -612,10 +612,11 @@ class Starlite(Router):
 
     def _get_handler_qualname(self, handler: "RouteHandlerType") -> str:
         """Retrieves __qualname__ for passed route handler."""
-        if handler.fn and hasattr(handler.fn, "__qualname__"):
-            return handler.fn.__qualname__
+        handler_fn = cast("AnyCallable", handler.fn)
+        if hasattr(handler_fn, "__qualname__"):
+            return handler_fn.__qualname__
 
-        return type(handler.fn).__qualname__
+        return type(handler_fn).__qualname__
 
     def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
         """Stores mappings:
@@ -635,9 +636,7 @@ class Starlite(Router):
             qualname = self._get_handler_qualname(handler)
             self._route_mapping[qualname].append(route)
 
-            name = handler.name
-            if not name:
-                continue
+            name = handler.name or self._get_handler_qualname(handler)
 
             if (
                 name in self._route_handler_index
