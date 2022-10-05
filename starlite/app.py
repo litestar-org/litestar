@@ -524,6 +524,18 @@ class Starlite(Router):
 
         return join_paths(output)
 
+    @property
+    def route_handler_method_view(self) -> Dict[str, List[str]]:
+        """
+        Returns:
+             A dictionary mapping route handlers to paths
+        """
+        route_map: Dict[str, List[str]] = {}
+        for handler, routes in self._route_mapping.items():
+            route_map[handler] = [route.path for route in routes]
+
+        return route_map
+
     def _create_asgi_handler(self) -> "ASGIApp":
         """Creates an ASGIApp that wraps the ASGI router inside an exception
         handler.
