@@ -528,7 +528,7 @@ class Starlite(Router):
     def route_handler_method_view(self) -> Dict[str, List[str]]:
         """
         Returns:
-             A dictionary mapping route handlers to paths
+            A dictionary mapping route handlers to paths.
         """
         route_map: Dict[str, List[str]] = {}
         for handler, routes in self._route_mapping.items():
@@ -619,10 +619,8 @@ class Starlite(Router):
         return type(handler_fn).__qualname__
 
     def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
-        """Stores mappings:
-
-            * between route handlers and routes;
-            * between route handlers and names.
+        """Stores the mapping of route handlers to routes and to route handler
+        names.
 
         Args:
             route: A Route instance.

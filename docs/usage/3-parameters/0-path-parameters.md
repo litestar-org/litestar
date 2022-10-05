@@ -37,7 +37,8 @@ Currently, the following types are supported:
 - `int`: Accepts ints and floats.
 - `path`: Accepts valid POSIX paths.
 - `str`: Accepts all string values.
-- `timedelta`: Accepts time stamps and duration strings compatible with the pydantic formats.
+- `time`: Accepts time strings with optional timezone compatible with pydantic formats.
+- `timedelta`: Accepts duration strings compatible with the pydantic formats.
 - `uuid`: Accepts all uuid values.
 
 The types declared in the path parameter and the function do not need to match 1:1 - as long as parameter inside the

@@ -31,11 +31,11 @@ def handler_four(request: Request, name: str) -> Redirect:
     if not handler_index:
         raise NotFoundException(f"no handler matching the name {name} was found")
 
-    # handler_index == { "path": "/", "handler": ..., "qualname": ... }
+    # handler_index == { "paths": ["/"], "handler": ..., "qualname": ... }
     # do something with the handler index below, e.g. send a redirect response to the handler, or access
     # handler.opt and some values stored there etc.
 
-    return Redirect(path=handler_index["path"])
+    return Redirect(path=handler_index["paths"][0])
 
 
 @get("/redirect/{param_value:int}", name="five")
