@@ -513,7 +513,8 @@ class Starlite(Router):
             if isinstance(component, dict):
                 val = path_parameters.get(component["name"])
                 if not (
-                    isinstance(val, component["type"]) or (type(val) in allow_str_instead and isinstance(val, str))
+                    isinstance(val, component["type"])
+                    or (component["type"] in allow_str_instead and isinstance(val, str))
                 ):
                     raise ValidationException(
                         f"Received type for path parameter {component['name']} doesn't match declared type {component['type']}"
