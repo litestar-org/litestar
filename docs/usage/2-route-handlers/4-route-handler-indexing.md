@@ -83,3 +83,6 @@ If there are multiple paths attached to a handler that have the same path parame
 has been registered on multiple routers) the result of `route_reverse` is not defined.
 The function will return a formatted path but it might be picked randomly so reversing urls in such cases is highly
 discouraged.
+
+If you have access to `request` instance you can make reverse lookups using `url_for` function which is similar to
+`route_reverse` but returns absolute URL.
