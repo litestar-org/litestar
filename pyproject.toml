@@ -71,7 +71,7 @@ tortoise-orm = "*"
 tox = "*"
 
 [tool.poetry.extras]
-testing = ["httpx"]
+testing = ["httpx", "cryptography"]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]

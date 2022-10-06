@@ -25,7 +25,7 @@ jobs:
       - name: Install App Dependencies
         run: poetry install --no-interaction --no-root --no-dev
       - name: Install Test Dependencies
-        run: poetry run python -m pip install pytest pytest-asyncio httpx
+        run: poetry run python -m pip install pytest pytest-asyncio httpx cryptography
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
