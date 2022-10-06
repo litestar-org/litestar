@@ -142,16 +142,16 @@ def create_constrained_field_schema(
 def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Schema:
     """Copy values from the given instance of pydantic FieldInfo into the
     schema."""
-    if field_info.const and field_info.default not in [None, ..., Undefined] and schema.const is None:
+    if field_info.const and field_info.default not in {None, ..., Undefined} and schema.const is None:
         schema.const = field_info.default
     for pydantic_key, schema_key in PYDANTIC_TO_OPENAPI_PROPERTY_MAP.items():
         value = getattr(field_info, pydantic_key)
-        if value not in [None, ..., Undefined]:
+        if value not in {None, ..., Undefined}:
             setattr(schema, schema_key, value)
     for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
         if extra_key in field_info.extra:
             value = field_info.extra[extra_key]
-            if value not in [None, ..., Undefined]:
+            if value not in (None, ..., Undefined):
                 setattr(schema, schema_key, value)
     return schema
 

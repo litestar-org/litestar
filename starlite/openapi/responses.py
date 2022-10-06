@@ -64,7 +64,7 @@ def create_success_response(
         or default_descriptions.get(signature.return_annotation)
         or HTTPStatus(route_handler.status_code).description
     )
-    if signature.return_annotation not in [signature.empty, None, Redirect, File, Stream]:
+    if signature.return_annotation not in {signature.empty, None, Redirect, File, Stream}:
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
             return_annotation = str  # since templates return str

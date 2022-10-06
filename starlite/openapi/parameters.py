@@ -167,7 +167,7 @@ def get_layered_parameter(
 
     field_info.default = (
         signature_field_info.default
-        if signature_field_info.default not in [Undefined, Ellipsis]
+        if signature_field_info.default not in {Undefined, Ellipsis}
         else layer_field_info.default
     )
 
