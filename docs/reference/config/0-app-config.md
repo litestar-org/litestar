@@ -27,6 +27,7 @@
             - openapi_config
             - parameters
             - plugins
+            - request_class
             - response_class
             - response_cookies
             - response_headers
@@ -35,3 +36,4 @@
             - static_files_config
             - tags
             - template_config
+            - websocket_class

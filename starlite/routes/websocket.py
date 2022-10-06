@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from starlette.routing import get_name
 
-from starlite.connection import WebSocket
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
 
 if TYPE_CHECKING:
+    from starlite.connection import WebSocket
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.types import (
@@ -58,7 +58,7 @@ class WebSocketRoute(BaseRoute):
         Returns:
             None
         """
-        websocket = WebSocket[Any, Any](scope=scope, receive=receive, send=send)
+        websocket: "WebSocket[Any, Any]" = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
         if self.route_handler.resolve_guards():
             await self.route_handler.authorize_connection(connection=websocket)
 
@@ -70,7 +70,7 @@ class WebSocketRoute(BaseRoute):
         else:
             await fn(**kwargs)
 
-    async def _resolve_kwargs(self, websocket: WebSocket[Any, Any]) -> Dict[str, Any]:
+    async def _resolve_kwargs(self, websocket: "WebSocket[Any, Any]") -> Dict[str, Any]:
         """Resolves the required kwargs from the request data.
 
         Args:

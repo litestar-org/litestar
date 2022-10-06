@@ -45,6 +45,8 @@ def app_config_object() -> AppConfig:
         static_files_config=[],
         tags=[],
         template_config=None,
+        request_class=None,
+        websocket_class=None,
     )
 
 
