@@ -570,7 +570,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             )
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and return_annotation not in [NoReturn, None]:
+        ) and return_annotation not in {NoReturn, None}:
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",

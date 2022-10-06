@@ -79,7 +79,7 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/dosisod/refurb
-    rev: v1.2.0
+    rev: v1.3.0
     hooks:
       - id: refurb
         args: [--ignore, "120", --ignore, "128"]
@@ -163,7 +163,7 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.273
+    rev: v1.1.274
     hooks:
       - id: pyright
         exclude: "tests"

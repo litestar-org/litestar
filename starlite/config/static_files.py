@@ -31,7 +31,7 @@ class StaticFilesConfig(BaseModel):
         Flag dictating whether or not serving html. If true, the default file will be 'index.html'.
     """
 
-    @validator("path")
+    @validator("path", always=True)
     def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument
         """Ensures the path has no path parameters.
 

@@ -31,8 +31,7 @@ def create_async_test_handler(msg: str) -> "AfterResponseHookHandler":
 @pytest.mark.parametrize("layer", ["app", "router", "controller", "handler"])
 def test_after_response_resolution(layer: str) -> None:
     for handler in (create_sync_test_handler(layer), create_async_test_handler(layer)):
-        if state.get("msg"):
-            del state["msg"]
+        state.pop("msg", None)
 
         class MyController(Controller):
             path = "/controller"

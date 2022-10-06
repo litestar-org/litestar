@@ -12,12 +12,13 @@ from typing import (
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseConfig, BaseModel, validator
 from typing_extensions import Literal
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.exceptions import MissingDependencyException
-from starlite.utils import default_serializer
+from starlite.types import BeforeMessageSendHookHandler
+from starlite.utils import AsyncCallable, default_serializer
 
 try:
     from sqlalchemy import create_engine
@@ -59,6 +60,26 @@ def serializer(value: Any) -> str:
         default=default_serializer,
         option=OPT_SERIALIZE_NUMPY,
     ).decode("utf-8")
+
+
+async def default_before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
+    """
+    Handles closing and cleaning up sessions before sending.
+    Args:
+        message:
+        _:
+        scope:
+
+    Returns:
+
+    """
+    session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
+    if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
+        if isinstance(session, AsyncSession):
+            await session.close()
+        else:
+            session.close()
+        del scope[SESSION_SCOPE_KEY]  # type: ignore
 
 
 class SQLAlchemySessionConfig(BaseModel):
@@ -179,14 +200,37 @@ class SQLAlchemyConfig(BaseModel):
     Configuration options for the 'sessionmaker'. The configuration options are documented in the
         SQLAlchemy documentation.
     """
-    session_maker: Type[sessionmaker] = sessionmaker
+    session_maker_class: Type[sessionmaker] = sessionmaker
     """
     Sessionmaker class to use.
     """
-    session_maker_app_state_key: str = "session_maker"
+    session_maker_app_state_key: str = "session_maker_class"
     """
     Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State] instance.
     """
+    session_maker_instance: Optional[sessionmaker] = None
+    """
+    Optional sessionmaker to use. If set, the plugin will use the provided instance rather than instantiate a sessionmaker.
+    """
+    engine_instance: Optional[Union[Engine, FutureEngine, AsyncEngine]] = None
+    """
+    Optional engine to use. If set, the plugin will use the provided instance rather than instantiate an engine.
+    """
+    before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
+
+    @validator("before_send_handler", always=True)
+    def validate_before_send_handler(  # pylint: disable=no-self-argument
+        cls, value: BeforeMessageSendHookHandler
+    ) -> Any:
+        """
+
+        Args:
+            value: A before send handler callable.
+
+        Returns:
+            The handler wrapped in AsyncCallable.
+        """
+        return AsyncCallable(value)  # type: ignore[arg-type]
 
     @property
     def engine_config_dict(self) -> Dict[str, Any]:
@@ -234,10 +278,10 @@ class SQLAlchemyConfig(BaseModel):
             exclude_none=True, exclude={"future"} if self.use_async_engine else set()
         )
         session_class = self.session_class or (AsyncSession if self.use_async_engine else Session)
-        engine = state[self.engine_app_state_key] = create_engine_callable(
+        engine = state[self.engine_app_state_key] = self.engine_instance or create_engine_callable(
             self.connection_string, **self.engine_config_dict
         )
-        state[self.session_maker_app_state_key] = self.session_maker(
+        state[self.session_maker_app_state_key] = self.session_maker_instance or self.session_maker_class(
             engine, class_=session_class, **session_maker_kwargs
         )
 
@@ -256,26 +300,6 @@ class SQLAlchemyConfig(BaseModel):
         else:
             engine.dispose()
         del state[self.engine_app_state_key]
-
-    @staticmethod
-    async def before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
-        """
-        Handles closing and cleaning up sessions before sending.
-        Args:
-            message:
-            _:
-            scope:
-
-        Returns:
-
-        """
-        session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
-        if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
-            if isinstance(session, AsyncSession):
-                await session.close()
-            else:
-                session.close()
-            del scope[SESSION_SCOPE_KEY]  # type: ignore
 
     def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
         """Adds the SQLAlchemy loggers to the logging config. Currently working

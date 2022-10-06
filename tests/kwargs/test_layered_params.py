@@ -96,7 +96,7 @@ def test_layered_parameters_validation(parameter: str) -> None:
         elif parameter in cookies:
             cookies = {}
         else:
-            del query[parameter]
+            query.pop(parameter)
 
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = cookies
