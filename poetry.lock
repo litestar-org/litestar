@@ -1035,12 +1035,12 @@ cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
-testing = ["httpx"]
+testing = ["httpx", "cryptography"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "7cdb7175ca7ddc683c5d7045ab5b28685cc615b1115e24758237b0e8a7233e57"
+content-hash = "98971e69f8ec517b98b20ce263456943fd1668b1871f358e7b0a0e9ac123b526"
 
 [metadata.files]
 aiosqlite = [
