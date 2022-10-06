@@ -1,5 +1,12 @@
 # Changelog
 
+[1.25.0]
+
+- add `app.route_reverse` method.
+- update `SQLAlchemyPluginConfig` to allow setting `before_send_handler`.
+- update `SQLAlchemyPluginConfig` to expose `engine` and `sessionmaker`.
+- update `SQLAlchemyPlugin` to handle `SQLAlchemy 2.0` column types.
+
 [1.24.0]
 
 - update `RequestFactory`.
