@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
     from starlite.app import Starlite
+    from starlite.cache import Cache
     from starlite.types.asgi_types import Message, Receive, Scope, Send
     from starlite.types.protocols import Logger
 
@@ -55,6 +56,19 @@ async def empty_send(_: "Message") -> None:  # pragma: no cover
 
 class ASGIConnection(Generic[Handler, User, Auth]):
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
+
+    scope: "Scope"
+    """
+    The ASGI scope attached to the connection.
+    """
+    receive: "Receive"
+    """
+    The ASGI receive function.
+    """
+    send: "Send"
+    """
+    The ASGI send function.
+    """
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """The base ASGI connection container.
@@ -236,6 +250,15 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             ImproperlyConfiguredException: if 'log_config' has not been passed to the Starlite constructor.
         """
         return self.app.get_logger()
+
+    @property
+    def cache(self) -> "Cache":
+        """
+
+        Returns:
+            A 'Cache' instance.
+        """
+        return self.app.cache
 
     def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
         """Helper method to set the session in scope.

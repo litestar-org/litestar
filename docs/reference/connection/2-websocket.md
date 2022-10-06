@@ -8,6 +8,7 @@
             - app
             - auth
             - base_url
+            - cache
             - clear_session
             - client
             - close
@@ -16,11 +17,14 @@
             - logger
             - path_params
             - query_params
+            - receive
             - receive_bytes
             - receive_data
             - receive_json
             - receive_text
             - route_handler
+            - scope
+            - send
             - send_bytes
             - send_data
             - send_json

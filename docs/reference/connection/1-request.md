@@ -8,6 +8,7 @@
             - auth
             - base_url
             - body
+            - cache
             - clear_session
             - client
             - content_type
@@ -19,7 +20,10 @@
             - method
             - path_params
             - query_params
+            - receive
             - route_handler
+            - scope
+            - send
             - send_push_promise
             - session
             - set_session
