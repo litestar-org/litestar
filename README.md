@@ -295,12 +295,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/jonadaly"><img src="https://avatars.githubusercontent.com/u/26462826?v=4?s=100" width="100px;" alt="Jon Daly"/><br /><sub><b>Jon Daly</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jonadaly" title="Documentation">📖</a> <a href="https://github.com/starlite-api/starlite/commits?author=jonadaly" title="Code">💻</a></td>
       <td align="center"><a href="https://harshallaheri.me/"><img src="https://avatars.githubusercontent.com/u/73422191?v=4?s=100" width="100px;" alt="Harshal Laheri"/><br /><sub><b>Harshal Laheri</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Harshal6927" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=Harshal6927" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/sorasful"><img src="https://avatars.githubusercontent.com/u/32820423?v=4?s=100" width="100px;" alt="Téva KRIEF"/><br /><sub><b>Téva KRIEF</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=sorasful" title="Code">💻</a></td>
-      <td align="center"><a href="https://github.com/jtraub"><img src="https://avatars.githubusercontent.com/u/153191?v=4?s=100" width="100px;" alt="Konstantin Mikhailov"/><br /><sub><b>Konstantin Mikhailov</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jtraub" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/jtraub"><img src="https://avatars.githubusercontent.com/u/153191?v=4?s=100" width="100px;" alt="Konstantin Mikhailov"/><br /><sub><b>Konstantin Mikhailov</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jtraub" title="Documentation">📖</a> <a href="https://github.com/starlite-api/starlite/commits?author=jtraub" title="Code">💻</a></td>
       <td align="center"><a href="http://linkedin.com/in/mitchell-henry334/"><img src="https://avatars.githubusercontent.com/u/17354727?v=4?s=100" width="100px;" alt="Mitchell Henry"/><br /><sub><b>Mitchell Henry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=devmitch" title="Documentation">📖</a></td>
     </tr>
   </tbody>
   <tfoot>
-
+    
   </tfoot>
 </table>
 
