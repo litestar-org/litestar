@@ -13,6 +13,7 @@
             - app
             - auth
             - base_url
+            - cache
             - clear_session
             - client
             - cookies
@@ -20,7 +21,10 @@
             - logger
             - path_params
             - query_params
+            - receive
             - route_handler
+            - scope
+            - send
             - session
             - set_session
             - state
