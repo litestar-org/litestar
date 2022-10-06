@@ -1,5 +1,7 @@
+from collections import defaultdict
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -15,7 +17,7 @@ from starlite.asgi import (
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.datastructures.state import State
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
@@ -24,7 +26,7 @@ from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
-from starlite.utils.sync import as_async_callable_list
+from starlite.utils import as_async_callable_list, join_paths, unique
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -88,16 +90,18 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 
 class HandlerIndex(TypedDict):
-    """This class is used to map route handler names to a mapping of path +
+    """This class is used to map route handler names to a mapping of paths +
     route handler.
 
-    It's used in the 'get_handler_index_by_name' utility method.
+    It's returned from the 'get_handler_index_by_name' utility method.
     """
 
-    path: str
-    """Full route path to the route handler."""
+    paths: List[str]
+    """Full route paths to the route handler."""
     handler: "RouteHandlerType"
     """Route handler instance."""
+    qualname: str
+    """Qualname of the handler"""
 
 
 class HandlerNode(TypedDict):
@@ -113,6 +117,7 @@ class Starlite(Router):
     __slots__ = (
         "_init",
         "_registered_routes",
+        "_route_mapping",
         "_route_handler_index",
         "_static_paths",
         "after_exception",
@@ -253,7 +258,8 @@ class Starlite(Router):
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
         """
         self._registered_routes: Set[BaseRoute] = set()
-        self._route_handler_index: Dict[str, HandlerIndex] = {}
+        self._route_mapping: Dict[str, List[BaseRoute]] = defaultdict(list)
+        self._route_handler_index: Dict[str, "RouteHandlerType"] = {}
         self._static_paths: Set[str] = set()
         self.openapi_schema: Optional["OpenAPI"] = None
         self.get_logger: "GetLogger" = get_logger_placeholder
@@ -401,10 +407,7 @@ class Starlite(Router):
         """
         routes = super().register(value=value)
         for route in routes:
-            if isinstance(route, HTTPRoute):
-                route_handlers = route.route_handlers
-            else:
-                route_handlers = [cast("Union[WebSocketRoute, ASGIRoute]", route).route_handler]  # type: ignore
+            route_handlers = self._get_route_handlers(route)
             for route_handler in route_handlers:
 
                 self._create_handler_signature_model(route_handler=route_handler)
@@ -422,7 +425,8 @@ class Starlite(Router):
 
     def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
         """Receives a route handler name and returns an optional dictionary
-        containing the route handler instance and the path.
+        containing the route handler instance and list of paths sorted
+        lexically.
 
         Examples:
             ```python
@@ -438,7 +442,7 @@ class Starlite(Router):
 
             handler_index = app.get_handler_index_by_name("my-handler")
 
-            # { "path": "/", "handler" ... }
+            # { "path": ["/"], "handler" ... }
             ```
         Args:
             name: A route handler unique name.
@@ -446,7 +450,92 @@ class Starlite(Router):
         Returns:
             A [HandlerIndex][starlite.app.HandlerIndex] instance or None.
         """
-        return self._route_handler_index.get(name)
+        handler = self._route_handler_index.get(name)
+        if not handler:
+            return None
+
+        qualname = self._get_handler_qualname(handler)
+
+        routes = self._route_mapping[qualname]
+        paths = sorted(unique([route.path for route in routes]))
+
+        return HandlerIndex(handler=handler, paths=paths, qualname=qualname)
+
+    def route_reverse(self, name: str, **path_parameters: Any) -> Optional[str]:
+        """Receives a route handler name, path parameter values and returns an
+        optional url path to the handler with filled path parameters.
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+
+
+            @get("/group/{group_id:int}/user/{user_id:int}", name="get_memebership_details")
+            def get_membership_details(group_id: int, user_id: int) -> None:
+                pass
+
+
+            app = Starlite(route_handlers=[get_membership_details])
+
+            path = app.route_reverse("get_memebership_details", user_id=100, group_id=10)
+
+            # /group/10/user/100
+            ```
+        Args:
+            name: A route handler unique name.
+            **path_parameters: Actual values for path parameters in the route.
+
+        Raises:
+            ValidationException: If path parameters are missing in **path_parameters or have wrong type.
+
+        Returns:
+            A fully formatted url path or None.
+        """
+        handler_index = self.get_handler_index_by_name(name)
+        if handler_index is None:
+            return None
+
+        allow_str_instead = {datetime, date, time, timedelta, float, Path}
+        output: List[str] = []
+
+        routes = sorted(
+            self._route_mapping[handler_index["qualname"]], key=lambda r: len(r.path_parameters), reverse=True
+        )
+        passed_parameters = set(path_parameters.keys())
+
+        selected_route = routes[-1]
+        for route in routes:
+            if passed_parameters.issuperset({param["name"] for param in route.path_parameters}):
+                selected_route = route
+                break
+
+        for component in selected_route.path_components:
+            if isinstance(component, dict):
+                val = path_parameters.get(component["name"])
+                if not (
+                    isinstance(val, component["type"])
+                    or (component["type"] in allow_str_instead and isinstance(val, str))
+                ):
+                    raise ValidationException(
+                        f"Received type for path parameter {component['name']} doesn't match declared type {component['type']}"
+                    )
+                output.append(str(val))
+            else:
+                output.append(component)
+
+        return join_paths(output)
+
+    @property
+    def route_handler_method_view(self) -> Dict[str, List[str]]:
+        """
+        Returns:
+            A dictionary mapping route handlers to paths.
+        """
+        route_map: Dict[str, List[str]] = {}
+        for handler, routes in self._route_mapping.items():
+            route_map[handler] = [route.path for route in routes]
+
+        return route_map
 
     def _create_asgi_handler(self) -> "ASGIApp":
         """Creates an ASGIApp that wraps the ASGI router inside an exception
@@ -512,8 +601,27 @@ class Starlite(Router):
         self._configure_route_map_node(route, current_node)
         return current_node
 
-    def _add_route_to_handler_index(self, route: BaseRoute) -> None:
-        """Maps route handler names to urls.
+    def _get_route_handlers(self, route: BaseRoute) -> List["RouteHandlerType"]:
+        """Retrieve handler(s) as a list for given route."""
+        route_handlers: List["RouteHandlerType"] = []
+        if isinstance(route, (WebSocketRoute, ASGIRoute)):
+            route_handlers.append(route.route_handler)
+        else:
+            route_handlers.extend(cast("HTTPRoute", route).route_handlers)
+
+        return route_handlers
+
+    def _get_handler_qualname(self, handler: "RouteHandlerType") -> str:
+        """Retrieves __qualname__ for passed route handler."""
+        handler_fn = cast("AnyCallable", handler.fn)
+        if hasattr(handler_fn, "__qualname__"):
+            return handler_fn.__qualname__
+
+        return type(handler_fn).__qualname__
+
+    def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
+        """Stores the mapping of route handlers to routes and to route handler
+        names.
 
         Args:
             route: A Route instance.
@@ -521,17 +629,21 @@ class Starlite(Router):
         Returns:
             None
         """
-        route_handlers: List["RouteHandlerType"] = []
-        if isinstance(route, (WebSocketRoute, ASGIRoute)):
-            route_handlers.append(route.route_handler)
-        else:
-            route_handlers.extend(cast("HTTPRoute", route).route_handlers)
+        route_handlers = self._get_route_handlers(route)
 
-        for route_handler in filter(lambda x: x.name, route_handlers):
-            name = cast("str", route_handler.name)
-            if name in self._route_handler_index:
+        for handler in route_handlers:
+            qualname = self._get_handler_qualname(handler)
+            self._route_mapping[qualname].append(route)
+
+            name = handler.name or self._get_handler_qualname(handler)
+
+            if (
+                name in self._route_handler_index
+                and self._get_handler_qualname(self._route_handler_index[name]) != qualname
+            ):
                 raise ImproperlyConfiguredException(f"route handler names must be unique - {name} is not unique.")
-            self._route_handler_index[name] = HandlerIndex(path=route.path, handler=route_handler)
+
+            self._route_handler_index[name] = handler
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree
@@ -579,7 +691,7 @@ class Starlite(Router):
             node = self._add_node_to_route_map(route)
             if node["_path_parameters"] != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
-            self._add_route_to_handler_index(route)
+            self._store_handler_to_route_mapping(route)
             self._registered_routes.add(route)
 
     def _build_route_middleware_stack(

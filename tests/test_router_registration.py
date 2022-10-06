@@ -137,15 +137,17 @@ def test_route_handler_method_view() -> None:
     put_handler = put("/modify")(_handler)
     post_handler = post("/send")(_handler)
 
-    first_router = Router(path="/first", route_handlers=[MyController, handler, post_handler, put_handler])
-    second_router = Router(path="/second", route_handlers=[MyController, handler, post_handler, put_handler])
+    first_router = Router(path="/first", route_handlers=[MyController, post_handler, put_handler])
+    second_router = Router(path="/second", route_handlers=[MyController, post_handler, put_handler])
 
-    # Test routers.
-    assert first_router.route_handler_method_view[handler.fn.__qualname__] == ["/first/root"]  # type: ignore
-    assert second_router.route_handler_method_view[MyController.get_method.fn.__qualname__] == ["/second/test"]  # type: ignore
+    app = Starlite(route_handlers=[first_router, second_router, handler])
 
-    app = Starlite(route_handlers=[first_router, second_router])
-    # Test on Starlite instance.
+    assert app.route_handler_method_view[handler.fn.__qualname__] == ["/root"]  # type: ignore
+    assert app.route_handler_method_view[MyController.get_method.fn.__qualname__] == [  # type: ignore
+        "/first/test",
+        "/second/test",
+    ]
+
     assert app.route_handler_method_view[MyController.ws.fn.__qualname__] == [  # type: ignore
         "/first/test/socket",
         "/second/test/socket",

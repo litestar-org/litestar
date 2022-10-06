@@ -7,6 +7,8 @@
             - __call__
             - register
             - get_handler_index_by_name
+            - route_handler_method_view
+            - route_reverse
 
 ::: starlite.app.HandlerIndex
 
