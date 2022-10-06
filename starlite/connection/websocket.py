@@ -53,6 +53,17 @@ class WebSocket(
     __slots__ = ("connection_state",)
 
     scope: "WebSocketScope"
+    """
+    The ASGI scope attached to the connection.
+    """
+    receive: "Receive"
+    """
+    The ASGI receive function.
+    """
+    send: "Send"
+    """
+    The ASGI send function.
+    """
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """The Starlite WebSocket class.
