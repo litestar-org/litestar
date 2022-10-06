@@ -61,3 +61,20 @@ def test_route_handler_property() -> None:
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
         assert value["handler"] is handler
+
+
+def test_custom_request_class() -> None:
+    value: Any = {}
+
+    class MyRequest(Request):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+            self.scope["called"] = True  # type: ignore
+
+    @get("/")
+    def handler(request: MyRequest) -> None:
+        value["called"] = request.scope.get("called")
+
+    with create_test_client(route_handlers=[handler], request_class=MyRequest) as client:
+        client.get("/")
+        assert value["called"]

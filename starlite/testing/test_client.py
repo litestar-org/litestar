@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from starlette.testclient import TestClient as StarletteTestClient
 
@@ -9,6 +9,7 @@ from starlite.middleware.session import SessionMiddleware
 if TYPE_CHECKING:
     from typing_extensions import Literal
 
+    from starlite import Request, WebSocket
     from starlite.config import (
         BaseLoggingConfig,
         CacheConfig,
@@ -175,11 +176,13 @@ def create_test_client(
     parameters: Optional["ParametersMap"] = None,
     plugins: Optional[List["PluginProtocol"]] = None,
     raise_server_exceptions: bool = True,
+    request_class: Optional[Type["Request"]] = None,
     response_class: Optional["ResponseType"] = None,
     root_path: str = "",
     session_config: Optional["SessionCookieConfig"] = None,
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
+    websocket_class: Optional[Type["WebSocket"]] = None,
 ) -> TestClient:
     """Creates a Starlite app instance and initializes it.
 
@@ -255,6 +258,8 @@ def create_test_client(
         parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
             application paths.
         plugins: List of plugins.
+        request_class: An optional subclass of [Request][starlite.connection.request.Request] to use for
+            http connections.
         raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
             wrapping them in an HTTP response.
         response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
@@ -263,6 +268,8 @@ def create_test_client(
         session_config: Configuration for Session Middleware class to create raw session cookies for request to the
             route handlers.
         template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+        websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
+            websocket connections.
 
     Returns:
         An instance of [TestClient][starlite.testing.TestClient] with a created app instance.
@@ -293,10 +300,12 @@ def create_test_client(
             openapi_config=openapi_config,
             parameters=parameters,
             plugins=plugins,
+            request_class=request_class,
             response_class=response_class,
             route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
             static_files_config=static_files_config,
             template_config=template_config,
+            websocket_class=websocket_class,
         ),
         backend=backend,
         backend_options=backend_options,

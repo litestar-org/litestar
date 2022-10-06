@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from starlette.datastructures import MutableHeaders
 
-from starlite.connection import Request
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
@@ -13,6 +12,7 @@ from starlite.middleware.base import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlite.config import CSRFConfig
+    from starlite.connection import Request
     from starlite.types import ASGIApp, HTTPSendMessage, Message, Receive, Scope, Send
 
 CSRF_SECRET_BYTES = 32
@@ -50,7 +50,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
             return
 
-        request = Request[Any, Any](scope=scope)
+        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope)
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 

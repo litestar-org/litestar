@@ -50,3 +50,22 @@ async def test_accept_set_headers(headers: Any) -> None:
 
     with create_test_client(route_handlers=[handler]).websocket_connect("/") as ws:
         ws.receive()
+
+
+async def test_custom_request_class() -> None:
+    value: Any = {}
+
+    class MyWebSocket(WebSocket):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+            self.scope["called"] = True  # type: ignore
+
+    @websocket("/")
+    async def handler(socket: MyWebSocket) -> None:
+        value["called"] = socket.scope.get("called")
+        await socket.accept()
+        await socket.close()
+
+    with create_test_client(route_handlers=[handler], websocket_class=MyWebSocket).websocket_connect("/") as ws:
+        ws.receive()
+        assert value["called"]

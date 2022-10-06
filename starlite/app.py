@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -16,6 +16,7 @@ from starlite.asgi import (
 )
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
+from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers.asgi import asgi
@@ -117,8 +118,8 @@ class Starlite(Router):
     __slots__ = (
         "_init",
         "_registered_routes",
-        "_route_mapping",
         "_route_handler_index",
+        "_route_mapping",
         "_static_paths",
         "after_exception",
         "after_shutdown",
@@ -143,10 +144,12 @@ class Starlite(Router):
         "openapi_schema",
         "plain_routes",
         "plugins",
+        "request_class",
         "route_map",
         "state",
         "static_files_config",
         "template_engine",
+        "websocket_class",
     )
 
     def __init__(
@@ -179,6 +182,7 @@ class Starlite(Router):
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
         parameters: Optional["ParametersMap"] = None,
         plugins: Optional[List["PluginProtocol"]] = None,
+        request_class: Optional[Type["Request"]] = None,
         response_class: Optional["ResponseType"] = None,
         response_cookies: Optional["ResponseCookies"] = None,
         response_headers: Optional["ResponseHeadersMap"] = None,
@@ -186,6 +190,7 @@ class Starlite(Router):
         static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
         tags: Optional[List[str]] = None,
         template_config: Optional["TemplateConfig"] = None,
+        websocket_class: Optional[Type["WebSocket"]] = None,
     ) -> None:
         """The Starlite application.
 
@@ -244,6 +249,8 @@ class Starlite(Router):
             parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
                 application paths.
             plugins: List of plugins.
+            request_class: An optional subclass of [Request][starlite.connection.request.Request] to use for
+                http connections.
             response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
@@ -256,6 +263,8 @@ class Starlite(Router):
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
+                websocket connections.
         """
         self._registered_routes: Set[BaseRoute] = set()
         self._route_mapping: Dict[str, List[BaseRoute]] = defaultdict(list)
@@ -296,6 +305,7 @@ class Starlite(Router):
             openapi_config=openapi_config,
             parameters=parameters or {},
             plugins=plugins or [],
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies or [],
             response_headers=response_headers or {},
@@ -304,6 +314,7 @@ class Starlite(Router):
             static_files_config=static_files_config or [],
             tags=tags or [],
             template_config=template_config,
+            websocket_class=websocket_class,
         )
         for handler in on_app_init or []:
             config = handler(config)
@@ -320,13 +331,15 @@ class Starlite(Router):
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.debug = config.debug
+        self.logging_config = config.logging_config
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
         self.plugins = config.plugins
+        self.request_class = config.request_class or Request
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.to_engine() if config.template_config else None
-        self.logging_config = config.logging_config
+        self.websocket_class = config.websocket_class or WebSocket
 
         super().__init__(
             after_request=config.after_request,

@@ -1,8 +1,9 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
+from starlite.connection import Request, WebSocket
 from starlite.datastructures.provide import Provide
 from starlite.plugins.base import PluginProtocol
 from starlite.types import (
@@ -158,6 +159,10 @@ class AppConfig(BaseModel):
     """
     List of [PluginProtocol][starlite.plugins.base.PluginProtocol].
     """
+    request_class: Optional[Type[Request]]
+    """
+    An optional subclass of [Request][starlite.connection.request.Request] to use for http connections.
+    """
     response_class: Optional[ResponseType]
     """
     A custom subclass of [starlite.response.Response] to be used as the app's default response.
@@ -191,4 +196,8 @@ class AppConfig(BaseModel):
     template_config: Optional[TemplateConfig]
     """
     An instance of [TemplateConfig][starlite.config.TemplateConfig].
+    """
+    websocket_class: Optional[Type[WebSocket]]
+    """
+    An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for websocket connections.
     """

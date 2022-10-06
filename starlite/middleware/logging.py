@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
-from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.utils import default_serializer, get_serializer_from_scope
@@ -17,6 +16,7 @@ from starlite.utils.extractors import (
 )
 
 if TYPE_CHECKING:
+    from starlite.connection import Request
     from starlite.types import ASGIApp, Logger, Message, Receive, Scope, Send
 
 try:
@@ -103,7 +103,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             None
 
         """
-        extracted_data = await self.extract_request_data(request=Request[Any, Any](scope))
+        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope))
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: "Scope") -> None:

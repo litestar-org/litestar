@@ -89,7 +89,7 @@ class RateLimitMiddleware:
             if not hasattr(self, "cache"):
                 self.cache = scope["app"].cache
 
-            request = Request[Any, Any](scope)
+            request: "Request[Any, Any]" = scope["app"].request_class(scope)
             if await self.should_check_request(request=request):
                 key = self.cache_key_from_request(request=request)
                 cache_object = await self.retrieve_cached_history(key)
