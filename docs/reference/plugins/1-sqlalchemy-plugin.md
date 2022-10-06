@@ -16,18 +16,23 @@
 ::: starlite.plugins.sql_alchemy.SQLAlchemyConfig
     options:
         members:
+            - before_send_handler
             - connection_string
             - create_async_engine
             - create_async_engine_callable
             - create_engine_callable
             - db_supports_json
             - dependency_key
+            - engine
             - engine_app_state_key
             - engine_config
+            - engine_instance
             - session_class
             - session_config
             - session_maker
             - session_maker_app_state_key
+            - session_maker_class
+            - session_maker_instance
 
 ::: starlite.plugins.sql_alchemy.SQLAlchemyEngineConfig
     options:

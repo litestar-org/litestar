@@ -217,6 +217,10 @@ class SQLAlchemyConfig(BaseModel):
     Optional engine to use. If set, the plugin will use the provided instance rather than instantiate an engine.
     """
     before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
+    """
+    Handler to call before the ASGI message is sent. The handler should handle closing the session stored in the ASGI
+    scope, if its still open, and committing and uncommitted data.
+    """
 
     @validator("before_send_handler", always=True)
     def validate_before_send_handler(  # pylint: disable=no-self-argument
@@ -246,6 +250,37 @@ class SQLAlchemyConfig(BaseModel):
 
         return self.engine_config.dict(exclude_none=True, exclude=engine_excluded_fields)
 
+    @property
+    def engine(self) -> Union["Engine", "FutureEngine", "AsyncEngine"]:
+        """
+
+        Returns:
+            Getter that returns the engine instance used by the plugin.
+        """
+        if not self.engine_instance:
+            create_engine_callable = (
+                self.create_async_engine_callable if self.use_async_engine else self.create_engine_callable
+            )
+            self.engine_instance = create_engine_callable(self.connection_string, **self.engine_config_dict)
+        return cast("Union[Engine, FutureEngine, AsyncEngine]", self.engine_instance)
+
+    @property
+    def session_maker(self) -> sessionmaker:
+        """
+
+        Returns:
+            Getter that returns the session_maker instance used by the plugin.
+        """
+        if not self.session_maker_instance:
+            session_maker_kwargs = self.session_config.dict(
+                exclude_none=True, exclude={"future"} if self.use_async_engine else set()
+            )
+            session_class = self.session_class or (AsyncSession if self.use_async_engine else Session)
+            self.session_maker_instance = self.session_maker_class(
+                self.engine, class_=session_class, **session_maker_kwargs
+            )
+        return cast("sessionmaker", self.session_maker_instance)
+
     def create_db_session_dependency(self, state: "State", scope: "Scope") -> Union[Session, AsyncSession]:
         """
 
@@ -271,19 +306,9 @@ class SQLAlchemyConfig(BaseModel):
         Returns:
             None
         """
-        create_engine_callable = (
-            self.create_async_engine_callable if self.use_async_engine else self.create_engine_callable
-        )
-        session_maker_kwargs = self.session_config.dict(
-            exclude_none=True, exclude={"future"} if self.use_async_engine else set()
-        )
-        session_class = self.session_class or (AsyncSession if self.use_async_engine else Session)
-        engine = state[self.engine_app_state_key] = self.engine_instance or create_engine_callable(
-            self.connection_string, **self.engine_config_dict
-        )
-        state[self.session_maker_app_state_key] = self.session_maker_instance or self.session_maker_class(
-            engine, class_=session_class, **session_maker_kwargs
-        )
+
+        state[self.engine_app_state_key] = self.engine
+        state[self.session_maker_app_state_key] = self.session_maker
 
     async def on_shutdown(self, state: "State") -> None:
         """Disposes of the SQLAlchemy engine.
