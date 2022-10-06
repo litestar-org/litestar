@@ -30,7 +30,8 @@ try:
     from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type
     from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
-    from sqlalchemy.orm import DeclarativeMeta, Mapper
+    from sqlalchemy.exc import NoInspectionAvailable
+    from sqlalchemy.orm import DeclarativeMeta, InstanceState, Mapper
     from sqlalchemy.sql.type_api import TypeEngine
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
@@ -88,7 +89,11 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         Returns:
             A boolean typeguard.
         """
-        return isinstance(value, DeclarativeMeta) or isinstance(value.__class__, DeclarativeMeta)
+        try:
+            inspected = inspect(value)
+        except NoInspectionAvailable:
+            return False
+        return isinstance(inspected, (Mapper, InstanceState))
 
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
@@ -329,13 +334,18 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             model_class: An SQLAlchemy declarative class.
 
         Returns:
-            An SQLAlchemy inspection 'Mapper'.
+            A SQLAlchemy `Mapper`.
         """
-        if not isinstance(model_class, DeclarativeMeta):
-            raise ImproperlyConfiguredException(
-                "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
-            )
-        return inspect(model_class)
+        try:
+            inspected = inspect(model_class)
+        except NoInspectionAvailable:
+            pass
+        else:
+            if isinstance(inspected, Mapper):
+                return inspected
+        raise ImproperlyConfiguredException(
+            "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
+        )
 
     def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
         """Generates a pydantic model for a given SQLAlchemy declarative table
