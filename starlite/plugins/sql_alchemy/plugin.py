@@ -25,6 +25,8 @@ from starlite.exceptions import (
 )
 from starlite.plugins.base import PluginProtocol
 
+from .types import SQLAlchemyBinaryType
+
 try:
     from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type
@@ -95,7 +97,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return isinstance(inspected, (Mapper, InstanceState))
 
     @staticmethod
-    def handle_string_type(column_type: Union[sqlalchemy_type.String, sqlalchemy_type._Binary]) -> "Type":
+    def handle_string_type(column_type: Union[sqlalchemy_type.String, SQLAlchemyBinaryType]) -> "Type":
         """Handles the SQLAlchemy String types, including Blob and Binary
         types.
 
@@ -138,7 +140,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             dimensions -= 1
         return list_type
 
-    def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:
+    def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:  # type:ignore[name-defined]
         """Handles the SQLAlchemy Tuple type.
 
         Args:
@@ -160,10 +162,10 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         Returns:
             An appropriate enum type
         """
-        return column_type.enum_class
+        return column_type.enum_class  # type:ignore[union-attr]
 
     @property
-    def providers_map(self) -> Dict["Type[TypeEngine]", Callable[[Union[TypeEngine, "Type[TypeEngine]"]], Any]]:
+    def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
         """A map of SQLAlchemy column types to provider functions.
 
         This method is separated to allow for easy overriding in
@@ -209,7 +211,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlalchemy_type.TIMESTAMP: lambda x: datetime,
             sqlalchemy_type.Text: self.handle_string_type,
             sqlalchemy_type.Time: lambda x: time,
-            sqlalchemy_type.TupleType: self.handle_tuple_type,
+            sqlalchemy_type.TupleType: self.handle_tuple_type,  # type:ignore[attr-defined]
             sqlalchemy_type.Unicode: self.handle_string_type,
             sqlalchemy_type.UnicodeText: self.handle_string_type,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
@@ -325,7 +327,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return type(column_type)
 
     @staticmethod
-    def parse_model(model_class: DeclarativeMeta) -> Mapper:
+    def parse_model(model_class: Type[DeclarativeMeta]) -> Mapper:
         """Validates that the passed in model_class is an SQLAlchemy
         declarative model, and returns a Mapper of it.
 

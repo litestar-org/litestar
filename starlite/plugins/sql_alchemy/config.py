@@ -20,6 +20,8 @@ from starlite.exceptions import MissingDependencyException
 from starlite.types import BeforeMessageSendHookHandler
 from starlite.utils import AsyncCallable, default_serializer
 
+from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol
+
 try:
     from sqlalchemy import create_engine
     from sqlalchemy.engine import Engine
@@ -200,7 +202,7 @@ class SQLAlchemyConfig(BaseModel):
     Configuration options for the 'sessionmaker'. The configuration options are documented in the
         SQLAlchemy documentation.
     """
-    session_maker_class: Type[sessionmaker] = sessionmaker
+    session_maker_class: Type[SessionMakerTypeProtocol] = sessionmaker
     """
     Sessionmaker class to use.
     """
@@ -208,7 +210,7 @@ class SQLAlchemyConfig(BaseModel):
     """
     Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State] instance.
     """
-    session_maker_instance: Optional[sessionmaker] = None
+    session_maker_instance: Optional[SessionMakerInstanceProtocol] = None
     """
     Optional sessionmaker to use. If set, the plugin will use the provided instance rather than instantiate a sessionmaker.
     """
