@@ -50,6 +50,9 @@ The `name` kwarg passed to the `Template` class is the filename for the given te
 directories specifies for this file until it finds it or an exception will be raised. The `context` kwarg is a
 dictionary specifying context data that is passed to the engine.
 
+Starlite automatically injects current request into context under `request` name. Note that if you try pass any value
+under `request` key it will be overridden with the current request.
+
 ## Defining a Custom Template Engine
 
 If you wish to use another templating engine, you can easily do so by

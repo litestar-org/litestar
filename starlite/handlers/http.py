@@ -62,6 +62,7 @@ from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
+    from starlite.connection import Request
     from starlite.plugins import PluginProtocol
     from starlite.types import AnyCallable, AsyncAnyCallable
 
@@ -132,11 +133,15 @@ def _create_response_container_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for ResponseContainers."""
 
-    async def handler(data: ResponseContainer, app: "Starlite", **kwargs: Any) -> StarletteResponse:
+    async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> StarletteResponse:
         normalized_headers = {**_normalize_headers(headers), **data.headers}
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         response = data.to_response(
-            app=app, headers=normalized_headers, status_code=status_code, media_type=data.media_type or media_type
+            app=app,
+            headers=normalized_headers,
+            status_code=status_code,
+            media_type=data.media_type or media_type,
+            request=request,
         )
         for cookie in normalized_cookies:
             response.set_cookie(**cookie)
@@ -526,7 +531,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self._resolved_response_handler = handler
         return cast("Callable[[Any], Awaitable[StarletteResponse]]", self._resolved_response_handler)
 
-    async def to_response(self, app: "Starlite", data: Any, plugins: List["PluginProtocol"]) -> StarletteResponse:
+    async def to_response(
+        self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
+    ) -> StarletteResponse:
         """
 
         Args:
@@ -534,13 +541,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             data: Either an instance of a [ResponseContainer][starlite.datastructures.ResponseContainer],
                 a Response instance or an arbitrary value.
             plugins: An optional mapping of plugins
+            request: A [Request][starlite.connection.request.Request] instance
 
         Returns:
             A Response instance
 
         """
         response_handler = self.resolve_response_handler()
-        return await response_handler(app=app, data=data, plugins=plugins)  # type: ignore
+        return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
     @property
     def http_methods(self) -> List["Method"]:
