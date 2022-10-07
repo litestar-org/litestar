@@ -24,7 +24,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -100,7 +100,7 @@ repos:
     rev: v0.14.1
     hooks:
       - id: slotscheck
-        exclude: "^(?!starlite/)"
+        exclude: "test_*"
         additional_dependencies:
           [
             brotli,
