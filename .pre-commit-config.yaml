@@ -119,6 +119,7 @@ repos:
             starlette,
             starlite_multipart,
             tortoise_orm,
+            pytest,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.3"
