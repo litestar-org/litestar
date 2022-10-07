@@ -1,6 +1,8 @@
 from typing import Any, Optional
 
 import pytest
+from pydantic import ValidationError
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK
@@ -99,3 +101,18 @@ def test_logging_config(engine_logger: Optional[str], pool_logger: Optional[str]
 
 def test_default_serializer_returns_string() -> None:
     assert serializer({"hello": "world"}) == '{"hello":"world"}'
+
+
+def test_config_connection_string_or_engine_instance_validation() -> None:
+    with pytest.raises(ValidationError):
+        SQLAlchemyConfig(connection_string=None, engine_instance=None)
+
+    connection_string = "sqlite:///"
+    engine = create_engine(connection_string)
+
+    with pytest.raises(ValidationError):
+        SQLAlchemyConfig(connection_string=connection_string, engine_instance=engine)
+
+    # these should be OK
+    SQLAlchemyConfig(engine_instance=engine)
+    SQLAlchemyConfig(connection_string=connection_string)
