@@ -16,10 +16,10 @@ class OpenAPIController(_OpenAPIController):
     redoc_google_fonts = False
     redoc_js_url = "https://offline_location/redoc.standalone.js"
     swagger_css_url = "https://offline_location/swagger-ui-css"
-    swagger_js_ui_bundle = "https://offline_location/swagger-ui-bundle.js"
-    swagger_js_standalone_preset_js = "https://offline_location/swagger-ui-standalone-preset.js"
-    stoplight_css_url = "https://offline_location/spotlight-styles.mins.css"
-    stoplight_js_url = "https://offline_location/spotlight-web-components.min.js"
+    swagger_ui_bundle_js_url = "https://offline_location/swagger-ui-bundle.js"
+    swagger_ui_standalone_preset_js_url = "https://offline_location/swagger-ui-standalone-preset.js"
+    stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
+    stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
 
 def test_without_google_fonts() -> None:
     config = OpenAPIConfig(
