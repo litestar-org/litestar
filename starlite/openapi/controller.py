@@ -46,45 +46,39 @@ class OpenAPIController(Controller):
     """
     redoc_google_fonts: bool = True
     """
-    Google CDN Fonts in Redoc, use False for use in isolated environment
+    Download google fonts via CDN. Should be set to `False` when not using a CDN.
     """
     redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
     """
-    Specify redoc_js_url for use in isolated environment
-    Default reverts to as used in redoc_version
+    Download url for the Redoc JS bundle.
     """
     swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
     """
-    Specify swagger_css_url for use in isolated environment
-    Default reverts to as used in swagger_ui_version
+    Download url for the Swagger UI CSS bundle.
     """
     swagger_ui_bundle_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
     )
     """
-    Specify swagger_ui_bundle_js_url for use in isolated environment
-    Default reverts to as used in swagger_ui_version
+    Download url for the Swagger UI JS bundle.
     """
     swagger_ui_standalone_preset_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     )
     """
-    Specify swagger_js_standalone_preset_js for use in isolated environment
-    Default reverts to as used in swagger_ui_version
+    Download url for the Swagger Standalone Preset JS bundle.
     """
     stoplight_elements_css_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
     )
     """
-    Specify stoplight_css_url for use in isolated environment.
-    Default reverts to as used in stoplight_elements_version
+    Download url for the Stoplight Elements CSS bundle.
     """
     stoplight_elements_js_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
     )
     """
-    Specify stoplight_js_url for use in isolated environment.
-    Default reverts to as used in stoplight_elements_version
+    Download url for the Stoplight Elements JS bundle.
     """
 
     # internal
