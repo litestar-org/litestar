@@ -47,7 +47,7 @@ starlette = ">=0.21"
 starlite-multipart = "*"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-aioredis = {extras = ["hiredis"], version = "^2.0.1", optional = true}
+redis = {version = "^4.2.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
@@ -78,7 +78,7 @@ cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
-redis_cache_backend = ["aioredis"]
+redis_cache_backend = ["redis"]
 
 
 [build-system]
