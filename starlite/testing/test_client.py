@@ -144,6 +144,54 @@ class TestClient(StarletteTestClient):
         encoded_data = self.session.dump_data(data=session_data)
         return {f"{self.session.config.key}-{i}": chunk.decode("utf-8") for i, chunk in enumerate(encoded_data)}
 
+    def update_session_cookies(self, session_data: Dict[str, Any]) -> None:
+        """Creates raw session cookies that are loaded into session by the
+        Session Middleware. It simulates cookies the same way as if they are
+        coming from the browser. Your tests must set up session middleware to
+        load raw session cookies into the session.
+
+        Cookies are added to `TestClient.cookies`.
+
+        Examples:
+
+            ```python
+            import os
+
+            import pytest
+            from pydantic import SecretBytes
+            from starlite.middleware.session import SessionCookieConfig
+            from starlite.testing import TestClient
+
+
+            @pytest.fixture(scope="class")
+            def session_config(self) -> SessionCookieConfig:
+                return SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+
+
+            @pytest.fixture()
+            def app(self, session_config: SessionCookieConfig) -> Starlite:
+                @get(path="/test")
+                def my_handler() -> None:
+                    pass
+
+                # Set up session middleware.
+                return Starlite(route_handlers=[my_handler], middleware=[session_config.middleware])
+
+
+            def test_something(app: Starlite, session_config: SessionCookieConfig) -> None:
+                with TestClient(app=app, session_config=session_config) as client:
+                    client.update_session_cookies(session_data={"user": "test_user"})
+                    # Pass raw cookies to the request.
+                    client.get(url="/test")
+            ```
+        """
+        if self.session is None:
+            return
+        encoded_data = self.session.dump_data(data=session_data)
+        self.cookies.update(
+            {f"{self.session.config.key}-{i}": chunk.decode("utf-8") for i, chunk in enumerate(encoded_data)}
+        )
+
 
 def create_test_client(
     route_handlers: Union["ControllerRouterHandler", List["ControllerRouterHandler"]],

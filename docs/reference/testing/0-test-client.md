@@ -6,6 +6,7 @@
             - __init__
             - __enter__
             - create_session_cookies
+            - update_session_cookies
 
 ::: starlite.testing.create_test_client
     options:

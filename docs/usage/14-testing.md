@@ -75,10 +75,10 @@ def test_health_check(test_client: TestClient):
 
 If you are using **Session Middleware** for session persistence across requests then your route handlers may expect
 preloaded session when you are mocking request to the route handler. To mock request with session cookies, you can use
-`TestClient.create_session_cookies` to mock session. The session middleware will then load session from the session
+`TestClient.update_session_cookies` to mock session. The session middleware will then load session from the session
 cookies that you provide.
 
-`TestClient.create_session_cookies` accepts the following arguments:
+`TestClient.update_session_cookies` accepts the following arguments:
 
 - session_data: You can pass dictionary to this argument to preload the session.
 
@@ -105,9 +105,9 @@ class TestClass:
 
     def test_something(self, session_config: SessionCookieConfig) -> None:
         with TestClient(app=app, session_config=session_config) as client:
-            cookies = client.create_session_cookies(session_data={"user": "test_user"})
-            # Pass raw cookies to the request.
-            client.get(url="/my_route", cookies=cookies)
+            # update session cookies on the client
+            client.update_session_cookies(session_data={"user": "test_user"})
+            client.get(url="/my_route")
 ```
 
 !!! important

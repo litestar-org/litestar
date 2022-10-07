@@ -196,12 +196,13 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
     @get(path="/test")
     def test_handler(state: State, request: Request) -> None:
         assert state.value == 1
-        assert request.session == session_data
+        assert request.session == {**session_data, "more": "data"}
 
     session_config = SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
     app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
     with TestClient(app=app, session_config=session_config if enable_session else None) as client:
         client.cookies = client.create_session_cookies(session_data=session_data)
+        client.update_session_cookies({"more": "data"})
         client.get("/test")
         assert app.state.value == 1
