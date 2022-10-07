@@ -152,6 +152,7 @@ class HTTPRoute(BaseRoute):
             app=scope["app"],
             data=response_data,
             plugins=request.app.plugins,
+            request=request,
         )
 
     @staticmethod

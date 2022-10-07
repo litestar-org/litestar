@@ -34,6 +34,7 @@ from starlite.enums import MediaType
 if TYPE_CHECKING:
 
     from starlite.app import Starlite
+    from starlite.connection import Request
     from starlite.response import TemplateResponse
 
 
@@ -59,7 +60,12 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
 
     @abstractmethod
     def to_response(
-        self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
+        self,
+        headers: Dict[str, Any],
+        media_type: Union["MediaType", str],
+        status_code: int,
+        app: "Starlite",
+        request: "Request",
     ) -> R:  # pragma: no cover
         """Abstract method that should be implemented by subclasses. Returns a
         Starlette compatible Response instance.
@@ -69,6 +75,7 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Returns:
             A Response Object
@@ -99,6 +106,7 @@ class File(ResponseContainer[FileResponse]):
         media_type: Union["MediaType", str],
         status_code: int,
         app: "Starlite",
+        request: "Request",
     ) -> FileResponse:
         """Creates a FileResponse instance.
 
@@ -107,6 +115,7 @@ class File(ResponseContainer[FileResponse]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Returns:
             A FileResponse instance
@@ -129,7 +138,12 @@ class Redirect(ResponseContainer[RedirectResponse]):
     """Redirection path"""
 
     def to_response(
-        self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
+        self,
+        headers: Dict[str, Any],
+        media_type: Union["MediaType", str],
+        status_code: int,
+        app: "Starlite",
+        request: "Request",
     ) -> RedirectResponse:
         """Creates a RedirectResponse instance.
 
@@ -138,6 +152,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Returns:
             A RedirectResponse instance
@@ -161,7 +176,12 @@ class Stream(ResponseContainer[StreamingResponse]):
     """Iterator, Generator or async Iterator or Generator returning stream chunks"""
 
     def to_response(
-        self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
+        self,
+        headers: Dict[str, Any],
+        media_type: Union["MediaType", str],
+        status_code: int,
+        app: "Starlite",
+        request: "Request",
     ) -> StreamingResponse:
         """Creates a StreamingResponse instance.
 
@@ -170,6 +190,7 @@ class Stream(ResponseContainer[StreamingResponse]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Returns:
             A StreamingResponse instance
@@ -193,7 +214,12 @@ class Template(ResponseContainer["TemplateResponse"]):
     """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
 
     def to_response(
-        self, headers: Dict[str, Any], media_type: Union["MediaType", str], status_code: int, app: "Starlite"
+        self,
+        headers: Dict[str, Any],
+        media_type: Union["MediaType", str],
+        status_code: int,
+        app: "Starlite",
+        request: "Request",
     ) -> "TemplateResponse":
         """Creates a TemplateResponse instance.
 
@@ -202,6 +228,7 @@ class Template(ResponseContainer["TemplateResponse"]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
+            request: A [Request][starlite.connection.request.Request] instance
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
@@ -213,11 +240,12 @@ class Template(ResponseContainer["TemplateResponse"]):
         from starlite.exceptions import ImproperlyConfiguredException
         from starlite.response import TemplateResponse
 
+        context = self.context or {}
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
         return TemplateResponse(
             background=self.background,
-            context=self.context,
+            context={**context, "request": request},
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,

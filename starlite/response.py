@@ -108,7 +108,7 @@ class TemplateResponse(Response):
         template_name: str,
         template_engine: "TemplateEngineProtocol",
         status_code: int,
-        context: Optional[Dict[str, Any]] = None,
+        context: Dict[str, Any],
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
@@ -119,16 +119,15 @@ class TemplateResponse(Response):
             template_name: Path-like name for the template to be rendered, e.g. "index.html".
             template_engine: The template engine class to use to render the response.
             status_code: A value for the response HTTP status code.
-            context: A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None.
+            context: A dictionary of key/value pairs to be passed to the temple engine's render method.
             background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
                 [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
         """
-        context = context or {}
         template = template_engine.get_template(template_name)
-        content = template.render(**context or {})
+        content = template.render(**context)
         super().__init__(
             content=content,
             status_code=status_code,
