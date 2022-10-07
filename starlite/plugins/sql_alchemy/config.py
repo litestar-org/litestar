@@ -12,7 +12,7 @@ from typing import (
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
-from pydantic import BaseConfig, BaseModel, validator
+from pydantic import BaseConfig, BaseModel, root_validator, validator
 from typing_extensions import Literal
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
@@ -147,7 +147,7 @@ class SQLAlchemyConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    connection_string: str
+    connection_string: Optional[str] = None
     """Database connection string in one of the formats supported by SQLAlchemy.
 
     Notes:
@@ -236,6 +236,30 @@ class SQLAlchemyConfig(BaseModel):
         """
         return AsyncCallable(value)  # type: ignore[arg-type]
 
+    @root_validator
+    def check_connection_string_or_engine_instance(  # pylint: disable=no-self-argument
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Either `connection_string` or `engine_instance` must be specified,
+        and not both.
+
+        Args:
+            values: Field values, after validation.
+
+        Returns:
+            Field values.
+        """
+        connection_string = values.get("connection_string")
+        engine_instance = values.get("engine_instance")
+
+        if connection_string is None and engine_instance is None:
+            raise ValueError("One of 'connection_string' or 'engine_instance' must be provided.")
+
+        if connection_string is not None and engine_instance is not None:
+            raise ValueError("Only one of 'connection_string' or 'engine_instance' can be provided.")
+
+        return values
+
     @property
     def engine_config_dict(self) -> Dict[str, Any]:
         """
@@ -261,7 +285,9 @@ class SQLAlchemyConfig(BaseModel):
             create_engine_callable = (
                 self.create_async_engine_callable if self.use_async_engine else self.create_engine_callable
             )
-            self.engine_instance = create_engine_callable(self.connection_string, **self.engine_config_dict)
+            self.engine_instance = create_engine_callable(
+                self.connection_string, **self.engine_config_dict  # type:ignore[arg-type]
+            )
         return cast("Union[Engine, FutureEngine, AsyncEngine]", self.engine_instance)
 
     @property
