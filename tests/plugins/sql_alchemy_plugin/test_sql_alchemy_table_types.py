@@ -221,7 +221,7 @@ def test_sql_alchemy_plugin_validation() -> None:
 
 
 def test_provider_validation() -> None:
-    class MyStrColumn(sqlalchemy.String):  # type:ignore[misc]
+    class MyStrColumn(sqlalchemy.String):
         pass
 
     class ModelWithCustomColumn(SQLAlchemyBase):

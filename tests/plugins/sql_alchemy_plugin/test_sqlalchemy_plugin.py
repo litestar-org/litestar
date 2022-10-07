@@ -20,7 +20,7 @@ class FromAsDeclarative(AsDeclBase):
     id = Column(Integer, primary_key=True)
 
 
-class FromDeclBase(DeclBase):  # type:ignore[misc,valid-type]
+class FromDeclBase(DeclBase):
     __tablename__ = "whatever"
     id = Column(Integer, primary_key=True)
 

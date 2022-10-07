@@ -8,7 +8,7 @@ from tests.plugins.sql_alchemy_plugin import Pet, User
 
 
 def test_relationship() -> None:
-    result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)
+    result = SQLAlchemyPlugin().to_pydantic_model_class(model_class=User)  # type:ignore[arg-type]
     assert issubclass(result, BaseModel)
     result.update_forward_refs()
     fields = result.__fields__
