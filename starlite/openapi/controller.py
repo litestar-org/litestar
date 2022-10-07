@@ -48,38 +48,40 @@ class OpenAPIController(Controller):
     """
     Google CDN Fonts in Redoc, use False for use in isolated environment
     """
-    redoc_js_url: str = \
-        f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
+    redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
     """
     Specify redoc_js_url for use in offline use in isolated environment.
     Default reverts to as used in redoc_version
     """
-    swagger_css_url: str = \
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
+    swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
     """
     Specify swagger_css_url for use in offline use in isolated environment.
     Default reverts to as used in swagger_ui_version
     """
-    swagger_ui_bundle_js_url: str = \
+    swagger_ui_bundle_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
+    )
     """
     Specify swagger_ui_bundle_js_url for use in offline use in isolated environment.
     Default reverts to as used in swagger_ui_version
     """
-    swagger_ui_standalone_preset_js_url: str = \
+    swagger_ui_standalone_preset_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
+    )
     """
     Specify swagger_js_standalone_preset_js for use in isolated environment.
     Default reverts to as used in swagger_ui_version
     """
-    stoplight_elements_css_url: str = \
+    stoplight_elements_css_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
+    )
     """
     Specify stoplight_css_url for use in isolated environment .
     Default reverts to as used in stoplight_elements_version
     """
-    stoplight_elements_js_url: str = \
+    stoplight_elements_js_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
+    )
     """
     Specify stoplight_js_url for use in isolated environment.
     Default reverts to as used in stoplight_elements_version

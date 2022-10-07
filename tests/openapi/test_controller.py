@@ -3,16 +3,15 @@ from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite import OpenAPIConfig
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import MediaType
+from starlite.openapi.controller import OpenAPIController as _OpenAPIController
 from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
-from starlite.openapi.controller import OpenAPIController as _OpenAPIController
 
 
 class OpenAPIController(_OpenAPIController):
-    """
-    test class for usage in a couple "offline" tests
-    and for without google fonts test
-    """
+    """test class for usage in a couple "offline" tests and for without google
+    fonts test."""
+
     redoc_google_fonts = False
     redoc_js_url = "https://offline_location/redoc.standalone.js"
     swagger_css_url = "https://offline_location/swagger-ui-css"
@@ -21,9 +20,9 @@ class OpenAPIController(_OpenAPIController):
     stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
     stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
 
+
 def test_without_google_fonts() -> None:
-    config = OpenAPIConfig(
-        title="Starlite API", version="1.0.0", openapi_controller=OpenAPIController)
+    config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=config) as client:
         response = client.get("/schema/redoc")
         assert "fonts.googleapis.com" not in response.text
@@ -42,16 +41,16 @@ def test_openapi_swagger_offline() -> None:
     with create_test_client([PersonController, PetController], openapi_config=config) as client:
         response = client.get("/schema/swagger")
         assert OpenAPIController.swagger_css_url in response.text
-        assert OpenAPIController.swagger_js_ui_bundle in response.text
-        assert OpenAPIController.swagger_js_standalone_preset_js in response.text
+        assert OpenAPIController.swagger_ui_bundle_js_url in response.text
+        assert OpenAPIController.swagger_ui_standalone_preset_js_url in response.text
 
 
 def test_openapi_stoplight_elements_offline() -> None:
     config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=config) as client:
         response = client.get("/schema/elements")
-        assert OpenAPIController.stoplight_css_url in response.text
-        assert OpenAPIController.stoplight_js_url in response.text
+        assert OpenAPIController.stoplight_elements_css_url in response.text
+        assert OpenAPIController.stoplight_elements_js_url in response.text
 
 
 def test_openapi_root() -> None:
