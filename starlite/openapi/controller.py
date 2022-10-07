@@ -44,22 +44,22 @@ class OpenAPIController(Controller):
     """
     URL to download a favicon from.
     """
-    with_google_fonts: bool = True
+    redoc_google_fonts: bool = True
     """
     use google cdn fonts in the rendering of redoc
     """
     swagger_css_url: str = \
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui.css"
+        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
     """
     specify swagger_css_url for use in offline environments 
     """
     swagger_js_ui_bundle: str = \
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-bundle.js"
+        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
     """
     specify swagger_js_ui_bundle for use in offline environments
     """
     swagger_js_standalone_preset_js: str = \
-        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-standalone-preset.js"
+        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     """
     specify swagger_js_standalone_preset_js for use in offline environments
     """
@@ -424,7 +424,7 @@ class OpenAPIController(Controller):
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             """
-        if self.with_google_fonts:
+        if self.redoc_google_fonts:
             head += """
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
             """
