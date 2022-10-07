@@ -39,3 +39,35 @@ app = Starlite(
 
 See the [API Reference][starlite.openapi.controller.OpenAPIController] for full details on the `OpenAPIController` class
 and the kwargs it accepts.
+
+
+## OpenAPI usage in offline environments.
+
+When subclassing [OpenAPIController][starlite.openapi.controller.OpenAPIController] 
+it is possible to set several variables for setting urls to css, js files
+needed for rendering the OpenAPI pages (swagger/redoc/spotlight elements)
+
+you can also set dont use google fonts (used in redoc)
+
+
+```python
+from starlite import Starlite, OpenAPIController, OpenAPIConfig
+
+
+class MyOpenAPIController(OpenAPIController):
+    path = "/api-docs"
+    redoc_google_fonts = False
+    redoc_js_url = "https://offline_location/redoc.standalone.js"
+    swagger_css_url = "https://offline_location/swagger-ui-css"
+    swagger_ui_bundle_js_url = "https://offline_location/swagger-ui-bundle.js"
+    swagger_ui_standalone_preset_js_url = "https://offline_location/swagger-ui-standalone-preset.js"
+    stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
+    stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
+
+app = Starlite(
+    route_handlers=[...],
+    openapi_config=OpenAPIConfig(
+        title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
+    ),
+)
+```
