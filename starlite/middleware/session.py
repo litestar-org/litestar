@@ -22,7 +22,6 @@ from starlite.connection import ASGIConnection
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
-from starlite.types import Empty
 from starlite.utils import get_serializer_from_scope
 from starlite.utils.serialization import default_serializer
 
@@ -215,8 +214,7 @@ class SessionMiddleware(MiddlewareProtocol):
             headers = MutableHeaders(scope=message)
             scope_session = scope.get("session")
 
-            should_clear_session = scope_session is Empty
-            if not should_clear_session:
+            if scope_session:
                 data = self.dump_data(scope_session, scope=scope)
                 cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
                 for i, datum in enumerate(data, start=0):
