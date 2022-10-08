@@ -64,7 +64,9 @@ def test_default_stoplight_elements_cdn_urls() -> None:
             client.app.openapi_config.openapi_controller.stoplight_elements_css_url
             in default_stoplight_elements_bundles
         )
-        assert client.app.openapi_config.openapi_controller.stoplight_elements_js_url
+        assert (
+            client.app.openapi_config.openapi_controller.stoplight_elements_js_url in default_stoplight_elements_bundles
+        )
         assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
 
 
