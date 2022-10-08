@@ -455,7 +455,7 @@ class Starlite(Router):
 
             handler_index = app.get_handler_index_by_name("my-handler")
 
-            # { "path": ["/"], "handler" ... }
+            # { "paths": ["/"], "handler" ... }
             ```
         Args:
             name: A route handler unique name.
