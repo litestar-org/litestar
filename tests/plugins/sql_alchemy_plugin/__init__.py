@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import as_declarative, declared_attr, relationship
 
@@ -11,18 +13,18 @@ class SQLAlchemyBase:
     # Generate the table name from the class name
     @declared_attr
     def __tablename__(cls) -> str:
-        return cls.__name__.lower()  # type:ignore[no-any-return,attr-defined]
+        return cls.__name__.lower()
 
 
 association_table = Table(
     "association",
-    SQLAlchemyBase.metadata,  # type:ignore[attr-defined]
+    SQLAlchemyBase.metadata,
     Column("pet_id", ForeignKey("pet.id")),
     Column("user_id", ForeignKey("user.id")),
 )
 friendship_table = Table(
     "friendships",
-    SQLAlchemyBase.metadata,  # type:ignore[attr-defined]
+    SQLAlchemyBase.metadata,
     Column("friend_a_id", Integer, ForeignKey("user.id"), primary_key=True),
     Column("friend_b_id", Integer, ForeignKey("user.id"), primary_key=True),
 )
@@ -34,7 +36,7 @@ class Pet(SQLAlchemyBase):
     name = Column(String)
     age = Column(Float)
     owner_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="pets", uselist=False)
+    owner: "User" = relationship("User", back_populates="pets", uselist=False)
 
 
 class Company(SQLAlchemyBase):
@@ -46,8 +48,8 @@ class Company(SQLAlchemyBase):
 class User(SQLAlchemyBase):
     id = Column(Integer, primary_key=True)
     name = Column(String, default="moishe")
-    pets = relationship("Pet", back_populates="owner", uselist=True)
-    friends = relationship(
+    pets: List[Pet] = relationship("Pet", back_populates="owner", uselist=True)
+    friends: List["User"] = relationship(
         "User",
         secondary=friendship_table,
         primaryjoin=id == friendship_table.c.friend_a_id,
@@ -55,4 +57,4 @@ class User(SQLAlchemyBase):
         uselist=True,
     )
     company_id = Column(Integer, ForeignKey("company.id"))
-    company = relationship("Company")
+    company: Company = relationship("Company")

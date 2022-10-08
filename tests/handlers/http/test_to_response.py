@@ -107,7 +107,7 @@ async def test_to_response_async_await() -> None:
     ).create_signature_model()
 
     response = await test_function.to_response(
-        data=test_function.fn(data=person_instance), plugins=[], app=None  # type: ignore
+        data=test_function.fn(data=person_instance), plugins=[], app=None, request=None  # type: ignore
     )
     assert loads(response.body) == person_instance.dict()
 
@@ -120,7 +120,7 @@ async def test_to_response_returning_starlite_response() -> None:
     with create_test_client(test_function) as client:
         http_route: HTTPRoute = client.app.routes[0]  # type: ignore
         route_handler = http_route.route_handlers[0]
-        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
         assert isinstance(response, Response)
 
 
@@ -146,7 +146,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
     with create_test_client(test_function) as client:
         http_route: HTTPRoute = client.app.routes[0]  # type: ignore
         route_handler = http_route.route_handlers[0]
-        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
         assert isinstance(response, StarletteResponse)
         assert response is expected_response
 
@@ -172,7 +172,7 @@ async def test_to_response_returning_redirect_response() -> None:
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]  # type: ignore
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
         assert isinstance(response, RedirectResponse)
         assert response.headers["location"] == "/somewhere-else"
         assert response.headers["local-header"] == "123"
@@ -191,7 +191,11 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
 
     def before_request_hook_handler(request: Request) -> RedirectResponse:
         return Redirect(path="/proxy").to_response(
-            headers={}, media_type="application/json", status_code=HTTP_308_PERMANENT_REDIRECT, app=request.app
+            headers={},
+            media_type="application/json",
+            status_code=HTTP_308_PERMANENT_REDIRECT,
+            app=request.app,
+            request=request,
         )
 
     @get(path="/test", before_request=before_request_hook_handler)
@@ -227,7 +231,7 @@ async def test_to_response_returning_file_response() -> None:
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]  # type: ignore
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
         assert isinstance(response, FileResponse)
         assert response.stat_result
         assert response.path == current_file_path
@@ -276,7 +280,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
         with create_test_client(test_function) as client:
             route: HTTPRoute = client.app.routes[0]  # type: ignore
             route_handler = route.route_handlers[0]
-            response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+            response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
             assert isinstance(response, StreamingResponse)
             assert response.headers["local-header"] == "123"
             assert response.headers["response-header"] == "abc"
@@ -311,7 +315,7 @@ async def func_to_response_template_response() -> None:
     with create_test_client(test_function) as client:
         route: HTTPRoute = client.app.routes[0]  # type: ignore
         route_handler = route.route_handlers[0]
-        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None)  # type: ignore
+        response = await route_handler.to_response(data=route_handler.fn(), plugins=[], app=None, request=None)  # type: ignore
         assert isinstance(response, TemplateResponse)
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"

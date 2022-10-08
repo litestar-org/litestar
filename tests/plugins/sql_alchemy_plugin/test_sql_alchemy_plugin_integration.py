@@ -12,7 +12,7 @@ from starlite.testing import create_test_client
 from tests.plugins.sql_alchemy_plugin import Company
 
 companies = [
-    Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))  # type: ignore[call-arg]
+    Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))
     for i in range(3)
 ]
 
