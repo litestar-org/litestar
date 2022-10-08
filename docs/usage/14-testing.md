@@ -154,7 +154,7 @@ class TestClass:
 ```
 
 !!! important
-    Enable **Session Middleware** in your Starlite app to use session.
+    The **Session Middleware** must be enabled in Starlite app provided to the TestClient to use sessions.
 
 !!! important
     Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
