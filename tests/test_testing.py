@@ -202,6 +202,10 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
     app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
     with TestClient(app=app, session_config=session_config if enable_session else None) as client:
-        client.cookies = client.create_session_cookies(session_data=session_data)
+        cookies = client.create_session_cookies(session_data=session_data)
+        for key, value in cookies.items():
+            client.cookies.set(key, value, domain=client.base_url.host)
         client.get("/test")
+        session = client.get_session_from_cookies()
+        assert session == session_data
         assert app.state.value == 1

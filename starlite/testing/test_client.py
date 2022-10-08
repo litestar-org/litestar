@@ -154,8 +154,8 @@ class TestClient(StarletteTestClient):
 
             ```python
             def test_something(self, test_client: TestClient) -> None:
-                response = test_client.get(url="/my_route")
-                session = test_client.get_session_from_cookies(cookies=response.cookies)
+                test_client.get(url="/my_route")
+                session = test_client.get_session_from_cookies()
                 assert "user" in session
             ```
         """
