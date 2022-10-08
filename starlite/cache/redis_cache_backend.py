@@ -27,17 +27,17 @@ class RedisCacheBackendConfig(BaseModel):
 class RedisCacheBackend(CacheBackendProtocol):
     def __init__(self, config: RedisCacheBackendConfig):
         self._config = config
-        self._redis_int = None
+        self._redis_int: Redis = None  # type: ignore[assignment]
 
     @property
-    def _redis(self):
+    def _redis(self) -> Redis:
         if not self._redis_int:
             pool = ConnectionPool.from_url(**self._config.dict(exclude_unset=True))
             self._redis_int = Redis(connection_pool=pool)
 
         return self._redis_int
 
-    async def get(self, key: str) -> Any:
+    async def get(self, key: str) -> Any:  # pylint: disable=invalid-overridden-method
         """Retrieves a value from cache corresponding to the given key.
 
         Args:
@@ -50,7 +50,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         value = await self._redis.get(key)
         return value
 
-    async def set(self, key: str, value: Any, expiration: int) -> Any:
+    async def set(self, key: str, value: Any, expiration: int) -> Any:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by
         expiration.
 
@@ -70,7 +70,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         await self._redis.set(key, value, ex=expiration)
         return None
 
-    async def delete(self, key: str) -> Any:
+    async def delete(self, key: str) -> Any:  # pylint: disable=invalid-overridden-method
         """Deletes a value from the cache and removes the given key.
 
         Args:

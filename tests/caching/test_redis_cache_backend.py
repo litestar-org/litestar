@@ -1,12 +1,21 @@
-from typing import Optional
-from unittest.mock import patch, Mock
-from starlite.cache.redis_cache_backend import RedisCacheBackend, RedisCacheBackendConfig
+from typing import TYPE_CHECKING, Optional
+from unittest.mock import Mock, patch
+
+import pytest
+
+from starlite.cache.redis_cache_backend import (
+    RedisCacheBackend,
+    RedisCacheBackendConfig,
+)
+
+if TYPE_CHECKING:
+    from typing import Dict
 
 
 class FakeAsyncRedis:
-    def __init__(self):
-        self._cache = dict()
-        self._expirations = dict()
+    def __init__(self) -> None:
+        self._cache: Dict[str, str] = dict()
+        self._expirations: Dict[str, int] = dict()
 
     async def get(self, key: str) -> Optional[str]:
         return self._cache.get(key)
@@ -22,9 +31,14 @@ class FakeAsyncRedis:
         return self._expirations.get(key)
 
 
+@pytest.fixture()
+def mock_redis() -> None:
+    patch("starlite.cache.redis_cache_backend.Redis")
+
+
 @patch("starlite.cache.redis_cache_backend.ConnectionPool.from_url")
-@patch("starlite.cache.redis_cache_backend.Redis")
-def test_config_redis_default(_redis_mock: Mock, connection_pool_from_url_mock: Mock) -> None:
+@pytest.mark.usefixtures("mock_redis")
+def test_config_redis_default(connection_pool_from_url_mock: Mock) -> None:
     url = "redis://localhost"
     config = RedisCacheBackendConfig(url=url)
     cache = RedisCacheBackend(config)
@@ -33,16 +47,14 @@ def test_config_redis_default(_redis_mock: Mock, connection_pool_from_url_mock: 
 
 
 @patch("starlite.cache.redis_cache_backend.ConnectionPool.from_url")
-@patch("starlite.cache.redis_cache_backend.Redis")
-def test_config_redis_non_default(_redis_mock: Mock, connection_pool_from_url_mock: Mock) -> None:
+@pytest.mark.usefixtures("mock_redis")
+def test_config_redis_non_default(connection_pool_from_url_mock: Mock) -> None:
     url = "redis://localhost"
     db = 2
     port = 1234
     username = "user"
     password = "password"
-    config = RedisCacheBackendConfig(
-        url=url, db=db,  port=port, username=username, password=password
-    )
+    config = RedisCacheBackendConfig(url=url, db=db, port=port, username=username, password=password)
     cache = RedisCacheBackend(config)
     assert cache._redis
     connection_pool_from_url_mock.assert_called_once_with(
@@ -51,7 +63,7 @@ def test_config_redis_non_default(_redis_mock: Mock, connection_pool_from_url_mo
 
 
 @patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_get_from_cache(redis_mock: Mock):
+async def test_get_from_cache(redis_mock: Mock) -> None:
     key = "key"
     value = "value"
     fake_redis = FakeAsyncRedis()
@@ -67,7 +79,7 @@ async def test_get_from_cache(redis_mock: Mock):
 
 
 @patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_set_in_cache(redis_mock: Mock):
+async def test_set_in_cache(redis_mock: Mock) -> None:
     key = "key"
     value = "value"
     exp = 60
@@ -86,7 +98,7 @@ async def test_set_in_cache(redis_mock: Mock):
 
 
 @patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_delete_from_cache(redis_mock: Mock):
+async def test_delete_from_cache(redis_mock: Mock) -> None:
     key = "key"
     fake_redis = FakeAsyncRedis()
     await fake_redis.set(key, "value", 60)
