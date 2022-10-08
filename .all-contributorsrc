@@ -451,6 +451,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "nielsvanhooy",
+      "name": "nielsvanhooy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40770348?v=4",
+      "profile": "https://github.com/nielsvanhooy",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
