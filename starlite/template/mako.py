@@ -2,7 +2,12 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
-from starlite.template.base import TemplateEngineProtocol, TemplateProtocol, url_for
+from starlite.template.base import (
+    TemplateEngineProtocol,
+    TemplateProtocol,
+    csrf_token,
+    url_for,
+)
 
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
@@ -24,7 +29,8 @@ class MakoTemplate(TemplateProtocol):
         self.template = template
 
     def render(self, *args: Any, **kwargs: Any) -> str:
-        kwargs["url_for"] = partial(url_for, kwargs)
+        kwargs["url_for"] = partial(url_for, kwargs)  # pyright: ignore
+        kwargs["csrf_token"] = partial(csrf_token, kwargs)  # pyright: ignore
         return str(self.template.render(*args, **kwargs))
 
 

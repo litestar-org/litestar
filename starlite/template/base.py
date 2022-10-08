@@ -1,18 +1,25 @@
-from typing import TYPE_CHECKING, Any, List, Mapping, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, List, TypeVar, Union
 
 from pydantic import DirectoryPath, validate_arguments
-from typing_extensions import Protocol, runtime_checkable
+from typing_extensions import Protocol, TypedDict, runtime_checkable
+
+from starlite.utils import generate_csrf_token
 
 if TYPE_CHECKING:
     from starlite import Request
 
 
-def url_for(context: Mapping[str, Any], route_name: str, **path_parameters: Any) -> str:
+class TemplateContext(TypedDict):
+    request: "Request[Any, Any]"
+
+
+def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -> str:
     """Wrapper for [route_reverse][starlite.app.route_reverse] to be used in
     templates.
 
     Args:
-        name: A route handler unique name.
+        context: The template context.
+        route_name: The name of the route handler.
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:
@@ -21,8 +28,25 @@ def url_for(context: Mapping[str, Any], route_name: str, **path_parameters: Any)
     Returns:
         A fully formatted url path.
     """
-    request = cast("Request", context.get("request"))
-    return request.app.route_reverse(route_name, **path_parameters)
+    return context["request"].app.route_reverse(route_name, **path_parameters)
+
+
+def csrf_token(context: TemplateContext) -> str:
+    """Sets a CSRF token on the template.
+
+    Notes:
+        - to use this function make sure to pass an instance of [CSRFConfig][starlite.config.csrf_config.CSRFConfig] to
+        the [Starlite][starlite.app.Starlite] constructor.
+
+    Args:
+        context: The template context.
+
+
+    Returns:
+        A CSRF token if the app level `csrf_config` is set, otherwise an empty string.
+    """
+    csrf_config = context["request"].app.csrf_config
+    return generate_csrf_token(csrf_config.secret) if csrf_config else ""
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover

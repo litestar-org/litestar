@@ -1,5 +1,3 @@
-import hashlib
-import hmac
 import secrets
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -9,13 +7,17 @@ from starlite.datastructures.cookie import Cookie
 from starlite.enums import ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
+from starlite.utils.csrf import (
+    CSRF_SECRET_BYTES,
+    generate_csrf_hash,
+    generate_csrf_token,
+)
 
 if TYPE_CHECKING:
     from starlite.config import CSRFConfig
     from starlite.connection import Request
     from starlite.types import ASGIApp, HTTPSendMessage, Message, Receive, Scope, Send
 
-CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
@@ -93,7 +95,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         if "set-cookie" not in headers:
             cookie = Cookie(
                 key=self.config.cookie_name,
-                value=self._generate_csrf_token(),
+                value=generate_csrf_token(secret=self.config.secret),
                 path=self.config.cookie_path,
                 secure=self.config.cookie_secure,
                 httponly=self.config.cookie_httponly,
@@ -102,17 +104,6 @@ class CSRFMiddleware(MiddlewareProtocol):
             )
             headers.append("set-cookie", cookie.to_header(header=""))
 
-    def _generate_csrf_hash(self, token: str) -> str:
-        """Generate an HMAC that signs the CSRF token."""
-        return hmac.new(self.config.secret.encode(), token.encode(), hashlib.sha256).hexdigest()
-
-    def _generate_csrf_token(self) -> str:
-        """Generate a CSRF token that includes a randomly generated string
-        signed by an HMAC."""
-        token = secrets.token_hex(CSRF_SECRET_BYTES)
-        token_hash = self._generate_csrf_hash(token)
-        return token + token_hash
-
     def _decode_csrf_token(self, token: str) -> Optional[str]:
         """Decode a CSRF token and validate its HMAC."""
         if len(token) < CSRF_SECRET_LENGTH + 1:
@@ -120,7 +111,7 @@ class CSRFMiddleware(MiddlewareProtocol):
 
         token_secret = token[:CSRF_SECRET_LENGTH]
         existing_hash = token[CSRF_SECRET_LENGTH:]
-        expected_hash = self._generate_csrf_hash(token_secret)
+        expected_hash = generate_csrf_hash(token=token_secret, secret=self.config.secret)
         if not secrets.compare_digest(existing_hash, expected_hash):
             return None
 

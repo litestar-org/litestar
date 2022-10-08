@@ -1,4 +1,4 @@
-# pylint: disable=unused-argument, import-outside-toplevel
+# pylint: disable=unused-argument
 import os
 from abc import ABC, abstractmethod
 from typing import (
@@ -30,13 +30,13 @@ from starlette.responses import StreamingResponse
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import TemplateResponse
 
 if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.connection import Request
-    from starlite.response import TemplateResponse
-
 
 R = TypeVar("R", bound=StarletteResponse)
 
@@ -210,7 +210,7 @@ class Template(ResponseContainer["TemplateResponse"]):
 
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
-    context: Optional[Dict[str, Any]] = None
+    context: Dict[str, Any] = {}
     """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
 
     def to_response(
@@ -237,15 +237,15 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
-        from starlite.exceptions import ImproperlyConfiguredException
-        from starlite.response import TemplateResponse
 
-        context = self.context or {}
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
+
+        context = {**self.context, "request": request}
+
         return TemplateResponse(
             background=self.background,
-            context={**context, "request": request},
+            context=context,
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,
