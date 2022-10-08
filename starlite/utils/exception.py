@@ -29,7 +29,7 @@ def get_exception_handler(
 
     Args:
         exception_handlers: Mapping of status codes and exception types to handlers.
-    exc: Exception Instance to be resolved to a handler.
+        exc: Exception Instance to be resolved to a handler.
 
     Returns:
         Optional exception handler callable.

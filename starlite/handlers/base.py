@@ -210,3 +210,15 @@ class BaseRouteHandler(Generic[T]):
         return annotations."""
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
+
+    def __str__(self) -> str:
+        """
+        Returns:
+            A unique identifier for the route handler
+        """
+        if self.name:
+            return self.name
+        target = cast("Any", self.fn)
+        if not hasattr(target, "__qualname__"):
+            target = type(target)
+        return f"{target.__module__}.{target.__qualname__}"
