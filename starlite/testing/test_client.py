@@ -101,48 +101,68 @@ class TestClient(StarletteTestClient):
         return super().__enter__()  # pyright: ignore
 
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
-        """Creates raw session cookies that are loaded into session by the
-        Session Middleware. It simulates cookies the same way as if they are
+        """Creates raw session cookies that are loaded into the session by the
+        Session Middleware. It creates cookies the same way as if they are
         coming from the browser. Your tests must set up session middleware to
         load raw session cookies into the session.
+
+        Args:
+            session_data: Dictionary to create raw session cookies from.
+
+        Returns:
+            A dictionary with cookie name as key and cookie value as value.
 
         Examples:
 
             ```python
-            import os
-
             import pytest
-            from pydantic import SecretBytes
-            from starlite.middleware.session import SessionCookieConfig
             from starlite.testing import TestClient
 
-
-            @pytest.fixture(scope="class")
-            def session_config(self) -> SessionCookieConfig:
-                return SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+            from my_app.main import app, session_cookie_config_instance
 
 
-            @pytest.fixture()
-            def app(self, session_config: SessionCookieConfig) -> Starlite:
-                @get(path="/test")
-                def my_handler() -> None:
-                    pass
+            class TestClass:
+                @pytest.fixture()
+                def test_client(self) -> TestClient:
+                    with TestClient(
+                        app=app, session_config=session_cookie_config_instance
+                    ) as client:
+                        yield client
 
-                # Set up session middleware.
-                return Starlite(route_handlers=[my_handler], middleware=[session_config.middleware])
-
-
-            def test_something(app: Starlite, session_config: SessionCookieConfig) -> None:
-                with TestClient(app=app, session_config=session_config) as client:
-                    cookies = client.create_session_cookies(session_data={"user": "test_user"})
-                    # Pass raw cookies to the request.
-                    client.get(url="/test", cookies=cookies)
+                def test_something(self, test_client: TestClient) -> None:
+                    cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
+                    # Set raw session cookies to the "cookies" attribute of test_client instance.
+                    test_client.cookies = cookies
+                    test_client.get(url="/my_route")
             ```
         """
         if self.session is None:
             return {}
         encoded_data = self.session.dump_data(data=session_data)
         return {f"{self.session.config.key}-{i}": chunk.decode("utf-8") for i, chunk in enumerate(encoded_data)}
+
+    def get_session_from_cookies(self) -> Dict[str, Any]:
+        """Raw session cookies are a serialized image of session which are
+        created by session middleware and sent with the response. To assert
+        data in session, this method deserializes the raw session cookies and
+        creates session from them.
+
+        Returns:
+            A dictionary containing session data.
+
+        Examples:
+
+            ```python
+            def test_something(self, test_client: TestClient) -> None:
+                response = test_client.get(url="/my_route")
+                session = test_client.get_session_from_cookies(cookies=response.cookies)
+                assert "user" in session
+            ```
+        """
+        if self.session is None:
+            return {}
+        raw_data = [self.cookies[key].encode("utf-8") for key in self.cookies if self.session.config.key in key]
+        return self.session.load_data(data=raw_data)
 
 
 def create_test_client(
