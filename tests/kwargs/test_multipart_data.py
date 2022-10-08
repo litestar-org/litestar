@@ -1,4 +1,5 @@
 from os import path
+from os.path import abspath, dirname, join
 from pathlib import Path
 from typing import Any, Dict, List, Type
 
@@ -363,3 +364,16 @@ def test_postman_multipart_form_data() -> None:
                 "content_type": "application/octet-stream",
             },
         }
+
+
+def test_image_upload() -> None:
+    @post("/")
+    async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        await data.read()
+        return None
+
+    with open(join(dirname(abspath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
+        route_handlers=[hello_world]
+    ) as client:
+        data = f.read()
+        client.post("/", files={"data": data})
