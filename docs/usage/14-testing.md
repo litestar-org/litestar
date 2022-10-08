@@ -86,7 +86,7 @@ It is recommended to create a fixture for `SessionCookieConfig` as it will be us
 also passed as an argument to the `TestClient` whenever you need to mock request. The `secret` should remain the same
 throughout the test session, so set fixture `scope` to `"class"`.
 
-```python title="tests/test_route_handlers.py
+```python title="tests/test_route_handlers.py"
 import os
 
 import pytest
