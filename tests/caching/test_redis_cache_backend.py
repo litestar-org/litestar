@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 class FakeAsyncRedis:
     def __init__(self) -> None:
-        self._cache: Dict[str, str] = dict()
-        self._expirations: Dict[str, int] = dict()
+        self._cache: Dict[str, str] = {}
+        self._expirations: Dict[str, int] = {}
 
     async def get(self, key: str) -> Optional[str]:
         return self._cache.get(key)
