@@ -612,7 +612,8 @@ class Starlite(Router):
         self._configure_route_map_node(route, current_node)
         return current_node
 
-    def _get_route_handlers(self, route: BaseRoute) -> List["RouteHandlerType"]:
+    @staticmethod
+    def _get_route_handlers(route: BaseRoute) -> List["RouteHandlerType"]:
         """Retrieve handler(s) as a list for given route."""
         route_handlers: List["RouteHandlerType"] = []
         if isinstance(route, (WebSocketRoute, ASGIRoute)):
@@ -634,6 +635,14 @@ class Starlite(Router):
         """
         route_handlers = self._get_route_handlers(route)
         for handler in route_handlers:
+            if (
+                handler.name in self._route_handler_index
+                and self._route_handler_index[handler.name].identifier != handler.identifier
+            ):
+                raise ImproperlyConfiguredException(
+                    f"route handler names must be unique - {handler.name} is not unique."
+                )
+
             self._route_mapping[str(handler)].append(route)
             self._route_handler_index[str(handler)] = handler
 

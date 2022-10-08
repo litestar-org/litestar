@@ -5,6 +5,7 @@ import pytest
 from starlite import (
     Controller,
     HTTPRouteHandler,
+    ImproperlyConfiguredException,
     Router,
     Starlite,
     asgi,
@@ -111,3 +112,16 @@ def test_indexes_handlers_with_multiple_paths(decorator: Type[HTTPRouteHandler])
     assert handler_index
     assert handler_index["paths"] == ["/router-one/path-two", "/router-two/path-two"]
     assert handler_index["handler"] == handler_two
+
+
+def test_indexing_validation() -> None:
+    @get("/abc", name="same-name")
+    def handler_one() -> None:
+        pass
+
+    @get("/xyz", name="same-name")
+    def handler_two() -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[handler_one, handler_two])
