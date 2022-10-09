@@ -467,10 +467,11 @@ class Starlite(Router):
         if not handler:
             return None
 
-        routes = self._route_mapping[str(handler)]
+        identifier = handler.name or str(handler)
+        routes = self._route_mapping[identifier]
         paths = sorted(unique([route.path for route in routes]))
 
-        return HandlerIndex(handler=handler, paths=paths, identifier=str(handler))
+        return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
     def route_reverse(self, name: str, **path_parameters: Any) -> Optional[str]:
         """Receives a route handler name, path parameter values and returns an
@@ -634,17 +635,17 @@ class Starlite(Router):
             None
         """
         route_handlers = self._get_route_handlers(route)
+
         for handler in route_handlers:
-            if (
-                handler.name in self._route_handler_index
-                and self._route_handler_index[handler.name].identifier != handler.identifier
+            if handler.name in self._route_handler_index and str(self._route_handler_index[handler.name]) != str(
+                handler
             ):
                 raise ImproperlyConfiguredException(
                     f"route handler names must be unique - {handler.name} is not unique."
                 )
-
-            self._route_mapping[str(handler)].append(route)
-            self._route_handler_index[str(handler)] = handler
+            identifier = handler.name or str(handler)
+            self._route_mapping[identifier].append(route)
+            self._route_handler_index[identifier] = handler
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree

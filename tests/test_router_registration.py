@@ -153,10 +153,14 @@ def test_route_handler_method_view() -> None:
         "/second/test/socket",
     ]
     assert app.route_handler_method_view[str(put_handler)] == [
+        "/first/send",
         "/first/modify",
+        "/second/send",
         "/second/modify",
     ]
     assert app.route_handler_method_view[str(post_handler)] == [
         "/first/send",
+        "/first/modify",
         "/second/send",
+        "/second/modify",
     ]

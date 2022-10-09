@@ -211,23 +211,12 @@ class BaseRouteHandler(Generic[T]):
         if not self.fn:
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
 
-    @property
-    def identifier(self) -> str:
-        """
-
-        Returns:
-            A path like identifier for the route handler.
-        """
-        target = cast("Any", self.fn)
-        if not hasattr(target, "__qualname__"):
-            target = type(target)
-        return f"{type(self).__name__}::{target.__module__}.{target.__qualname__}"
-
     def __str__(self) -> str:
         """
         Returns:
             A unique identifier for the route handler
         """
-        if self.name:
-            return self.name
-        return self.identifier
+        target = cast("Any", self.fn)
+        if not hasattr(target, "__qualname__"):
+            target = type(target)
+        return f"{target.__module__}.{target.__qualname__}"
