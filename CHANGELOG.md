@@ -1,5 +1,18 @@
 # Changelog
 
+[1.26.0]
+
+- add `cache` property getter to `ASGIConnection`.
+- add support for creating test sessions from raw session cookies.
+- add support for using custom `Request` and `WebSocket` classes.
+- fix large file uploads with `httpx`.
+- fix route handler name indexing.
+- update OpenAPIController to configure bundle download paths.
+- update `RequestFactory` to assign empty session dict by default.
+- update `SQLAlchemyConfig` session*maker*\* attributes to protocols.
+- update `SQLAlchemyConfig` to support either passing an instance or setting connectoin string.
+- update templating to inject request into template context.
+
 [1.25.0]
 
 - add `app.route_reverse` method.
@@ -449,7 +462,7 @@
 
 [0.1.2]
 
-- fix _requests_ not being included in project dependencies.
+- fix `requests` not being included in project dependencies.
 - update pydantic to v1.9.0.
 
 [0.1.1]
