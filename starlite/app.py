@@ -101,8 +101,8 @@ class HandlerIndex(TypedDict):
     """Full route paths to the route handler."""
     handler: "RouteHandlerType"
     """Route handler instance."""
-    qualname: str
-    """Qualname of the handler"""
+    identifier: str
+    """Unique identifier of the handler. Either equal to the 'name' attribute or the __str__ value of the handler."""
 
 
 class HandlerNode(TypedDict):
@@ -467,12 +467,11 @@ class Starlite(Router):
         if not handler:
             return None
 
-        qualname = self._get_handler_qualname(handler)
-
-        routes = self._route_mapping[qualname]
+        identifier = handler.name or str(handler)
+        routes = self._route_mapping[identifier]
         paths = sorted(unique([route.path for route in routes]))
 
-        return HandlerIndex(handler=handler, paths=paths, qualname=qualname)
+        return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
     def route_reverse(self, name: str, **path_parameters: Any) -> Optional[str]:
         """Receives a route handler name, path parameter values and returns an
@@ -483,7 +482,7 @@ class Starlite(Router):
             from starlite import Starlite, get
 
 
-            @get("/group/{group_id:int}/user/{user_id:int}", name="get_memebership_details")
+            @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
             def get_membership_details(group_id: int, user_id: int) -> None:
                 pass
 
@@ -512,7 +511,7 @@ class Starlite(Router):
         output: List[str] = []
 
         routes = sorted(
-            self._route_mapping[handler_index["qualname"]], key=lambda r: len(r.path_parameters), reverse=True
+            self._route_mapping[handler_index["identifier"]], key=lambda r: len(r.path_parameters), reverse=True
         )
         passed_parameters = set(path_parameters.keys())
 
@@ -614,7 +613,8 @@ class Starlite(Router):
         self._configure_route_map_node(route, current_node)
         return current_node
 
-    def _get_route_handlers(self, route: BaseRoute) -> List["RouteHandlerType"]:
+    @staticmethod
+    def _get_route_handlers(route: BaseRoute) -> List["RouteHandlerType"]:
         """Retrieve handler(s) as a list for given route."""
         route_handlers: List["RouteHandlerType"] = []
         if isinstance(route, (WebSocketRoute, ASGIRoute)):
@@ -623,14 +623,6 @@ class Starlite(Router):
             route_handlers.extend(cast("HTTPRoute", route).route_handlers)
 
         return route_handlers
-
-    def _get_handler_qualname(self, handler: "RouteHandlerType") -> str:
-        """Retrieves __qualname__ for passed route handler."""
-        handler_fn = cast("AnyCallable", handler.fn)
-        if hasattr(handler_fn, "__qualname__"):
-            return handler_fn.__qualname__
-
-        return type(handler_fn).__qualname__
 
     def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
         """Stores the mapping of route handlers to routes and to route handler
@@ -645,18 +637,15 @@ class Starlite(Router):
         route_handlers = self._get_route_handlers(route)
 
         for handler in route_handlers:
-            qualname = self._get_handler_qualname(handler)
-            self._route_mapping[qualname].append(route)
-
-            name = handler.name or self._get_handler_qualname(handler)
-
-            if (
-                name in self._route_handler_index
-                and self._get_handler_qualname(self._route_handler_index[name]) != qualname
+            if handler.name in self._route_handler_index and str(self._route_handler_index[handler.name]) != str(
+                handler
             ):
-                raise ImproperlyConfiguredException(f"route handler names must be unique - {name} is not unique.")
-
-            self._route_handler_index[name] = handler
+                raise ImproperlyConfiguredException(
+                    f"route handler names must be unique - {handler.name} is not unique."
+                )
+            identifier = handler.name or str(handler)
+            self._route_mapping[identifier].append(route)
+            self._route_handler_index[identifier] = handler
 
     def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
         """Set required attributes and route handlers on route_map tree
