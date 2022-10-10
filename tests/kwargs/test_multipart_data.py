@@ -1,7 +1,7 @@
 from os import path
 from os.path import abspath, dirname, join
 from pathlib import Path
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Optional, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
@@ -376,4 +376,20 @@ def test_image_upload() -> None:
         route_handlers=[hello_world]
     ) as client:
         data = f.read()
-        client.post("/", files={"data": data})
+        response = client.post("/", files={"data": data})
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_optional_formdata() -> None:
+    @post("/")
+    async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        if data is not None:
+            await data.read()
+        return None
+
+    with create_test_client(
+        route_handlers=[hello_world]
+    ) as client:
+
+        response = client.post("/")
+        assert response.status_code == HTTP_201_CREATED
