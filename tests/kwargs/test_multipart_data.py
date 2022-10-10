@@ -72,7 +72,7 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
                 "filename": value.filename,
                 "content": content.decode(),
                 "content_type": value.content_type,
-                "headers": list(value.headers.items()),
+                "headers": [[name.lower(), value] for name, value in value.headers.items()],
             }
         else:
             output[key] = value
@@ -188,9 +188,9 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "content": "<file2 content>",
                 "content_type": "text/plain",
                 "headers": [
-                    ["Content-Disposition", 'form-data; name="test2"; filename="test2.txt"'],
+                    ["content-disposition", 'form-data; name="test2"; filename="test2.txt"'],
                     ["x-custom", "f2"],
-                    ["Content-Type", "text/plain"],
+                    ["content-type", "text/plain"],
                 ],
             },
         }
