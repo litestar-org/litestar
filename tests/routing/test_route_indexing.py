@@ -73,18 +73,19 @@ def test_default_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     router = Router("router/", route_handlers=[handler, named_handler, MyController])
     app = Starlite(route_handlers=[router])
 
-    handler_index = app.get_handler_index_by_name(handler.name or str(handler))
+    handler_index = app.get_handler_index_by_name(str(handler))
     assert handler_index
     assert handler_index["paths"] == ["/router/handler"]
     assert handler_index["handler"] == handler
-    assert handler_index["identifier"] == handler.name or str(handler)
+    assert handler_index["identifier"] == str(handler)
 
-    handler_index = app.get_handler_index_by_name(MyController.handler.name or str(MyController.handler))
+    handler_index = app.get_handler_index_by_name(str(MyController.handler))
     assert handler_index
     assert handler_index["paths"] == ["/router/test"]
-    assert handler_index["identifier"] == MyController.handler.name or str(MyController.handler)
+    assert handler_index["identifier"] == str(MyController.handler)
 
-    handler_index = app.get_handler_index_by_name(named_handler)  # type: ignore
+    # check that default str(named_handler) does not override explicit name
+    handler_index = app.get_handler_index_by_name(str(named_handler))
     assert handler_index is None
 
 
