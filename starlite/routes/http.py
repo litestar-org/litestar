@@ -166,7 +166,7 @@ class HTTPRoute(BaseRoute):
             kwargs = parameter_model.to_kwargs(connection=request)
             request_data = kwargs.get("data")
             if request_data:
-                kwargs["data"] = await request_data
+                kwargs["data"] = (await request_data) or None
             for dependency in parameter_model.expected_dependencies:
                 kwargs[dependency.key] = await parameter_model.resolve_dependency(
                     dependency=dependency, connection=request, **kwargs
