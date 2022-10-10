@@ -25,6 +25,7 @@ from pydantic.fields import (
     ModelField,
     Undefined,
 )
+from pydantic_factories.utils import is_optional
 from starlette.datastructures import URL
 
 from starlite.constants import (
@@ -85,7 +86,6 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 
 class KwargsModel:
     __slots__ = (
-        "has_kwargs",
         "expected_cookie_params",
         "expected_dependencies",
         "expected_form_data",
@@ -93,6 +93,8 @@ class KwargsModel:
         "expected_path_params",
         "expected_query_params",
         "expected_reserved_kwargs",
+        "has_kwargs",
+        "is_data_optional",
         "sequence_query_parameter_names",
     )
 
@@ -107,6 +109,7 @@ class KwargsModel:
         expected_query_params: Set[ParameterDefinition],
         expected_reserved_kwargs: Set["ReservedKwargs"],
         sequence_query_parameter_names: Set[str],
+        is_data_optional: bool,
     ) -> None:
         """This class is used to model the required kwargs for a given
         RouteHandler and its dependencies.
@@ -140,6 +143,7 @@ class KwargsModel:
             or expected_query_params
             or expected_reserved_kwargs
         )
+        self.is_data_optional = is_data_optional
 
     @classmethod
     def _get_param_definitions(
@@ -321,6 +325,9 @@ class KwargsModel:
             expected_header_params=expected_header_parameters,
             expected_reserved_kwargs=cast("Set[ReservedKwargs]", expected_reserved_kwargs),
             sequence_query_parameter_names=sequence_query_parameter_names,
+            is_data_optional=is_optional(signature_model.__fields__["data"])
+            if "data" in expected_reserved_kwargs
+            else False,
         )
 
     def _collect_reserved_kwargs(
@@ -538,5 +545,6 @@ class KwargsModel:
         if self.expected_form_data:
             media_type, model_field = self.expected_form_data
             form_data = await request.form()
-            return parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
+            parsed_form = parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
+            return parsed_form if parsed_form or not self.is_data_optional else None
         return await request.json()

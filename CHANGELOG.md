@@ -1,5 +1,9 @@
 # Changelog
 
+[1.26.1]
+
+- fix optional `UploadFile` not being allowed.
+
 [1.26.0]
 
 - add `cache` property getter to `ASGIConnection`.
