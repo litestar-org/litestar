@@ -140,7 +140,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             dimensions -= 1
         return list_type
 
-    def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:  # type:ignore[name-defined]
+    def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:
         """Handles the SQLAlchemy Tuple type.
 
         Args:
@@ -211,7 +211,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlalchemy_type.TIMESTAMP: lambda x: datetime,
             sqlalchemy_type.Text: self.handle_string_type,
             sqlalchemy_type.Time: lambda x: time,
-            sqlalchemy_type.TupleType: self.handle_tuple_type,  # type:ignore[attr-defined]
+            sqlalchemy_type.TupleType: self.handle_tuple_type,  # pyright: ignore
             sqlalchemy_type.Unicode: self.handle_string_type,
             sqlalchemy_type.UnicodeText: self.handle_string_type,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
