@@ -8,6 +8,7 @@ from pydantic import (
     ConstrainedBytes,
     ConstrainedDecimal,
     ConstrainedFloat,
+    ConstrainedFrozenSet,
     ConstrainedInt,
     ConstrainedList,
     ConstrainedSet,
@@ -93,7 +94,7 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
 
 
 def create_collection_constrained_field_schema(
-    field_type: Union[Type[ConstrainedList], Type[ConstrainedSet]],
+    field_type: Union[Type[ConstrainedList], Type[ConstrainedSet], Type[ConstrainedFrozenSet]],
     sub_fields: Optional[List[ModelField]],
     plugins: List["PluginProtocol"],
 ) -> Schema:
@@ -103,7 +104,7 @@ def create_collection_constrained_field_schema(
         schema.minItems = field_type.min_items
     if field_type.max_items:
         schema.maxItems = field_type.max_items
-    if issubclass(field_type, ConstrainedSet):
+    if issubclass(field_type, (ConstrainedSet, ConstrainedFrozenSet)):
         schema.uniqueItems = True
     if sub_fields:
         items = [create_schema(field=sub_field, generate_examples=False, plugins=plugins) for sub_field in sub_fields]
@@ -119,13 +120,14 @@ def create_collection_constrained_field_schema(
 
 def create_constrained_field_schema(
     field_type: Union[
-        Type[ConstrainedSet],
-        Type[ConstrainedList],
-        Type[ConstrainedStr],
         Type[ConstrainedBytes],
-        Type[ConstrainedFloat],
-        Type[ConstrainedInt],
         Type[ConstrainedDecimal],
+        Type[ConstrainedFloat],
+        Type[ConstrainedFrozenSet],
+        Type[ConstrainedInt],
+        Type[ConstrainedList],
+        Type[ConstrainedSet],
+        Type[ConstrainedStr],
     ],
     sub_fields: Optional[List[ModelField]],
     plugins: List["PluginProtocol"],
