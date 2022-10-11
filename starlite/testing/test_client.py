@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
-from starlette.testclient import TestClient as StarletteTestClient
-
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.session import SessionMiddleware
@@ -41,7 +39,7 @@ if TYPE_CHECKING:
     )
 
 try:
-    pass
+    from starlette.testclient import TestClient as StarletteTestClient
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
