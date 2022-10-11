@@ -1,4 +1,12 @@
 [[package]]
+name = "aiomcache"
+version = "0.7.0"
+description = "Minimal pure python memcached client"
+category = "main"
+optional = true
+python-versions = ">=3.7"
+
+[[package]]
 name = "aiosqlite"
 version = "0.17.0"
 description = "asyncio bridge to the standard sqlite3 module"
@@ -1033,6 +1041,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
+memcached_cahce_backend = ["aiomcache"]
 picologging = ["picologging"]
 structlog = ["structlog"]
 testing = ["httpx", "cryptography"]
@@ -1040,9 +1049,13 @@ testing = ["httpx", "cryptography"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "1a8c3b2638d2c46b9ec396af181e975fe3fb4d3ed9e2b4a7d3210d31ea8359ee"
+content-hash = "2dbd3abfa7918ea388043ae2efc8fa3d2c7bc1a4cd9cd34d455dda246007747f"
 
 [metadata.files]
+aiomcache = [
+    {file = "aiomcache-0.7.0-py3-none-any.whl", hash = "sha256:c10de62da84cd1aa5c11b959ff7b6f4fe923699b694b0d71854e6a9867256314"},
+    {file = "aiomcache-0.7.0.tar.gz", hash = "sha256:a73fd33bc9b4b2dad051d2b7ad0d14087491d87eb0a3d741c9c51a53665bf500"},
+]
 aiosqlite = [
     {file = "aiosqlite-0.17.0-py3-none-any.whl", hash = "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231"},
     {file = "aiosqlite-0.17.0.tar.gz", hash = "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"},
