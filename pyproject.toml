@@ -78,7 +78,7 @@ cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
-redis_cache_backend = ["redis"]
+redis = ["redis"]
 
 
 [build-system]

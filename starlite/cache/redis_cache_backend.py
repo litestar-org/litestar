@@ -9,7 +9,7 @@ try:
     from redis.asyncio.connection import ConnectionPool
 except ImportError as e:
     raise MissingDependencyException(
-        "To use starlite.redis_cache_backend, install starlite with 'redis_cache_backend' extra, e.g. `pip install starlite[redis_cache_backend]`"
+        "To use starlite.redis_cache_backend, install starlite with 'redis' extra, e.g. `pip install starlite[redis]`"
     ) from e
 
 

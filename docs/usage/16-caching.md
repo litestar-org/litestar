@@ -61,8 +61,8 @@ but is not a production grade solution.
 - `RedisCacheBackend` uses [Redis](https://github.com/redis/redis-py) as the caching database. Under the hood it uses
 [redis-py asyncio](https://redis-py.readthedocs.io/en/stable/examples/asyncio_examples.html) to make sure requests are
 not blocked and [hiredis](https://github.com/redis/hiredis) to boost performance. Please note that Redis is an optional
-dependency so in order to use it you need to install Starlite with the `redis_cache_backend` extra, e.g.
-`pip install starlite[redis_cache_backend]`. Here is an example of how to configure Redis as the cache backend:
+dependency so in order to use it you need to install Starlite with the `redis` extra, e.g.
+`pip install starlite[redis]`. Here is an example of how to configure Redis as the cache backend:
 
     ```python
     from starlite import CacheConfig

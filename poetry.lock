@@ -1043,14 +1043,14 @@ brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
-redis_cache_backend = ["redis"]
+redis = ["redis"]
 structlog = ["structlog"]
 testing = ["httpx", "cryptography"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "d5935b34eb0323fae0bc8dd19bbd7cf63b09bb3f629b1fdcbb5263f744e6aa08"
+content-hash = "ab3eb66b0b7cc8ced846e02d078a09e031cd19a0ff77189b5eea21fb568a7cd4"
 
 [metadata.files]
 aiosqlite = [
