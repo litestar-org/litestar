@@ -54,23 +54,26 @@ kwargs it accepts.
 
 ### Registering a Cache Backend
 
-Starlite comes with a single builtin cache backend called `SimpleCacheBackend`, which stores values in memory using a
-dictionary.
+Starlite comes with the following builtin cache backends:
 
-This is fine for local development but is not a production grade solution. In a production environment it's probably a
-good idea to use a more robust solution for caching - using a database, disk storage, or an external service such as
-[Redis](https://github.com/redis/redis-py), [Memcached](https://pymemcache.readthedocs.io/en/latest/index.html)
-or [Etcd](https://pypi.org/project/python-etcd/).
+- `SimpleCacheBackend` which stores values in memory using a dictionary. This is fine for local development
+but is not a production grade solution.
+- `RedisCacheBackend` uses [Redis](https://github.com/redis/redis-py) as the caching database. Under the hood it uses
+[redis-py asyncio](https://redis-py.readthedocs.io/en/stable/examples/asyncio_examples.html) to make sure requests are
+not blocked and [hiredis](https://github.com/redis/hiredis) to boost performance. Please note that Redis is an optional
+dependency so in order to use it you need to install Starlite with the `redis_cache_backend` extra, e.g.
+`pip install starlite[redis_cache_backend]`. Here is an example of how to configure Redis as the cache backend:
+    ```python
+    from starlite import CacheConfig
+    from starlite.cache import RedisCacheBackendConfig, RedisCacheBackend
 
-To do this you simply need to either implement the `starlite.cache.CacheBackendProtocol`, or provide an object that
-fulfills it. For example, you can directly use all 3 libraries mentioned above without needing to implement anything. To
-use Redis as an example:
+    config = RedisCacheBackendConfig(url="redis://localhost/", port=6379, db=0)
+    redis_backend = RedisCacheBackend(config=config)
 
-```python
-from redis import Redis
-from starlite import CacheConfig
+    cache_config = CacheConfig(backend=redis_backend)
+    ```
 
-redis = Redis(host="localhost", port=6379, db=0)
-
-cache_config = CacheConfig(backend=redis)
-```
+If you're interested in another solution for caching - using a database, disk storage, or an external service such as
+[Memcached](https://pymemcache.readthedocs.io/en/latest/index.html)
+or [Etcd](https://pypi.org/project/python-etcd/) you need to either implement the
+`starlite.cache.CacheBackendProtocol`, or provide an object that fulfills it.
