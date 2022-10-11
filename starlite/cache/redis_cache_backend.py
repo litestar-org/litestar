@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 
-from starlite import MissingDependencyException
+from starlite.exceptions import MissingDependencyException
 
 try:
     from redis.asyncio import Redis
