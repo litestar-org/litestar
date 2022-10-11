@@ -1041,7 +1041,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
-memcached_cahce_backend = ["aiomcache"]
+memcached = ["aiomcache"]
 picologging = ["picologging"]
 structlog = ["structlog"]
 testing = ["httpx", "cryptography"]
@@ -1049,7 +1049,7 @@ testing = ["httpx", "cryptography"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "2dbd3abfa7918ea388043ae2efc8fa3d2c7bc1a4cd9cd34d455dda246007747f"
+content-hash = "8cd7ea0a1e9328fa28d26cb3a71a2fb92e407856baf3af72cb70f3a7c5b563ef"
 
 [metadata.files]
 aiomcache = [

@@ -78,7 +78,7 @@ cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
-memcached_cahce_backend = ["aiomcache"]
+memcached = ["aiomcache"]
 
 
 [build-system]
