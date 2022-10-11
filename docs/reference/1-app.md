@@ -11,6 +11,11 @@
             - route_reverse
 
 ::: starlite.app.HandlerIndex
+    options:
+        members:
+            - paths
+            - handler
+            - identifier
 
 ::: starlite.app.DEFAULT_OPENAPI_CONFIG
 

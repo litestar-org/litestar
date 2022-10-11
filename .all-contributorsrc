@@ -442,6 +442,24 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "chbndrhnns",
+      "name": "chbndrhnns",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7534547?v=4",
+      "profile": "https://github.com/chbndrhnns",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "nielsvanhooy",
+      "name": "nielsvanhooy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40770348?v=4",
+      "profile": "https://github.com/nielsvanhooy",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -449,5 +467,6 @@
   "projectOwner": "starlite-api",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }

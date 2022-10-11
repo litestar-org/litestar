@@ -44,11 +44,11 @@ def test_template_response_receives_request_in_context(template_dir: Path) -> No
     Path(template_dir / "abc.html").write_text("")
 
     @get(path="/")
-    def hanler() -> Template:
+    def handler() -> Template:
         return Template(name="abc.html", context={})
 
     with patch("starlite.response.TemplateResponse") as template_response_mock, create_test_client(
-        route_handlers=[hanler],
+        route_handlers=[handler],
         template_config=TemplateConfig(
             directory=template_dir,
             engine=JinjaTemplateEngine,
@@ -64,15 +64,15 @@ def test_template_response_receives_request_in_context(template_dir: Path) -> No
         assert isinstance(request, Request)
 
 
-def test_request_can_not_be_overriden_in_context(template_dir: Path) -> None:
+def test_request_can_not_be_overridden_in_context(template_dir: Path) -> None:
     Path(template_dir / "abc.html").write_text("")
 
     @get(path="/")
-    def hanler() -> Template:
+    def handler() -> Template:
         return Template(name="abc.html", context={"request": 123})
 
     with patch("starlite.response.TemplateResponse") as template_response_mock, create_test_client(
-        route_handlers=[hanler],
+        route_handlers=[handler],
         template_config=TemplateConfig(
             directory=template_dir,
             engine=JinjaTemplateEngine,

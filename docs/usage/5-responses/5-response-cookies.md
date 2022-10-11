@@ -93,7 +93,7 @@ Set-Cookie: my-cookie=456; Path=/; SameSite=lax
 
 ## The Cookie Class
 
-Starlite exports the class `starlite.datastructures.Cookie`. This is a pydantic model that allows you to define the
+Starlite exports the class `starlite.datastructures.Cookie`. This is a pydantic model that allows you to define
 a cookie. See the [API Reference][starlite.datastructures.Cookie] for full details on the `Cookie` class and the kwargs it accepts.
 
 ## Dynamic Cookies

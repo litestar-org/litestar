@@ -44,6 +44,43 @@ class OpenAPIController(Controller):
     """
     URL to download a favicon from.
     """
+    redoc_google_fonts: bool = True
+    """
+    Download google fonts via CDN. Should be set to `False` when not using a CDN.
+    """
+    redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
+    """
+    Download url for the Redoc JS bundle.
+    """
+    swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
+    """
+    Download url for the Swagger UI CSS bundle.
+    """
+    swagger_ui_bundle_js_url: str = (
+        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
+    )
+    """
+    Download url for the Swagger UI JS bundle.
+    """
+    swagger_ui_standalone_preset_js_url: str = (
+        f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
+    )
+    """
+    Download url for the Swagger Standalone Preset JS bundle.
+    """
+    stoplight_elements_css_url: str = (
+        f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
+    )
+    """
+    Download url for the Stoplight Elements CSS bundle.
+    """
+    stoplight_elements_js_url: str = (
+        f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
+    )
+    """
+    Download url for the Stoplight Elements JS bundle.
+    """
+
     # internal
     _dumped_schema: str = ""
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
@@ -290,9 +327,9 @@ class OpenAPIController(Controller):
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui.css" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-bundle.js" crossorigin></script>
-            <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@{self.swagger_ui_version}/swagger-ui-standalone-preset.js" crossorigin></script>
+            <link href="{self.swagger_css_url}" rel="stylesheet">
+            <script src="{self.swagger_ui_bundle_js_url}" crossorigin></script>
+            <script src="{self.swagger_ui_standalone_preset_js_url}" crossorigin></script>
             <style>{self.style}</style>
           </head>
         """
@@ -342,8 +379,8 @@ class OpenAPIController(Controller):
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/styles.min.css">
-            <script src="https://unpkg.com/@stoplight/elements@{self.stoplight_elements_version}/web-components.min.js" crossorigin></script>
+            <link rel="stylesheet" href="{self.stoplight_elements_css_url}">
+            <script src="{self.stoplight_elements_js_url}" crossorigin></script>
             <style>{self.style}</style>
           </head>
         """
@@ -388,8 +425,13 @@ class OpenAPIController(Controller):
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            """
+        if self.redoc_google_fonts:
+            head += """
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
-            <script src="https://cdn.jsdelivr.net/npm/redoc@{self.redoc_version}/bundles/redoc.standalone.js" crossorigin></script>
+            """
+        head += f"""
+            <script src="{self.redoc_js_url}" crossorigin></script>
             <style>
                 {self.style}
             </style>

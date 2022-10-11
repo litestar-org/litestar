@@ -1,6 +1,7 @@
 from os import path
+from os.path import abspath, dirname, join
 from pathlib import Path
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Optional, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
@@ -71,7 +72,7 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
                 "filename": value.filename,
                 "content": content.decode(),
                 "content_type": value.content_type,
-                "headers": list(value.headers.items()),
+                "headers": [[name.lower(), value] for name, value in value.headers.items()],
             }
         else:
             output[key] = value
@@ -187,9 +188,9 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "content": "<file2 content>",
                 "content_type": "text/plain",
                 "headers": [
-                    ["Content-Disposition", 'form-data; name="test2"; filename="test2.txt"'],
+                    ["content-disposition", 'form-data; name="test2"; filename="test2.txt"'],
                     ["x-custom", "f2"],
-                    ["Content-Type", "text/plain"],
+                    ["content-type", "text/plain"],
                 ],
             },
         }
@@ -237,7 +238,7 @@ def test_multipart_request_mixed_files_and_data() -> None:
                 b"value1\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
             ),
-            headers={"Content-Type": ("multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c")},
+            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
         )
         assert response.json() == {
             "file": {
@@ -262,7 +263,7 @@ def test_multipart_request_with_charset_for_filename() -> None:
                 b"<file content>\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
             ),
-            headers={"Content-Type": ("multipart/form-data; charset=utf-8; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c")},
+            headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
         )
         assert response.json() == {
             "file": {
@@ -285,7 +286,7 @@ def test_multipart_request_without_charset_for_filename() -> None:
                 b"<file content>\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
             ),
-            headers={"Content-Type": ("multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c")},
+            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
         )
         assert response.json() == {
             "file": {
@@ -307,7 +308,7 @@ def test_multipart_request_with_encoded_value() -> None:
                 b"Transf\xc3\xa9rer\r\n"
                 b"--20b303e711c4ab8c443184ac833ab00f--\r\n"
             ),
-            headers={"Content-Type": ("multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f")},
+            headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f"},
         )
         assert response.json() == {"value": "Transférer"}
 
@@ -363,3 +364,30 @@ def test_postman_multipart_form_data() -> None:
                 "content_type": "application/octet-stream",
             },
         }
+
+
+def test_image_upload() -> None:
+    @post("/")
+    async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        await data.read()
+        return None
+
+    with open(join(dirname(abspath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
+        route_handlers=[hello_world]
+    ) as client:
+        data = f.read()
+        response = client.post("/", files={"data": data})
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_optional_formdata() -> None:
+    @post("/")
+    async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        if data is not None:
+            await data.read()
+        return None
+
+    with create_test_client(route_handlers=[hello_world]) as client:
+
+        response = client.post("/")
+        assert response.status_code == HTTP_201_CREATED

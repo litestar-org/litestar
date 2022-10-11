@@ -74,41 +74,87 @@ def test_health_check(test_client: TestClient):
 ### Create Session Cookies
 
 If you are using **Session Middleware** for session persistence across requests then your route handlers may expect
-preloaded session when you are mocking request to the route handler. To mock request with session cookies, you can use
-`TestClient.create_session_cookies` to mock session. The session middleware will then load session from the session
+preloaded session when mocking the request. To mock request with raw session cookies, you can use
+`TestClient.create_session_cookies`. The session middleware will then load the session data from the session
 cookies that you provide.
 
-`TestClient.create_session_cookies` accepts the following arguments:
+`TestClient.create_session_cookies` accepts the following argument:
 
-- session_data: You can pass dictionary to this argument to preload the session.
+- session_data: Dictionary to create raw session cookies from.
 
-It is recommended to create a fixture for `SessionCookieConfig` as it will be used to set up session middleware and is
-also passed as an argument to the `TestClient` whenever you need to mock request. The `secret` should remain the same
-throughout the test session, so set fixture `scope` to `"class"`.
+To use the same session configuration that you have used in your app for session middleware, import
+`SessionCookieConfig` instance from your app.
 
-```python title="tests/test_route_handlers.py
-import os
-
+```python title="tests/test_route_handlers.py"
 import pytest
-from pydantic import SecretBytes
-from starlite.middleware.session import SessionCookieConfig
 from starlite.testing import TestClient
 
-from my_app.main import app
+from my_app.main import app, session_cookie_config_instance
 
 
 class TestClass:
 
-    @pytest.fixture(scope="class")
-    def session_config(self) -> SessionCookieConfig:
-        return SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+    @pytest.fixture()
+    def test_client(self) -> TestClient:
+        with TestClient(app=app, base_url="example.com", session_config=session_cookie_config_instance) as client:
+            yield client
 
-    def test_something(self, session_config: SessionCookieConfig) -> None:
-        with TestClient(app=app, session_config=session_config) as client:
-            cookies = client.create_session_cookies(session_data={"user": "test_user"})
-            # Pass raw cookies to the request.
-            client.get(url="/my_route", cookies=cookies)
+    def test_something(self, test_client: TestClient) -> None:
+        cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
+        # Set raw session cookies to the "cookies" attribute of test_client instance.
+        test_client.cookies = cookies
+        test_client.get(url="/my_route")
 ```
+
+#### Set Cookies With Domain
+
+If you have set `domain` in `SessionCookieConfig` instance, the `domain` argument here must take the same parameter. The
+domain must follow the format specified in RFC 2109, that is, setting a cookie domain without a preceding dot, like,
+*example.com* instead of *.example.com*, is invalid and will not set the cookie.
+
+If you have not set `domain` in `SessionCookieConfig`, the `domain` argument here must match with the domain name in the
+`base_url` argument of `TestClient` instance. See the example below.
+
+```python
+def test_something(test_client) -> None:
+    cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
+    # Get domain
+    domain = test_client.session.config.domain or test_client.base_url.host
+    # Set cookies
+    for key, value in cookies.items():
+        test_client.cookies.set(key=key, value=value, domain=domain)
+    test_client.get(url="/my_route")
+```
+
+### Create Session from Raw Cookies
+
+If your route handlers modify data in session, you may want to assert session data to confirm the modification. If you
+are using **Session Middleware**, the response from the route handlers will include raw session cookies which are a
+serialized image of the session. To assert data in session, `TestClient.get_session_from_cookies` method deserializes
+raw session cookies and creates session from them.
+
+```python title="tests/test_route_handlers.py"
+import pytest
+from starlite.testing import TestClient
+
+from my_app.main import app, session_cookie_config_instance
+
+
+class TestClass:
+
+    @pytest.fixture()
+    def test_client(self) -> TestClient:
+        with TestClient(app=app, session_config=session_cookie_config_instance) as client:
+            yield client
+
+    def test_something(self, test_client: TestClient) -> None:
+        test_client.get(url="/test")
+        session = test_client.get_session_from_cookies()
+        assert "user" in session
+```
+
+!!! important
+    The **Session Middleware** must be enabled in Starlite app provided to the TestClient to use sessions.
 
 !!! important
     Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
@@ -268,7 +314,7 @@ def test_get_item(item: Item):
 Another helper is the `RequestFactory` class, which creates instances of `starlite.connection.Request`.
 The use case for this helper is when you need to test logic that expects to receive a request object.
 
-For example, lets say we wanted to unit test a _guard_ function in isolation, to which end we'll reuse the examples
+For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
 from the [guards](9-guards.md) documentation:
 
 ```python title="my_app/guards.py"
