@@ -17,15 +17,27 @@ from starlite.cache.base import CacheBackendProtocol
 
 
 class RedisCacheBackendConfig(BaseModel):
+    """Redis cache backend configuration."""
+
     url: str
+    """Redis connection URL"""
     db: Optional[int] = None
+    """Redis DB ID (optional)"""
     port: Optional[int] = None
+    """Redis port (optional)"""
     username: Optional[str] = None
+    """A username to use when connecting to Redis (optional)"""
     password: Optional[str] = None
+    """A password to use when connecting to Redis (optional)"""
 
 
 class RedisCacheBackend(CacheBackendProtocol):
     def __init__(self, config: RedisCacheBackendConfig):
+        """This class offers a cache backend based on Redis.
+
+        Args:
+            config: required configuration to connect to Redis.
+        """
         self._config = config
         self._redis_int: Redis = None  # type: ignore[assignment]
 
@@ -50,7 +62,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         value = await self._redis.get(key)
         return value
 
-    async def set(self, key: str, value: Any, expiration: int) -> Any:  # pylint: disable=invalid-overridden-method
+    async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by
         expiration.
 
@@ -64,13 +76,13 @@ class RedisCacheBackend(CacheBackendProtocol):
             - return value is not used by Starlite internally.
 
         Returns:
-            Any
+            None
         """
 
         await self._redis.set(key, value, ex=expiration)
         return None
 
-    async def delete(self, key: str) -> Any:  # pylint: disable=invalid-overridden-method
+    async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
         """Deletes a value from the cache and removes the given key.
 
         Args:
@@ -80,7 +92,7 @@ class RedisCacheBackend(CacheBackendProtocol):
             - return value is not used by Starlite internally.
 
         Returns:
-            Any
+            None
         """
 
         await self._redis.delete(key)
