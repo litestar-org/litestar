@@ -25,8 +25,8 @@ class MemcachedCacheBackendConfig(BaseModel):
     """memcached port (optional, defaults to 11211)"""
     pool_size: Optional[int] = None
     """Maximum number of memcached open connections (optional, defaults to 2)"""
-    pool_minsize: Optional[str] = None
-    """memcached minimum pool size (optional, by default equals to `pool_size`)"""
+    pool_minsize: Optional[int] = None
+    """memcached minimum pool size (optional, by default set to `pool_size`)"""
 
 
 class MemcachedCacheBackend(CacheBackendProtocol):
