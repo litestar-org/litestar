@@ -80,6 +80,14 @@ picologging = ["picologging"]
 structlog = ["structlog"]
 redis = ["redis"]
 
+[tool.poetry.scripts]
+test = "scripts:test"
+all_checks = "scripts:all_checks"
+lint = "scripts:lint"
+type_check = "scripts:type_check"
+fmt = "scripts:fmt"
+docs = "scripts:docs"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
