@@ -116,6 +116,10 @@ class ServiceUnavailableException(HTTPException):
     status_code = HTTP_503_SERVICE_UNAVAILABLE
 
 
+class NoRouteMatchFoundException(InternalServerException):
+    """Route with given name and passed parameters can not be found."""
+
+
 class TemplateNotFoundException(InternalServerException):
     def __init__(self, *args: Any, template_name: str) -> None:
         """Referenced template could not be found.

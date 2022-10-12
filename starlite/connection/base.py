@@ -285,7 +285,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         self.scope["session"] = {}
 
-    def url_for(self, name: str, **path_parameters: Dict[str, Any]) -> Optional[str]:
+    def url_for(self, name: str, **path_parameters: Dict[str, Any]) -> str:
         """
 
         Args:
@@ -293,13 +293,12 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             **path_parameters: Values for path parameters in the route
 
         Raises:
-            ValidationException: If path parameters are missing in **path_parameters or have wrong type.
+            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in **path_parameters or have wrong type.
 
         Returns:
-            If a route handler with the given name is found, it returns a string representing the absolute url of the route handler.
+            String representing the absolute url of the route handler.
         """
         starlite_instance = self.scope["app"]
         url_path = starlite_instance.route_reverse(name, **path_parameters)
-        if url_path:
-            return URLPath(url_path).make_absolute_url(self.base_url)
-        return None
+
+        return URLPath(url_path).make_absolute_url(self.base_url)

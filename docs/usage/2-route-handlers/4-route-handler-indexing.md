@@ -1,10 +1,11 @@
 # Route Handler Indexing
 
 You can provide in all route handler decorators a `name` kwarg. The value for this kwarg **must be unique**, otherwise
-an exception will be raised. Default value for `name` is value returned by `handler.__str__` which should be the full
-dotted path to the handler (e.g. `app.controllers.projects.list` for `list` function residing in
-`app/controllers/projects.py` file). `name` can be used to dynamically retrieve (i.e. during runtime) a mapping containing
-the route handler instance and paths, also it can be used to build a URL path for that handler:
+[`ImproperlyConfiguredException`](starlite.exceptions.ImproperlyConfiguredException) exception will be raised. Default
+value for `name` is value returned by `handler.__str__` which should be the full dotted path to the handler
+(e.g. `app.controllers.projects.list` for `list` function residing in `app/controllers/projects.py` file). `name` can
+be used to dynamically retrieve (i.e. during runtime) a mapping containing the route handler instance and paths, also
+it can be used to build a URL path for that handler:
 
 ```python
 from starlite import Starlite, Request, Redirect, NotFoundException, get
@@ -47,9 +48,11 @@ def handler_five(request: Request, param_value: int) -> Redirect:
 app = Starlite(route_handlers=[handler_one, handler_two, handler_three])
 ```
 
-`app.route_reverse` will raise `ValidationException` if any of path parameters is missing or if its types do not
-match types in the respective route declaration. However, `str` is accepted in place of `datetime`, `date`, `time`,
-`timedelta`, `float`, and `Path` parameters so you can apply custom formatting and pass the result to `route_reverse`.
+[`route_reverse`][starlite.app.Starlite.route_reverse] will raise
+[`NoMatchRouteFoundException`][starlite.exceptions.NoRouteMatchFoundException] if route with given name was not found
+or if any of path parameters is missing or if any of passed path parameters types do not match types in the respective
+route declaration. However, `str` is accepted in place of `datetime`, `date`, `time`, `timedelta`, `float`, and `Path`
+parameters so you can apply custom formatting and pass the result to `route_reverse`.
 
 If handler has multiple paths attached to it `route_reverse` will return the path that consumes the most number of
 keywords arguments passed to the function.

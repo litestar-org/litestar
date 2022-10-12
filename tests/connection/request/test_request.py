@@ -43,12 +43,18 @@ def test_request_resolve_url() -> None:
 
     @get(path="/test")
     def root(request: Request) -> Dict[str, str]:
-        assert request.url_for("none") is None
-        return {"url": request.url_for("proxy") or ""}
+        return {"url": request.url_for("proxy")}
 
-    with create_test_client(route_handlers=[proxy, root]) as client:
+    @get(path="/test-none")
+    def test_none(request: Request) -> Dict[str, str]:
+        return {"url": request.url_for("none")}
+
+    with create_test_client(route_handlers=[proxy, root, test_none]) as client:
         response = client.get("/test")
         assert response.json() == {"url": "http://testserver/proxy"}
+
+        response = client.get("/test-none")
+        assert response.status_code == 500
 
 
 def test_route_handler_property() -> None:

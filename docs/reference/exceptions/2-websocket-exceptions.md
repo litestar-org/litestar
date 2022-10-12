@@ -1,3 +1,3 @@
 # WebSocket Exceptions
 
-::starlite.exceptions.WebSocketException
+:::starlite.exceptions.WebSocketException

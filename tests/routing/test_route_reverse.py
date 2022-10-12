@@ -5,9 +5,9 @@ import pytest
 
 from starlite import (
     HTTPRouteHandler,
+    NoRouteMatchFoundException,
     Router,
     Starlite,
-    ValidationException,
     delete,
     get,
     patch,
@@ -62,8 +62,8 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
     reversed_url_path = app.route_reverse("handler4", str_param="string")
     assert reversed_url_path == "/router-path/handler4/str/string"
 
-    reversed_url_path = app.route_reverse("nonexistent-handler")
-    assert reversed_url_path is None
+    with pytest.raises(NoRouteMatchFoundException):
+        reversed_url_path = app.route_reverse("nonexistent-handler")
 
 
 @pytest.mark.parametrize(
@@ -81,7 +81,7 @@ def test_route_reverse_validation_complex_params(complex_path_param) -> None:  #
 
     # test that complex types of path params accept either itself
     # or string but nothing else
-    with pytest.raises(ValidationException):
+    with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("handler", param=123)
 
     reversed_url_path = app.route_reverse("handler", param=param_manual_str)
@@ -102,11 +102,11 @@ def test_route_reverse_validation() -> None:
 
     app = Starlite(route_handlers=[handler_one, handler_two])
 
-    with pytest.raises(ValidationException):
+    with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("handler-name")
 
-    with pytest.raises(ValidationException):
+    with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("handler-name", param="str")
 
-    with pytest.raises(ValidationException):
+    with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("another-handler-name", param=1)
