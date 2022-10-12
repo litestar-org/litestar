@@ -122,6 +122,7 @@ repos:
             tortoise_orm,
             pytest,
             redis,
+            aiomcache,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.4"
@@ -195,4 +196,5 @@ repos:
             starlette,
             starlite_multipart,
             structlog,
+            aiomcache,
           ]
