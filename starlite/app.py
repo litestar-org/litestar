@@ -18,7 +18,10 @@ from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
-from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    NoRouteMatchFoundException,
+)
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
@@ -473,7 +476,7 @@ class Starlite(Router):
 
         return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
-    def route_reverse(self, name: str, **path_parameters: Any) -> Optional[str]:
+    def route_reverse(self, name: str, **path_parameters: Any) -> str:
         """Receives a route handler name, path parameter values and returns an
         optional url path to the handler with filled path parameters.
 
@@ -498,14 +501,14 @@ class Starlite(Router):
             **path_parameters: Actual values for path parameters in the route.
 
         Raises:
-            ValidationException: If path parameters are missing in **path_parameters or have wrong type.
+            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in **path_parameters or have wrong type.
 
         Returns:
-            A fully formatted url path or None.
+            A fully formatted url path.
         """
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
-            return None
+            raise NoRouteMatchFoundException(f"Route {name} can not be found")
 
         allow_str_instead = {datetime, date, time, timedelta, float, Path}
         output: List[str] = []
@@ -528,7 +531,7 @@ class Starlite(Router):
                     isinstance(val, component["type"])
                     or (component["type"] in allow_str_instead and isinstance(val, str))
                 ):
-                    raise ValidationException(
+                    raise NoRouteMatchFoundException(
                         f"Received type for path parameter {component['name']} doesn't match declared type {component['type']}"
                     )
                 output.append(str(val))

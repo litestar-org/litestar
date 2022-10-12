@@ -1,6 +1,6 @@
 # HTTP Exceptions
 
-::starlite.exceptions.HTTPException
+:::starlite.exceptions.HTTPException
     options:
         members:
             - __init__
@@ -9,22 +9,51 @@
             - headers
             - status_code
 
-::starlite.exceptions.ImproperlyConfiguredException
+:::starlite.exceptions.ImproperlyConfiguredException
 
-::starlite.exceptions.InternalServerException
+:::starlite.exceptions.InternalServerException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.MethodNotAllowedException
+:::starlite.exceptions.MethodNotAllowedException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.NotAuthorizedException
+:::starlite.exceptions.NotAuthorizedException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.NotFoundException
+:::starlite.exceptions.NoRouteMatchFoundException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.PermissionDeniedException
+:::starlite.exceptions.NotFoundException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.ServiceUnavailableException
+:::starlite.exceptions.PermissionDeniedException
+    options:
+        members:
+            - status_code
 
-::starlite.exceptions.TemplateNotFoundException
+:::starlite.exceptions.ServiceUnavailableException
 
-::starlite.exceptions.TooManyRequestsException
+:::starlite.exceptions.TemplateNotFoundException
+    options:
+        members:
+            - __init__
 
-::starlite.exceptions.ValidationException
+:::starlite.exceptions.TooManyRequestsException
+    options:
+        members:
+            - status_code
+
+:::starlite.exceptions.ValidationException
+    options:
+        members:
+            - status_code

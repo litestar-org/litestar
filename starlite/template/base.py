@@ -1,7 +1,28 @@
-from typing import Any, List, TypeVar, Union
+from typing import TYPE_CHECKING, Any, List, Mapping, TypeVar, Union, cast
 
 from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from starlite import Request
+
+
+def url_for(context: Mapping[str, Any], route_name: str, **path_parameters: Any) -> str:
+    """Wrapper for [route_reverse][starlite.app.route_reverse] to be used in
+    templates.
+
+    Args:
+        name: A route handler unique name.
+        **path_parameters: Actual values for path parameters in the route.
+
+    Raises:
+        NoRouteMatchFoundException: If path parameters are missing in **path_parameters or have wrong type.
+
+    Returns:
+        A fully formatted url path.
+    """
+    request = cast("Request", context.get("request"))
+    return request.app.route_reverse(route_name, **path_parameters)
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover
