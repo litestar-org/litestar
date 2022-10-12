@@ -71,6 +71,7 @@ sqlalchemy = "*"
 structlog = "*"
 tortoise-orm = "*"
 tox = "*"
+aiomcache = "*"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]

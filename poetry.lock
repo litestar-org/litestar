@@ -3,7 +3,7 @@ name = "aiomcache"
 version = "0.7.0"
 description = "Minimal pure python memcached client"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.7"
 
 [[package]]
@@ -1059,7 +1059,7 @@ testing = ["httpx", "cryptography"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "39bd7b84c3b870aedf0a92353ada9966bd040e60168f1d5f8c6943f3640c2bbe"
+content-hash = "b231260bcc363480a815cfb89c83e9bde74d885c913615f98c9d2e8120813b17"
 
 [metadata.files]
 aiomcache = [

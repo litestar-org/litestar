@@ -66,7 +66,10 @@ dependency so in order to use it you need to install Starlite with the `redis` e
 
     ```python
     from starlite import CacheConfig
-    from starlite.cache import RedisCacheBackendConfig, RedisCacheBackend
+    from starlite.cache.redis_cache_backend import (
+        RedisCacheBackendConfig,
+        RedisCacheBackend,
+    )
 
     config = RedisCacheBackendConfig(url="redis://localhost/", port=6379, db=0)
     redis_backend = RedisCacheBackend(config=config)
@@ -81,7 +84,10 @@ is an optional dependency so in order to use it you need to install Starlite wit
 
     ```python
     from starlite import CacheConfig
-    from starlite.cache import MemcachedCacheBackendConfig, MemcachedCacheBackend
+    from starlite.cache.memcached_cache_backend import (
+        MemcachedCacheBackendConfig,
+        MemcachedCacheBackend,
+    )
 
     config = MemcachedCacheBackendConfig(url="127.0.0.1", port=11211)
     memcached_backend = MemcachedCacheBackend(config=config)
