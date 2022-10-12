@@ -9,7 +9,7 @@ try:
     from aiomcache import Client
 except ImportError as e:
     raise MissingDependencyException(
-        "To use starlite.memcached_cahce_backend, install starlite with 'memcached_cahce_backend' extra, e.g. `pip install starlite[memcached_cahce_backend]`"
+        "To use starlite.memcached_cahce_backend, install starlite with 'memcached' extra, e.g. `pip install starlite[memcached]`"
     ) from e
 
 

@@ -74,7 +74,20 @@ dependency so in order to use it you need to install Starlite with the `redis` e
     cache_config = CacheConfig(backend=redis_backend)
     ```
 
-If you're interested in another solution for caching - using a database, disk storage, or an external service such as
-[Memcached](https://pymemcache.readthedocs.io/en/latest/index.html)
-or [Etcd](https://pypi.org/project/python-etcd/) you need to either implement the
-`starlite.cache.CacheBackendProtocol`, or provide an object that fulfills it.
+- `MemcachedCacheBackend` uses [memcached](https://memcached.org/) as the caching database. Under the hood it uses
+[aiomcache](https://github.com/aio-libs/aiomcache) to make sure requests are not blocked. Please note that memcached
+is an optional dependency so in order to use it you need to install Starlite with the `memcached` extra, e.g.
+`pip install starlite[memcached]`. Here is an example of how to configure memcached as the cache backend:
+
+    ```python
+    from starlite import CacheConfig
+    from starlite.cache import MemcachedCacheBackendConfig, MemcachedCacheBackend
+
+    config = MemcachedCacheBackendConfig(url="127.0.0.1", port=11211)
+    memcached_backend = MemcachedCacheBackend(config=config)
+
+    cache_config = CacheConfig(backend=memcached_backend)
+    ```
+
+If you're interested in another solution for caching - using a database, disk storage, or an external service you
+need to either implement the `starlite.cache.CacheBackendProtocol`, or provide an object that fulfills it.
