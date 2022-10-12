@@ -14,7 +14,6 @@ from starlite.types.asgi_types import ASGIVersion
 from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
-
     from starlite.datastructures.cookie import Cookie
 
 try:

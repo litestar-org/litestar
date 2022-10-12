@@ -151,6 +151,7 @@ nav:
       - Cache:
           - reference/cache/0-base-cache.md
           - reference/cache/1-simple-cache.md
+          - reference/cache/2-redis-cache.md
       - Config:
           - reference/config/0-app-config.md
           - reference/config/1-cache-config.md

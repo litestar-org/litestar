@@ -10,7 +10,7 @@ repos:
         exclude: "\\.idea/(.)*"
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.0.0
+    rev: v3.1.0
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
@@ -117,9 +117,11 @@ repos:
             httpx,
             sqlalchemy,
             starlette,
+            structlog,
             starlite_multipart,
             tortoise_orm,
             pytest,
+            redis,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.4"
@@ -163,6 +165,7 @@ repos:
             types-PyYAML,
             types-freezegun,
             types-redis,
+            redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.274
