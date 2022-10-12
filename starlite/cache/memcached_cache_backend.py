@@ -1,5 +1,5 @@
 import pickle
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from pydantic import BaseModel
 
@@ -27,6 +27,10 @@ class MemcachedCacheBackendConfig(BaseModel):
     """Maximum number of memcached open connections (optional, defaults to 2)"""
     pool_minsize: Optional[int] = None
     """memcached minimum pool size (optional, by default set to `pool_size`)"""
+    serialize: Callable[[Any], bytes] = pickle.dumps
+    """A callable to serialize data that goes into the cache from an object to bytes, defaults to `pickle.dumps`"""
+    deserialize: Callable[[bytes], Any] = pickle.loads
+    """A callable to deserialize data coming from the cache from bytes to an object, defaults to `pickle.loads`"""
 
 
 class MemcachedCacheBackend(CacheBackendProtocol):
@@ -57,7 +61,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         """
 
         value = await self._memcached_client.get(key=key.encode())  # pyright: ignore
-        return pickle.loads(value)  # nosec
+        return self._config.deserialize(value)
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by
@@ -76,7 +80,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             None
         """
 
-        await self._memcached_client.set(key.encode(), pickle.dumps(value), exptime=expiration)
+        await self._memcached_client.set(key.encode(), self._config.serialize(value), exptime=expiration)
         return None
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method

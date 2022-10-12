@@ -100,3 +100,27 @@ async def test_delete_from_cache(memcached_client_mock: Mock) -> None:
     await cache.delete(key)
     fake_memcached_value = await fake_memcached.get(key.encode())
     assert fake_memcached_value is None
+
+
+@patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client")
+async def test_non_default_serialization(memcached_client_mock: Mock) -> None:
+    serialized_data = b"serialized"
+    deserialized_data = "deserialized"
+
+    key = "key"
+    fake_memcached = FakeAsyncMemcached()
+
+    memcached_client_mock.set = fake_memcached.set
+    memcached_client_mock.get = fake_memcached.get
+
+    config = MemcachedCacheBackendConfig(
+        host="host", serialize=lambda _: serialized_data, deserialize=lambda _: deserialized_data
+    )
+    cache = MemcachedCacheBackend(config)
+
+    await cache.set(key, "value", 60)
+    serialized_cached_data = await fake_memcached.get(key.encode())
+    assert serialized_cached_data == serialized_data
+
+    deserialized_cached_data = await cache.get(key)
+    assert deserialized_cached_data == deserialized_data
