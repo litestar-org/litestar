@@ -1,6 +1,6 @@
 # Memcached Cache Backend
 
-::: starlite.cache.MemcachedCacheBackend
+::: starlite.cache.memcached_cache_backend.MemcachedCacheBackend
     options:
         members:
             - __init__
@@ -8,10 +8,12 @@
             - set
             - delete
 
-::: starlite.cache.MemcachedCacheBackendConfig
+::: starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig
     options:
         members:
             - host
             - port
             - pool_size
             - pool_minsize
+            - serialize
+            - deserialize
