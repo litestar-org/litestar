@@ -1059,7 +1059,7 @@ testing = ["httpx", "cryptography"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "b231260bcc363480a815cfb89c83e9bde74d885c913615f98c9d2e8120813b17"
+content-hash = "f9d787d50e48cc7066d56d6393afdc4547b0660eb9fd170e3612826a8541fee8"
 
 [metadata.files]
 aiomcache = [

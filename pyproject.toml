@@ -48,7 +48,7 @@ starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 redis = {version = "*", optional = true, extras = ["hiredis"]}
-aiomcache = {version = "^0.7.0", optional = true}
+aiomcache = {version = "*", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
