@@ -169,7 +169,7 @@ repos:
             redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.274
+    rev: v1.1.275
     hooks:
       - id: pyright
         exclude: "tests"

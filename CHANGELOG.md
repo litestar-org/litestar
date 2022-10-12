@@ -1,5 +1,11 @@
 # Changelog
 
+[1.27.0]
+
+- add `url_for` function in templates.
+- add `redis` cache backend.
+- add `memcached` cache backend.
+
 [1.26.1]
 
 - fix optional `UploadFile` not being allowed.
