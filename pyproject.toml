@@ -48,6 +48,7 @@ starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 redis = {version = "*", optional = true, extras = ["hiredis"]}
+aiomcache = {version = "*", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
@@ -70,6 +71,7 @@ sqlalchemy = "*"
 structlog = "*"
 tortoise-orm = "*"
 tox = "*"
+aiomcache = "*"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]
@@ -79,6 +81,7 @@ full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
 redis = ["redis"]
+memcached = ["aiomcache"]
 
 
 [build-system]

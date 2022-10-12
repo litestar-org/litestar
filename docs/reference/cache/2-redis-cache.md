@@ -1,6 +1,6 @@
 # Redis Cache Backend
 
-::: starlite.cache.RedisCacheBackend
+::: starlite.cache.redis_cache_backend.RedisCacheBackend
     options:
         members:
             - __init__
@@ -8,7 +8,7 @@
             - set
             - delete
 
-::: starlite.cache.RedisCacheBackendConfig
+::: starlite.cache.redis_cache_backend.RedisCacheBackendConfig
     options:
         members:
             - url
