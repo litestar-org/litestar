@@ -37,7 +37,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             config: required configuration to connect to memcached.
         """
         self._config = config
-        self._client: Client = None
+        self._client: Client = None  # pyright: ignore
 
     @property
     def _memcached_client(self) -> Client:
@@ -56,8 +56,8 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             Cached value if existing else `None`.
         """
 
-        value = await self._memcached_client.get(key=key.encode())
-        return pickle.loads(value)
+        value = await self._memcached_client.get(key=key.encode())  # pyright: ignore
+        return pickle.loads(value)  # nosec
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by
