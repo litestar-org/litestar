@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
-from starlite.template.base import TemplateEngineProtocol
+from starlite.template.base import TemplateEngineProtocol, url_for
 
 try:
     from jinja2 import Environment, FileSystemLoader
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
+    from jinja2 import pass_context
 except ImportError as e:
     raise MissingDependencyException("jinja2 is not installed") from e
 
@@ -26,6 +27,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         super().__init__(directory=directory)
         loader = FileSystemLoader(searchpath=directory)
         self.engine = Environment(loader=loader, autoescape=True)
+        self.engine.globals["url_for"] = pass_context(url_for)
 
     def get_template(self, template_name: str) -> "JinjaTemplate":
         """
