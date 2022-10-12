@@ -296,7 +296,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in **path_parameters or have wrong type.
 
         Returns:
-            String representing the absolute url of the route handler.
+            A string representing the absolute url of the route handler.
         """
         starlite_instance = self.scope["app"]
         url_path = starlite_instance.route_reverse(name, **path_parameters)

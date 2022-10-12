@@ -53,9 +53,9 @@ dictionary specifying context data that is passed to the engine.
 Starlite automatically injects current request into context under `request` name. Note that if you try pass any value
 under `request` key it will be overridden with the current request.
 
-URLs for indexed route handlers in templates can be generated with `url_for` function available both in Jinja2 and Mako
-templates. Its signature and behaviour matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour.
-More details about rout handler indexing can be found [here](2-route-handlers/4-route-handler-indexing.md)
+URLs for indexed route handlers in templates can be generated with the `url_for` function. Its signature and behaviour
+matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
+can be found [here](2-route-handlers/4-route-handler-indexing.md)
 
 ## Defining a Custom Template Engine
 

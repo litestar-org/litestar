@@ -117,7 +117,7 @@ class ServiceUnavailableException(HTTPException):
 
 
 class NoRouteMatchFoundException(InternalServerException):
-    """Route with given name and passed parameters can not be found."""
+    """A route with the given name could not be found."""
 
 
 class TemplateNotFoundException(InternalServerException):
