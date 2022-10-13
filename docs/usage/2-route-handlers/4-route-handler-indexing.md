@@ -1,7 +1,7 @@
 # Route Handler Indexing
 
 You can provide in all route handler decorators a `name` kwarg. The value for this kwarg **must be unique**, otherwise
-[`ImproperlyConfiguredException`](starlite.exceptions.ImproperlyConfiguredException) exception will be raised. Default
+[`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] exception will be raised. Default
 value for `name` is value returned by `handler.__str__` which should be the full dotted path to the handler
 (e.g. `app.controllers.projects.list` for `list` function residing in `app/controllers/projects.py` file). `name` can
 be used to dynamically retrieve (i.e. during runtime) a mapping containing the route handler instance and paths, also

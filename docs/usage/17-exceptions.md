@@ -11,7 +11,9 @@ i.e. exceptions in route handlers, dependencies and middleware that should be se
 For missing extra dependencies, Starlite will raise either `MissingDependencyException`. For example, if you try to use
 the `SQLAlchemyPLugin` without having SQLAlchemy installed, this will be raised when you start the application.
 
-For other configuration issues, Starlite will raise `ImproperlyConfiguredException` with a message explaining the issue.
+For other configuration issues, Starlite will raise
+[`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] with a message explaining
+the issue.
 
 ## Application Exceptions
 

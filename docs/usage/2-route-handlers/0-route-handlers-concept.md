@@ -119,8 +119,9 @@ def my_request_handler(
 ## Handler Function Type Annotations
 
 Starlite enforces strict type annotations. Functions decorated by a route handler **must** have all their kwargs and
-return value type annotated. If a type annotation is missing, an `ImproperlyConfiguredException` will be raised during
-the application boot-up process.
+return value type annotated. If a type annotation is missing, an
+[`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] will be raised during the
+application boot-up process.
 
 There are several reasons for why this limitation is enforced:
 
