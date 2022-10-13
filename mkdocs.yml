@@ -158,7 +158,7 @@ nav:
           - reference/config/1-cache-config.md
           - reference/config/2-cors-config.md
           - reference/config/3-csrf-config.md
-          - reference/config/4-compression-config
+          - reference/config/4-compression-config.md
           - reference/config/5-openapi-config.md
           - reference/config/6-static-files-config.md
           - reference/config/7-template-config.md

@@ -123,6 +123,7 @@ app = Starlite(
 )
 ```
 
-In the above, the `SQLAlchemyPlugin` will establish a db connection using the given connection string, and add an
+In the above, the `SQLAlchemyPlugin` will establish a db connection using the given connection string, and add a
 dependency injection under the `async_session` key on the application level. See
-the [API Reference][starlite.config.SQLAlchemyConfig] for a full reference of the `SQLAlchemyConfig` kwargs.
+the [API Reference][starlite.plugins.sql_alchemy.config.SQLAlchemyConfig] for a full reference of the
+`SQLAlchemyConfig` kwargs.
