@@ -72,6 +72,7 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 aiomcache = "*"
+trio = "^0.22.0"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]
