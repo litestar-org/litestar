@@ -1,6 +1,5 @@
 from typing import Callable
 
-import pytest
 from orjson import dumps
 from piccolo.testing.model_builder import ModelBuilder
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
@@ -26,8 +25,7 @@ def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None
         assert [str(Venue(**value).querystring) for value in response.json()] == [str(v.querystring) for v in venues]
 
 
-@pytest.mark.asyncio()
-async def test_create_piccolo_table_instance(scaffold_piccolo: Callable) -> None:
+async def test_create_piccolo_table_instance(scaffold_piccolo: Callable, anyio_backend: str) -> None:
     manager = await ModelBuilder.build(Manager)
     band_1 = await ModelBuilder.build(Band, defaults={Band.manager: manager})
     band_2 = await ModelBuilder.build(Band, defaults={Band.manager: manager})

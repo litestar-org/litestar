@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-49-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-50-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -123,7 +123,7 @@ While supporting function based route handlers, Starlite also supports and promo
 controllers:
 
 ```python title="my_app/controllers/user.py"
-from typing import List, Optional, NoReturn
+from typing import List, Optional
 
 from pydantic import UUID4
 from starlite import Controller, Partial, get, post, put, patch, delete
@@ -164,7 +164,7 @@ class UserController(Controller):
         ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> NoReturn:
+    async def delete_user(self, user_id: UUID4) -> None:
         ...
 ```
 
@@ -299,6 +299,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="http://linkedin.com/in/mitchell-henry334/"><img src="https://avatars.githubusercontent.com/u/17354727?v=4?s=100" width="100px;" alt="Mitchell Henry"/><br /><sub><b>Mitchell Henry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=devmitch" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/chbndrhnns"><img src="https://avatars.githubusercontent.com/u/7534547?v=4?s=100" width="100px;" alt="chbndrhnns"/><br /><sub><b>chbndrhnns</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=chbndrhnns" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/nielsvanhooy"><img src="https://avatars.githubusercontent.com/u/40770348?v=4?s=100" width="100px;" alt="nielsvanhooy"/><br /><sub><b>nielsvanhooy</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=nielsvanhooy" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://github.com/provinzkraut"><img src="https://avatars.githubusercontent.com/u/25355197?v=4?s=100" width="100px;" alt="provinzkraut"/><br /><sub><b>provinzkraut</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=provinzkraut" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

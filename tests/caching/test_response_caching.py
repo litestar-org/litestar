@@ -53,8 +53,7 @@ def test_default_expiration() -> None:
 
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
-@pytest.mark.asyncio()
-async def test_custom_cache_key(sync_to_thread: bool) -> None:
+async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str) -> None:
     def custom_cache_key_builder(request: Request) -> str:
         return request.url.path + ":::cached"
 

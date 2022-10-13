@@ -56,8 +56,7 @@ def test_route_handler_validation_response_class() -> None:
         HTTPRouteHandler(http_method=HttpMethod.GET, response_class={})  # type: ignore
 
 
-@pytest.mark.asyncio()
-async def test_function_validation() -> None:
+async def test_function_validation(anyio_backend: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/")

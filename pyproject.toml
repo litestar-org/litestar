@@ -51,6 +51,7 @@ redis = {version = "*", optional = true, extras = ["hiredis"]}
 aiomcache = {version = "*", optional = true}
 
 [tool.poetry.group.dev.dependencies]
+aiomcache = "*"
 aiosqlite = "*"
 brotli = "*"
 cryptography = "*"
@@ -71,7 +72,7 @@ sqlalchemy = "*"
 structlog = "*"
 tortoise-orm = "*"
 tox = "*"
-aiomcache = "*"
+trio = "*"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]

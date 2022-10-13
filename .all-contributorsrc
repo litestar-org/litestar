@@ -460,6 +460,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "provinzkraut",
+      "name": "provinzkraut",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25355197?v=4",
+      "profile": "https://github.com/provinzkraut",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

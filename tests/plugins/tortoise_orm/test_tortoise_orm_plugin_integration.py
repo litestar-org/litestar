@@ -1,4 +1,3 @@
-import pytest
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
@@ -13,8 +12,7 @@ from tests.plugins.tortoise_orm import (
 )
 
 
-@pytest.mark.asyncio()
-async def test_serializing_single_tortoise_model_instance() -> None:
+async def test_serializing_single_tortoise_model_instance(anyio_backend: str) -> None:
     with create_test_client(
         route_handlers=[get_tournament],
         on_startup=[init_tortoise],
@@ -35,8 +33,7 @@ async def test_serializing_single_tortoise_model_instance() -> None:
         assert len(db_tournament.events.related_objects) == len(data["events"])
 
 
-@pytest.mark.asyncio()
-async def test_serializing_list_of_tortoise_models() -> None:
+async def test_serializing_list_of_tortoise_models(anyio_backend: str) -> None:
     with create_test_client(
         route_handlers=[get_tournaments],
         on_startup=[init_tortoise],
@@ -58,8 +55,7 @@ async def test_serializing_list_of_tortoise_models() -> None:
         assert len(db_tournament.events.related_objects) == len(serialized_tournament["events"])
 
 
-@pytest.mark.asyncio()
-async def test_creating_a_tortoise_model() -> None:
+async def test_creating_a_tortoise_model(anyio_backend: str) -> None:
     with create_test_client(
         route_handlers=[create_tournament],
         on_startup=[init_tortoise],
