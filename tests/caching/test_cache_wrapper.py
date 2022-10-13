@@ -28,9 +28,8 @@ class NaiveCacheBackend(CacheBackendProtocol):
         self._store.pop(key, None)
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("backend", [SimpleCacheBackend(), NaiveCacheBackend()])
-async def test_cache_wrapper_integration(backend: CacheBackendProtocol) -> None:
+async def test_cache_wrapper_integration(backend: CacheBackendProtocol, anyio_backend: str) -> None:
     value_to_cache = "123"
     cache = Cache(backend=backend, default_expiration=1, cache_key_builder=default_cache_key_builder)
     await cache.set("test-key", value_to_cache)
@@ -39,9 +38,8 @@ async def test_cache_wrapper_integration(backend: CacheBackendProtocol) -> None:
     assert (await cache.get("test-key")) is None
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("backend", [SimpleCacheBackend(), NaiveCacheBackend()])
-async def test_cache_wrapper_default_expiration(backend: CacheBackendProtocol) -> None:
+async def test_cache_wrapper_default_expiration(backend: CacheBackendProtocol, anyio_backend: str) -> None:
     value_to_cache = "123"
     cache = Cache(backend=backend, default_expiration=0.1, cache_key_builder=default_cache_key_builder)  # type: ignore
     await cache.set("test-key", value_to_cache)
@@ -50,9 +48,8 @@ async def test_cache_wrapper_default_expiration(backend: CacheBackendProtocol) -
     assert (await cache.get("test-key")) is None
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("backend", [SimpleCacheBackend(), NaiveCacheBackend()])
-async def test_cache_wrapper_custom_expiration(backend: CacheBackendProtocol) -> None:
+async def test_cache_wrapper_custom_expiration(backend: CacheBackendProtocol, anyio_backend: str) -> None:
     value_to_cache = "123"
     cache = Cache(backend=backend, default_expiration=1, cache_key_builder=default_cache_key_builder)
     await cache.set("test-key", value=value_to_cache, expiration=0.1)  # type: ignore

@@ -94,8 +94,7 @@ class MyAsyncIterator:
         return str(i)
 
 
-@pytest.mark.asyncio()
-async def test_to_response_async_await() -> None:
+async def test_to_response_async_await(anyio_backend: str) -> None:
     @route(http_method=HttpMethod.POST, path="/person")
     async def test_function(data: Person) -> Person:
         assert isinstance(data, Person)
@@ -124,7 +123,6 @@ async def test_to_response_returning_starlite_response() -> None:
         assert isinstance(response, Response)
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "expected_response",
     [
@@ -138,7 +136,9 @@ async def test_to_response_returning_starlite_response() -> None:
         FileResponse("./test_to_response.py"),
     ],
 )
-async def test_to_response_returning_redirect_starlette_response(expected_response: StarletteResponse) -> None:
+async def test_to_response_returning_redirect_starlette_response(
+    expected_response: StarletteResponse, anyio_backend: str
+) -> None:
     @get(path="/test")
     def test_function() -> StarletteResponse:
         return expected_response
@@ -151,8 +151,7 @@ async def test_to_response_returning_redirect_starlette_response(expected_respon
         assert response is expected_response
 
 
-@pytest.mark.asyncio()
-async def test_to_response_returning_redirect_response() -> None:
+async def test_to_response_returning_redirect_response(anyio_backend: str) -> None:
     background_task = BackgroundTask(lambda: "")
 
     @get(
@@ -208,8 +207,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
         assert response.json() == {"message": "redirected by before request hook"}
 
 
-@pytest.mark.asyncio()
-async def test_to_response_returning_file_response() -> None:
+async def test_to_response_returning_file_response(anyio_backend: str) -> None:
     current_file_path = Path(__file__).resolve()
     filename = Path(__file__).name
     background_task = BackgroundTask(lambda: "")
@@ -245,7 +243,6 @@ async def test_to_response_returning_file_response() -> None:
         assert response.background == background_task
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "iterator, should_raise",
     [
@@ -260,7 +257,7 @@ async def test_to_response_returning_file_response() -> None:
         [{"key": 1}, True],
     ],
 )
-async def test_to_response_streaming_response(iterator: Any, should_raise: bool) -> None:
+async def test_to_response_streaming_response(iterator: Any, should_raise: bool, anyio_backend: str) -> None:
     if not should_raise:
         background_task = BackgroundTask(lambda: "")
 
@@ -294,8 +291,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool)
             Stream(iterator=iterator)
 
 
-@pytest.mark.asyncio()
-async def func_to_response_template_response() -> None:
+async def func_to_response_template_response(anyio_backend: str) -> None:
     background_task = BackgroundTask(lambda: "")
 
     @get(

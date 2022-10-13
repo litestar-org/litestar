@@ -137,14 +137,9 @@ def test_brotli_regular_response() -> None:
         assert int(response.headers["Content-Length"]) < 40000
 
 
-@pytest.mark.asyncio()
-@pytest.mark.parametrize(
-    "iterator",
-    [
-        streaming_iter(content=b"_starlite_" * 400, count=10),
-    ],
-)
-async def test_brotli_streaming_response(iterator: Any) -> None:
+async def test_brotli_streaming_response(anyio_backend: str) -> None:
+    iterator = streaming_iter(content=b"_starlite_" * 400, count=10)
+
     @get("/streaming-response")
     def streaming_handler() -> Stream:
         return Stream(iterator=iterator)
