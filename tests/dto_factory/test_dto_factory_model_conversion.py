@@ -80,8 +80,7 @@ def test_conversion_from_model_instance(
             assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
 
 
-@pytest.mark.asyncio()
-async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable) -> None:
+async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable, anyio_backend: str) -> None:
     DTO = DTOFactory(plugins=[TortoiseORMPlugin()])("TournamentDTO", Tournament)
 
     tournament = Tournament(name="abc", id=1, created_at=datetime.now())

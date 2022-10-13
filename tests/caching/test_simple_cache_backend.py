@@ -1,7 +1,5 @@
 from time import sleep
 
-import pytest
-
 from starlite import CacheConfig, get
 from starlite.cache import SimpleCacheBackend
 from starlite.testing import create_test_client
@@ -9,8 +7,7 @@ from starlite.testing import create_test_client
 from . import after_request_handler, slow_handler
 
 
-@pytest.mark.asyncio()
-async def test_simple_cache_backend() -> None:
+async def test_simple_cache_backend(anyio_backend: str) -> None:
     backend = SimpleCacheBackend()
     await backend.set("test", "1", 0.1)  # type: ignore
     value = await backend.get("test")

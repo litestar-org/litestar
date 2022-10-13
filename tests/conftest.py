@@ -73,5 +73,5 @@ def session_test_cookies(session_middleware: SessionMiddleware) -> str:
         pytest.param("trio", id="trio"),
     ]
 )
-def anyio_backend(request):
-    return request.param
+def anyio_backend(request: pytest.FixtureRequest) -> str:
+    return request.param  # type: ignore[no-any-return]
