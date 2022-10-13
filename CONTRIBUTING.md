@@ -51,6 +51,8 @@ On the first run it will pull and build the image, but afterwards this should be
 Note: if you want your terminal back use `docker compose up --detach` but then you will need to bring the docs down
 with `docker compose down` rather than ctrl+C.
 
+Another option is to build the docs locally: `poetry run tox -e docs`. The docs will reside under the `site/` directory.
+
 ### Writing and Editing Docs
 
 We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
@@ -80,7 +82,13 @@ against different python versions. To achieve this you can use the `tox` config 
 - Run: `$ poetry run tox`
 - Force recreate tox environments: `$ poetry run tox -r`
 - Run specific tox environment: `$ poetry run tox -e py37`
-- Run pre-commit only: `$ poetry run tox -e lint`
+- Run all pre-commit checks: `$ poetry run tox -e all-checks`
+  - Run on specific files/directories: `$ poetry run tox -e all-checks starlite/cache/**`
+- Run pylint from pre-commit: `$ poetry run tox -e lint`
+  - Run on specific files/directories: `$ poetry run tox -e lint starlite/cache/**`
+- Run formatting pre-commit hooks: `$ poetry run tox -e fmt`
+- Run type-check from pre-commit: `$ poetry run tox -e typecheck`
+- Build docs locally: `$ poetry run tox -e docs`
 
 Note that these commands may be quite slow to run the first time as environments are created and dependencies installed,
 but subsequent runs should be much faster.
