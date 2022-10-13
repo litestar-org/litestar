@@ -100,7 +100,7 @@ class User:
 **Define a Controller** for your data model:
 
 ```python title="my_app/controllers/user.py"
-from typing import List, NoReturn
+from typing import List
 
 from pydantic import UUID4
 from starlite import Controller, Partial, get, post, put, patch, delete
@@ -132,7 +132,7 @@ class UserController(Controller):
         ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> NoReturn:
+    async def delete_user(self, user_id: UUID4) -> None:
         ...
 ```
 

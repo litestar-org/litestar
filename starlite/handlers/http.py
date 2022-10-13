@@ -7,7 +7,6 @@ from typing import (
     Callable,
     Dict,
     List,
-    NoReturn,
     Optional,
     Type,
     Union,
@@ -574,11 +573,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         if return_annotation is Signature.empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
-                "If your function doesn't return a value or returns None, annotate it as returning 'NoReturn' or 'None' respectively."
+                "If your function doesn't return a value, annotate it as returning 'None'."
             )
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and return_annotation not in {NoReturn, None}:
+        ) and return_annotation is not None:
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",

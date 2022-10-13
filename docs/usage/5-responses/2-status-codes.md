@@ -26,8 +26,7 @@ If `status_code` is not set by the user, the following defaults are used:
 
 !!! important
     For status codes < 100 or 204, 304 statuses, no response body is allowed. If you specify a return annotation other
-    than `typing.NoReturn` or `None` in those cases, an
-    [`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] will be raised.
+    than `None`, an [`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] will be raised.
 
 !!! note
     When using the `route` decorator with multiple http methods, the default status code is `200`.

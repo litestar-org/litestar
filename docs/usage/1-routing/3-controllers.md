@@ -9,7 +9,6 @@ from pydantic import BaseModel, UUID4
 from starlite.controller import Controller
 from starlite.handlers import get, post, patch, delete
 from starlite.types import Partial
-from typing import NoReturn
 
 
 class UserOrder(BaseModel):
@@ -35,7 +34,7 @@ class UserOrderController(Controller):
         ...
 
     @delete(path="/{order_id:uuid}")
-    async def delete_user_order(self, order_id: UUID4) -> NoReturn:
+    async def delete_user_order(self, order_id: UUID4) -> None:
         ...
 ```
 

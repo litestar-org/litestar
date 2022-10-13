@@ -1,14 +1,4 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    NoReturn,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
@@ -83,10 +73,8 @@ class Response(StarletteResponse, Generic[T]):
             An encoded bytes string
         """
         try:
-            if (
-                content is None
-                or content is NoReturn
-                and (self.status_code < 100 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED})
+            if content is None and (
+                self.status_code < 100 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
             ):
                 return b""
             if self.media_type == MediaType.JSON:
