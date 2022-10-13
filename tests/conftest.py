@@ -65,3 +65,13 @@ def session_test_cookies(session_middleware: SessionMiddleware) -> str:
         f"session-{i}={serialize.decode('utf-8')}" for i, serialize in enumerate(session_middleware.dump_data(_session))
     )
     return cookies
+
+
+@pytest.fixture(
+    params=[
+        pytest.param("asyncio", id="asyncio"),
+        pytest.param("trio", id="trio"),
+    ]
+)
+def anyio_backend(request):
+    return request.param
