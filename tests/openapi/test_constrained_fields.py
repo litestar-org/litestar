@@ -1,19 +1,22 @@
+from datetime import date
 from typing import Any, List, Union
 
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import conlist, conset
 
-from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import (
     create_collection_constrained_field_schema,
     create_constrained_field_schema,
+    create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
 from starlite.utils.model import create_parsed_model_field
 from tests.openapi.utils import (
     constrained_collection,
+    constrained_dates,
     constrained_numbers,
     constrained_string,
 )
@@ -72,11 +75,23 @@ def test_create_numerical_constrained_field_schema(field_type: Any) -> None:
     assert schema.minimum == field_type.ge
     assert schema.exclusiveMaximum == field_type.lt
     assert schema.maximum == field_type.le
-    assert schema.exclusiveMinimum == field_type.gt
     assert schema.multipleOf == field_type.multiple_of
 
 
-@given(field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string]))
+@given(field_type=st.sampled_from(constrained_dates))
+def test_create_date_constrained_field_schema(field_type: Any) -> None:
+    schema = create_date_constrained_field_schema(field_type=field_type)
+    assert schema.type == OpenAPIType.STRING
+    assert schema.schema_format == OpenAPIFormat.DATE
+    assert (date.fromtimestamp(schema.exclusiveMinimum) if schema.exclusiveMinimum else None) == field_type.gt
+    assert (date.fromtimestamp(schema.minimum) if schema.minimum else None) == field_type.ge
+    assert (date.fromtimestamp(schema.exclusiveMaximum) if schema.exclusiveMaximum else None) == field_type.lt
+    assert (date.fromtimestamp(schema.maximum) if schema.maximum else None) == field_type.le
+
+
+@given(
+    field_type=st.sampled_from([*constrained_numbers, *constrained_collection, *constrained_string, *constrained_dates])
+)
 def test_create_constrained_field_schema(field_type: Any) -> None:
     schema = create_constrained_field_schema(field_type=field_type, sub_fields=None, plugins=[])
     assert schema
