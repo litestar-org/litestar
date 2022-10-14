@@ -348,8 +348,10 @@ class SignatureModelFactory:
                 self.collect_dependency_names(parameter)
                 self.set_field_default(parameter)
                 if self.should_skip_parameter_validation(parameter):
-                    # pydantic has issues with none-pydantic classes that receive generics
-                    self.field_definitions[parameter.name] = (Any, ...)
+                    if is_dependency_field(parameter.default):
+                        self.field_definitions[parameter.name] = (Any, parameter.default.default)
+                    else:
+                        self.field_definitions[parameter.name] = (Any, ...)
                     continue
                 if ModelFactory.is_constrained_field(parameter.default):
                     self.field_definitions[parameter.name] = (parameter.default, ...)

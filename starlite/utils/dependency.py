@@ -1,11 +1,14 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic.fields import FieldInfo
 
 from starlite.constants import EXTRA_KEY_IS_DEPENDENCY, EXTRA_KEY_SKIP_VALIDATION
 
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
-def is_dependency_field(val: Any) -> bool:
+
+def is_dependency_field(val: Any) -> "TypeGuard[FieldInfo]":
     """Determine if a value is a `FieldInfo` instance created via the
     `Dependency()` function.
 
@@ -29,4 +32,4 @@ def should_skip_dependency_validation(val: Any) -> bool:
         `True` if `val` is `FieldInfo` created by [`Dependency()`][starlite.params.Dependency] function and
         `skip_validation=True` is set.
     """
-    return is_dependency_field(val) and val.extra.get(EXTRA_KEY_SKIP_VALIDATION)
+    return is_dependency_field(val) and bool(val.extra.get(EXTRA_KEY_SKIP_VALIDATION))
