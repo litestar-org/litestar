@@ -24,8 +24,8 @@ from starlette.status import (
 )
 
 from starlite.constants import REDIRECT_STATUS_CODES
+from starlite.datastructures import CacheControlHeader, Provide
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
-from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
     File,
     Redirect,
@@ -218,6 +218,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "background",
         "before_request",
         "cache",
+        "cache_control",
         "cache_key_builder",
         "content_encoding",
         "content_media_type",
@@ -251,6 +252,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -367,6 +369,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.background = background
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache = cache
+        self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
         self.media_type = media_type
         self.response_class = response_class
@@ -421,6 +424,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         resolved_response_headers = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
+        if self.cache_control:
+            resolved_response_headers.update(CacheControlHeader.CACHE_CONTROL_HEADER, self.cache_control.to_header())
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
@@ -609,6 +614,7 @@ class get(HTTPRouteHandler):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -698,6 +704,7 @@ class get(HTTPRouteHandler):
             background=background,
             before_request=before_request,
             cache=cache,
+            cache_control=cache_control,
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
@@ -740,6 +747,7 @@ class post(HTTPRouteHandler):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -828,6 +836,7 @@ class post(HTTPRouteHandler):
             background=background,
             before_request=before_request,
             cache=cache,
+            cache_control=cache_control,
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
@@ -870,6 +879,7 @@ class put(HTTPRouteHandler):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -958,6 +968,7 @@ class put(HTTPRouteHandler):
             background=background,
             before_request=before_request,
             cache=cache,
+            cache_control=cache_control,
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
@@ -1000,6 +1011,7 @@ class patch(HTTPRouteHandler):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -1088,6 +1100,7 @@ class patch(HTTPRouteHandler):
             background=background,
             before_request=before_request,
             cache=cache,
+            cache_control=cache_control,
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
@@ -1130,6 +1143,7 @@ class delete(HTTPRouteHandler):
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
+        cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
@@ -1218,6 +1232,7 @@ class delete(HTTPRouteHandler):
             background=background,
             before_request=before_request,
             cache=cache,
+            cache_control=cache_control,
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
