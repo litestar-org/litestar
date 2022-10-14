@@ -406,7 +406,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             The default [Response][starlite.response.Response] class for the route handler.
         """
-        for layer in self.ownership_layers:
+        for layer in list(reversed(self.ownership_layers)):
             if layer.response_class is not None:
                 return layer.response_class
         return Response
