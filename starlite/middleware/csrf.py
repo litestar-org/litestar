@@ -57,13 +57,15 @@ class CSRFMiddleware(MiddlewareProtocol):
         existing_csrf_token = request.headers.get(self.config.header_name)
 
         if request.method in self.config.safe_methods:
-            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie))
+            scope["_csrf_token"] = generate_csrf_token(secret=self.config.secret)  # type: ignore
+            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, scope=scope))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
+            scope["_csrf_token"] = existing_csrf_token  # type: ignore
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 
-    def create_send_wrapper(self, send: "Send", csrf_cookie: Optional[str]) -> "Send":
+    def create_send_wrapper(self, send: "Send", scope: "Scope", csrf_cookie: Optional[str]) -> "Send":
         """Wraps 'send' to handle CSRF validation.
 
         Args:
@@ -85,24 +87,23 @@ class CSRFMiddleware(MiddlewareProtocol):
             """
             if csrf_cookie is None and message["type"] == "http.response.start":
                 message.setdefault("headers", [])
-                self._set_cookie_if_needed(message)
+                self._set_cookie_if_needed(message=message, scope=scope)
             await send(message)
 
         return send_wrapper
 
-    def _set_cookie_if_needed(self, message: "HTTPSendMessage") -> None:
+    def _set_cookie_if_needed(self, message: "HTTPSendMessage", scope: "Scope") -> None:
         headers = MutableHeaders(scope=message)
-        if "set-cookie" not in headers:
-            cookie = Cookie(
-                key=self.config.cookie_name,
-                value=generate_csrf_token(secret=self.config.secret),
-                path=self.config.cookie_path,
-                secure=self.config.cookie_secure,
-                httponly=self.config.cookie_httponly,
-                samesite=self.config.cookie_samesite,
-                domain=self.config.cookie_domain,
-            )
-            headers.append("set-cookie", cookie.to_header(header=""))
+        cookie = Cookie(
+            key=self.config.cookie_name,
+            value=scope["_csrf_token"],  # type: ignore
+            path=self.config.cookie_path,
+            secure=self.config.cookie_secure,
+            httponly=self.config.cookie_httponly,
+            samesite=self.config.cookie_samesite,
+            domain=self.config.cookie_domain,
+        )
+        headers.append("set-cookie", cookie.to_header(header=""))
 
     def _decode_csrf_token(self, token: str) -> Optional[str]:
         """Decode a CSRF token and validate its HMAC."""

@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING, Any, List, TypeVar, Union
 from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, TypedDict, runtime_checkable
 
-from starlite.utils import generate_csrf_token
-
 if TYPE_CHECKING:
     from starlite import Request
 
@@ -45,8 +43,7 @@ def csrf_token(context: TemplateContext) -> str:
     Returns:
         A CSRF token if the app level `csrf_config` is set, otherwise an empty string.
     """
-    csrf_config = context["request"].app.csrf_config
-    return generate_csrf_token(csrf_config.secret) if csrf_config else ""
+    return context["request"].scope.get("_csrf_token", "")  # type: ignore
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover

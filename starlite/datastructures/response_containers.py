@@ -34,7 +34,6 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import TemplateResponse
 
 if TYPE_CHECKING:
-
     from starlite.app import Starlite
     from starlite.connection import Request
 
@@ -228,7 +227,7 @@ class Template(ResponseContainer["TemplateResponse"]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
@@ -241,13 +240,26 @@ class Template(ResponseContainer["TemplateResponse"]):
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
 
-        context = {**self.context, "request": request}
-
         return TemplateResponse(
             background=self.background,
-            context=context,
+            context=self.create_template_context(request=request),
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,
             template_name=self.name,
         )
+
+    def create_template_context(self, request: "Request") -> Dict[str, Any]:
+        """Creates a context object for the template.
+
+        Args:
+            request: A [Request][starlite.connection.request.Request] instance.
+
+        Returns:
+        """
+        csrf_token = request.scope.get("_csrf_token", "")
+        return {
+            **self.context,
+            "request": request,
+            "csrf_input": f'<input type="hidden" name="_token" value="{csrf_token}" />',
+        }
