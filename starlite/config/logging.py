@@ -132,7 +132,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     }
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding Logger instance."""
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {
-        "handlers": ["queue_listener", "console"],
+        "handlers": ["queue_listener"],
         "level": "INFO",
     }
     """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
