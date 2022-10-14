@@ -19,9 +19,9 @@ class FakeAsyncMemcached:
     async def get(self, key: bytes) -> Optional[bytes]:
         return self._cache.get(key)
 
-    async def set(self, key: bytes, value: bytes, expiration: int) -> None:
+    async def set(self, key: bytes, value: bytes, exptime: int) -> None:
         self._cache[key] = value
-        self._expirations[key] = expiration
+        self._expirations[key] = exptime
 
     async def delete(self, key: bytes) -> None:
         self._cache.pop(key)

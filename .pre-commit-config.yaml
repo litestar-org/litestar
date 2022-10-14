@@ -77,6 +77,8 @@ repos:
             "flake8-secure-coding-standard",
             "flake8-eradicate",
             "flake8-encodings",
+            "flake8-use-fstring",
+            "flake8-use-pathlib",
           ]
   - repo: https://github.com/johnfraney/flake8-markdown
     rev: v0.4.0

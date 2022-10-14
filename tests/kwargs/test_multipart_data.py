@@ -1,3 +1,4 @@
+# flake8: noqa
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
