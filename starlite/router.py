@@ -162,7 +162,10 @@ class Router:
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop
                     )
-                    assert existing_route_index != -1, "unable to find_index existing route index"
+
+                    if existing_route_index == -1:  # pragma: no cover
+                        raise ImproperlyConfiguredException("unable to find_index existing route index")
+
                     route = HTTPRoute(
                         path=path,
                         route_handlers=route_handlers,

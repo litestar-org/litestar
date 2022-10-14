@@ -54,7 +54,6 @@ class AuthMiddleware(AbstractAuthenticationMiddleware):
 def http_route_handler(request: Request[User, Auth]) -> None:
     assert isinstance(request.user, User)
     assert isinstance(request.auth, Auth)
-    return None
 
 
 def test_authentication_middleware_http_routes() -> None:

@@ -23,12 +23,10 @@ async def async_before_request_handler_with_return_value(request: Request) -> di
 
 def sync_before_request_handler_without_return_value(request: Request) -> None:
     assert isinstance(request, Request)
-    return None
 
 
 async def async_before_request_handler_without_return_value(request: Request) -> None:
     assert isinstance(request, Request)
-    return None
 
 
 def sync_after_request_handler(response: Response) -> Response:

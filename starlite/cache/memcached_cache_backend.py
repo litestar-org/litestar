@@ -81,7 +81,6 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         """
 
         await self._memcached_client.set(key.encode(), self._config.serialize(value), exptime=expiration)
-        return None
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
         """Deletes a value from the cache and removes the given key.
@@ -97,4 +96,3 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         """
 
         await self._memcached_client.delete(key=key.encode())
-        return None

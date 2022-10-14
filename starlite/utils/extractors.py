@@ -283,6 +283,7 @@ class ConnectionDataExtractor:
             return {
                 key: repr(value) if isinstance(value, UploadFile) else value for key, value in form_data.multi_items()
             }
+        return None
 
 
 class ExtractedResponseData(TypedDict, total=False):

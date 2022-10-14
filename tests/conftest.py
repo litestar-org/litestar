@@ -61,10 +61,9 @@ def session_test_cookies(session_middleware: SessionMiddleware) -> str:
     # Put random data. If you are also handling session management then use session_middleware fixture and create
     # session cookies with your own data.
     _session = {"key": secrets.token_hex(16)}
-    cookies = "; ".join(
+    return "; ".join(
         f"session-{i}={serialize.decode('utf-8')}" for i, serialize in enumerate(session_middleware.dump_data(_session))
     )
-    return cookies
 
 
 @pytest.fixture(

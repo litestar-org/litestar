@@ -25,7 +25,6 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
     def callback(engine: JinjaTemplateEngine) -> None:
         nonlocal received_engine
         received_engine = engine
-        return None
 
     app = Starlite(
         route_handlers=[],

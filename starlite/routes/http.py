@@ -203,7 +203,7 @@ class HTTPRoute(BaseRoute):
         cached_response = await cache.get(key=cache_key)
 
         if cached_response:
-            return cast("StarletteResponse", pickle.loads(cached_response))  # nosec
+            return cast("StarletteResponse", pickle.loads(cached_response))  # nosec # noqa: SCS113
 
         return None
 
