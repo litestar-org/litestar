@@ -1,4 +1,5 @@
 from dataclasses import is_dataclass
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
@@ -6,6 +7,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from pydantic import (
     BaseModel,
     ConstrainedBytes,
+    ConstrainedDate,
     ConstrainedDecimal,
     ConstrainedFloat,
     ConstrainedFrozenSet,
@@ -28,7 +30,7 @@ from starlite.openapi.constants import (
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
     TYPE_MAP,
 )
-from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
 
@@ -79,6 +81,20 @@ def create_numerical_constrained_field_schema(
     return schema
 
 
+def create_date_constrained_field_schema(field_type: Type[ConstrainedDate]) -> Schema:
+    """Create Schema from Constrained Date Field."""
+    schema = Schema(type=OpenAPIType.STRING, schema_format=OpenAPIFormat.DATE)
+    if field_type.le is not None:
+        schema.maximum = float(datetime.combine(field_type.le, datetime.min.time()).timestamp())
+    if field_type.lt is not None:
+        schema.exclusiveMaximum = float(datetime.combine(field_type.lt, datetime.min.time()).timestamp())
+    if field_type.ge is not None:
+        schema.minimum = float(datetime.combine(field_type.ge, datetime.min.time()).timestamp())
+    if field_type.gt is not None:
+        schema.exclusiveMinimum = float(datetime.combine(field_type.gt, datetime.min.time()).timestamp())
+    return schema
+
+
 def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr], Type[ConstrainedBytes]]) -> Schema:
     """Create Schema from Constrained Str/Bytes field."""
     schema = Schema(type=OpenAPIType.STRING)
@@ -121,6 +137,7 @@ def create_collection_constrained_field_schema(
 def create_constrained_field_schema(
     field_type: Union[
         Type[ConstrainedBytes],
+        Type[ConstrainedDate],
         Type[ConstrainedDecimal],
         Type[ConstrainedFloat],
         Type[ConstrainedFrozenSet],
@@ -138,6 +155,8 @@ def create_constrained_field_schema(
         return create_numerical_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, (ConstrainedStr, ConstrainedBytes)):
         return create_string_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, ConstrainedDate):
+        return create_date_constrained_field_schema(field_type=field_type)
     return create_collection_constrained_field_schema(field_type=field_type, sub_fields=sub_fields, plugins=plugins)
 
 
