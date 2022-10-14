@@ -1,13 +1,16 @@
 import sys
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 from unittest.mock import patch
 
 import pytest
 from orjson import JSONDecodeError
 
-from starlite import get
+from starlite import StaticFilesConfig, get
 from starlite.connection import Request
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="skipping due to python 3.7 async failures")  # type: ignore[misc]
@@ -33,7 +36,7 @@ async def test_request_valid_body_to_json(anyio_backend: str) -> None:
         assert request_json == {"test": "valid"}
 
 
-def test_request_resolve_url() -> None:
+def test_request_url_for() -> None:
     @get(path="/proxy", name="proxy")
     def proxy() -> None:
         pass
@@ -51,6 +54,26 @@ def test_request_resolve_url() -> None:
         assert response.json() == {"url": "http://testserver/proxy"}
 
         response = client.get("/test-none")
+        assert response.status_code == 500
+
+
+def test_request_asset_url(tmp_path: "Path") -> None:
+    @get(path="/resolver")
+    def resolver(request: Request) -> Dict[str, str]:
+        return {"url": request.url_for_static_asset("js", "main.js")}
+
+    @get(path="/resolver-none")
+    def resolver_none(request: Request) -> Dict[str, str]:
+        return {"url": request.url_for_static_asset("none", "main.js")}
+
+    with create_test_client(
+        route_handlers=[resolver, resolver_none],
+        static_files_config=StaticFilesConfig(path="/static/js", directories=[tmp_path], name="js"),
+    ) as client:
+        response = client.get("/resolver")
+        assert response.json() == {"url": "http://testserver/static/js/main.js"}
+
+        response = client.get("/resolver-none")
         assert response.status_code == 500
 
 

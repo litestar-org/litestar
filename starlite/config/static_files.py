@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, cast
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from pydantic import BaseModel, DirectoryPath, constr, validator
 from starlette.staticfiles import StaticFiles
@@ -29,6 +29,10 @@ class StaticFilesConfig(BaseModel):
     html_mode: bool = False
     """
         Flag dictating whether or not serving html. If true, the default file will be 'index.html'.
+    """
+    name: Optional[str] = None
+    """
+        An optional string identifying the static files handler.
     """
 
     @validator("path", always=True)

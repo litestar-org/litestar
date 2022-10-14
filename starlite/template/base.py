@@ -22,7 +22,7 @@ def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:
-        NoRouteMatchFoundException: If path parameters are missing in **path_parameters or have wrong type.
+        NoRouteMatchFoundException: If 'route_name' does not exist, path parameters are missing in **path_parameters or have wrong type.
 
     Returns:
         A fully formatted url path.
@@ -45,6 +45,23 @@ def csrf_token(context: TemplateContext) -> str:
         A CSRF token if the app level `csrf_config` is set, otherwise an empty string.
     """
     return context["request"].scope.get("_csrf_token", "")  # type: ignore
+
+
+def url_for_static_asset(context: TemplateContext, name: str, file_path: str) -> str:
+    """Wrapper for [url_for_static_asset][starlite.app.url_for_static_asset] to
+    be used in templates.
+
+    Args:
+        name: A static handler unique name.
+        file_path: a string containing path to an asset.
+
+    Raises:
+        NoRouteMatchFoundException: If static files handler with 'name' does not exist.
+
+    Returns:
+        A url path to the asset.
+    """
+    return context["request"].app.url_for_static_asset(name, file_path)
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover
