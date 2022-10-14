@@ -9,7 +9,7 @@ try:
     from aiomcache import Client
 except ImportError as e:
     raise MissingDependencyException(
-        "To use starlite.memcached_cahce_backend, install starlite with 'memcached' extra, e.g. `pip install starlite[memcached]`"
+        "To use starlite.memcached_cache_backend, install starlite with 'memcached' extra, e.g. `pip install starlite[memcached]`"
     ) from e
 
 
@@ -80,7 +80,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             None
         """
 
-        await self._memcached_client.set(key.encode(), self._config.serialize(value), exptime=expiration)
+        await self._memcached_client.set(key.encode(), self._config.serialize(value), expiration=expiration)
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
         """Deletes a value from the cache and removes the given key.

@@ -320,7 +320,8 @@ class SignatureModelFactory:
         for name, parameter in filter(lambda x: x[0] not in SKIP_NAMES, self.signature.parameters.items()):
             yield SignatureParameter(self.fn_name, name, parameter)
 
-    def should_skip_parameter_validation(self, parameter: SignatureParameter) -> bool:
+    @staticmethod
+    def should_skip_parameter_validation(parameter: SignatureParameter) -> bool:
         """Identify dependencies for which provided values should not be
         validated.
 
