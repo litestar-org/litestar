@@ -1,5 +1,4 @@
 import atexit
-from io import StringIO
 from logging import StreamHandler
 from queue import Queue
 from typing import Any, List, Optional
@@ -28,7 +27,7 @@ class QueueListenerHandler(QueueHandler):  # type: ignore[misc]
         if handlers:
             handlers = resolve_handlers(handlers)
         else:
-            handlers = [StreamHandler(StringIO())]
+            handlers = [StreamHandler()]
         self.listener = QueueListener(self.queue, *handlers)
         self.listener.start()
 
