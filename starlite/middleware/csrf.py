@@ -57,15 +57,15 @@ class CSRFMiddleware(MiddlewareProtocol):
         existing_csrf_token = request.headers.get(self.config.header_name)
 
         if request.method in self.config.safe_methods:
-            scope["_csrf_token"] = generate_csrf_token(secret=self.config.secret)  # type: ignore
-            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, scope=scope))
+            token = scope["_csrf_token"] = generate_csrf_token(secret=self.config.secret)  # type: ignore
+            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
             scope["_csrf_token"] = existing_csrf_token  # type: ignore
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 
-    def create_send_wrapper(self, send: "Send", scope: "Scope", csrf_cookie: Optional[str]) -> "Send":
+    def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
         """Wraps 'send' to handle CSRF validation.
 
         Args:
@@ -87,16 +87,16 @@ class CSRFMiddleware(MiddlewareProtocol):
             """
             if csrf_cookie is None and message["type"] == "http.response.start":
                 message.setdefault("headers", [])
-                self._set_cookie_if_needed(message=message, scope=scope)
+                self._set_cookie_if_needed(message=message, token=token)
             await send(message)
 
         return send_wrapper
 
-    def _set_cookie_if_needed(self, message: "HTTPSendMessage", scope: "Scope") -> None:
+    def _set_cookie_if_needed(self, message: "HTTPSendMessage", token: str) -> None:
         headers = MutableHeaders(scope=message)
         cookie = Cookie(
             key=self.config.cookie_name,
-            value=scope["_csrf_token"],  # type: ignore
+            value=token,
             path=self.config.cookie_path,
             secure=self.config.cookie_secure,
             httponly=self.config.cookie_httponly,

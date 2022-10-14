@@ -20,7 +20,14 @@ def generate_csrf_hash(token: str, secret: str) -> str:
 
 def generate_csrf_token(secret: str) -> str:
     """Generates a CSRF token that includes a randomly generated string signed
-    by an HMAC."""
+    by an HMAC.
+
+    Args:
+        secret: A secret string.
+
+    Returns:
+        A unique CSRF token.
+    """
     token = secrets.token_hex(CSRF_SECRET_BYTES)
     token_hash = generate_csrf_hash(token=token, secret=secret)
     return token + token_hash

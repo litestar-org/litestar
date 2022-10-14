@@ -261,5 +261,5 @@ class Template(ResponseContainer["TemplateResponse"]):
         return {
             **self.context,
             "request": request,
-            "csrf_input": f'<input type="hidden" name="_token" value="{csrf_token}" />',
+            "csrf_input": f'<input type="hidden" name="csrf_token" value="{csrf_token}" />',
         }
