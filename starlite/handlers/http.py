@@ -24,7 +24,7 @@ from starlette.status import (
 )
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import CacheControlHeader, Provide
+from starlite.datastructures import CacheControlHeader, Provide, ResponseHeader
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.response_containers import (
     File,
@@ -425,7 +425,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
         if self.cache_control:
-            resolved_response_headers.update(CacheControlHeader.CACHE_CONTROL_HEADER, self.cache_control.to_header())
+            resolved_response_headers.update(
+                {CacheControlHeader.CACHE_CONTROL_HEADER: ResponseHeader(value=self.cache_control.to_header())}
+            )
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
