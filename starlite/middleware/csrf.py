@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from starlette.datastructures import MutableHeaders
 
 from starlite.datastructures.cookie import Cookie
-from starlite.enums import ScopeType
+from starlite.enums import RequestEncodingType, ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils.csrf import (
@@ -52,9 +52,17 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
             return
 
-        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope)
+        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope, receive=receive)
+        content_type, _ = request.content_type
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
+
+        if not existing_csrf_token and content_type in {
+            RequestEncodingType.URL_ENCODED,
+            RequestEncodingType.MULTI_PART,
+        }:
+            form = await request.form()
+            existing_csrf_token = form.get("_csrf_token", None)
 
         if request.method in self.config.safe_methods:
             token = scope["_csrf_token"] = generate_csrf_token(secret=self.config.secret)  # type: ignore

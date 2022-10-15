@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 class TemplateContext(TypedDict):
     request: "Request[Any, Any]"
+    csrf_input: str
 
 
 def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -> str:
