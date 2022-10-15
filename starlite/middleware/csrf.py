@@ -65,7 +65,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             existing_csrf_token = form.get("_csrf_token", None)
 
         if request.method in self.config.safe_methods:
-            token = scope["_csrf_token"] = generate_csrf_token(secret=self.config.secret)  # type: ignore
+            token = scope["_csrf_token"] = csrf_cookie or generate_csrf_token(secret=self.config.secret)  # type: ignore
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
             scope["_csrf_token"] = existing_csrf_token  # type: ignore
