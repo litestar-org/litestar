@@ -424,10 +424,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         resolved_response_headers = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
-        if self.cache_control:
-            resolved_response_headers.update(
-                {CacheControlHeader.CACHE_CONTROL_HEADER: ResponseHeader(value=self.cache_control.to_header())}
-            )
+            if cache_control := getattr(layer, "cache_control", None):
+                resolved_response_headers.update(
+                    {CacheControlHeader.CACHE_CONTROL_HEADER: ResponseHeader(value=cache_control.to_header())}
+                )
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
