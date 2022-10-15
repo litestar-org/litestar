@@ -35,5 +35,20 @@ class CacheControlHeader(BaseModel):
         return (f"{self.CACHE_CONTROL_HEADER}: " if include_header_name else "") + ", ".join(cc_items)
 
     @classmethod
+    def from_header(cls, header_value: str) -> "CacheControlHeader":
+        cc_items = [v.strip() for v in header_value.split(",")]
+        kwargs = {}
+        for cc_item in cc_items:
+            key_value = cc_item.split("=")
+            if len(key_value) == 1:
+                kwargs[key_value[0]] = True
+            elif len(key_value) == 2:
+                kwargs[key_value[0]] = key_value[1]
+            else:
+                raise ValueError("Invalid cache-control header value")
+
+        return CacheControlHeader(**kwargs)
+
+    @classmethod
     def prevent_storing(cls):
         return cls(no_store=True)
