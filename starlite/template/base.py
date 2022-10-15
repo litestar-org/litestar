@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, TypeVar, Union
 
 from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, TypedDict, runtime_checkable
@@ -93,3 +93,14 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
             [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]: if no template is found.
         """
         ...
+
+    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+        """Registers a callable on the template engine.
+
+        Args:
+            key: The callable key, i.e. the value to use inside the template to call the callable.
+            template_callable: A callable to register.
+
+        Returns:
+            None
+        """

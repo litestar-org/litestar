@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
 from starlite.template.base import TemplateEngineProtocol, csrf_token, url_for
@@ -27,8 +27,8 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         super().__init__(directory=directory)
         loader = FileSystemLoader(searchpath=directory)
         self.engine = Environment(loader=loader, autoescape=True)
-        self.engine.globals["url_for"] = pass_context(url_for)
-        self.engine.globals["csrf_token"] = pass_context(csrf_token)
+        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+        self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
 
     def get_template(self, template_name: str) -> "JinjaTemplate":
         """
@@ -46,3 +46,15 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             return self.engine.get_template(name=template_name)
         except JinjaTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
+
+    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+        """Registers a callable on the template engine.
+
+        Args:
+            key: The callable key, i.e. the value to use inside the template to call the callable.
+            template_callable: A callable to register.
+
+        Returns:
+            None
+        """
+        self.engine.globals[key] = pass_context(template_callable)

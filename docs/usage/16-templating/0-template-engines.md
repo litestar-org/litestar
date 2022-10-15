@@ -1,4 +1,4 @@
-# Templating
+# Template Engines
 
 Starlite has built-in support for both [jinja2](https://jinja.palletsprojects.com/en/3.0.x/)
 and [mako](https://www.makotemplates.org/) as template engines, and it also offers a simple way to add additional
@@ -49,13 +49,6 @@ def info(request: Request) -> Template:
 The `name` kwarg passed to the `Template` class is the filename for the given template. Starlite will search all the
 directories specifies for this file until it finds it or an exception will be raised. The `context` kwarg is a
 dictionary specifying context data that is passed to the engine.
-
-Starlite automatically injects current request into context under `request` name. Note that if you try pass any value
-under `request` key it will be overridden with the current request.
-
-URLs for indexed route handlers in templates can be generated with the `url_for` function. Its signature and behaviour
-matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
-can be found [here](2-route-handlers/4-route-handler-indexing.md)
 
 ## Defining a Custom Template Engine
 

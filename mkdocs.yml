@@ -137,7 +137,10 @@ nav:
           - usage/12-openapi/5-customizing-pydantic-model-schemas.md
       - usage/13-lifecycle-hooks.md
       - usage/14-testing.md
-      - usage/15-templating.md
+      - Templates:
+          - usage/16-templating/0-template-engines.md
+          - usage/16-templating/1-template-context.md
+          - usage/16-templating/2-template-functions.md
       - usage/16-caching.md
       - usage/17-exceptions.md
   - API Reference:

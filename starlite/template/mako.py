@@ -1,5 +1,5 @@
 from functools import partial
-from typing import TYPE_CHECKING, Any, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
 from starlite.template.base import (
@@ -22,15 +22,17 @@ if TYPE_CHECKING:
 
 
 class MakoTemplate(TemplateProtocol):
-    template: "_MakoTemplate"
-
-    def __init__(self, template: "_MakoTemplate"):
+    def __init__(
+        self, template: "_MakoTemplate", template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]]
+    ):
         super().__init__()
         self.template = template
+        self.template_callables = template_callables
 
     def render(self, *args: Any, **kwargs: Any) -> str:
-        kwargs["url_for"] = partial(url_for, kwargs)  # pyright: ignore
-        kwargs["csrf_token"] = partial(csrf_token, kwargs)  # pyright: ignore
+        for callable_key, template_callable in self.template_callables:
+            kwargs_copy = {**kwargs}
+            kwargs[callable_key] = partial(template_callable, kwargs_copy)
         return str(self.template.render(*args, **kwargs))
 
 
@@ -43,6 +45,9 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         """
         super().__init__(directory=directory)
         self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
+        self._template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]] = []
+        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+        self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
 
     def get_template(self, template_name: str) -> MakoTemplate:
         """
@@ -57,7 +62,20 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]: if no template is found.
         """
         try:
-            mako_tpl_object = self.engine.get_template(template_name)
-            return MakoTemplate(mako_tpl_object)
+            return MakoTemplate(
+                template=self.engine.get_template(template_name), template_callables=self._template_callables
+            )
         except MakoTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
+
+    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+        """Registers a callable on the template engine.
+
+        Args:
+            key: The callable key, i.e. the value to use inside the template to call the callable.
+            template_callable: A callable to register.
+
+        Returns:
+            None
+        """
+        self._template_callables.append((key, template_callable))

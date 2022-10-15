@@ -68,4 +68,4 @@ def test_csrf_input(engine: Any, template: str, template_dir: Path) -> None:
     ) as client:
         response = client.get("/")
         assert token["value"]
-        assert html.unescape(response.text) == f'<input type="hidden" name="csrf_token" value="{token["value"]}" />'
+        assert html.unescape(response.text) == f'<input type="hidden" name="_csrf_token" value="{token["value"]}" />'

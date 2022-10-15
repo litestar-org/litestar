@@ -5,3 +5,4 @@
         members:
             - __init__
             - get_template
+            - register_template_callable
