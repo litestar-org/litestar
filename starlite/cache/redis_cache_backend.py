@@ -59,8 +59,7 @@ class RedisCacheBackend(CacheBackendProtocol):
             Cached value if existing else `None`.
         """
 
-        value = await self._redis.get(key)
-        return value
+        return await self._redis.get(key)
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by
@@ -80,7 +79,6 @@ class RedisCacheBackend(CacheBackendProtocol):
         """
 
         await self._redis.set(key, value, ex=expiration)
-        return None
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
         """Deletes a value from the cache and removes the given key.
@@ -96,4 +94,3 @@ class RedisCacheBackend(CacheBackendProtocol):
         """
 
         await self._redis.delete(key)
-        return None

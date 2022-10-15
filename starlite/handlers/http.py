@@ -406,11 +406,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             The default [Response][starlite.response.Response] class for the route handler.
         """
-        response_class = Response
-        for layer in self.ownership_layers:
+        for layer in list(reversed(self.ownership_layers)):
             if layer.response_class is not None:
-                response_class = layer.response_class
-        return response_class
+                return layer.response_class
+        return Response
 
     def resolve_response_headers(self) -> "ResponseHeadersMap":
         """Returns all header parameters in the scope of the handler function.

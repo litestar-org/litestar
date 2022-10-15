@@ -56,7 +56,6 @@ class SimpleCacheBackend(CacheBackendProtocol):
         """
         async with self._lock:
             self._store[key] = CacheObject(value=value, expiration=datetime.now() + timedelta(seconds=expiration))
-        return None
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
         """Remove a value from the cache for a given key.
@@ -69,4 +68,3 @@ class SimpleCacheBackend(CacheBackendProtocol):
         """
         async with self._lock:
             self._store.pop(key, None)
-        return None

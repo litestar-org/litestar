@@ -125,7 +125,6 @@ def test_path_params(decorator: Any, http_method: Any, expected_status_code: Any
         @decorator(path="/{person_id:str}")
         def test_method(self, person_id: str) -> None:
             assert person_id == person_instance.id
-            return None
 
     with create_test_client(MyController) as client:
         response = client.request(http_method, f"{test_path}/{person_instance.id}")
@@ -155,7 +154,6 @@ def test_query_params(decorator: Any, http_method: Any, expected_status_code: An
             assert first == query_params_instance.first
             assert second == query_params_instance.second
             assert third == query_params_instance.third
-            return None
 
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, params=query_params_instance.dict(exclude_none=True))

@@ -1,6 +1,7 @@
 # pylint: disable=unused-argument
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -97,7 +98,7 @@ class File(ResponseContainer[FileResponse]):
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath."""
-        return value or os.stat(cast("str", values.get("path")))
+        return value or Path(cast("str", values.get("path"))).stat()
 
     def to_response(
         self,

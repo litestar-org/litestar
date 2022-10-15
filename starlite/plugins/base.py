@@ -69,7 +69,7 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
         Returns:
             None
         """
-        return None
+        return None  # noqa: R501
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:

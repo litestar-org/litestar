@@ -181,7 +181,6 @@ def test_query_kwarg() -> None:
     @get(test_path)
     def test_method(a: List[str], b: List[str], query: Dict[str, Union[str, List[str]]]) -> None:
         assert query == {"a": ["foo", "bar"], "b": ["qux"]}
-        return None
 
     with create_test_client(test_method) as client:
         response = client.get(f"{test_path}?{params}")

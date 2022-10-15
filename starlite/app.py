@@ -492,7 +492,7 @@ class Starlite(Router):
 
             app = Starlite(route_handlers=[get_membership_details])
 
-            path = app.route_reverse("get_memebership_details", user_id=100, group_id=10)
+            path = app.route_reverse("get_membership_details", user_id=100, group_id=10)
 
             # /group/10/user/100
             ```

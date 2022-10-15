@@ -170,7 +170,7 @@ class RequestFactory:
         """
 
         if not cookies:
-            return None
+            return
 
         if isinstance(cookies, list):
             cookie_header = "; ".join(cookie.to_header(header="") for cookie in cookies)

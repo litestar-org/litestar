@@ -41,7 +41,7 @@ class Provide:
         if self.use_cache:
             self.value = value
 
-        return value
+        return value  # noqa: R504
 
     def __eq__(self, other: Any) -> bool:
         # check if memory address is identical, otherwise compare attributes

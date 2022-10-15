@@ -219,7 +219,6 @@ def test_use_of_custom_response_serializer_with_http_handler(session_middleware:
         obj = Obj()
         obj.inner = "123Jeronimo"
         request.set_session({"value": obj})
-        return None
 
     with create_test_client(
         route_handlers=[create_session_handler],

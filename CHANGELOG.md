@@ -20,7 +20,7 @@
 - update OpenAPIController to configure bundle download paths.
 - update `RequestFactory` to assign empty session dict by default.
 - update `SQLAlchemyConfig` session*maker*\* attributes to protocols.
-- update `SQLAlchemyConfig` to support either passing an instance or setting connectoin string.
+- update `SQLAlchemyConfig` to support either passing an instance or setting connection string.
 - update templating to inject request into template context.
 
 [1.25.0]
