@@ -53,6 +53,7 @@ aiomcache = {version = "*", optional = true}
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
 aiosqlite = "*"
+beautifulsoup4 = "*"
 brotli = "*"
 cryptography = "*"
 freezegun = "*"

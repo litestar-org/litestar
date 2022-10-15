@@ -15,7 +15,7 @@ from tests.plugins.piccolo_orm.tables import (
     Venue,
 )
 
-CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 APP_CONFIG = AppConfig(
     app_name="music",

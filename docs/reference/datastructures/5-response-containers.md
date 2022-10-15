@@ -27,3 +27,11 @@
         members:
             - iterator
             - to_response
+
+::: starlite.datastructures.Template
+    options:
+        members:
+            - name
+            - context
+            - to_response
+            - update_context

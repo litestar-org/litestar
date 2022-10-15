@@ -20,7 +20,6 @@ async def test_startup_and_shutdown_example(monkeypatch: "MonkeyPatch") -> None:
     @get("/")
     def handler(state: State) -> None:
         assert state.engine is FakeAsyncEngine
-        return None
 
     startup_and_shutdown.app.register(handler)
 

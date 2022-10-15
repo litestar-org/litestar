@@ -4,6 +4,7 @@ from starlette.routing import get_name
 
 from starlite.controller import Controller
 from starlite.enums import ScopeType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
 
@@ -79,7 +80,8 @@ class WebSocketRoute(BaseRoute):
         Returns:
             Dictionary of parsed kwargs
         """
-        assert self.handler_parameter_model, "handler parameter model not defined"
+        if not self.handler_parameter_model:  # pragma: no cover
+            raise ImproperlyConfiguredException("handler parameter model not defined")
 
         signature_model = get_signature_model(self.route_handler)
         kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)

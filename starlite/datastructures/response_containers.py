@@ -1,6 +1,7 @@
-# pylint: disable=unused-argument, import-outside-toplevel
+# pylint: disable=unused-argument
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -30,13 +31,12 @@ from starlette.responses import StreamingResponse
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import TemplateResponse
 
 if TYPE_CHECKING:
-
     from starlite.app import Starlite
     from starlite.connection import Request
-    from starlite.response import TemplateResponse
-
 
 R = TypeVar("R", bound=StarletteResponse)
 
@@ -98,7 +98,7 @@ class File(ResponseContainer[FileResponse]):
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
         """Set the stat_result value for the given filepath."""
-        return value or os.stat(cast("str", values.get("path")))
+        return value or Path(cast("str", values.get("path"))).stat()
 
     def to_response(
         self,
@@ -210,7 +210,7 @@ class Template(ResponseContainer["TemplateResponse"]):
 
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
-    context: Optional[Dict[str, Any]] = None
+    context: Dict[str, Any] = {}
     """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
 
     def to_response(
@@ -228,7 +228,7 @@ class Template(ResponseContainer["TemplateResponse"]):
             media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
             status_code: A response status code.
             app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance
+            request: A [Request][starlite.connection.request.Request] instance.
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
@@ -237,17 +237,30 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
-        from starlite.exceptions import ImproperlyConfiguredException
-        from starlite.response import TemplateResponse
 
-        context = self.context or {}
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
+
         return TemplateResponse(
             background=self.background,
-            context={**context, "request": request},
+            context=self.create_template_context(request=request),
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,
             template_name=self.name,
         )
+
+    def create_template_context(self, request: "Request") -> Dict[str, Any]:
+        """Creates a context object for the template.
+
+        Args:
+            request: A [Request][starlite.connection.request.Request] instance.
+
+        Returns:
+        """
+        csrf_token = request.scope.get("_csrf_token", "")
+        return {
+            **self.context,
+            "request": request,
+            "csrf_input": f'<input type="hidden" name="_csrf_token" value="{csrf_token}" />',
+        }

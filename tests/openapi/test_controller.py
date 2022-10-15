@@ -9,7 +9,7 @@ from tests.openapi.utils import PersonController, PetController
 
 
 class OpenAPIController(_OpenAPIController):
-    """test class for usage in a couple "offline" tests and for without google
+    """test class for usage in a couple "offline" tests and for without Google
     fonts test."""
 
     redoc_google_fonts = False

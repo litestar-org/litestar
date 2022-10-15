@@ -93,7 +93,6 @@ async def get_tournament(tournament_id: int) -> Tournament:
 
 @post("/tournaments")
 async def create_tournament(data: Tournament) -> Tournament:
-    assert isinstance(data, Tournament)
     await data.save()
     await data.refresh_from_db()
     return data
