@@ -1,5 +1,4 @@
 import atexit
-from logging import StreamHandler
 from queue import Queue
 from typing import Any, List, Optional
 
@@ -7,6 +6,7 @@ from starlite.exceptions import MissingDependencyException
 from starlite.logging.utils import resolve_handlers
 
 try:
+    from picologging import StreamHandler
     from picologging.handlers import QueueHandler, QueueListener
 except ImportError as e:
     raise MissingDependencyException("picologging is not installed") from e

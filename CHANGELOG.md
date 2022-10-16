@@ -1,5 +1,10 @@
 # Changelog
 
+[1.28.1]
+
+- fix `QueueListenerHandler` using stdlib `QueueListenerHandler`.
+- update `pydantic-factories` to `v1.11.1`.
+
 [1.28.0]
 
 - add `csrf_input` template context value.
