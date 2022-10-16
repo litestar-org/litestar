@@ -23,6 +23,7 @@ from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
 from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
+from typing_extensions import is_typeddict
 
 from starlite.datastructures.upload_file import UploadFile
 from starlite.openapi.constants import (
@@ -32,7 +33,11 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
-from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
+from starlite.utils.model import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    create_parsed_model_field,
+)
 
 if TYPE_CHECKING:
     from starlite.plugins.base import PluginProtocol
@@ -186,6 +191,8 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return OpenAPI310PydanticSchema(schema_class=field_type)
     if is_dataclass(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
+    if is_typeddict(field_type):
+        return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))
     if isinstance(field_type, EnumMeta):
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER

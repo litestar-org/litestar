@@ -19,10 +19,15 @@ from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
 from pydantic_factories import ModelFactory
+from typing_extensions import is_typeddict
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
-from starlite.utils import convert_dataclass_to_model, is_async_callable
+from starlite.utils import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    is_async_callable,
+)
 
 if TYPE_CHECKING:
     from typing import Awaitable
@@ -134,7 +139,7 @@ class DTO(GenericModel, Generic[T]):
 class DTOFactory:
     def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
         """Create [`DTO`][starlite.dto.DTO] types from pydantic models,
-        dataclasses and other types supported via plugins.
+        `TypedDict`, dataclasses and other types supported via plugins.
 
         Args:
             plugins (list[PluginProtocol] | None): Plugins used to support `DTO` construction from arbitrary types.
@@ -150,7 +155,7 @@ class DTOFactory:
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
     ) -> Type[DTO[T]]:
         """
-        Given a supported model class - either pydantic, dataclass or a class supported via plugins,
+        Given a supported model class - either pydantic, `TypedDict`, dataclass or a class supported via plugins,
         create a DTO pydantic model class.
 
         An instance of the factory must first be created, passing any plugins to it.
@@ -193,7 +198,7 @@ class DTOFactory:
 
         Args:
             name (str): This becomes the name of the generated pydantic model.
-            source (type[T]): A type that is either a subclass of `BaseModel`, a `dataclass` or any other type with a
+            source (type[T]): A type that is either a subclass of `BaseModel`, `TypedDict`, a `dataclass` or any other type with a
                 plugin registered.
             exclude (list[str] | None): Names of attributes on `source`. Named Attributes will not have a field
                 generated on the resultant pydantic model.
@@ -208,7 +213,7 @@ class DTOFactory:
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If `source` is not a
-                pydantic model or dataclass, and there is no plugin registered for its type.
+                pydantic model, `TypedDict` or dataclass, and there is no plugin registered for its type.
         """
         field_definitions = field_definitions or {}
         exclude = exclude or []
@@ -228,14 +233,17 @@ class DTOFactory:
     def _get_fields_from_source(
         self, source: Type[T]  # pyright: ignore
     ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
-        """Converts a `BaseModel` subclass, `dataclass` or any other type that
-        has a plugin registered into a mapping of `str` to `ModelField`."""
+        """Converts a `BaseModel` subclass, `TypedDict`, `dataclass` or any
+        other type that has a plugin registered into a mapping of `str` to
+        `ModelField`."""
         plugin: Optional[PluginProtocol] = None
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
         elif is_dataclass(source):
             fields = convert_dataclass_to_model(source).__fields__
+        elif is_typeddict(source):
+            fields = convert_typeddict_to_model(source).__fields__  # pyright:ignore[reportGeneralTypeIssues]
         else:
             plugin = get_plugin_for_value(value=source, plugins=self.plugins)
             if not plugin:

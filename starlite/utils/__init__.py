@@ -6,7 +6,11 @@ from .exception import (
     get_exception_handler,
 )
 from .extractors import ConnectionDataExtractor, ResponseDataExtractor, obfuscate
-from .model import convert_dataclass_to_model, create_parsed_model_field
+from .model import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    create_parsed_model_field,
+)
 from .path import join_paths, normalize_path
 from .predicates import is_async_callable, is_class_and_subclass, is_optional_union
 from .scope import get_serializer_from_scope
@@ -22,6 +26,7 @@ __all__ = (
     "as_async_callable_list",
     "async_partial",
     "convert_dataclass_to_model",
+    "convert_typeddict_to_model",
     "create_exception_response",
     "create_parsed_model_field",
     "default_serializer",

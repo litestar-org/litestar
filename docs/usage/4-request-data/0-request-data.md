@@ -17,7 +17,7 @@ async def create_user(data: User) -> User:
     ...
 ```
 
-The type of `data` does not need to be a pydantic model - it can be any supported type, e.g. a dataclass:
+The type of `data` does not need to be a pydantic model - it can be any supported type, e.g. a dataclass, or a `TypedDict`:
 
 ```python
 from starlite import post

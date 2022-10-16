@@ -81,7 +81,7 @@ class User(BaseModel):
     id: UUID4
 ```
 
-Alternatively, you can **use a dataclass** – either from dataclasses or from pydantic:
+Alternatively, you can **use a dataclass** – either from dataclasses or from pydantic, or a `TypedDict`:
 
 ```python title="my_app/models/user.py"
 from uuid import UUID

@@ -1,11 +1,12 @@
 from inspect import isclass
 from typing import TYPE_CHECKING, Any, Dict, Type, cast
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, create_model, create_model_from_typeddict
 from pydantic_factories.utils import create_model_from_dataclass
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
+    from typing_extensions import TypedDict
 
 
 class Config(BaseConfig):
@@ -20,6 +21,7 @@ def create_parsed_model_field(value: Type[Any]) -> "ModelField":
 
 
 _dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
+_typeddict_model_map: Dict[Any, Type[BaseModel]] = {}
 
 
 def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
@@ -29,3 +31,14 @@ def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
     if not _dataclass_model_map.get(dataclass):
         _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)  # pyright: ignore
     return _dataclass_model_map[dataclass]
+
+
+def convert_typeddict_to_model(
+    # Mypy bug: see https://github.com/python/mypy/issues/11030
+    typeddict: Type["TypedDict"],  # type:ignore[valid-type]
+) -> Type[BaseModel]:
+    """Converts a typeddict to a pydantic model and memoizes the result."""
+    existing = _typeddict_model_map.get(typeddict)
+    if not existing:
+        _typeddict_model_map[typeddict] = existing = create_model_from_typeddict(typeddict)
+    return existing
