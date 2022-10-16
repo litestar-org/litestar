@@ -74,6 +74,7 @@ app = Starlite(route_handlers=[hello_world])
 - Plugin System
 - SQLAlchemy Support (via plugin)
 - Tortoise-ORM Support (via plugin)
+- Trio support (built-in, via AnyIO)
 - Automatic OpenAPI 3.1 schema generation
 - Support for [Redoc](https://github.com/Redocly/redoc)
 - Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
