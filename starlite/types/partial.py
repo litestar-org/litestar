@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 SupportedTypes: "TypeAlias" = "Union[DataclassType, Type[BaseModel], TypedDictType]"
+"""Types that are supported by [`Partial`][starlite.types.partial.Partial]"""
 
 
 class Partial(Generic[T]):
@@ -53,14 +54,14 @@ class Partial(Generic[T]):
     _models: Dict[SupportedTypes, SupportedTypes] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Takes a pydantic model class, `TypedDict` or a dataclass and returns
-        an all optional version of that class.
+        """Takes a pydantic model class, [`TypedDict`][typing.TypedDict] or a
+        dataclass and returns an all optional version of that class.
 
         Args:
-            item: A pydantic model, `TypedDict` or dataclass class.
+            item: A pydantic model, [`TypedDict`][typing.TypedDict] or dataclass class.
 
         Returns:
-            A pydantic model, `TypedDict`, or dataclass.
+            A pydantic model, [`TypedDict`][typing.TypedDict], or dataclass.
         """
 
         if item not in cls._models:
@@ -122,7 +123,7 @@ class Partial(Generic[T]):
         attributes `Optional`.
 
         Args:
-            item: A `TypedDict` class.
+            item: A [`TypedDict`][typing.TypeDict] class.
         """
         type_hints: Dict[str, Any] = {}
         for key_name, value_type in get_type_hints(item).items():

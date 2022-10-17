@@ -2,7 +2,7 @@
 <!-- markdownlint-disable MD052 -->
 
 Starlite includes a [`DTOFactory`][starlite.dto.DTOFactory] class that allows you to create DTOs from pydantic models,
-dataclasses, `TypedDict`, and any other class supported via plugins.
+dataclasses, [`TypedDict`][typing.TypedDict], and any other class supported via plugins.
 
 An instance of the factory must first be created, optionally passing plugins to it as a kwarg. It can then be used to
 create a [`DTO`][starlite.dto.DTO] by calling the instance like a function. Additionally, it can exclude (drop)

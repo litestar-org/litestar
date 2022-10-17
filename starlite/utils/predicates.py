@@ -81,13 +81,13 @@ def is_optional_union(annotation: Any) -> bool:
 
 
 def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[DataclassType]":
-    """Wrapper for `is_dataclass()` that narrows type.
+    """Wrapper for `is_dataclass()` that narrows to type only, not instance.
 
     Args:
-        value: tested to determine if instance or type of `dataclass`.
+        value: tested to determine if type of `dataclass`.
 
     Returns:
-        `True` if instance or type of `dataclass`.
+        `True` if `value` is a `dataclass` type.
     """
     return is_dataclass(value) and isinstance(value, type)
 
