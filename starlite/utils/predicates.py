@@ -105,7 +105,7 @@ def is_dataclass_type_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassT
 
 
 def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictType]":
-    """Wrapper for `is_dataclass()` that narrows type.
+    """Wrapper for `is_typeddict()` that narrows type.
 
     Args:
         value: tested to determine if instance or type of `dataclass`.
