@@ -92,6 +92,8 @@ class DTO(GenericModel, Generic[T]):
             values = cast("Dict[str, Any]", result)
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
+        elif isinstance(model_instance, dict):
+            values = dict(model_instance)  # copy required as `_from_value_mapping()` mutates `values`.
         else:
             values = asdict(model_instance)
         return cls._from_value_mapping(mapping=values)

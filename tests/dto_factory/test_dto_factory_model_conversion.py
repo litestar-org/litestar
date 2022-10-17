@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Type, cast
 
 import pytest
 from pydantic_factories import ModelFactory
+from typing_extensions import is_typeddict
 
 from starlite import DTOFactory, ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
@@ -57,6 +58,7 @@ def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: 
     [
         [Person, ["id"], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
+        [TypedDictPerson, ["id"], {"complex": "ultra"}, []],
         [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
@@ -65,7 +67,7 @@ def test_conversion_from_model_instance(
 ) -> None:
     DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
-    if issubclass(model, (Person, VanillaDataClassPerson)):
+    if issubclass(model, (Person, VanillaDataClassPerson)) or is_typeddict(model):
         model_instance = model(
             first_name="moishe",
             last_name="zuchmir",
@@ -85,10 +87,10 @@ def test_conversion_from_model_instance(
     dto_instance = DTO.from_model_instance(model_instance=model_instance)
     for key in dto_instance.__fields__:
         if key not in DTO.dto_field_mapping:
-            assert model_instance.__getattribute__(key) == dto_instance.__getattribute__(key)
+            assert _get_attribute_value(model_instance, key) == _get_attribute_value(dto_instance, key)
         else:
             original_key = DTO.dto_field_mapping[key]
-            assert model_instance.__getattribute__(original_key) == dto_instance.__getattribute__(key)
+            assert _get_attribute_value(model_instance, original_key) == _get_attribute_value(dto_instance, key)
 
 
 async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable, anyio_backend: str) -> None:
