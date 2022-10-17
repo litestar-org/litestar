@@ -3,7 +3,7 @@
 https://github.com/piccolo-orm/piccolo/blob/master/tests/example_apps/music/piccolo_app.py
 """
 
-import os
+from pathlib import Path
 
 from piccolo.conf.apps import AppConfig
 
@@ -15,7 +15,7 @@ from tests.plugins.piccolo_orm.tables import (
     Venue,
 )
 
-CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+CURRENT_DIRECTORY = Path(__file__).parent
 
 APP_CONFIG = AppConfig(
     app_name="music",
@@ -26,6 +26,6 @@ APP_CONFIG = AppConfig(
         Concert,
         RecordingStudio,
     ],
-    migrations_folder_path=os.path.join(CURRENT_DIRECTORY, "piccolo_migrations"),
+    migrations_folder_path=str(CURRENT_DIRECTORY / "piccolo_migrations"),
     commands=[],
 )
