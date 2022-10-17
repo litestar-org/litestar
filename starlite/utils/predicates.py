@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
 
 from typing_extensions import ParamSpec, TypeGuard, get_args, get_origin, is_typeddict
 
+from starlite.types.builtin_types import NoneType
+
 if sys.version_info >= (3, 10):
     from types import UnionType
 
@@ -75,7 +77,7 @@ def is_optional_union(annotation: Any) -> bool:
     Returns:
         True for a union, False otherwise.
     """
-    return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)
+    return get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation)
 
 
 def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[DataclassType]":

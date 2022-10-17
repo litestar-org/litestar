@@ -3,9 +3,10 @@ from typing import Any, Optional, get_type_hints
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.types.builtin_types import NoneType
 from starlite.types.partial import Partial
 from tests import (
     Person,
@@ -29,9 +30,9 @@ def test_partial_pydantic_model() -> None:
         assert field.allow_none
         assert not field.required
 
-    for annotation in partial.__annotations__.values():
+    for annotation in get_type_hints(partial).values():
         assert isinstance(annotation, GenericAlias)
-        assert type(None) in annotation.__args__
+        assert NoneType in get_args(annotation)
 
 
 @pytest.mark.parametrize("cls", [VanillaDataClassPerson, PydanticDataClassPerson])
@@ -42,18 +43,21 @@ def test_partial_dataclass(cls: Any) -> None:
 
     for field in partial.__dataclass_fields__.values():  # type: ignore
         assert field.default is None
-        assert type(None) in field.type.__args__
+        assert NoneType in get_args(field.type)
 
-    for annotation in partial.__annotations__.values():
+    for annotation in get_type_hints(partial).values():
         assert isinstance(annotation, GenericAlias)
-        assert type(None) in annotation.__args__
+        assert NoneType in get_args(annotation)
 
 
 def test_partial_typeddict() -> None:
     partial = Partial[TypedDictPerson]
 
     assert len(get_type_hints(partial)) == len(get_type_hints(TypedDictPerson))
-    assert get_type_hints(partial).keys() == partial.__optional_keys__  # type:ignore[attr-defined]
+
+    for annotation in get_type_hints(partial).values():
+        assert isinstance(annotation, GenericAlias)
+        assert NoneType in get_args(annotation)
 
 
 def test_partial_pydantic_model_with_superclass() -> None:
@@ -71,7 +75,7 @@ def test_partial_pydantic_model_with_superclass() -> None:
         assert field.allow_none
         assert not field.required
 
-    assert partial_child.__annotations__ == {
+    assert get_type_hints(partial_child) == {
         "parent_attribute": Optional[int],
         "child_attribute": Optional[int],
     }
@@ -92,12 +96,9 @@ def test_partial_dataclass_with_superclass() -> None:
 
     for field in partial_child.__dataclass_fields__.values():  # type: ignore
         assert field.default is None
-        assert type(None) in field.type.__args__
+        assert NoneType in get_args(field.type)
 
-    assert partial_child.__annotations__ == {
-        "parent_attribute": Optional[int],
-        "child_attribute": Optional[int],
-    }
+    assert get_type_hints(partial_child) == {"parent_attribute": Optional[int], "child_attribute": Optional[int]}
 
 
 def test_partial_typeddict_with_superclass() -> None:
@@ -107,11 +108,9 @@ def test_partial_typeddict_with_superclass() -> None:
     class Child(Parent):
         child_attribute: int
 
-    partial = Partial[Child]
+    partial_child = Partial[Child]
 
-    type_hints = get_type_hints(partial)
-    assert len(type_hints) == 2
-    assert get_type_hints(partial).keys() == partial.__optional_keys__  # type:ignore[attr-defined]
+    assert get_type_hints(partial_child) == {"parent_attribute": Optional[int], "child_attribute": Optional[int]}
 
 
 class Foo:
