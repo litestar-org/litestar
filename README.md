@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-50-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-51-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -74,6 +74,7 @@ app = Starlite(route_handlers=[hello_world])
 - Plugin System
 - SQLAlchemy Support (via plugin)
 - Tortoise-ORM Support (via plugin)
+- Trio support (built-in, via AnyIO)
 - Automatic OpenAPI 3.1 schema generation
 - Support for [Redoc](https://github.com/Redocly/redoc)
 - Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
@@ -302,6 +303,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center"><a href="https://github.com/provinzkraut"><img src="https://avatars.githubusercontent.com/u/25355197?v=4?s=100" width="100px;" alt="provinzkraut"/><br /><sub><b>provinzkraut</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=provinzkraut" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://github.com/jab"><img src="https://avatars.githubusercontent.com/u/64992?v=4?s=100" width="100px;" alt="Joshua Bronson"/><br /><sub><b>Joshua Bronson</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jab" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
