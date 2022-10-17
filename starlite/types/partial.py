@@ -1,20 +1,38 @@
 from dataclasses import MISSING
 from dataclasses import Field as DataclassField
-from dataclasses import dataclass, is_dataclass
+from dataclasses import dataclass
 from inspect import getmro
-from typing import Any, Dict, Generic, Optional, Tuple, Type, TypeVar, get_type_hints
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    get_type_hints,
+)
 
 from pydantic import BaseModel, create_model
-from typing_extensions import TypedDict, is_typeddict
+from typing_extensions import TypedDict
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils.predicates import is_class_and_subclass
+from starlite.utils.predicates import (
+    is_class_and_subclass,
+    is_dataclass_type_typeguard,
+    is_typeddict_typeguard,
+)
 
 try:
     # python 3.9 changed these variable
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore
 except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
+
+if TYPE_CHECKING:
+    from starlite.types.builtin_types import DataclassType
 
 T = TypeVar("T")
 
@@ -28,7 +46,7 @@ class Partial(Generic[T]):
     optional.
     """
 
-    _models: Dict[Type[T], Type[T]] = {}
+    _models: Dict[Union["DataclassType", Type[T]], Type[T]] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
         """Takes a pydantic model class, `TypedDict` or a dataclass and returns
@@ -44,9 +62,9 @@ class Partial(Generic[T]):
         if item not in cls._models:
             if is_class_and_subclass(item, BaseModel):
                 cls._create_partial_pydantic_model(item=item)
-            elif is_dataclass(item):
+            elif is_dataclass_type_typeguard(item):
                 cls._create_partial_dataclass(item=item)
-            elif is_typeddict(item):
+            elif is_typeddict_typeguard(item):
                 cls._create_partial_typeddict(item=item)
             else:
                 raise ImproperlyConfiguredException(
@@ -73,7 +91,7 @@ class Partial(Generic[T]):
         cls._models[item] = create_model(f"Partial{item.__name__}", __base__=item, **field_definitions)  # type: ignore
 
     @classmethod
-    def _create_partial_dataclass(cls, item: Type[T]) -> None:
+    def _create_partial_dataclass(cls, item: "DataclassType") -> None:
         """Receives a dataclass class and creates an all optional subclass of
         it.
 
@@ -105,7 +123,7 @@ class Partial(Generic[T]):
         cls._models[item] = TypedDict(item.__name__, get_type_hints(item), total=False)  # type:ignore[operator]
 
     @staticmethod
-    def _create_optional_field_map(item: Type[T]) -> Dict[str, DataclassField]:
+    def _create_optional_field_map(item: "DataclassType") -> Dict[str, DataclassField]:
         """Creates a map of field name to optional dataclass Fields for a given
         dataclass.
 
@@ -116,7 +134,7 @@ class Partial(Generic[T]):
             A map of field name to optional dataclass fields.
         """
         fields: Dict[str, DataclassField] = {}
-        for field_name, dataclass_field in item.__dataclass_fields__.items():  # type: ignore[attr-defined]
+        for field_name, dataclass_field in item.__dataclass_fields__.items():
             if not isinstance(dataclass_field.type, GenericAlias) or type(None) not in dataclass_field.type.__args__:
                 dataclass_field.type = Optional[dataclass_field.type]
             if dataclass_field.default_factory is MISSING:

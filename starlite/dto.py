@@ -1,4 +1,4 @@
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict
 from inspect import isawaitable
 from typing import (
     TYPE_CHECKING,
@@ -19,7 +19,6 @@ from pydantic import BaseConfig, BaseModel, create_model
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
 from pydantic_factories import ModelFactory
-from typing_extensions import is_typeddict
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
@@ -27,6 +26,8 @@ from starlite.utils import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
     is_async_callable,
+    is_dataclass_type_or_instance_typeguard,
+    is_typeddict_typeguard,
 )
 
 if TYPE_CHECKING:
@@ -240,10 +241,10 @@ class DTOFactory:
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
-        elif is_dataclass(source):
+        elif is_dataclass_type_or_instance_typeguard(source):
             fields = convert_dataclass_to_model(source).__fields__
-        elif is_typeddict(source):
-            fields = convert_typeddict_to_model(source).__fields__  # pyright:ignore[reportGeneralTypeIssues]
+        elif is_typeddict_typeguard(source):
+            fields = convert_typeddict_to_model(source).__fields__
         else:
             plugin = get_plugin_for_value(value=source, plugins=self.plugins)
             if not plugin:

@@ -1,6 +1,14 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Protocol
+
+if TYPE_CHECKING:
+    from typing import ClassVar, Dict
+
+
+class DataclassProtocol(Protocol):
+
+    __dataclass_fields__: "ClassVar[Dict[str, Any]]"
 
 
 class Logger(Protocol):  # pragma: no cover

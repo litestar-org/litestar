@@ -73,7 +73,7 @@ from .internal_types import (
     RouteHandlerType,
 )
 from .partial import Partial
-from .protocols import Logger
+from .protocols import DataclassProtocol, Logger
 
 __all__ = (
     "ASGIApp",
@@ -89,6 +89,7 @@ __all__ = (
     "BeforeRequestHookHandler",
     "CacheKeyBuilder",
     "ControllerRouterHandler",
+    "DataclassProtocol",
     "Dependencies",
     "Empty",
     "EmptyType",

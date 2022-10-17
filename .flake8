@@ -8,3 +8,5 @@ classmethod-decorators =
     classmethod
     validator
     root_validator
+per-file-ignores =
+    starlite/types/builtin_types.py:E800,F401
