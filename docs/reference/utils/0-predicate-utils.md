@@ -8,9 +8,9 @@
 
 ::: starlite.utils.predicates.is_class_and_subclass
 
-::: starlite.utils.predicates.is_dataclass_type_or_instance_typeguard
+::: starlite.utils.predicates.is_dataclass_class_or_instance_typeguard
 
-::: starlite.utils.predicates.is_dataclass_type_typeguard
+::: starlite.utils.predicates.is_dataclass_class_typeguard
 
 ::: starlite.utils.predicates.is_optional_union
 

@@ -32,7 +32,7 @@ from starlite.openapi.constants import (
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.utils import (
-    is_dataclass_type_or_instance_typeguard,
+    is_dataclass_class_or_instance_typeguard,
     is_typeddict_typeguard,
 )
 from starlite.utils.model import (
@@ -51,7 +51,7 @@ def normalize_example_value(value: Any) -> Any:
         value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
-    if is_dataclass_type_or_instance_typeguard(value):
+    if is_dataclass_class_or_instance_typeguard(value):
         value = convert_dataclass_to_model(value)
     if isinstance(value, BaseModel):
         value = value.dict()
@@ -191,7 +191,7 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return TYPE_MAP[field_type].copy()
     if is_pydantic_model(field_type):
         return OpenAPI310PydanticSchema(schema_class=field_type)
-    if is_dataclass_type_or_instance_typeguard(field_type):
+    if is_dataclass_class_or_instance_typeguard(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
     if is_typeddict_typeguard(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))

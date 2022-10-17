@@ -11,17 +11,17 @@ if TYPE_CHECKING:
 
 
 __all__ = [
-    "DataclassType",
-    "DataclassTypeOrInstance",
+    "DataclassClass",
+    "DataclassClassOrInstance",
     "NoneType",
-    "TypedDictType",
+    "TypedDictClass",
 ]
 
-DataclassType: "TypeAlias" = "Type[DataclassProtocol]"
+DataclassClass: "TypeAlias" = "Type[DataclassProtocol]"
 
-DataclassTypeOrInstance: "TypeAlias" = "Union[DataclassType, DataclassProtocol]"
+DataclassClassOrInstance: "TypeAlias" = "Union[DataclassClass, DataclassProtocol]"
 
 NoneType = type(None)
 
 # mypy issue: https://github.com/python/mypy/issues/11030
-TypedDictType: "TypeAlias" = "Type[TypedDict]"  # type:ignore[valid-type]
+TypedDictClass: "TypeAlias" = "Type[TypedDict]"  # type:ignore[valid-type]

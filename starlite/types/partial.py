@@ -21,7 +21,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import (
     is_class_and_subclass,
-    is_dataclass_type_typeguard,
+    is_dataclass_class_typeguard,
     is_typeddict_typeguard,
 )
 
@@ -34,11 +34,11 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     from typing import TypeAlias, Union  # noqa: F401  # nopycln: import
 
-    from starlite.types.builtin_types import DataclassType, TypedDictType
+    from starlite.types.builtin_types import DataclassClass, TypedDictClass
 
 T = TypeVar("T")
 
-SupportedTypes: "TypeAlias" = "Union[DataclassType, Type[BaseModel], TypedDictType]"
+SupportedTypes: "TypeAlias" = "Union[DataclassClass, Type[BaseModel], TypedDictClass]"
 """Types that are supported by [`Partial`][starlite.types.partial.Partial]"""
 
 
@@ -67,7 +67,7 @@ class Partial(Generic[T]):
         if item not in cls._models:
             if is_class_and_subclass(item, BaseModel):
                 cls._create_partial_pydantic_model(item=item)
-            elif is_dataclass_type_typeguard(item):
+            elif is_dataclass_class_typeguard(item):
                 cls._create_partial_dataclass(item=item)
             elif is_typeddict_typeguard(item):
                 cls._create_partial_typeddict(item=item)
@@ -96,7 +96,7 @@ class Partial(Generic[T]):
         cls._models[item] = create_model(cls._create_partial_type_name(item), __base__=item, **field_definitions)  # type: ignore
 
     @classmethod
-    def _create_partial_dataclass(cls, item: "DataclassType") -> None:
+    def _create_partial_dataclass(cls, item: "DataclassClass") -> None:
         """Receives a dataclass class and creates an all optional subclass of
         it.
 
@@ -104,7 +104,7 @@ class Partial(Generic[T]):
             item: A dataclass class.
         """
         fields: Dict[str, DataclassField] = cls._create_optional_field_map(item)
-        partial_type: "DataclassType" = dataclass(
+        partial_type: "DataclassClass" = dataclass(
             type(cls._create_partial_type_name(item), (item,), {"__dataclass_fields__": fields})
         )
         annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
@@ -118,7 +118,7 @@ class Partial(Generic[T]):
         cls._models[item] = partial_type
 
     @classmethod
-    def _create_partial_typeddict(cls, item: "TypedDictType") -> None:
+    def _create_partial_typeddict(cls, item: "TypedDictClass") -> None:
         """Receives a typeddict class and creates a new type with all
         attributes `Optional`.
 
@@ -135,7 +135,7 @@ class Partial(Generic[T]):
         cls._models[item] = TypedDict(type_name, type_hints, total=False)  # type:ignore
 
     @staticmethod
-    def _create_optional_field_map(item: "DataclassType") -> Dict[str, DataclassField]:
+    def _create_optional_field_map(item: "DataclassClass") -> Dict[str, DataclassField]:
         """Creates a map of field name to optional dataclass Fields for a given
         dataclass.
 

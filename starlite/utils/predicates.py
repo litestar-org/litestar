@@ -19,9 +19,9 @@ else:  # pragma: no cover
 if TYPE_CHECKING:
 
     from starlite.types.builtin_types import (
-        DataclassType,
-        DataclassTypeOrInstance,
-        TypedDictType,
+        DataclassClass,
+        DataclassClassOrInstance,
+        TypedDictClass,
     )
 
 P = ParamSpec("P")
@@ -80,7 +80,7 @@ def is_optional_union(annotation: Any) -> bool:
     return get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation)
 
 
-def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[DataclassType]":
+def is_dataclass_class_typeguard(value: Any) -> "TypeGuard[DataclassClass]":
     """Wrapper for `is_dataclass()` that narrows to type only, not instance.
 
     Args:
@@ -92,7 +92,7 @@ def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[DataclassType]":
     return is_dataclass(value) and isinstance(value, type)
 
 
-def is_dataclass_type_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassTypeOrInstance]":
+def is_dataclass_class_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
     """Wrapper for `is_dataclass()` that narrows type.
 
     Args:
@@ -104,7 +104,7 @@ def is_dataclass_type_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassT
     return is_dataclass(value)
 
 
-def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictType]":
+def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictClass]":
     """Wrapper for `is_typeddict()` that narrows type.
 
     Args:

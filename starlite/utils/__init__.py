@@ -15,8 +15,8 @@ from .path import join_paths, normalize_path
 from .predicates import (
     is_async_callable,
     is_class_and_subclass,
-    is_dataclass_type_or_instance_typeguard,
-    is_dataclass_type_typeguard,
+    is_dataclass_class_or_instance_typeguard,
+    is_dataclass_class_typeguard,
     is_optional_union,
     is_typeddict_typeguard,
 )
@@ -42,8 +42,8 @@ __all__ = (
     "get_serializer_from_scope",
     "is_async_callable",
     "is_class_and_subclass",
-    "is_dataclass_type_or_instance_typeguard",
-    "is_dataclass_type_typeguard",
+    "is_dataclass_class_or_instance_typeguard",
+    "is_dataclass_class_typeguard",
     "is_dependency_field",
     "is_optional_union",
     "is_typeddict_typeguard",
