@@ -1,12 +1,18 @@
 import dataclasses
-from typing import Any, Optional
+from typing import Any, Optional, get_type_hints
 
 import pytest
 from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.partial import Partial
-from tests import Person, PydanticDataClassPerson, VanillaDataClassPerson
+from tests import (
+    Person,
+    PydanticDataClassPerson,
+    TypedDictPerson,
+    VanillaDataClassPerson,
+)
 
 try:
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore
@@ -41,6 +47,13 @@ def test_partial_dataclass(cls: Any) -> None:
     for annotation in partial.__annotations__.values():
         assert isinstance(annotation, GenericAlias)
         assert type(None) in annotation.__args__
+
+
+def test_partial_typeddict() -> None:
+    partial = Partial[TypedDictPerson]
+
+    assert len(get_type_hints(partial)) == len(get_type_hints(TypedDictPerson))
+    assert get_type_hints(partial).keys() == partial.__optional_keys__  # type:ignore[attr-defined]
 
 
 def test_partial_pydantic_model_with_superclass() -> None:
@@ -85,6 +98,20 @@ def test_partial_dataclass_with_superclass() -> None:
         "parent_attribute": Optional[int],
         "child_attribute": Optional[int],
     }
+
+
+def test_partial_typeddict_with_superclass() -> None:
+    class Parent(TypedDict, total=True):
+        parent_attribute: int
+
+    class Child(Parent):
+        child_attribute: int
+
+    partial = Partial[Child]
+
+    type_hints = get_type_hints(partial)
+    assert len(type_hints) == 2
+    assert get_type_hints(partial).keys() == partial.__optional_keys__  # type:ignore[attr-defined]
 
 
 class Foo:
