@@ -8,7 +8,7 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from starlite import DTOFactory, get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.testing import create_test_client
-from tests import Person, VanillaDataClassPerson
+from tests import Person, TypedDictPerson, VanillaDataClassPerson
 from tests.plugins.sql_alchemy_plugin import Pet
 
 
@@ -17,6 +17,7 @@ from tests.plugins.sql_alchemy_plugin import Pet
     [
         [Person, ["id"], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
+        [TypedDictPerson, ["id"], {"complex": "ultra"}, []],
         [Pet, ["owner"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
@@ -50,6 +51,7 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
     [
         [Person, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
+        [TypedDictPerson, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
         [Pet, ["age"], {"species": "kind"}, {"special": (str, ...)}, [SQLAlchemyPlugin()]],
     ],
 )
