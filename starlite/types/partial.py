@@ -131,7 +131,7 @@ class Partial(Generic[T]):
                 continue
             type_hints[key_name] = Optional[value_type]
         type_name = cls._create_partial_type_name(item)
-        cls._models[item] = TypedDict(type_name, type_hints)  # type:ignore
+        cls._models[item] = TypedDict(type_name, type_hints, total=False)  # type:ignore
 
     @staticmethod
     def _create_optional_field_map(item: "DataclassType") -> Dict[str, DataclassField]:
