@@ -6,9 +6,9 @@ if TYPE_CHECKING:
 
     from typing import Type, Union
 
+    from pydantic_factories.protocols import DataclassProtocol
     from typing_extensions import TypeAlias, TypedDict
 
-    from .protocols import DataclassProtocol
 
 __all__ = [
     "DataclassType",

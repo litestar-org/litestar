@@ -134,7 +134,8 @@ class Partial(Generic[T]):
             A map of field name to optional dataclass fields.
         """
         fields: Dict[str, DataclassField] = {}
-        for field_name, dataclass_field in item.__dataclass_fields__.items():
+        # https://github.com/python/typing/discussions/1056
+        for field_name, dataclass_field in item.__dataclass_fields__.items():  # pyright:ignore
             if not isinstance(dataclass_field.type, GenericAlias) or type(None) not in dataclass_field.type.__args__:
                 dataclass_field.type = Optional[dataclass_field.type]
             if dataclass_field.default_factory is MISSING:

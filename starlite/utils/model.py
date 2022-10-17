@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Type, cast
 
 from pydantic import BaseConfig, BaseModel, create_model, create_model_from_typeddict
 from pydantic_factories.utils import create_model_from_dataclass
@@ -6,8 +6,7 @@ from pydantic_factories.utils import create_model_from_dataclass
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
-    from starlite.types import DataclassProtocol
-    from starlite.types.builtin_types import TypedDictType
+    from starlite.types.builtin_types import DataclassTypeOrInstance, TypedDictType
 
 
 class Config(BaseConfig):
@@ -24,9 +23,7 @@ def create_parsed_model_field(value: Type[Any]) -> "ModelField":
 _type_model_map: Dict[Type[Any], Type[BaseModel]] = {}
 
 
-def convert_dataclass_to_model(
-    dataclass_or_instance: "Union[Type[DataclassProtocol], DataclassProtocol]",
-) -> Type[BaseModel]:
+def convert_dataclass_to_model(dataclass_or_instance: "DataclassTypeOrInstance") -> Type[BaseModel]:
     """Converts a dataclass or dataclass instance to a pydantic model and
     memoizes the result."""
 
@@ -37,7 +34,7 @@ def convert_dataclass_to_model(
 
     existing = _type_model_map.get(dataclass)
     if not existing:
-        _type_model_map[dataclass] = existing = create_model_from_dataclass(dataclass)  # type:ignore[arg-type]
+        _type_model_map[dataclass] = existing = create_model_from_dataclass(dataclass)
     return existing
 
 

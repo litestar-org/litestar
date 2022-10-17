@@ -16,8 +16,11 @@ else:  # pragma: no cover
 
 if TYPE_CHECKING:
 
-    from starlite.types import DataclassProtocol
-    from starlite.types.builtin_types import TypedDictType
+    from starlite.types.builtin_types import (
+        DataclassType,
+        DataclassTypeOrInstance,
+        TypedDictType,
+    )
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -75,7 +78,7 @@ def is_optional_union(annotation: Any) -> bool:
     return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)
 
 
-def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[Type[DataclassProtocol]]":
+def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[DataclassType]":
     """Wrapper for `is_dataclass()` that narrows type.
 
     Args:
@@ -87,9 +90,7 @@ def is_dataclass_type_typeguard(value: Any) -> "TypeGuard[Type[DataclassProtocol
     return is_dataclass(value) and isinstance(value, type)
 
 
-def is_dataclass_type_or_instance_typeguard(
-    value: Any,
-) -> "TypeGuard[Union[DataclassProtocol, Type[DataclassProtocol]]]":
+def is_dataclass_type_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassTypeOrInstance]":
     """Wrapper for `is_dataclass()` that narrows type.
 
     Args:
