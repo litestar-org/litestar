@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Type
 
 import pytest
-from starlette.status import HTTP_400_BAD_REQUEST
 
 from starlite import (
     Controller,
@@ -15,6 +14,7 @@ from starlite import (
     ValidationException,
     get,
 )
+from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

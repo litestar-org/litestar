@@ -41,7 +41,7 @@ def test_cache_control_from_header_single_value() -> None:
     assert header_dict == {"no-cache": True}
 
 
-@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])  # type: ignore[misc]
+@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"]) 
 def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         CacheControlHeader.from_header(invalid_value)

@@ -1,9 +1,9 @@
 from typing import Any
 
 import pytest
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import HTTPException, InternalServerException, ValidationException
+from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.types import ExceptionHandlersMap
 from starlite.utils.exception import get_exception_handler
 

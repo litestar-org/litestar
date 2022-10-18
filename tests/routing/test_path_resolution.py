@@ -1,13 +1,6 @@
 from typing import Any, Callable, Optional, Type
 
 import pytest
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-    HTTP_405_METHOD_NOT_ALLOWED,
-)
 
 from starlite import (
     Controller,
@@ -16,6 +9,13 @@ from starlite import (
     delete,
     get,
     post,
+)
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_405_METHOD_NOT_ALLOWED,
 )
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory

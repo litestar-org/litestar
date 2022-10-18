@@ -1,9 +1,9 @@
 from typing import List
 
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import Controller, Parameter, Router, get
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 

@@ -1,7 +1,7 @@
 import pytest
-from starlette.status import HTTP_200_OK
 
 from starlite import ImproperlyConfiguredException, MediaType, Response
+from starlite.status_codes import HTTP_200_OK
 
 
 def test_response_error_handling() -> None:

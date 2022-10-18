@@ -29,7 +29,7 @@ app = Starlite(route_handlers=[health_check])
 We would then test it using the test client like so:
 
 ```python title="tests/test_health_check.py"
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
 from my_app.main import app
@@ -60,7 +60,7 @@ def test_client() -> TestClient:
 We would then be able to rewrite our test like so:
 
 ```python title="tests/test_health_check.py"
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
 
@@ -174,7 +174,7 @@ here you can also pass individual values.
 For example, you can do this:
 
 ```python title="my_app/tests/test_health_check.py"
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 from my_app.main import health_check
@@ -190,7 +190,7 @@ def test_health_check():
 But also this:
 
 ```python title="my_app/tests/test_health_check.py"
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 from my_app.main import health_check
@@ -237,7 +237,7 @@ We could test the `/item` route like so:
 ```python title="tests/conftest.py"
 import pytest
 
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Provide, create_test_client
 
 from my_app.main import Service, Item, get_item
@@ -269,7 +269,7 @@ from typing import Protocol, runtime_checkable
 import pytest
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Provide, get
 from starlite.testing import create_test_client
 

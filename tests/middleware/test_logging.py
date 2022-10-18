@@ -1,7 +1,6 @@
 from logging import INFO
 from typing import TYPE_CHECKING
 
-from starlette.status import HTTP_200_OK
 from structlog.testing import capture_logs
 
 from starlite import (
@@ -14,6 +13,7 @@ from starlite import (
 )
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -54,9 +54,9 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture") -> None:
             'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
         )
         assert (
-            caplog.messages[1] == 'HTTP Response: status_code=200, cookies={"first-cookie":"abc","Path":"/",'
-            '"SameSite":"lax","second-cookie":"xxx"}, headers={"token":"123","regular":"abc",'
-            '"content-length":"17","content-type":"application/json"}, body={"hello":"world"}'
+            caplog.messages[1] == 'HTTP Response: status_code=200, cookies={"first-cookie":"abc","Path":"/","SameSite":'
+            '"lax","second-cookie":"xxx"}, headers={"token":"123","regular":"abc","content-type":'
+            '"application/json","content-length":"17"}, body={"hello":"world"}'
         )
 
 

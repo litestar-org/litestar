@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.enums import MediaType
 from starlite.exceptions.http_exceptions import HTTPException
-from starlite.response import Response
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
     from typing import Type
 
+    from starlite.response import Response
     from starlite.types import ExceptionHandler, ExceptionHandlersMap
 
 
@@ -60,7 +60,7 @@ class ExceptionResponseContent(BaseModel):
     """An extra mapping to attach to the exception."""
 
 
-def create_exception_response(exc: Exception) -> Response:
+def create_exception_response(exc: Exception) -> "Response":
     """Constructs a response from an exception.
 
     For instances of either `starlite.exceptions.HTTPException` or `starlette.exceptions.HTTPException` the response
@@ -72,6 +72,8 @@ def create_exception_response(exc: Exception) -> Response:
     Returns:
         Response: HTTP response constructed from exception details.
     """
+    from starlite.response import Response  # pylint: disable=import-outside-toplevel
+
     if isinstance(exc, (HTTPException, StarletteHTTPException)):
         content = ExceptionResponseContent(detail=exc.detail, status_code=exc.status_code)
         if isinstance(exc, HTTPException):

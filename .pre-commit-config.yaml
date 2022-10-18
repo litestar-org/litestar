@@ -85,7 +85,7 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/dosisod/refurb
-    rev: v1.3.0
+    rev: v1.4.0
     hooks:
       - id: refurb
         args: [--ignore, "120", --ignore, "128"]
@@ -98,9 +98,17 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             sqlalchemy,
+            sqlalchemy2-stubs,
             starlette,
             starlite_multipart,
             structlog,
+            types-PyYAML,
+            types-freezegun,
+            types-redis,
+            redis,
+            pytest,
+            cryptography,
+            bs4,
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
@@ -169,13 +177,15 @@ repos:
             starlette,
             starlite_multipart,
             structlog,
+            pyyaml,
             types-PyYAML,
             types-freezegun,
             types-redis,
             redis,
+            pytest,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.275
+    rev: v1.1.276
     hooks:
       - id: pyright
         exclude: "tests"

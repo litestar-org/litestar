@@ -9,7 +9,6 @@ import pytest
 from cryptography.exceptions import InvalidTag
 from orjson import dumps
 from pydantic import SecretBytes, ValidationError
-from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import (
     HttpMethod,
@@ -27,6 +26,7 @@ from starlite.middleware.session import (
     SessionCookieConfig,
     SessionMiddleware,
 )
+from starlite.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 
