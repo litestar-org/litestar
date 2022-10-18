@@ -6,7 +6,6 @@ from typing import Any, Optional
 import pytest
 from bs4 import BeautifulSoup
 from starlette import status
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from starlite import (
     Body,
@@ -23,6 +22,7 @@ from starlite import (
     put,
     websocket,
 )
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.template.mako import MakoTemplateEngine
 from starlite.testing import create_test_client

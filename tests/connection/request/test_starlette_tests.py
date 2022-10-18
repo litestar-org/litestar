@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import pytest
 from starlette.datastructures import Address, State
-from starlette.status import HTTP_200_OK
 from starlette.testclient import TestClient
 
 from starlite import InternalServerException, MediaType
 from starlite.connection import Request, empty_send
 from starlite.response import Response
+from starlite.status_codes import HTTP_200_OK
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Send
@@ -265,6 +265,7 @@ def test_request_state() -> None:
 
 def test_request_cookies() -> None:
     async def app(scope: Any, receive: "Receive", send: "Send") -> None:
+
         request = Request(scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:

@@ -24,21 +24,21 @@ from typing import (
 
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
-from starlette.responses import FileResponse, RedirectResponse
-from starlette.responses import Response as StarletteResponse
-from starlette.responses import StreamingResponse
+from starlette.responses import FileResponse
+from typing_extensions import Literal
 
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import TemplateResponse
+from starlite.response import RedirectResponse, StreamingResponse
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
+    from starlite.response import TemplateResponse
 
-R = TypeVar("R", bound=StarletteResponse)
+R = TypeVar("R")
 
 
 class ResponseContainer(GenericModel, ABC, Generic[R]):
@@ -137,11 +137,11 @@ class Redirect(ResponseContainer[RedirectResponse]):
     path: str
     """Redirection path"""
 
-    def to_response(
+    def to_response(  # type: ignore[override]
         self,
         headers: Dict[str, Any],
         media_type: Union["MediaType", str],
-        status_code: int,
+        status_code: "Literal[301, 302, 303, 307, 308]",
         app: "Starlite",
         request: "Request",
     ) -> RedirectResponse:
@@ -237,6 +237,9 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
+        from starlite.response import (  # pylint: disable=import-outside-toplevel
+            TemplateResponse,
+        )
 
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")

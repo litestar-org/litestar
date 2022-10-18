@@ -1,19 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.utils import create_exception_response
 from starlite.utils.exception import get_exception_handler
 
 if TYPE_CHECKING:
-
-    from starlette.responses import Response as StarletteResponse
-
+    from starlite.response import Response
     from starlite.types import ASGIApp, ExceptionHandlersMap, Receive, Scope, Send
     from starlite.types.asgi_types import WebSocketCloseEvent
 
@@ -57,7 +55,7 @@ class ExceptionHandlerMiddleware:
                     get_exception_handler(self.exception_handlers, e) or self.default_http_exception_handler
                 )
                 response = exception_handler(Request(scope=scope, receive=receive, send=send), e)
-                await response(scope=scope, receive=receive, send=send)  # type: ignore[arg-type]
+                await response(scope=scope, receive=receive, send=send)
                 return
 
             if isinstance(e, WebSocketException):
@@ -72,11 +70,11 @@ class ExceptionHandlerMiddleware:
             event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason}
             await send(event)
 
-    def default_http_exception_handler(self, request: Request, exc: Exception) -> "StarletteResponse":
+    def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
         """Default handler for exceptions subclassed from HTTPException."""
         status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
             server_middleware = ServerErrorMiddleware(app=self)  # type: ignore[arg-type]
-            return server_middleware.debug_response(request=request, exc=exc)  # type: ignore[arg-type]
+            return server_middleware.debug_response(request=request, exc=exc)  # type: ignore
         return create_exception_response(exc)

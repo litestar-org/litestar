@@ -1,33 +1,76 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    AsyncIterable,
+    AsyncIterator,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
+from urllib.parse import quote
 
 import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-from starlette.responses import Response as StarletteResponse
-from starlette.status import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 
+from starlite.datastructures import Cookie
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_204_NO_CONTENT,
+    HTTP_304_NOT_MODIFIED,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
+from starlite.types.composite import StreamType
 from starlite.utils.serialization import default_serializer
+from starlite.utils.sync import iterate_sync_iterator
 
 T = TypeVar("T")
 
 if TYPE_CHECKING:
+    from typing_extensions import Literal
+
     from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
-    from starlite.types import ResponseCookies
+    from starlite.types import (
+        HTTPResponseBodyEvent,
+        HTTPResponseStartEvent,
+        Receive,
+        ResponseCookies,
+        Scope,
+        Send,
+    )
 
 
-class Response(StarletteResponse, Generic[T]):
+class Response(Generic[T]):
+    __slots__ = (
+        "status_code",
+        "media_type",
+        "background",
+        "headers",
+        "cookies",
+        "encoding",
+        "body",
+        "status_allows_body",
+    )
+
     def __init__(
         self,
         content: T,
         *,
-        status_code: int,
-        media_type: Union["MediaType", "OpenAPIMediaType", str],
+        status_code: int = HTTP_200_OK,
+        media_type: Union[MediaType, "OpenAPIMediaType", str] = MediaType.JSON,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
+        encoding: str = "utf-8",
     ) -> None:
         """The response class is used to return an HTTP response.
 
@@ -40,15 +83,93 @@ class Response(StarletteResponse, Generic[T]):
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            encoding: Encoding to use for the headers.
         """
-        super().__init__(
-            content=content,
-            status_code=status_code,
-            headers=headers or {},
-            media_type=media_type,
-            background=cast("BackgroundTask", background),
-        )
+        self.status_code = status_code
+        self.media_type = media_type
+        self.background = background
+        self.headers = headers or {}
         self.cookies = cookies or []
+        self.encoding = encoding
+        self.status_allows_body = not (
+            self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < 100
+        )
+        self.body = self.render(content)
+
+    def set_cookie(
+        self,
+        key: str,
+        value: Optional[str] = None,
+        max_age: Optional[int] = None,
+        expires: Optional[int] = None,
+        path: str = "/",
+        domain: Optional[str] = None,
+        secure: bool = False,
+        httponly: bool = False,
+        samesite: 'Literal["lax", "strict", "none"]' = "lax",
+    ) -> None:
+        """Sets a cookie on the response.
+
+        Args:
+            key: Key for the cookie.
+            value: Value for the cookie, if none given defaults to empty string.
+            max_age: Maximal age of the cookie before its invalidated.
+            expires: Expiration date as unix MS timestamp.
+            path: Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'.
+            domain: Domain for which the cookie is valid.
+            secure: Https is required for the cookie.
+            httponly: Forbids javascript to access the cookie via 'Document.cookie'.
+            samesite: Controls whether a cookie is sent with cross-site requests. Defaults to 'lax'.
+
+        Returns:
+            None.
+        """
+        self.cookies.append(
+            Cookie(
+                domain=domain,
+                expires=expires,
+                httponly=httponly,
+                key=key,
+                max_age=max_age,
+                path=path,
+                samesite=samesite,
+                secure=secure,
+                value=value,
+            )
+        )
+
+    def set_header(self, key: str, value: str) -> None:
+        """Sets a header on the response.
+
+        Args:
+            key: Header key.
+            value: Header value.
+
+        Returns:
+            None.
+        """
+        self.headers[key] = value
+
+    def delete_cookie(
+        self,
+        key: str,
+        path: str = "/",
+        domain: Optional[str] = None,
+    ) -> None:
+        """Deletes a cookie.
+
+        Args:
+            key: Key of the cookie.
+            path: Path of the cookie.
+            domain: Domain of the cookie.
+
+        Returns:
+            None.
+        """
+        for i, cookie in enumerate(self.cookies):
+            if cookie.key == key and cookie.path == path and cookie.domain == domain:
+                self.cookies.pop(i)
+                break
 
     @staticmethod
     def serializer(value: Any) -> Any:
@@ -72,34 +193,111 @@ class Response(StarletteResponse, Generic[T]):
         Returns:
             An encoded bytes string
         """
-        try:
-            if content is None and (
-                self.status_code < 100 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-            ):
-                return b""
+        if self.status_allows_body:
+            if isinstance(content, bytes):
+                return content
+            if isinstance(content, str):
+                return content.encode(self.encoding)
             if self.media_type == MediaType.JSON:
-                return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+                try:
+                    return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+                except (AttributeError, ValueError, TypeError) as e:
+                    raise ImproperlyConfiguredException("Unable to serialize response content") from e
             if isinstance(content, OpenAPI):
                 content_dict = content.dict(by_alias=True, exclude_none=True)
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                    encoded = yaml.dump(content_dict, default_flow_style=False).encode("utf-8")
-                    return cast("bytes", encoded)
+                    return cast("bytes", yaml.dump(content_dict, default_flow_style=False).encode("utf-8"))
                 return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
-            return super().render(content)
-        except (AttributeError, ValueError, TypeError) as e:
-            raise ImproperlyConfiguredException("Unable to serialize response content") from e
+            if content is None:
+                return b""
+            raise ImproperlyConfiguredException(
+                f"unable to render response body for the given {content} with media_type {self.media_type}"
+            )
+        if content is not None:
+            raise ImproperlyConfiguredException(
+                f"status_code {self.status_code} does not support a response body value"
+            )
+        return b""
+
+    @property
+    def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
+        """
+
+        Returns:
+            A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
+        """
+
+        if "text/" in self.media_type:
+            content_type = f"{self.media_type}; charset={self.encoding}"
+        else:
+            content_type = self.media_type
+
+        encoded_headers = [
+            *((k.lower().encode("latin-1"), v.lower().encode("latin-1")) for k, v in self.headers.items()),
+            *((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
+            (b"content-type", content_type.encode("latin-1")),
+        ]
+
+        if self.status_allows_body and isinstance(self.body, bytes):
+            encoded_headers.append((b"content-length", str(len(self.body)).encode("latin-1")))
+        return encoded_headers
+
+    async def after_response(self) -> None:
+        """Executed after the response is sent.
+
+        Returns:
+            None
+        """
+        if self.background is not None:
+            await self.background()
+
+    async def start_response(self, send: "Send") -> None:
+        """
+        Emits the start event of the response. This event includes the headers and status codes.
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        event: "HTTPResponseStartEvent" = {
+            "type": "http.response.start",
+            "status": self.status_code,
+            "headers": self.encoded_headers,
+        }
+
+        await send(event)
+
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """The call method of the response is an "ASGIApp".
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        await self.start_response(send=send)
+
+        event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
+        await send(event)
+
+        await self.after_response()
 
 
-class TemplateResponse(Response):
+class TemplateResponse(Response[bytes]):
     def __init__(
         self,
         template_name: str,
         template_engine: "TemplateEngineProtocol",
-        status_code: int,
         context: Dict[str, Any],
+        status_code: int = HTTP_200_OK,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
+        encoding: str = "utf-8",
     ) -> None:
         """Handles the rendering of a given template into a bytes string.
 
@@ -115,12 +313,75 @@ class TemplateResponse(Response):
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
         """
         template = template_engine.get_template(template_name)
-        content = template.render(**context)
         super().__init__(
-            content=content,
-            status_code=status_code,
+            background=background,
+            content=template.render(**context),
+            cookies=cookies,
+            encoding=encoding,
             headers=headers,
             media_type=MediaType.HTML,
+            status_code=status_code,
+        )
+
+
+class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
+    __slots__ = ("iterator",)
+
+    def __init__(
+        self,
+        content: StreamType[Union[str, bytes]],
+        *,
+        status_code: int = HTTP_200_OK,
+        media_type: Union[MediaType, "OpenAPIMediaType", str] = MediaType.JSON,
+        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: Optional["ResponseCookies"] = None,
+        encoding: str = "utf-8",
+    ):
+        super().__init__(
             background=background,
+            content=b"",  # type: ignore[arg-type]
             cookies=cookies,
+            encoding=encoding,
+            headers=headers,
+            media_type=media_type,
+            status_code=status_code,
+        )
+        self.iterator: Union[AsyncIterable[Union[str, bytes]], AsyncGenerator[Union[str, bytes], None]] = (
+            content if isinstance(content, (AsyncIterable, AsyncIterator)) else iterate_sync_iterator(content)
+        )
+
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        await self.start_response(send=send)
+
+        async for chunk in self.iterator:
+            stream_event: "HTTPResponseBodyEvent" = {
+                "type": "http.response.body",
+                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
+                "more_body": True,
+            }
+            await send(stream_event)
+
+        terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+        await send(terminus_event)
+
+        await self.after_response()
+
+
+class RedirectResponse(Response):
+    def __init__(
+        self,
+        url: str,
+        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
+        status_code: "Literal[301, 302, 303, 307, 308]" = HTTP_307_TEMPORARY_REDIRECT,
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: Optional["ResponseCookies"] = None,
+    ) -> None:
+        super().__init__(
+            background=background,
+            content=b"",
+            cookies=cookies,
+            headers={**(headers or {}), "location": quote(url, safe="/#%[]=:;$&()+,!?*@'~")},
+            media_type=MediaType.TEXT,
+            status_code=status_code,
         )

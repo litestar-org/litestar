@@ -5,7 +5,6 @@ from pydantic import ValidationError
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
-from starlette.status import HTTP_200_OK
 
 from starlite import LoggingConfig, Starlite, get
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
@@ -16,6 +15,7 @@ from starlite.plugins.sql_alchemy.config import (
     SQLAlchemyEngineConfig,
     serializer,
 )
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory, create_test_client
 from starlite.types import Scope
 

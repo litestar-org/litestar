@@ -63,8 +63,9 @@ another example - redirecting the request to a different url from a middleware:
 
 ```python
 from starlite.types import ASGIApp, Receive, Scope, Send
-from starlette.responses import RedirectResponse
-from starlette.status import HTTP_307_TEMPORARY_REDIRECT
+from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
+
+from starlite.response import RedirectResponse
 from starlite import Request
 from starlite.middleware.base import MiddlewareProtocol
 

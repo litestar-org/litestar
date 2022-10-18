@@ -6,7 +6,7 @@ status code in the 30x range.
 In Starlite, a redirect response looks like this:
 
 ```python
-from starlette.status import HTTP_307_TEMPORARY_REDIRECT
+from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 from starlite import get
 from starlite.datastructures import Redirect
 

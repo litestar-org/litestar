@@ -1,7 +1,6 @@
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-
 from starlite import MediaType, Request, Response, Starlite, get, post
 from starlite.exceptions import InternalServerException
+from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import TestClient, create_test_client
 from tests import Person
 

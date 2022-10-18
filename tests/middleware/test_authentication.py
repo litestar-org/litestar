@@ -2,11 +2,6 @@ from typing import TYPE_CHECKING, Any, Dict
 
 import pytest
 from pydantic import BaseModel
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_403_FORBIDDEN,
-    HTTP_500_INTERNAL_SERVER_ERROR,
-)
 from starlette.websockets import WebSocketDisconnect
 
 from starlite import Starlite, get, websocket
@@ -17,6 +12,11 @@ from starlite.middleware.authentication import (
     AuthenticationResult,
 )
 from starlite.middleware.base import DefineMiddleware
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_403_FORBIDDEN,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

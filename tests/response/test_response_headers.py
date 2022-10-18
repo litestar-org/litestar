@@ -2,9 +2,9 @@ from typing import Dict
 
 import pytest
 from pydantic import ValidationError
-from starlette.status import HTTP_201_CREATED
 
 from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
+from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 
 

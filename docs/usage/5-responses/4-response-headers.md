@@ -77,7 +77,7 @@ as you see fit, e.g.:
 
 ```python
 from pydantic import BaseModel
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Response, get
 from starlite.datastructures import ResponseHeader
 from starlite.enums import MediaType
@@ -124,7 +124,7 @@ the headers on the corresponding layer:
 from random import randint
 
 from pydantic import BaseModel
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Response, Router, get
 from starlite.datastructures import ResponseHeader
 from starlite.enums import MediaType

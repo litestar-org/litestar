@@ -2,11 +2,9 @@ from typing import Any, cast
 
 import brotli
 import pytest
-from starlette.datastructures import Headers
-from starlette.responses import PlainTextResponse
 from typing_extensions import Literal
 
-from starlite import WebSocket, get, websocket
+from starlite import MediaType, WebSocket, get, websocket
 from starlite.config import CompressionConfig
 from starlite.datastructures import Stream
 from starlite.middleware.compression.brotli import BrotliMiddleware, CompressionEncoding
@@ -16,14 +14,14 @@ from starlite.testing import create_test_client
 BrotliMode = Literal["text", "generic", "font"]
 
 
-@get(path="/")
-def handler() -> PlainTextResponse:
-    return PlainTextResponse("_starlite_" * 4000)
+@get(path="/", media_type=MediaType.TEXT)
+def handler() -> str:
+    return "_starlite_" * 4000
 
 
-@get(path="/no-compression")
-def no_compress_handler() -> PlainTextResponse:
-    return PlainTextResponse("_starlite_")
+@get(path="/no-compression", media_type=MediaType.TEXT)
+def no_compress_handler() -> str:
+    return "_starlite_"
 
 
 async def streaming_iter(content: bytes, count: int) -> Any:
@@ -258,5 +256,4 @@ async def test_skips_for_websocket() -> None:
         route_handlers=[websocket_handler],
         compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
     ).websocket_connect("/") as ws:
-        headers = Headers(scope=ws.scope)
-        assert "Content-Encoding" not in headers
+        assert "Content-Encoding" not in ws.scope["headers"]

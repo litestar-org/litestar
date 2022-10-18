@@ -1,6 +1,5 @@
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-
 from examples.middleware import session_middleware
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import TestClient
 
 

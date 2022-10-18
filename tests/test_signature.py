@@ -6,7 +6,6 @@ import pytest
 from pydantic import BaseModel, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 from starlette.datastructures import URL
-from starlette.status import HTTP_204_NO_CONTENT
 
 from starlite import HTTPException, Provide, get
 from starlite.connection import WebSocket
@@ -17,6 +16,7 @@ from starlite.exceptions import (
 )
 from starlite.params import Dependency
 from starlite.signature import SignatureModel, SignatureModelFactory
+from starlite.status_codes import HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, create_test_client
 from tests.plugins.test_base import AModel, APlugin
 

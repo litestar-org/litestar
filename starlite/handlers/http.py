@@ -15,13 +15,6 @@ from typing import (
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-from starlette.responses import Response as StarletteResponse
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_304_NOT_MODIFIED,
-)
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
@@ -41,9 +34,16 @@ from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
 from starlite.response import Response
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_304_NOT_MODIFIED,
+)
 from starlite.types import (
     AfterRequestHookHandler,
     AfterResponseHookHandler,
+    ASGIApp,
     BeforeRequestHookHandler,
     CacheKeyBuilder,
     Empty,
@@ -132,7 +132,7 @@ def _create_response_container_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for ResponseContainers."""
 
-    async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> StarletteResponse:
+    async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> "ASGIApp":
         normalized_headers = {**_normalize_headers(headers), **data.headers}
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         response = data.to_response(
@@ -154,7 +154,7 @@ def _create_response_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlite Responses."""
 
-    async def handler(data: Response, **kwargs: Any) -> StarletteResponse:
+    async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
         for cookie in normalized_cookies:
             data.set_cookie(**cookie)
@@ -163,15 +163,16 @@ def _create_response_handler(
     return handler
 
 
-def _create_starlette_response_handler(
+def _create_generic_asgi_response_handler(
     after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
     """Creates a handler function for Starlette Responses."""
 
-    async def handler(data: StarletteResponse, **kwargs: Any) -> StarletteResponse:
+    async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
         normalized_cookies = _normalize_cookies(cookies, [])
-        for cookie in normalized_cookies:
-            data.set_cookie(**cookie)
+        if hasattr(data, "set_cookie"):
+            for cookie in normalized_cookies:
+                data.set_cookie(**cookie)  # type: ignore
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
@@ -188,7 +189,7 @@ def _create_data_handler(
 ) -> "AsyncAnyCallable":
     """Creates a handler function for arbitrary data."""
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> StarletteResponse:
+    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
         data = await _normalize_response_data(data=data, plugins=plugins)
         normalized_cookies = _normalize_cookies(cookies, [])
         normalized_headers = _normalize_headers(headers)
@@ -389,7 +390,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: Union[Optional[AfterResponseHookHandler], EmptyType] = Empty
         self._resolved_before_request: Union[Optional[BeforeRequestHookHandler], EmptyType] = Empty
-        self._resolved_response_handler: Union["Callable[[Any], Awaitable[StarletteResponse]]", EmptyType] = Empty
+        self._resolved_response_handler: Union["Callable[[Any], Awaitable[ASGIApp]]", EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
         """Replaces a function with itself."""
@@ -482,7 +483,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def resolve_response_handler(
         self,
-    ) -> Callable[[Any], Awaitable[StarletteResponse]]:
+    ) -> Callable[[Any], Awaitable["ASGIApp"]]:
         """Resolves the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
@@ -513,8 +514,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 )
             elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
-            elif is_class_and_subclass(self.signature.return_annotation, StarletteResponse):
-                handler = _create_starlette_response_handler(cookies=cookies, after_request=after_request)
+            elif is_async_callable(self.signature.return_annotation):
+                handler = _create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
             else:
                 handler = _create_data_handler(
                     after_request=after_request,
@@ -527,11 +528,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 )
 
             self._resolved_response_handler = handler
-        return cast("Callable[[Any], Awaitable[StarletteResponse]]", self._resolved_response_handler)
+        return cast("Callable[[Any], Awaitable[ASGIApp]]", self._resolved_response_handler)
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
-    ) -> StarletteResponse:
+    ) -> "ASGIApp":
         """
 
         Args:

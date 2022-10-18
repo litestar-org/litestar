@@ -5,7 +5,7 @@ You can control the response `status_code` by setting the corresponding kwarg to
 ```python
 from pydantic import BaseModel
 from starlite import get
-from starlette.status import HTTP_202_ACCEPTED
+from starlite.status_codes import HTTP_202_ACCEPTED
 
 
 class Resource(BaseModel):

@@ -61,25 +61,26 @@ class BrotliMiddleware(MiddlewareProtocol):
         self.minimum_size = minimum_size
         self.lgwin = brotli_lgwin
         self.lgblock = brotli_lgblock
-        self.gzip_fallback = brotli_gzip_fallback
+        self.brotli_responder = BrotliResponder(
+            app=self.app,
+            minimum_size=self.minimum_size,
+            quality=self.quality,
+            mode=self.mode,
+            lgwin=self.lgwin,
+            lgblock=self.lgblock,
+        )
+        self.gzip_responder: Optional[GZipResponder] = None
+        if brotli_gzip_fallback:
+            self.gzip_responder = GZipResponder(self.app, self.minimum_size)  # type: ignore[arg-type]
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
             headers = Headers(scope=scope)
             if CompressionEncoding.BROTLI in headers.get("Accept-Encoding", ""):
-                brotli_responder = BrotliResponder(
-                    app=self.app,
-                    minimum_size=self.minimum_size,
-                    quality=self.quality,
-                    mode=self.mode,
-                    lgwin=self.lgwin,
-                    lgblock=self.lgblock,
-                )
-                await brotli_responder(scope, receive, send)
+                await self.brotli_responder(scope, receive, send)
                 return
-            if self.gzip_fallback and CompressionEncoding.GZIP in headers.get("Accept-Encoding", ""):
-                gzip_responder = GZipResponder(self.app, self.minimum_size)  # type: ignore[arg-type]
-                await gzip_responder(scope, receive, send)  # type: ignore[arg-type]
+            if self.gzip_responder and CompressionEncoding.GZIP in headers.get("Accept-Encoding", ""):
+                await self.gzip_responder(scope, receive, send)  # type: ignore[arg-type]
                 return
         await self.app(scope, receive, send)
 
@@ -151,7 +152,6 @@ class BrotliResponder:
             Args:
                 message (Message): An ASGI Message.
             """
-
             if message["type"] == "http.response.start":
                 # Don't send the initial message until we've determined how to
                 # modify the outgoing headers correctly.

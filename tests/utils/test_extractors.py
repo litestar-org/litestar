@@ -1,10 +1,10 @@
 from typing import Any, List
 
 import pytest
-from starlette.status import HTTP_200_OK
 
 from starlite import Cookie, MediaType, Request, RequestEncodingType, Response
 from starlite.connection import empty_receive
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory
 from starlite.utils import ConnectionDataExtractor
 from starlite.utils.extractors import ResponseDataExtractor
@@ -91,7 +91,7 @@ def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str)
 
 
 async def test_response_data_extractor() -> None:
-    headers = {"common": "abc", "special": "123", "content-type": "application/json; charset=utf-8"}
+    headers = {"common": "abc", "special": "123", "content-type": "application/json"}
     cookies = [Cookie(key="regular"), Cookie(key="auth")]
     response = Response(
         media_type=MediaType.JSON,
@@ -107,11 +107,11 @@ async def test_response_data_extractor() -> None:
     async def send(message: "Any") -> None:
         messages.append(message)
 
-    await response({}, empty_receive, send)
+    await response({}, empty_receive, send)  # type: ignore[arg-type]
 
     assert len(messages) == 2
     extracted_data = extractor(messages)  # type: ignore
     assert extracted_data["status_code"] == HTTP_200_OK
     assert extracted_data["body"] == b'{"hello":"world"}'
     assert extracted_data["headers"] == {**headers, "content-length": "17"}
-    assert extracted_data["cookies"] == {"Path": "/", "SameSite": "lax", "auth": "None", "regular": "None"}
+    assert extracted_data["cookies"] == {"Path": "/", "SameSite": "lax", "auth": "", "regular": ""}

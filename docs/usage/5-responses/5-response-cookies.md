@@ -111,7 +111,7 @@ as you see fit, e.g.:
 from random import randint
 
 from pydantic import BaseModel
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Response, get
 from starlite.datastructures import Cookie
 from starlite.enums import MediaType
@@ -210,7 +210,7 @@ different value range:
 from random import randint
 
 from pydantic import BaseModel
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 from starlite import Response, Router, get
 from starlite.datastructures import Cookie
 from starlite.enums import MediaType

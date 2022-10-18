@@ -2,11 +2,11 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import HTTPException, Request, Response, Starlite, get
 from starlite.enums import MediaType
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

@@ -13,7 +13,6 @@ from typing import (
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import Headers
-from starlette.status import WS_1000_NORMAL_CLOSURE
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -23,6 +22,7 @@ from starlite.connection.base import (
     empty_send,
 )
 from starlite.exceptions import WebSocketException
+from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:

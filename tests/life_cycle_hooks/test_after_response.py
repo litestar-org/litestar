@@ -2,9 +2,9 @@ from asyncio import sleep
 from typing import TYPE_CHECKING, Dict
 
 import pytest
-from starlette.status import HTTP_200_OK
 
 from starlite import Controller, Request, Router, get
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 state: Dict[str, str] = {}
