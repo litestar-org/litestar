@@ -1,5 +1,9 @@
 # Changelog
 
+[1.29.0]
+
+- Adds native support for `TypedDict` as data type.
+
 [1.28.1]
 
 - fix `QueueListenerHandler` using stdlib `QueueListenerHandler`.
