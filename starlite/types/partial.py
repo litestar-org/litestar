@@ -46,9 +46,9 @@ class Partial(Generic[T]):
     """Type generation for PATCH routes.
 
     Partial is a special typing helper that takes a generic T, which must be a
-    `TypedDict`, dataclass or pydantic model class, and returns to static type
-    checkers a version of this T in which all fields - and nested fields - are
-    optional.
+    [`TypedDict`][typing.TypedDict], dataclass or pydantic model class, and
+    returns to static type checkers a version of this T in which all fields -
+    and nested fields - are optional.
     """
 
     _models: Dict[SupportedTypes, SupportedTypes] = {}
