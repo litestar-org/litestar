@@ -6,9 +6,9 @@ from uuid import UUID, uuid1, uuid4
 
 import pytest
 from pydantic import UUID4
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
 from starlite import ImproperlyConfiguredException, Parameter, Starlite, get
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 

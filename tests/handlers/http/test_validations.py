@@ -3,12 +3,6 @@ from typing import Dict
 
 import pytest
 from pydantic import ValidationError
-from starlette.status import (
-    HTTP_100_CONTINUE,
-    HTTP_200_OK,
-    HTTP_304_NOT_MODIFIED,
-    HTTP_307_TEMPORARY_REDIRECT,
-)
 
 from starlite import (
     File,
@@ -23,6 +17,12 @@ from starlite import (
 )
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
+from starlite.status_codes import (
+    HTTP_100_CONTINUE,
+    HTTP_200_OK,
+    HTTP_304_NOT_MODIFIED,
+    HTTP_307_TEMPORARY_REDIRECT,
+)
 from tests import Person
 
 

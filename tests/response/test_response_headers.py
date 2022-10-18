@@ -2,11 +2,11 @@ from typing import Dict
 
 import pytest
 from pydantic import ValidationError
-from starlette.status import HTTP_201_CREATED
 
 from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
 from starlite.datastructures import CacheControlHeader, ETag
 from starlite.datastructures.headers import Header
+from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import TestClient, create_test_client
 
 

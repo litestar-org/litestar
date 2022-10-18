@@ -4,10 +4,10 @@ from pydantic_factories.value_generators.primitives import (
     create_random_float,
     create_random_string,
 )
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from starlite import get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests.plugins.sql_alchemy_plugin import Company
 

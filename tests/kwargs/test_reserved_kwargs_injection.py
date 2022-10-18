@@ -3,7 +3,6 @@ from typing import Any, List, Optional, Type, Union, cast
 import pytest
 from pydantic import BaseModel, Field
 from pydantic_factories import ModelFactory
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import (
     Controller,
@@ -17,6 +16,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import create_test_client
 from starlite.types import Scope
 from tests import Person, PersonFactory

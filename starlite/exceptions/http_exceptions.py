@@ -2,7 +2,9 @@ from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Union
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import (
+
+from starlite.exceptions.base_exceptions import StarLiteException
+from starlite.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
@@ -12,8 +14,6 @@ from starlette.status import (
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
 )
-
-from starlite.exceptions.base_exceptions import StarLiteException
 
 
 class HTTPException(StarletteHTTPException, StarLiteException):

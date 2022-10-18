@@ -1,9 +1,8 @@
 import logging
 from typing import TYPE_CHECKING
 
-from starlette.status import HTTP_400_BAD_REQUEST
-
 from starlite import HTTPException, Starlite, get
+from starlite.status_codes import HTTP_400_BAD_REQUEST
 
 logger = logging.getLogger()
 

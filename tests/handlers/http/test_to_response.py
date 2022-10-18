@@ -11,11 +11,8 @@ from starlette.responses import (
     HTMLResponse,
     JSONResponse,
     PlainTextResponse,
-    RedirectResponse,
 )
 from starlette.responses import Response as StarletteResponse
-from starlette.responses import StreamingResponse
-from starlette.status import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 
 from starlite import (
     Cookie,
@@ -34,8 +31,9 @@ from starlite import (
     route,
 )
 from starlite.datastructures import BackgroundTask
-from starlite.response import TemplateResponse
+from starlite.response import RedirectResponse, StreamingResponse, TemplateResponse
 from starlite.signature import SignatureModelFactory
+from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
 from tests import Person, PersonFactory
 
@@ -112,7 +110,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         app=Starlite(route_handlers=[]),
         request=RequestFactory().get("/"),
     )
-    assert loads(response.body) == person_instance.dict()
+    assert loads(response.body) == person_instance.dict()  # type: ignore
 
 
 async def test_to_response_returning_starlite_response() -> None:
@@ -132,17 +130,14 @@ async def test_to_response_returning_starlite_response() -> None:
 @pytest.mark.parametrize(
     "expected_response",
     [
-        Response(status_code=HTTP_200_OK, content=b"abc", media_type=MediaType.TEXT),
         StarletteResponse(status_code=HTTP_200_OK, content=b"abc"),
         PlainTextResponse(content="abc"),
         HTMLResponse(content="<div><span/></div"),
         JSONResponse(status_code=HTTP_200_OK, content={}),
-        RedirectResponse(url="/person"),
-        StreamingResponse(status_code=HTTP_200_OK, content=MySyncIterator()),
         FileResponse("./test_to_response.py"),
     ],
 )
-async def test_to_response_returning_redirect_starlette_response(
+async def test_to_response_returning_starlette_response(
     expected_response: StarletteResponse, anyio_backend: str
 ) -> None:
     @get(path="/test")
@@ -156,7 +151,7 @@ async def test_to_response_returning_redirect_starlette_response(
             data=route_handler.fn(), plugins=[], app=client.app, request=RequestFactory().get("/")  # type: ignore
         )
         assert isinstance(response, StarletteResponse)
-        assert response is expected_response
+        assert response is expected_response  # type: ignore[unreachable]
 
 
 async def test_to_response_returning_redirect_response(anyio_backend: str) -> None:
@@ -186,10 +181,10 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         assert response.headers["location"] == "/somewhere-else"
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
-        cookies = response.headers.getlist("set-cookie")
+        cookies = response.cookies
         assert len(cookies) == 2
-        assert cookies[0] == "redirect-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert cookies[0].to_header(header="") == "redirect-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
 
 
@@ -243,7 +238,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
             data=route_handler.fn(), plugins=[], app=client.app, request=RequestFactory().get("/")  # type: ignore
         )
         assert isinstance(response, FileResponse)
-        assert response.stat_result
+        assert response.stat_result  # type: ignore[unreachable]
         assert response.path == current_file_path
         assert response.filename == filename
         assert response.headers["local-header"] == "123"
@@ -295,10 +290,10 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             assert isinstance(response, StreamingResponse)
             assert response.headers["local-header"] == "123"
             assert response.headers["response-header"] == "abc"
-            cookies = response.headers.getlist("set-cookie")
+            cookies = response.cookies
             assert len(cookies) == 3
-            assert cookies[0] == "streaming-cookie=xyz; Path=/; SameSite=lax"
-            assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+            assert cookies[0].to_header(header="") == "streaming-cookie=xyz; Path=/; SameSite=lax"
+            assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
             assert response.background == background_task
     else:
         with pytest.raises(ValidationError):
@@ -331,8 +326,8 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
         assert isinstance(response, TemplateResponse)
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
-        cookies = response.headers.getlist("set-cookie")
+        cookies = response.cookies
         assert len(cookies) == 2
-        assert cookies[0] == "template-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert cookies[0].to_header(header="") == "template-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task

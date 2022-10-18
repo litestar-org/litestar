@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from starlite import Response, get
 from starlite.datastructures import Cookie
 from starlite.enums import MediaType
-from starlette.status import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK
 
 
 class Resource(BaseModel):

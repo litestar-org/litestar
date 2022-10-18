@@ -3,7 +3,6 @@ from typing import Optional
 from hypothesis import given
 from hypothesis import strategies as st
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.enums import MediaType
 from starlite.exceptions import (
@@ -12,6 +11,7 @@ from starlite.exceptions import (
     StarLiteException,
     ValidationException,
 )
+from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.utils.exception import create_exception_response
 
 

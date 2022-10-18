@@ -150,6 +150,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A Headers instance with the request's scope["headers"] value.
         """
         if self._headers is Empty:
+            self.scope.setdefault("headers", [])
             self._headers = self.scope["_headers"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
         return cast("Headers", self._headers)
 

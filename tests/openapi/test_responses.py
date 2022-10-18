@@ -2,12 +2,6 @@ from http import HTTPStatus
 
 import pytest
 from pydantic import BaseModel
-from starlette.status import (
-    HTTP_200_OK,
-    HTTP_307_TEMPORARY_REDIRECT,
-    HTTP_400_BAD_REQUEST,
-    HTTP_406_NOT_ACCEPTABLE,
-)
 
 from starlite import (
     Cookie,
@@ -34,6 +28,12 @@ from starlite.openapi.responses import (
     create_error_responses,
     create_responses,
     create_success_response,
+)
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_307_TEMPORARY_REDIRECT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_406_NOT_ACCEPTABLE,
 )
 from tests import Person
 from tests.openapi.utils import PersonController, PetController, PetException

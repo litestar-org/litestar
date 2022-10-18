@@ -1,6 +1,5 @@
-from starlette.status import HTTP_200_OK
-
 from starlite import Controller, MediaType, Response, ScopeType, asgi
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 from starlite.types import Receive, Scope, Send
 
@@ -11,7 +10,7 @@ def test_handle_asgi() -> None:
         assert scope["type"] == ScopeType.HTTP
         assert scope["method"] == "GET"
         response = Response("Hello World", media_type=MediaType.TEXT, status_code=HTTP_200_OK)
-        await response(scope, receive, send)  # type: ignore[arg-type]
+        await response(scope, receive, send)
 
     class MyController(Controller):
         path = "/asgi"
@@ -21,7 +20,7 @@ def test_handle_asgi() -> None:
             assert scope["type"] == ScopeType.HTTP
             assert scope["method"] == "GET"
             response = Response("Hello World", media_type=MediaType.TEXT, status_code=HTTP_200_OK)
-            await response(scope, receive, send)  # type: ignore[arg-type]
+            await response(scope, receive, send)
 
     with create_test_client([root_asgi_handler, MyController]) as client:
         response = client.get("/")

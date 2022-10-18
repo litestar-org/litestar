@@ -1,4 +1,17 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterable,
+    AsyncIterator,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from .asgi_types import ASGIApp
 from .callable_types import ExceptionHandler
@@ -26,6 +39,8 @@ else:
     ResponseHeader = Any
     StarletteMiddleware = Any
 
+T = TypeVar("T")
+
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
@@ -36,3 +51,4 @@ Middleware = Union[
 ParametersMap = Dict[str, FieldInfo]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
+StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]

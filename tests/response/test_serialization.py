@@ -5,9 +5,9 @@ from typing import Any, Dict, List
 
 import pytest
 from pydantic import SecretStr
-from starlette.status import HTTP_200_OK
 
 from starlite import MediaType, Response
+from starlite.status_codes import HTTP_200_OK
 from tests import Person, PersonFactory, PydanticDataClassPerson, VanillaDataClassPerson
 
 person = PersonFactory.build()

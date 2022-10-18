@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Dict
 
 from starlette.datastructures import MutableHeaders
-from starlette.status import HTTP_200_OK
 
 from starlite import get
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

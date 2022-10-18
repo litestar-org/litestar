@@ -1,6 +1,18 @@
 from functools import partial
 from inspect import getfullargspec, ismethod
-from typing import Any, Callable, Dict, Generic, List, TypeVar, Union, cast
+from typing import (
+    Any,
+    AsyncGenerator,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from anyio.to_thread import run_sync
 from typing_extensions import Literal, ParamSpec
@@ -71,3 +83,20 @@ def async_partial(fn: Callable) -> Callable:
         return await run_sync(applied_kwarg, *args)
 
     return wrapper
+
+
+async def iterate_sync_iterator(value: Union[Iterator[T], Iterable[T]]) -> AsyncGenerator[T, None]:
+    """Take a sync iterator or iterable and yields values from it
+    asynchronously.
+
+    Args:
+        value: An iterator or iterable.
+
+    Returns:
+        An AsyncGenerator.
+    """
+    it = iter(value)
+    try:
+        yield next(it)
+    except StopIteration:
+        return

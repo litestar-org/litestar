@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Callable, Dict
 
 from orjson import OPT_INDENT_2, dumps
-from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 from starlite.connection import Request
 from starlite.controller import Controller
@@ -9,6 +8,7 @@ from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 from starlite.response import Response
+from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI

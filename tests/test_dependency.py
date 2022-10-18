@@ -1,11 +1,11 @@
 from typing import Any, Dict, Optional
 
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import Controller, Dependency, Provide, Starlite, get
 from starlite.constants import EXTRA_KEY_IS_DEPENDENCY
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 
