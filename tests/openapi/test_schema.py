@@ -1,6 +1,8 @@
 from typing import Generic, TypeVar
+from unittest.mock import MagicMock
 
 import pytest
+from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
@@ -10,12 +12,17 @@ from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.constants import EXTRA_KEY_REQUIRED
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.openapi import schema
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
 )
-from starlite.openapi.schema import update_schema_with_field_info
+from starlite.openapi.schema import (
+    get_schema_for_field_type,
+    update_schema_with_field_info,
+)
 from starlite.testing import create_test_client
+from tests import TypedDictPerson
 
 
 def test_update_schema_with_field_info() -> None:
@@ -102,3 +109,18 @@ def test_create_schema_for_generic_type_raises_improper_config() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[handler_function])
+
+
+def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) -> None:
+    return_value_mock = MagicMock()
+    convert_typeddict_to_model_mock = MagicMock(return_value=return_value_mock)
+    openapi_310_pydantic_schema_mock = MagicMock()
+    monkeypatch.setattr(schema, "OpenAPI310PydanticSchema", openapi_310_pydantic_schema_mock)
+    monkeypatch.setattr(schema, "convert_typeddict_to_model", convert_typeddict_to_model_mock)
+
+    class M(BaseModel):
+        data: TypedDictPerson
+
+    get_schema_for_field_type(M.__fields__["data"], [])
+    convert_typeddict_to_model_mock.assert_called_once_with(TypedDictPerson)
+    openapi_310_pydantic_schema_mock.assert_called_once_with(schema_class=return_value_mock)
