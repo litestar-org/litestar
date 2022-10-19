@@ -52,7 +52,7 @@ app = Starlite(route_handlers=[handler_one, handler_two, handler_three])
 [`NoMatchRouteFoundException`][starlite.exceptions.NoRouteMatchFoundException] if route with given name was not found
 or if any of path parameters is missing or if any of passed path parameters types do not match types in the respective
 route declaration. However, `str` is accepted in place of `datetime`, `date`, `time`, `timedelta`, `float`, and `Path`
-parameters so you can apply custom formatting and pass the result to `route_reverse`.
+parameters, so you can apply custom formatting and pass the result to `route_reverse`.
 
 If handler has multiple paths attached to it `route_reverse` will return the path that consumes the most number of
 keywords arguments passed to the function.
@@ -85,7 +85,7 @@ def path_info(request: Request) -> str:
 
 If there are multiple paths attached to a handler that have the same path parameters (for example indexed handler
 has been registered on multiple routers) the result of `route_reverse` is not defined.
-The function will return a formatted path but it might be picked randomly so reversing urls in such cases is highly
+The function will return a formatted path, but it might be picked randomly so reversing urls in such cases is highly
 discouraged.
 
 If you have access to `request` instance you can make reverse lookups using `url_for` function which is similar to

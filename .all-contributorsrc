@@ -469,6 +469,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "jab",
+      "name": "Joshua Bronson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64992?v=4",
+      "profile": "https://github.com/jab",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

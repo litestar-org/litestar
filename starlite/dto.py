@@ -1,4 +1,4 @@
-from dataclasses import asdict, is_dataclass
+from dataclasses import asdict
 from inspect import isawaitable
 from typing import (
     TYPE_CHECKING,
@@ -22,7 +22,13 @@ from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import PluginProtocol, get_plugin_for_value
-from starlite.utils import convert_dataclass_to_model, is_async_callable
+from starlite.utils import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    is_async_callable,
+    is_dataclass_class_or_instance_typeguard,
+    is_typeddict_typeguard,
+)
 
 if TYPE_CHECKING:
     from typing import Awaitable
@@ -86,6 +92,8 @@ class DTO(GenericModel, Generic[T]):
             values = cast("Dict[str, Any]", result)
         elif isinstance(model_instance, BaseModel):
             values = model_instance.dict()
+        elif isinstance(model_instance, dict):
+            values = dict(model_instance)  # copy required as `_from_value_mapping()` mutates `values`.
         else:
             values = asdict(model_instance)
         return cls._from_value_mapping(mapping=values)
@@ -133,8 +141,10 @@ class DTO(GenericModel, Generic[T]):
 
 class DTOFactory:
     def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
-        """Create [`DTO`][starlite.dto.DTO] types from pydantic models,
-        dataclasses and other types supported via plugins.
+        """Create [`DTO`][starlite.dto.DTO] types.
+
+         Pydantic models, [`TypedDict`][typing.TypedDict] and dataclasses are natively supported. Other types supported
+         via plugins.
 
         Args:
             plugins (list[PluginProtocol] | None): Plugins used to support `DTO` construction from arbitrary types.
@@ -150,8 +160,8 @@ class DTOFactory:
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
     ) -> Type[DTO[T]]:
         """
-        Given a supported model class - either pydantic, dataclass or a class supported via plugins,
-        create a DTO pydantic model class.
+        Given a supported model class - either pydantic, [`TypedDict`][typing.TypedDict], dataclass or a class supported
+        via plugins, create a DTO pydantic model class.
 
         An instance of the factory must first be created, passing any plugins to it.
         It can then be used to create a DTO by calling the instance like a function. Additionally, it can exclude (drop)
@@ -193,8 +203,8 @@ class DTOFactory:
 
         Args:
             name (str): This becomes the name of the generated pydantic model.
-            source (type[T]): A type that is either a subclass of `BaseModel`, a `dataclass` or any other type with a
-                plugin registered.
+            source (type[T]): A type that is either a subclass of `BaseModel`, [`TypedDict`][typing.TypedDict], a
+                `dataclass` or any other type with a plugin registered.
             exclude (list[str] | None): Names of attributes on `source`. Named Attributes will not have a field
                 generated on the resultant pydantic model.
             field_mapping (dict[str, str | tuple[str, Any]] | None): Keys are names of attributes on `source`. Values
@@ -208,7 +218,8 @@ class DTOFactory:
 
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If `source` is not a
-                pydantic model or dataclass, and there is no plugin registered for its type.
+                pydantic model, [`TypedDict`][typing.TypedDict] or dataclass, and there is no plugin registered for its
+                type.
         """
         field_definitions = field_definitions or {}
         exclude = exclude or []
@@ -228,14 +239,17 @@ class DTOFactory:
     def _get_fields_from_source(
         self, source: Type[T]  # pyright: ignore
     ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
-        """Converts a `BaseModel` subclass, `dataclass` or any other type that
-        has a plugin registered into a mapping of `str` to `ModelField`."""
+        """Converts a `BaseModel` subclass, [`TypedDict`][typing.TypedDict],
+        `dataclass` or any other type that has a plugin registered into a
+        mapping of `str` to `ModelField`."""
         plugin: Optional[PluginProtocol] = None
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
-        elif is_dataclass(source):
+        elif is_dataclass_class_or_instance_typeguard(source):
             fields = convert_dataclass_to_model(source).__fields__
+        elif is_typeddict_typeguard(source):
+            fields = convert_typeddict_to_model(source).__fields__
         else:
             plugin = get_plugin_for_value(value=source, plugins=self.plugins)
             if not plugin:

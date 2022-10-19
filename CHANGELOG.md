@@ -1,5 +1,24 @@
 # Changelog
 
+[1.29.0]
+
+- Adds native support for `TypedDict` as data type.
+
+[1.28.1]
+
+- fix `QueueListenerHandler` using stdlib `QueueListenerHandler`.
+- update `pydantic-factories` to `v1.11.1`.
+
+[1.28.0]
+
+- add `csrf_input` template context value.
+- add `csrf_token` template callable.
+- add support for pydantic's `ConstrainedDate` in OpenAPI schema.
+- fix `NoReturn` as allowed return typing for `delete` decorators.
+- fix signature model for dependency with `skip_validation` and `default`.
+- update `QueueListenerHandler` to log to stderr by default.
+- update `TemplateEngineProtocol` to support registering template callables.
+
 [1.27.0]
 
 - add `url_for` function in templates.
@@ -20,7 +39,7 @@
 - update OpenAPIController to configure bundle download paths.
 - update `RequestFactory` to assign empty session dict by default.
 - update `SQLAlchemyConfig` session*maker*\* attributes to protocols.
-- update `SQLAlchemyConfig` to support either passing an instance or setting connectoin string.
+- update `SQLAlchemyConfig` to support either passing an instance or setting connection string.
 - update templating to inject request into template context.
 
 [1.25.0]

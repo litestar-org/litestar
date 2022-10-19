@@ -40,7 +40,7 @@ As previously mentioned, the default `media_type` is `MediaType.JSON`. which sup
 - numpy ndarray
 - lists containing any of the above elements
 
-Since Starlite uses the excellent (and super-fast!) [orjson](https://github.com/ijl/orjson#numpy) library to handle
+Since Starlite uses the excellent (and super fast!) [orjson](https://github.com/ijl/orjson#numpy) library to handle
 JSON (also in requests), you can use the following values as part of your responses without issue:
 
 - all UUIDs

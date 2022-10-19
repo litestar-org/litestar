@@ -1,9 +1,18 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import conbytes, condecimal, confloat, conint, conlist, conset, constr
+from pydantic import (
+    conbytes,
+    condate,
+    condecimal,
+    confloat,
+    conint,
+    conlist,
+    conset,
+    constr,
+)
 from pydantic_openapi_schema.v3_1_0.example import Example
 
 from starlite import (
@@ -158,4 +167,10 @@ constrained_collection = [
     conlist(int, min_items=1, max_items=10),
     conset(int, min_items=1),
     conset(int, min_items=1, max_items=10),
+]
+constrained_dates = [
+    condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+    condate(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
+    condate(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
 ]

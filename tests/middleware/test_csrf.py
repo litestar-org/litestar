@@ -1,10 +1,30 @@
-from typing import Optional
+import html
+from os import urandom
+from pathlib import Path
+from typing import Any, Optional
 
 import pytest
+from bs4 import BeautifulSoup
 from starlette import status
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from starlite import CSRFConfig, WebSocket, delete, get, patch, post, put, websocket
+from starlite import (
+    Body,
+    CSRFConfig,
+    MediaType,
+    RequestEncodingType,
+    Template,
+    TemplateConfig,
+    WebSocket,
+    delete,
+    get,
+    patch,
+    post,
+    put,
+    websocket,
+)
+from starlite.template.jinja import JinjaTemplateEngine
+from starlite.template.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
 
 
@@ -144,3 +164,40 @@ def test_custom_csrf_config() -> None:
 
         response = client.post("/", headers={"x-custom-csrftoken": csrf_token})
         assert response.status_code == HTTP_201_CREATED
+
+
+@pytest.mark.parametrize(
+    "engine, template",
+    (
+        (JinjaTemplateEngine, "{{csrf_input}}"),
+        (MakoTemplateEngine, "${csrf_input}"),
+    ),
+)
+def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> None:
+    @get(path="/", media_type=MediaType.HTML)
+    def handler() -> Template:
+        return Template(name="abc.html")
+
+    @post("/")
+    def form_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[handler, form_handler],
+        template_config=TemplateConfig(
+            directory=template_dir,
+            engine=engine,
+        ),
+        csrf_config=CSRFConfig(secret=str(urandom(10))),
+    ) as client:
+        url = str(client.base_url) + "/"
+        Path(template_dir / "abc.html").write_text(
+            f'<html><body><div><form action="{url}" method="post">{template}</form></div></body></html>'
+        )
+        _ = client.get("/")
+        response = client.get("/")
+        html_soup = BeautifulSoup(html.unescape(response.text), features="html.parser")
+        data = {"_csrf_token": html_soup.body.div.form.input.attrs.get("value")}
+        response = client.post("/", data=data)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == data

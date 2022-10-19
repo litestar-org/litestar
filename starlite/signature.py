@@ -302,12 +302,10 @@ class SignatureModelFactory:
         tuple[Any, Any]
         """
         if parameter.default_defined:
-            field_definition = (parameter.annotation, parameter.default)
-        elif not parameter.optional:
-            field_definition = (parameter.annotation, ...)
-        else:
-            field_definition = (parameter.annotation, None)
-        return field_definition
+            return parameter.annotation, parameter.default
+        if not parameter.optional:
+            return parameter.annotation, ...
+        return parameter.annotation, None
 
     @property
     def signature_parameters(self) -> Generator[SignatureParameter, None, None]:
@@ -322,7 +320,8 @@ class SignatureModelFactory:
         for name, parameter in filter(lambda x: x[0] not in SKIP_NAMES, self.signature.parameters.items()):
             yield SignatureParameter(self.fn_name, name, parameter)
 
-    def should_skip_parameter_validation(self, parameter: SignatureParameter) -> bool:
+    @staticmethod
+    def should_skip_parameter_validation(parameter: SignatureParameter) -> bool:
         """Identify dependencies for which provided values should not be
         validated.
 
@@ -348,8 +347,10 @@ class SignatureModelFactory:
                 self.collect_dependency_names(parameter)
                 self.set_field_default(parameter)
                 if self.should_skip_parameter_validation(parameter):
-                    # pydantic has issues with none-pydantic classes that receive generics
-                    self.field_definitions[parameter.name] = (Any, ...)
+                    if is_dependency_field(parameter.default):
+                        self.field_definitions[parameter.name] = (Any, parameter.default.default)
+                    else:
+                        self.field_definitions[parameter.name] = (Any, ...)
                     continue
                 if ModelFactory.is_constrained_field(parameter.default):
                     self.field_definitions[parameter.name] = (parameter.default, ...)

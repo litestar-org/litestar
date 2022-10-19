@@ -1,11 +1,12 @@
-from inspect import isclass
 from typing import TYPE_CHECKING, Any, Dict, Type, cast
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, create_model, create_model_from_typeddict
 from pydantic_factories.utils import create_model_from_dataclass
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
+
+    from starlite.types.builtin_types import DataclassClassOrInstance, TypedDictClass
 
 
 class Config(BaseConfig):
@@ -19,13 +20,28 @@ def create_parsed_model_field(value: Type[Any]) -> "ModelField":
     return cast("BaseModel", model).__fields__["value"]
 
 
-_dataclass_model_map: Dict[Any, Type[BaseModel]] = {}
+_type_model_map: Dict[Type[Any], Type[BaseModel]] = {}
 
 
-def convert_dataclass_to_model(dataclass: Any) -> Type[BaseModel]:
-    """Converts a dataclass to a pydantic model and memoizes the result."""
-    if not isclass(dataclass) and hasattr(dataclass, "__class__"):
-        dataclass = dataclass.__class__
-    if not _dataclass_model_map.get(dataclass):
-        _dataclass_model_map[dataclass] = create_model_from_dataclass(dataclass)  # pyright: ignore
-    return _dataclass_model_map[dataclass]
+def convert_dataclass_to_model(dataclass_or_instance: "DataclassClassOrInstance") -> Type[BaseModel]:
+    """Converts a dataclass or dataclass instance to a pydantic model and
+    memoizes the result."""
+
+    if not isinstance(dataclass_or_instance, type):
+        dataclass = type(dataclass_or_instance)
+    else:
+        dataclass = dataclass_or_instance
+
+    existing = _type_model_map.get(dataclass)
+    if not existing:
+        _type_model_map[dataclass] = existing = create_model_from_dataclass(dataclass)
+    return existing
+
+
+def convert_typeddict_to_model(typeddict: "TypedDictClass") -> Type[BaseModel]:
+    """Converts a [`TypedDict`][typing.TypedDict] to a pydantic model and
+    memoizes the result."""
+    existing = _type_model_map.get(typeddict)
+    if not existing:
+        _type_model_map[typeddict] = existing = create_model_from_typeddict(typeddict)
+    return existing

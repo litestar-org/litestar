@@ -14,8 +14,7 @@ def normalize_path(path: str) -> str:
     """
     path = path.strip("/")
     path = "/" + path
-    path = re.sub("//+", "/", path)
-    return path
+    return re.sub("//+", "/", path)
 
 
 def join_paths(paths: Iterable[str]) -> str:

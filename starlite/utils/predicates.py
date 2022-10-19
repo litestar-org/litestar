@@ -1,10 +1,13 @@
 import asyncio
 import functools
 import sys
+from dataclasses import is_dataclass
 from inspect import isclass
-from typing import Any, Awaitable, Callable, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
 
-from typing_extensions import ParamSpec, TypeGuard, get_args, get_origin
+from typing_extensions import ParamSpec, TypeGuard, get_args, get_origin, is_typeddict
+
+from starlite.types.builtin_types import NoneType
 
 if sys.version_info >= (3, 10):
     from types import UnionType
@@ -12,6 +15,14 @@ if sys.version_info >= (3, 10):
     UNION_TYPES = {UnionType, Union}
 else:  # pragma: no cover
     UNION_TYPES = {Union}
+
+if TYPE_CHECKING:
+
+    from starlite.types.builtin_types import (
+        DataclassClass,
+        DataclassClassOrInstance,
+        TypedDictClass,
+    )
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -66,4 +77,40 @@ def is_optional_union(annotation: Any) -> bool:
     Returns:
         True for a union, False otherwise.
     """
-    return get_origin(annotation) in UNION_TYPES and type(None) in get_args(annotation)
+    return get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation)
+
+
+def is_dataclass_class_typeguard(value: Any) -> "TypeGuard[DataclassClass]":
+    """Wrapper for `is_dataclass()` that narrows to type only, not instance.
+
+    Args:
+        value: tested to determine if type of `dataclass`.
+
+    Returns:
+        `True` if `value` is a `dataclass` type.
+    """
+    return is_dataclass(value) and isinstance(value, type)
+
+
+def is_dataclass_class_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
+    """Wrapper for `is_dataclass()` that narrows type.
+
+    Args:
+        value: tested to determine if instance or type of `dataclass`.
+
+    Returns:
+        `True` if instance or type of `dataclass`.
+    """
+    return is_dataclass(value)
+
+
+def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictClass]":
+    """Wrapper for `is_typeddict()` that narrows type.
+
+    Args:
+        value: tested to determine if instance or type of `dataclass`.
+
+    Returns:
+        `True` if instance or type of `dataclass`.
+    """
+    return is_typeddict(value)

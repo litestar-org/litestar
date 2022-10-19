@@ -1,4 +1,4 @@
-from dataclasses import is_dataclass
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 from pydantic import (
     BaseModel,
     ConstrainedBytes,
+    ConstrainedDate,
     ConstrainedDecimal,
     ConstrainedFloat,
     ConstrainedFrozenSet,
@@ -28,9 +29,17 @@ from starlite.openapi.constants import (
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
     TYPE_MAP,
 )
-from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
-from starlite.utils.model import convert_dataclass_to_model, create_parsed_model_field
+from starlite.utils import (
+    is_dataclass_class_or_instance_typeguard,
+    is_typeddict_typeguard,
+)
+from starlite.utils.model import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    create_parsed_model_field,
+)
 
 if TYPE_CHECKING:
     from starlite.plugins.base import PluginProtocol
@@ -42,7 +51,7 @@ def normalize_example_value(value: Any) -> Any:
         value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
-    if is_dataclass(value):
+    if is_dataclass_class_or_instance_typeguard(value):
         value = convert_dataclass_to_model(value)
     if isinstance(value, BaseModel):
         value = value.dict()
@@ -76,6 +85,20 @@ def create_numerical_constrained_field_schema(
         schema.exclusiveMinimum = float(field_type.gt)
     if field_type.multiple_of is not None:
         schema.multipleOf = float(field_type.multiple_of)
+    return schema
+
+
+def create_date_constrained_field_schema(field_type: Type[ConstrainedDate]) -> Schema:
+    """Create Schema from Constrained Date Field."""
+    schema = Schema(type=OpenAPIType.STRING, schema_format=OpenAPIFormat.DATE)
+    if field_type.le is not None:
+        schema.maximum = float(datetime.combine(field_type.le, datetime.min.time()).timestamp())
+    if field_type.lt is not None:
+        schema.exclusiveMaximum = float(datetime.combine(field_type.lt, datetime.min.time()).timestamp())
+    if field_type.ge is not None:
+        schema.minimum = float(datetime.combine(field_type.ge, datetime.min.time()).timestamp())
+    if field_type.gt is not None:
+        schema.exclusiveMinimum = float(datetime.combine(field_type.gt, datetime.min.time()).timestamp())
     return schema
 
 
@@ -121,6 +144,7 @@ def create_collection_constrained_field_schema(
 def create_constrained_field_schema(
     field_type: Union[
         Type[ConstrainedBytes],
+        Type[ConstrainedDate],
         Type[ConstrainedDecimal],
         Type[ConstrainedFloat],
         Type[ConstrainedFrozenSet],
@@ -138,6 +162,8 @@ def create_constrained_field_schema(
         return create_numerical_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, (ConstrainedStr, ConstrainedBytes)):
         return create_string_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, ConstrainedDate):
+        return create_date_constrained_field_schema(field_type=field_type)
     return create_collection_constrained_field_schema(field_type=field_type, sub_fields=sub_fields, plugins=plugins)
 
 
@@ -165,8 +191,10 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return TYPE_MAP[field_type].copy()
     if is_pydantic_model(field_type):
         return OpenAPI310PydanticSchema(schema_class=field_type)
-    if is_dataclass(field_type):
+    if is_dataclass_class_or_instance_typeguard(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
+    if is_typeddict_typeguard(field_type):
+        return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))
     if isinstance(field_type, EnumMeta):
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER

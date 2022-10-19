@@ -94,3 +94,14 @@ def test_dependency_skip_validation() -> None:
         skipped_resp = client.get("/skipped")
         assert skipped_resp.status_code == HTTP_200_OK
         assert skipped_resp.json() == {"value": "str"}
+
+
+def test_dependency_skip_validation_with_default_value() -> None:
+    @get("/skipped")
+    def skipped(value: int = Dependency(default=1, skip_validation=True)) -> Dict[str, int]:
+        return {"value": value}
+
+    with create_test_client(route_handlers=[skipped]) as client:
+        skipped_resp = client.get("/skipped")
+        assert skipped_resp.status_code == HTTP_200_OK
+        assert skipped_resp.json() == {"value": 1}

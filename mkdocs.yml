@@ -137,8 +137,14 @@ nav:
           - usage/12-openapi/5-customizing-pydantic-model-schemas.md
       - usage/13-lifecycle-hooks.md
       - usage/14-testing.md
-      - usage/15-templating.md
-      - usage/16-caching.md
+      - Caching:
+          - usage/15-caching/0-cache-backends.md
+          - usage/15-caching/1-response-caching.md
+          - usage/15-caching/2-interacting-with-cache.md
+      - Templates:
+          - usage/16-templating/0-template-engines.md
+          - usage/16-templating/1-template-context.md
+          - usage/16-templating/2-template-functions.md
       - usage/17-exceptions.md
   - API Reference:
       - reference/0-api-reference-intro.md
@@ -170,13 +176,12 @@ nav:
       - Datastructures:
           - reference/datastructures/0-state.md
           - reference/datastructures/1-cookie.md
-          - reference/datastructures/2-template.md
+          - reference/datastructures/2-provide.md
           - reference/datastructures/3-response-header.md
           - reference/datastructures/4-background.md
           - reference/datastructures/5-response-containers.md
           - reference/datastructures/6-upload-file.md
           - reference/datastructures/7-form-multi-dict.md
-          - reference/datastructures/8-provide.md
       - Exceptions:
           - reference/exceptions/0-base-exceptions.md
           - reference/exceptions/1-http-exceptions.md

@@ -1,21 +1,23 @@
-import hashlib
-import hmac
 import secrets
 from typing import TYPE_CHECKING, Any, Optional
 
 from starlette.datastructures import MutableHeaders
 
 from starlite.datastructures.cookie import Cookie
-from starlite.enums import ScopeType
+from starlite.enums import RequestEncodingType, ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
+from starlite.utils.csrf import (
+    CSRF_SECRET_BYTES,
+    generate_csrf_hash,
+    generate_csrf_token,
+)
 
 if TYPE_CHECKING:
     from starlite.config import CSRFConfig
     from starlite.connection import Request
     from starlite.types import ASGIApp, HTTPSendMessage, Message, Receive, Scope, Send
 
-CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
@@ -50,18 +52,28 @@ class CSRFMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
             return
 
-        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope)
+        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope, receive=receive)
+        content_type, _ = request.content_type
         csrf_cookie = request.cookies.get(self.config.cookie_name)
         existing_csrf_token = request.headers.get(self.config.header_name)
 
+        if not existing_csrf_token and content_type in {
+            RequestEncodingType.URL_ENCODED,
+            RequestEncodingType.MULTI_PART,
+        }:
+            form = await request.form()
+            existing_csrf_token = form.get("_csrf_token", None)
+
         if request.method in self.config.safe_methods:
-            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie))
+            token = scope["_csrf_token"] = csrf_cookie or generate_csrf_token(secret=self.config.secret)  # type: ignore
+            await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
+            scope["_csrf_token"] = existing_csrf_token  # type: ignore
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
 
-    def create_send_wrapper(self, send: "Send", csrf_cookie: Optional[str]) -> "Send":
+    def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
         """Wraps 'send' to handle CSRF validation.
 
         Args:
@@ -83,35 +95,23 @@ class CSRFMiddleware(MiddlewareProtocol):
             """
             if csrf_cookie is None and message["type"] == "http.response.start":
                 message.setdefault("headers", [])
-                self._set_cookie_if_needed(message)
+                self._set_cookie_if_needed(message=message, token=token)
             await send(message)
 
         return send_wrapper
 
-    def _set_cookie_if_needed(self, message: "HTTPSendMessage") -> None:
+    def _set_cookie_if_needed(self, message: "HTTPSendMessage", token: str) -> None:
         headers = MutableHeaders(scope=message)
-        if "set-cookie" not in headers:
-            cookie = Cookie(
-                key=self.config.cookie_name,
-                value=self._generate_csrf_token(),
-                path=self.config.cookie_path,
-                secure=self.config.cookie_secure,
-                httponly=self.config.cookie_httponly,
-                samesite=self.config.cookie_samesite,
-                domain=self.config.cookie_domain,
-            )
-            headers.append("set-cookie", cookie.to_header(header=""))
-
-    def _generate_csrf_hash(self, token: str) -> str:
-        """Generate an HMAC that signs the CSRF token."""
-        return hmac.new(self.config.secret.encode(), token.encode(), hashlib.sha256).hexdigest()
-
-    def _generate_csrf_token(self) -> str:
-        """Generate a CSRF token that includes a randomly generated string
-        signed by an HMAC."""
-        token = secrets.token_hex(CSRF_SECRET_BYTES)
-        token_hash = self._generate_csrf_hash(token)
-        return token + token_hash
+        cookie = Cookie(
+            key=self.config.cookie_name,
+            value=token,
+            path=self.config.cookie_path,
+            secure=self.config.cookie_secure,
+            httponly=self.config.cookie_httponly,
+            samesite=self.config.cookie_samesite,
+            domain=self.config.cookie_domain,
+        )
+        headers.append("set-cookie", cookie.to_header(header=""))
 
     def _decode_csrf_token(self, token: str) -> Optional[str]:
         """Decode a CSRF token and validate its HMAC."""
@@ -120,7 +120,7 @@ class CSRFMiddleware(MiddlewareProtocol):
 
         token_secret = token[:CSRF_SECRET_LENGTH]
         existing_hash = token[CSRF_SECRET_LENGTH:]
-        expected_hash = self._generate_csrf_hash(token_secret)
+        expected_hash = generate_csrf_hash(token=token_secret, secret=self.config.secret)
         if not secrets.compare_digest(existing_hash, expected_hash):
             return None
 
