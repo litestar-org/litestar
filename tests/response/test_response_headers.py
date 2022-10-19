@@ -94,6 +94,6 @@ def test_cache_control_response_header() -> None:
     app = Starlite(route_handlers=[MyController, test3_handler], cache_control=CacheControlHeader(max_age=10))
 
     with TestClient(app=app) as client:
-        for path, expected_value in [("/test1", "no-cache"), ("/test2", "no-store"), ("/test3", "max-age=10")]:
+        for path, expected_value in (("/test1", "no-cache"), ("/test2", "no-store"), ("/test3", "max-age=10")):
             response = client.get(path)
             assert response.headers["cache-control"] == expected_value
