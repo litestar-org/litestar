@@ -70,7 +70,7 @@ class Router:
         after_request: Optional[AfterRequestHookHandler] = None,
         after_response: Optional[AfterResponseHookHandler] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
-        cache_control: Optional["CacheControlHeader"] = None,
+        cache_control: Optional[CacheControlHeader] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
         guards: Optional[List[Guard]] = None,
