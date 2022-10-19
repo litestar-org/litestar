@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Union
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, Union
 
 from .asgi_types import Message, Scope
 from .helpers import SyncOrAsyncUnion
@@ -24,6 +24,8 @@ else:
     WebsocketRouteHandler = Any
     Logger = Any
 
+_ExceptionT = TypeVar("_ExceptionT", bound=Exception)
+
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
     Callable[[StarletteResponse], SyncOrAsyncUnion[StarletteResponse]], Callable[[Response], SyncOrAsyncUnion[Response]]
@@ -36,7 +38,7 @@ BeforeMessageSendHookHandler = Union[
 ]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
-ExceptionHandler = Callable[[Request, Exception], StarletteResponse]
+ExceptionHandler = Callable[[Request, _ExceptionT], StarletteResponse]
 Guard = Union[
     Callable[[Request, HTTPRouteHandler], SyncOrAsyncUnion[None]],
     Callable[[WebSocket, WebsocketRouteHandler], SyncOrAsyncUnion[None]],
