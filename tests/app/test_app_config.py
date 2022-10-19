@@ -23,6 +23,7 @@ def app_config_object() -> AppConfig:
         before_shutdown=[],
         before_startup=[],
         cache_config=DEFAULT_CACHE_CONFIG,
+        cache_control=None,
         compression_config=None,
         cors_config=None,
         csrf_config=None,

@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar, Optional
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, Extra, ValidationError
+
+from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
     from typing import Any, Dict
@@ -88,9 +90,12 @@ class CacheControlHeader(Header):
             elif len(key_value) == 2:
                 kwargs[key_value[0]] = key_value[1]
             else:
-                raise ValueError("Invalid cache-control header value")
+                raise ImproperlyConfiguredException("Invalid cache-control header value")
 
-        return CacheControlHeader(**kwargs)
+        try:
+            return CacheControlHeader(**kwargs)
+        except ValidationError as exc:
+            raise ImproperlyConfiguredException from exc
 
     @classmethod
     def prevent_storing(cls) -> "CacheControlHeader":
