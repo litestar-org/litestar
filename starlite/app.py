@@ -233,7 +233,7 @@ class Starlite(Router):
             cache_config: Configures caching behavior of the application.
             cache_control: A `cache-control` header of type
                 [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this app.
-                Can be overriden by route handlers.
+                Can be overridden by route handlers.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set this enables the builtin CORS middleware.

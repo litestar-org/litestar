@@ -62,6 +62,7 @@ from starlite.utils.sync import AsyncCallable
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
+    from starlite.datastructures.headers import Header
     from starlite.plugins import PluginProtocol
     from starlite.types import AnyCallable, AsyncAnyCallable
 
@@ -301,6 +302,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
@@ -423,10 +426,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         resolved_response_headers = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
-            if cache_control := getattr(layer, "cache_control", None):
-                resolved_response_headers.update(
-                    {CacheControlHeader.CACHE_CONTROL_HEADER: ResponseHeader(value=cache_control.to_header())}
-                )
+            for extra_header in ["cache_control"]:
+                header_model: Optional["Header"] = getattr(layer, extra_header, None)
+                if header_model:
+                    resolved_response_headers.update(
+                        {header_model.HEADER_NAME: ResponseHeader(value=header_model.to_header())}
+                    )
+
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
@@ -663,6 +669,8 @@ class get(HTTPRouteHandler):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
@@ -796,6 +804,8 @@ class post(HTTPRouteHandler):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
@@ -928,6 +938,8 @@ class put(HTTPRouteHandler):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
@@ -1060,6 +1072,8 @@ class patch(HTTPRouteHandler):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
@@ -1192,6 +1206,8 @@ class delete(HTTPRouteHandler):
                 bypassing the route handler.
             cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
                 of seconds (e.g. '120') to cache the response.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.

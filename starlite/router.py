@@ -98,7 +98,7 @@ class Router:
                 bypassing the route handler.
             cache_control: A `cache-control` header of type
                 [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this
-                router. Can be overriden by route handlers.
+                router. Can be overridden by route handlers.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.

@@ -1,7 +1,7 @@
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
-from starlite.datastructures.cache_control import CacheControlHeader
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.form_multi_dict import FormMultiDict
+from starlite.datastructures.headers import CacheControlHeader
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
     File,
