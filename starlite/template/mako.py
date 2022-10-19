@@ -7,6 +7,7 @@ from starlite.template.base import (
     TemplateProtocol,
     csrf_token,
     url_for,
+    url_for_static_asset,
 )
 
 try:
@@ -33,6 +34,7 @@ class MakoTemplate(TemplateProtocol):
         for callable_key, template_callable in self.template_callables:
             kwargs_copy = {**kwargs}
             kwargs[callable_key] = partial(template_callable, kwargs_copy)
+
         return str(self.template.render(*args, **kwargs))
 
 
@@ -46,8 +48,9 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         super().__init__(directory=directory)
         self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
         self._template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]] = []
-        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
+        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
 
     def get_template(self, template_name: str) -> MakoTemplate:
         """

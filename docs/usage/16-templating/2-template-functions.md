@@ -15,6 +15,11 @@ This function returns the request's unique `csrf_token`. You can use this if you
 non-HTML based templates, or insert it into HTML templates not using a hidden input field but by some other means,
 for example inside a special `<meta>` tag.
 
+## The `url_for_static_asset` Callable
+
+URLs for static files can be created using the `url_for_static_asset` function. It's signature and behaviour are identical to
+[app.url_for_static_asset][starlite.app.Starlite.url_for_static_asset].
+
 ## Registering Template Callables
 
 The Starlite [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol] specifies the method

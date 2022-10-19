@@ -1,7 +1,7 @@
 # Template Engines
 
-Starlite has built-in support for both [jinja2](https://jinja.palletsprojects.com/en/3.0.x/)
-and [mako](https://www.makotemplates.org/) as template engines, and it also offers a simple way to add additional
+Starlite has built-in support for both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/)
+and [Mako](https://www.makotemplates.org/) as template engines, and it also offers a simple way to add additional
 template engines.
 
 ## Registering a Template Engine
@@ -30,8 +30,8 @@ app = Starlite(
 )
 ```
 
-The kwarg `directory` passed to `TemplateConfig` is either a directory or list of directories to use for loading
-templates.
+The kwarg `directory` passed to [`TemplateConfig`][starlite.config.template.TemplateConfig] is either a directory or
+list of directories to use for loading templates.
 
 ## Template Responses
 

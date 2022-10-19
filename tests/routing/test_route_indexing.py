@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import TYPE_CHECKING, Any, Type
 
 import pytest
 
@@ -8,6 +8,7 @@ from starlite import (
     ImproperlyConfiguredException,
     Router,
     Starlite,
+    StaticFilesConfig,
     asgi,
     delete,
     get,
@@ -16,6 +17,9 @@ from starlite import (
     put,
     websocket,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])
@@ -115,7 +119,7 @@ def test_indexes_handlers_with_multiple_paths(decorator: Type[HTTPRouteHandler])
     assert handler_index["handler"] == handler_two
 
 
-def test_indexing_validation() -> None:
+def test_indexing_validation(tmp_path: "Path") -> None:
     @get("/abc", name="same-name")
     def handler_one() -> None:
         pass
@@ -126,3 +130,9 @@ def test_indexing_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(route_handlers=[handler_one, handler_two])
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(
+            route_handlers=[handler_one],
+            static_files_config=StaticFilesConfig(path="/static", directories=[tmp_path], name="same-name"),
+        )

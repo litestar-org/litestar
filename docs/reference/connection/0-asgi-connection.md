@@ -30,4 +30,5 @@
             - state
             - url
             - url_for
+            - url_for_static_asset
             - user

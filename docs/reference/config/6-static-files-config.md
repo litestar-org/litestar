@@ -6,3 +6,4 @@
             - path
             - directories
             - html_mode
+            - name

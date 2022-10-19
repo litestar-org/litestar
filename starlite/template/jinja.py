@@ -1,7 +1,12 @@
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
-from starlite.template.base import TemplateEngineProtocol, csrf_token, url_for
+from starlite.template.base import (
+    TemplateEngineProtocol,
+    csrf_token,
+    url_for,
+    url_for_static_asset,
+)
 
 try:
     from jinja2 import Environment, FileSystemLoader
@@ -27,8 +32,9 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         super().__init__(directory=directory)
         loader = FileSystemLoader(searchpath=directory)
         self.engine = Environment(loader=loader, autoescape=True)
-        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
+        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
+        self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
 
     def get_template(self, template_name: str) -> "JinjaTemplate":
         """
