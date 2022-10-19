@@ -41,7 +41,7 @@ The Starlite dependency injection system is different from the one used by FastA
 the [dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md) section of the documentation.
 
 In FastAPI you declare dependencies either as a list of functions passed to the `Router` or `FastAPI` instances, or as a
-default function argument value wrapped in an instance of the `Depend` class.
+default function argument value wrapped in an instance of the `Depends` class.
 
 In Starlite **dependencies are always declared using a dictionary** with a string key and the value wrapped in an instance of
 the `Provide` class.
