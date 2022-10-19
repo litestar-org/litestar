@@ -426,7 +426,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         resolved_response_headers = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
-            for extra_header in ["cache_control"]:
+            for extra_header in ("cache_control",):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
                     resolved_response_headers.update(
