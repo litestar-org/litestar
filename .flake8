@@ -9,4 +9,5 @@ classmethod-decorators =
     validator
     root_validator
 per-file-ignores =
+    examples/dependency_injection/dependency_non_optional_not_provided.py:E800
     starlite/types/builtin_types.py:E800,F401

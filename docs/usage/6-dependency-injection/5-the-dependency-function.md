@@ -1,84 +1,54 @@
 # The Dependency Function
 
-Starlite infers function parameters to be provided dependencies if there is a `Provide` anywhere in the handler's
-ownership tree keyed to the same name as the function parameter. Other parameters are either reserved kwargs or query,
-cookie or header parameters.
+## Dependency validation
 
-This works well, except when a dependency is optional. For example, consider the following:
+By default, injected dependency values are validated by Starlite, for example, this application will raise an
+internal server error:
 
-```python
-from typing import NamedTuple, Optional
-from starlite import Provide, get, post
-from pydantic import BaseModel
-
-
-class LimitOffset(NamedTuple):
-    limit: int
-    offset: int
-
-
-class Resource(BaseModel):
-    id: int
-    ...
-
-
-class ResourceRepository:
-    def __init__(self, limit_offset: Optional[LimitOffset] = None) -> None:
-        ...
-
-    async def retrieve_resources(self) -> list[Resource]:
-        ...
-
-    async def create_resource(self, data: Resource) -> Resource:
-        ...
-
-
-# limit and offset are optional query parameters here
-def limit_offset_filter(limit: int = 100, offset: int = 0) -> LimitOffset:
-    return LimitOffset(limit, offset)
-
-
-@post(dependencies={"repository": Provide(ResourceRepository)})
-async def create_resource(data: Resource, repository: ResourceRepository) -> Resource:
-    return await repository.create_resource(data=data)
-
-
-@get(
-    dependencies={
-        "limit_offset": Provide(limit_offset_filter),
-        "repository": Provide(ResourceRepository),
-    }
-)
-async def get_resource(repository: ResourceRepository) -> list[Resource]:
-    return await repository.retrieve_resources()
+```py title="Dependency validation error"
+--8<-- "examples/dependency_injection/dependency_validation_error.py"
 ```
 
-This configuration works, however, `limit_offset` from the `ResourceRepository` will appear as a `query` parameter in
-the OpenAPI documentation for `create_resource` because Starlite cannot ascertain it is a dependency in this case.
-To resolve this, we mark the parameter `limit_offset` with the `Dependency` function:
+Dependency validation can be toggled using the [`Dependency`][starlite.params.Dependency] function.
 
-```python
-from typing import Optional, NamedTuple
-from starlite import Dependency
-
-
-class LimitOffset(NamedTuple):
-    limit: int
-    offset: int
-
-
-class ResourceRepository:
-    def __init__(
-        self, limit_offset: Optional[LimitOffset] = Dependency(default=None)
-    ) -> None:
-        ...
+```py title="Dependency validation error"
+--8<-- "examples/dependency_injection/dependency_skip_validation.py"
 ```
 
-Now Starlite knows that the function parameter is not a `query` parameter and that it should not appear in the OpenAPI
-documentation.
+This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!
 
-`Dependency` accepts the following kwargs:
+## Dependency function as a marker
 
-- `default`: default value for the parameter, if any
-- `skip_validation`: if `True` value returned from `Provide` function is not validated by the signature model. Default
-  `False`.
+The [`Dependency`][starlite.params.Dependency] function can also be used as a marker that gives us a bit more detail
+about your application.
+
+### Exclude dependencies with default values from OpenAPI docs
+
+Depending on your application design, it is possible to have a dependency declared in a handler or `Provide` function
+that has a default value. If the dependency isn't provided for the route, the default should be used by the function.
+
+```py title="Dependency with default value"
+--8<-- "examples/dependency_injection/dependency_default_value_no_dependency_fn.py"
+```
+
+This doesn't fail, but due to the way the application determines parameter types, this is inferred to be a query
+parameter:
+
+<img alt="Dependency query parameter" src="../images/dependency_query_parameter.png" width="auto" height="auto">
+
+By declaring the parameter to be a dependency, Starlite knows to exclude it from the docs:
+
+```py title="Dependency with default value"
+--8<-- "examples/dependency_injection/dependency_default_value_with_dependency_fn.py"
+```
+
+### Early detection if a dependency isn't provided
+
+The other side of the same coin is when a dependency isn't provided, and no default is specified. Without the dependency
+marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.
+
+If the parameter is marked as a dependency, this allows us to fail early instead:
+
+```py title="Dependency not provided error"
+--8<-- "examples/dependency_injection/dependency_non_optional_not_provided.py"
+```
