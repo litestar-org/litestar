@@ -228,3 +228,56 @@ router = Router(
 
 # ...
 ```
+
+## Specific Headers Implementation
+
+Starlite has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
+from `response_headers` in dedicated kwargs available on all layers of the app (individual route handlers, controllers,
+routers and the app itself).
+
+### Cache Control
+
+Starlite has a dedicated [CacheControlHeader][starlite.datastructures.CacheControlHeader] class for
+[`Cache-Control`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) which allows easy creation
+and parsing of the header value and provides accessors to its directives.
+
+Here is a simple example that shows how to use it:
+
+```python
+import time
+
+from starlite import get, Router, Controller
+from starlite.datastructures import CacheControlHeader
+
+
+class MyController(Controller):
+    cache_control = CacheControlHeader(max_age=86_400, public=True)
+
+    @get("/chance_of_rain")
+    def get_chance_of_rain(self) -> float:
+        return 0.5
+
+    @get("/timestamp", cache_control=CacheControlHeader(no_store=True))
+    def get_server_time(self) -> float:
+        return time.time()
+
+
+@get("/population")
+def get_population_count() -> int:
+    return 100000
+
+
+router = Router(
+    route_handlers=[MyController, get_population_count],
+    cache_control=CacheControlHeader(max_age=2_628_288, public=True),
+)
+```
+
+In this example we have a `cache-control` with `max-age` of 1 month for the whole app, a `max-age` of
+1 day for all routes within `MyController` and `no-store` for one specific route `get_server_time`. Here are the cache
+control values that will be returned from each endpoint:
+
+- When calling `/population` the response will have `cache-control` with `max-age=2628288` (1 month).
+- When calling `/chance_of_rain` the response will have `cache-control` with `max-age=86400` (1 day).
+- When calling `/timestamp` the response will have `cache-control` with `no-store` which means don't store the result
+in any cache.

@@ -21,3 +21,6 @@
             - must_understand
             - immutable
             - stale_while_revalidate
+            - to_header
+            - from_header
+            - prevent_storing
