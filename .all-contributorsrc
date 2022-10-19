@@ -478,6 +478,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ReznikovRoman",
+      "name": "Roman Reznikov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44291988?v=4",
+      "profile": "http://linkedin.com/in/roman-reznikov",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

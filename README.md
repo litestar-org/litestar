@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-51-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-52-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -304,6 +304,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center"><a href="https://github.com/provinzkraut"><img src="https://avatars.githubusercontent.com/u/25355197?v=4?s=100" width="100px;" alt="provinzkraut"/><br /><sub><b>provinzkraut</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=provinzkraut" title="Tests">⚠️</a></td>
       <td align="center"><a href="https://github.com/jab"><img src="https://avatars.githubusercontent.com/u/64992?v=4?s=100" width="100px;" alt="Joshua Bronson"/><br /><sub><b>Joshua Bronson</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jab" title="Documentation">📖</a></td>
+      <td align="center"><a href="http://linkedin.com/in/roman-reznikov"><img src="https://avatars.githubusercontent.com/u/44291988?v=4?s=100" width="100px;" alt="Roman Reznikov"/><br /><sub><b>Roman Reznikov</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ReznikovRoman" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
