@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, c
 from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.staticfiles import StaticFiles
 from typing_extensions import TypedDict
 
 from starlite.asgi import (
@@ -386,7 +387,7 @@ class Starlite(Router):
             self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
         ):
             self._static_paths.add(static_config.path)
-            self.register(asgi(path=static_config.path)(static_config.to_static_files_app()))
+            self.register(asgi(path=static_config.path, name=static_config.name)(static_config.to_static_files_app()))
 
         self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
         self.asgi_handler = self._create_asgi_handler()
@@ -483,8 +484,8 @@ class Starlite(Router):
         return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
     def route_reverse(self, name: str, **path_parameters: Any) -> str:
-        """Receives a route handler name, path parameter values and returns an
-        optional url path to the handler with filled path parameters.
+        """Receives a route handler name, path parameter values and returns url
+        path to the handler with filled path parameters.
 
         Examples:
             ```python
@@ -545,6 +546,42 @@ class Starlite(Router):
                 output.append(component)
 
         return join_paths(output)
+
+    def url_for_static_asset(self, name: str, file_path: str) -> str:
+        """Receives a static files handler name, an asset file path and returns
+        resolved url path to the asset.
+
+        Examples:
+            ```python
+            from starlite import Starlite, StaticFilesConfig
+
+            app = Starlite(
+                static_files_config=StaticFilesConfig(directories=["css"], path="/static/css")
+            )
+
+            path = app.url_for_static_asset("css", "main.css")
+
+            # /static/css/main.css
+            ```
+        Args:
+            name: A static handler unique name.
+            file_path: a string containing path to an asset.
+
+        Raises:
+            NoRouteMatchFoundException: If static files handler with 'name' does not exist.
+
+        Returns:
+            A url path to the asset.
+        """
+        handler_index = self.get_handler_index_by_name(name)
+        if handler_index is None:
+            raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
+
+        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
+        if not isinstance(handler_fn, StaticFiles):
+            raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
+
+        return join_paths([handler_index["paths"][0], file_path])  # type: ignore [unreachable]
 
     @property
     def route_handler_method_view(self) -> Dict[str, List[str]]:
