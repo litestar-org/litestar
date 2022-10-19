@@ -49,17 +49,29 @@ class CacheControlHeader(Header):
     HEADER_NAME: ClassVar[str] = "cache-control"
 
     max_age: Optional[int] = None
+    """Accessor for the `max-age` directive."""
     s_maxage: Optional[int] = None
+    """Accessor for the `s-maxage` directive."""
     no_cache: Optional[bool] = None
+    """Accessor for the `no-cache` directive."""
     no_store: Optional[bool] = None
+    """Accessor for the `no-store` directive."""
     private: Optional[bool] = None
+    """Accessor for the `private` directive."""
     public: Optional[bool] = None
+    """Accessor for the `public` directive."""
     no_transform: Optional[bool] = None
+    """Accessor for the `no-transform` directive."""
     must_revalidate: Optional[bool] = None
+    """Accessor for the `must-revalidate` directive."""
     proxy_revalidate: Optional[bool] = None
+    """Accessor for the `proxy-revalidate` directive."""
     must_understand: Optional[bool] = None
+    """Accessor for the `must-understand` directive."""
     immutable: Optional[bool] = None
+    """Accessor for the `immutable` directive."""
     stale_while_revalidate: Optional[int] = None
+    """Accessor for the `stale-while-revalidate` directive."""
 
     def _get_header_value(self) -> str:
         """Get the header value as string."""

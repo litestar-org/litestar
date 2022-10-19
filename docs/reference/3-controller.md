@@ -6,6 +6,7 @@
             - after_request
             - after_response
             - before_request
+            - cache_control
             - dependencies
             - exception_handlers
             - guards
