@@ -19,11 +19,11 @@ amount=1000usd&to=attacker@evil.com
 This middleware prevents CSRF attacks by doing the following:
 
 1. On the first "safe" request (e.g `GET`) - set a cookie with a special token created by the server
-2. On each subsequent "unsafe" request (e.g `POST`) - make sure the request contains an additional header that has
-   this token
+2. On each subsequent "unsafe" request (e.g `POST`) - make sure the request contains either a form field or
+   an additional header that has this token
 
-To enable CSRF protection in a Starlite application simply pass an instance of `starlite.config.CSRFConfig`
-to the Starlite constructor:
+To enable CSRF protection in a Starlite application simply pass an instance of
+[`starlite.config.CSRFConfig`][starlite.config.CSRFConfig] to the Starlite constructor:
 
 ```python
 from starlite import Starlite, CSRFConfig
@@ -32,5 +32,20 @@ csrf_config = CSRFConfig(secret="my-secret")
 
 app = Starlite(route_handlers=[...], csrf_config=csrf_config)
 ```
+
+Some routes can be marked as being exempt from the protection by this middleware via
+[handler opts](../../2-route-handlers/5-handler-opts.md)
+
+```python
+from starlite import post
+
+
+@post("/post", exclude_from_csrf=True)
+def handler() -> None:
+    ...
+```
+
+If you need to exempt many routes at once you might want to consider using [`exclude`][starlite.config.CSRFConfig.exclude]
+kwarg which accepts list of path patterns to skip in the middleware.
 
 See the [API Reference][starlite.config.CSRFConfig] for full details on the `CSRFConfig` class and the kwargs it accepts.

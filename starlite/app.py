@@ -603,8 +603,6 @@ class Starlite(Router):
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)  # type: ignore
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())  # type: ignore
-        if self.csrf_config:
-            asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
         return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
 
     def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: "ExceptionHandlersMap") -> "ASGIApp":
@@ -748,6 +746,9 @@ class Starlite(Router):
         asgi_handler = self._wrap_in_exception_handler(
             app=route.handle, exception_handlers=route_handler.resolve_exception_handlers()  # type: ignore[arg-type]
         )
+
+        if self.csrf_config:
+            asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
 
         for middleware in route_handler.resolve_middleware():
             if isinstance(middleware, StarletteMiddleware):
