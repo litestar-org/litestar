@@ -1,9 +1,6 @@
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
-    AsyncIterable,
-    AsyncIterator,
     Dict,
     Generic,
     List,
@@ -13,11 +10,10 @@ from typing import (
     Union,
     cast,
 )
-from urllib.parse import quote
 
-import yaml
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+from pydantic_openapi_schema.v3_1_0 import OpenAPI
+from yaml import dump as dump_yaml
 
 from starlite.datastructures import Cookie
 from starlite.enums import MediaType, OpenAPIMediaType
@@ -26,19 +22,13 @@ from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
     HTTP_304_NOT_MODIFIED,
-    HTTP_307_TEMPORARY_REDIRECT,
 )
-from starlite.types.composite import StreamType
 from starlite.utils.serialization import default_serializer
-from starlite.utils.sync import iterate_sync_iterator
-
-T = TypeVar("T")
 
 if TYPE_CHECKING:
     from typing_extensions import Literal
 
-    from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
-    from starlite.template import TemplateEngineProtocol
+    from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import (
         HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
@@ -47,6 +37,8 @@ if TYPE_CHECKING:
         Scope,
         Send,
     )
+
+T = TypeVar("T")
 
 
 class Response(Generic[T]):
@@ -206,7 +198,7 @@ class Response(Generic[T]):
             if isinstance(content, OpenAPI):
                 content_dict = content.dict(by_alias=True, exclude_none=True)
                 if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                    return cast("bytes", yaml.dump(content_dict, default_flow_style=False).encode("utf-8"))
+                    return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
                 return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
             if content is None:
                 return b""
@@ -285,103 +277,3 @@ class Response(Generic[T]):
         await send(event)
 
         await self.after_response()
-
-
-class TemplateResponse(Response[bytes]):
-    def __init__(
-        self,
-        template_name: str,
-        template_engine: "TemplateEngineProtocol",
-        context: Dict[str, Any],
-        status_code: int = HTTP_200_OK,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
-        encoding: str = "utf-8",
-    ) -> None:
-        """Handles the rendering of a given template into a bytes string.
-
-        Args:
-            template_name: Path-like name for the template to be rendered, e.g. "index.html".
-            template_engine: The template engine class to use to render the response.
-            status_code: A value for the response HTTP status code.
-            context: A dictionary of key/value pairs to be passed to the temple engine's render method.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
-            headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-        """
-        template = template_engine.get_template(template_name)
-        super().__init__(
-            background=background,
-            content=template.render(**context),
-            cookies=cookies,
-            encoding=encoding,
-            headers=headers,
-            media_type=MediaType.HTML,
-            status_code=status_code,
-        )
-
-
-class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
-    __slots__ = ("iterator",)
-
-    def __init__(
-        self,
-        content: StreamType[Union[str, bytes]],
-        *,
-        status_code: int = HTTP_200_OK,
-        media_type: Union[MediaType, "OpenAPIMediaType", str] = MediaType.JSON,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
-        encoding: str = "utf-8",
-    ):
-        super().__init__(
-            background=background,
-            content=b"",  # type: ignore[arg-type]
-            cookies=cookies,
-            encoding=encoding,
-            headers=headers,
-            media_type=media_type,
-            status_code=status_code,
-        )
-        self.iterator: Union[AsyncIterable[Union[str, bytes]], AsyncGenerator[Union[str, bytes], None]] = (
-            content if isinstance(content, (AsyncIterable, AsyncIterator)) else iterate_sync_iterator(content)
-        )
-
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        await self.start_response(send=send)
-
-        async for chunk in self.iterator:
-            stream_event: "HTTPResponseBodyEvent" = {
-                "type": "http.response.body",
-                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
-                "more_body": True,
-            }
-            await send(stream_event)
-
-        terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
-        await send(terminus_event)
-
-        await self.after_response()
-
-
-class RedirectResponse(Response):
-    def __init__(
-        self,
-        url: str,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        status_code: "Literal[301, 302, 303, 307, 308]" = HTTP_307_TEMPORARY_REDIRECT,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
-    ) -> None:
-        super().__init__(
-            background=background,
-            content=b"",
-            cookies=cookies,
-            headers={**(headers or {}), "location": quote(url, safe="/#%[]=:;$&()+,!?*@'~")},
-            media_type=MediaType.TEXT,
-            status_code=status_code,
-        )
