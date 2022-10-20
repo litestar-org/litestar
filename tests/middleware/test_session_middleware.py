@@ -21,7 +21,12 @@ from starlite import (
     route,
     websocket,
 )
-from starlite.middleware.session.cookie_backend import AAD, CHUNK_SIZE, CookieBackendConfig
+from starlite.middleware.session import (
+    AAD,
+    CHUNK_SIZE,
+    CookieSessionMiddleware,
+    SessionCookieConfig,
+)
 from starlite.testing import create_test_client
 
 
@@ -40,9 +45,9 @@ from starlite.testing import create_test_client
 def test_config_validation(secret: bytes, should_raise: bool) -> None:
     if should_raise:
         with pytest.raises(ValidationError):
-            CookieBackendConfig(secret=SecretBytes(secret))
+            SessionCookieConfig(secret=SecretBytes(secret))
     else:
-        CookieBackendConfig(secret=SecretBytes(secret))
+        SessionCookieConfig(secret=SecretBytes(secret))
 
 
 def create_session(size: int = 16) -> Dict[str, str]:
@@ -50,27 +55,29 @@ def create_session(size: int = 16) -> Dict[str, str]:
 
 
 @pytest.mark.parametrize("session", [create_session(), create_session(size=4096)])
-def test_dump_and_load_data(session: dict, cookie_session_backend) -> None:
-    ciphertext = cookie_session_backend.dump_data(session)
+def test_dump_and_load_data(session: dict, session_middleware: CookieSessionMiddleware) -> None:
+    ciphertext = session_middleware.dump_data(session)
     assert isinstance(ciphertext, list)
 
     for text in ciphertext:
         assert len(text) <= CHUNK_SIZE
 
-    plain_text = cookie_session_backend.load_data(ciphertext)
+    plain_text = session_middleware.load_data(ciphertext)
     assert plain_text == session
 
 
 @mock.patch("time.time", return_value=round(time.time()))
-def test_load_data_should_return_empty_if_session_expired(time_mock: mock.MagicMock, cookie_session_backend) -> None:
+def test_load_data_should_return_empty_if_session_expired(
+    time_mock: mock.MagicMock, session_middleware: CookieSessionMiddleware
+) -> None:
     """Should return empty dict if session is expired."""
-    ciphertext = cookie_session_backend.dump_data(create_session())
-    time_mock.return_value = round(time.time()) + cookie_session_backend.config.max_age + 1
-    plaintext = cookie_session_backend.load_data(data=ciphertext)
+    ciphertext = session_middleware.dump_data(create_session())
+    time_mock.return_value = round(time.time()) + session_middleware.config.max_age + 1
+    plaintext = session_middleware.load_data(data=ciphertext)
     assert plaintext == {}
 
 
-def test_set_session_cookies(cookie_backend_config) -> None:
+def test_set_session_cookies(session_middleware: CookieSessionMiddleware) -> None:
     """Should set session cookies from session in response."""
     chunks_multiplier = 2
 
@@ -82,7 +89,7 @@ def test_set_session_cookies(cookie_backend_config) -> None:
 
     with create_test_client(
         route_handlers=[handler],
-        middleware=[cookie_backend_config.middleware],
+        middleware=[session_middleware.config.middleware],
     ) as client:
         response = client.get("/test")
 
@@ -92,7 +99,7 @@ def test_set_session_cookies(cookie_backend_config) -> None:
     assert "session-0" in response.cookies
 
 
-def test_session_cookie_name_matching(cookie_backend_config) -> None:
+def test_session_cookie_name_matching(session_middleware: CookieSessionMiddleware) -> None:
     session_data = {"foo": "bar"}
 
     @get("/")
@@ -105,16 +112,16 @@ def test_session_cookie_name_matching(cookie_backend_config) -> None:
 
     with create_test_client(
         route_handlers=[handler, set_session_data],
-        middleware=[cookie_backend_config.middleware],
+        middleware=[session_middleware.config.middleware],
     ) as client:
         client.post("/")
-        client.cookies[f"thisisnnota{cookie_backend_config.key}cookie"] = "foo"
+        client.cookies[f"thisisnnota{session_middleware.config.key}cookie"] = "foo"
         response = client.get("/")
         assert response.json() == session_data
 
 
 @pytest.mark.parametrize("mutate", [False, True])
-def test_load_session_cookies_and_expire_previous(mutate: bool, cookie_session_middleware) -> None:
+def test_load_session_cookies_and_expire_previous(mutate: bool, session_middleware: CookieSessionMiddleware) -> None:
     """Should load session cookies into session from request and overwrite the
     previously set cookies with the upcoming response.
 
@@ -135,16 +142,15 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, cookie_session_m
             _session = request.session
         return request.session
 
-    ciphertext = cookie_session_middleware.backend.dump_data(_session)
+    ciphertext = session_middleware.dump_data(_session)
 
     with create_test_client(
         route_handlers=[handler],
-        middleware=[cookie_session_middleware.backend.config.middleware],
+        middleware=[session_middleware.config.middleware],
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {
-            f"{cookie_session_middleware.backend.config.key}-{i}": text.decode("utf-8")
-            for i, text in enumerate(ciphertext, start=0)
+            f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
         }
         response = client.get(
             "/test",
@@ -157,14 +163,14 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, cookie_session_m
     assert response.headers["set-cookie"].count("session") >= response.request.headers["Cookie"].count("session")
 
 
-def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend) -> None:
+def test_load_data_should_raise_invalid_tag_if_tampered_aad(session_middleware: CookieSessionMiddleware) -> None:
     """If AAD has been tampered with, the integrity of the data cannot be
     verified and InavlidTag exception is raised."""
-    encrypted_session = cookie_session_backend.dump_data(create_session())
+    encrypted_session = session_middleware.dump_data(create_session())
     # The attacker will tamper with the AAD to increase the expiry time of the cookie.
     attacker_chosen_time = 300  # In seconds
     fraudulent_associated_data = dumps(
-        {"expires_at": round(time.time()) + cookie_session_backend.config.max_age + attacker_chosen_time}
+        {"expires_at": round(time.time()) + session_middleware.config.max_age + attacker_chosen_time}
     )
     decoded = b64decode(b"".join(encrypted_session))
     aad_starts_from = decoded.find(AAD)
@@ -174,7 +180,7 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backe
     encoded = [ciphertext[i : i + CHUNK_SIZE] for i in range(0, len(ciphertext), CHUNK_SIZE)]
 
     with pytest.raises(InvalidTag):
-        cookie_session_backend.load_data(encoded)
+        session_middleware.load_data(encoded)
 
 
 def test_session_middleware_not_installed_raises() -> None:
@@ -189,7 +195,7 @@ def test_session_middleware_not_installed_raises() -> None:
         assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
 
 
-def test_integration(session_backend_config) -> None:
+def test_integration(session_middleware: CookieSessionMiddleware) -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
     def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
@@ -202,7 +208,7 @@ def test_integration(session_backend_config) -> None:
 
     with create_test_client(
         route_handlers=[session_handler],
-        middleware=[session_backend_config.middleware],
+        middleware=[session_middleware.config.middleware],
     ) as client:
         response = client.get("/session")
         assert response.json() == {"has_session": False}
@@ -218,7 +224,7 @@ def test_integration(session_backend_config) -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_use_of_custom_response_serializer_with_http_handler(session_backend_config) -> None:
+def test_use_of_custom_response_serializer_with_http_handler(session_middleware: CookieSessionMiddleware) -> None:
     class Obj:
         inner: str
 
@@ -237,14 +243,16 @@ def test_use_of_custom_response_serializer_with_http_handler(session_backend_con
 
     with create_test_client(
         route_handlers=[create_session_handler],
-        middleware=[session_backend_config.middleware],
+        middleware=[session_middleware.config.middleware],
         response_class=MyResponse,
     ) as client:
         response = client.post("/create-session")
         assert response.status_code == HTTP_201_CREATED
 
 
-async def test_use_of_custom_response_serializer_with_websocket_handler(session_backend_config) -> None:
+async def test_use_of_custom_response_serializer_with_websocket_handler(
+    session_middleware: CookieSessionMiddleware,
+) -> None:
     class Obj:
         inner: str
 
@@ -266,7 +274,7 @@ async def test_use_of_custom_response_serializer_with_websocket_handler(session_
 
     with create_test_client(
         route_handlers=[create_session_handler],
-        middleware=[session_backend_config.middleware],
+        middleware=[session_middleware.config.middleware],
         response_class=MyResponse,
     ).websocket_connect("/create-session") as ws:
         data = ws.receive_json()
