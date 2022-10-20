@@ -12,10 +12,11 @@ if TYPE_CHECKING:
     from starlite.types import ResponseCookies
 
 
-class RedirectResponse(Response):
+class RedirectResponse(Response[Any]):
     def __init__(
         self,
         url: str,
+        *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         status_code: "Literal[301, 302, 303, 307, 308]" = HTTP_307_TEMPORARY_REDIRECT,
         headers: Optional[Dict[str, Any]] = None,

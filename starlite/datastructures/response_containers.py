@@ -24,14 +24,13 @@ from typing import (
 
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
-from starlette.responses import FileResponse
 from typing_extensions import Literal
 
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import RedirectResponse, StreamingResponse
+from starlite.response import FileResponse, RedirectResponse, StreamingResponse
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
