@@ -68,7 +68,7 @@ class Controller:
     cache_control: Optional["CacheControlHeader"]
     """
          A [CacheControlHeader][starlite.datastructures.CacheControlHeader] header to add to route handlers
-         of this controller.
+         of this controller. Can be overridden by route handlers.
     """
     dependencies: Optional["Dependencies"]
     """

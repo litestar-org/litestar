@@ -106,7 +106,7 @@ class AppConfig(BaseModel):
     cache_control: Optional[CacheControlHeader]
     """
     A `cache-control` header of type [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to
-    route handlers of this app.
+    route handlers of this app. Can be overridden by route handlers.
     """
     compression_config: Optional[CompressionConfig]
     """
