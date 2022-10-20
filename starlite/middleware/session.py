@@ -1,5 +1,6 @@
 import binascii
 import contextlib
+import re
 import time
 from base64 import b64decode, b64encode
 from os import urandom
@@ -138,6 +139,7 @@ class SessionMiddleware(MiddlewareProtocol):
         self.app = app
         self.config = config
         self.aesgcm = AESGCM(config.secret.get_secret_value())
+        self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
 
     def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
         """Given orjson serializable data, including pydantic models and numpy
@@ -256,7 +258,7 @@ class SessionMiddleware(MiddlewareProtocol):
         if scope["type"] in self.config.scopes:
             scope.setdefault("session", {})
             connection = ASGIConnection[Any, Any, Any](scope)
-            cookie_keys = sorted(key for key in connection.cookies if self.config.key in key)
+            cookie_keys = sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
             if cookie_keys:
                 data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
                 # If these exceptions occur, the session must remain empty so do nothing.
