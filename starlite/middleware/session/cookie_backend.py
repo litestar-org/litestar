@@ -1,0 +1,178 @@
+import binascii
+import contextlib
+import re
+import time
+from base64 import b64decode, b64encode
+from os import urandom
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+from orjson import dumps, loads
+from pydantic import SecretBytes, validator
+from starlette.datastructures import MutableHeaders
+
+from starlite.datastructures.cookie import Cookie
+from starlite.exceptions import MissingDependencyException
+from starlite.middleware.base import MiddlewareProtocol
+
+from .base import BaseSessionMiddleware, SessionBackend
+
+try:
+    from cryptography.exceptions import InvalidTag
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+except ImportError as e:
+    raise MissingDependencyException("cryptography is not installed") from e
+
+if TYPE_CHECKING:
+    from starlite.types import ASGIApp, Message, Scope, Receive, Send
+    from starlite.connection import ASGIConnection
+
+from .config import CookieConfig
+
+NONCE_SIZE = 12
+CHUNK_SIZE = 4096 - 64
+AAD = b"additional_authenticated_data="
+
+
+class CookieBackend(SessionBackend["SessionCookieConfig"]):
+    def __init__(self, config: "SessionCookieConfig") -> None:
+        """Starlite CookieSessionMiddleware.
+
+        Args:
+            config: SessionCookieConfig instance.
+        """
+        super().__init__(config)
+        self.aesgcm = AESGCM(config.secret.get_secret_value())
+        self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
+
+    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
+        """Given orjson serializable data, including pydantic models and numpy
+        types, dump it into a bytes string, encrypt, encode and split it into
+        chunks of the desirable size.
+
+        Args:
+            data: Data to serialize, encrypt, encode and chunk.
+            scope: The ASGI connection scope.
+
+        Notes:
+            - The returned list is composed of a chunks of a single base64 encoded
+                string that is encrypted using AES-CGM.
+
+        Returns:
+            List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
+        """
+        serialized = self.serialise_data(data, scope)
+        associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
+        nonce = urandom(NONCE_SIZE)
+        encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
+        encoded = b64encode(nonce + encrypted + AAD + associated_data)
+        return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
+
+    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
+        """Given a list of strings, decodes them into the session object.
+
+        Args:
+            data: A list of strings derived from the request's session cookie(s).
+
+        Returns:
+            A deserialized session value.
+        """
+        decoded = b64decode(b"".join(data))
+        nonce = decoded[:NONCE_SIZE]
+        aad_starts_from = decoded.find(AAD)
+        associated_data = decoded[aad_starts_from:].replace(AAD, b"") if aad_starts_from != -1 else None
+        if associated_data and loads(associated_data)["expires_at"] > round(time.time()):
+            encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
+            decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
+            return self.deserialise_data(decrypted)
+        return {}
+
+    def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
+        return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
+
+    async def store_session(self, message: "Message", connection: "ASGIConnection") -> None:
+        headers = MutableHeaders(scope=message)
+        scope = connection.scope
+        scope_session = scope.get("session")
+        cookie_keys = self.get_cookie_keys(connection)
+
+        if scope_session:
+            data = self.dump_data(scope_session, scope=scope)
+            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+            for i, datum in enumerate(data, start=0):
+                headers.append(
+                    "Set-Cookie",
+                    Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params).to_header(
+                        header=""
+                    ),
+                )
+            # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
+            # cookies, first check how many session cookies will not be overwritten in this upcoming response.
+            # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
+            # expired and their names are in cookie_keys.
+            cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
+        else:
+            cookies_to_clear = cookie_keys
+
+        for cookie_key in cookies_to_clear:
+            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+            headers.append(
+                "Set-Cookie",
+                Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+            )
+
+    async def load_session(self, connection: "ASGIConnection") -> Dict[str, Any]:
+        cookie_keys = self.get_cookie_keys(connection)
+        if cookie_keys:
+            data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
+            # If these exceptions occur, the session must remain empty so do nothing.
+            with contextlib.suppress(InvalidTag, binascii.Error):
+                return self.load_data(data)
+        return {}
+
+
+class SessionCookieConfig(CookieConfig):
+    """Configuration for [SessionMiddleware] middleware."""
+
+    _backend_class = CookieBackend
+
+    secret: SecretBytes
+
+    @validator("secret", always=True)
+    def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
+        """Ensures that the 'secret' value is 128, 192 or 256 bits.
+
+        Args:
+            value: A bytes string.
+
+        Raises:
+            ValueError: if the bytes string is of incorrect length.
+
+        Returns:
+            A bytes string.
+        """
+        if len(value.get_secret_value()) not in {16, 24, 32}:
+            raise ValueError("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
+        return value
+
+
+# Backwards compatible middleware shim
+
+
+class CookieSessionMiddleware(MiddlewareProtocol):
+    def __init__(self, app: "ASGIApp", config: SessionCookieConfig) -> None:
+        self.app = app
+        self.config = config
+        self._backend = CookieBackend(config=config)
+        self._middleware = BaseSessionMiddleware(app=app, backend=self._backend)
+
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        await self._middleware(scope, receive, send)
+
+    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
+        return self._backend.dump_data(data, scope)
+
+    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
+        return self._backend.load_data(data)
+
+
+SessionMiddleware = CookieSessionMiddleware

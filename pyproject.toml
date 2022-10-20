@@ -81,6 +81,7 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 trio = "*"
+types-redis = "^4.3.21.2"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]

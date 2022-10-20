@@ -23,8 +23,8 @@ from starlite import (
 from starlite.middleware.session import (
     AAD,
     CHUNK_SIZE,
+    CookieSessionMiddleware,
     SessionCookieConfig,
-    SessionMiddleware,
 )
 from starlite.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
@@ -55,7 +55,7 @@ def create_session(size: int = 16) -> Dict[str, str]:
 
 
 @pytest.mark.parametrize("session", [create_session(), create_session(size=4096)])
-def test_dump_and_load_data(session: dict, session_middleware: SessionMiddleware) -> None:
+def test_dump_and_load_data(session: dict, session_middleware: CookieSessionMiddleware) -> None:
     ciphertext = session_middleware.dump_data(session)
     assert isinstance(ciphertext, list)
 
@@ -68,7 +68,7 @@ def test_dump_and_load_data(session: dict, session_middleware: SessionMiddleware
 
 @mock.patch("time.time", return_value=round(time.time()))
 def test_load_data_should_return_empty_if_session_expired(
-    time_mock: mock.MagicMock, session_middleware: SessionMiddleware
+    time_mock: mock.MagicMock, session_middleware: CookieSessionMiddleware
 ) -> None:
     """Should return empty dict if session is expired."""
     ciphertext = session_middleware.dump_data(create_session())
@@ -77,7 +77,7 @@ def test_load_data_should_return_empty_if_session_expired(
     assert plaintext == {}
 
 
-def test_set_session_cookies(session_middleware: SessionMiddleware) -> None:
+def test_set_session_cookies(session_middleware: CookieSessionMiddleware) -> None:
     """Should set session cookies from session in response."""
     chunks_multiplier = 2
 
@@ -99,7 +99,7 @@ def test_set_session_cookies(session_middleware: SessionMiddleware) -> None:
     assert "session-0" in response.cookies
 
 
-def test_session_cookie_name_matching(session_middleware: SessionMiddleware) -> None:
+def test_session_cookie_name_matching(session_middleware: CookieSessionMiddleware) -> None:
     session_data = {"foo": "bar"}
 
     @get("/")
@@ -121,7 +121,7 @@ def test_session_cookie_name_matching(session_middleware: SessionMiddleware) -> 
 
 
 @pytest.mark.parametrize("mutate", [False, True])
-def test_load_session_cookies_and_expire_previous(mutate: bool, session_middleware: SessionMiddleware) -> None:
+def test_load_session_cookies_and_expire_previous(mutate: bool, session_middleware: CookieSessionMiddleware) -> None:
     """Should load session cookies into session from request and overwrite the
     previously set cookies with the upcoming response.
 
@@ -163,7 +163,7 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
     assert response.headers["set-cookie"].count("session") >= response.request.headers["Cookie"].count("session")
 
 
-def test_load_data_should_raise_invalid_tag_if_tampered_aad(session_middleware: SessionMiddleware) -> None:
+def test_load_data_should_raise_invalid_tag_if_tampered_aad(session_middleware: CookieSessionMiddleware) -> None:
     """If AAD has been tampered with, the integrity of the data cannot be
     verified and InavlidTag exception is raised."""
     encrypted_session = session_middleware.dump_data(create_session())
@@ -195,7 +195,7 @@ def test_session_middleware_not_installed_raises() -> None:
         assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
 
 
-def test_integration(session_middleware: SessionMiddleware) -> None:
+def test_integration(session_middleware: CookieSessionMiddleware) -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
     def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
@@ -224,7 +224,7 @@ def test_integration(session_middleware: SessionMiddleware) -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_use_of_custom_response_serializer_with_http_handler(session_middleware: SessionMiddleware) -> None:
+def test_use_of_custom_response_serializer_with_http_handler(session_middleware: CookieSessionMiddleware) -> None:
     class Obj:
         inner: str
 
@@ -250,7 +250,9 @@ def test_use_of_custom_response_serializer_with_http_handler(session_middleware:
         assert response.status_code == HTTP_201_CREATED
 
 
-async def test_use_of_custom_response_serializer_with_websocket_handler(session_middleware: SessionMiddleware) -> None:
+async def test_use_of_custom_response_serializer_with_websocket_handler(
+    session_middleware: CookieSessionMiddleware,
+) -> None:
     class Obj:
         inner: str
 

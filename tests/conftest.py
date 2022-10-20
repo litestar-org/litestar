@@ -8,7 +8,7 @@ from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 from pydantic import SecretBytes
 
-from starlite.middleware.session import SessionCookieConfig, SessionMiddleware
+from starlite.middleware.session import CookieSessionMiddleware, SessionCookieConfig
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
@@ -52,12 +52,12 @@ async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> Non
 
 
 @pytest.fixture()
-def session_middleware() -> SessionMiddleware:
-    return SessionMiddleware(app=mock_asgi_app, config=SessionCookieConfig(secret=SecretBytes(os.urandom(16))))
+def session_middleware() -> CookieSessionMiddleware:
+    return CookieSessionMiddleware(app=mock_asgi_app, config=SessionCookieConfig(secret=SecretBytes(os.urandom(16))))
 
 
 @pytest.fixture()
-def session_test_cookies(session_middleware: SessionMiddleware) -> str:
+def session_test_cookies(session_middleware: CookieSessionMiddleware) -> str:
     # Put random data. If you are also handling session management then use session_middleware fixture and create
     # session cookies with your own data.
     _session = {"key": secrets.token_hex(16)}
