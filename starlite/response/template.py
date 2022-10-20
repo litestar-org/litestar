@@ -14,6 +14,7 @@ class TemplateResponse(Response[bytes]):
     def __init__(
         self,
         template_name: str,
+        *,
         template_engine: "TemplateEngineProtocol",
         context: Dict[str, Any],
         status_code: int = HTTP_200_OK,
