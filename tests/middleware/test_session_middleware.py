@@ -99,6 +99,27 @@ def test_set_session_cookies(session_middleware: SessionMiddleware) -> None:
     assert "session-0" in response.cookies
 
 
+def test_session_cookie_name_matching(session_middleware: SessionMiddleware) -> None:
+    session_data = {"foo": "bar"}
+
+    @get("/")
+    def handler(request: Request) -> Dict[str, Any]:
+        return request.session
+
+    @post("/")
+    def set_session_data(request: Request) -> None:
+        request.set_session(session_data)
+
+    with create_test_client(
+        route_handlers=[handler, set_session_data],
+        middleware=[session_middleware.config.middleware],
+    ) as client:
+        client.post("/")
+        client.cookies[f"thisisnnota{session_middleware.config.key}cookie"] = "foo"
+        response = client.get("/")
+        assert response.json() == session_data
+
+
 @pytest.mark.parametrize("mutate", [False, True])
 def test_load_session_cookies_and_expire_previous(mutate: bool, session_middleware: SessionMiddleware) -> None:
     """Should load session cookies into session from request and overwrite the
