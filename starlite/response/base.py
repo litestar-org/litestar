@@ -51,6 +51,7 @@ class Response(Generic[T]):
         "encoding",
         "body",
         "status_allows_body",
+        "is_head_response",
     )
 
     def __init__(
@@ -63,6 +64,7 @@ class Response(Generic[T]):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
+        is_head_response: bool = False,
     ) -> None:
         """The response class is used to return an HTTP response.
 
@@ -83,6 +85,7 @@ class Response(Generic[T]):
         self.headers = headers or {}
         self.cookies = cookies or []
         self.encoding = encoding
+        self.is_head_response = is_head_response
         self.status_allows_body = not (
             self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < 100
         )
@@ -141,6 +144,17 @@ class Response(Generic[T]):
             None.
         """
         self.headers[key] = value
+
+    def set_etag(self, etag: str) -> None:
+        """Sets an etag header.
+
+        Args:
+            etag: An etag value.
+
+        Returns:
+            None
+        """
+        self.headers["etag"] = etag
 
     def delete_cookie(
         self,
@@ -212,6 +226,17 @@ class Response(Generic[T]):
         return b""
 
     @property
+    def content_length(self) -> Optional[int]:
+        """
+
+        Returns:
+            Returns the value for the 'Content-Length' header, if applies.
+        """
+        if self.status_allows_body and isinstance(self.body, bytes):
+            return len(self.body)
+        return None
+
+    @property
     def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
         """
 
@@ -230,8 +255,8 @@ class Response(Generic[T]):
             (b"content-type", content_type.encode("latin-1")),
         ]
 
-        if self.status_allows_body and isinstance(self.body, bytes):
-            encoded_headers.append((b"content-length", str(len(self.body)).encode("latin-1")))
+        if self.content_length is not None:
+            encoded_headers.append((b"content-length", str(self.content_length).encode("latin-1")))
         return encoded_headers
 
     async def after_response(self) -> None:

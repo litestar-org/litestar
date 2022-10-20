@@ -6,12 +6,7 @@ from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Generator, Iterator
 
 import pytest
 from pydantic import ValidationError
-from starlette.responses import (
-    FileResponse,
-    HTMLResponse,
-    JSONResponse,
-    PlainTextResponse,
-)
+from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
 from starlite import (
@@ -31,7 +26,12 @@ from starlite import (
     route,
 )
 from starlite.datastructures import BackgroundTask
-from starlite.response import RedirectResponse, StreamingResponse, TemplateResponse
+from starlite.response import (
+    FileResponse,
+    RedirectResponse,
+    StreamingResponse,
+    TemplateResponse,
+)
 from starlite.signature import SignatureModelFactory
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
@@ -134,7 +134,6 @@ async def test_to_response_returning_starlite_response() -> None:
         PlainTextResponse(content="abc"),
         HTMLResponse(content="<div><span/></div"),
         JSONResponse(status_code=HTTP_200_OK, content={}),
-        FileResponse("./test_to_response.py"),
     ],
 )
 async def test_to_response_returning_starlette_response(
@@ -238,15 +237,13 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
             data=route_handler.fn(), plugins=[], app=client.app, request=RequestFactory().get("/")  # type: ignore
         )
         assert isinstance(response, FileResponse)
-        assert response.stat_result  # type: ignore[unreachable]
-        assert response.path == current_file_path
-        assert response.filename == filename
+        assert response.stat_result
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
-        cookies = response.headers.getlist("set-cookie")
+        cookies = response.cookies
         assert len(cookies) == 3
-        assert cookies[0] == "file-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[1] == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert cookies[0].to_header(header="") == "file-cookie=xyz; Path=/; SameSite=lax"
+        assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
         assert response.background == background_task
 
 
