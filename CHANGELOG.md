@@ -1,5 +1,9 @@
 # Changelog
 
+[1.29.1]
+
+- fix `SessionMiddleware` handling non-session cookies with `session` anywhere in their name
+
 [1.29.0]
 
 - Adds native support for `TypedDict` as data type.
