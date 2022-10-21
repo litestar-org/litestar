@@ -71,7 +71,7 @@ async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]
         [RequestEncodingType.MULTI_PART, lambda data: "Content-Disposition" in data],
         [
             RequestEncodingType.URL_ENCODED,
-            lambda data: data == "&".join([f"{key}={value}" for key, value in pet.dict(exclude_none=True).items()]),
+            lambda data: data == f"name={pet.name}&species={pet.species.value}&age={pet.age}",
         ],
     ],
 )

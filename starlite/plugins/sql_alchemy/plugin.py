@@ -15,7 +15,7 @@ from typing import (
 )
 from uuid import UUID
 
-from pydantic import BaseModel, Json, conint, constr, create_model
+from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
 
 from starlite.datastructures.provide import Provide
@@ -196,7 +196,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlalchemy_type.INTEGER: lambda x: int,
             sqlalchemy_type.Integer: lambda x: int,
             sqlalchemy_type.Interval: lambda x: timedelta,
-            sqlalchemy_type.JSON: lambda x: dict,
+            sqlalchemy_type.JSON: lambda x: Union[dict, list],
             sqlalchemy_type.LargeBinary: self.handle_string_type,
             sqlalchemy_type.NCHAR: self.handle_string_type,
             sqlalchemy_type.NUMERIC: self.handle_numeric_type,
@@ -242,7 +242,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             mysql.ENUM: self.handle_enum,
             mysql.FLOAT: self.handle_numeric_type,
             mysql.INTEGER: lambda x: int,
-            mysql.JSON: lambda x: Json,
+            mysql.JSON: lambda x: Union[dict, list],
             mysql.LONGBLOB: self.handle_string_type,
             mysql.LONGTEXT: self.handle_string_type,
             mysql.MEDIUMBLOB: self.handle_string_type,
@@ -288,8 +288,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             postgresql.INT4RANGE: lambda x: Tuple[int, int],
             postgresql.INT8RANGE: lambda x: Tuple[int, int],
             postgresql.INTERVAL: lambda x: timedelta,
-            postgresql.JSON: lambda x: Json,
-            postgresql.JSONB: lambda x: Json,
+            postgresql.JSON: lambda x: Union[dict, list],
+            postgresql.JSONB: lambda x: Union[dict, list],
             postgresql.MACADDR: lambda x: constr(regex=r"^([A-F0-9]{2}:){5}[A-F0-9]{2}$"),
             postgresql.MONEY: lambda x: Decimal,
             postgresql.NUMRANGE: lambda x: Tuple[Union[int, float], Union[int, float]],
@@ -301,7 +301,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             # sqlite
             sqlite.DATE: lambda x: date,
             sqlite.DATETIME: lambda x: datetime,
-            sqlite.JSON: lambda x: Json,
+            sqlite.JSON: lambda x: Union[dict, list],
             sqlite.TIME: lambda x: time,
         }
 

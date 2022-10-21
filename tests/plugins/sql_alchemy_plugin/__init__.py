@@ -1,6 +1,7 @@
 from typing import List
 
-from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
+from sqlalchemy import JSON, Column, Enum, Float, ForeignKey, Integer, String, Table
+from sqlalchemy.dialects import mysql, postgresql, sqlite
 from sqlalchemy.orm import as_declarative, declared_attr, relationship
 
 from tests import Species
@@ -37,6 +38,15 @@ class Pet(SQLAlchemyBase):
     age = Column(Float)
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner: "User" = relationship("User", back_populates="pets", uselist=False)
+
+
+class WildAnimal(SQLAlchemyBase):
+    id = Column(Integer, primary_key=True)
+    sa_json = Column(JSON, default={})
+    my_json = Column(mysql.JSON, default=[])
+    pg_json = Column(postgresql.JSON, default={})
+    pg_jsonb = Column(postgresql.JSONB, default=[])
+    sl_json = Column(sqlite.JSON, default={})
 
 
 class Company(SQLAlchemyBase):

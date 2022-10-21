@@ -106,3 +106,7 @@ async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable,
     dto_instance = await DTO.from_model_instance_async(tournament)
     assert dto_instance.name == "abc"  # type: ignore
     assert dto_instance.id == 1  # type: ignore
+
+
+def test_sqlalchemy_jsonb_column() -> None:
+    ...
