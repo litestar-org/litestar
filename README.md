@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-53-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-54-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -306,6 +306,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/jab"><img src="https://avatars.githubusercontent.com/u/64992?v=4?s=100" width="100px;" alt="Joshua Bronson"/><br /><sub><b>Joshua Bronson</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jab" title="Documentation">📖</a></td>
       <td align="center"><a href="http://linkedin.com/in/roman-reznikov"><img src="https://avatars.githubusercontent.com/u/44291988?v=4?s=100" width="100px;" alt="Roman Reznikov"/><br /><sub><b>Roman Reznikov</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ReznikovRoman" title="Documentation">📖</a></td>
       <td align="center"><a href="http://mookrs.com"><img src="https://avatars.githubusercontent.com/u/985439?v=4?s=100" width="100px;" alt="mookrs"/><br /><sub><b>mookrs</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=mookrs" title="Documentation">📖</a></td>
+      <td align="center"><a href="http://mike.depalatis.net"><img src="https://avatars.githubusercontent.com/u/2805515?v=4?s=100" width="100px;" alt="Mike DePalatis"/><br /><sub><b>Mike DePalatis</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=mivade" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
