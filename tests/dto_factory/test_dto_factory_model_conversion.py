@@ -83,11 +83,6 @@ def test_conversion_from_model_instance(
             name="Mike",
             age=3,
             owner_id=1,
-            sa_json={"sa": "json"},
-            my_json=["my", "json"],
-            pg_json={"pg": "json"},
-            pg_jsonb=[{"pg": "jsonb"}],
-            sl_json={"sl": "json"},
         )
     dto_instance = DTO.from_model_instance(model_instance=model_instance)
     for key in dto_instance.__fields__:

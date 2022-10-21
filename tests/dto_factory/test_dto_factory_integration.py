@@ -10,7 +10,7 @@ from starlite import DTOFactory, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.testing import create_test_client
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet
+from tests.plugins.sql_alchemy_plugin import Pet, WildAnimal
 
 
 @pytest.mark.parametrize(
@@ -20,6 +20,7 @@ from tests.plugins.sql_alchemy_plugin import Pet
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
         [TypedDictPerson, ["id"], {"complex": "ultra"}, []],
         [Pet, ["owner"], {"species": "kind"}, [SQLAlchemyPlugin()]],
+        [WildAnimal, None, None, [SQLAlchemyPlugin()]],
     ],
 )
 def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:

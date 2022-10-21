@@ -38,6 +38,10 @@ class Pet(SQLAlchemyBase):
     age = Column(Float)
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner: "User" = relationship("User", back_populates="pets", uselist=False)
+
+
+class WildAnimal(SQLAlchemyBase):
+    id = Column(Integer, primary_key=True)
     sa_json = Column(JSON, default={})
     my_json = Column(mysql.JSON, default=[])
     pg_json = Column(postgresql.JSON, default={})
