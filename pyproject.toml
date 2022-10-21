@@ -34,6 +34,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
+aiomcache = {version = "*", optional = true}
+anyio = ">=3"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 httpx = { version = ">=0.22", optional = true }
@@ -43,12 +45,11 @@ pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 pyyaml = "*"
+redis = {version = "*", optional = true, extras = ["hiredis"]}
 starlette = ">=0.21"
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-redis = {version = "*", optional = true, extras = ["hiredis"]}
-aiomcache = {version = "*", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
