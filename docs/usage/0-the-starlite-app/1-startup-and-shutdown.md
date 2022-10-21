@@ -2,7 +2,7 @@
 
 You can pass a list of callables - either sync or async functions, methods or class instances - using the `on_startup`
 / `on_shutdown` kwargs of the `Starlite` constructor. The callables will be called in their respective order in the list
-once the ASGI server (uvicorn, dafne etc.) emits the respective event.
+once the ASGI server (uvicorn, daphne etc.) emits the respective event.
 
 ## Example
 
