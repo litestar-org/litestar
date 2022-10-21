@@ -139,7 +139,7 @@ async def test_to_response_returning_starlite_response() -> None:
 async def test_to_response_returning_starlette_response(
     expected_response: StarletteResponse, anyio_backend: str
 ) -> None:
-    @get(path="/test")
+    @get(path="/test", response_cookies=[Cookie(key="my-cookies", value="abc", path="/test")])
     def test_function() -> StarletteResponse:
         return expected_response
 
@@ -151,6 +151,7 @@ async def test_to_response_returning_starlette_response(
         )
         assert isinstance(response, StarletteResponse)
         assert response is expected_response  # type: ignore[unreachable]
+        assert response.headers["set-cookie"] == "my-cookies=abc; Path=/test; SameSite=lax"
 
 
 async def test_to_response_returning_redirect_response(anyio_backend: str) -> None:
