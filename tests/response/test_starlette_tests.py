@@ -94,7 +94,7 @@ def test_redirect_response_content_length_header() -> None:
         await response(scope, receive, send)
 
     client: TestClient = TestClient(app)  # type: ignore
-    response = client.request("GET", "/redirect", allow_redirects=False)
+    response = client.request("GET", "/redirect", follow_redirects=False)
     assert response.url == "http://testserver/redirect"
     assert "content-length" not in response.headers
 
@@ -401,7 +401,7 @@ async def test_streaming_response_stops_if_receiving_http_disconnect(anyio_backe
         await disconnected.wait()
         return {"type": "http.disconnect"}
 
-    async def send(message: Message) -> None:
+    async def send(message: "Message") -> None:
         nonlocal streamed
         if message["type"] == "http.response.body":
             streamed += len(message.get("body", b""))
