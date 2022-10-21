@@ -71,7 +71,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         if not cancel_scope.cancel_called:
             message = await receive()
             if message["type"] == "http.disconnect":
-                await cancel_scope.cancel()
+                cancel_scope.cancel()
             else:
                 await self.listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
 
