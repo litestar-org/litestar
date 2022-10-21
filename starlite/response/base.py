@@ -87,7 +87,7 @@ class Response(Generic[T]):
         self.encoding = encoding
         self.is_head_response = is_head_response
         self.status_allows_body = not (
-            self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < 100
+            self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < HTTP_200_OK
         )
         self.body = self.render(content)
 
@@ -172,9 +172,11 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        for i, cookie in enumerate(self.cookies):
+        for cookie in self.cookies:
             if cookie.key == key and cookie.path == path and cookie.domain == domain:
-                self.cookies.pop(i)
+                cookie.value = None
+                cookie.expires = 0
+                cookie.max_age = 0
                 break
 
     @staticmethod
@@ -250,7 +252,7 @@ class Response(Generic[T]):
             content_type = self.media_type
 
         encoded_headers = [
-            *((k.lower().encode("latin-1"), v.lower().encode("latin-1")) for k, v in self.headers.items()),
+            *((k.lower().encode("latin-1"), str(v).lower().encode("latin-1")) for k, v in self.headers.items()),
             *((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
             (b"content-type", content_type.encode("latin-1")),
         ]
