@@ -255,7 +255,7 @@ class Response(Generic[T]):
             (b"content-type", content_type.encode("latin-1")),
         ]
 
-        if self.content_length is not None:
+        if self.content_length and not any(key == b"content-length" for key, _ in encoded_headers):
             encoded_headers.append((b"content-length", str(self.content_length).encode("latin-1")))
         return encoded_headers
 

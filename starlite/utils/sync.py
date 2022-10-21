@@ -85,18 +85,15 @@ def async_partial(fn: Callable) -> Callable:
     return wrapper
 
 
-async def iterate_sync_iterator(value: Union[Iterator[T], Iterable[T]]) -> AsyncGenerator[T, None]:
+async def iterate_sync_iterator(iterator: Union[Iterator[T], Iterable[T]]) -> AsyncGenerator[T, None]:
     """Take a sync iterator or iterable and yields values from it
     asynchronously.
 
     Args:
-        value: An iterator or iterable.
+        iterator: An iterator or iterable.
 
     Returns:
         An AsyncGenerator.
     """
-    it = iter(value)
-    try:
-        yield next(it)
-    except StopIteration:
-        return
+    for element in iterator:
+        yield element

@@ -70,12 +70,10 @@ repos:
             "flake8-print",
             "flake8-simplify",
             "flake8-type-checking",
-            "flake8-pytest-style",
             "flake8-implicit-str-concat",
             "flake8-noqa",
             "flake8-return",
             "flake8-secure-coding-standard",
-            "flake8-eradicate",
             "flake8-encodings",
             "flake8-use-fstring",
             "flake8-use-pathlib",
@@ -163,7 +161,7 @@ repos:
     rev: "v0.982"
     hooks:
       - id: mypy
-        exclude: "test_starlette_tests"
+        exclude: "starlette"
         additional_dependencies:
           [
             orjson,

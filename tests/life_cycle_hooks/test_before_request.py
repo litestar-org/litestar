@@ -43,13 +43,13 @@ async def async_after_request_handler(response: Response) -> Response:
 
 @pytest.mark.parametrize(
     "handler, expected",
-    [
-        [get(path="/")(greet), {"hello": "world"}],
-        [get(path="/", before_request=sync_before_request_handler_with_return_value)(greet), {"hello": "moon"}],
-        [get(path="/", before_request=async_before_request_handler_with_return_value)(greet), {"hello": "moon"}],
-        [get(path="/", before_request=sync_before_request_handler_without_return_value)(greet), {"hello": "world"}],
-        [get(path="/", before_request=async_before_request_handler_without_return_value)(greet), {"hello": "world"}],
-    ],
+    (
+        (get(path="/")(greet), {"hello": "world"}),
+        (get(path="/", before_request=sync_before_request_handler_with_return_value)(greet), {"hello": "moon"}),
+        (get(path="/", before_request=async_before_request_handler_with_return_value)(greet), {"hello": "moon"}),
+        (get(path="/", before_request=sync_before_request_handler_without_return_value)(greet), {"hello": "world"}),
+        (get(path="/", before_request=async_before_request_handler_without_return_value)(greet), {"hello": "world"}),
+    ),
 )
 def test_before_request_handler_called(handler: HTTPRouteHandler, expected: dict) -> None:
     with create_test_client(route_handlers=handler) as client:

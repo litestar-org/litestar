@@ -67,11 +67,11 @@ def test_request_headers() -> None:
 
 @pytest.mark.parametrize(
     "scope,expected_client",
-    [
+    (
         ({"client": ["client", 42]}, Address("client", 42)),
         ({"client": None}, None),
         ({}, None),
-    ],
+    ),
 )
 def test_request_client(scope: Any, expected_client: Optional[Address]) -> None:
     scope.update({"type": "http"})  # required by Request's constructor
