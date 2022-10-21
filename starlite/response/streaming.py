@@ -68,7 +68,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else iterate_sync_iterator(content)
         )
 
-    async def listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:
+    async def _listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:
         """
         Listens for a cancellation message, and if received - calls cancel on the cancel scope.
 
@@ -86,9 +86,9 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
                 # therefore make sure not to await this.
                 cancel_scope.cancel()
             else:
-                await self.listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
+                await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
 
-    async def stream(self, send: "Send") -> None:
+    async def _stream(self, send: "Send") -> None:
         """Sends the chunks from the iterator as a stream of ASGI
         'http.response.body' events.
 
@@ -120,5 +120,5 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         """
 
         async with create_task_group() as task_group:
-            task_group.start_soon(partial(self.stream, send))
-            await self.listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
+            task_group.start_soon(partial(self._stream, send))
+            await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)

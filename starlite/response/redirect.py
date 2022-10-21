@@ -34,7 +34,7 @@ class RedirectResponse(Response[Any]):
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If status code is not a redirect status code.
         """
         if status_code not in REDIRECT_STATUS_CODES:
             raise ImproperlyConfiguredException(
