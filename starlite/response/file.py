@@ -162,6 +162,6 @@ class FileResponse(StreamingResponse):
         """
 
         Returns:
-            Returns the value for the 'Content-Length' header, if applies.
+            Returns the value of 'self.stat_result.st_size' to populate the 'Content-Length' header.
         """
         return self.stat_result.st_size

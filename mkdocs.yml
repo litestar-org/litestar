@@ -151,7 +151,6 @@ nav:
       - reference/1-app.md
       - reference/2-router.md
       - reference/3-controller.md
-      - reference/4-response.md
       - reference/5-dto.md
       - reference/6-enums.md
       - Cache:
@@ -173,6 +172,12 @@ nav:
           - reference/connection/0-asgi-connection.md
           - reference/connection/1-request.md
           - reference/connection/2-websocket.md
+      - Responses:
+          - reference/response/0-base.md
+          - reference/response/1-streaming.md
+          - reference/response/2-file.md
+          - reference/response/3-template.md
+          - reference/response/4-redirect.md
       - Datastructures:
           - reference/datastructures/0-state.md
           - reference/datastructures/1-cookie.md
