@@ -54,12 +54,38 @@ class FileResponse(StreamingResponse):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
+        is_head_response: bool = False,
         filename: Optional[str] = None,
         stat_result: Optional["stat_result_type"] = None,
         chunk_size: int = ONE_MEGA_BYTE,
         content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
         etag: Optional[str] = None,
     ) -> None:
+        """This class allows streaming a file as response body.
+
+        Notes:
+            - This class extends the [StreamingReesponse][starlite.response.StreamingResponse] class.
+
+        Args:
+            path: A file path in one of the supported formats.
+            status_code: An HTTP status code.
+            media_type: A value for the response 'Content-Type' header. If not provided, the value will be either
+                derived from the filename if provided and supported by the stdlib, or will default to
+                'application/octet-stream'.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            encoding: The encoding to used for the response headers.
+            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
+            filename: An optional filename to set in the header.
+            stat_result: An optional result of calling 'os.stat'. If not provided, this will be done by the response
+                constructor.
+            chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
+            content_disposition_type: Either 'inline' or 'attachment'.
+            etag: An optional etag for the file. If not provided, and etag will be generated automatically.
+        """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
@@ -72,6 +98,7 @@ class FileResponse(StreamingResponse):
             headers=headers,
             cookies=cookies,
             encoding=encoding,
+            is_head_response=is_head_response,
         )
         self.stat_result = cast("stat_result_type", self._get_stat_result(path=path, stat_result=stat_result))
         self.set_header("last-modified", formatdate(self.stat_result.st_mtime, usegmt=True))
