@@ -172,12 +172,12 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        for cookie in self.cookies:
-            if cookie.key == key and cookie.path == path and cookie.domain == domain:
-                cookie.value = None
-                cookie.expires = 0
-                cookie.max_age = 0
-                break
+        self.cookies = [
+            cookie
+            for cookie in self.cookies
+            if not (cookie.key == key and cookie.path == path and cookie.domain == domain)
+        ]
+        self.cookies.append(Cookie(key=key, path=path, domain=domain, expires=0, max_age=0))
 
     @staticmethod
     def serializer(value: Any) -> Any:
