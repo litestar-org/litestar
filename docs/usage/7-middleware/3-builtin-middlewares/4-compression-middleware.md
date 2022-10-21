@@ -17,7 +17,7 @@ You can configure the following additional gzip-specific values:
 from starlite import Starlite, CompressionConfig
 
 app = Starlite(
-    request_handlers=[...],
+    route_handlers=[...],
     compression_config=CompressionConfig(backend="gzip", gzip_compress_level=9),
 )
 ```
@@ -42,7 +42,7 @@ from starlite import Starlite
 from starlite.config import CompressionConfig
 
 app = Starlite(
-    request_handlers=[...],
+    route_handlers=[...],
     compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=True),
 )
 ```

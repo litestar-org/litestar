@@ -8,7 +8,7 @@ trusted hosts to the Starlite constructor:
 from starlite import Starlite
 
 app = Starlite(
-    request_handlers=[...], allowed_hosts=["*.example.com", "www.wikipedia.org"]
+    route_handlers=[...], allowed_hosts=["*.example.com", "www.wikipedia.org"]
 )
 ```
 
