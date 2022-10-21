@@ -79,7 +79,7 @@ def Parameter(
         regex: A string representing a regex against which the given string will be matched.
             Equivalent to pattern in the OpenAPI specification.
     """
-    extra: Dict[str, Any] = dict(is_parameter=True)
+    extra: Dict[str, Any] = {"is_parameter": True}
     extra.update(header=header)
     extra.update(cookie=cookie)
     extra.update(query=query)

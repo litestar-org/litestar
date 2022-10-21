@@ -119,7 +119,7 @@ class Foo:
 
 @pytest.mark.parametrize(
     "cls, should_raise",
-    [(Foo, True), (Person, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)],
+    ((Foo, True), (Person, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
 )
 def test_validation(cls: Any, should_raise: bool) -> None:
     """Test that Partial returns no annotations for classes that don't inherit

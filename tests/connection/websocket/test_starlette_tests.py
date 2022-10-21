@@ -1,6 +1,7 @@
 """The tests in this file were adapted from:
 
-https://github.com/encode/starlette/blob/master/tests/test_websockets.py
+https://github.com/encode/starlette/blob/master/tests/test_websockets.py And are
+meant to ensure our compatibility with their API.
 """
 
 from typing import TYPE_CHECKING
@@ -25,8 +26,7 @@ def test_websocket_url():
         await websocket.send_json({"url": str(websocket.url)})
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/123?a=abc") as websocket:
+    with TestClient(app).websocket_connect("/123?a=abc") as websocket:  # type: ignore
         data = websocket.receive_json()
         assert data == {"url": "ws://testserver/123?a=abc"}
 
@@ -39,8 +39,7 @@ def test_websocket_binary_json():
         await websocket.send_json(message, mode="binary")
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/123?a=abc") as websocket:
+    with TestClient(app).websocket_connect("/123?a=abc") as websocket:  # type: ignore
         websocket.send_json({"test": "data"}, mode="binary")
         data = websocket.receive_json(mode="binary")
         assert data == {"test": "data"}
@@ -54,8 +53,7 @@ def test_websocket_query_params():
         await websocket.send_json({"params": query_params})
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/?a=abc&b=456") as websocket:
+    with TestClient(app).websocket_connect("/?a=abc&b=456") as websocket:  # type: ignore
         data = websocket.receive_json()
         assert data == {"params": {"a": ["abc"], "b": ["456"]}}
 
@@ -68,8 +66,7 @@ def test_websocket_headers():
         await websocket.send_json({"headers": headers})
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         expected_headers = {
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br",
@@ -90,8 +87,7 @@ def test_websocket_port():
         await websocket.send_json({"port": websocket.url.port})
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("ws://example.com:123/123?a=abc") as websocket:
+    with TestClient(app).websocket_connect("ws://example.com:123/123?a=abc") as websocket:  # type: ignore
         data = websocket.receive_json()
         assert data == {"port": 123}
 
@@ -104,8 +100,7 @@ def test_websocket_send_and_receive_text():
         await websocket.send_text("Message was: " + data)
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.send_text("Hello, world!")
         data = websocket.receive_text()
         assert data == "Message was: Hello, world!"
@@ -119,8 +114,7 @@ def test_websocket_send_and_receive_bytes():
         await websocket.send_bytes(b"Message was: " + data)
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.send_bytes(b"Hello, world!")
         data = websocket.receive_bytes()
         assert data == b"Message was: Hello, world!"
@@ -134,8 +128,7 @@ def test_websocket_send_and_receive_json():
         await websocket.send_json({"message": data})
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.send_json({"hello": "world"})
         data = websocket.receive_json()
         assert data == {"message": {"hello": "world"}}
@@ -162,8 +155,7 @@ def test_websocket_concurrency_pattern():
             await writer(websocket)
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.send_json({"hello": "world"})
         data = websocket.receive_json()
         assert data == {"hello": "world"}
@@ -181,8 +173,7 @@ def test_client_close():
         except WebSocketException as exc:
             close_code = exc.code
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.close(code=status.WS_1001_GOING_AWAY)
     assert close_code == status.WS_1001_GOING_AWAY
 
@@ -193,8 +184,7 @@ def test_application_close():
         await websocket.accept()
         await websocket.close(status.WS_1001_GOING_AWAY)
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:
+    with TestClient(app).websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:  # type: ignore
         websocket.receive_text()
     assert exc.value.code == status.WS_1001_GOING_AWAY
 
@@ -204,9 +194,8 @@ def test_rejected_connection():
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.close(status.WS_1001_GOING_AWAY)
 
-    client = TestClient(app)
-    with pytest.raises(WebSocketDisconnect) as exc, client.websocket_connect("/"):
-        pass  # pragma: nocover
+    with pytest.raises(WebSocketDisconnect) as exc, TestClient(app).websocket_connect("/"):  # type: ignore
+        pass
     assert exc.value.code == status.WS_1001_GOING_AWAY
 
 
@@ -217,8 +206,7 @@ def test_subprotocol():
         await websocket.accept(subprotocols="wamp")
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/", subprotocols=["soap", "wamp"]) as websocket:
+    with TestClient(app).websocket_connect("/", subprotocols=["soap", "wamp"]) as websocket:  # type: ignore
         assert websocket.accepted_subprotocol == "wamp"
 
 
@@ -228,8 +216,7 @@ def test_additional_headers():
         await websocket.accept(headers=[(b"additional", b"header")])
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         assert websocket.extra_headers == [(b"additional", b"header")]
 
 
@@ -239,8 +226,7 @@ def test_no_additional_headers():
         await websocket.accept()
         await websocket.close()
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket:
+    with TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         assert websocket.extra_headers == []
 
 
@@ -248,9 +234,8 @@ def test_websocket_exception():
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         raise RuntimeError
 
-    client = TestClient(app)
-    with pytest.raises(RuntimeError), client.websocket_connect("/123?a=abc"):
-        pass  # pragma: nocover
+    with pytest.raises(RuntimeError), TestClient(app).websocket_connect("/123?a=abc"):  # type: ignore
+        pass
 
 
 def test_duplicate_disconnect():
@@ -261,8 +246,7 @@ def test_duplicate_disconnect():
         assert message["type"] == "websocket.disconnect"
         message = await websocket.receive()
 
-    client = TestClient(app)
-    with pytest.raises(WebSocketException), client.websocket_connect("/") as websocket:
+    with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/") as websocket:  # type: ignore
         websocket.close()
 
 
@@ -272,8 +256,7 @@ def test_websocket_close_reason() -> None:
         await websocket.accept()
         await websocket.close(code=status.WS_1001_GOING_AWAY, reason="Going Away")
 
-    client = TestClient(app)
-    with client.websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:
+    with TestClient(app).websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:  # type: ignore
         websocket.receive_text()
         assert exc.value.code == status.WS_1001_GOING_AWAY
         assert exc.value.reason == "Going Away"
@@ -284,9 +267,8 @@ def test_receive_text_before_accept():
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.receive_text()
 
-    client = TestClient(app)
-    with pytest.raises(WebSocketException), client.websocket_connect("/"):
-        pass  # pragma: nocover
+    with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):  # type: ignore
+        pass
 
 
 def test_receive_bytes_before_accept():
@@ -294,9 +276,8 @@ def test_receive_bytes_before_accept():
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.receive_bytes()
 
-    client = TestClient(app)
-    with pytest.raises(WebSocketException), client.websocket_connect("/"):
-        pass  # pragma: nocover
+    with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):  # type: ignore
+        pass
 
 
 def test_receive_json_before_accept():
@@ -304,6 +285,5 @@ def test_receive_json_before_accept():
         websocket = WebSocket(scope, receive=receive, send=send)
         await websocket.receive_json()
 
-    client = TestClient(app)
-    with pytest.raises(WebSocketException), client.websocket_connect("/"):
-        pass  # pragma: nocover
+    with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):  # type: ignore
+        pass

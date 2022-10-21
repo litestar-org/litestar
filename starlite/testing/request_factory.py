@@ -34,10 +34,13 @@ def _default_route_handler() -> None:
     ...
 
 
+default_app = Starlite(route_handlers=[_default_route_handler])
+
+
 class RequestFactory:
     def __init__(
         self,
-        app: Starlite = Starlite(route_handlers=[_default_route_handler]),
+        app: Starlite = default_app,
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
