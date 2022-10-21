@@ -497,6 +497,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "mivade",
+      "name": "Mike DePalatis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2805515?v=4",
+      "profile": "http://mike.depalatis.net",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

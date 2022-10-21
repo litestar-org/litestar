@@ -10,7 +10,7 @@ def provide_str() -> str:
 
 @get("/", dependencies={"injected": Provide(provide_str)})
 def hello_world(injected: int = Dependency(skip_validation=True)) -> dict[str, Any]:
-    """Handler expects and `int`, but we've provided a `str`."""
+    """Handler expects an `int`, but we've provided a `str`."""
     return {"hello": injected}
 
 
