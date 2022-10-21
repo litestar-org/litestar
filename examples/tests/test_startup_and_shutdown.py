@@ -6,7 +6,7 @@ from starlite import State, get
 from starlite.testing import TestClient
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch  # noqa:PT013
+    from pytest import MonkeyPatch
 
 
 class FakeAsyncEngine:

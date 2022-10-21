@@ -7,7 +7,7 @@ from typing_extensions import TypedDict
 from starlite.utils import model
 
 if TYPE_CHECKING:
-    from pytest import MonkeyPatch  # noqa: PT013
+    from pytest import MonkeyPatch
 
 
 def test_convert_dataclass_to_model_cache(monkeypatch: "MonkeyPatch") -> None:

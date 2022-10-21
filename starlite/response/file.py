@@ -1,4 +1,5 @@
 from email.utils import formatdate
+from mimetypes import guess_type
 from os.path import basename
 from pathlib import Path
 from stat import S_ISREG
@@ -45,10 +46,10 @@ class FileResponse(StreamingResponse):
 
     def __init__(
         self,
-        path: Union[str, "PathLike"],
+        path: Union[str, "PathLike", "Path"],
         *,
         status_code: int = HTTP_200_OK,
-        media_type: Union["Literal[MediaType.TEXT]", str] = "application/octet-stream",
+        media_type: Optional[Union["Literal[MediaType.TEXT]", str]] = None,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
@@ -59,6 +60,10 @@ class FileResponse(StreamingResponse):
         content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
         etag: Optional[str] = None,
     ) -> None:
+        if not media_type:
+            mimetype, _ = guess_type(filename) if filename else (None, None)
+            media_type = mimetype or "application/octet-stream"
+
         super().__init__(
             content=async_file_iterator(file_path=path, chunk_size=chunk_size),
             status_code=status_code,
@@ -90,9 +95,8 @@ class FileResponse(StreamingResponse):
         check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
         return f"{self.stat_result.st_mtime}-{self.stat_result.st_size}-{check}"
 
-    def _get_stat_result(
-        self, path: Union[str, "PathLike"], stat_result: Optional["stat_result_type"]
-    ) -> "stat_result_type":
+    @staticmethod
+    def _get_stat_result(path: Union[str, "PathLike"], stat_result: Optional["stat_result_type"]) -> "stat_result_type":
         """
 
         Args:
@@ -110,9 +114,8 @@ class FileResponse(StreamingResponse):
         except FileNotFoundError as e:
             raise ImproperlyConfiguredException(f"file {path} doesn't exist") from e
 
-    def _get_content_disposition(
-        self, filename: str, content_disposition_type: "Literal['attachment', 'inline']"
-    ) -> str:
+    @staticmethod
+    def _get_content_disposition(filename: str, content_disposition_type: "Literal['attachment', 'inline']") -> str:
         """
 
         Args:

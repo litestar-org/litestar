@@ -1,4 +1,4 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 import pytest
 from pydantic import ValidationError
@@ -7,10 +7,13 @@ from starlite import ImproperlyConfiguredException, Starlite, get
 from starlite.config import StaticFilesConfig
 from starlite.testing import create_test_client
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def test_staticfiles(tmpdir: Any) -> None:
-    path = tmpdir.join("test.txt")
-    path.write("content")
+
+def test_staticfiles(tmpdir: "Path") -> None:
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get("/static/test.txt")
@@ -18,9 +21,9 @@ def test_staticfiles(tmpdir: Any) -> None:
         assert response.text == "content"
 
 
-def test_staticfiles_html_mode(tmpdir: Any) -> None:
-    path = tmpdir.join("index.html")
-    path.write("content")
+def test_staticfiles_html_mode(tmpdir: "Path") -> None:
+    path = tmpdir / "index.html"
+    path.write_text("content", "utf-8")
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir], html_mode=True)
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get("/static")
@@ -28,9 +31,9 @@ def test_staticfiles_html_mode(tmpdir: Any) -> None:
         assert response.text == "content"
 
 
-def test_staticfiles_for_slash_path(tmpdir: Any) -> None:
-    path = tmpdir.join("text.txt")
-    path.write("content")
+def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
 
     static_files_config = StaticFilesConfig(path="/", directories=[tmpdir])
     with create_test_client([], static_files_config=static_files_config) as client:
@@ -39,9 +42,9 @@ def test_staticfiles_for_slash_path(tmpdir: Any) -> None:
         assert response.text == "content"
 
 
-def test_config_validation(tmpdir: Any) -> None:
-    path = tmpdir.join("text.txt")
-    path.write("content")
+def test_config_validation(tmpdir: "Path") -> None:
+    path = tmpdir / "text.txt"
+    path.write_text("content", "utf-8")
 
     with pytest.raises(ValidationError):
         StaticFilesConfig(path="", directories=[tmpdir])
@@ -50,9 +53,9 @@ def test_config_validation(tmpdir: Any) -> None:
         StaticFilesConfig(path="/{param:int}", directories=[tmpdir])
 
 
-def test_path_inside_static(tmpdir: Any) -> None:
-    path = tmpdir.join("test.txt")
-    path.write("content")
+def test_path_inside_static(tmpdir: "Path") -> None:
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
 
     @get("/static/strange/{f:str}")
     def handler(f: str) -> str:
@@ -67,13 +70,13 @@ def test_path_inside_static(tmpdir: Any) -> None:
         app.register(handler)
 
 
-def test_multiple_configs(tmpdir: Any) -> None:
-    root1 = tmpdir.mkdir("1")
-    root2 = tmpdir.mkdir("2")
-    path1 = root1.join("test.txt")
-    path1.write("content1")
-    path2 = root2.join("test.txt")
-    path2.write("content2")
+def test_multiple_configs(tmpdir: "Path") -> None:
+    root1 = tmpdir.mkdir("1")  # type: ignore
+    root2 = tmpdir.mkdir("2")  # type: ignore
+    path1 = root1 / "test.txt"
+    path1.write_text("content1", "utf-8")
+    path2 = root2 / "test.txt"
+    path2.write_text("content2", "utf-8")
 
     static_files_config = [
         StaticFilesConfig(path="/1", directories=[root1]),
@@ -89,10 +92,9 @@ def test_multiple_configs(tmpdir: Any) -> None:
         assert response.text == "content2"
 
 
-def test_static_substring_of_self(tmpdir: Any) -> None:
-    path = tmpdir.mkdir("static_part").mkdir("static")
-    path = path.join("test.txt")
-    path.write("content")
+def test_static_substring_of_self(tmpdir: "Path") -> None:
+    path = tmpdir.mkdir("static_part").mkdir("static") / "test.txt"  # type: ignore
+    path.write_text("content", "utf-8")
 
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
     with create_test_client([], static_files_config=static_files_config) as client:
