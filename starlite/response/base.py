@@ -66,18 +66,20 @@ class Response(Generic[T]):
         encoding: str = "utf-8",
         is_head_response: bool = False,
     ) -> None:
-        """The response class is used to return an HTTP response.
+        """This is the base Starlite HTTP response class, its is used as a
+        basis for all other response classes.
 
         Args:
             content: A value for the response body that will be rendered into bytes string.
-            status_code: A value for the response HTTP status code.
+            status_code: An HTTP status code.
             media_type: A value for the response 'Content-Type' header.
             background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
                 [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-            encoding: Encoding to use for the headers.
+            encoding: The encoding to used for the response headers.
+            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """
         self.status_code = status_code
         self.media_type = media_type
@@ -89,7 +91,7 @@ class Response(Generic[T]):
         self.status_allows_body = not (
             self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < HTTP_200_OK
         )
-        self.body = self.render(content)
+        self.body = self.render(content) if not self.is_head_response else b""
 
     def set_cookie(
         self,
@@ -287,6 +289,22 @@ class Response(Generic[T]):
 
         await send(event)
 
+    async def send_body(self, send: "Send", receive: "Receive") -> None:  # pylint: disable=unused-argument
+        """Emits the response body.
+
+        Args:
+            send: The ASGI send function.
+            receive: The ASGI receive function.
+
+        Notes:
+            - Response subclasses should customize this method if there is a need to customize sending data.
+
+        Returns:
+            None
+        """
+        event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
+        await send(event)
+
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The call method of the response is an "ASGIApp".
 
@@ -300,7 +318,10 @@ class Response(Generic[T]):
         """
         await self.start_response(send=send)
 
-        event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
-        await send(event)
+        if self.is_head_response:
+            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+            await send(event)
+        else:
+            await self.send_body(send=send, receive=receive)
 
         await self.after_response()
