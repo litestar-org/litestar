@@ -488,6 +488,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "mookrs",
+      "name": "mookrs",
+      "avatar_url": "https://avatars.githubusercontent.com/u/985439?v=4",
+      "profile": "http://mookrs.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
