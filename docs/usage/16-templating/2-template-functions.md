@@ -24,7 +24,7 @@ URLs for static files can be created using the `url_for_static_asset` function. 
 
 The Starlite [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol] specifies the method
 `register_template_callable` that allows defining a custom callable on a template engine. This method is implemented
-for the two built in engine and it can be used to register callables that will be inject on the template. The callable
+for the two built in engine, and it can be used to register callables that will be inject on the template. The callable
 should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
 the call method. For example:
 
@@ -40,7 +40,7 @@ def my_template_function(ctx: dict) -> str:
 
 
 template_config.engine.register_template_callable(
-    "check_context_key", my_template_function
+    "check_context_key", template_callable=my_template_function
 )
 
 app = Starlite(

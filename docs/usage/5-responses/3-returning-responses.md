@@ -57,7 +57,7 @@ def retrieve_resource() -> Response[Resource]:
             id=1,
             name="my resource",
             headers={"MY-HEADER": "xyz"},
-            cookies=[Cookie("my-cookie", value="abc")],
+            cookies=[Cookie(key="my-cookie", value="abc")],
         )
     )
 ```

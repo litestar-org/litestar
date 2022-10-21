@@ -87,6 +87,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         """Wraps 'send' to handle CSRF validation.
 
         Args:
+            token: The CSRF token.
             send: The ASGI send function.
             csrf_cookie: CSRF cookie.
 
