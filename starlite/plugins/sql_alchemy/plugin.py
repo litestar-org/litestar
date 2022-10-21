@@ -196,7 +196,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             sqlalchemy_type.INTEGER: lambda x: int,
             sqlalchemy_type.Integer: lambda x: int,
             sqlalchemy_type.Interval: lambda x: timedelta,
-            sqlalchemy_type.JSON: lambda x: dict,
+            sqlalchemy_type.JSON: lambda x: Union[dict, list],
             sqlalchemy_type.LargeBinary: self.handle_string_type,
             sqlalchemy_type.NCHAR: self.handle_string_type,
             sqlalchemy_type.NUMERIC: self.handle_numeric_type,
@@ -301,7 +301,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             # sqlite
             sqlite.DATE: lambda x: date,
             sqlite.DATETIME: lambda x: datetime,
-            sqlite.JSON: lambda x: Union[Dict, List],
+            sqlite.JSON: lambda x: Union[dict, list],
             sqlite.TIME: lambda x: time,
         }
 
