@@ -83,8 +83,12 @@ def test_delete_cookie() -> None:
     with create_test_client(route_handlers=[create_cookie_handler, delete_cookie_handler]) as client:
         response = client.get("/create")
         assert response.cookies.get("test") == "abc"
+        assert client.cookies.get("test") == "abc"
         response = client.get("/delete")
         assert response.cookies.get("test") is None
+        # the commented out assert fails, because of the starlette test client's behaviour - which doesn't clear
+        # cookies.
+        # assert client.cookies.get("test") is None
 
 
 @pytest.mark.parametrize(
