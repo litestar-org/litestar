@@ -71,6 +71,8 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         if not cancel_scope.cancel_called:
             message = await receive()
             if message["type"] == "http.disconnect":
+                # despite the IDE warning, this is not a coroutine because anyio 3+ changed this.
+                # therefore make sure not to await this.
                 cancel_scope.cancel()
             else:
                 await self.listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
