@@ -1,11 +1,12 @@
+import json
 from typing import Any
 
 import pytest
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED
+from starlette.status import HTTP_201_CREATED
 
-from starlite import DTOFactory, get, post
+from starlite import DTOFactory, post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.testing import create_test_client
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
@@ -32,18 +33,17 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
     @post(path="/")
     def post_handler(data: MyDTO) -> None:  # type: ignore
         assert isinstance(data, MyDTO)
-        assert data == dto_instance
+        for k, v in data.dict().items():
+            # the factory data might have datetime values in it which don't compare
+            if k in ("sa_json", "my_json", "pg_json", "pg_jsonb", "sl_json"):
+                dto_val = dto_instance[k]
+                assert v == json.loads(json.dumps(dto_val, default=str))
+            else:
+                assert v == dto_instance[k]
 
-    @get(path="/")
-    def get_handler() -> Any:
-        return dto_instance
-
-    with create_test_client(route_handlers=[post_handler, get_handler]) as client:
-        post_response = client.post("/", json=dto_instance)
+    with create_test_client(route_handlers=[post_handler]) as client:
+        post_response = client.post("/", content=json.dumps(dto_instance, default=str))
         assert post_response.status_code == HTTP_201_CREATED
-        get_response = client.get("/")
-        assert get_response.status_code == HTTP_200_OK
-        assert get_response.json() == dto_instance
 
 
 @pytest.mark.parametrize(

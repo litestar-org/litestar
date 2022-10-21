@@ -83,6 +83,11 @@ def test_conversion_from_model_instance(
             name="Mike",
             age=3,
             owner_id=1,
+            sa_json={"sa": "json"},
+            my_json=["my", "json"],
+            pg_json={"pg": "json"},
+            pg_jsonb=[{"pg": "jsonb"}],
+            sl_json={"sl": "json"},
         )
     dto_instance = DTO.from_model_instance(model_instance=model_instance)
     for key in dto_instance.__fields__:
@@ -106,3 +111,7 @@ async def test_async_conversion_from_model_instance(scaffold_tortoise: Callable,
     dto_instance = await DTO.from_model_instance_async(tournament)
     assert dto_instance.name == "abc"  # type: ignore
     assert dto_instance.id == 1  # type: ignore
+
+
+def test_sqlalchemy_jsonb_column() -> None:
+    ...
