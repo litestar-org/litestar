@@ -5,8 +5,11 @@ meant to ensure our compatibility with their API.
 """
 from typing import TYPE_CHECKING
 
-from starlite import Response
+import pytest
+
+from starlite import ImproperlyConfiguredException, Response
 from starlite.response import RedirectResponse
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
 if TYPE_CHECKING:
@@ -53,3 +56,8 @@ def test_redirect_response_content_length_header() -> None:
     response = client.request("GET", "/redirect", follow_redirects=False)
     assert response.url == "http://testserver/redirect"
     assert "content-length" not in response.headers
+
+
+def test_redirect_response_status_validation() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        RedirectResponse("/", status_code=HTTP_200_OK)  # type: ignore

@@ -21,13 +21,7 @@ from starlite.utils.sync import iterate_sync_iterator
 if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.enums import OpenAPIMediaType
-    from starlite.types import (
-        HTTPResponseBodyEvent,
-        Receive,
-        ResponseCookies,
-        Scope,
-        Send,
-    )
+    from starlite.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send
 
 
 class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
@@ -43,7 +37,23 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
+        is_head_response: bool = False,
     ):
+        """This class is an HTTP response that streams the response data as a
+        series of ASGI 'http.response.body' events.
+
+        Args:
+            content: A sync or async iterator or iterable.
+            status_code: An HTTP status code.
+            media_type: A value for the response 'Content-Type' header.
+            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+                Defaults to None.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            encoding: The encoding to used for the response headers.
+            is_head_response: Whether the response should send only the headers ("head" request) or also the content.
+        """
         super().__init__(
             background=background,
             content=b"",  # type: ignore[arg-type]
@@ -52,6 +62,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             headers=headers,
             media_type=media_type,
             status_code=status_code,
+            is_head_response=is_head_response,
         )
         self.iterator: Union[AsyncIterable[Union[str, bytes]], AsyncGenerator[Union[str, bytes], None]] = (
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else iterate_sync_iterator(content)
@@ -97,21 +108,17 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
         await send(terminus_event)
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The call method of the response is an "ASGIApp".
+    async def send_body(self, send: "Send", receive: "Receive") -> None:
+        """Emits a stream of events correlating with the response body.
 
         Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
             send: The ASGI send function.
+            receive: The ASGI receive function.
 
         Returns:
             None
         """
-        await self.start_response(send=send)
 
         async with create_task_group() as task_group:
             task_group.start_soon(partial(self.stream, send))
             await self.listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
-
-        await self.after_response()

@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 from urllib.parse import quote
 
+from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.enums import MediaType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 
@@ -17,11 +19,28 @@ class RedirectResponse(Response[Any]):
         self,
         url: str,
         *,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         status_code: "Literal[301, 302, 303, 307, 308]" = HTTP_307_TEMPORARY_REDIRECT,
+        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
     ) -> None:
+        """This class is used to send redirect responses.
+
+        Args:
+            url: A url to redirect to.
+            status_code: An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
+                otherwise an exception will be raised. .
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+
+        Raises:
+            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]
+        """
+        if status_code not in REDIRECT_STATUS_CODES:
+            raise ImproperlyConfiguredException(
+                f"Redirect responses should have one of "
+                f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
+            )
         super().__init__(
             background=background,
             content=b"",
