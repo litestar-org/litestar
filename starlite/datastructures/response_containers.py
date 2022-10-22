@@ -110,7 +110,7 @@ class File(ResponseContainer[FileResponse]):
         """Set the stat_result value for the given filepath.
 
         Args:
-            value: An optional result an [stat][os.stat] call.
+            value: An optional result [stat][os.stat] result.
             values: The values dict.
 
         Returns:
