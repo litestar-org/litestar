@@ -176,9 +176,9 @@ layers for this purpose.
 ```python
 import logging
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlette.responses import Response
+from starlite.response import Response
 from starlite.utils import create_exception_response
-from starlite.types import Request
+from starlite.connection import Request
 from starlite import Starlite
 
 logger = logging.getLogger(__name__)

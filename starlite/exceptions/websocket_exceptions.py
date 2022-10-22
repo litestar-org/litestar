@@ -1,6 +1,7 @@
 from typing import Any
 
 from starlite.exceptions.base_exceptions import StarLiteException
+from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 
 
 class WebSocketException(StarLiteException):
@@ -17,3 +18,15 @@ class WebSocketException(StarLiteException):
         """
         super().__init__(*args, detail=detail)
         self.code = code
+
+
+class WebSocketDisconnect(WebSocketException):
+    def __init__(self, *args: Any, detail: str, code: int = WS_1000_NORMAL_CLOSURE) -> None:
+        """Exception class for websocket disconnect events.
+
+        Args:
+            *args:
+            detail:
+            code:
+        """
+        super().__init__(*args, detail=detail, code=code)
