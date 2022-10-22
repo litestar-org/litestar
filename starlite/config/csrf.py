@@ -1,4 +1,4 @@
-from typing import Optional, Set
+from typing import List, Optional, Set, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
@@ -32,3 +32,7 @@ class CSRFConfig(BaseModel):
     """Specifies which hosts can receive the cookie"""
     safe_methods: Set[Method] = {"GET", "HEAD"}
     """A set of "safe methods" that can set the cookie"""
+    exclude: Optional[Union[str, List[str]]] = None
+    """A pattern or list of patterns to skip in the CSRF middleware"""
+    exclude_from_csrf_key: str = "exclude_from_csrf"
+    """An identifier to use on routes to disable CSRF for a particular route"""
