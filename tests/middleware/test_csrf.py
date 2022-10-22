@@ -197,7 +197,7 @@ def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> No
         _ = client.get("/")
         response = client.get("/")
         html_soup = BeautifulSoup(html.unescape(response.text), features="html.parser")
-        data = {"_csrf_token": html_soup.body.div.form.input.attrs.get("value")}
+        data = {"_csrf_token": html_soup.body.div.form.input.attrs.get("value")}  # type: ignore
         response = client.post("/", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data

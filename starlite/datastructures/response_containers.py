@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 R = TypeVar("R")
 
 
-class ResponseContainer(GenericModel, ABC, Generic[R]):
+class ResponseContainer(ABC, GenericModel, Generic[R]):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -70,7 +70,7 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
         status_code: int,
         app: "Starlite",
         request: "Request",
-    ) -> R:  # pragma: no cover
+    ) -> "R":  # pragma: no cover
         """Abstract method that should be implemented by subclasses. Returns a
         Starlette compatible Response instance.
 
