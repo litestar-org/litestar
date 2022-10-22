@@ -70,7 +70,7 @@ def handler() -> ASGIApp:
 ### What is an ASGI Application?
 
 An ASGI application in this context is any async callable (function, class method or simply a class that implements
-that special `__call__` dunder method) that has accepts the three ASGI arguments: `scope`, `receive` and `send`.
+that special `__call__` dunder method) that accepts the three ASGI arguments: `scope`, `receive` and `send`.
 
 For example, all the following examples are ASGI applications:
 

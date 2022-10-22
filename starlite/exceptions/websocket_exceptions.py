@@ -13,8 +13,8 @@ class WebSocketException(StarLiteException):
 
         Args:
             *args: Any exception args.
-            detail:
-            code: Exception code. Should be a number in the 4000+ range.
+            detail: Exception details.
+            code: Exception code. Should be a number in the >= 1000.
         """
         super().__init__(*args, detail=detail)
         self.code = code
@@ -25,8 +25,8 @@ class WebSocketDisconnect(WebSocketException):
         """Exception class for websocket disconnect events.
 
         Args:
-            *args:
-            detail:
-            code:
+            *args: Any exception args.
+            detail: Exception details.
+            code: Exception code. Should be a number in the >= 1000.
         """
         super().__init__(*args, detail=detail, code=code)
