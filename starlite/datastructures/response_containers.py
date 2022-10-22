@@ -30,6 +30,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import (
     FileResponse,
     RedirectResponse,
+    Response,
     StreamingResponse,
     TemplateResponse,
 )
@@ -40,7 +41,7 @@ if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
 
-R = TypeVar("R")
+R = TypeVar("R", bound=Response)
 
 
 class ResponseContainer(GenericModel, ABC, Generic[R]):
