@@ -140,15 +140,17 @@ class File(ResponseContainer[FileResponse]):
         """
         return FileResponse(
             background=self.background,
+            chunk_size=self.chunk_size,
+            content_disposition_type=self.content_disposition_type,
+            cookies=self.cookies,
+            encoding=self.encoding,
+            etag=self.etag,
             filename=self.filename,
             headers=headers,
             media_type=media_type,
             path=self.path,
             stat_result=self.stat_result,
             status_code=status_code,
-            chunk_size=self.chunk_size,
-            content_disposition_type=self.content_disposition_type,
-            etag=self.etag,
         )
 
 
@@ -161,6 +163,8 @@ class Redirect(ResponseContainer[RedirectResponse]):
     def to_response(  # type: ignore[override]
         self,
         headers: Dict[str, Any],
+        # TODO: update the redirect response to support HTML as well.
+        #   This argument is currently ignored.
         media_type: Union["MediaType", str],
         status_code: "Literal[301, 302, 303, 307, 308]",
         app: "Starlite",
@@ -178,7 +182,14 @@ class Redirect(ResponseContainer[RedirectResponse]):
         Returns:
             A RedirectResponse instance
         """
-        return RedirectResponse(headers=headers, status_code=status_code, url=self.path, background=self.background)
+        return RedirectResponse(
+            background=self.background,
+            cookies=self.cookies,
+            encoding=self.encoding,
+            headers=headers,
+            status_code=status_code,
+            url=self.path,
+        )
 
 
 class Stream(ResponseContainer[StreamingResponse]):
@@ -230,6 +241,8 @@ class Stream(ResponseContainer[StreamingResponse]):
         return StreamingResponse(
             background=self.background,
             content=self.iterator if isinstance(self.iterator, (Iterable, AsyncIterable)) else self.iterator(),
+            cookies=self.cookies,
+            encoding=self.encoding,
             headers=headers,
             media_type=media_type,
             status_code=status_code,
@@ -274,6 +287,8 @@ class Template(ResponseContainer["TemplateResponse"]):
         return TemplateResponse(
             background=self.background,
             context=self.create_template_context(request=request),
+            cookies=self.cookies,
+            encoding=self.encoding,
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,

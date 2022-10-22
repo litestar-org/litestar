@@ -23,6 +23,7 @@ class RedirectResponse(Response[Any]):
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
+        encoding: str = "utf-8",
     ) -> None:
         """This class is used to send redirect responses.
 
@@ -32,7 +33,7 @@ class RedirectResponse(Response[Any]):
                 otherwise an exception will be raised. .
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-
+            encoding: The encoding to used for the response headers.
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If status code is not a redirect status code.
         """
@@ -48,4 +49,5 @@ class RedirectResponse(Response[Any]):
             headers={**(headers or {}), "location": quote(url, safe="/#%[]=:;$&()+,!?*@'~")},
             media_type=MediaType.TEXT,
             status_code=status_code,
+            encoding=encoding,
         )

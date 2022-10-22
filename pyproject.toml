@@ -103,6 +103,7 @@ multi_line_output = 3
 disable = [
   "cyclic-import",
   "duplicate-code",
+  "fixme",
   "line-too-long",
   "missing-class-docstring",
   "missing-module-docstring",
