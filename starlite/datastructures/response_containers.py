@@ -30,12 +30,16 @@ from starlite.datastructures.background_tasks import BackgroundTask, BackgroundT
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import FileResponse, RedirectResponse, StreamingResponse
+from starlite.response import (
+    FileResponse,
+    RedirectResponse,
+    StreamingResponse,
+    TemplateResponse,
+)
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
-    from starlite.response import TemplateResponse
 
 R = TypeVar("R")
 
@@ -236,10 +240,6 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
-        from starlite.response import (  # pylint: disable=import-outside-toplevel
-            TemplateResponse,
-        )
-
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
 
