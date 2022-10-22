@@ -83,7 +83,7 @@ class FileResponse(StreamingResponse):
             stat_result: An optional result of calling 'os.stat'. If not provided, this will be done by the response
                 constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
-            content_disposition_type: Either 'inline' or 'attachment'.
+            content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
             etag: An optional etag for the file. If not provided, and etag will be generated automatically.
         """
         if not media_type:
