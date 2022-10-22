@@ -1,9 +1,12 @@
+from typing import Dict
+
+import pytest
 from pydantic import BaseConfig
 from pydantic.fields import ModelField
 
-from starlite import RequestEncodingType
+from starlite import Cookie, RequestEncodingType
 from starlite.datastructures import FormMultiDict
-from starlite.parsers import parse_form_data, parse_query_params
+from starlite.parsers import parse_cookie_string, parse_form_data, parse_query_params
 from starlite.testing import RequestFactory
 
 
@@ -51,3 +54,25 @@ def test_parse_form_data() -> None:
         "healthy": True,
         "polluting": False,
     }
+
+
+@pytest.mark.parametrize(
+    "cookie_string, expected",
+    (
+        ("ABC    = 123;   efg  =   456", {"ABC": "123", "efg": "456"}),
+        (("foo= ; bar="), {"foo": "", "bar": ""}),
+        ('foo="bar=123456789&name=moisheZuchmir"', {"foo": "bar=123456789&name=moisheZuchmir"}),
+        ("email=%20%22%2c%3b%2f", {"email": ' ",;/'}),
+        ("foo=%1;bar=bar", {"foo": "%1", "bar": "bar"}),
+        ("foo=bar;fizz  ; buzz", {"": "buzz", "foo": "bar"}),
+        ("  fizz; foo=  bar", {"": "fizz", "foo": "bar"}),
+        ("foo=false;bar=bar;foo=true", {"bar": "bar", "foo": "true"}),
+        ("foo=;bar=bar;foo=boo", {"bar": "bar", "foo": "boo"}),
+        (
+            Cookie(key="abc", value="123", path="/head", domain="localhost").to_header(header=""),
+            {"Domain": "localhost", "Path": "/head", "SameSite": "lax", "abc": "123"},
+        ),
+    ),
+)
+def test_cookie_parser(cookie_string: str, expected: Dict[str, str]) -> None:
+    assert parse_cookie_string(cookie_string) == expected
