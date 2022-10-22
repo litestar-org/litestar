@@ -248,7 +248,7 @@ class Response(Generic[T]):
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
         """
 
-        if "text/" in self.media_type:
+        if self.media_type.startswith("text/"):
             content_type = f"{self.media_type}; charset={self.encoding}"
         else:
             content_type = self.media_type
