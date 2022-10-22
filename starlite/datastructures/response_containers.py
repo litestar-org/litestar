@@ -210,9 +210,6 @@ class Stream(ResponseContainer[StreamingResponse]):
         Returns:
             A sync or async iterable.
         """
-        if isinstance(value, (str, bytes, dict)):
-            raise ValueError("string, bytes and dict values are not supported as Stream.iterator values")
-
         return value if isinstance(value, (Iterable, Iterator, AsyncIterable, AsyncIterator)) else value()
 
     def to_response(

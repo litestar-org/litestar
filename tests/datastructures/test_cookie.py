@@ -47,3 +47,4 @@ def test_equality() -> None:
     assert Cookie(key="key") != Cookie(key="key", path="/test")
     assert Cookie(key="key", path="/test") != Cookie(key="key", path="/test", domain="localhost")
     assert Cookie(key="key", path="/test", domain="localhost") == Cookie(key="key", path="/test", domain="localhost")
+    assert Cookie(key="key") != "key"

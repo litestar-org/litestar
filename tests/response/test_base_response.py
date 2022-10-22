@@ -169,5 +169,10 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
 
 
 def test_is_head_response_returns_no_body() -> None:
-    assert Response(content="hello world", media_type=MediaType.TEXT).body == b"hello world"
-    assert Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True).body == b""
+    @get("/")
+    def handler() -> Response:
+        return Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True)
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.text == ""
