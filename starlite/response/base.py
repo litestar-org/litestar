@@ -198,7 +198,7 @@ class Response(Generic[T]):
         """
         Handles the rendering of content T into a bytes string.
         Args:
-            content: An arbitrary value of type T
+            content: A value for the response body that will be rendered into bytes string.
 
         Returns:
             An encoded bytes string
