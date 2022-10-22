@@ -166,3 +166,8 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
             assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         else:
             assert response.status_code == HTTP_200_OK
+
+
+def test_is_head_response_returns_no_body() -> None:
+    assert Response(content="hello world", media_type=MediaType.TEXT).body == b"hello world"
+    assert Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True).body == b""

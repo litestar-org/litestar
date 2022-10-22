@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import ResponseCookies
 
-ONE_MEGA_BYTE = 1024 * 1024
+ONE_MEGA_BYTE: int = 1024 * 1024
 
 
 async def async_file_iterator(file_path: Union[str, "PathLike"], chunk_size: int) -> AsyncGenerator[bytes, None]:
@@ -77,14 +77,14 @@ class FileResponse(StreamingResponse):
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-            encoding: The encoding to used for the response headers.
+            encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             filename: An optional filename to set in the header.
             stat_result: An optional result of calling 'os.stat'. If not provided, this will be done by the response
                 constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
-            etag: An optional etag for the file. If not provided, and etag will be generated automatically.
+            etag: An optional etag for the file. If not provided, an etag will be generated automatically.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)

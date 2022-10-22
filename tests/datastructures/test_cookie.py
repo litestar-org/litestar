@@ -40,3 +40,10 @@ def test_cookie_with_max_age_as_header() -> None:
 def test_cookie_as_header_without_header_name() -> None:
     cookie = Cookie(key="key")
     assert cookie.to_header(header="") == 'key=""; Path=/; SameSite=lax'
+
+
+def test_equality() -> None:
+    assert Cookie(key="key") == Cookie(key="key")
+    assert Cookie(key="key") != Cookie(key="key", path="/test")
+    assert Cookie(key="key", path="/test") != Cookie(key="key", path="/test", domain="localhost")
+    assert Cookie(key="key", path="/test", domain="localhost") == Cookie(key="key", path="/test", domain="localhost")
