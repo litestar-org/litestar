@@ -149,7 +149,7 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
         middleware=[session_middleware.config.middleware],
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {
+        client.cookies = {  # type: ignore
             f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
         }
         response = client.get(

@@ -34,18 +34,19 @@ class MemcachedCacheBackendConfig(BaseModel):
 
 
 class MemcachedCacheBackend(CacheBackendProtocol):
-    def __init__(self, config: MemcachedCacheBackendConfig):
+    _client: Client
+
+    def __init__(self, config: MemcachedCacheBackendConfig) -> None:
         """This class offers a cache backend based on memcached.
 
         Args:
             config: required configuration to connect to memcached.
         """
         self._config = config
-        self._client: Client = None  # pyright: ignore
 
     @property
     def _memcached_client(self) -> Client:
-        if not self._client:
+        if not hasattr(self, "_client"):
             self._client = Client(**self._config.dict(exclude_unset=True))
 
         return self._client
@@ -60,7 +61,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             Cached value if existing else `None`.
         """
 
-        value = await self._memcached_client.get(key=key.encode())  # pyright: ignore
+        value = await self._memcached_client.get(key=key.encode("utf-8"))  # type: ignore
         return self._config.deserialize(value)
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method

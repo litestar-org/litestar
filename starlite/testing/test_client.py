@@ -99,7 +99,7 @@ class TestClient(StarletteTestClient):
         Returns:
             TestClient
         """
-        return super().__enter__()  # pyright: ignore
+        return cast("TestClient", super().__enter__())
 
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
         """Creates raw session cookies that are loaded into the session by the

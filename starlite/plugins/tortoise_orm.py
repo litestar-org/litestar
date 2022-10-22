@@ -8,8 +8,11 @@ from starlite.exceptions import MissingDependencyException
 from starlite.plugins.base import PluginProtocol
 
 try:
-    from tortoise import Model, ModelMeta
-    from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator
+    from tortoise import Model, ModelMeta  # type:ignore [attr-defined]
+    from tortoise.contrib.pydantic import (  # type:ignore [attr-defined]
+        PydanticModel,
+        pydantic_model_creator,
+    )
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
