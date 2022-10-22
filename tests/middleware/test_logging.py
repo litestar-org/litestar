@@ -40,7 +40,7 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture") -> None:
         route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
         client.app.get_logger = get_logger
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
@@ -67,7 +67,7 @@ def test_logging_middleware_struct_logger() -> None:
         logging_config=StructLoggingConfig(),
     ) as client, capture_logs() as cap_logs:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(cap_logs) == 2

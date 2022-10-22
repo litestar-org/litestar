@@ -41,6 +41,6 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, expecte
 
     with create_test_client(test_method) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = param_dict
+        client.cookies = param_dict  # type: ignore
         response = client.get(test_path)
         assert response.status_code == expected_code

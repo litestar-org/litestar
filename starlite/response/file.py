@@ -27,15 +27,15 @@ if TYPE_CHECKING:
 ONE_MEGA_BYTE: int = 1024 * 1024
 
 
-async def async_file_iterator(file_path: Union[str, "PathLike"], chunk_size: int) -> AsyncGenerator[bytes, None]:
+async def async_file_iterator(file_path: Union[str, "PathLike", Path], chunk_size: int) -> AsyncGenerator[bytes, None]:
     """
     A generator function that asynchronously reads a file and yields its chunks.
     Args:
-        file_path:
-        chunk_size:
+        file_path: A path to a file.
+        chunk_size: The chunk file to use.
 
     Returns:
-
+        An async generator.
     """
     async with await open_file(file_path, mode="rb") as file:
         yield await file.read(chunk_size)
