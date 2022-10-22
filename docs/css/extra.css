@@ -143,7 +143,7 @@ body {
   /* Typeset `table` color shades */
   --md-typeset-table-color: hsla(0, 0%, 0%, 0.12);
 
-  /* Admonition color shades *
+  /* Admonition color shades */
   --md-admonition-fg-color:          var(--md-default-fg-color);
   --md-admonition-bg-color:          var(--md-default-bg-color);
 
