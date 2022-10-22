@@ -2,7 +2,7 @@ from asyncio import sleep as async_sleep
 from json import loads
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Generator, Iterator
+from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator
 
 import pytest
 from pydantic import ValidationError
@@ -80,7 +80,7 @@ class MyAsyncIterator:
         self.i = 0
         self.to = 0.1
 
-    def __aiter__(self) -> AsyncIterator[str]:
+    async def __aiter__(self) -> "MyAsyncIterator":
         return self
 
     async def __anext__(self) -> str:
@@ -259,7 +259,13 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         [my_async_generator, False],
         [MyAsyncIterator, False],
         [MySyncIterator, False],
-        [{"key": 1}, True],
+        [[1, 2, 3, 4], False],
+        ["abc", False],
+        [b"abc", False],
+        [{"key": 1}, False],
+        [[{"key": 1}], False],
+        [1, True],
+        [None, True],
     ],
 )
 async def test_to_response_streaming_response(iterator: Any, should_raise: bool, anyio_backend: str) -> None:
