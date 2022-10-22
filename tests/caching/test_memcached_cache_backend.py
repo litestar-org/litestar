@@ -8,28 +8,7 @@ from starlite.cache.memcached_cache_backend import (
     MemcachedCacheBackend,
     MemcachedCacheBackendConfig,
 )
-
-if TYPE_CHECKING:
-    from typing import Dict
-
-
-class FakeAsyncMemcached:
-    def __init__(self) -> None:
-        self._cache: Dict[bytes, bytes] = {}
-        self._expirations: Dict[bytes, int] = {}
-
-    async def get(self, key: bytes) -> Optional[bytes]:
-        return self._cache.get(key)
-
-    async def set(self, key: bytes, value: bytes, exptime: int) -> None:
-        self._cache[key] = value
-        self._expirations[key] = exptime
-
-    async def delete(self, key: bytes) -> None:
-        self._cache.pop(key)
-
-    def ttl(self, key: bytes) -> Optional[int]:
-        return self._expirations.get(key)
+from tests.fake_memcached import FakeAsyncMemcached
 
 
 @pytest.fixture()

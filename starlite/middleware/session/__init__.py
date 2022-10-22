@@ -1,10 +1,7 @@
-from .cookie_backend import AAD as AAD
-from .cookie_backend import CHUNK_SIZE as CHUNK_SIZE
-from .cookie_backend import CookieSessionMiddleware as CookieSessionMiddleware
-from .cookie_backend import SessionCookieConfig as SessionCookieConfig
-from .cookie_backend import SessionMiddleware as SessionMiddleware
-from .server_backends import FileBackend as FileBackend
-from .server_backends import MemcacheBackend as MemcacheBackend
-from .server_backends import MemoryBackend as MemoryBackend
-from .server_backends import RedisBackend as RedisBackend
-from .server_backends import ServerSideBackend as ServerSideSessionMiddleware
+from .base import SessionMiddleware
+from .cookie_backend import SessionCookieConfig
+
+__all__ = [
+    "SessionMiddleware",
+    "SessionCookieConfig",  # backwards compatible export
+]

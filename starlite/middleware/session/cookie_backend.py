@@ -14,7 +14,7 @@ from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import MiddlewareProtocol
 
-from .base import BaseSessionMiddleware, SessionBackend
+from .base import BaseBackendConfig, SessionBackend, SessionMiddleware
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -23,10 +23,9 @@ except ImportError as e:
     raise MissingDependencyException("cryptography is not installed") from e
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Message, Scope, Receive, Send
     from starlite.connection import ASGIConnection
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
-from .config import CookieConfig
 
 NONCE_SIZE = 12
 CHUNK_SIZE = 4096 - 64
@@ -34,7 +33,7 @@ AAD = b"additional_authenticated_data="
 
 
 class CookieBackend(SessionBackend["SessionCookieConfig"]):
-    def __init__(self, config: "SessionCookieConfig") -> None:
+    def __init__(self, config: "CookieBackendConfig") -> None:
         """Starlite CookieSessionMiddleware.
 
         Args:
@@ -89,9 +88,9 @@ class CookieBackend(SessionBackend["SessionCookieConfig"]):
     def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
-    async def store_session(self, message: "Message", connection: "ASGIConnection") -> None:
-        headers = MutableHeaders(scope=message)
+    async def store_in_message(self, message: "Message", connection: "ASGIConnection") -> None:
         scope = connection.scope
+        headers = MutableHeaders(scope=message)
         scope_session = scope.get("session")
         cookie_keys = self.get_cookie_keys(connection)
 
@@ -120,7 +119,7 @@ class CookieBackend(SessionBackend["SessionCookieConfig"]):
                 Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
             )
 
-    async def load_session(self, connection: "ASGIConnection") -> Dict[str, Any]:
+    async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
         cookie_keys = self.get_cookie_keys(connection)
         if cookie_keys:
             data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]
@@ -130,12 +129,16 @@ class CookieBackend(SessionBackend["SessionCookieConfig"]):
         return {}
 
 
-class SessionCookieConfig(CookieConfig):
+class CookieBackendConfig(BaseBackendConfig):
     """Configuration for [SessionMiddleware] middleware."""
 
     _backend_class = CookieBackend
 
     secret: SecretBytes
+    """
+    A secret key to use for generating an encryption key.
+    Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.
+    """
 
     @validator("secret", always=True)
     def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
@@ -156,14 +159,12 @@ class SessionCookieConfig(CookieConfig):
 
 
 # Backwards compatible middleware shim
-
-
 class CookieSessionMiddleware(MiddlewareProtocol):
-    def __init__(self, app: "ASGIApp", config: SessionCookieConfig) -> None:
+    def __init__(self, app: "ASGIApp", config: CookieBackendConfig) -> None:
         self.app = app
         self.config = config
         self._backend = CookieBackend(config=config)
-        self._middleware = BaseSessionMiddleware(app=app, backend=self._backend)
+        self._middleware = SessionMiddleware[CookieBackend](app=app, backend=self._backend)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         await self._middleware(scope, receive, send)
@@ -175,4 +176,4 @@ class CookieSessionMiddleware(MiddlewareProtocol):
         return self._backend.load_data(data)
 
 
-SessionMiddleware = CookieSessionMiddleware
+SessionCookieConfig = CookieBackendConfig
