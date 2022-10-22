@@ -1,9 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
-from starlite.exceptions import MissingDependencyException, WebSocketDisconnect
+from starlite.exceptions import MissingDependencyException
 from starlite.middleware.session import SessionMiddleware
-from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 
 if TYPE_CHECKING:
     from typing_extensions import Literal
@@ -34,7 +33,6 @@ if TYPE_CHECKING:
         Guard,
         LifeSpanHandler,
         LifeSpanHookHandler,
-        Message,
         Middleware,
         ParametersMap,
         ResponseType,
@@ -164,13 +162,6 @@ class TestClient(StarletteTestClient):
             return {}
         raw_data = [self.cookies[key].encode("utf-8") for key in self.cookies if self.session.config.key in key]
         return self.session.load_data(data=raw_data)
-
-    def _raise_on_close(self, message: "Message") -> None:
-        if message["type"] == "websocket.close":
-            raise WebSocketDisconnect(
-                detail=message.get("reason") or "",
-                code=message.get("code", WS_1000_NORMAL_CLOSURE),
-            )
 
 
 def create_test_client(
