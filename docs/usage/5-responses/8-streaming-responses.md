@@ -5,8 +5,7 @@ To return a streaming response use the `Stream` class. The Stream class receives
 ```python
 from typing import AsyncGenerator
 from asyncio import sleep
-from starlite import get
-from starlite.datastructures import Stream
+from starlite import Stream, get
 from datetime import datetime
 from orjson import dumps
 

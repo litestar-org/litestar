@@ -7,8 +7,7 @@ In Starlite, a redirect response looks like this:
 
 ```python
 from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
-from starlite import get
-from starlite.datastructures import Redirect
+from starlite import Redirect, get
 
 
 @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
