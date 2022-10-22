@@ -56,6 +56,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
+from starlite.utils import unique
 from starlite.utils.predicates import is_async_callable, is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -74,11 +75,11 @@ def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "Respo
     returns a normalized dict ready to be set on the response."""
     filtered_cookies = [*local_cookies]
     for cookie in layered_cookies:
-        if not any(cookie.key == c.key for c in filtered_cookies):
+        if not any(c == cookie for c in filtered_cookies):
             filtered_cookies.append(cookie)
     return [
         cookie.dict(exclude_none=True, exclude={"documentation_only", "description"})
-        for cookie in filtered_cookies
+        for cookie in unique(filtered_cookies)
         if not cookie.documentation_only
     ]
 

@@ -51,7 +51,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-            encoding: The encoding to used for the response headers.
+            encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """
         super().__init__(

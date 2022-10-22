@@ -60,7 +60,7 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
     media_type: Optional[Union[MediaType, str]] = None
     """If defined, overrides the media type configured in the route decorator"""
     encoding: str = "utf-8"
-    """The encoding to used for the response headers."""
+    """The encoding to be used for the response headers."""
 
     @abstractmethod
     def to_response(
@@ -101,7 +101,7 @@ class File(ResponseContainer[FileResponse]):
     content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
     """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
     etag: Optional[str] = None
-    """An optional etag for the file. If not provided, and etag will be generated automatically."""
+    """An optional etag for the file. If not provided, an etag will be generated automatically."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -142,7 +142,6 @@ class File(ResponseContainer[FileResponse]):
             background=self.background,
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,
-            cookies=self.cookies,
             encoding=self.encoding,
             etag=self.etag,
             filename=self.filename,
@@ -184,7 +183,6 @@ class Redirect(ResponseContainer[RedirectResponse]):
         """
         return RedirectResponse(
             background=self.background,
-            cookies=self.cookies,
             encoding=self.encoding,
             headers=headers,
             status_code=status_code,
@@ -241,7 +239,6 @@ class Stream(ResponseContainer[StreamingResponse]):
         return StreamingResponse(
             background=self.background,
             content=self.iterator if isinstance(self.iterator, (Iterable, AsyncIterable)) else self.iterator(),
-            cookies=self.cookies,
             encoding=self.encoding,
             headers=headers,
             media_type=media_type,
@@ -287,7 +284,6 @@ class Template(ResponseContainer["TemplateResponse"]):
         return TemplateResponse(
             background=self.background,
             context=self.create_template_context(request=request),
-            cookies=self.cookies,
             encoding=self.encoding,
             headers=headers,
             status_code=status_code,
