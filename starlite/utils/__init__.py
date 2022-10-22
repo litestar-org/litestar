@@ -6,6 +6,7 @@ from .exception import (
     get_exception_handler,
 )
 from .extractors import ConnectionDataExtractor, ResponseDataExtractor, obfuscate
+from .helpers import get_name
 from .model import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -38,7 +39,10 @@ __all__ = (
     "create_parsed_model_field",
     "default_serializer",
     "find_index",
+    "generate_csrf_hash",
+    "generate_csrf_token",
     "get_exception_handler",
+    "get_name",
     "get_serializer_from_scope",
     "is_async_callable",
     "is_class_and_subclass",
@@ -52,6 +56,4 @@ __all__ = (
     "obfuscate",
     "should_skip_dependency_validation",
     "unique",
-    "generate_csrf_hash",
-    "generate_csrf_token",
 )

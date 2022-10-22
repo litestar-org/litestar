@@ -8,7 +8,6 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
 )
 from pydantic_openapi_schema.v3_1_0.schema import Schema
-from starlette.routing import get_name
 from typing_extensions import get_args, get_origin
 
 from starlite.datastructures.response_containers import File, Redirect, Stream, Template
@@ -22,6 +21,7 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
+from starlite.utils import get_name
 from starlite.utils.model import create_parsed_model_field
 
 if TYPE_CHECKING:
