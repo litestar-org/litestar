@@ -33,7 +33,7 @@ class RedirectResponse(Response[Any]):
                 otherwise an exception will be raised. .
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
-            encoding: The encoding to used for the response headers.
+            encoding: The encoding to be used for the response headers.
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If status code is not a redirect status code.
         """

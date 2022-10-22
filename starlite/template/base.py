@@ -4,7 +4,7 @@ from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, TypedDict, runtime_checkable
 
 if TYPE_CHECKING:
-    from starlite import Request
+    from starlite.connection import Request
 
 
 class TemplateContext(TypedDict):

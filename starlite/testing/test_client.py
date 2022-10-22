@@ -8,7 +8,6 @@ from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 if TYPE_CHECKING:
     from typing_extensions import Literal
 
-    from starlite import Request, WebSocket
     from starlite.config import (
         BaseLoggingConfig,
         CacheConfig,
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.connection import Request, WebSocket
     from starlite.middleware.session import SessionCookieConfig
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
