@@ -5,18 +5,15 @@ from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     AsyncIterable,
     AsyncIterator,
     Callable,
     Dict,
-    Generator,
     Generic,
     Iterable,
     Iterator,
     List,
     Optional,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -36,6 +33,8 @@ from starlite.response import (
     StreamingResponse,
     TemplateResponse,
 )
+from starlite.response.file import ONE_MEGA_BYTE
+from starlite.types.composite import StreamType
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -60,6 +59,8 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
     """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     media_type: Optional[Union[MediaType, str]] = None
     """If defined, overrides the media type configured in the route decorator"""
+    encoding: str = "utf-8"
+    """The encoding to used for the response headers."""
 
     @abstractmethod
     def to_response(
@@ -91,22 +92,36 @@ class File(ResponseContainer[FileResponse]):
 
     path: FilePath
     """Path to the file to send"""
-    filename: str
+    filename: Optional[str] = None
     """The filename"""
     stat_result: Optional[os.stat_result] = None
     """File statistics"""
+    chunk_size: int = ONE_MEGA_BYTE
+    """The size of chunks to use when streaming the file"""
+    content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
+    """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
+    etag: Optional[str] = None
+    """An optional etag for the file. If not provided, and etag will be generated automatically."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
-        """Set the stat_result value for the given filepath."""
+        """Set the stat_result value for the given filepath.
+
+        Args:
+            value: An optional result an [stat][os.stat] call.
+            values: The values dict.
+
+        Returns:
+            A stat_result
+        """
         return value or Path(cast("str", values.get("path"))).stat()
 
     def to_response(
         self,
         headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        media_type: Optional[Union["MediaType", str]],
         status_code: int,
         app: "Starlite",
         request: "Request",
@@ -131,6 +146,9 @@ class File(ResponseContainer[FileResponse]):
             path=self.path,
             stat_result=self.stat_result,
             status_code=status_code,
+            chunk_size=self.chunk_size,
+            content_disposition_type=self.content_disposition_type,
+            etag=self.etag,
         )
 
 
@@ -166,17 +184,27 @@ class Redirect(ResponseContainer[RedirectResponse]):
 class Stream(ResponseContainer[StreamingResponse]):
     """Container type for returning Stream responses."""
 
-    iterator: Union[
-        Iterator[Union[str, bytes]],
-        Generator[Union[str, bytes], Any, Any],
-        AsyncIterator[Union[str, bytes]],
-        AsyncGenerator[Union[str, bytes], Any],
-        Type[Iterator[Union[str, bytes]]],
-        Type[AsyncIterator[Union[str, bytes]]],
-        Callable[[], AsyncGenerator[Union[str, bytes], Any]],
-        Callable[[], Generator[Union[str, bytes], Any, Any]],
-    ]
-    """Iterator, Generator or async Iterator or Generator returning stream chunks"""
+    iterator: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]]
+    """Iterator, Iterable,Generator or async Iterator, Iterable or Generator returning chunks to stream."""
+
+    @validator("iterator", always=True)
+    def validate_iterator(  # pylint: disable=no-self-argument
+        cls,
+        value: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]],
+    ) -> StreamType[Union[str, bytes]]:
+        """Set the iterator value by ensuring that the return value is
+        iterable.
+
+        Args:
+            value: An iterable or callable returning an iterable.
+
+        Returns:
+            A sync or async iterable.
+        """
+        if isinstance(value, (str, bytes, dict)):
+            raise ValueError("string, bytes and dict values are not supported as Stream.iterator values")
+
+        return value if isinstance(value, (Iterable, Iterator, AsyncIterable, AsyncIterator)) else value()
 
     def to_response(
         self,
