@@ -13,22 +13,23 @@ from .http_exceptions import (
     TooManyRequestsException,
     ValidationException,
 )
-from .websocket_exceptions import WebSocketException
+from .websocket_exceptions import WebSocketDisconnect, WebSocketException
 
 __all__ = (
-    "MissingDependencyException",
-    "StarLiteException",
     "HTTPException",
     "ImproperlyConfiguredException",
-    "ValidationException",
-    "NotAuthorizedException",
-    "PermissionDeniedException",
-    "NoRouteMatchFoundException",
-    "NotFoundException",
-    "MethodNotAllowedException",
-    "TooManyRequestsException",
     "InternalServerException",
+    "MethodNotAllowedException",
+    "MissingDependencyException",
+    "NoRouteMatchFoundException",
+    "NotAuthorizedException",
+    "NotFoundException",
+    "PermissionDeniedException",
     "ServiceUnavailableException",
+    "StarLiteException",
     "TemplateNotFoundException",
+    "TooManyRequestsException",
+    "ValidationException",
+    "WebSocketDisconnect",
     "WebSocketException",
 )
