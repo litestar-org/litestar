@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, Any, Optional
 
 import pytest
 from starlette.datastructures import Address, State
-from starlette.testclient import TestClient
 
 from starlite import InternalServerException, MediaType
 from starlite.connection import Request, empty_send
 from starlite.response import Response
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Send

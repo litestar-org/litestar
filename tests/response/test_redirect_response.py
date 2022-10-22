@@ -24,7 +24,7 @@ def test_redirect_response() -> None:
             response = RedirectResponse("/")
         await response(scope, receive, send)
 
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/redirect")
     assert response.text == "hello, world"
     assert response.url == "http://testserver/"
@@ -38,7 +38,7 @@ def test_quoting_redirect_response() -> None:
             response = RedirectResponse(url="/test/")
         await response(scope, receive, send)
 
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/redirect", follow_redirects=True)
     assert response.text == "hello, world"
     assert str(response.url) == "http://testserver/test/"
@@ -52,7 +52,7 @@ def test_redirect_response_content_length_header() -> None:
             response = RedirectResponse("/")
         await response(scope, receive, send)
 
-    client: TestClient = TestClient(app)  # type: ignore
+    client: TestClient = TestClient(app)
     response = client.request("GET", "/redirect", follow_redirects=False)
     assert response.url == "http://testserver/redirect"
     assert "content-length" not in response.headers

@@ -17,14 +17,14 @@ if TYPE_CHECKING:
 
 def test_streaming_response_unknown_size() -> None:
     app = StreamingResponse(content=iter(["hello", "world"]))
-    client: TestClient = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert "content-length" not in response.headers
 
 
 def test_streaming_response_known_size() -> None:
     app = StreamingResponse(content=iter(["hello", "world"]), headers={"content-length": "10"})
-    client: TestClient = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert response.headers["content-length"] == "10"
 
@@ -81,7 +81,7 @@ def test_streaming_response() -> None:
         await response(scope, receive, send)
 
     assert filled_by_bg_task == ""
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
     assert filled_by_bg_task == "6, 7, 8, 9"
@@ -105,7 +105,7 @@ def test_streaming_response_custom_iterator() -> None:
         response = StreamingResponse(CustomAsyncIterator(), media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert response.text == "12345"
 
@@ -120,7 +120,7 @@ def test_streaming_response_custom_iterable() -> None:
         response = StreamingResponse(CustomAsyncIterable(), media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert response.text == "12345"
 
@@ -137,6 +137,6 @@ def test_sync_streaming_response() -> None:
         response = StreamingResponse(generator, media_type="text/plain")
         await response(scope, receive, send)
 
-    client = TestClient(app)  # type: ignore
+    client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"
