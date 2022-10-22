@@ -33,7 +33,7 @@ csrf_config = CSRFConfig(secret="my-secret")
 app = Starlite(route_handlers=[...], csrf_config=csrf_config)
 ```
 
-Some routes can be marked as being exempt from the protection by this middleware via
+Some routes can be marked as being exempt from the protection offered by this middleware via
 [handler opts](../../2-route-handlers/5-handler-opts.md)
 
 ```python
