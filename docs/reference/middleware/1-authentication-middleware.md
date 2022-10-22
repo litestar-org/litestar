@@ -9,6 +9,7 @@
 ::: starlite.middleware.AbstractAuthenticationMiddleware
     options:
         members:
+            - __init__
             - scopes
             - error_response_media_type
             - websocket_error_status_code
