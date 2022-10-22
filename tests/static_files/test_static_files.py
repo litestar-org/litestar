@@ -73,14 +73,14 @@ def test_path_inside_static(tmpdir: "Path") -> None:
 def test_multiple_configs(tmpdir: "Path") -> None:
     root1 = tmpdir.mkdir("1")  # type: ignore
     root2 = tmpdir.mkdir("2")  # type: ignore
-    path1 = root1 / "test.txt"
+    path1 = root1 / "test.txt"  # pyright: ignore
     path1.write_text("content1", "utf-8")
-    path2 = root2 / "test.txt"
+    path2 = root2 / "test.txt"  # pyright: ignore
     path2.write_text("content2", "utf-8")
 
     static_files_config = [
-        StaticFilesConfig(path="/1", directories=[root1]),
-        StaticFilesConfig(path="/2", directories=[root2]),
+        StaticFilesConfig(path="/1", directories=[root1]),  # pyright: ignore
+        StaticFilesConfig(path="/2", directories=[root2]),  # pyright: ignore
     ]
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get("/1/test.txt")
