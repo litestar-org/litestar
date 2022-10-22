@@ -4,8 +4,7 @@ File responses send a file:
 
 ```python
 from pathlib import Path
-from starlite import get
-from starlite.datastructures import File
+from starlite import File, get
 
 
 @get(path="/file-download")
@@ -33,8 +32,7 @@ For example:
 
 ```python
 from pathlib import Path
-from starlite import get
-from starlite.datastructures import File
+from starlite import File, get
 
 
 @get(path="/file-download", media_type="application/pdf")
