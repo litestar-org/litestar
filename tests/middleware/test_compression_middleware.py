@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any, AsyncIterator, cast
 
 import brotli
 import pytest
@@ -24,7 +24,7 @@ def no_compress_handler() -> str:
     return "_starlite_"
 
 
-async def streaming_iter(content: bytes, count: int) -> Any:
+async def streaming_iter(content: bytes, count: int) -> AsyncIterator[bytes]:
     for _ in range(count):
         yield content
 

@@ -77,7 +77,7 @@ def test_conversion_from_model_instance(
             pets=None,
         )
     else:
-        model_instance = cast("Type[Pet]", model)(
+        model_instance = cast("Type[Pet]", model)(  # pyright: ignore
             id=1,
             species=Species.MONKEY,
             name="Mike",
