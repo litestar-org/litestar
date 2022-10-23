@@ -1,8 +1,11 @@
+import asyncio
+import functools
 from functools import partial
 from inspect import getfullargspec, ismethod
 from typing import (
     Any,
     AsyncGenerator,
+    Awaitable,
     Callable,
     Dict,
     Generic,
@@ -15,12 +18,26 @@ from typing import (
 )
 
 from anyio.to_thread import run_sync
-from typing_extensions import Literal, ParamSpec
-
-from starlite.utils.predicates import is_async_callable
+from typing_extensions import Literal, ParamSpec, TypeGuard
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
+    """Extends `asyncio.iscoroutinefunction()` to additionally detect async
+    `partial` objects and class instances with `async def __call__()` defined.
+
+    Args:
+        value: Any
+
+    Returns:
+        Bool determining if type of `value` is an awaitable.
+    """
+    while isinstance(value, functools.partial):
+        value = value.func  # type: ignore[unreachable]
+
+    return asyncio.iscoroutinefunction(value) or (callable(value) and asyncio.iscoroutinefunction(value.__call__))  # type: ignore[operator]
 
 
 class AsyncCallable(Generic[P, T]):

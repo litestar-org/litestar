@@ -1,32 +1,66 @@
-from typing import Any, Callable, List, TypeVar
+from typing import Any, Callable, Iterable
 
-from starlette.background import BackgroundTask as StarletteBackgroundTask
-from starlette.background import BackgroundTasks as StarletteBackgroundTasks
+from anyio import create_task_group
 from typing_extensions import ParamSpec
 
+from starlite.utils.sync import AsyncCallable
+
 P = ParamSpec("P")
-T = TypeVar("T")
 
 
-class BackgroundTask(StarletteBackgroundTask):
-    def __init__(self, func: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
+class BackgroundTask:
+    __slots__ = ("fn", "args", "kwargs")
+
+    def __init__(self, fn: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
         """A container for a 'background' task function. Background tasks are
         called once a Response finishes.
-
         Args:
-            func: A sync or async function to call as the background task.
+            fn: A sync or async function to call as the background task.
             *args: Args to pass to the func.
             **kwargs: Kwargs to pass to the func
         """
-        super().__init__(func, *args, **kwargs)
+        self.fn = AsyncCallable(fn)
+        self.args = args
+        self.kwargs = kwargs
 
+    async def __call__(self) -> None:
+        """Calls the wrapped function with the passed in arguments.
 
-class BackgroundTasks(StarletteBackgroundTasks):
-    def __init__(self, tasks: List[BackgroundTask]) -> None:
-        """A container for multiple 'background' task functions. Background
-        tasks are called once a Response finishes.
-
-        Args:
-            tasks: A list of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
+        Returns:
+            None.
         """
-        super().__init__(tasks=tasks)
+        await self.fn(*self.args, **self.kwargs)
+
+
+class BackgroundTasks:
+    __slots__ = (
+        "tasks",
+        "run_in_task_group",
+    )
+
+    def __init__(self, tasks: Iterable[BackgroundTask], run_in_task_group: bool = False) -> None:
+        """A container for multiple 'background' task functions.
+
+        Background
+        tasks are called once a Response finishes.
+        Args:
+            tasks: An iterable of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
+            run_in_task_group: If true the tasks will be executed in parallel using an 'TaskGroup',
+                which can increase performance. Enable this option if the order of execution of the tasks does not matter.
+        """
+        self.tasks = tasks
+        self.run_in_task_group = run_in_task_group
+
+    async def __call__(self) -> None:
+        """Calls the wrapped background tasks.
+
+        Returns:
+            None
+        """
+        if self.run_in_task_group:
+            async with create_task_group() as task_group:
+                for task in self.tasks:
+                    task_group.start_soon(task)
+        else:
+            for task in self.tasks:
+                await task()

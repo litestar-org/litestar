@@ -14,7 +14,6 @@ from .model import (
 )
 from .path import join_paths, normalize_path
 from .predicates import (
-    is_async_callable,
     is_class_and_subclass,
     is_dataclass_class_or_instance_typeguard,
     is_dataclass_class_typeguard,
@@ -24,7 +23,12 @@ from .predicates import (
 from .scope import get_serializer_from_scope
 from .sequence import find_index, unique
 from .serialization import default_serializer
-from .sync import AsyncCallable, as_async_callable_list, async_partial
+from .sync import (
+    AsyncCallable,
+    as_async_callable_list,
+    async_partial,
+    is_async_callable,
+)
 
 __all__ = (
     "AsyncCallable",

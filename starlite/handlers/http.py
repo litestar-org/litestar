@@ -56,8 +56,8 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import unique
-from starlite.utils.predicates import is_async_callable, is_class_and_subclass
+from starlite.utils import is_async_callable, unique
+from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
