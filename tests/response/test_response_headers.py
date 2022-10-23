@@ -107,3 +107,19 @@ def test_documentation_only_cache_control_header() -> None:
     with create_test_client(my_handler) as client:
         response = client.get("/test")
         assert "cache-control" not in response.headers
+
+
+def test_cache_control_header_overrides_response_headers() -> None:
+    @get(
+        path="/test",
+        response_headers={"cache-control": ResponseHeader(value="no-store")},
+        cache_control=CacheControlHeader(no_cache=True),
+    )
+    def my_handler() -> None:
+        pass
+
+    app = Starlite(route_handlers=[my_handler])
+
+    route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
+    resolved_headers = route_handler.resolve_response_headers()
+    assert resolved_headers["cache-control"].value == "no-cache"
