@@ -1,8 +1,9 @@
 import re
 from abc import ABC, abstractmethod
-from typing import Annotated, Any, ClassVar, Dict, Optional
+from typing import Any, ClassVar, Dict, Optional
 
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from typing_extensions import Annotated
 
 from starlite.exceptions import ImproperlyConfiguredException
 
