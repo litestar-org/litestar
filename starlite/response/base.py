@@ -23,6 +23,7 @@ from starlite.status_codes import (
     HTTP_204_NO_CONTENT,
     HTTP_304_NOT_MODIFIED,
 )
+from starlite.utils.helpers import get_enum_string_value
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
@@ -82,7 +83,7 @@ class Response(Generic[T]):
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """
         self.status_code = status_code
-        self.media_type = media_type
+        self.media_type = get_enum_string_value(media_type)
         self.background = background
         self.headers = headers or {}
         self.cookies = cookies or []

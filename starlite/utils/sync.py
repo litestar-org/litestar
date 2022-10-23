@@ -34,10 +34,10 @@ class AsyncCallable(Generic[P, T]):
             fn: Callable to wrap - can be any sync or async callable.
         """
 
-        self.is_method = ismethod(fn)
+        self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
         self.wrapped_callable: Dict[Literal["fn"], Callable] = {
-            "fn": fn if is_async_callable(fn) else async_partial(fn)
+            "fn": fn if is_async_callable(fn) else async_partial(fn)  # pyright: ignore
         }
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:

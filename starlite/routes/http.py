@@ -4,7 +4,6 @@ from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 from anyio.to_thread import run_sync
-from starlette.routing import get_name
 
 from starlite.connection import Request
 from starlite.controller import Controller
@@ -13,7 +12,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import RedirectResponse
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
-from starlite.utils import is_async_callable
+from starlite.utils import get_name, is_async_callable
 
 if TYPE_CHECKING:
     from starlite.handlers.http import HTTPRouteHandler

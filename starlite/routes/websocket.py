@@ -1,12 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
-from starlette.routing import get_name
-
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
+from starlite.utils import get_name
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket

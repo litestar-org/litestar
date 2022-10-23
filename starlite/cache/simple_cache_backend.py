@@ -1,7 +1,8 @@
-from asyncio import Lock
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict
+
+from anyio import Lock
 
 from starlite.cache.base import CacheBackendProtocol
 
