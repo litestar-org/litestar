@@ -182,7 +182,7 @@ class RateLimitMiddleware:
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await self.cache.set(key, dumps(cache_object))
+        await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
         """
