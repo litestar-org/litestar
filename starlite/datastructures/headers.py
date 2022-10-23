@@ -1,12 +1,13 @@
+import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar, Optional
+from typing import Any, ClassVar, Dict, Optional
 
-from pydantic import BaseModel, Extra, ValidationError
+from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from typing_extensions import Annotated
 
 from starlite.exceptions import ImproperlyConfiguredException
 
-if TYPE_CHECKING:
-    from typing import Any, Dict
+ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
 
 
 class Header(BaseModel, ABC):
@@ -30,6 +31,11 @@ class Header(BaseModel, ABC):
         """Get the header value as string."""
 
         raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def from_header(cls, header_value: str) -> "Header":
+        """Construct a header from its string representation."""
 
     def to_header(self, include_header_name: bool = False) -> str:
         """Get the header as string.
@@ -99,7 +105,7 @@ class CacheControlHeader(Header):
         """
 
         cc_items = [v.strip() for v in header_value.split(",")]
-        kwargs: "Dict[str, Any]" = {}
+        kwargs: Dict[str, Any] = {}
         for cc_item in cc_items:
             key_value = cc_item.split("=")
             if len(key_value) == 1:
@@ -121,3 +127,41 @@ class CacheControlHeader(Header):
         store this response."""
 
         return cls(no_store=True)
+
+
+class ETag(Header):
+    """An `etag` header."""
+
+    HEADER_NAME: ClassVar[str] = "etag"
+
+    weak: bool = False
+    value: Annotated[Optional[str], Field(regex=r"^[ -~]+$")] = None  # only ASCII characters
+
+    def _get_header_value(self) -> str:
+        value = f'"{self.value}"'
+        if self.weak:
+            return f"W/{value}"
+        return value
+
+    @classmethod
+    def from_header(cls, header_value: str) -> "ETag":
+        """Construct an `etag` header from its string representation.
+
+        Note that this will unquote etag-values
+        """
+        match = ETAG_RE.match(header_value)
+        if not match:
+            raise ImproperlyConfiguredException
+        weak, value = match.group(1, 2)
+        try:
+            return cls(weak=bool(weak), value=value)
+        except ValidationError as exc:
+            raise ImproperlyConfiguredException from exc
+
+    @validator("value", always=True)
+    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
+        """Ensures that either value is set or the instance is for
+        documentation_only."""
+        if values.get("documentation_only") or value is not None:
+            return value
+        raise ValueError("value must be set if documentation_only is false")

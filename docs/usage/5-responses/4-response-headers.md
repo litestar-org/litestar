@@ -232,14 +232,16 @@ router = Router(
 ## Specific Headers Implementation
 
 Starlite has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
-from `response_headers` in dedicated kwargs available on all layers of the app (individual route handlers, controllers,
-routers and the app itself).
+imported from `response_headers` with dedicated keyword arguments or as class attributes on all layers of the app
+(individual route handlers, controllers, routers and the app itself).
+
+These header implementations allow easy creating, serialisation and parsing according to the associated header
+specifications.
 
 ### Cache Control
 
-Starlite has a dedicated [CacheControlHeader][starlite.datastructures.CacheControlHeader] class for
-[`Cache-Control`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) which allows easy creation
-and parsing of the header value and provides accessors to its directives.
+[CacheControlHeader][starlite.datastructures.CacheControlHeader] represents a
+[`Cache-Control` Header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control).
 
 Here is a simple example that shows how to use it:
 
@@ -255,3 +257,18 @@ control values that will be returned from each endpoint:
 - When calling `/chance_of_rain` the response will have `cache-control` with `max-age=86400` (1 day).
 - When calling `/timestamp` the response will have `cache-control` with `no-store` which means don't store the result
 in any cache.
+
+### ETag
+
+[ETag][starlite.datastructures.ETag] represents an
+[`ETag` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag).
+
+Here are some usage examples:
+
+```py title="Returning ETag headers"
+--8<-- "examples/datastructures/headers/etag.py"
+```
+
+```py title="Parsing ETag heaers"
+--8<-- "examples/datastructures/headers/etag_parsing.py"
+```

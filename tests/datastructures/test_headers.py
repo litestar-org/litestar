@@ -1,6 +1,7 @@
 import pytest
+from pydantic import ValidationError
 
-from starlite.datastructures import CacheControlHeader
+from starlite.datastructures import CacheControlHeader, ETag
 from starlite.exceptions import ImproperlyConfiguredException
 
 
@@ -51,3 +52,53 @@ def test_cache_control_header_prevent_storing() -> None:
     header = CacheControlHeader.prevent_storing()
     header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
     assert header_dict == {"no-store": True}
+
+
+def test_etag_documentation_only() -> None:
+    assert ETag(documentation_only=True).value is None
+
+
+def test_etag_no_value() -> None:
+    with pytest.raises(ValidationError):
+        ETag()
+
+    with pytest.raises(ValidationError):
+        ETag(weak=True)
+
+
+def test_etag_non_ascii() -> None:
+    with pytest.raises(ValidationError):
+        ETag(value="f↓o")
+
+
+def test_etag_from_header() -> None:
+    etag = ETag.from_header('"foo"')
+    assert etag.value == "foo"
+    assert etag.weak is False
+
+
+@pytest.mark.parametrize("value", ['W/"foo"', 'w/"foo"'])  # type: ignore[misc]
+def test_etag_from_header_weak(value: str) -> None:
+    etag = ETag.from_header(value)
+    assert etag.value == "foo"
+    assert etag.weak is True
+
+
+@pytest.mark.parametrize("value", ['"føo"', 'W/"føo"'])  # type: ignore[misc]
+def test_etag_from_header_non_ascii_value(value: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        ETag.from_header(value)
+
+
+@pytest.mark.parametrize("value", ["foo", "W/foo"])  # type: ignore[misc]
+def test_etag_from_header_missing_quotes(value: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        ETag.from_header(value)
+
+
+def test_etag_to_header() -> None:
+    assert ETag(value="foo").to_header() == '"foo"'
+
+
+def test_etag_to_header_weak() -> None:
+    assert ETag(value="foo", weak=True).to_header() == 'W/"foo"'

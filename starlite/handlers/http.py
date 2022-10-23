@@ -24,7 +24,7 @@ from starlette.status import (
 )
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import CacheControlHeader, Provide, ResponseHeader
+from starlite.datastructures import CacheControlHeader, ETag, Provide, ResponseHeader
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.response_containers import (
     File,
@@ -225,6 +225,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "content_media_type",
         "deprecated",
         "description",
+        "etag",
         "http_method",
         "include_in_schema",
         "media_type",
@@ -256,6 +257,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]],
@@ -307,6 +309,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             http_method: An [http method string][starlite.types.Method], a member of the enum
@@ -374,6 +377,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
+        self.etag = etag
         self.media_type = media_type
         self.response_class = response_class
         self.response_cookies = response_cookies
@@ -426,7 +430,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         resolved_response_headers = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
-            for extra_header in ("cache_control",):
+            for extra_header in ("cache_control", "etag"):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
                     resolved_response_headers.update(
@@ -628,6 +632,7 @@ class get(HTTPRouteHandler):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
@@ -724,6 +729,7 @@ class get(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
             http_method=HttpMethod.GET,
@@ -763,6 +769,7 @@ class post(HTTPRouteHandler):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
@@ -813,6 +820,7 @@ class post(HTTPRouteHandler):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -859,6 +867,7 @@ class post(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            etag=etag,
             guards=guards,
             http_method=HttpMethod.POST,
             include_in_schema=include_in_schema,
@@ -897,6 +906,7 @@ class put(HTTPRouteHandler):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
@@ -947,6 +957,7 @@ class put(HTTPRouteHandler):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -970,7 +981,9 @@ class put(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. T
+                he Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -993,6 +1006,7 @@ class put(HTTPRouteHandler):
             deprecated=deprecated,
             description=description,
             exception_handlers=exception_handlers,
+            etag=etag,
             guards=guards,
             http_method=HttpMethod.PUT,
             include_in_schema=include_in_schema,
@@ -1031,6 +1045,7 @@ class patch(HTTPRouteHandler):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
@@ -1081,6 +1096,7 @@ class patch(HTTPRouteHandler):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -1126,6 +1142,7 @@ class patch(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
             http_method=HttpMethod.PATCH,
@@ -1165,6 +1182,7 @@ class delete(HTTPRouteHandler):
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         media_type: Union[MediaType, str] = MediaType.JSON,
@@ -1215,6 +1233,7 @@ class delete(HTTPRouteHandler):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -1260,6 +1279,7 @@ class delete(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
             http_method=HttpMethod.DELETE,

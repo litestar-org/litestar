@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
-    from starlite.datastructures import CacheControlHeader, Provide
+    from starlite.datastructures import CacheControlHeader, ETag, Provide
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes.base import PathParameterDefinition
@@ -177,6 +177,7 @@ class Starlite(Router):
         csrf_config: Optional["CSRFConfig"] = None,
         debug: bool = False,
         dependencies: Optional[Dict[str, "Provide"]] = None,
+        etag: Optional["ETag"] = None,
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
         logging_config: Optional["BaseLoggingConfig"] = None,
@@ -241,6 +242,8 @@ class Starlite(Router):
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If `True`, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
+                Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
@@ -305,6 +308,7 @@ class Starlite(Router):
             csrf_config=csrf_config,
             debug=debug,
             dependencies=dependencies or {},
+            etag=etag,
             exception_handlers=exception_handlers or {},
             guards=guards or [],
             logging_config=logging_config,
@@ -356,6 +360,7 @@ class Starlite(Router):
             before_request=config.before_request,
             cache_control=config.cache_control,
             dependencies=config.dependencies,
+            etag=config.etag,
             exception_handlers=config.exception_handlers,
             guards=config.guards,
             middleware=config.middleware,

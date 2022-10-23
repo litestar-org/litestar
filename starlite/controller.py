@@ -7,7 +7,7 @@ from starlite.utils import AsyncCallable, normalize_path
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
-    from starlite.datastructures import CacheControlHeader
+    from starlite.datastructures import CacheControlHeader, ETag
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHookHandler,
@@ -36,6 +36,7 @@ class Controller:
         "after_response",
         "before_request",
         "dependencies",
+        "etag",
         "exception_handlers",
         "guards",
         "middleware",
@@ -73,6 +74,11 @@ class Controller:
     dependencies: Optional["Dependencies"]
     """
         dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+    """
+    etag: Optional["ETag"]
+    """
+        An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this controller.
+        Can be overridden by route handlers.
     """
     exception_handlers: Optional["ExceptionHandlersMap"]
     """
