@@ -1,15 +1,22 @@
 # Changelog
 
+[1.31.0]
+
+- add support for ETag headers.
+- add support Cache-Control headers.
+- fix `Partial` handling of `ClassVar`.
+- update CSRFMiddleware to support excluding routes.
+
 [1.30.0]
 
-- `url_for_static_asset` path resolver function.
-- Use a `TypeVar` for `ExceptionHandler` exception parameter.
+- add `url_for_static_asset` path resolver function.
+- fix SQLAlchemy plugin maps JSON column types to `Union[Dict, List]` on DTOs.
 - fix `SessionMiddleware` handling non-session cookies with `session` anywhere in their name.
-- SQLAlchemy plugin maps JSON column types to `Union[Dict, List]` on DTOs.
+- update a `TypeVar` for `ExceptionHandler` exception parameter.
 
 [1.29.0]
 
-- Adds native support for `TypedDict` as data type.
+- add native support for `TypedDict` as data type.
 
 [1.28.1]
 
