@@ -5,7 +5,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
-from starlite.datastructures import CacheControlHeader, Provide
+from starlite.datastructures import CacheControlHeader, ETag, Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -48,6 +48,7 @@ class Router:
         "after_response",
         "cache_control",
         "dependencies",
+        "etag",
         "exception_handlers",
         "guards",
         "middleware",
@@ -72,6 +73,7 @@ class Router:
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache_control: Optional[CacheControlHeader] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
+        etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
@@ -100,6 +102,8 @@ class Router:
                 [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this
                 router. Can be overridden by route handlers.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this router.
+                Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
@@ -122,6 +126,7 @@ class Router:
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache_control = cache_control
+        self.etag = etag
         self.dependencies = dependencies or {}
         self.exception_handlers = exception_handlers or {}
         self.guards = guards or []

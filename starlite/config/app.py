@@ -4,7 +4,7 @@ from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.connection import Request, WebSocket
-from starlite.datastructures import CacheControlHeader, Provide
+from starlite.datastructures import CacheControlHeader, ETag, Provide
 from starlite.plugins.base import PluginProtocol
 from starlite.types import (
     AfterExceptionHookHandler,
@@ -127,6 +127,11 @@ class AppConfig(BaseModel):
     dependencies: Dict[str, Provide]
     """
     A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+    """
+    etag: Optional[ETag]
+    """
+        An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
+        Can be overridden by route handlers.
     """
     exception_handlers: ExceptionHandlersMap
     """
