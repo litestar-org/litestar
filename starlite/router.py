@@ -5,7 +5,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
-from starlite.datastructures.provide import Provide
+from starlite.datastructures import CacheControlHeader, Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -46,6 +46,7 @@ class Router:
         "after_request",
         "before_request",
         "after_response",
+        "cache_control",
         "dependencies",
         "exception_handlers",
         "guards",
@@ -69,6 +70,7 @@ class Router:
         after_request: Optional[AfterRequestHookHandler] = None,
         after_response: Optional[AfterResponseHookHandler] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
+        cache_control: Optional[CacheControlHeader] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
@@ -94,6 +96,9 @@ class Router:
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
                 bypassing the route handler.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this
+                router. Can be overridden by route handlers.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
@@ -116,6 +121,7 @@ class Router:
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.before_request = AsyncCallable(before_request) if before_request else None
+        self.cache_control = cache_control
         self.dependencies = dependencies or {}
         self.exception_handlers = exception_handlers or {}
         self.guards = guards or []

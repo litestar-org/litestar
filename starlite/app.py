@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
-    from starlite.datastructures.provide import Provide
+    from starlite.datastructures import CacheControlHeader, Provide
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes.base import PathParameterDefinition
@@ -171,6 +171,7 @@ class Starlite(Router):
         before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
         before_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+        cache_control: Optional["CacheControlHeader"] = None,
         compression_config: Optional["CompressionConfig"] = None,
         cors_config: Optional["CORSConfig"] = None,
         csrf_config: Optional["CSRFConfig"] = None,
@@ -231,6 +232,9 @@ class Starlite(Router):
                 list thereof. This hook is called during the ASGI startup, before any callables in the 'on_startup'
                 list have been called.
             cache_config: Configures caching behavior of the application.
+            cache_control: A `cache-control` header of type
+                [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this app.
+                Can be overridden by route handlers.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set this enables the builtin CORS middleware.
@@ -295,6 +299,7 @@ class Starlite(Router):
             before_shutdown=before_shutdown or [],
             before_startup=before_startup or [],
             cache_config=cache_config,
+            cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,
@@ -349,6 +354,7 @@ class Starlite(Router):
             after_request=config.after_request,
             after_response=config.after_response,
             before_request=config.before_request,
+            cache_control=config.cache_control,
             dependencies=config.dependencies,
             exception_handlers=config.exception_handlers,
             guards=config.guards,

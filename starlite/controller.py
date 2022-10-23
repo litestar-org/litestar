@@ -7,6 +7,7 @@ from starlite.utils import AsyncCallable, normalize_path
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
+    from starlite.datastructures import CacheControlHeader
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHookHandler,
@@ -63,6 +64,11 @@ class Controller:
         A sync or async function called immediately before calling the route handler.
         It receives the [Request][starlite.connection.Request] instance and any
         non-`None` return value is used for the response, bypassing the route handler.
+    """
+    cache_control: Optional["CacheControlHeader"]
+    """
+         A [CacheControlHeader][starlite.datastructures.CacheControlHeader] header to add to route handlers
+         of this controller. Can be overridden by route handlers.
     """
     dependencies: Optional["Dependencies"]
     """

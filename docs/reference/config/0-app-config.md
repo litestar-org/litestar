@@ -14,6 +14,7 @@
             - before_shutdown
             - before_startup
             - cache_config
+            - cache_control
             - compression_config
             - cors_config
             - csrf_config

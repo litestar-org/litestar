@@ -4,7 +4,7 @@ from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.connection import Request, WebSocket
-from starlite.datastructures.provide import Provide
+from starlite.datastructures import CacheControlHeader, Provide
 from starlite.plugins.base import PluginProtocol
 from starlite.types import (
     AfterExceptionHookHandler,
@@ -102,6 +102,11 @@ class AppConfig(BaseModel):
     cache_config: CacheConfig
     """
     Configures caching behavior of the application.
+    """
+    cache_control: Optional[CacheControlHeader]
+    """
+    A `cache-control` header of type [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to
+    route handlers of this app. Can be overridden by route handlers.
     """
     compression_config: Optional[CompressionConfig]
     """

@@ -5,7 +5,8 @@ from pydantic import ValidationError
 from starlette.status import HTTP_201_CREATED
 
 from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
-from starlite.testing import create_test_client
+from starlite.datastructures import CacheControlHeader
+from starlite.testing import TestClient, create_test_client
 
 
 def test_response_headers() -> None:
@@ -72,3 +73,53 @@ def test_response_headers_rendering() -> None:
         response = client.post("/test", json={"hello": "world"})
         assert response.status_code == HTTP_201_CREATED
         assert response.headers.get("test-header") == "test value"
+
+
+def test_cache_control_response_header() -> None:
+    class MyController(Controller):
+        cache_control = CacheControlHeader(no_store=True)
+
+        @get(path="/test1", cache_control=CacheControlHeader(no_cache=True))
+        def test1_handler(self) -> None:
+            pass
+
+        @get(path="/test2")
+        def test2_handler(self) -> None:
+            pass
+
+    @get(path="/test3")
+    def test3_handler() -> None:
+        pass
+
+    app = Starlite(route_handlers=[MyController, test3_handler], cache_control=CacheControlHeader(max_age=10))
+
+    with TestClient(app=app) as client:
+        for path, expected_value in (("/test1", "no-cache"), ("/test2", "no-store"), ("/test3", "max-age=10")):
+            response = client.get(path)
+            assert response.headers["cache-control"] == expected_value
+
+
+def test_documentation_only_cache_control_header() -> None:
+    @get(path="/test", cache_control=CacheControlHeader(no_cache=True, documentation_only=True))
+    def my_handler() -> None:
+        pass
+
+    with create_test_client(my_handler) as client:
+        response = client.get("/test")
+        assert "cache-control" not in response.headers
+
+
+def test_cache_control_header_overrides_response_headers() -> None:
+    @get(
+        path="/test",
+        response_headers={"cache-control": ResponseHeader(value="no-store")},
+        cache_control=CacheControlHeader(no_cache=True),
+    )
+    def my_handler() -> None:
+        pass
+
+    app = Starlite(route_handlers=[my_handler])
+
+    route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
+    resolved_headers = route_handler.resolve_response_headers()
+    assert resolved_headers["cache-control"].value == "no-cache"
