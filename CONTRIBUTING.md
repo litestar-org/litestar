@@ -30,6 +30,9 @@ To contribute code changes or update the documentation, please follow these step
                - cache_key_builder
    ```
 
+4. Add or modify examples in the Docs related to the new functionality implemented. Please
+   follow the guidelines in [Adding examples](#adding-examples)
+
 ## Project Documentation
 
 The documentation is located under the `/doc` folder, with the `mkdocs.yml` file in the project root.
@@ -63,6 +66,27 @@ restructure the docs etc. But make sure to follow these emphases:
 - examples should be simple and clear.
 - provide links where applicable.
 - provide diagrams where applicable and possible.
+
+#### Adding examples
+
+The examples from the Docs are located in their own modules inside the
+`examples/` folder. This makes it easier to test them alongside the rest of the
+test suite, ensuring they do not become stale as Starlite evolves.
+
+Please follow the next guidelines when adding a new example:
+
+- Add the example in the corresponding module directory in `examples/` or create
+  a new one if necessary
+- Create a suite for the module in `tests/examples` that tests the facets of the
+  example that it demonstrates
+- Reference the example in the Markdown file with an external reference code
+  block, e.g.
+
+````md
+```py title="Tests a Thing"
+--8<-- "examples/test_thing.py"
+```
+````
 
 ## Testing multiple python versions
 
