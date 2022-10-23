@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, Any
 
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.errors import ServerErrorMiddleware
 
 from starlite.connection import Request
@@ -61,18 +60,15 @@ class ExceptionHandlerMiddleware:
             if isinstance(e, WebSocketException):
                 code = e.code
                 reason = e.detail
-            elif isinstance(e, StarletteHTTPException):
-                code = e.status_code + 4000
-                reason = e.detail
             else:
-                code = HTTP_500_INTERNAL_SERVER_ERROR + 4000
-                reason = repr(e)
+                code = 4000 + getattr(e, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
+                reason = getattr(e, "detail", repr(e))
             event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason}
             await send(event)
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
         """Default handler for exceptions subclassed from HTTPException."""
-        status_code = exc.status_code if isinstance(exc, StarletteHTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
+        status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
             server_middleware = ServerErrorMiddleware(app=self)  # type: ignore[arg-type]
