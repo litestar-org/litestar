@@ -6,6 +6,11 @@
             - documentation_only
             - value
 
+::: starlite.datastructures.headers.Header
+    options:
+        members:
+            - documentation_only
+
 ::: starlite.datastructures.CacheControlHeader
     options:
         members:

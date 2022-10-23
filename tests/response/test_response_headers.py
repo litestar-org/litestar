@@ -97,3 +97,13 @@ def test_cache_control_response_header() -> None:
         for path, expected_value in (("/test1", "no-cache"), ("/test2", "no-store"), ("/test3", "max-age=10")):
             response = client.get(path)
             assert response.headers["cache-control"] == expected_value
+
+
+def test_documentation_only_cache_control_header() -> None:
+    @get(path="/test", cache_control=CacheControlHeader(no_cache=True, documentation_only=True))
+    def my_handler() -> None:
+        pass
+
+    with create_test_client(my_handler) as client:
+        response = client.get("/test")
+        assert "cache-control" not in response.headers

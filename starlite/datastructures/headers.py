@@ -22,6 +22,9 @@ class Header(BaseModel, ABC):
         def alias_generator(cls, field_name: str) -> str:  # pylint: disable=missing-function-docstring
             return field_name.replace("_", "-")
 
+    documentation_only: bool = False
+    """Defines the header instance as for OpenAPI documentation purpose only"""
+
     @abstractmethod
     def _get_header_value(self) -> str:
         """Get the header value as string."""
@@ -77,7 +80,9 @@ class CacheControlHeader(Header):
         """Get the header value as string."""
 
         cc_items = []
-        for key, value in self.dict(exclude_unset=True, exclude_none=True, by_alias=True).items():
+        for key, value in self.dict(
+            exclude_unset=True, exclude_none=True, by_alias=True, exclude={"documentation_only"}
+        ).items():
             cc_items.append(key if isinstance(value, bool) else f"{key}={value}")
 
         return ", ".join(cc_items)

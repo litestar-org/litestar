@@ -430,7 +430,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
                     resolved_response_headers.update(
-                        {header_model.HEADER_NAME: ResponseHeader(value=header_model.to_header())}
+                        {
+                            header_model.HEADER_NAME: ResponseHeader(
+                                value=header_model.to_header(), documentation_only=header_model.documentation_only
+                            )
+                        }
                     )
 
         return resolved_response_headers
