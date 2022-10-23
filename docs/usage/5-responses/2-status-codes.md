@@ -5,7 +5,7 @@ You can control the response `status_code` by setting the corresponding kwarg to
 ```python
 from pydantic import BaseModel
 from starlite import get
-from starlette.status import HTTP_202_ACCEPTED
+from starlite.status_codes import HTTP_202_ACCEPTED
 
 
 class Resource(BaseModel):
@@ -37,6 +37,6 @@ If `status_code` is not set by the user, the following defaults are used:
 
 !!! tip
     While you can write integers as the value for `status_code`, e.g. `200`, it's best practice to use constants (also in
-    tests). Starlette includes easy to use statuses that are exported from `starlette.status`, e.g. `HTTP_200_OK`
+    tests). Starlite includes easy to use statuses that are exported from `starlite.status_codes`, e.g. `HTTP_200_OK`
     and `HTTP_201_CREATED`. Another option is the `http.HTTPStatus`enum from the standard library, which also offers
     extra functionality. For this see [the standard library documentation](https://docs.python.org/3/library/http.html#http.HTTPStatus).

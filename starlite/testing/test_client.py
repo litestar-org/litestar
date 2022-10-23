@@ -7,7 +7,6 @@ from starlite.middleware.session import SessionMiddleware
 if TYPE_CHECKING:
     from typing_extensions import Literal
 
-    from starlite import Request, WebSocket
     from starlite.config import (
         BaseLoggingConfig,
         CacheConfig,
@@ -18,12 +17,14 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
+    from starlite.connection import Request, WebSocket
     from starlite.middleware.session import SessionCookieConfig
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
+        ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
@@ -54,7 +55,7 @@ class TestClient(StarletteTestClient):
 
     def __init__(
         self,
-        app: Starlite,
+        app: Union[Starlite, "ASGIApp"],
         base_url: str = "http://testserver",
         raise_server_exceptions: bool = True,
         root_path: str = "",
@@ -96,7 +97,7 @@ class TestClient(StarletteTestClient):
         Returns:
             TestClient
         """
-        return super().__enter__()  # pyright: ignore
+        return cast("TestClient", super().__enter__())
 
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
         """Creates raw session cookies that are loaded into the session by the

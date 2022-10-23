@@ -1,8 +1,8 @@
 from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Union
 
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import (
+from starlite.exceptions.base_exceptions import StarLiteException
+from starlite.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_403_FORBIDDEN,
@@ -13,10 +13,8 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-from starlite.exceptions.base_exceptions import StarLiteException
 
-
-class HTTPException(StarletteHTTPException, StarLiteException):
+class HTTPException(StarLiteException):
     status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
     """Exception status code."""
     detail: str
@@ -45,8 +43,8 @@ class HTTPException(StarletteHTTPException, StarLiteException):
             headers: Headers to set on the response.
             extra: An extra mapping to attach to the exception.
         """
-
-        super().__init__(status_code or self.status_code)
+        super().__init__()
+        self.status_code = status_code or self.status_code
 
         if not detail:
             detail = args[0] if args else HTTPStatus(self.status_code).phrase

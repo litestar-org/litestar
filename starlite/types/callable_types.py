@@ -1,12 +1,10 @@
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, Union
 
-from .asgi_types import Message, Scope
+from .asgi_types import ASGIApp, Message, Scope
 from .helpers import SyncOrAsyncUnion
 from .internal_types import StarliteType
 
 if TYPE_CHECKING:
-    from starlette.responses import Response as StarletteResponse  # noqa: TC004
-
     from starlite.config import AppConfig  # noqa: TC004
     from starlite.connection import Request, WebSocket  # noqa: TC004
     from starlite.datastructures.state import State  # noqa: TC004
@@ -18,7 +16,6 @@ else:
     HTTPRouteHandler = Any
     Request = Any
     Response = Any
-    StarletteResponse = Any
     State = Any
     WebSocket = Any
     WebsocketRouteHandler = Any
@@ -28,7 +25,7 @@ _ExceptionT = TypeVar("_ExceptionT", bound=Exception)
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
-    Callable[[StarletteResponse], SyncOrAsyncUnion[StarletteResponse]], Callable[[Response], SyncOrAsyncUnion[Response]]
+    Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]
 ]
 AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
@@ -38,7 +35,7 @@ BeforeMessageSendHookHandler = Union[
 ]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
-ExceptionHandler = Callable[[Request, _ExceptionT], StarletteResponse]
+ExceptionHandler = Callable[[Request, _ExceptionT], Response]
 Guard = Union[
     Callable[[Request, HTTPRouteHandler], SyncOrAsyncUnion[None]],
     Callable[[WebSocket, WebsocketRouteHandler], SyncOrAsyncUnion[None]],

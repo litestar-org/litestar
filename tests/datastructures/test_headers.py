@@ -42,7 +42,7 @@ def test_cache_control_from_header_single_value() -> None:
     assert header_dict == {"no-cache": True}
 
 
-@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])  # type: ignore[misc]
+@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])
 def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         CacheControlHeader.from_header(invalid_value)
@@ -77,20 +77,20 @@ def test_etag_from_header() -> None:
     assert etag.weak is False
 
 
-@pytest.mark.parametrize("value", ['W/"foo"', 'w/"foo"'])  # type: ignore[misc]
+@pytest.mark.parametrize("value", ['W/"foo"', 'w/"foo"'])
 def test_etag_from_header_weak(value: str) -> None:
     etag = ETag.from_header(value)
     assert etag.value == "foo"
     assert etag.weak is True
 
 
-@pytest.mark.parametrize("value", ['"føo"', 'W/"føo"'])  # type: ignore[misc]
+@pytest.mark.parametrize("value", ['"føo"', 'W/"føo"'])
 def test_etag_from_header_non_ascii_value(value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ETag.from_header(value)
 
 
-@pytest.mark.parametrize("value", ["foo", "W/foo"])  # type: ignore[misc]
+@pytest.mark.parametrize("value", ["foo", "W/foo"])
 def test_etag_from_header_missing_quotes(value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ETag.from_header(value)

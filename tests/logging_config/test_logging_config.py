@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, Dict
 from unittest.mock import Mock, patch
 
 import pytest
-from starlette.status import HTTP_200_OK
 
 from starlite import Request, get
 from starlite.config import LoggingConfig
@@ -17,6 +16,7 @@ from starlite.logging.picologging import (
 from starlite.logging.standard import (
     QueueListenerHandler as StandardQueueListenerHandler,
 )
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

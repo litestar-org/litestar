@@ -4,7 +4,7 @@ from pydantic import DirectoryPath, validate_arguments
 from typing_extensions import Protocol, TypedDict, runtime_checkable
 
 if TYPE_CHECKING:
-    from starlite import Request
+    from starlite.connection import Request
 
 
 class TemplateContext(TypedDict):
@@ -52,6 +52,7 @@ def url_for_static_asset(context: TemplateContext, name: str, file_path: str) ->
     be used in templates.
 
     Args:
+        context: The template context object.
         name: A static handler unique name.
         file_path: a string containing path to an asset.
 

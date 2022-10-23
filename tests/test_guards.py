@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from starlette.status import HTTP_200_OK, HTTP_403_FORBIDDEN
 from starlette.websockets import WebSocketDisconnect
 
 from starlite import (
@@ -15,6 +14,7 @@ from starlite import (
 )
 from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException
+from starlite.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
 from starlite.testing import create_test_client
 from starlite.types import Receive, Scope, Send
 
@@ -53,7 +53,7 @@ def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
         response = Response(media_type=MediaType.JSON, status_code=HTTP_200_OK, content={"hello": "world"})
-        await response(scope=scope, receive=receive, send=send)  # type: ignore[arg-type]
+        await response(scope=scope, receive=receive, send=send)
 
     with create_test_client(guards=[app_guard], route_handlers=[my_asgi_handler]) as client:
         response = client.get("/secret")

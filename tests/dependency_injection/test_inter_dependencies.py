@@ -1,8 +1,7 @@
 from random import randint
 
-from starlette.status import HTTP_200_OK
-
 from starlite import Controller, MediaType, Provide, get
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 

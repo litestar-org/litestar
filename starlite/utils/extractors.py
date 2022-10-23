@@ -11,12 +11,12 @@ from typing import (
     cast,
 )
 
-from starlette.requests import cookie_parser
 from typing_extensions import Literal, TypedDict
 
 from starlite.connection import Request
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
+from starlite.parsers import parse_cookie_string
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
@@ -402,7 +402,7 @@ class ResponseDataExtractor:
             The Response's cookies dict.
         """
         cookie_string = ";".join(
-            list(
+            list(  # noqa: C417
                 map(
                     lambda x: x[1].decode("latin-1"),
                     filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"]),
@@ -410,6 +410,6 @@ class ResponseDataExtractor:
             )
         )
         if cookie_string:
-            parsed_cookies = cookie_parser(cookie_string)
+            parsed_cookies = parse_cookie_string(cookie_string)
             return obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies
         return {}

@@ -8,7 +8,6 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
     MediaType as OpenAPISchemaMediaType,
 )
 from pydantic_openapi_schema.v3_1_0.schema import Schema
-from starlette.routing import get_name
 from typing_extensions import get_args, get_origin
 
 from starlite.datastructures.response_containers import File, Redirect, Stream, Template
@@ -22,7 +21,7 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
-from starlite.utils.model import create_parsed_model_field
+from starlite.utils import create_parsed_model_field, get_enum_string_value, get_name
 
 if TYPE_CHECKING:
 
@@ -68,7 +67,7 @@ def create_success_response(
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
             return_annotation = str  # since templates return str
-            route_handler.media_type = MediaType.HTML
+            route_handler.media_type = get_enum_string_value(MediaType.HTML)
         elif get_origin(signature.return_annotation) is StarliteResponse:
             return_annotation = get_args(signature.return_annotation)[0] or Any
         as_parsed_model_field = create_parsed_model_field(return_annotation)
@@ -152,13 +151,13 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             Schema(
                 type=OpenAPIType.OBJECT,
                 required=["detail", "status_code"],
-                properties=dict(
-                    status_code=Schema(type=OpenAPIType.INTEGER),
-                    detail=Schema(type=OpenAPIType.STRING),
-                    extra=Schema(
+                properties={
+                    "status_code": Schema(type=OpenAPIType.INTEGER),
+                    "detail": Schema(type=OpenAPIType.STRING),
+                    "extra": Schema(
                         type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY], additionalProperties=Schema()
                     ),
-                ),
+                },
                 description=pascal_case_to_text(get_name(exc)),
                 examples=[{"status_code": status_code, "detail": HTTPStatus(status_code).phrase, "extra": {}}],
             )

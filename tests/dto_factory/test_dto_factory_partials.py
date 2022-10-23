@@ -41,5 +41,5 @@ def test_partial_dto_sqlalchemy_model() -> None:
 
     # Test for partial DTO
     partial_dto_car = Partial[dto_car]  # type: ignore
-    ford = partial_dto_car(**car_two)
+    ford = partial_dto_car(**car_two)  # pyright: ignore
     assert ford.make == "Ford"  # type: ignore

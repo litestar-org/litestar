@@ -34,35 +34,35 @@ You can also modify the generated schema for the route handler using the followi
     The expected content should be based on a Pydantic model describing its structure. It can also include
     a description and the expected media type. For example:
 
-    ```python
-    from datetime import datetime
-    from typing import Optional
+```python
+from datetime import datetime
+from typing import Optional
 
-    from pydantic import BaseModel
+from pydantic import BaseModel
 
-    from starlite import ResponseSpec, get
-
-
-    class Item(BaseModel):
-        ...
+from starlite import ResponseSpec, get
 
 
-    class ItemNotFound(BaseModel):
-        was_removed: bool
-        removed_at: Optional[datetime]
+class Item(BaseModel):
+    ...
 
 
-    @get(
-        path="/items/{pk:int}",
-        responses={
-            404: ResponseSpec(
-                model=ItemNotFound, description="Item was removed or not found"
-            )
-        },
-    )
-    def retrieve_item(pk: int) -> Item:
-        ...
-    ```
+class ItemNotFound(BaseModel):
+    was_removed: bool
+    removed_at: Optional[datetime]
+
+
+@get(
+    path="/items/{pk:int}",
+    responses={
+        404: ResponseSpec(
+            model=ItemNotFound, description="Item was removed or not found"
+        )
+    },
+)
+def retrieve_item(pk: int) -> Item:
+    ...
+```
 
 You can also specify `security` and `tags` on higher level of the application, e.g. on a controller, router or the app instance itself. For example:
 

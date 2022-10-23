@@ -4,7 +4,6 @@ from typing import Any
 import pytest
 from freezegun import freeze_time
 from orjson import dumps, loads
-from starlette.status import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 
 from starlite import Request, get
 from starlite.middleware.rate_limit import (
@@ -13,6 +12,7 @@ from starlite.middleware.rate_limit import (
     DurationUnit,
     RateLimitConfig,
 )
+from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import create_test_client
 
 

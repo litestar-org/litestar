@@ -1,10 +1,10 @@
 import yaml
 from orjson import loads
 from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
-from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import OpenAPIMediaType
+from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
 

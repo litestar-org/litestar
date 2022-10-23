@@ -1,9 +1,8 @@
 from asyncio import sleep
 from typing import TYPE_CHECKING, Any, Dict
 
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-
 from starlite import Controller, Provide, get
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

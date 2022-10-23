@@ -4,24 +4,29 @@ from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 from anyio.to_thread import run_sync
-from starlette.responses import RedirectResponse
-from starlette.routing import get_name
 
 from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import RedirectResponse
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
-from starlite.utils import is_async_callable
+from starlite.utils import get_name, is_async_callable
 
 if TYPE_CHECKING:
-    from starlette.responses import Response as StarletteResponse
-
     from starlite.handlers.http import HTTPRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.response import Response
-    from starlite.types import AnyCallable, HTTPScope, Method, Receive, Scope, Send
+    from starlite.types import (
+        AnyCallable,
+        ASGIApp,
+        HTTPScope,
+        Method,
+        Receive,
+        Scope,
+        Send,
+    )
 
 
 class HTTPRoute(BaseRoute):
@@ -73,7 +78,7 @@ class HTTPRoute(BaseRoute):
             scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
         )
 
-        await response(scope, receive, send)  # type: ignore[arg-type]
+        await response(scope, receive, send)
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
             await after_response_handler(request)  # type: ignore
@@ -96,7 +101,7 @@ class HTTPRoute(BaseRoute):
         request: Request[Any, Any],
         route_handler: "HTTPRouteHandler",
         parameter_model: "KwargsModel",
-    ) -> "StarletteResponse":
+    ) -> "ASGIApp":
         """Handles creating a response instance and/or using cache.
 
         Args:
@@ -106,9 +111,9 @@ class HTTPRoute(BaseRoute):
             parameter_model: The Handler's KwargsModel
 
         Returns:
-            An instance of StarletteResponse or a subclass of it
+            An instance of Response or a compatible ASGIApp or a subclass of it
         """
-        response: Optional["StarletteResponse"] = None
+        response: Optional["ASGIApp"] = None
         if route_handler.cache:
             response = await self._get_cached_response(request=request, route_handler=route_handler)
 
@@ -127,7 +132,7 @@ class HTTPRoute(BaseRoute):
 
     async def _call_handler_function(
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
-    ) -> "StarletteResponse":
+    ) -> "ASGIApp":
         """Calls the before request handlers, retrieves any data required for
         the route handler, and calls the route handler's to_response method.
 
@@ -185,9 +190,7 @@ class HTTPRoute(BaseRoute):
         return fn()
 
     @staticmethod
-    async def _get_cached_response(
-        request: Request, route_handler: "HTTPRouteHandler"
-    ) -> Optional["StarletteResponse"]:
+    async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["ASGIApp"]:
         """Retrieves and un-pickles the cached response, if existing.
 
         Args:
@@ -203,13 +206,13 @@ class HTTPRoute(BaseRoute):
         cached_response = await cache.get(key=cache_key)
 
         if cached_response:
-            return cast("StarletteResponse", pickle.loads(cached_response))  # nosec # noqa: SCS113
+            return cast("ASGIApp", pickle.loads(cached_response))  # nosec # noqa: SCS113
 
         return None
 
     @staticmethod
     async def _set_cached_response(
-        response: Union["Response", "StarletteResponse"], request: Request, route_handler: "HTTPRouteHandler"
+        response: Union["Response", "ASGIApp"], request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
         """Pickles and caches a response object."""
         cache = request.app.cache

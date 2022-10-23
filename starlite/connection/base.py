@@ -11,11 +11,10 @@ from typing import (
 )
 
 from starlette.datastructures import URL, Address, Headers, URLPath
-from starlette.requests import cookie_parser
 
 from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.parsers import parse_query_params
+from starlite.parsers import parse_cookie_string, parse_query_params
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -150,6 +149,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A Headers instance with the request's scope["headers"] value.
         """
         if self._headers is Empty:
+            self.scope.setdefault("headers", [])
             self._headers = self.scope["_headers"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
         return cast("Headers", self._headers)
 
@@ -182,7 +182,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             cookies: Dict[str, str] = {}
             cookie_header = self.headers.get("cookie")
             if cookie_header:
-                cookies = cookie_parser(cookie_header)
+                cookies = parse_cookie_string(cookie_header)
             self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
         return cast("Dict[str, str]", self._cookies)
 

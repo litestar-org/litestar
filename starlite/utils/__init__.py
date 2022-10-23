@@ -6,6 +6,7 @@ from .exception import (
     get_exception_handler,
 )
 from .extractors import ConnectionDataExtractor, ResponseDataExtractor, obfuscate
+from .helpers import get_enum_string_value, get_name
 from .model import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -13,7 +14,6 @@ from .model import (
 )
 from .path import join_paths, normalize_path
 from .predicates import (
-    is_async_callable,
     is_class_and_subclass,
     is_dataclass_class_or_instance_typeguard,
     is_dataclass_class_typeguard,
@@ -23,10 +23,17 @@ from .predicates import (
 from .scope import get_serializer_from_scope
 from .sequence import find_index, unique
 from .serialization import default_serializer
-from .sync import AsyncCallable, as_async_callable_list, async_partial
+from .sync import (
+    AsyncCallable,
+    AsyncIteratorWrapper,
+    as_async_callable_list,
+    async_partial,
+    is_async_callable,
+)
 
 __all__ = (
     "AsyncCallable",
+    "AsyncIteratorWrapper",
     "ConnectionDataExtractor",
     "ExceptionResponseContent",
     "ResponseDataExtractor",
@@ -38,7 +45,11 @@ __all__ = (
     "create_parsed_model_field",
     "default_serializer",
     "find_index",
+    "generate_csrf_hash",
+    "generate_csrf_token",
+    "get_enum_string_value",
     "get_exception_handler",
+    "get_name",
     "get_serializer_from_scope",
     "is_async_callable",
     "is_class_and_subclass",
@@ -52,6 +63,4 @@ __all__ = (
     "obfuscate",
     "should_skip_dependency_validation",
     "unique",
-    "generate_csrf_hash",
-    "generate_csrf_token",
 )

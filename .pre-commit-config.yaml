@@ -37,7 +37,7 @@ repos:
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0-alpha.2"
+    rev: "v3.0.0-alpha.3"
     hooks:
       - id: prettier
         exclude: docs
@@ -70,12 +70,10 @@ repos:
             "flake8-print",
             "flake8-simplify",
             "flake8-type-checking",
-            "flake8-pytest-style",
             "flake8-implicit-str-concat",
             "flake8-noqa",
             "flake8-return",
             "flake8-secure-coding-standard",
-            "flake8-eradicate",
             "flake8-encodings",
             "flake8-use-fstring",
             "flake8-use-pathlib",
@@ -85,22 +83,39 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/dosisod/refurb
-    rev: v1.3.0
+    rev: v1.4.0
     hooks:
       - id: refurb
         args: [--ignore, "120", --ignore, "128"]
         additional_dependencies:
           [
+            aiomcache,
+            beautifulsoup4,
+            brotli,
+            cryptography,
+            freezegun,
+            httpx,
+            hypothesis,
+            mako,
             orjson,
             piccolo,
             picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
+            pytest,
+            pyyaml,
+            redis,
             sqlalchemy,
+            sqlalchemy2-stubs,
             starlette,
             starlite_multipart,
             structlog,
+            tortoise-orm,
+            types-PyYAML,
+            types-beautifulsoup4,
+            types-freezegun,
+            types-redis,
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
@@ -131,7 +146,7 @@ repos:
             aiomcache,
           ]
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.4"
+    rev: "v2.15.5"
     hooks:
       - id: pylint
         exclude: "test_*"
@@ -155,37 +170,16 @@ repos:
     rev: "v0.982"
     hooks:
       - id: mypy
-        exclude: "test_starlette_tests"
+        args: [--show-traceback, --pdb]
         additional_dependencies:
           [
-            orjson,
-            piccolo,
-            picologging,
-            pydantic,
-            pydantic_factories,
-            pydantic_openapi_schema,
-            sqlalchemy,
-            sqlalchemy2-stubs,
-            starlette,
-            starlite_multipart,
-            structlog,
-            types-PyYAML,
-            types-freezegun,
-            types-redis,
-            redis,
-          ]
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.275
-    hooks:
-      - id: pyright
-        exclude: "tests"
-        additional_dependencies:
-          [
+            aiomcache,
+            beautifulsoup4,
             brotli,
             cryptography,
             freezegun,
+            httpx,
             hypothesis,
-            jinja2,
             mako,
             orjson,
             piccolo,
@@ -196,11 +190,48 @@ repos:
             pytest,
             pyyaml,
             redis,
-            httpx,
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
             starlite_multipart,
             structlog,
+            tortoise-orm,
+            types-PyYAML,
+            types-beautifulsoup4,
+            types-freezegun,
+            types-redis,
+          ]
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.276
+    hooks:
+      - id: pyright
+        additional_dependencies:
+          [
             aiomcache,
+            beautifulsoup4,
+            brotli,
+            cryptography,
+            freezegun,
+            httpx,
+            hypothesis,
+            mako,
+            orjson,
+            piccolo,
+            picologging,
+            pydantic,
+            pydantic_factories,
+            pydantic_openapi_schema,
+            pytest,
+            pyyaml,
+            redis,
+            sqlalchemy,
+            sqlalchemy2-stubs,
+            starlette,
+            starlite_multipart,
+            structlog,
+            tortoise-orm,
+            types-PyYAML,
+            types-beautifulsoup4,
+            types-freezegun,
+            types-redis,
           ]

@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, cast
 
 from pydantic_openapi_schema.v3_1_0.operation import Operation
 from pydantic_openapi_schema.v3_1_0.path_item import PathItem
-from starlette.routing import get_name
 
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
+from starlite.utils import get_name
 
 if TYPE_CHECKING:
     from pydantic import BaseModel

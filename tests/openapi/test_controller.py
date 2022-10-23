@@ -1,9 +1,8 @@
-from starlette.status import HTTP_200_OK, HTTP_404_NOT_FOUND
-
 from starlite import OpenAPIConfig
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import MediaType
 from starlite.openapi.controller import OpenAPIController as _OpenAPIController
+from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
 

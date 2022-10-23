@@ -5,7 +5,7 @@ If you need to write your own ASGI application, you can do so using the `asgi` d
 ```python
 from starlite.types import Scope, Receive, Send
 from starlite.enums import MediaType
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import Response, asgi
 
 
@@ -32,7 +32,7 @@ the code below is equivalent to the one above:
 ```python
 from starlite.types import Scope, Receive, Send
 from starlite.enums import MediaType
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite import ASGIRouteHandler, Response
 
 

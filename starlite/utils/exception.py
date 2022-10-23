@@ -2,16 +2,14 @@ from inspect import getmro
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from pydantic import BaseModel
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite.enums import MediaType
-from starlite.exceptions.http_exceptions import HTTPException
-from starlite.response import Response
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
     from typing import Type
 
+    from starlite.response import Response
     from starlite.types import ExceptionHandler, ExceptionHandlersMap
 
 
@@ -36,15 +34,13 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
     """
     if not exception_handlers:
         return None
-    if isinstance(exc, (StarletteHTTPException, HTTPException)) and exc.status_code in exception_handlers:
-        return exception_handlers[exc.status_code]
+    status_code: Optional[int] = getattr(exc, "status_code", None)
+    if status_code in exception_handlers:
+        return exception_handlers[status_code]
     for cls in getmro(type(exc)):
         if cls in exception_handlers:
             return exception_handlers[cast("Type[Exception]", cls)]
-    if (
-        not isinstance(exc, (StarletteHTTPException, HTTPException))
-        and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers
-    ):
+    if not hasattr(exc, "status_code") and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers:
         return exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
     return None
 
@@ -59,8 +55,25 @@ class ExceptionResponseContent(BaseModel):
     extra: Optional[Union[Dict[str, Any], List[Any]]] = None
     """An extra mapping to attach to the exception."""
 
+    def to_response(self) -> "Response":
+        """Creates a response from the model attributes.
 
-def create_exception_response(exc: Exception) -> Response:
+        Returns:
+            A response instance.
+        """
+        from starlite.response import (  # pylint: disable=import-outside-toplevel
+            Response,
+        )
+
+        return Response(
+            content=self.dict(exclude_none=True, exclude={"headers"}),
+            headers=self.headers,
+            media_type=MediaType.JSON,
+            status_code=self.status_code,
+        )
+
+
+def create_exception_response(exc: Exception) -> "Response":
     """Constructs a response from an exception.
 
     For instances of either `starlite.exceptions.HTTPException` or `starlette.exceptions.HTTPException` the response
@@ -72,15 +85,10 @@ def create_exception_response(exc: Exception) -> Response:
     Returns:
         Response: HTTP response constructed from exception details.
     """
-    if isinstance(exc, (HTTPException, StarletteHTTPException)):
-        content = ExceptionResponseContent(detail=exc.detail, status_code=exc.status_code)
-        if isinstance(exc, HTTPException):
-            content.extra = exc.extra
-    else:
-        content = ExceptionResponseContent(detail=repr(exc), status_code=HTTP_500_INTERNAL_SERVER_ERROR)
-    return Response(
-        media_type=MediaType.JSON,
-        content=content.dict(exclude_none=True),
-        status_code=content.status_code,
-        headers=exc.headers if isinstance(exc, (HTTPException, StarletteHTTPException)) else None,
+    content = ExceptionResponseContent(
+        status_code=getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR),
+        detail=getattr(exc, "detail", repr(exc)),
+        headers=getattr(exc, "headers", None),
+        extra=getattr(exc, "extra", None),
     )
+    return content.to_response()

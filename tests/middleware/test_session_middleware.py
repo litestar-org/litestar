@@ -9,7 +9,6 @@ import pytest
 from cryptography.exceptions import InvalidTag
 from orjson import dumps
 from pydantic import SecretBytes, ValidationError
-from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
 from starlite import (
     HttpMethod,
@@ -27,6 +26,7 @@ from starlite.middleware.session import (
     SessionCookieConfig,
     SessionMiddleware,
 )
+from starlite.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 
@@ -149,7 +149,7 @@ def test_load_session_cookies_and_expire_previous(mutate: bool, session_middlewa
         middleware=[session_middleware.config.middleware],
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {
+        client.cookies = {  # type: ignore
             f"{session_middleware.config.key}-{i}": text.decode("utf-8") for i, text in enumerate(ciphertext, start=0)
         }
         response = client.get(

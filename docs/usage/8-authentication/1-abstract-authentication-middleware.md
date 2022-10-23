@@ -229,7 +229,7 @@ async def site_index() -> Response:
     raise NotFoundException("Site index was not found")
 
 
-app = Starlite(request_handlers=[site_index], middleware=[auth_mw])
+app = Starlite(route_handlers=[site_index], middleware=[auth_mw])
 ```
 
 And of course use the same kind of mechanism for dependencies:

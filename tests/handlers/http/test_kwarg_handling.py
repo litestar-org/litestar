@@ -4,7 +4,6 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic.main import BaseModel
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from starlite import (
     HttpMethod,
@@ -18,6 +17,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path
 

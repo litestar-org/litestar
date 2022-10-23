@@ -34,10 +34,13 @@ def _default_route_handler() -> None:
     ...
 
 
+default_app = Starlite(route_handlers=[_default_route_handler])
+
+
 class RequestFactory:
     def __init__(
         self,
-        app: Starlite = Starlite(route_handlers=[_default_route_handler]),
+        app: Starlite = default_app,
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
@@ -265,7 +268,7 @@ class RequestFactory:
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(data, files=files or [])
+                encoding_headers, stream = encode_multipart_data(data, files=files or [])  # type: ignore[assignment]
             else:
                 encoding_headers, stream = encode_urlencoded_data(loads(dumps(data, default=default_serializer)))
             headers.update(encoding_headers)

@@ -77,7 +77,7 @@ nav:
           - usage/4-request-data/1-the-body-function.md
           - usage/4-request-data/2-url-encoded-form-data.md
           - usage/4-request-data/3-multipart-form-data.md
-      - Returning Responses:
+      - Responses:
           - usage/5-responses/0-responses-intro.md
           - usage/5-responses/1-media-type.md
           - usage/5-responses/2-status-codes.md
@@ -89,6 +89,7 @@ nav:
           - usage/5-responses/8-streaming-responses.md
           - usage/5-responses/9-template-responses.md
           - usage/5-responses/10-custom-responses.md
+          - usage/5-responses/11-background-tasks.md
       - Dependency Injection:
           - usage/6-dependency-injection/0-dependency-injection-intro.md
           - usage/6-dependency-injection/1-dependency-kwargs.md
@@ -151,7 +152,6 @@ nav:
       - reference/1-app.md
       - reference/2-router.md
       - reference/3-controller.md
-      - reference/4-response.md
       - reference/5-dto.md
       - reference/6-enums.md
       - Cache:
@@ -173,6 +173,12 @@ nav:
           - reference/connection/0-asgi-connection.md
           - reference/connection/1-request.md
           - reference/connection/2-websocket.md
+      - Responses:
+          - reference/response/0-base.md
+          - reference/response/1-streaming.md
+          - reference/response/2-file.md
+          - reference/response/3-template.md
+          - reference/response/4-redirect.md
       - Datastructures:
           - reference/datastructures/0-state.md
           - reference/datastructures/1-cookie.md

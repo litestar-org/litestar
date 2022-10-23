@@ -1,6 +1,6 @@
 from typing import List, cast
 
-from tortoise import Model, Tortoise, fields
+from tortoise import Model, Tortoise, fields  # type: ignore
 
 from starlite.handlers.http import get, post
 

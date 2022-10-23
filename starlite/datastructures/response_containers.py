@@ -5,18 +5,15 @@ from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     AsyncIterable,
     AsyncIterator,
     Callable,
     Dict,
-    Generator,
     Generic,
     Iterable,
     Iterator,
     List,
     Optional,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -24,24 +21,29 @@ from typing import (
 
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
-from starlette.responses import FileResponse, RedirectResponse
-from starlette.responses import Response as StarletteResponse
-from starlette.responses import StreamingResponse
+from typing_extensions import Literal
 
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import TemplateResponse
+from starlite.response import (
+    FileResponse,
+    RedirectResponse,
+    StreamingResponse,
+    TemplateResponse,
+)
+from starlite.response.file import ONE_MEGA_BYTE
+from starlite.types.composite import StreamType
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
 
-R = TypeVar("R", bound=StarletteResponse)
+R = TypeVar("R")
 
 
-class ResponseContainer(GenericModel, ABC, Generic[R]):
+class ResponseContainer(ABC, GenericModel, Generic[R]):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -57,6 +59,8 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
     """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
     media_type: Optional[Union[MediaType, str]] = None
     """If defined, overrides the media type configured in the route decorator"""
+    encoding: str = "utf-8"
+    """The encoding to be used for the response headers."""
 
     @abstractmethod
     def to_response(
@@ -66,7 +70,7 @@ class ResponseContainer(GenericModel, ABC, Generic[R]):
         status_code: int,
         app: "Starlite",
         request: "Request",
-    ) -> R:  # pragma: no cover
+    ) -> "R":  # pragma: no cover
         """Abstract method that should be implemented by subclasses. Returns a
         Starlette compatible Response instance.
 
@@ -88,22 +92,34 @@ class File(ResponseContainer[FileResponse]):
 
     path: FilePath
     """Path to the file to send"""
-    filename: str
+    filename: Optional[str] = None
     """The filename"""
     stat_result: Optional[os.stat_result] = None
     """File statistics"""
+    chunk_size: int = ONE_MEGA_BYTE
+    """The size of chunks to use when streaming the file"""
+    content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
+    """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
         cls, value: Optional[os.stat_result], values: Dict[str, Any]
     ) -> os.stat_result:
-        """Set the stat_result value for the given filepath."""
+        """Set the stat_result value for the given filepath.
+
+        Args:
+            value: An optional result [stat][os.stat] result.
+            values: The values dict.
+
+        Returns:
+            A stat_result
+        """
         return value or Path(cast("str", values.get("path"))).stat()
 
     def to_response(
         self,
         headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        media_type: Optional[Union["MediaType", str]],
         status_code: int,
         app: "Starlite",
         request: "Request",
@@ -122,6 +138,9 @@ class File(ResponseContainer[FileResponse]):
         """
         return FileResponse(
             background=self.background,
+            chunk_size=self.chunk_size,
+            content_disposition_type=self.content_disposition_type,
+            encoding=self.encoding,
             filename=self.filename,
             headers=headers,
             media_type=media_type,
@@ -137,11 +156,13 @@ class Redirect(ResponseContainer[RedirectResponse]):
     path: str
     """Redirection path"""
 
-    def to_response(
+    def to_response(  # type: ignore[override]
         self,
         headers: Dict[str, Any],
+        # TODO: update the redirect response to support HTML as well.
+        #   This argument is currently ignored.
         media_type: Union["MediaType", str],
-        status_code: int,
+        status_code: "Literal[301, 302, 303, 307, 308]",
         app: "Starlite",
         request: "Request",
     ) -> RedirectResponse:
@@ -157,23 +178,36 @@ class Redirect(ResponseContainer[RedirectResponse]):
         Returns:
             A RedirectResponse instance
         """
-        return RedirectResponse(headers=headers, status_code=status_code, url=self.path, background=self.background)
+        return RedirectResponse(
+            background=self.background,
+            encoding=self.encoding,
+            headers=headers,
+            status_code=status_code,
+            url=self.path,
+        )
 
 
 class Stream(ResponseContainer[StreamingResponse]):
     """Container type for returning Stream responses."""
 
-    iterator: Union[
-        Iterator[Union[str, bytes]],
-        Generator[Union[str, bytes], Any, Any],
-        AsyncIterator[Union[str, bytes]],
-        AsyncGenerator[Union[str, bytes], Any],
-        Type[Iterator[Union[str, bytes]]],
-        Type[AsyncIterator[Union[str, bytes]]],
-        Callable[[], AsyncGenerator[Union[str, bytes], Any]],
-        Callable[[], Generator[Union[str, bytes], Any, Any]],
-    ]
-    """Iterator, Generator or async Iterator or Generator returning stream chunks"""
+    iterator: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]]
+    """Iterator, Iterable,Generator or async Iterator, Iterable or Generator returning chunks to stream."""
+
+    @validator("iterator", always=True)
+    def validate_iterator(  # pylint: disable=no-self-argument
+        cls,
+        value: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]],
+    ) -> StreamType[Union[str, bytes]]:
+        """Set the iterator value by ensuring that the return value is
+        iterable.
+
+        Args:
+            value: An iterable or callable returning an iterable.
+
+        Returns:
+            A sync or async iterable.
+        """
+        return value if isinstance(value, (Iterable, Iterator, AsyncIterable, AsyncIterator)) else value()
 
     def to_response(
         self,
@@ -199,6 +233,7 @@ class Stream(ResponseContainer[StreamingResponse]):
         return StreamingResponse(
             background=self.background,
             content=self.iterator if isinstance(self.iterator, (Iterable, AsyncIterable)) else self.iterator(),
+            encoding=self.encoding,
             headers=headers,
             media_type=media_type,
             status_code=status_code,
@@ -237,13 +272,13 @@ class Template(ResponseContainer["TemplateResponse"]):
         Returns:
             A TemplateResponse instance
         """
-
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
 
         return TemplateResponse(
             background=self.background,
             context=self.create_template_context(request=request),
+            encoding=self.encoding,
             headers=headers,
             status_code=status_code,
             template_engine=app.template_engine,

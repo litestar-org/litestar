@@ -10,10 +10,10 @@ from starlette.staticfiles import StaticFiles
 from typing_extensions import TypedDict
 
 from starlite.asgi import (
+    ASGIRouter,
     PathParameterTypePathDesignator,
     PathParamNode,
     RouteMapNode,
-    StarliteASGIRouter,
 )
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
@@ -394,7 +394,7 @@ class Starlite(Router):
             self._static_paths.add(static_config.path)
             self.register(asgi(path=static_config.path, name=static_config.name)(static_config.to_static_files_app()))
 
-        self.asgi_router = StarliteASGIRouter(on_shutdown=self.on_shutdown, on_startup=self.on_startup, app=self)
+        self.asgi_router = ASGIRouter(app=self)
         self.asgi_handler = self._create_asgi_handler()
 
     async def __call__(
@@ -417,7 +417,7 @@ class Starlite(Router):
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
-            await self.asgi_router.lifespan(scope, receive, send)  # type: ignore[arg-type]
+            await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]

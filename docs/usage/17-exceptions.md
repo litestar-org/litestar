@@ -55,7 +55,7 @@ or `exception classes`, to callables. For example, if you would like to replace 
 handler that returns plain-text responses you could do this:
 
 ```python
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite import HTTPException, MediaType, Request, Response, Starlite
 
 
@@ -84,7 +84,7 @@ The above will define a top level exception handler that will apply the `plain_t
 exceptions that inherit from `HTTPException`. You could of course be more granular:
 
 ```python
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite import ValidationException, Request, Response, Starlite
 
 
@@ -175,10 +175,10 @@ layers for this purpose.
 
 ```python
 import logging
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
-from starlette.responses import Response
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.response import Response
 from starlite.utils import create_exception_response
-from starlite.types import Request
+from starlite.connection import Request
 from starlite import Starlite
 
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ from starlite.utils.path import join_paths, normalize_path
 
 @pytest.mark.parametrize(
     "base,fragment, expected",
-    [
+    (
         ("/path/", "sub", "/path/sub"),
         ("/path/", "/sub/", "/path/sub"),
         ("path/", "sub", "/path/sub"),
@@ -14,7 +14,7 @@ from starlite.utils.path import join_paths, normalize_path
         ("path/", "sub/", "/path/sub"),
         ("path", "sub/", "/path/sub"),
         ("/", "/root/sub", "/root/sub"),
-    ],
+    ),
 )
 def test_join_url_fragments(base: str, fragment: str, expected: str) -> None:
     assert join_paths([base, fragment]) == expected

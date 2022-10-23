@@ -2,6 +2,7 @@ import re
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
+from traceback import format_exc
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,7 +23,6 @@ from pydantic.datetime_parse import (
     parse_duration,
     parse_time,
 )
-from starlette.routing import Router as StarletteRouter
 
 from starlite.enums import ScopeType
 from starlite.exceptions import (
@@ -38,6 +38,12 @@ if TYPE_CHECKING:
     from starlite.types import (
         ASGIApp,
         LifeSpanHandler,
+        LifeSpanReceive,
+        LifeSpanSend,
+        LifeSpanShutdownCompleteEvent,
+        LifeSpanShutdownFailedEvent,
+        LifeSpanStartupCompleteEvent,
+        LifeSpanStartupFailedEvent,
         Receive,
         RouteHandlerType,
         Scope,
@@ -59,18 +65,20 @@ RouteMapNode = Dict[Union[str, PathParamPlaceholderType], Any]
 ComponentsSet = Set[Union[str, PathParamPlaceholderType, TerminusNodePlaceholderType]]
 
 
-class StarliteASGIRouter(StarletteRouter):
-    """This class extends the Starlette Router class and *is* the ASGI app used
-    in Starlite."""
+class ASGIRouter:
+    __slots__ = ("app",)
 
     def __init__(
         self,
         app: "Starlite",
-        on_shutdown: List["LifeSpanHandler"],
-        on_startup: List["LifeSpanHandler"],
     ) -> None:
+        """This class is the Starlite ASGI router. It handles both the ASGI
+        lifespan event and routing connection requests.
+
+        Args:
+            app: The Starlite app instance
+        """
         self.app = app
-        super().__init__(on_startup=on_startup, on_shutdown=on_shutdown)
 
     def _traverse_route_map(self, path: str, scope: "Scope") -> Tuple[RouteMapNode, List[str]]:
         """Traverses the application route mapping and retrieves the correct
@@ -208,7 +216,7 @@ class StarliteASGIRouter(StarletteRouter):
             node = asgi_handlers[ScopeType.WEBSOCKET]
         return node["asgi_app"], node["handler"]
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The main entry point to the Router class."""
         try:
             asgi_handlers, is_asgi = self._parse_scope_to_route(scope=scope)
@@ -217,6 +225,43 @@ class StarliteASGIRouter(StarletteRouter):
             raise NotFoundException() from e
         scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
+
+    async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
+        """Handles the ASGI "lifespan" event on application startup and
+        shutdown.
+
+        Args:
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None.
+        """
+        message = await receive()
+        try:
+            if message["type"] == "lifespan.startup":
+                await self.startup()
+                startup_event: "LifeSpanStartupCompleteEvent" = {"type": "lifespan.startup.complete"}
+                await send(startup_event)
+                await receive()
+        except BaseException as e:
+            if message["type"] == "lifespan.startup":
+                startup_failure_event: "LifeSpanStartupFailedEvent" = {
+                    "type": "lifespan.startup.failed",
+                    "message": format_exc(),
+                }
+                await send(startup_failure_event)
+            else:
+                shutdown_failure_event: "LifeSpanShutdownFailedEvent" = {
+                    "type": "lifespan.shutdown.failed",
+                    "message": format_exc(),
+                }
+                await send(shutdown_failure_event)
+            raise e
+        else:
+            await self.shutdown()
+            shutdown_event: "LifeSpanShutdownCompleteEvent" = {"type": "lifespan.shutdown.complete"}
+            await send(shutdown_event)
 
     async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
         """Determines whether the lifecycle handler expects an argument, and if
@@ -244,7 +289,7 @@ class StarliteASGIRouter(StarletteRouter):
         for hook in self.app.before_startup:
             await hook(self.app)
 
-        for handler in self.on_startup:
+        for handler in self.app.on_startup:
             await self._call_lifespan_handler(handler)
 
         for hook in self.app.after_startup:
@@ -262,7 +307,7 @@ class StarliteASGIRouter(StarletteRouter):
         for hook in self.app.before_shutdown:
             await hook(self.app)
 
-        for handler in self.on_shutdown:
+        for handler in self.app.on_shutdown:
             await self._call_lifespan_handler(handler)
 
         for hook in self.app.after_shutdown:

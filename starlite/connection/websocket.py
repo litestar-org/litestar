@@ -13,7 +13,6 @@ from typing import (
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from starlette.datastructures import Headers
-from starlette.status import WS_1000_NORMAL_CLOSURE
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -22,7 +21,8 @@ from starlite.connection.base import (
     empty_receive,
     empty_send,
 )
-from starlite.exceptions import WebSocketException
+from starlite.exceptions import WebSocketDisconnect, WebSocketException
+from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
@@ -112,7 +112,7 @@ class WebSocket(
 
         async def wrapped_send(message: "Message") -> None:
             if self.connection_state == "disconnect":
-                raise WebSocketException(detail=DISCONNECT_MESSAGE)  # pragma: no cover
+                raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
             await send(message)
 
         return wrapped_send
@@ -198,9 +198,9 @@ class WebSocket(
             await self.accept()
         event = cast("Union['WebSocketReceiveEvent', 'WebSocketDisconnectEvent']", await self.receive())
         if event["type"] == "websocket.disconnect":
-            raise WebSocketException(detail="disconnect event", code=event["code"])
+            raise WebSocketDisconnect(detail="disconnect event", code=event["code"])
         if self.connection_state == "disconnect":
-            raise WebSocketException(detail=DISCONNECT_MESSAGE)
+            raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     async def receive_text(self) -> str:
