@@ -1,7 +1,8 @@
 from contextlib import suppress
 from functools import reduce
+from http.cookies import _unquote as unquote_cookie
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, unquote
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
@@ -78,3 +79,19 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
         if field.shape is SHAPE_SINGLETON and field.type_ in (UploadFile, MultipartUploadFile) and values_dict:
             return list(values_dict.values())[0]
     return values_dict
+
+
+def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
+    """
+    Parses a cookie string into a dictionary of values.
+    Args:
+        cookie_string: A cookie string.
+
+    Returns:
+        A string keyed dictionary of values
+    """
+    output: Dict[str, str] = {}
+    cookies = [cookie.split("=", 1) if "=" in cookie else ("", cookie) for cookie in cookie_string.split(";")]
+    for k, v in filter(lambda x: x[0] or x[1], ((k.strip(), v.strip()) for k, v in cookies)):
+        output[k] = unquote(unquote_cookie(v))
+    return output

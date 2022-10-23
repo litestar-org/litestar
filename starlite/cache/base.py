@@ -1,6 +1,6 @@
-from asyncio import Lock
 from typing import TYPE_CHECKING, Any, Optional, overload
 
+from anyio import Lock
 from typing_extensions import Protocol, runtime_checkable
 
 from starlite.utils import is_async_callable
