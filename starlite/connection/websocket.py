@@ -200,7 +200,7 @@ class WebSocket(
         if event["type"] == "websocket.disconnect":
             raise WebSocketDisconnect(detail="disconnect event", code=event["code"])
         if self.connection_state == "disconnect":
-            raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)
+            raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     async def receive_text(self) -> str:
