@@ -1,9 +1,7 @@
-import asyncio
-import functools
 import sys
 from dataclasses import is_dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Type, TypeVar, Union
 
 from typing_extensions import ParamSpec, TypeGuard, get_args, get_origin, is_typeddict
 
@@ -26,22 +24,6 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 T = TypeVar("T")
-
-
-def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extends `asyncio.iscoroutinefunction()` to additionally detect async
-    `partial` objects and class instances with `async def __call__()` defined.
-
-    Args:
-        value: Any
-
-    Returns:
-        Bool determining if type of `value` is an awaitable.
-    """
-    while isinstance(value, functools.partial):
-        value = value.func  # type: ignore[unreachable]
-
-    return asyncio.iscoroutinefunction(value) or (callable(value) and asyncio.iscoroutinefunction(value.__call__))  # type: ignore[operator]
 
 
 def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:

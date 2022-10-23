@@ -4,6 +4,8 @@
 
 ::: starlite.utils.sync.T
 
+::: starlite.utils.is_async_callable
+
 ::: starlite.utils.AsyncCallable
     options:
         members:
