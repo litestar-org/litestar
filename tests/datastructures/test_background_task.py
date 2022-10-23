@@ -43,4 +43,4 @@ async def test_background_tasks_task_group_execution() -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert values == [1, 2, 3, 4, 5, 6]
+        assert set(values) == {1, 2, 3, 4, 5, 6}
