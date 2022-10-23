@@ -197,7 +197,7 @@ body {
   --md-accent-bg-color: #171c28;
   --md-accent-bg-color--light: hsl(222, 27%, 20%);
   --md-accent-fg-color: var(--md-primary-fg-color--light);
-  --md-accent-fg-color--transparent: var(--md-primary-fg-color--light);
+  --md-accent-fg-color--transparent: #ffd58033;
 
   /* Misc */
   --md-footer-fg-color: var(--md-accent-fg-color);
@@ -271,9 +271,15 @@ body {
     0 .25rem .66rem hsla(0, 0%, 0%, 0.2),
     0 0              .06125rem  hsla(0, 0%, 0%, 0.35); */
 }
+
 [data-md-color-scheme="mirage-light"] .md-typeset a:focus,
-.md-typeset a:hover {
+[data-md-color-scheme="mirage-light"] .md-typeset a:hover {
   color: var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="mirage"] .md-typeset a:focus,
+[data-md-color-scheme="mirage"] .md-typeset a:hover {
+  color: var(--md-primary-fg-color--light);
 }
 
 [data-md-color-scheme="mirage-light"] .md-header {
