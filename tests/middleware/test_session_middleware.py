@@ -21,7 +21,11 @@ from starlite import (
     route,
     websocket,
 )
-from starlite.middleware.session.cookie_backend import AAD, CHUNK_SIZE, CookieBackendConfig
+from starlite.middleware.session.cookie_backend import (
+    AAD,
+    CHUNK_SIZE,
+    CookieBackendConfig,
+)
 from starlite.testing import create_test_client
 
 

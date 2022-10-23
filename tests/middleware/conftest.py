@@ -1,23 +1,29 @@
 import os
-from typing import Any, TYPE_CHECKING
 import secrets
 from datetime import timedelta
-import pytest
+from typing import TYPE_CHECKING, Any
 
+import fakeredis.aioredis
+import pytest
 from pydantic import SecretBytes
 
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.cookie_backend import CookieBackend, CookieBackendConfig
-from starlite.middleware.session.file_backend import FileBackend, FileBackendConfig
-from starlite.middleware.session.memcached_backend import MemcachedBackend, MemcachedBackendConfig
-from starlite.middleware.session.memory_backend import MemoryBackend, MemoryBackendConfig
-from starlite.middleware.session.redis_backend import RedisBackend, RedisBackendConfig
-
-import fakeredis.aioredis
-
 from starlite.middleware.session.base import BaseBackendConfig, SessionBackend
+from starlite.middleware.session.cookie_backend import (
+    CookieBackend,
+    CookieBackendConfig,
+)
+from starlite.middleware.session.file_backend import FileBackend, FileBackendConfig
+from starlite.middleware.session.memcached_backend import (
+    MemcachedBackend,
+    MemcachedBackendConfig,
+)
+from starlite.middleware.session.memory_backend import (
+    MemoryBackend,
+    MemoryBackendConfig,
+)
+from starlite.middleware.session.redis_backend import RedisBackend, RedisBackendConfig
 from tests.fake_memcached import FakeAsyncMemcached
-
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send

@@ -1,8 +1,6 @@
 import os
 import pathlib
-import secrets
-from datetime import timedelta
-from typing import TYPE_CHECKING, AsyncGenerator, Callable
+from typing import AsyncGenerator, Callable
 
 import pytest
 from piccolo.conf.apps import Finder
@@ -37,11 +35,6 @@ async def scaffold_piccolo() -> AsyncGenerator:
     await create_db_tables(*TABLES)
     yield
     await drop_db_tables(*TABLES)
-
-
-#############################
-# Session Middleware Fixtures
-#############################
 
 
 @pytest.fixture(
