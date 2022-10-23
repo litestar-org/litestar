@@ -243,34 +243,8 @@ and parsing of the header value and provides accessors to its directives.
 
 Here is a simple example that shows how to use it:
 
-```python
-import time
-
-from starlite import get, Router, Controller
-from starlite.datastructures import CacheControlHeader
-
-
-class MyController(Controller):
-    cache_control = CacheControlHeader(max_age=86_400, public=True)
-
-    @get("/chance_of_rain")
-    def get_chance_of_rain(self) -> float:
-        return 0.5
-
-    @get("/timestamp", cache_control=CacheControlHeader(no_store=True))
-    def get_server_time(self) -> float:
-        return time.time()
-
-
-@get("/population")
-def get_population_count() -> int:
-    return 100000
-
-
-router = Router(
-    route_handlers=[MyController, get_population_count],
-    cache_control=CacheControlHeader(max_age=2_628_288, public=True),
-)
+```py title="Cache Control Header"
+--8<-- "examples/datastructures/headers/cache_control.py"
 ```
 
 In this example we have a `cache-control` with `max-age` of 1 month for the whole app, a `max-age` of
