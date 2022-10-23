@@ -232,7 +232,7 @@ router = Router(
 ## Specific Headers Implementation
 
 Starlite has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
-from `response_headers` with dedicated keyword arguments or as class attributes on all layers of the app
+imported from `response_headers` with dedicated keyword arguments or as class attributes on all layers of the app
 (individual route handlers, controllers, routers and the app itself).
 
 These header implementations allow easy creating, serialisation and parsing according to the associated header
