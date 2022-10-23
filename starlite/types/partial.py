@@ -15,6 +15,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, create_model
+from pydantic.typing import is_classvar
 from typing_extensions import TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
@@ -88,6 +89,8 @@ class Partial(Generic[T]):
         """
         field_definitions: Dict[str, Tuple[Any, None]] = {}
         for field_name, field_type in get_type_hints(item).items():
+            if is_classvar(field_type):
+                continue
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions[field_name] = (Optional[field_type], None)
             else:
