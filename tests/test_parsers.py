@@ -74,5 +74,5 @@ def test_parse_form_data() -> None:
         ),
     ),
 )
-def test_cookie_parser(cookie_string: str, expected: Dict[str, str]) -> None:
+def test_parse_cookie_string(cookie_string: str, expected: Dict[str, str]) -> None:
     assert parse_cookie_string(cookie_string) == expected
