@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cas
 from urllib.parse import parse_qsl
 
 from orjson import loads
-from starlette.requests import SERVER_PUSH_HEADERS_TO_COPY
 from starlite_multipart import MultipartFormDataParser
 from starlite_multipart import UploadFile as MultipartUploadFile
 from starlite_multipart import parse_options_header
@@ -25,6 +24,15 @@ if TYPE_CHECKING:
 
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
+
+
+SERVER_PUSH_HEADERS = {
+    "accept",
+    "accept-encoding",
+    "accept-language",
+    "cache-control",
+    "user-agent",
+}
 
 
 class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
@@ -188,7 +196,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         extensions: Dict[str, Dict[Any, Any]] = self.scope.get("extensions") or {}
         if "http.response.push" in extensions:
             raw_headers = []
-            for name in SERVER_PUSH_HEADERS_TO_COPY:
+            for name in SERVER_PUSH_HEADERS:
                 for value in self.headers.getlist(name):
                     raw_headers.append((name.encode("latin-1"), value.encode("latin-1")))
             await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})

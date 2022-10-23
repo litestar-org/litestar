@@ -43,7 +43,7 @@ class HTTPException(StarLiteException):
             headers: Headers to set on the response.
             extra: An extra mapping to attach to the exception.
         """
-
+        super().__init__()
         self.status_code = status_code or self.status_code
 
         if not detail:

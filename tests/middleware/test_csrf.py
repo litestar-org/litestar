@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 import pytest
 from bs4 import BeautifulSoup
-from starlette import status
 
 from starlite import (
     Body,
@@ -22,7 +21,7 @@ from starlite import (
     put,
     websocket,
 )
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 from starlite.template.jinja import JinjaTemplateEngine
 from starlite.template.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
@@ -72,7 +71,7 @@ def test_csrf_successful_flow() -> None:
         ]
 
         response = client.post("/", headers={"x-csrftoken": csrf_token})
-        assert response.status_code == status.HTTP_201_CREATED
+        assert response.status_code == HTTP_201_CREATED
 
 
 @pytest.mark.parametrize(
@@ -91,7 +90,7 @@ def test_unsafe_method_fails_without_csrf_header(method: str) -> None:
         assert csrf_token is not None
 
         response = client.request(method, "/")
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
@@ -106,7 +105,7 @@ def test_invalid_csrf_token() -> None:
         assert csrf_token is not None
 
         response = client.post("/", headers={"x-csrftoken": csrf_token + "invalid"})
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
@@ -120,7 +119,7 @@ def test_csrf_token_too_short() -> None:
         assert "csrftoken" in response.cookies
 
         response = client.post("/", headers={"x-csrftoken": "too-short"})
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json() == {"detail": "CSRF token verification failed", "status_code": 403}
 
 
@@ -233,7 +232,7 @@ def test_csrf_middleware_exclude_from_check() -> None:
     ) as client:
         data = {"field": "value"}
         response = client.post("/protected-handler", data=data)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == HTTP_403_FORBIDDEN
 
         response = client.post("/unprotected-handler", data=data)
         assert response.status_code == HTTP_201_CREATED
@@ -255,7 +254,7 @@ def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> Non
     ) as client:
         data = {"field": "value"}
         response = client.post("/handler", data=data)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == HTTP_403_FORBIDDEN
 
         data = {"field": "value"}
         response = client.post("/handler2", data=data)
