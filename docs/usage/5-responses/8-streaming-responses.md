@@ -1,6 +1,6 @@
 # Streaming Responses
 
-To return a streaming response use the `Stream` class. The Stream class receives a single required kwarg - `iterator`:
+To return a streaming response use the [`Stream`][starlite.datastructures.Stream] class. The Stream class receives a single required kwarg - `iterator`:
 
 ```python
 from typing import AsyncGenerator

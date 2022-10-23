@@ -1,7 +1,7 @@
 # The Provide Class
 
-The class `starlite.datastructures.Provide` is a wrapper used for dependency injection. To inject a callable you must wrap it
-in `Provide`:
+The [`Provide`][starlite.datastructures.Provide] class is a wrapper used for dependency injection.
+To inject a callable you must wrap it in `Provide`:
 
 ```python
 from starlite import Provide, get

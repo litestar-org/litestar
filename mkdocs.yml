@@ -193,9 +193,10 @@ nav:
           - reference/exceptions/1-http-exceptions.md
           - reference/exceptions/2-websocket-exceptions.md
       - Handlers:
-          - reference/handlers/0-http-handlers.md
-          - reference/handlers/1-websocket-handlers.md
-          - reference/handlers/2-asgi-handlers.md
+          - reference/handlers/0-base-handler.md
+          - reference/handlers/1-http-handlers.md
+          - reference/handlers/2-websocket-handlers.md
+          - reference/handlers/3-asgi-handlers.md
       - Middleware:
           - reference/middleware/0-base.md
           - reference/middleware/1-authentication-middleware.md

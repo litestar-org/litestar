@@ -2,7 +2,7 @@
 
 CORS ([Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) is a common security
 mechanism - that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
-of `starlite.config.CORSConfig` to the Starlite constructor:
+of [`CORSConfig`][starlite.config.CORSConfig] to the [Starlite constructor][starlite.app.Starlite]:
 
 ```python
 from starlite import CORSConfig, Starlite

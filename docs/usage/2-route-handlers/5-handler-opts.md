@@ -12,7 +12,8 @@ def handler() -> None:
 ```
 
 This dictionary can be accessed by [route guard](../9-guards.md), or by accessing the `route_handler` property on a
-request (`request.route_handler.opt`), or using the ASGI scope object directly (`scope["route_handler"].opt`).
+[request][starlite.connection.request.Request] (`request.route_handler.opt`), or using the
+[ASGI scope][starlite.types.Scope] object directly (`scope["route_handler"].opt`).
 
 ## Passing **kwargs to handlers
 

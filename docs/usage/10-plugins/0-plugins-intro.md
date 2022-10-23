@@ -11,7 +11,7 @@ data using non-pydantic classes. Additionally, they allow for seamless serializa
 
 ## Creating Plugins
 
-A plugin is a class that implements the `starlite.plugins.base.PluginProtocol`.
+A plugin is a class that implements the [`PluginProtocol`][starlite.plugins.base.PluginProtocol].
 
 If you wish to support the serialization and deserialization of none-pydantic classes, you need to implement the
 following methods specified by the:
@@ -72,7 +72,8 @@ class MyPlugin(PluginProtocol[MyClass]):
         ...
 ```
 
-If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the `on_app_init` method:
+If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the
+[`on_app_init`][starlite.plugins.base.PluginProtocol.on_app_init] method:
 
 ```python
 from typing import Any

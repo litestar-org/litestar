@@ -1,10 +1,10 @@
 # Application Init Hook
 
-Starlite includes a hook for intercepting the arguments passed to the [Starlite][starlite.app.Starlite] constructor,
+Starlite includes a hook for intercepting the arguments passed to the [Starlite constructor][starlite.app.Starlite],
 before they are used to instantiate the application.
 
 Handlers can be passed to the `on_app_init` parameter on construction of the application, and in turn, each will receive
-an instance of [AppConfig][starlite.config.app.AppConfig] and must return an instance of same.
+an instance of [`AppConfig`][starlite.config.app.AppConfig] and must return an instance of same.
 
 This hook is useful for applying common configuration between applications, and for use by developers who may wish to
 develop third-party application configuration systems.

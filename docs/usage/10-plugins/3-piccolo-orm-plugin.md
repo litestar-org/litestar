@@ -1,6 +1,7 @@
 # Piccolo ORM Plugin
 
-To use the `starlite.plugins.piccolo_orm.PiccoloORMPlugin` import it and pass it to the `Starlite` constructor:
+To use the [`PiccoloORMPlugin`][starlite.plugins.piccolo_orm.PiccoloORMPlugin]
+import it and pass it to the [Starlite constructor][starlite.app.Starlite]:
 
 ```python
 from starlite import Starlite, post, get

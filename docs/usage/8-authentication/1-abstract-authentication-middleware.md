@@ -1,9 +1,9 @@
 # AbstractAuthenticationMiddleware
 
-Starlite exports a class called `AbstractAuthenticationMiddleware`, which is an Abstract Base
-Class (ABC) that implements the [middleware protocol](../7-middleware/0-middleware-intro.md#the-middleware-protocol). To
-add authentication to your app using this class as a basis, subclass it and implement the abstract method
-`authenticate_request`:
+Starlite exports a class called [`AbstractAuthenticationMiddleware`][starlite.middleware.AbstractAuthenticationMiddleware],
+which is an Abstract Base Class (ABC) that implements the [middleware protocol](../7-middleware/0-middleware-intro.md#the-middleware-protocol).
+To add authentication to your app using this class as a basis, subclass it and implement the abstract method
+[`authenticate_request`][starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request]:
 
 ```python
 from starlite import (
@@ -22,7 +22,7 @@ class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 ```
 
 As you can see, `authenticate_request` is an async function that receives a connection instance and is supposed to return
-an `AuthenticationResult` instance, which is a pydantic model that has two attributes:
+an [`AuthenticationResult`][starlite.middleware.AuthenticationResult] instance, which is a pydantic model that has two attributes:
 
 1. `user`: a non-optional value representing a user. It's typed as `Any` so it receives any value, including `None`.
 2. `auth`: an optional value representing the authentication scheme. Defaults to `None`.

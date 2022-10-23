@@ -6,10 +6,10 @@ request-response cycle.
 ## Before Request
 
 The `before_request` hook runs immediately before calling the route handler function. It accepts either a sync or async
-function that receives the `starlite.connection.Request` instance as its sole parameter. While the handler function
-does not need to return a value, if it does return a value other than `None`, then the route handler will not be called
-and this value will instead be used for the response. Thus, the `before_request` handler allows bypassing the route
-handler selectively.
+function that receives the [`Request`][starlite.connection.Request] instance as its sole parameter.
+While the handler function does not need to return a value, if it does return a value other than `None`, then the route
+handler will not be called and this value will instead be used for the response. Thus, the `before_request` handler
+allows bypassing the route handler selectively.
 
 ```python
 from starlite import Starlite, Request
@@ -44,10 +44,9 @@ app = Starlite(route_handlers=[...], after_request=my_after_request_handler)
 ## After Response
 
 The `after_response` hook is called after the response has been awaited, that is - after a response has been sent to the
-requester. It receives either a sync or async function that receives the `Request` object. The function should not
-return any values. This hook is meant for data post-processing, transmission of data to third party services, gathering
-of metrics
-etc.
+requester. It receives either a sync or async function that receives the [`Request`][starlite.connection.Request]
+object. The function should not return any values. This hook is meant for data post-processing, transmission of data to third party
+services, gathering of metrics etc.
 
 ```python
 from starlite import Starlite, Request

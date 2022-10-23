@@ -20,6 +20,6 @@ def retrieve_resource() -> Resource:
 ```
 
 In the example above, the route handler function returns an instance of the `Resource` pydantic class. This value will
-then be used by Starlite to construct an instance of the `starlite.response.Response` class using defaults values: the
-response status code will be set to `200` and it's `Content-Type` header will be set to `application/json`.
-The `Resource` instance will be serialized into JSON and set as the response body.
+then be used by Starlite to construct an instance of the [`Response`][starlite.response.Response]
+class using defaults values: the response status code will be set to `200` and it's `Content-Type` header will be set
+to `application/json`. The `Resource` instance will be serialized into JSON and set as the response body.

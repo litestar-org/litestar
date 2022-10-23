@@ -1,6 +1,6 @@
 # Websocket Route Handlers
 
-Starlite supports Websockets via the `websocket` decorator:
+Starlite supports Websockets via the [`websocket`][starlite.handlers.websocket] decorator:
 
 ```python
 from starlite import WebSocket, websocket
@@ -13,7 +13,8 @@ async def my_websocket_handler(socket: WebSocket) -> None:
     await socket.close()
 ```
 
-The`websocket` decorator is an alias of the class `starlite.handlers.websocket.WebsocketRouteHandler`. Thus, the below
+The`websocket` decorator is an alias of the class
+[`WebsocketRouteHandler`][starlite.handlers.websocket.WebsocketRouteHandler]. Thus, the below
 code is equivalent to the one above:
 
 ```python

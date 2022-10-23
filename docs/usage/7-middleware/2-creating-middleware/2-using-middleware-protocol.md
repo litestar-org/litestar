@@ -1,7 +1,8 @@
 # Using MiddlewareProtocol
 
-The `starlite.middleware.base.MiddlewareProtocol` class is a [PEP 544 Protocol](https://peps.python.org/pep-0544/) that
-specifies the minimal implementation of a middleware as follows:
+The [`MiddlewareProtocol`][starlite.middleware.base.MiddlewareProtocol] class is a
+[PEP 544 Protocol](https://peps.python.org/pep-0544/) that specifies the minimal implementation of a middleware as
+follows:
 
 ```python
 from typing import Protocol, Any
@@ -85,8 +86,8 @@ class RedirectMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
 ```
 
-As you can see in the above, given some condition (request.session being None) we create a `RedirectResponse` and then
-await it. Otherwise, we await `self.app`
+As you can see in the above, given some condition (request.session being None) we create a
+[`RedirectResponse`][starlite.response.RedirectResponse] and then await it. Otherwise, we await `self.app`
 
 ## Modifying ASGI Requests and Responses using the MiddlewareProtocol
 

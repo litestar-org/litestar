@@ -1,8 +1,9 @@
 # SQL-Alchemy Plugin
 
-Starlite offers extensive support for `SQLAlchemy` using with the `SQLAlchemyPlugin`. This plugin offers support for
-SQLAlchemy declarative models, which can be used as if they were pydantic models. Additionally, you can pass optional
-configuration to the plugin to create a DB engine / connection and setup DB sessions dependency injection.
+Starlite offers extensive support for [SQLAlchemy](https://docs.sqlalchemy.org/) using with the
+[`SQLAlchemyPlugin`][starlite.plugins.sql_alchemy.SQLAlchemyPlugin]. This plugin offers
+support for SQLAlchemy declarative models, which can be used as if they were pydantic models. Additionally, you can
+pass optional configuration to the plugin to create a DB engine / connection and setup DB sessions dependency injection.
 
 ## Basic Use
 
@@ -85,7 +86,7 @@ send complete data structures using the API.
 
 ## SQLAlchemy Config
 
-You can also pass an instance of [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig] to the plugin
+You can also pass an instance of [`SQLAlchemyConfig`][starlite.plugins.sql_alchemy.SQLAlchemyConfig] to the plugin
 constructor:
 
 ```python

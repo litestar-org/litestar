@@ -1,7 +1,8 @@
 # HTTP Route Handlers
 
 The most commonly used route handlers are those that handle http requests and responses. These route handlers all
-inherit from the class `starlite.handlers.http.HTTPRouteHandler`, which is aliased as the decorator called `route`:
+inherit from the class [`starlite.handlers.http.HTTPRouteHandler`][starlite.handlers.http.HTTPRouteHandler], which
+is aliased as the decorator called [`route`][starlite.handlers.route]:
 
 ```python
 from starlite import HttpMethod, route
@@ -26,8 +27,7 @@ def my_endpoint() -> None:
 
 ## HTTP Route Handlers Kwargs
 
-The `route` decorator **requires** an `http_method` kwarg, which is a member of the enum `starlite.enums.HttpMethod` or
-a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
+The `route` decorator **requires** an `http_method` kwarg, which is a member of the [`HttpMethod`][starlite.enums.HttpMethod] enum or a list of members, e.g. `HttpMethod.GET` or `[HttpMethod.PATCH, HttpMethod.PUT]`.
 
 See the [API Reference][starlite.handlers.HTTPRouteHandler] for full details on the `route` decorator and the kwargs it accepts.
 
@@ -98,7 +98,7 @@ class methods or by abstracting code to reusable functions.
 
 You can use both sync and async functions as the base for route handler functions, but which should you use? and when?
 
-If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), he most
+If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), the most
 performant solution within the scope of an ASGI application, including Starlite, is going to be by using an async
 solution for this purpose.
 

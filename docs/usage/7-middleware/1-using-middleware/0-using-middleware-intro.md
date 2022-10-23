@@ -1,9 +1,9 @@
 # Using Middleware
 
-A middleware in Starlite is any callable that receives at least one kwarg called `app` and returns an `ASGIApp`. Since
-these terms are somewhat daunting, lets parse what this means: an `ASGIApp` is nothing but an async function that receives the
-ASGI primitives - `scope`, `receive` and `send` - and either calls the next `ASGIApp` or
-returns a response / handles the websocket connection.
+A middleware in Starlite is any callable that receives at least one kwarg called `app` and returns an
+[`ASGIApp`][starlite.types.ASGIApp]. Since these terms are somewhat daunting, lets parse what this means: an
+`ASGIApp` is nothing but an async function that receives the ASGI primitives - `scope`, `receive` and
+`send` - and either calls the next `ASGIApp` or returns a response / handles the websocket connection.
 
 For example, the following function can be used as a middleware because it receives the `app` kwarg and returns
 an `ASGIApp`:

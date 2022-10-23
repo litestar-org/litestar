@@ -1,8 +1,9 @@
 # Passing Args and Kwargs to Middleware
 
 Starlite offers a simple way to pass positional arguments (`*args`) and key-word arguments (`**kwargs`) to middleware
-using the `starlite.middleware.base.DefineMiddleware` class. Let's extend the factory function used in the examples above
-to take some args and kwargs and then use `DefineMiddleware` to pass these values to our middleware:
+using the [`DefineMiddleware`][starlite.middleware.base.DefineMiddleware] class. Let's extend
+the factory function used in the examples above to take some args and kwargs and then use `DefineMiddleware` to pass
+these values to our middleware:
 
 ```python
 from starlite.types import ASGIApp, Scope, Receive, Send

@@ -1,9 +1,9 @@
 # Rate-Limit Middleware
 
-Starlite includes an optional `RateLimitMiddleware` that follows
+Starlite includes an optional [`RateLimitMiddleware`][starlite.middleware.rate_limit.RateLimitMiddleware] that follows
 the [IETF RateLimit draft specification](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/).
 
-To use the rate limit middleware, use the `RateLimitConfig`:
+To use the rate limit middleware, use the [`RateLimitConfig`][starlite.middleware.rate_limit.RateLimitConfig]:
 
 ```python
 from starlite import Starlite

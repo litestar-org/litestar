@@ -73,17 +73,13 @@ def test_health_check(test_client: TestClient):
 
 ### Create Session Cookies
 
-If you are using **Session Middleware** for session persistence across requests then your route handlers may expect
-preloaded session when mocking the request. To mock request with raw session cookies, you can use
-`TestClient.create_session_cookies`. The session middleware will then load the session data from the session
-cookies that you provide.
-
-`TestClient.create_session_cookies` accepts the following argument:
-
-- session_data: Dictionary to create raw session cookies from.
+If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
+across requests then your route handlers may expect preloaded session when mocking the request. To mock request with raw session
+cookies, you can use [`TestClient.create_session_cookies`][starlite.testing.test_client.TestClient.create_session_cookies]. The
+session middleware will then load the session data from the session cookies that you provide.
 
 To use the same session configuration that you have used in your app for session middleware, import
-`SessionCookieConfig` instance from your app.
+[`SessionCookieConfig`][starlite.middleware.session.SessionCookieConfig] instance from your app.
 
 ```python title="tests/test_route_handlers.py"
 import pytest
@@ -130,7 +126,8 @@ def test_something(test_client) -> None:
 
 If your route handlers modify data in session, you may want to assert session data to confirm the modification. If you
 are using **Session Middleware**, the response from the route handlers will include raw session cookies which are a
-serialized image of the session. To assert data in session, `TestClient.get_session_from_cookies` method deserializes
+serialized image of the session. To assert data in session,
+[`TestClient.get_session_from_cookies`][starlite.testing.test_client.TestClient.get_session_from_cookies] method deserializes
 raw session cookies and creates session from them.
 
 ```python title="tests/test_route_handlers.py"
@@ -162,9 +159,9 @@ class TestClass:
 
 ## Creating a Test App
 
-Starlite also offers a helper function called `create_test_client` which first creates an instance of Starlite and then
-a test client using it. There are multiple use cases for this helper - when you need to check generic logic that is
-decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
+Starlite also offers a helper function called [`create_test_client`][starlite.testing.create_test_client] which first creates
+an instance of Starlite and then a test client using it. There are multiple use cases for this helper - when you need to check
+generic logic that is decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
 
 You can pass to this helper all the kwargs accepted by
 the [starlite constructor](0-the-starlite-app/0-the-starlite-app.md), with
@@ -311,8 +308,9 @@ def test_get_item(item: Item):
 
 ## Creating a Test Request
 
-Another helper is the `RequestFactory` class, which creates instances of `starlite.connection.Request`.
-The use case for this helper is when you need to test logic that expects to receive a request object.
+Another helper is the [`RequestFactory`][starlite.testing.RequestFactory] class, which creates instances of
+[`starlite.connection.request.Request`][starlite.connection.request.Request]. The use case for this helper is when
+you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
 from the [guards](9-guards.md) documentation:
@@ -371,7 +369,7 @@ def test_secret_token_guard_success_scenario():
 
 The `RequestFactory` constructor accepts the following parameters:
 
-- `app`: An instance of `starlite.app.Starlite`.
+- `app`: An instance of the [`Starlite`][starlite.app.Starlite] class.
 - `server`: The server's domain. Defaults to `test.org`.
 - `port`: The server's port. Defaults to `3000`.
 - `root_path`: Root path for the server. Defaults to `/`.
@@ -389,7 +387,7 @@ All of these methods accept the following parameters:
 
 - `path`: The request's path. This parameter is **required**.
 - `headers`: A dictionary of headers. Defaults to `None`.
-- `cookies`: A string representing the cookie header or a list of `starlite.datastructures.Cookie` instances.
+- `cookies`: A string representing the cookie header or a list of [`Cookie`][starlite.datastructures.Cookie] instances.
   This value can include multiple cookies. Defaults to `None`.
 - `session`: A dictionary of session data. Defaults to `None`.
 - `user`: A value for `request.scope["user"]`. Defaults to `None`.

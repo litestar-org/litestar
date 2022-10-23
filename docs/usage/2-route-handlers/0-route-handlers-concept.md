@@ -19,9 +19,10 @@ combination of the path `"/"` and the http verb `GET`. In this case it will be a
 header of `text/plain`.
 
 What the decorator does, is wrap the function or method within a class instance that inherits from
-`starlite.handlers.base.BaseRouteHandler`. These classes are optimized descriptor classes that record all the data
-necessary for the given function or method - this includes a modelling of the function signature, which allows for
-injection of kwargs and dependencies, as well as data pertinent to OpenAPI spec generation.
+[`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler]. These classesare optimized
+descriptor classes that record all the data necessary for the given function or method - this includes a modelling of
+the function signature, which allows for injection of kwargs and dependencies, as well as data pertinent to OpenAPI
+spec generation.
 
 ## Declaring Path(s)
 
@@ -88,9 +89,9 @@ Additionally, you can specify the following special kwargs, what's called "reser
 - `cookies`: injects the request `cookies` as a parsed dictionary.
 - `headers`: injects the request `headers` as an instance of `starlette.datastructures.Headers` - which is a case-insensitive mapping.
 - `query`: injects the request `query_params` as a parsed dictionary.
-- `request`: injects the `starlite.connection.Request` instance. Available only for [http route handlers](1-http-route-handlers.md)
+- `request`: injects the [`Request`][starlite.connection.Request] instance. Available only for [http route handlers](1-http-route-handlers.md)
 - `scope`: injects the ASGI scope dictionary.
-- `socket`: injects the `starlite.connection.WebSocket` instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
+- `socket`: injects the [`WebSocket`][starlite.connection.WebSocket] instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
 - `state`: injects a copy of the application `state`.
 
 - For example:

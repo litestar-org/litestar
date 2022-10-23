@@ -1,6 +1,6 @@
 # ASGI Route Handlers
 
-If you need to write your own ASGI application, you can do so using the `asgi` decorator:
+If you need to write your own ASGI application, you can do so using the [`asgi`][starlite.handlers.asgi] decorator:
 
 ```python
 from starlite.types import Scope, Receive, Send
@@ -26,7 +26,8 @@ async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     await response(scope=scope, receive=receive, send=send)
 ```
 
-Like other route handlers, the `asgi` decorator is an alias of the class `starlite.handlers.asgi.ASGIRouteHandler`. Thus,
+Like other route handlers, the `asgi` decorator is an alias of the class
+[`ASGIRouteHandler`][starlite.handlers.asgi.ASGIRouteHandler]. Thus,
 the code below is equivalent to the one above:
 
 ```python

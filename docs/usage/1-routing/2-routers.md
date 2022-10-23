@@ -1,7 +1,8 @@
 # Routers
 
-Routers are instances of `starlite.router.Router`, which is the base class for the `Starlite` app itself. A router can
-register Controllers, route handler functions and other routers, similarly to the Starlite constructor:
+Routers are instances of [`starlite.router.Router`][starlite.router.Router], which is the base class for the
+[Starlite app][starlite.app.Starlite] itself. A router can register Controllers, route handler functions
+and other routers, similarly to the Starlite constructor:
 
 ```python
 from starlite import Starlite, Router, get

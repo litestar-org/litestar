@@ -1,9 +1,10 @@
 # Guards
 
-Guards are callables that receive two arguments - `request`, which is the Request instance, and `route_handler`, which
-is a copy of the `BaseRouteHandler` model. Their role is to `authorize` the request by verifying that the request is allowed
-to reach the endpoint handler in question. If verification fails, the guard should raise an HTTPException, usually a
-`NotAuthorizedException` with a `status_code` of 401.
+Guards are callables that receive two arguments - `request`, which is the [`Request`][starlite.connection.request.Request]
+instance, and `route_handler`, which is a copy of the [`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler] model.
+Their role is to `authorize` the request by verifying that the request is allowed to reach the endpoint handler in question.
+If verification fails, the guard should raise an HTTPException, usually a
+[`NotAuthorizedException`][starlite.exceptions.NotAuthorizedException] with a `status_code` of 401.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Starlite app. As we have done
 for [authentication](8-authentication/0-intro.md), we will assume that we added some sort of persistence layer without actually
@@ -117,17 +118,7 @@ guards on different levels of your app, and they will combine.
 ## The Route Handler "opt" Key
 
 Occasionally there might be a need to set some values on the route handler itself - these can be permissions, or some
-other flag. To this end, all route handler decorators can receive the kwarg `opt` which adds a dictionary of
-arbitrary values to the route handler. For example:
-
-```python
-from starlite import get
-
-
-@get(path="/", opt={"permissions": [...]})
-def my_route_handler() -> None:
-    ...
-```
+other flag. This can be achieved with [`opts` kwarg](./2-route-handlers/5-handler-opts.md) of route handler
 
 To illustrate this lets say we want to have an endpoint that is guarded by a "secret" token, to which end we create
 the following guard:

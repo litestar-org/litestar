@@ -2,13 +2,13 @@
 
 Starlite includes a builtin [Cache][starlite.cache.Cache] that offers a uniform interface to interact with different
 "Cache Backends". A __Cache Backend__ is a class that either implements or fulfills the interface specified by
-[CacheBackendProtocol][starlite.cache.CacheBackendProtocol] to provide cache services.
+[`CacheBackendProtocol`][starlite.cache.CacheBackendProtocol] to provide cache services.
 
 ## Builtin Cache Backends
 
 Starlite comes with the following builtin cache backends:
 
-By default, Starlite uses the [SimpleCacheBackend][starlite.cache.SimpleCacheBackend], which stores values
+By default, Starlite uses the [`SimpleCacheBackend`][starlite.cache.SimpleCacheBackend], which stores values
 in local memory with the added security of async locks. This is fine for local development, but it's not a good solution
 for production environments.
 
@@ -32,9 +32,9 @@ Starlite also ships with two other ready to use cache backends:
 
 ## Configuring Caching
 
-You can configure caching behaviour on the application level by passing an instance of `CacheConfig` to the Starlite
-constructor. See the [API Reference][starlite.config.CacheConfig] for full details on the `CacheConfig` class and the
-kwargs it accepts.
+You can configure caching behaviour on the application level by passing an instance of `CacheConfig` to the
+[Starlite constructor][starlite.app.Starlite]. See the [API Reference][starlite.config.CacheConfig] for full
+details on the `CacheConfig` class and the kwargs it accepts.
 
 Here is an example of how to configure Redis as the cache backend:
 
@@ -68,7 +68,7 @@ cache_config = CacheConfig(backend=memcached_backend)
 
 ## Creating a Custom Cache Backend
 
-Since Starlite relies on the [CacheBackendProtocol][starlite.cache.CacheBackendProtocol] to define cache, creating a
+Since Starlite relies on the [`CacheBackendProtocol`][starlite.cache.CacheBackendProtocol] to define cache, creating a
 custom cache backend is very simple - all that is required is to create a class that inherits from the protocol
 and implements all its methods, or even a class that simply implements these methods without inheriting from the protocol.
 Once this is done, you can use the backend in the cache config.

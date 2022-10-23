@@ -6,14 +6,14 @@ hooks can receive an optional kwarg called `state`, which is the application's s
 The advantage of using application `state`, is that it can be accessed during multiple stages of the connection, and
 it can be injected into dependencies and route handlers.
 
-The Application State is an instance of [starlite.datastructures.State][starlite.datastructures.State] which inherits
+The Application State is an instance of [`State`][starlite.datastructures.State] which inherits
 from `starlette.datastructures.State`. It is accessible via [Starlite.state][starlite.app.Starlite] and it can be
 accessed via any application reference, such as:
 
 - `starlite.connection.ASGIConnection.app.state` (accessible inside middleware - see the example below).
-- [ASGIConnection.app][starlite.connection.ASGIConnection]
-- [Request.app][starlite.connection.Request]
-- [Websocket.app][starlite.connection.WebSocket]
+- [`ASGIConnection.app`][starlite.connection.ASGIConnection]
+- [`Request.app`][starlite.connection.Request]
+- [`Websocket.app`][starlite.connection.WebSocket]
 
 The following complete example demonstrates different patterns of accessing Application State:
 
