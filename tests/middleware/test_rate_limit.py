@@ -2,6 +2,7 @@ from time import time
 from typing import Any
 
 import pytest
+from freezegun import freeze_time
 from orjson import dumps, loads
 from starlette.status import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 
@@ -24,7 +25,9 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     config = RateLimitConfig(rate_limit=(unit, 1))
     cache_key = "RateLimitMiddleware::testclient"
 
-    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+    with freeze_time() as frozen_time, create_test_client(
+        route_handlers=[handler], middleware=[config.middleware]
+    ) as client:
         cache = client.app.cache
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -37,6 +40,8 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
+        frozen_time.tick(DURATION_VALUES[unit] - 1)  # type: ignore[arg-type]
+
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
@@ -44,8 +49,8 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        cache_object.history = [cache_object.history[0] - DURATION_VALUES[unit]]
-        await cache.set(cache_key, dumps(cache_object))
+        frozen_time.tick(1)  # type: ignore[arg-type]
+
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
 
