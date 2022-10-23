@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic_factories import ModelFactory
 from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import INTEGER, JSONB, TEXT, TIMESTAMP
+from sqlalchemy.dialects.postgresql import INTEGER, JSONB, TEXT
 from sqlalchemy.orm import declarative_base
 from typing_extensions import TypedDict
 

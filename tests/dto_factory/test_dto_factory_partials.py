@@ -1,21 +1,18 @@
 from starlite import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.types.partial import Partial
-
-from tests import Person, Car
-from tests.plugins.sql_alchemy_plugin import Pet
+from tests import Car, Person
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 
 
-def test_partial_dto_pydantic():
-    dto_person = dto_factory("dto_person", Person)
+def test_partial_dto_pydantic() -> None:
     dto_partial_person = Partial[Person]
-    bob = dto_partial_person(first_name="Bob")
-    assert bob.first_name == "Bob"
+    bob = dto_partial_person(first_name="Bob")  # type: ignore
+    assert bob.first_name == "Bob"  # type: ignore
 
 
-def test_partial_dto_sqlalchemy_model():
+def test_partial_dto_sqlalchemy_model() -> None:
     car_one = {
         "id": 1,
         "year": 2022,
@@ -40,9 +37,9 @@ def test_partial_dto_sqlalchemy_model():
     # Test for non-partial DTO
     dto_car = dto_factory("dto_cars", Car)
     ferrari = dto_car(**car_one)
-    assert ferrari.year == 2022
+    assert ferrari.year == 2022  # type: ignore
 
     # Test for partial DTO
-    partial_dto_car = Partial[dto_car]
+    partial_dto_car = Partial[dto_car]  # type: ignore
     ford = partial_dto_car(**car_two)
-    assert ford.make == "Ford"
+    assert ford.make == "Ford"  # type: ignore
