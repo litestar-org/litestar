@@ -39,6 +39,7 @@ class RedirectResponse(Response[Any]):
         """
         if status_code not in REDIRECT_STATUS_CODES:
             raise ImproperlyConfiguredException(
+                f"{status_code} is not a valid for this response. "
                 f"Redirect responses should have one of "
                 f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             )

@@ -100,8 +100,6 @@ class File(ResponseContainer[FileResponse]):
     """The size of chunks to use when streaming the file"""
     content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
     """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
-    etag: Optional[str] = None
-    """An optional etag for the file. If not provided, an etag will be generated automatically."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -143,7 +141,6 @@ class File(ResponseContainer[FileResponse]):
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,
             encoding=self.encoding,
-            etag=self.etag,
             filename=self.filename,
             headers=headers,
             media_type=media_type,

@@ -59,7 +59,6 @@ class FileResponse(StreamingResponse):
         stat_result: Optional["stat_result_type"] = None,
         chunk_size: int = ONE_MEGA_BYTE,
         content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
-        etag: Optional[str] = None,
     ) -> None:
         """This class allows streaming a file as response body.
 
@@ -84,7 +83,6 @@ class FileResponse(StreamingResponse):
                 constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
-            etag: An optional etag for the file. If not provided, an etag will be generated automatically.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
@@ -108,7 +106,7 @@ class FileResponse(StreamingResponse):
                 filename=filename or basename(path), content_disposition_type=content_disposition_type
             ),
         )
-        self.set_etag(etag or self._create_etag(path=path))
+        self.set_etag(self._create_etag(path=path))
 
     def _create_etag(self, path: Union[str, "PathLike"]) -> str:
         """Creates an etag.
@@ -120,7 +118,7 @@ class FileResponse(StreamingResponse):
             An etag.
         """
         check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
-        return f"{self.stat_result.st_mtime}-{self.stat_result.st_size}-{check}"
+        return f'"{self.stat_result.st_mtime}-{self.stat_result.st_size}-{check}"'
 
     @staticmethod
     def _get_stat_result(path: Union[str, "PathLike"], stat_result: Optional["stat_result_type"]) -> "stat_result_type":

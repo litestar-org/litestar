@@ -67,8 +67,8 @@ class Response(Generic[T]):
         encoding: str = "utf-8",
         is_head_response: bool = False,
     ) -> None:
-        """This is the base Starlite HTTP response class, its is used as a
-        basis for all other response classes.
+        """This is the base Starlite HTTP response class, used as the basis for
+        all other response classes.
 
         Args:
             content: A value for the response body that will be rendered into bytes string.
@@ -175,12 +175,9 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        self.cookies = [
-            cookie
-            for cookie in self.cookies
-            if not (cookie.key == key and cookie.path == path and cookie.domain == domain)
-        ]
-        self.cookies.append(Cookie(key=key, path=path, domain=domain, expires=0, max_age=0))
+        cookie = Cookie(key=key, path=path, domain=domain, expires=0, max_age=0)
+        self.cookies = [c for c in self.cookies if c != cookie]
+        self.cookies.append(cookie)
 
     @staticmethod
     def serializer(value: Any) -> Any:
@@ -235,15 +232,18 @@ class Response(Generic[T]):
         """
 
         Returns:
-            Returns the value for the 'Content-Length' header, if applies.
+            The content length of the body (e.g. for use in a "Content-Length" header).
+            If the response does not have a body, this value is `None`
         """
-        if self.status_allows_body and isinstance(self.body, bytes):
+        if self.status_allows_body:
             return len(self.body)
         return None
 
     @property
     def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
         """
+        Notes:
+            - A 'Content-Length' header will be added if appropriate and not provided by the user.
 
         Returns:
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
