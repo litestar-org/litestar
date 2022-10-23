@@ -54,7 +54,7 @@ def test_redirect_response_content_length_header() -> None:
 
     client: TestClient = TestClient(app)
     response = client.request("GET", "/redirect", follow_redirects=False)
-    assert response.url == "http://testserver/redirect"
+    assert str(response.url) == "http://testserver/redirect"
     assert "content-length" not in response.headers
 
 

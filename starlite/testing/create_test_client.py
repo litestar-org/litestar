@@ -77,7 +77,7 @@ def create_test_client(
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
     websocket_class: Optional[Type["WebSocket"]] = None,
-) -> TestClient:
+) -> TestClient["Starlite"]:
     """Creates a Starlite app instance and initializes it.
 
     [TestClient][starlite.testing.TestClient] with it.
@@ -168,7 +168,7 @@ def create_test_client(
     Returns:
         An instance of [TestClient][starlite.testing.TestClient] with a created app instance.
     """
-    return TestClient(
+    return TestClient[Starlite](
         app=Starlite(
             after_exception=after_exception,
             after_request=after_request,

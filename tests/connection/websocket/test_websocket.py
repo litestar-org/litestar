@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any
 import anyio
 import pytest
 from starlette.datastructures import Headers
-from starlette.websockets import WebSocketDisconnect
 
 from starlite import WebSocketException, websocket
 from starlite.connection import WebSocket
+from starlite.exceptions import WebSocketDisconnect
 from starlite.status_codes import WS_1001_GOING_AWAY
 from starlite.testing import TestClient, create_test_client
 
@@ -322,7 +322,7 @@ def test_websocket_close_reason() -> None:
     with TestClient(app).websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:
         websocket.receive_text()
         assert exc.value.code == WS_1001_GOING_AWAY
-        assert exc.value.reason == "Going Away"
+        assert exc.value.detail == "Going Away"
 
 
 def test_receive_text_before_accept() -> None:
