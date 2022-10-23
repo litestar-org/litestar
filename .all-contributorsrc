@@ -515,6 +515,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ThinksFast",
+      "name": "ThinksFast",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114229148?v=4",
+      "profile": "https://www.bestcryptocodes.com",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
