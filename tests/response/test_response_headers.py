@@ -5,7 +5,8 @@ from pydantic import ValidationError
 from starlette.status import HTTP_201_CREATED
 
 from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
-from starlite.datastructures import CacheControlHeader
+from starlite.datastructures import CacheControlHeader, ETag
+from starlite.datastructures.headers import Header
 from starlite.testing import TestClient, create_test_client
 
 
@@ -75,45 +76,93 @@ def test_response_headers_rendering() -> None:
         assert response.headers.get("test-header") == "test value"
 
 
-def test_cache_control_response_header() -> None:
+@pytest.mark.parametrize(
+    "config_kwarg,app_header,controller_header,handler_header",
+    [
+        (
+            "etag",
+            ETag(value="1"),
+            ETag(value="2"),
+            ETag(value="3"),
+        ),
+        (
+            "cache_control",
+            CacheControlHeader(max_age=1),
+            CacheControlHeader(max_age=2),
+            CacheControlHeader(max_age=3),
+        ),
+    ],
+)
+def test_explicit_response_headers(
+    config_kwarg: str, app_header: Header, controller_header: Header, handler_header: Header
+) -> None:
     class MyController(Controller):
-        cache_control = CacheControlHeader(no_store=True)
-
-        @get(path="/test1", cache_control=CacheControlHeader(no_cache=True))
-        def test1_handler(self) -> None:
+        @get(
+            path="/handler-override",
+            **{config_kwarg: handler_header},  # type: ignore[arg-type]
+        )
+        def controller_override(self) -> None:
             pass
 
-        @get(path="/test2")
-        def test2_handler(self) -> None:
+        @get(path="/controller")
+        def controller_handler(self) -> None:
             pass
 
-    @get(path="/test3")
-    def test3_handler() -> None:
+    setattr(MyController, config_kwarg, controller_header)
+
+    @get(path="/app")
+    def app_handler() -> None:
         pass
 
-    app = Starlite(route_handlers=[MyController, test3_handler], cache_control=CacheControlHeader(max_age=10))
+    app = Starlite(
+        route_handlers=[MyController, app_handler],
+        **{config_kwarg: app_header},  # type: ignore[arg-type]
+    )
 
     with TestClient(app=app) as client:
-        for path, expected_value in (("/test1", "no-cache"), ("/test2", "no-store"), ("/test3", "max-age=10")):
+        for path, expected_value in {
+            "handler-override": handler_header,
+            "controller": controller_header,
+            "app": app_header,
+        }.items():
             response = client.get(path)
-            assert response.headers["cache-control"] == expected_value
+            assert response.headers[expected_value.HEADER_NAME] == expected_value.to_header(include_header_name=False)
 
 
-def test_documentation_only_cache_control_header() -> None:
-    @get(path="/test", cache_control=CacheControlHeader(no_cache=True, documentation_only=True))
+@pytest.mark.parametrize(
+    "config_kwarg,header",
+    [
+        ("cache_control", CacheControlHeader(no_cache=True, documentation_only=True)),
+        ("etag", ETag(value="1", documentation_only=True)),
+    ],
+)
+def test_explicit_headers_documentation_only(config_kwarg: str, header: Header) -> None:
+    @get(
+        path="/test",
+        **{config_kwarg: header},  # type: ignore[arg-type]
+    )
     def my_handler() -> None:
         pass
 
     with create_test_client(my_handler) as client:
         response = client.get("/test")
-        assert "cache-control" not in response.headers
+        assert header.HEADER_NAME not in response.headers
 
 
-def test_cache_control_header_overrides_response_headers() -> None:
+@pytest.mark.parametrize(
+    "config_kwarg,response_header,header",
+    [
+        ("cache_control", ResponseHeader(value="no-store"), CacheControlHeader(no_cache=True)),
+        ("etag", ResponseHeader(value="1"), ETag(value="2")),
+    ],
+)
+def test_explicit_headers_override_response_headers(
+    config_kwarg: str, response_header: ResponseHeader, header: Header
+) -> None:
     @get(
         path="/test",
-        response_headers={"cache-control": ResponseHeader(value="no-store")},
-        cache_control=CacheControlHeader(no_cache=True),
+        response_headers={header.HEADER_NAME: response_header},
+        **{config_kwarg: header},  # type: ignore[arg-type]
     )
     def my_handler() -> None:
         pass
@@ -122,4 +171,4 @@ def test_cache_control_header_overrides_response_headers() -> None:
 
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
     resolved_headers = route_handler.resolve_response_headers()
-    assert resolved_headers["cache-control"].value == "no-cache"
+    assert resolved_headers[header.HEADER_NAME].value == header.to_header(include_header_name=False)
