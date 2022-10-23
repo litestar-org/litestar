@@ -21,6 +21,7 @@
             - dependencies
             - exception_handlers
             - guards
+            - logging_config
             - middleware
             - on_shutdown
             - on_startup
