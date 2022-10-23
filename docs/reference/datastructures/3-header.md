@@ -29,3 +29,9 @@
             - to_header
             - from_header
             - prevent_storing
+
+::: starlite.datastructures.ETag
+    options:
+        members:
+            - value
+            - weak
