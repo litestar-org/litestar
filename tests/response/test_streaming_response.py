@@ -3,6 +3,7 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are
 meant to ensure our compatibility with their API.
 """
+from itertools import cycle
 from typing import TYPE_CHECKING, AsyncIterator, Iterator
 
 import anyio
@@ -29,7 +30,7 @@ def test_streaming_response_known_size() -> None:
     assert response.headers["content-length"] == "10"
 
 
-async def test_streaming_response_stops_if_receiving_http_disconnect(anyio_backend: str) -> None:
+async def test_streaming_response_stops_if_receiving_http_disconnect_with_async_iterator(anyio_backend: str) -> None:
     streamed = 0
 
     disconnected = anyio.Event()
@@ -53,6 +54,30 @@ async def test_streaming_response_stops_if_receiving_http_disconnect(anyio_backe
             yield b"chunk "
 
     response = StreamingResponse(content=stream_indefinitely())
+
+    with anyio.move_on_after(1) as cancel_scope:
+        await response({}, receive_disconnect, send)  # type: ignore
+    assert not cancel_scope.cancel_called, "Content streaming should stop itself."
+
+
+async def test_streaming_response_stops_if_receiving_http_disconnect_with_sync_iterator(anyio_backend: str) -> None:
+    streamed = 0
+
+    disconnected = anyio.Event()
+
+    async def receive_disconnect() -> dict:
+        await disconnected.wait()
+        return {"type": "http.disconnect"}
+
+    async def send(message: "Message") -> None:
+        nonlocal streamed
+        if message["type"] == "http.response.body":
+            streamed += len(message.get("body", b""))
+            # Simulate disconnection after download has started
+            if streamed >= 16:
+                await disconnected.set()
+
+    response = StreamingResponse(content=cycle(["1", "2", "3"]))
 
     with anyio.move_on_after(1) as cancel_scope:
         await response({}, receive_disconnect, send)  # type: ignore

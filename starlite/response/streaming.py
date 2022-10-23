@@ -16,7 +16,7 @@ from starlite.enums import MediaType
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
 from starlite.types.composite import StreamType
-from starlite.utils.sync import iterate_sync_iterator
+from starlite.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks
@@ -65,7 +65,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             is_head_response=is_head_response,
         )
         self.iterator: Union[AsyncIterable[Union[str, bytes]], AsyncGenerator[Union[str, bytes], None]] = (
-            content if isinstance(content, (AsyncIterable, AsyncIterator)) else iterate_sync_iterator(content)
+            content if isinstance(content, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(content)
         )
 
     async def _listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:

@@ -48,6 +48,7 @@ def app_config_object() -> AppConfig:
         template_config=None,
         request_class=None,
         websocket_class=None,
+        etag=None,
     )
 
 

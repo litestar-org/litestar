@@ -72,7 +72,7 @@ class TypedDictPerson(TypedDict):
     pets: Optional[List[Pet]]
 
 
-class Car(Base):
+class Car(Base):  # pyright: ignore
     __tablename__ = "db_cars"
 
     id = Column(INTEGER, primary_key=True)

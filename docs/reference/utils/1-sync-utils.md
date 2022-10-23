@@ -15,3 +15,8 @@
 ::: starlite.utils.as_async_callable_list
 
 ::: starlite.utils.async_partial
+
+::: starlite.utils.AsyncIteratorWrapper
+    options:
+        members:
+            - __init__

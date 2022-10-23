@@ -101,15 +101,32 @@ def async_partial(fn: Callable) -> Callable:
     return wrapper
 
 
-async def iterate_sync_iterator(iterator: Union[Iterator[T], Iterable[T]]) -> AsyncGenerator[T, None]:
-    """Take a sync iterator or iterable and yields values from it
-    asynchronously.
+class AsyncIteratorWrapper(Generic[T]):
+    def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:
+        """Take a sync iterator or iterable and yields values from it
+        asynchronously.
 
-    Args:
-        iterator: An iterator or iterable.
+        Args:
+            iterator: A sync iterator or iterable.
+        """
+        self.iterator = iterator if isinstance(iterator, Iterator) else iter(iterator)
+        self.generator = self._async_generator()
 
-    Returns:
-        An AsyncGenerator.
-    """
-    for element in iterator:
-        yield element
+    def _call_next(self) -> T:
+        try:
+            return next(self.iterator)
+        except StopIteration as e:
+            raise ValueError from e
+
+    async def _async_generator(self) -> AsyncGenerator[T, None]:
+        while True:
+            try:
+                yield await run_sync(self._call_next)
+            except ValueError:
+                return
+
+    def __aiter__(self) -> "AsyncIteratorWrapper[T]":
+        return self
+
+    async def __anext__(self) -> T:
+        return await self.generator.__anext__()

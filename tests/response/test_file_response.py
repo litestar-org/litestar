@@ -3,7 +3,8 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are
 meant to ensure our compatibility with their API.
 """
-
+from datetime import datetime
+from email.utils import formatdate
 from pathlib import Path
 from typing import TYPE_CHECKING, AsyncIterator
 
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 
 
 def test_file_response(tmpdir: Path) -> None:
+    date_string = formatdate(datetime.now().timestamp(), usegmt=True)
     path = tmpdir / "xyz"
     content = b"<file content>" * 1000
     Path(path).write_bytes(content)
@@ -52,8 +54,8 @@ def test_file_response(tmpdir: Path) -> None:
     assert response.content == content
     assert response.headers["content-type"] == "image/png"
     assert response.headers["content-disposition"] == expected_disposition
-    assert "content-length" in response.headers
-    assert "last-modified" in response.headers
+    assert response.headers["content-length"] == "14000"
+    assert response.headers["last-modified"].lower() == date_string.lower()
     assert "etag" in response.headers
     assert filled_by_bg_task == "6, 7, 8, 9"
 

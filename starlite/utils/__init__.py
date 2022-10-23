@@ -25,6 +25,7 @@ from .sequence import find_index, unique
 from .serialization import default_serializer
 from .sync import (
     AsyncCallable,
+    AsyncIteratorWrapper,
     as_async_callable_list,
     async_partial,
     is_async_callable,
@@ -32,6 +33,7 @@ from .sync import (
 
 __all__ = (
     "AsyncCallable",
+    "AsyncIteratorWrapper",
     "ConnectionDataExtractor",
     "ExceptionResponseContent",
     "ResponseDataExtractor",
