@@ -45,8 +45,9 @@ class BackgroundTasks:
         tasks are called once a Response finishes.
         Args:
             tasks: An iterable of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
-            run_in_task_group: If true the tasks will be executed in parallel using an 'TaskGroup',
-                which can increase performance. Enable this option if the order of execution of the tasks does not matter.
+            run_in_task_group: If you set this value to `True` than the tasks will run concurrently, using
+                an [anyio.task_group](https://anyio.readthedocs.io/en/stable/tasks.html). Note: this will
+                not preserve execution order.
         """
         self.tasks = tasks
         self.run_in_task_group = run_in_task_group
