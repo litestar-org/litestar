@@ -1,5 +1,5 @@
 from inspect import getmro
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -10,12 +10,12 @@ from starlite.exceptions.http_exceptions import HTTPException
 from starlite.response import Response
 
 if TYPE_CHECKING:
-    from starlite.types import ExceptionHandler
+    from typing import Type
+
+    from starlite.types import ExceptionHandler, ExceptionHandlersMap
 
 
-def get_exception_handler(
-    exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"], exc: Exception
-) -> Optional["ExceptionHandler"]:
+def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Exception) -> Optional["ExceptionHandler"]:
     """Given a dictionary that maps exceptions and status codes to handler
     functions, and an exception, returns the appropriate handler if existing.
 

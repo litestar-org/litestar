@@ -201,3 +201,63 @@ def test_csrf_form_parsing(engine: Any, template: str, template_dir: Path) -> No
         response = client.post("/", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
+
+
+def test_csrf_middleware_exclude_from_check_via_opts() -> None:
+    @post("/", exclude_from_csrf=True)
+    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[post_handler],
+        csrf_config=CSRFConfig(secret=str(urandom(10))),
+    ) as client:
+        data = {"field": "value"}
+        response = client.post("/", data=data)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == data
+
+
+def test_csrf_middleware_exclude_from_check() -> None:
+    @post("/protected-handler")
+    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    @post("/unprotected-handler")
+    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[post_handler, post_handler2],
+        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
+    ) as client:
+        data = {"field": "value"}
+        response = client.post("/protected-handler", data=data)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        response = client.post("/unprotected-handler", data=data)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == data
+
+
+def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
+    @post("/handler", exclude_from_csrf=True)
+    def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    @post("/handler2", custom_exclude_from_csrf=True)
+    def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[post_handler, post_handler2],
+        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude_from_csrf_key="custom_exclude_from_csrf"),
+    ) as client:
+        data = {"field": "value"}
+        response = client.post("/handler", data=data)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        data = {"field": "value"}
+        response = client.post("/handler2", data=data)
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == data

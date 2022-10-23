@@ -1,5 +1,5 @@
 import collections
-from typing import TYPE_CHECKING, Dict, ItemsView, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, ItemsView, List, Optional, Union, cast
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -19,7 +19,7 @@ from starlite.types import (
     AfterResponseHookHandler,
     BeforeRequestHookHandler,
     ControllerRouterHandler,
-    ExceptionHandler,
+    ExceptionHandlersMap,
     Guard,
     Middleware,
     ParametersMap,
@@ -72,7 +72,7 @@ class Router:
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache_control: Optional[CacheControlHeader] = None,
         dependencies: Optional[Dict[str, Provide]] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
+        exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
         parameters: Optional[ParametersMap] = None,

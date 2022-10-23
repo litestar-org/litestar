@@ -30,7 +30,7 @@ no file is found the application will look for a `404.html` file in order to ren
 
 You can provide `name` parameter to `StaticFilesConfig` to identify given config and generate links to files in folders
 belonging to that config. `name` should be a unique string across all static configs and
-[route handlers](2-route-handlers/4-route-handler-indexing.md)
+[route handlers](../2-route-handlers/4-route-handler-indexing.md)
 
 ```python
 from starlite import Starlite, StaticFilesConfig

@@ -12,3 +12,5 @@
             - cookie_samesite
             - cookie_domain
             - safe_methods
+            - exclude
+            - exclude_from_csrf_key

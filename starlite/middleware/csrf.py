@@ -1,5 +1,6 @@
+import re
 import secrets
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Pattern
 
 from starlette.datastructures import MutableHeaders
 
@@ -37,6 +38,12 @@ class CSRFMiddleware(MiddlewareProtocol):
         """
         self.app = app
         self.config = config
+        self.exclude: Optional[Pattern[str]] = None
+
+        if config.exclude:
+            self.exclude = (
+                re.compile("|".join(config.exclude)) if isinstance(config.exclude, list) else re.compile(config.exclude)
+            )
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
@@ -64,7 +71,10 @@ class CSRFMiddleware(MiddlewareProtocol):
             form = await request.form()
             existing_csrf_token = form.get("_csrf_token", None)
 
-        if request.method in self.config.safe_methods:
+        exclude_from_csrf_flag = scope["route_handler"].opt.get(self.config.exclude_from_csrf_key)
+        exclude_from_csrf = exclude_from_csrf_flag or (self.exclude and self.exclude.findall(scope["path"]))
+
+        if request.method in self.config.safe_methods or exclude_from_csrf:
             token = scope["_csrf_token"] = csrf_cookie or generate_csrf_token(secret=self.config.secret)  # type: ignore
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):

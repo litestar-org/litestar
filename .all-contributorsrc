@@ -467,7 +467,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/25355197?v=4",
       "profile": "https://github.com/provinzkraut",
       "contributions": [
-        "test"
+        "test",
+        "code"
       ]
     },
     {
@@ -475,6 +476,33 @@
       "name": "Joshua Bronson",
       "avatar_url": "https://avatars.githubusercontent.com/u/64992?v=4",
       "profile": "https://github.com/jab",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ReznikovRoman",
+      "name": "Roman Reznikov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44291988?v=4",
+      "profile": "http://linkedin.com/in/roman-reznikov",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "mookrs",
+      "name": "mookrs",
+      "avatar_url": "https://avatars.githubusercontent.com/u/985439?v=4",
+      "profile": "http://mookrs.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "mivade",
+      "name": "Mike DePalatis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2805515?v=4",
+      "profile": "http://mike.depalatis.net",
       "contributions": [
         "doc"
       ]

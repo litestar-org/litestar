@@ -1,5 +1,12 @@
 # Changelog
 
+[1.30.0]
+
+- `url_for_static_asset` path resolver function.
+- Use a `TypeVar` for `ExceptionHandler` exception parameter.
+- fix `SessionMiddleware` handling non-session cookies with `session` anywhere in their name.
+- SQLAlchemy plugin maps JSON column types to `Union[Dict, List]` on DTOs.
+
 [1.29.0]
 
 - Adds native support for `TypedDict` as data type.
