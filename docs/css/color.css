@@ -27,7 +27,7 @@
   --clr-cyan: #5ccfe6;
   --clr-purple--faint: #c3a6ff;
   --clr-green: #bae67e;
-  --clr-red: #e74f13;
+  --clr-red: hsl(356, 92%, 60%);
   --clr-teal: #02768d;
   --clr-purple: #884dff;
   --clr-green--dark: #578915;
