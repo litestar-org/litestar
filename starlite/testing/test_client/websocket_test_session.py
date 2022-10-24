@@ -1,6 +1,6 @@
 from contextlib import ExitStack
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
 
 from anyio import sleep
 from anyio.from_thread import start_blocking_portal
@@ -36,7 +36,7 @@ class WebSocketTestSession:
         self.accepted_subprotocol: Optional[str] = None
         self.receive_queue: "Queue[WebSocketReceiveMessage]" = Queue()
         self.send_queue: "Queue[Union[WebSocketSendMessage, BaseException]]" = Queue()
-        self.extra_headers: Optional[Dict[str, str]] = None
+        self.extra_headers: Optional[List[Tuple[bytes, bytes]]] = None
 
     def __enter__(self) -> "WebSocketTestSession":
         self.exit_stack = ExitStack()
@@ -51,7 +51,7 @@ class WebSocketTestSession:
 
             message = self.receive()
             self.accepted_subprotocol = cast("Optional[str]", message.get("subprotocol", None))
-            self.extra_headers = cast("Optional[Dict[str, str]]", message.get("headers", None))
+            self.extra_headers = cast("Optional[List[Tuple[bytes, bytes]]]", message.get("headers", None))
             return self
         except Exception:
             self.exit_stack.close()
@@ -76,6 +76,13 @@ class WebSocketTestSession:
             return self.receive_queue.get()
 
         async def send(message: "WebSocketSendMessage") -> None:
+            if message["type"] == "websocket.accept":
+                headers = message.get("headers", [])
+                if headers:
+                    self.scope["headers"].extend(headers)
+                subprotocols = cast("Optional[str]", message.get("subprotocols"))
+                if subprotocols:
+                    self.scope["subprotocols"].append(subprotocols)
             self.send_queue.put(message)
 
         try:

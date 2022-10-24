@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
     from starlite.middleware.session import SessionCookieConfig
+    from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)
@@ -333,7 +334,9 @@ class TestClient(Client, Generic[T]):
             extensions=extensions,
         )
 
-    def websocket_connect(self, url: str, subprotocols: Optional[Sequence[str]] = None, **kwargs: Any) -> Any:
+    def websocket_connect(
+        self, url: str, subprotocols: Optional[Sequence[str]] = None, **kwargs: Any
+    ) -> "WebSocketTestSession":
         url = urljoin("ws://testserver", url)
         headers = kwargs.get("headers", {})
         headers.setdefault("connection", "upgrade")
