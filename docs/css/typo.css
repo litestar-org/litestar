@@ -3,8 +3,24 @@ body {
   --md-text-font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 }
 
-article p {
+article p, article li {
   line-height: 1.8;
+}
+article p {
+  margin: 1.25rem 0;
+}
+article p + .highlight {
+  margin-top: -1rem;
+}
+
+article .admonition p {
+  margin: .6rem 0;
+}
+
+/** index.md badges */
+article center > p {
+  line-height: 1;
+  margin: 0 0 1rem;
 }
 
 .md-content__button {
@@ -18,6 +34,10 @@ article p {
   font-size: calc(1rem * 1.35 * 1.35 * 1.35);
   margin: 1.35rem 0 1rem;
   font-weight: 400;
+}
+
+[dir="ltr"] .md-header__title {
+  margin-left: 0;
 }
 
 /* #starlite-banner .cls-1 {
@@ -60,7 +80,7 @@ article p {
   margin-top: 1rem;
 }
 .highlight .filename + pre {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 @media screen and (max-width: 76.1875em) {

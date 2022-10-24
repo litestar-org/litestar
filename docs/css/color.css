@@ -27,16 +27,20 @@
   --clr-cyan: #5ccfe6;
   --clr-purple--faint: #c3a6ff;
   --clr-green: #bae67e;
-  --clr-red: #ea101f;
-  --clr-red--subtle: #e01a27;
+  --clr-red: #e74f13;
   --clr-teal: #02768d;
   --clr-purple: #884dff;
   --clr-green--dark: #578915;
 
   /** Other */
-  --clr-red-translucent: hsla(6, 90%, 60%, 0.15);
-  --clr-green-translucent: hsla(150, 90%, 44%, 0.15);
-  --clr-black-translucent: hsla(0, 0%, 0%, 0.12);
+  --clr-red--translucent: hsla(6, 90%, 60%, 0.15);
+  --clr-green--translucent: hsla(150, 90%, 44%, 0.15);
+  --clr-black--translucent: hsla(0, 0%, 0%, 0.12);
+  --clr-teal--translucent: #02768d1a;
+  --clr-purple--translucent: #884dff1a;
+  --clr-red--faint--translucent: #f06b741a;
+  --clr-navy--lighter--alt--translucent: hsla(221, 28%, 33%, .15);
+  --clr-cyan--translucent: #5ccfe61a;
 
   --clr-white: #ffffff;
   --clr-grey--lightest: #fafafa;
@@ -102,8 +106,8 @@
   --md-typeset-mark-color: var(--clr-yellow--translucent); /* !! double-check !! */
 
   /* Typeset `del` and `ins` color shades */
-  --md-typeset-del-color: var(--clr-red-translucent);
-  --md-typeset-ins-color: var(--clr-green-translucent);
+  --md-typeset-del-color: var(--clr-red--translucent);
+  --md-typeset-ins-color: var(--clr-green--translucent);
 
   /* Typeset `kbd` color shades */
   --md-typeset-kbd-color: var(--clr-grey--lightest);
@@ -111,7 +115,7 @@
   --md-typeset-kbd-border-color: var(--clr-grey--dark);
 
   /* Typeset `table` color shades */
-  --md-typeset-table-color: var(--clr-black-translucent);
+  --md-typeset-table-color: var(--clr-black--translucent);
 
   /* Admonition color shades */
   --md-admonition-fg-color:          var(--md-default-fg-color);
@@ -185,7 +189,7 @@
   --md-code-hl-special-color: var(--clr-red);
   --md-code-hl-function-color: var(--clr-teal);
   --md-code-hl-constant-color: var(--clr-purple);
-  --md-code-hl-keyword-color: var(--clr-red--subtle);
+  --md-code-hl-keyword-color: var(--clr-red);
   --md-code-hl-string-color: var(--clr-green--dark);
   --md-code-hl-name-color: var(--md-default-fg-color);
   --md-code-hl-operator-color: var(--md-code-hl-number-color);
@@ -204,8 +208,8 @@
   --md-typeset-mark-color: var(--clr-yellow--translucent); /* !! double-check !! */
 
   /* Typeset `del` and `ins` color shades */
-  --md-typeset-del-color: var(--clr-red-translucent);
-  --md-typeset-ins-color: var(--clr-green-translucent);
+  --md-typeset-del-color: var(--clr-red--translucent);
+  --md-typeset-ins-color: var(--clr-green--translucent);
 
   /* Typeset `kbd` color shades */
   --md-typeset-kbd-color: var(--clr-grey--lightest);
@@ -213,7 +217,7 @@
   --md-typeset-kbd-border-color: var(--clr-grey--dark);
 
   /* Typeset `table` color shades */
-  --md-typeset-table-color: var(--clr-black-translucent);
+  --md-typeset-table-color: var(--clr-black--translucent);
 
   /* Admonition color shades *
   --md-admonition-fg-color:          var(--md-default-fg-color);
@@ -259,4 +263,52 @@
 
 [data-md-color-scheme="mirage-light"] .highlight span.filename {
   color: var(--md-default-fg-color);
+}
+
+[data-md-color-scheme="mirage-light"] .md-search-result mark {
+  color: var(--clr-orange-red--dark);
+}
+
+[data-md-color-scheme="mirage-light"] .md-search-result__meta {
+  background-color: var(--clr-silver);
+}
+
+
+.md-typeset :is(.admonition, details):is(.important) .admonition-title {
+  color: var(--clr-red--faint);
+}
+.md-typeset :is(.admonition, details):is(.important) {
+  border-color: var(--clr-red--faint);
+}
+.md-typeset :is(.important) > :is(.admonition-title, summary)::before {
+  background-color: var(--clr-red--faint);
+}
+.md-typeset :is(.important) > :is(.admonition-title, summary) {
+  background-color: var(--clr-red--faint--translucent);
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .hint) .admonition-title {
+  color: var(--clr-cyan);
+}
+.md-typeset :is(.admonition, details):is(.tip, .hint) {
+  border-color: var(--clr-cyan);
+}
+.md-typeset :is(.tip, .hint) > :is(.admonition-title, summary)::before {
+  background-color: var(--clr-cyan);
+}
+.md-typeset :is(.tip, .hint) > :is(.admonition-title, summary) {
+  background-color: var(--clr-cyan--translucent);
+}
+
+.md-typeset :is(.admonition, details):is(.note) .admonition-title {
+  color: var(--clr-navy--lighter--alt);
+}
+.md-typeset :is(.admonition, details):is(.note) {
+  border-color: var(--clr-navy--lighter--alt);
+}
+.md-typeset :is(.note) > :is(.admonition-title, summary)::before {
+  background-color: var(--clr-navy--lighter--alt);
+}
+.md-typeset :is(.note) > :is(.admonition-title, summary) {
+  background-color: var(--clr-navy--lighter--alt--translucent);
 }
