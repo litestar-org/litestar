@@ -4,7 +4,7 @@ import re
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Type
 
 from orjson import dumps, loads
 from pydantic import SecretBytes, validator
@@ -12,9 +12,8 @@ from starlette.datastructures import MutableHeaders
 
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.base import MiddlewareProtocol
 
-from .base import BaseBackendConfig, SessionBackend, SessionMiddleware
+from .base import BaseBackendConfig, SessionBackend
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -24,7 +23,7 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import Message, Scope
 
 
 NONCE_SIZE = 12
@@ -32,7 +31,7 @@ CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
 
 
-class CookieBackend(SessionBackend["SessionCookieConfig"]):
+class CookieBackend(SessionBackend["CookieBackendConfig"]):
     def __init__(self, config: "CookieBackendConfig") -> None:
         """Starlite CookieSessionMiddleware.
 
@@ -132,7 +131,7 @@ class CookieBackend(SessionBackend["SessionCookieConfig"]):
 class CookieBackendConfig(BaseBackendConfig):
     """Configuration for [SessionMiddleware] middleware."""
 
-    _backend_class = CookieBackend
+    _backend_class: ClassVar[Type[CookieBackend]] = CookieBackend
 
     secret: SecretBytes
     """
@@ -156,24 +155,3 @@ class CookieBackendConfig(BaseBackendConfig):
         if len(value.get_secret_value()) not in {16, 24, 32}:
             raise ValueError("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
         return value
-
-
-# Backwards compatible middleware shim
-class CookieSessionMiddleware(MiddlewareProtocol):
-    def __init__(self, app: "ASGIApp", config: CookieBackendConfig) -> None:
-        self.app = app
-        self.config = config
-        self._backend = CookieBackend(config=config)
-        self._middleware = SessionMiddleware[CookieBackend](app=app, backend=self._backend)
-
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        await self._middleware(scope, receive, send)
-
-    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
-        return self._backend.dump_data(data, scope)
-
-    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
-        return self._backend.load_data(data)
-
-
-SessionCookieConfig = CookieBackendConfig

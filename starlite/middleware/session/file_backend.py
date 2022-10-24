@@ -1,12 +1,14 @@
 import shutil
 from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Optional, Tuple
+from os import PathLike
+from typing import ClassVar, Optional, Tuple, Type
 
 import anyio
 import orjson
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
+
+FileStorageMetadataWrapper = Tuple[str, str]
 
 
 class FileBackend(ServerSideBackend["FileBackendConfig"]):
@@ -45,8 +47,5 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
 
 class FileBackendConfig(ServerSideSessionConfig):
-    _backend_class = FileBackend
-    storage_path: Path
-
-
-FileStorageMetadataWrapper = Tuple[str, str]
+    _backend_class: ClassVar[Type[FileBackend]] = FileBackend
+    storage_path: PathLike

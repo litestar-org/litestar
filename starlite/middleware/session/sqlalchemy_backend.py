@@ -1,7 +1,15 @@
 import abc
 import datetime
-from typing import (TYPE_CHECKING, ClassVar, Generic, Optional, Type, TypeVar,
-                    Union, cast)
+from typing import (
+    TYPE_CHECKING,
+    ClassVar,
+    Generic,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import anyio.to_thread
 import sqlalchemy as sa
@@ -13,16 +21,14 @@ from sqlalchemy.orm import Session as SASession
 from sqlalchemy.orm import declarative_mixin, registry
 
 from starlite import ImproperlyConfiguredException
-from starlite.middleware.session.base import (ServerSideBackend,
-                                              ServerSideSessionConfig)
+from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import Select
     from sqlalchemy.sql.elements import BooleanClauseList
 
-    from starlite.plugins.sql_alchemy import \
-        SQLAlchemyConfig as SQLAlchemyPluginConfig
+    from starlite.plugins.sql_alchemy import SQLAlchemyConfig as SQLAlchemyPluginConfig
 
 
 AnySASession = Union[SASession, AsyncSASession]

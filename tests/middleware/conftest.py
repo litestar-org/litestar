@@ -1,9 +1,9 @@
 import os
 import secrets
-from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-import fakeredis.aioredis
+import fakeredis.aioredis  # type: ignore
+import py
 import pytest
 from pydantic import SecretBytes
 
@@ -39,47 +39,47 @@ def cookie_backend_config() -> CookieBackendConfig:
 
 
 @pytest.fixture()
-def cookie_session_backend(cookie_backend_config) -> CookieBackend:
+def cookie_session_backend(cookie_backend_config: CookieBackendConfig) -> CookieBackend:
     return CookieBackend(config=cookie_backend_config)
 
 
 @pytest.fixture
 def memory_backend_config() -> MemoryBackendConfig:
-    return MemoryBackendConfig(expires=timedelta(seconds=10))
+    return MemoryBackendConfig()
 
 
 @pytest.fixture
-def file_backend_config(tmp_path) -> FileBackendConfig:
-    return FileBackendConfig(storage_path=tmp_path, expires=timedelta(seconds=10))
+def file_backend_config(tmpdir: py.path.local) -> FileBackendConfig:
+    return FileBackendConfig(storage_path=tmpdir)
 
 
 @pytest.fixture
 def redis_backend_config() -> RedisBackendConfig:
-    return RedisBackendConfig(redis=fakeredis.aioredis.FakeRedis(), expires=timedelta(seconds=10))
+    return RedisBackendConfig(redis=fakeredis.aioredis.FakeRedis())
 
 
 @pytest.fixture
 def memcached_backend_config() -> MemcachedBackendConfig:
-    return MemcachedBackendConfig(memcached=FakeAsyncMemcached(), expires=10)
+    return MemcachedBackendConfig(memcached=FakeAsyncMemcached())
 
 
 @pytest.fixture
-def memory_session_backend(memory_backend_config) -> MemoryBackend:
+def memory_session_backend(memory_backend_config: MemoryBackendConfig) -> MemoryBackend:
     return MemoryBackend(config=memory_backend_config)
 
 
 @pytest.fixture
-def file_session_backend(file_backend_config) -> MemoryBackend:
+def file_session_backend(file_backend_config: FileBackendConfig) -> FileBackend:
     return FileBackend(config=file_backend_config)
 
 
 @pytest.fixture
-def redis_session_backend(redis_backend_config) -> RedisBackend:
+def redis_session_backend(redis_backend_config: RedisBackendConfig) -> RedisBackend:
     return RedisBackend(config=redis_backend_config)
 
 
 @pytest.fixture
-def memcached_session_backend(memcached_backend_config) -> MemcachedBackend:
+def memcached_session_backend(memcached_backend_config: MemcachedBackendConfig) -> MemcachedBackend:
     return MemcachedBackend(config=memcached_backend_config)
 
 
@@ -92,8 +92,8 @@ def memcached_session_backend(memcached_backend_config) -> MemcachedBackend:
         pytest.param("memcached_backend_config", id="memcached"),
     ]
 )
-def session_backend_config(request) -> BaseBackendConfig:
-    return request.getfixturevalue(request.param)
+def session_backend_config(request: pytest.FixtureRequest) -> BaseBackendConfig:
+    return cast("BaseBackendConfig", request.getfixturevalue(request.param))
 
 
 @pytest.fixture(
@@ -105,26 +105,26 @@ def session_backend_config(request) -> BaseBackendConfig:
         pytest.param("memcached_session_backend", id="memcached"),
     ]
 )
-def session_backend(request) -> SessionBackend:
-    return request.getfixturevalue(request.param)
+def session_backend(request: pytest.FixtureRequest) -> SessionBackend:
+    return cast("SessionBackend", request.getfixturevalue(request.param))
 
 
 @pytest.fixture
-def session_middleware(session_backend) -> SessionMiddleware[Any]:
+def session_middleware(session_backend: SessionBackend) -> SessionMiddleware[Any]:
     return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
 
 
 @pytest.fixture
-def cookie_session_middleware(cookie_session_backend) -> SessionMiddleware[CookieBackend]:
+def cookie_session_middleware(cookie_session_backend: CookieBackend) -> SessionMiddleware[CookieBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
 
 
 @pytest.fixture()
-def session_test_cookies(cookie_session_middleware) -> str:
+def session_test_cookies(cookie_session_backend: CookieBackend) -> str:
     # Put random data. If you are also handling session management then use session_middleware fixture and create
     # session cookies with your own data.
     _session = {"key": secrets.token_hex(16)}
     return "; ".join(
         f"session-{i}={serialize.decode('utf-8')}"
-        for i, serialize in enumerate(cookie_session_middleware.dump_data(_session))
+        for i, serialize in enumerate(cookie_session_backend.dump_data(_session))
     )

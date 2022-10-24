@@ -5,6 +5,7 @@ from typing import (
     Any,
     Awaitable,
     Callable,
+    ClassVar,
     Dict,
     Generic,
     Optional,
@@ -15,7 +16,7 @@ from typing import (
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
-from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
+from pydantic import BaseConfig, BaseModel, conint, conlist, constr
 from starlette.datastructures import MutableHeaders
 from typing_extensions import Literal
 
@@ -26,11 +27,12 @@ from starlite.utils import default_serializer, get_serializer_from_scope
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
+
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 class BaseBackendConfig(BaseModel):
-    _backend_class: Type["SessionBackend"] = PrivateAttr()
+    _backend_class: ClassVar[Type["SessionBackend"]]
 
     """Configuration for Session middleware cookies."""
 
@@ -62,6 +64,10 @@ class BaseBackendConfig(BaseModel):
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
 
     @property
+    def backend(self) -> "SessionBackend":
+        return self._backend_class(config=self)
+
+    @property
     def middleware(self) -> DefineMiddleware:
         """Use this property to insert the config into a middleware list on one
         of the application layers.
@@ -88,7 +94,7 @@ class BaseBackendConfig(BaseModel):
         Returns:
             An instance of DefineMiddleware including 'self' as the config kwarg value.
         """
-        return DefineMiddleware(SessionMiddleware, backend=self._backend_class(config=self))
+        return DefineMiddleware(SessionMiddleware, backend=self.backend)
 
 
 class ServerSideSessionConfig(BaseBackendConfig):
@@ -202,6 +208,8 @@ B = TypeVar("B", bound=SessionBackend)
 
 
 class SessionMiddleware(MiddlewareProtocol, Generic[B]):
+    __slots__ = ("backend",)
+
     def __init__(self, app: "ASGIApp", backend: B) -> None:
         self.app = app
         self.backend = backend

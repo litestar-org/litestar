@@ -1,4 +1,4 @@
-from typing import Union
+from typing import ClassVar, Type, Union
 
 from redis.asyncio import Redis  # pylint: disable=import-error
 
@@ -43,6 +43,6 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
 
 
 class RedisBackendConfig(ServerSideSessionConfig):
-    _backend_class = RedisBackend
+    _backend_class: ClassVar[Type[RedisBackend]] = RedisBackend
     redis: Redis
     key_prefix: str = "STARLITE_SESSION"
