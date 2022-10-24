@@ -3,6 +3,10 @@ body {
   --md-text-font-family: Tahoma, Geneva, Verdana, sans-serif;
 }
 
+article p {
+  line-height: 1.8;
+}
+
 .md-content__button {
   display: none;
 }
