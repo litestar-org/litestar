@@ -1,141 +1,141 @@
-from concurrent.futures import Future
 from contextlib import ExitStack
 from queue import Queue
-from typing import TYPE_CHECKING, Any, Callable, ContextManager
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
 from anyio import sleep
+from anyio.from_thread import start_blocking_portal
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
+from typing_extensions import Literal
 
 from starlite.exceptions import WebSocketDisconnect
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
-    from anyio.from_thread import BlockingPortal
 
+    from starlite.testing.test_client.client import TestClient
     from starlite.types import (
-        ASGIApp,
-        Message,
-        Scope,
         WebSocketConnectEvent,
         WebSocketDisconnectEvent,
         WebSocketReceiveMessage,
+        WebSocketScope,
         WebSocketSendMessage,
     )
 
 
 class WebSocketTestSession:
+    exit_stack: "ExitStack"
+
     def __init__(
         self,
-        app: "ASGIApp",
-        scope: "Scope",
-        portal_factory: Callable[[], ContextManager["BlockingPortal"]],
+        client: "TestClient",
+        scope: "WebSocketScope",
     ) -> None:
-        self.app = app
+        self.client = client
         self.scope = scope
-        self.accepted_subprotocol = None
-        self.portal_factory = portal_factory
-        self._receive_queue: "Queue[Any]" = Queue()
-        self._send_queue: "Queue[Any]" = Queue()
-        self.extra_headers = None
+        self.accepted_subprotocol: Optional[str] = None
+        self.receive_queue: "Queue[WebSocketReceiveMessage]" = Queue()
+        self.send_queue: "Queue[Union[WebSocketSendMessage, BaseException]]" = Queue()
+        self.extra_headers: Optional[Dict[str, str]] = None
 
     def __enter__(self) -> "WebSocketTestSession":
         self.exit_stack = ExitStack()
-        self.portal = self.exit_stack.enter_context(self.portal_factory())
+        portal = self.exit_stack.enter_context(
+            start_blocking_portal(backend=self.client.backend, backend_options=self.client.backend_options)
+        )
 
         try:
-            _: "Future[None]" = self.portal.start_task_soon(self._run)
+            portal.start_task_soon(self.do_asgi_call)
             event: "WebSocketConnectEvent" = {"type": "websocket.connect"}
-            self.send(event)
+            self.receive_queue.put(event)
+
             message = self.receive()
-            self._raise_on_close(message)
+            self.accepted_subprotocol = cast("Optional[str]", message.get("subprotocol", None))
+            self.extra_headers = cast("Optional[Dict[str, str]]", message.get("headers", None))
+            return self
         except Exception:
             self.exit_stack.close()
             raise
-        self.accepted_subprotocol = message.get("subprotocol", None)
-        self.extra_headers = message.get("headers", None)
-        return self
 
     def __exit__(self, *args: Any) -> None:
         try:
-            self.close(1000)
+            self.close(WS_1000_NORMAL_CLOSURE)
         finally:
             self.exit_stack.close()
-        while not self._send_queue.empty():
-            message = self._send_queue.get()
+        while not self.send_queue.empty():
+            message = self.send_queue.get()
             if isinstance(message, BaseException):
                 raise message
 
-    async def _run(self) -> None:
+    async def do_asgi_call(self) -> None:
         """The sub-thread in which the websocket session runs."""
-        scope = self.scope
-        receive = self._asgi_receive
-        send = self._asgi_send
+
+        async def receive() -> "WebSocketReceiveMessage":
+            while self.receive_queue.empty():
+                await sleep(0)
+            return self.receive_queue.get()
+
+        async def send(message: "WebSocketSendMessage") -> None:
+            self.send_queue.put(message)
+
         try:
-            await self.app(scope, receive, send)
+            await self.client.app(self.scope, receive, send)
         except BaseException as exc:
-            self._send_queue.put(exc)
+            self.send_queue.put(exc)
             raise
 
-    async def _asgi_receive(self) -> "Message":
-        while self._receive_queue.empty():
-            await sleep(0)
-        return self._receive_queue.get()
-
-    async def _asgi_send(self, message: "Message") -> None:
-        self._send_queue.put(message)
-
-    @staticmethod
-    def _raise_on_close(message: "WebSocketSendMessage") -> None:
-        if message["type"] == "websocket.close":
-            raise WebSocketDisconnect(
-                detail=message.get("detail", message.get("reason", "")),
-                code=message.get("code", WS_1000_NORMAL_CLOSURE),
-            )
-
-    def send(self, message: "WebSocketReceiveMessage") -> None:
+    def send(
+        self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
+    ) -> None:
         """The 'send' here is the inverse of the ASGI 'send',
 
         that is - it receives 'eceive' events rather than 'send' events.
         """
-        self._receive_queue.put(message)
-
-    def send_text(self, data: str) -> None:
-        self.send({"type": "websocket.receive", "text": data})
-
-    def send_bytes(self, data: bytes) -> None:
-        self.send({"type": "websocket.receive", "bytes": data})
-
-    def send_json(self, data: Any, mode: str = "text") -> None:
-        text = dumps(data, default=default_serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
         if mode == "text":
-            self.send({"type": "websocket.receive", "text": text.decode("utf-8")})
+            data = data.decode(encoding) if isinstance(data, bytes) else data
+            text_event: "WebSocketReceiveMessage" = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
+            self.receive_queue.put(text_event)
         else:
-            self.send({"type": "websocket.receive", "bytes": text})
+            data = data if isinstance(data, bytes) else data.encode(encoding)
+            binary_event: "WebSocketReceiveMessage" = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
+            self.receive_queue.put(binary_event)
+
+    def send_text(self, data: str, encoding: str = "utf-8") -> None:
+        self.send(data=data, mode="text", encoding=encoding)
+
+    def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
+        self.send(data=data, mode="binary", encoding=encoding)
+
+    def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:
+        self.send(
+            data=dumps(data, default=default_serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS), mode=mode
+        )
 
     def close(self, code: int = 1000) -> None:
         event: "WebSocketDisconnectEvent" = {"type": "websocket.disconnect", "code": code}
-        self.send(event)
+        self.receive_queue.put(event)
 
     def receive(self) -> "WebSocketSendMessage":
-        message = self._send_queue.get()
+        message = cast("WebSocketSendMessage", self.send_queue.get())
         if isinstance(message, BaseException):
             raise message
+        if message["type"] == "websocket.close":
+            raise WebSocketDisconnect(
+                detail=cast("str", message.get("reason", "")),
+                code=message.get("code", WS_1000_NORMAL_CLOSURE),
+            )
         return message
 
     def receive_text(self) -> str:
         message = self.receive()
-        self._raise_on_close(message)
-        return message.get("text", "")
+        return cast("str", message.get("text", ""))
 
     def receive_bytes(self) -> bytes:
         message = self.receive()
-        self._raise_on_close(message)
-        return message.get("bytes", b"")
+        return cast("bytes", message.get("bytes", b""))
 
-    def receive_json(self, mode: str = "text") -> Any:
+    def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:
         message = self.receive()
-        self._raise_on_close(message)
         if mode == "text":
-            return loads(message.get("text", ""))
-        return loads(message.get("bytes", b""))
+            return loads(cast("str", message.get("text", "")))
+        return loads(cast("bytes", message.get("bytes", b"")))

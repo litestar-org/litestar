@@ -1,9 +1,10 @@
 from io import BytesIO
 from types import GeneratorType
-from typing import TYPE_CHECKING, Any, Callable, ContextManager, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
+from anyio.from_thread import start_blocking_portal
 from httpx import BaseTransport, ByteStream, Request, Response
 from typing_extensions import TypedDict
 
@@ -11,9 +12,16 @@ from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
 
 if TYPE_CHECKING:
-    from anyio.from_thread import BlockingPortal
-
-    from starlite.types import ASGIApp, Message, Receive, Send
+    from starlite.testing.test_client.client import TestClient
+    from starlite.types import (
+        HTTPDisconnectEvent,
+        HTTPRequestEvent,
+        Message,
+        Receive,
+        ReceiveMessage,
+        Send,
+        WebSocketScope,
+    )
 
 
 class ConnectionUpgradeException(Exception):
@@ -33,39 +41,36 @@ class SendReceiveContext(TypedDict):
 class TestClientTransport(BaseTransport):
     def __init__(
         self,
-        app: "ASGIApp",
-        portal_factory: Callable[[], ContextManager["BlockingPortal"]],
+        client: "TestClient",
         raise_server_exceptions: bool = True,
         root_path: str = "",
     ) -> None:
-        self.app = app
+        self.client = client
         self.raise_server_exceptions = raise_server_exceptions
         self.root_path = root_path
-        self.portal_factory = portal_factory
 
     @staticmethod
     def create_receive(request: "Request", context: SendReceiveContext) -> "Receive":
-        async def receive() -> "Message":
+        async def receive() -> "ReceiveMessage":
             if context["request_complete"]:
                 if not context["response_complete"].is_set():
                     await context["response_complete"].wait()
-                return {"type": "http.disconnect"}
+                disconnect_event: "HTTPDisconnectEvent" = {"type": "http.disconnect"}
+                return disconnect_event
 
-            body = request.read() or b""
+            body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
+            request_event: "HTTPRequestEvent" = {"type": "http.request", "body": b"", "more_body": False}
             if isinstance(body, GeneratorType):
                 try:
                     chunk = body.send(None)
-                    if isinstance(chunk, str):
-                        chunk = chunk.encode("utf-8")
-                    return {"type": "http.request", "body": chunk, "more_body": True}
+                    request_event["body"] = body = chunk if isinstance(chunk, bytes) else chunk.encode("utf-8")
+                    request_event["more_body"] = True
                 except StopIteration:
                     context["request_complete"] = True
-                    return {"type": "http.request", "body": b"", "more_body": False}
-
-            context["request_complete"] = True
-            if isinstance(body, str):
-                return {"type": "http.request", "body": body.encode("utf-8"), "more_body": False}
-            return {"type": "http.request", "body": body, "more_body": False}
+            else:
+                context["request_complete"] = True
+                request_event["body"] = body if isinstance(body, bytes) else body.encode("utf-8")
+            return request_event
 
         return receive
 
@@ -91,8 +96,8 @@ class TestClientTransport(BaseTransport):
                 if not more_body:
                     context["raw_kwargs"]["stream"].seek(0)
                     await context["response_complete"].set()
-            elif message["type"] == "http.response.template":
-                context["template"] = message["template"]
+            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap]
+                context["template"] = message["template"]  # type: ignore[unreachable]
                 context["context"] = message["context"]
 
         return send
@@ -114,7 +119,7 @@ class TestClientTransport(BaseTransport):
 
         host_header = request.headers.pop("host", host if port == default_port else f"{host}:{port}")
 
-        headers = [(k.lower().encode(), v.encode()) for k, v in [("host", host_header), *request.headers.items()]]
+        headers = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
 
         return {
             "type": "websocket" if scheme in {"ws", "wss"} else "http",
@@ -134,7 +139,7 @@ class TestClientTransport(BaseTransport):
             scope.update(
                 subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
             )
-            session = WebSocketTestSession(self.app, scope, self.portal_factory)
+            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))
             raise ConnectionUpgradeException(session)
         else:
             scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
@@ -142,7 +147,9 @@ class TestClientTransport(BaseTransport):
         raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
 
         try:
-            with self.portal_factory() as portal:
+            with start_blocking_portal(
+                backend=self.client.backend, backend_options=self.client.backend_options
+            ) as portal:
                 response_complete = portal.call(Event)
                 context: SendReceiveContext = {
                     "response_complete": response_complete,
@@ -153,7 +160,7 @@ class TestClientTransport(BaseTransport):
                     "context": None,
                 }
                 portal.call(
-                    self.app,
+                    self.client.app,
                     scope,
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),
@@ -174,6 +181,6 @@ class TestClientTransport(BaseTransport):
 
             stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
             response = Response(**raw_kwargs, stream=stream, request=request)
-            setattr(response, "template", context["template"])
-            setattr(response, "context", context["context"])
+            setattr(response, "template", context["template"])  # noqa: B010
+            setattr(response, "context", context["context"])  # noqa: B010
             return response

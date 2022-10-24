@@ -1,16 +1,6 @@
 from concurrent.futures import Future
-from contextlib import ExitStack, contextmanager
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    Generic,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-)
+from contextlib import ExitStack
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Sequence, TypeVar, Union
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
@@ -23,13 +13,10 @@ from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
     TestClientTransport,
 )
-from starlite.types import (
-    ASGIApp,
-)
+from starlite.types import ASGIApp
 
 try:
     from httpx import USE_CLIENT_DEFAULT, Client, Response
-
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -61,6 +48,7 @@ class TestClient(Client, Generic[T]):
     task: "Future[None]"
     portal: Optional[BlockingPortal] = None
     lifespan_handler: LifeSpanHandler
+    exit_stack: "ExitStack"
 
     def __init__(
         self,
@@ -99,8 +87,7 @@ class TestClient(Client, Generic[T]):
             follow_redirects=True,
             cookies=cookies,
             transport=TestClientTransport(
-                app=self.app,
-                portal_factory=self._portal_factory,
+                client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
             ),
@@ -128,14 +115,6 @@ class TestClient(Client, Generic[T]):
     def __exit__(self, *args: Any) -> None:
         self.exit_stack.close()
 
-    @contextmanager
-    def _portal_factory(self) -> Generator[BlockingPortal, None, None]:
-        if self.portal is not None:
-            yield self.portal
-        else:
-            with start_blocking_portal(backend=self.backend, backend_options=self.backend_options) as portal:
-                yield portal
-
     def request(
         self,
         method: str,
@@ -151,7 +130,7 @@ class TestClient(Client, Generic[T]):
         auth: Optional[Union["AuthTypes", "UseClientDefault"]] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().request(
             url=self.base_url.join(url),
@@ -179,7 +158,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().get(
             url,
@@ -202,7 +181,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().options(
             url,
@@ -225,7 +204,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().head(
             url,
@@ -252,7 +231,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().post(
             url,
@@ -283,7 +262,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().put(
             url,
@@ -314,7 +293,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
         return super().patch(
             url,
