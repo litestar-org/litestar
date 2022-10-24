@@ -3,7 +3,7 @@
 While the default response handling fits most use cases, in some cases you need to be able to return a response instance
 directly.
 
-Starlite allows you to return any class inheriting from the [Response][starlite.response.Response] class. Thus, the below
+Starlite allows you to return any class inheriting from the [`Response`][starlite.response.Response] class. Thus, the below
 example will work perfectly fine:
 
 ```python
@@ -34,16 +34,16 @@ def retrieve_resource() -> Response[Resource]:
 ```
 
 !!! important
-    In the case of the builtin [TemplateResponse][starlite.response.TemplateResponse],
-    [FileResponse][starlite.response.FileResponse], [StreamingResponse][starlite.response.StreamingResponse] and
-    [RedirectResponse][starlite.response.RedirectResponse] you should use the response "response containers", otherwise
+    In the case of the builtin [`TemplateResponse`][starlite.response.TemplateResponse],
+    [`FileResponse`][starlite.response.FileResponse], [`StreamingResponse`][starlite.response.StreamingResponse] and
+    [`RedirectResponse`][starlite.response.RedirectResponse] you should use the response "response containers", otherwise
     OpenAPI documentation will not be generated correctly. For more details see the respective documentation sections
     for the [Template](9-template-responses.md), [File](7-file-responses.md), [Stream](8-streaming-responses.md)
     and [Redirect](6-redirect-responses.md).
 
 ## Annotating Responses
 
-As you can see above, the [Response][starlite.response.Response] class accepts a generic argument. This allows Starlite
+As you can see above, the [`Response`][starlite.response.Response] class accepts a generic argument. This allows Starlite
 to infer the response body when generating the OpenAPI docs.
 
 !!! note

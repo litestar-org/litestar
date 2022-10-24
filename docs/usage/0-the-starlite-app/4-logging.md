@@ -57,5 +57,6 @@ app = Starlite(route_handlers=[my_router_handler], logging_config=logging_config
 
 ## Subclass Logging Configs
 
-You can easily create you own `LoggingConfig` class by subclassing `starlite.config.logging.BaseLoggingConfig` and
+You can easily create you own `LoggingConfig` class by subclassing
+[`BaseLoggingConfig`][starlite.config.logging.BaseLoggingConfig] and
 implementing the `configure` method.

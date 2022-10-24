@@ -1,8 +1,8 @@
 # URL Encoded Form Data
 
 To access data sent as [url-encoded form data](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST),
-i.e. `application/x-www-form-urlencoded` Content-Type header, use `Body` and specify `RequestEncodingType.URL_ENCODED` as
-the `media_type`:
+i.e. `application/x-www-form-urlencoded` Content-Type header, use [`Body`][starlite.params.Body] and specify
+[`RequestEncodingType.URL_ENCODED`][starlite.enums.RequestEncodingType] as the `media_type`:
 
 ```python
 from starlite import Body, post, RequestEncodingType

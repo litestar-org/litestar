@@ -24,8 +24,9 @@ about your application.
 
 ### Exclude dependencies with default values from OpenAPI docs
 
-Depending on your application design, it is possible to have a dependency declared in a handler or `Provide` function
-that has a default value. If the dependency isn't provided for the route, the default should be used by the function.
+Depending on your application design, it is possible to have a dependency declared in a handler or
+[`Provide`][starlite.datastructures.Provide] function that has a default value. If the dependency isn't provided for
+the route, the default should be used by the function.
 
 ```py title="Dependency with default value"
 --8<-- "examples/dependency_injection/dependency_default_value_no_dependency_fn.py"

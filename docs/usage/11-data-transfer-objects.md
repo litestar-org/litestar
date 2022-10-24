@@ -191,7 +191,7 @@ class MyClassDTO(BaseModel):
 ## Partial DTOs
 
 For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to
-partially modify a resource. In these cases, DTOs can be wrapped with [Partial][starlite.types.Partial].
+partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`][starlite.types.Partial].
 
 ```python
 from pydantic import BaseModel

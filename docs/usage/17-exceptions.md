@@ -1,6 +1,7 @@
 # Exceptions and Exception Handling
 
-Starlite define a base error called `StarliteException` which serves as a basis to all other exceptions.
+Starlite define a base error called [`StarliteException`][starlite.exceptions.StarLiteException] which serves as a basis
+to all other exceptions.
 
 In general, Starlite will raise two types of exceptions - exceptions that arise during application init, which fall
 under the broad scope of configurations errors, and exceptions that are raised as part of the normal application flow,
@@ -8,8 +9,9 @@ i.e. exceptions in route handlers, dependencies and middleware that should be se
 
 ## Configuration Exceptions
 
-For missing extra dependencies, Starlite will raise either `MissingDependencyException`. For example, if you try to use
-the `SQLAlchemyPLugin` without having SQLAlchemy installed, this will be raised when you start the application.
+For missing extra dependencies, Starlite will raise either [`MissingDependencyException`][starlite.exceptions.MissingDependencyException].
+For example, if you try to use the [`SQLAlchemyPLugin`](./10-plugins/1-sql-alchemy-plugin.md) without having SQLAlchemy
+installed, this will be raised when you start the application.
 
 For other configuration issues, Starlite will raise
 [`ImproperlyConfiguredException`][starlite.exceptions.ImproperlyConfiguredException] with a message explaining
@@ -169,7 +171,7 @@ layers for this purpose.
 #### Logging Exception Handler
 
 !!! note
-    The [create_exception_response][starlite.utils.create_exception_response] function is used internally to produce default error responses if no
+    The [`create_exception_response`][starlite.utils.create_exception_response] function is used internally to produce default error responses if no
     handler has been registered to a route. This is available as part of the public API of Starlite so that you can
     apply it wherever necessary to ensure consistent error responses across your application.
 

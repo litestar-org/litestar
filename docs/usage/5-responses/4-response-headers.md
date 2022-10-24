@@ -240,7 +240,7 @@ specifications.
 
 ### Cache Control
 
-[CacheControlHeader][starlite.datastructures.CacheControlHeader] represents a
+[`CacheControlHeader`][starlite.datastructures.CacheControlHeader] represents a
 [`Cache-Control` Header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control).
 
 Here is a simple example that shows how to use it:
@@ -260,7 +260,7 @@ in any cache.
 
 ### ETag
 
-[ETag][starlite.datastructures.ETag] represents an
+[`ETag`][starlite.datastructures.ETag] represents an
 [`ETag` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag).
 
 Here are some usage examples:

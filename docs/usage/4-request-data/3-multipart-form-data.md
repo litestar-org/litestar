@@ -3,11 +3,11 @@
 Multipart formdata supports complex data including file uploads and nested dictionaries.
 
 !!! note
-    Starlite uses a dedicated library for parsing multipart data -[starlite-multipart](https://github.com/starlite-api/starlite-multipart),
+    Starlite uses a dedicated library for parsing multipart data - [starlite-multipart](https://github.com/starlite-api/starlite-multipart),
     which offers strong performance and supports large file uploads.
 
-You can access data uploaded using a request with a `multipart/form-data` Content-Type header by specifying it in
-the `Body` function:
+You can access data uploaded using a request with a [`multipart/form-data`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) Content-Type header by specifying it in
+the [`Body`][starlite.params.Body] function:
 
 ```python
 from starlite import Body, RequestEncodingType, post
@@ -27,8 +27,8 @@ async def create_user(
 
 ## Accessing Files
 
-In case of files uploaded, Starlette transforms the results into an instance
-of [starlette.datastructures.UploadFile](https://www.starlette.io/requests/#request-files), which offer a convenient
+In case of files uploaded, Starlite transforms the results into an instance
+of [`UploadFile`][starlite.datastructures.UploadFile] class, which offer a convenient
 interface for working with files. Therefore, you need to type your file uploads accordingly.
 
 To access a single file simply type `data` as `UploadFile`:

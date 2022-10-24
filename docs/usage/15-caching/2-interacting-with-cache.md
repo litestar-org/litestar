@@ -18,8 +18,8 @@ class MyMiddleware(MiddlewareProtocol):
             ...
 ```
 
-The cache is also exposed as a property on the [ASGIConnection][starlite.connection.ASGIConnection] and the
-[Request][starlite.connection.Request] and [WebSocket][starlite.connection.WebSocket] classes that inherit from it.
+The cache is also exposed as a property on the [`ASGIConnection`][starlite.connection.ASGIConnection] and the
+[`Request`][starlite.connection.Request] and [`WebSocket`][starlite.connection.WebSocket] classes that inherit from it.
 You can thus interact with the cache inside a route handler easily, for example by doing this:
 
 ```python

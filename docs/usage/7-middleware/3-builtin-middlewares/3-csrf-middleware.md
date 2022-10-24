@@ -23,7 +23,7 @@ This middleware prevents CSRF attacks by doing the following:
    an additional header that has this token
 
 To enable CSRF protection in a Starlite application simply pass an instance of
-[`starlite.config.CSRFConfig`][starlite.config.CSRFConfig] to the Starlite constructor:
+[`CSRFConfig`][starlite.config.CSRFConfig] to the [Starlite constructor][starlite.app.Starlite]:
 
 ```python
 from starlite import Starlite, CSRFConfig

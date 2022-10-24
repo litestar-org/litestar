@@ -1,7 +1,7 @@
 # Registering Routes
 
-At the root of every `Starlite` application there is an instance of the class `starlite.app.Starlite`, on which the root
-level controllers, routers and route handler functions are registered using the `route_handlers` kwarg:
+At the root of every Starlite application there is an instance of the [`Starlite`][starlite.app.Starlite] class,
+on which the root level controllers, routers and route handler functions are registered using the `route_handlers` kwarg:
 
 ```python
 from starlite import Starlite, get

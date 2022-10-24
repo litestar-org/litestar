@@ -88,5 +88,6 @@ has been registered on multiple routers) the result of `route_reverse` is not de
 The function will return a formatted path, but it might be picked randomly so reversing urls in such cases is highly
 discouraged.
 
-If you have access to `request` instance you can make reverse lookups using `url_for` function which is similar to
-`route_reverse` but returns absolute URL.
+If you have access to [`request`][starlite.connection.request.Request] instance you can make reverse lookups using
+[`url_for`][starlite.connection.base.ASGIConnection.url_for] function which is similar to `route_reverse` but returns
+absolute URL.

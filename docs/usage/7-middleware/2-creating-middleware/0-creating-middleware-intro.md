@@ -1,7 +1,8 @@
 # Creating Middleware
 
 As mentioned in the [using middleware](../1-using-middleware/0-using-middleware-intro.md) section, a middleware in Starlite
-is **any callable** that takes a kwarg called `app`, which is the next ASGI handler, i.e. an `ASGIApp`, and returns an `ASGIApp`.
+is **any callable** that takes a kwarg called `app`, which is the next ASGI handler, i.e. an
+[`ASGIApp`][starlite.types.ASGIApp], and returns an `ASGIApp`.
 
 The example previously given was using a factory function, i.e.:
 

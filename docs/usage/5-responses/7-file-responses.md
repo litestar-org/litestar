@@ -15,7 +15,7 @@ def handle_file_download() -> File:
     )
 ```
 
-The File class expects two kwargs:
+The [`File`][starlite.datastructures.File] class expects two kwargs:
 
 - `path`: path of the file to download.
 - `filename`: the filename to set in the

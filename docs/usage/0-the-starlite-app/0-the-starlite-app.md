@@ -1,6 +1,6 @@
 # The Starlite App
 
-At the root of every Starlite application is an **instance** of the [Starlite][starlite.app.Starlite] class or a
+At the root of every Starlite application is an **instance** of the [`Starlite`][starlite.app.Starlite] class or a
 subclass of it.
 
 Typically, this code will be placed in a file called `main.py` at the **project's root directory**.
@@ -16,7 +16,7 @@ or [Route Handlers](../2-route-handlers/1-http-route-handlers.md):
 --8<-- "examples/hello_world.py"
 ```
 
-The **app instance is the root level** of the app - it has the base path of "/" and all root level Controllers, Routers
+The **app instance is the root level** of the app - it has the base path of `/` and all root level Controllers, Routers
 and Route Handlers should be registered on it. See [registering routes](../1-routing/1-registering-routes.md) for
 full details.
 

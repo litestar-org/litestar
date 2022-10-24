@@ -8,8 +8,6 @@ observability (monitoring, tracing, logging etc.).
     All application hook kwargs detailed below receive either a single callable or a list of callables.
     If a list is provided, it is called in the order it is given.
 
-Hooks:
-
 ## Before / After Startup
 
 The `before_startup` and `after_startup` hooks take a [sync or async callable][starlite.types.LifeSpanHookHandler] that

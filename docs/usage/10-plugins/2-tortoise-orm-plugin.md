@@ -1,6 +1,7 @@
 # Tortoise ORM Plugin
 
-To use the `starlite.plugins.tortoise_orm.TortoiseORMPlugin` import it and pass it to the `Starlite` constructor:
+To use the [`TortoiseORMPlugin`][starlite.plugins.tortoise_orm.TortoiseORMPlugin]
+import it and pass it to the [Starlite constructor][starlite.app.Starlite]:
 
 ```python
 from typing import cast

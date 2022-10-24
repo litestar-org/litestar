@@ -2,7 +2,7 @@
 
 You do not have to specify the `media_type` kwarg in the route handler function if the response should be JSON. But
 if you wish to return a response other than JSON, you should specify this value. You can use
-the `starlite.enums.MediaType` enum for this purpose:
+the [`MediaType`][starlite.enums.MediaType] enum for this purpose:
 
 ```python
 from starlite import MediaType, get

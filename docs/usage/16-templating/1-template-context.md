@@ -1,14 +1,14 @@
 # Template Context
 
-Both `Jinja` and `Mako` support passing a context object to the template as well as defining callables that will be
-available inside the template.
+Both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) and [Mako](https://www.makotemplates.org/) support passing a context
+object to the template as well as defining callables that will be available inside the template.
 
 ## Access the request instance through context
 
-Starlite injects the current request instance into the template context under `request` key, which enables accessing the
-request and through it the app etc.
+Starlite injects the current [request instance][starlite.connection.request.Request] into the template context under `request` key,
+which enables accessing the request and through it the app etc.
 
-For example, lets assume there is some value stored on the `app.state.some_key`, we could thus inject it into a `Jinja`
+For example, lets assume there is some value stored on the `app.state.some_key`, we could thus inject it into a Jinja
 template by doing something like this:
 
 ```html
@@ -79,8 +79,8 @@ and the CSRF middleware will check that the token is valid.
 
 ## Passing Template Context
 
-Passing context to the template is very simple - its one of the kwargs expected by the `Template` container, so simply pass
-a string keyed dictionary of values:
+Passing context to the template is very simple - its one of the kwargs expected by the [`Template`][starlite.response.TemplateResponse]
+container, so simply pass a string keyed dictionary of values:
 
 ```python
 from starlite import Template, get

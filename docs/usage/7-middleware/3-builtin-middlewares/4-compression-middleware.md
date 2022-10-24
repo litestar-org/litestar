@@ -2,7 +2,7 @@
 
 HTML responses can optionally be compressed. Starlite has built in support for gzip and brotli. Gzip support is provided through the built-in Starlette classes, and brotli support can be added by installing the `brotli` extras.
 
-You can enable either backend by passing an instance of `starlite.config.CompressionConfig` into the `compression_config` application parameter.
+You can enable either backend by passing an instance of [`CompressionConfig`][starlite.config.CompressionConfig] into the `compression_config` the [Starlite constructor][starlite.app.Starlite].
 
 ## GZIP
 

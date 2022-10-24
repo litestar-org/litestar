@@ -1,6 +1,6 @@
 # Custom Responses
 
-You can use a subclass of [Response][starlite.response.Response] and specify it as the response class using
+You can use a subclass of [`Response`][starlite.response.Response] and specify it as the response class using
 the `response_class` kwarg. For example, lets say we want to handle subclasses of `Document` from
 the `elasticsearch_dsl` package as shown below:
 
@@ -21,7 +21,7 @@ We could of course convert it to a dictionary of values in the route handler, an
 return `Document` subclasses in many route handlers, it makes sense to create a custom response to handle the
 serialization.
 
-We will therefore create a subclass of [Response][starlite.response.Response] that implements a serializer method that
+We will therefore create a subclass of [`Response`][starlite.response.Response] that implements a serializer method that
 is capable of handling `Document` subclasses:
 
 ```python

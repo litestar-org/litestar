@@ -46,15 +46,16 @@ def info(request: Request) -> Template:
     return Template(name="info.html", context={"user": request.user})
 ```
 
-The `name` kwarg passed to the `Template` class is the filename for the given template. Starlite will search all the
-directories specifies for this file until it finds it or an exception will be raised. The `context` kwarg is a
-dictionary specifying context data that is passed to the engine.
+The `name` kwarg passed to the [`Template`][starlite.datastructures.Template] class is the filename for the given
+template. Starlite will search all the directories specifies for this file until it finds it or a
+[`TemplateNotFoundException`][starlite.exceptions.TemplateNotFoundException] exception will
+be raised. The `context` kwarg is a dictionary specifying context data that is passed to the engine.
 
 ## Defining a Custom Template Engine
 
-If you wish to use another templating engine, you can easily do so by
-implementing `starlite.template.TemplateEngineProtocol`. This class accepts a generic argument `T` which should be the
-template class, and it specifies two methods:
+If you wish to use another templating engine, you can easily do so by implementing
+[`TemplateEngineProtocol`][starlite.template.TemplateEngineProtocol]. This class accepts a generic
+argument `T` which should be the template class, and it specifies two methods:
 
 ```python
 from typing import Protocol, Union, List
@@ -78,8 +79,8 @@ Once you have your custom engine you can register it as you would the built-in e
 
 ## Modifying the Template Engine Instance
 
-`TemplateConfig` accepts the `engine_callback` keyword arg which provides a way to modify the instantiated
-template engine instance. For example:
+[`TemplateConfig`][starlite.config.template.TemplateConfig] accepts the `engine_callback` keyword arg which provides a way to
+modify the instantiated template engine instance. For example:
 
 ```python
 from starlite import TemplateConfig
