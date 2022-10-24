@@ -1,5 +1,14 @@
 # Changelog
 
+[1.32.0]
+
+- add `BackgroundTask` and `BackgroundTasks` to replace Starlette.
+- add `Etag` support to `File` and update response containers.
+- add `RedirectResponse`, `FileResponse` and `StreamingResponse` to replace Starlette.
+- add `status_codes` constants.
+- fix cache classes being coupled to `asyncio`.
+- update `Response` to replace Starlette.
+
 [1.31.0]
 
 - add support for ETag headers.

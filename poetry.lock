@@ -553,7 +553,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "piccolo"
-version = "0.93.0"
+version = "0.94.0"
 description = "A fast, user friendly ORM and query builder which supports asyncio."
 category = "dev"
 optional = false
@@ -1096,7 +1096,7 @@ python-versions = "*"
 
 [[package]]
 name = "zipp"
-version = "3.9.0"
+version = "3.10.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 category = "main"
 optional = false
@@ -1700,8 +1700,8 @@ pathspec = [
     {file = "pathspec-0.10.1.tar.gz", hash = "sha256:7ace6161b621d31e7902eb6b5ae148d12cfd23f4a249b9ffb6b9fee12084323d"},
 ]
 piccolo = [
-    {file = "piccolo-0.93.0-py3-none-any.whl", hash = "sha256:7ddbcfa67886bb09432af7665a19431ee8b7ebd39925d6276f8ba4fe72ec30fa"},
-    {file = "piccolo-0.93.0.tar.gz", hash = "sha256:524c72da927c8bd6f5617fd27d691328309b4f5aa417d3fd0cc40571b0cbd508"},
+    {file = "piccolo-0.94.0-py3-none-any.whl", hash = "sha256:ecf6c2eb4cc6f186be7ecfc91e3e496a788570c4d7a80cfafe97472d3d5c4387"},
+    {file = "piccolo-0.94.0.tar.gz", hash = "sha256:475204b4e2bb98f1b2f97e357d33083b365b9d42e0c96dd8d8085e4894bbfcd8"},
 ]
 picologging = [
     {file = "picologging-0.8.1-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:262afe4b6189a2c84db8a0b43255ea44288b3a86caa1f2c997fd79b899882c9d"},
@@ -2087,6 +2087,6 @@ xeger = [
     {file = "xeger-0.3.5.tar.gz", hash = "sha256:2a91341fc2c814b27917b8bd24e8d212c8a3b904d98e9a6703d27484c2cb0f82"},
 ]
 zipp = [
-    {file = "zipp-3.9.0-py3-none-any.whl", hash = "sha256:972cfa31bc2fedd3fa838a51e9bc7e64b7fb725a8c00e7431554311f180e9980"},
-    {file = "zipp-3.9.0.tar.gz", hash = "sha256:3a7af91c3db40ec72dd9d154ae18e008c69efe8ca88dde4f9a731bb82fe2f9eb"},
+    {file = "zipp-3.10.0-py3-none-any.whl", hash = "sha256:4fcb6f278987a6605757302a6e40e896257570d11c51628968ccb2a47e80c6c1"},
+    {file = "zipp-3.10.0.tar.gz", hash = "sha256:7a7262fd930bd3e36c50b9a64897aec3fafff3dfdeec9623ae22b40e93f99bb8"},
 ]
