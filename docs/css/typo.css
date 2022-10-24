@@ -1,6 +1,6 @@
 :root,
 body {
-  --md-text-font-family: Tahoma, Geneva, Verdana, sans-serif;
+  --md-text-font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 }
 
 article p {
