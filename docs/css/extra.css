@@ -77,26 +77,26 @@ body {
 [data-md-color-scheme="mirage"] {
   /* Default color shades */
   --md-default-fg-color: #d6dbe1;
-  --md-default-fg-color--light: hsl(213, 15%, 76%);
-  --md-default-fg-color--lighter: hsl(213, 15%, 66%);
-  --md-default-fg-color--lightest: hsl(213, 15%, 56%);
+  --md-default-fg-color--light: #b9c1cb;
+  --md-default-fg-color--lighter: #9ba7b5;
+  --md-default-fg-color--lightest: #7e8da0;
   --md-default-bg-color: #1d2433;
-  --md-default-bg-color--light: hsl(221, 28%, 26%);
-  --md-default-bg-color--lighter: hsl(221, 28%, 36%);
-  --md-default-bg-color--lightest: hsl(221, 28%, 46%);
+  --md-default-bg-color--light: #303b55;
+  --md-default-bg-color--lighter: #425276;
+  --md-default-bg-color--lightest: #546996;
 
   /* Primary color shades */
   --md-primary-fg-color: #ffae57;
   --md-primary-fg-color--light: #ffd580;
-  --md-primary-fg-color--dark: hsl(31, 90%, 60%);
+  --md-primary-fg-color--dark: #f59c3d;
   --md-primary-bg-color: #2f3b54;
-  --md-primary-bg-color--light: hsl(221, 28%, 33%);
+  --md-primary-bg-color--light: #3d4c6c;
 
   /* Accent color shades */
   --md-accent-fg-color: #ffd580;
   --md-accent-fg-color--transparent: #ffd58033;
   --md-accent-bg-color: #171c28;
-  --md-accent-bg-color--light: hsl(222, 27%, 20%);
+  --md-accent-bg-color--light: #252d41;
 
   /* Misc */
   --md-footer-fg-color: var(--md-accent-fg-color);
@@ -108,7 +108,7 @@ body {
   --md-code-bg-color: var(--md-accent-bg-color--light);
 
   /* Code highlighting color shades */
-  --md-code-hl-color: rgba(255,255,0,.3);
+  --md-code-hl-color: #ffff004d;
   --md-code-hl-number-color: #ffd580;
   --md-code-hl-special-color: #ef6b73;
   --md-code-hl-function-color: #5ccfe6;
@@ -178,9 +178,9 @@ body {
 [data-md-color-scheme="mirage-light"] {
   /* Default color shades */
   --md-default-fg-color: #1d2433;
-  --md-default-fg-color--light: hsl(221, 28%, 26%);
-  --md-default-fg-color--lighter: hsl(221, 28%, 36%);
-  --md-default-fg-color--lightest: hsl(221, 28%, 46%);
+  --md-default-fg-color--light: #303b55;
+  --md-default-fg-color--lighter: #425276;
+  --md-default-fg-color--lightest: #546996;
   --md-default-bg-color: #fff;
   --md-default-bg-color--light: var(--md-default-bg-color);
   --md-default-bg-color--lighter: var(--md-default-bg-color);
@@ -188,14 +188,14 @@ body {
 
   /* Primary color shades */
   --md-primary-fg-color: #ffae57;
-  --md-primary-fg-color--light: hsla(31, 100%, 75%, 1);
-  --md-primary-fg-color--dark: hsla(31, 80%, 40%, 1);
+  --md-primary-fg-color--light: #ffc180;
+  --md-primary-fg-color--dark: #b86914;
   --md-primary-bg-color: #2f3b54;
-  --md-primary-bg-color--light: hsl(221, 28%, 33%);
+  --md-primary-bg-color--light: #3d4c6c;
 
   /* Accent color shades */
   --md-accent-bg-color: #171c28;
-  --md-accent-bg-color--light: hsl(222, 27%, 20%);
+  --md-accent-bg-color--light: #252d41;
   --md-accent-fg-color: var(--md-primary-fg-color--light);
   --md-accent-fg-color--transparent: #ffd58033;
 
@@ -207,10 +207,10 @@ body {
 
   /* Code color shades */
   --md-code-fg-color: var(--md-primary-bg-color);
-  --md-code-bg-color: hsla(0, 0%, 96%, 1);
+  --md-code-bg-color: #f5f5f5;
 
   /* Code highlighting color shades */
-  --md-code-hl-color: rgba(255,255,0,.3);
+  --md-code-hl-color: #ffff004d;
   --md-code-hl-number-color: var(--md-primary-fg-color--dark);
   --md-code-hl-special-color: #ea101f;
   --md-code-hl-function-color: #02768d;
@@ -234,13 +234,13 @@ body {
   --md-typeset-mark-color: hsla(#{hex2hsl($clr-yellow-a200)}, 0.5);
 
   /* Typeset `del` and `ins` color shades */
-  --md-typeset-del-color: hsla(6, 90%, 60%, 0.15);
-  --md-typeset-ins-color: hsla(150, 90%, 44%, 0.15);
+  --md-typeset-del-color: #f5503d26;
+  --md-typeset-ins-color: #0bd57026;
 
   /* Typeset `kbd` color shades */
-  --md-typeset-kbd-color: hsla(0, 0%, 98%, 1);
-  --md-typeset-kbd-accent-color: hsla(0, 100%, 100%, 1);
-  --md-typeset-kbd-border-color: hsla(0, 0%, 72%, 1);
+  --md-typeset-kbd-color: #fafafa;
+  --md-typeset-kbd-accent-color: #ffffff;
+  --md-typeset-kbd-border-color: #b8b8b8;
 
   /* Typeset `table` color shades */
   --md-typeset-table-color: hsla(0, 0%, 0%, 0.12);
