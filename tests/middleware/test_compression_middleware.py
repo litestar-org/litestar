@@ -256,4 +256,4 @@ async def test_skips_for_websocket() -> None:
         route_handlers=[websocket_handler],
         compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
     ).websocket_connect("/") as ws:
-        assert "Content-Encoding" not in ws.scope["headers"]
+        assert b"content-encoding" not in dict(ws.scope["headers"])
