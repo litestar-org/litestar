@@ -23,6 +23,7 @@ from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
 from typing_extensions import Literal
 
+from starlite.datastructures import ETag
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import MediaType
@@ -93,13 +94,17 @@ class File(ResponseContainer[FileResponse]):
     path: FilePath
     """Path to the file to send"""
     filename: Optional[str] = None
-    """The filename"""
+    """An optional filename to set in the header."""
     stat_result: Optional[os.stat_result] = None
-    """File statistics"""
+    """An optional result of calling 'os.stat'. If not provided, this will be done by the response constructor."""
     chunk_size: int = ONE_MEGA_BYTE
     """The size of chunks to use when streaming the file"""
     content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
     """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
+    etag: Optional[ETag] = None
+    """
+    An optional [ETag][starlite.datastructures.ETag] instance. If not provided, an etag will be automatically generated.
+    """
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -147,6 +152,7 @@ class File(ResponseContainer[FileResponse]):
             path=self.path,
             stat_result=self.stat_result,
             status_code=status_code,
+            etag=self.etag,
         )
 
 

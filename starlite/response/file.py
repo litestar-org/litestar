@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Literal
 
-    from starlite.datastructures import BackgroundTask, BackgroundTasks
+    from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import ResponseCookies
 
 ONE_MEGA_BYTE: int = 1024 * 1024
@@ -59,6 +59,7 @@ class FileResponse(StreamingResponse):
         stat_result: Optional["stat_result_type"] = None,
         chunk_size: int = ONE_MEGA_BYTE,
         content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
+        etag: Optional["ETag"] = None,
     ) -> None:
         """This class allows streaming a file as response body.
 
@@ -83,6 +84,8 @@ class FileResponse(StreamingResponse):
                 constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
+            etag: An optional [ETag][starlite.datastructures.ETag] instance.
+                If not provided, an etag will be automatically generated.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
@@ -106,7 +109,7 @@ class FileResponse(StreamingResponse):
                 filename=filename or basename(path), content_disposition_type=content_disposition_type
             ),
         )
-        self.set_etag(self._create_etag(path=path))
+        self.set_etag(etag or self._create_etag(path=path))
 
     def _create_etag(self, path: Union[str, "PathLike"]) -> str:
         """Creates an etag.

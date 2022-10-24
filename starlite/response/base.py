@@ -15,7 +15,7 @@ from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dum
 from pydantic_openapi_schema.v3_1_0 import OpenAPI
 from yaml import dump as dump_yaml
 
-from starlite.datastructures import Cookie
+from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import (
@@ -148,7 +148,7 @@ class Response(Generic[T]):
         """
         self.headers[key] = value
 
-    def set_etag(self, etag: str) -> None:
+    def set_etag(self, etag: Union[str, "ETag"]) -> None:
         """Sets an etag header.
 
         Args:
@@ -157,7 +157,7 @@ class Response(Generic[T]):
         Returns:
             None
         """
-        self.headers["etag"] = etag
+        self.headers["etag"] = etag.to_header() if isinstance(etag, ETag) else etag
 
     def delete_cookie(
         self,
