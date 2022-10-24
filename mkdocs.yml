@@ -37,7 +37,8 @@ theme:
           text: "#d6dbe1"
         cards_font: Tahoma
 extra_css:
-  - css/extra.css
+  - css/typo.css
+  - css/color.css
 nav:
   - index.md
   - Overview:
