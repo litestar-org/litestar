@@ -45,7 +45,7 @@ async def test_streaming_response_stops_if_receiving_http_disconnect_with_async_
             streamed += len(message.get("body", b""))
             # Simulate disconnection after download has started
             if streamed >= 16:
-                await disconnected.set()
+                disconnected.set()
 
     async def stream_indefinitely() -> AsyncIterator[bytes]:
         while True:
@@ -75,7 +75,7 @@ async def test_streaming_response_stops_if_receiving_http_disconnect_with_sync_i
             streamed += len(message.get("body", b""))
             # Simulate disconnection after download has started
             if streamed >= 16:
-                await disconnected.set()
+                disconnected.set()
 
     response = StreamingResponse(content=cycle(["1", "2", "3"]))
 
