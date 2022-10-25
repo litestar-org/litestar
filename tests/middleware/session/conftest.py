@@ -1,17 +1,20 @@
 import os
 import secrets
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generator, cast
 
 import fakeredis.aioredis  # type: ignore
 import py
 import pytest
 from pydantic import SecretBytes
-
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.base import BaseBackendConfig, SessionBackend, ServerSideBackend
+from starlite.middleware.session.base import (
+    BaseBackendConfig,
+    ServerSideBackend,
+    SessionBackend,
+)
 from starlite.middleware.session.cookie_backend import (
     CookieBackend,
     CookieBackendConfig,
@@ -25,15 +28,18 @@ from starlite.middleware.session.memory_backend import (
     MemoryBackend,
     MemoryBackendConfig,
 )
+from starlite.middleware.session.redis_backend import RedisBackend, RedisBackendConfig
 from starlite.middleware.session.sqlalchemy_backend import (
-    SQLAlchemyBackend,
     AsyncSQLAlchemyBackend,
+    SQLAlchemyBackend,
     SQLAlchemyBackendConfig,
     create_session_model,
 )
-from starlite.middleware.session.redis_backend import RedisBackend, RedisBackendConfig
-from starlite.plugins.sql_alchemy import SQLAlchemyEngineConfig, SQLAlchemyPlugin, SQLAlchemyConfig
-
+from starlite.plugins.sql_alchemy import (
+    SQLAlchemyConfig,
+    SQLAlchemyEngineConfig,
+    SQLAlchemyPlugin,
+)
 from tests.fake_memcached import FakeAsyncMemcached
 
 if TYPE_CHECKING:
@@ -77,25 +83,25 @@ engine_config = SQLAlchemyEngineConfig(connect_args={"check_same_thread": False}
 
 
 @pytest.fixture
-def sqlalchemy_backend_config() -> SQLAlchemyBackendConfig:
+def sqlalchemy_backend_config() -> Generator[SQLAlchemyBackendConfig, None, None]:
     config = SQLAlchemyConfig(
         connection_string="sqlite+pysqlite://",
         use_async_engine=False,
         engine_config=engine_config,
     )
-    Base.metadata.create_all(config.engine)
+    Base.metadata.create_all(config.engine)  # type: ignore
     yield SQLAlchemyBackendConfig(plugin=SQLAlchemyPlugin(config=config), model=SQLASessionModel)
-    Base.metadata.drop_all(config.engine)
+    Base.metadata.drop_all(config.engine)  # type: ignore
 
 
 @pytest.fixture
-async def async_sqlalchemy_backend_config() -> SQLAlchemyBackendConfig:
+async def async_sqlalchemy_backend_config() -> AsyncGenerator[SQLAlchemyBackendConfig, None]:
     config = SQLAlchemyConfig(connection_string="sqlite+aiosqlite://", engine_config=engine_config)
-    async with config.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async with config.engine.begin() as conn:  # type: ignore
+        await conn.run_sync(Base.metadata.create_all)  # pyright: ignore
     yield SQLAlchemyBackendConfig(plugin=SQLAlchemyPlugin(config=config), model=SQLASessionModel)
-    async with config.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    async with config.engine.begin() as conn:  # type: ignore
+        await conn.run_sync(Base.metadata.drop_all)  # pyright: ignore
 
 
 @pytest.fixture

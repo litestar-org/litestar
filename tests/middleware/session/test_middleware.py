@@ -1,10 +1,21 @@
-from typing import Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 
-from starlite import HttpMethod, Request, Response, WebSocket, get, post, route, websocket
-from starlite.middleware.session.base import BaseBackendConfig
+from starlite import (
+    HttpMethod,
+    Request,
+    Response,
+    WebSocket,
+    get,
+    post,
+    route,
+    websocket,
+)
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlite.middleware.session.base import BaseBackendConfig
 
 
 def test_session_middleware_not_installed_raises() -> None:

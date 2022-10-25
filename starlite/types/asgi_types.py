@@ -55,6 +55,7 @@ if TYPE_CHECKING:
     from .internal_types import RouteHandlerType
 
 Method = Literal["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD", "TRACE", "OPTIONS"]
+ScopeSession = Optional[Union["EmptyType", Dict[str, Any], "BaseModel"]]
 
 
 class ASGIVersion(TypedDict):
@@ -78,7 +79,7 @@ class BaseScope(TypedDict):
     route_handler: "RouteHandlerType"
     scheme: str
     server: Optional[Tuple[str, Optional[int]]]
-    session: Optional[Union["EmptyType", Dict[str, Any], "BaseModel"]]
+    session: ScopeSession
     state: Dict[str, Any]
     user: Any
 

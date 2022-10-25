@@ -24,7 +24,7 @@ from starlite.middleware.base import MiddlewareProtocol
 from starlite.utils import default_serializer, get_serializer_from_scope
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send
 
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
@@ -64,6 +64,8 @@ class BaseBackendConfig(BaseModel):
 
     @property
     def backend(self) -> "SessionBackend":
+        """Return an instance of the associated session backend, passing `self`
+        as the configuration."""
         return self._backend_class(config=self)
 
     @property
@@ -98,6 +100,9 @@ class BaseBackendConfig(BaseModel):
 
 class ServerSideSessionConfig(BaseBackendConfig):
     session_id_bytes: int = 32
+    """
+    Number of bytes used to generate a random session-ID
+    """
 
 
 ConfigT = TypeVar("ConfigT", bound=BaseBackendConfig)
@@ -106,10 +111,12 @@ ServerConfigT = TypeVar("ServerConfigT", bound=ServerSideSessionConfig)
 
 class SessionBackend(abc.ABC, Generic[ConfigT]):
     def __init__(self, config: ConfigT) -> None:
+        """Generic session backend, for either client- or server-side
+        storage."""
         self.config = config
 
     @staticmethod
-    def serialise_data(data: Any, scope: Optional["Scope"] = None) -> bytes:
+    def serialise_data(data: "ScopeSession", scope: Optional["Scope"] = None) -> bytes:
         """Serialise data into bytes for storage in the backend.
 
         The serialiser will be
@@ -120,29 +127,45 @@ class SessionBackend(abc.ABC, Generic[ConfigT]):
 
     @staticmethod
     def deserialise_data(data: Any) -> Dict[str, Any]:
+        """Deserialise data into a dictionary for use in the application
+        scope."""
         return cast("Dict[str, Any]", loads(data))
 
     @abc.abstractmethod
-    async def store_in_message(self, message: "Message", connection: ASGIConnection) -> None:
-        pass
+    async def store_in_message(
+        self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
+    ) -> None:
+        """Stores the necessary information in the outgoing `Message`
+
+        Args:
+            scope_session: Current session to store
+            message: Outgoing send-message
+            connection: Originating ASGIConnection containing the scope
+        """
 
     @abc.abstractmethod
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
-        pass
+        """Load session data from a connection and return it as a dictionary to
+        be used in the current application scope.
+
+        Args:
+            connection: Originating ASGIConnection
+
+        Notes:
+            - This should not modify the connection's scope. The data returned by this
+            method will be stored in the application scope by the middleware
+        """
 
 
-class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT]):
+class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], abc.ABC):
     def __init__(self, config: ServerConfigT) -> None:
-        """Starlite session middleware for storing session data server-side."""
-
         super().__init__(config=config)
 
     @abc.abstractmethod
     async def get(self, session_id: str) -> Union[bytes, str, Dict[str, Any], None]:
         """Retrieve data associate with `session_id`.
 
-        If no data for the given `session_id` exists, return an empty
-        dict
+        If no data for the given `session_id` exists, return `None`
         """
 
     @abc.abstractmethod
@@ -167,11 +190,25 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT]):
         random bytes."""
         return secrets.token_hex(self.config.session_id_bytes)
 
-    async def store_in_message(self, message: "Message", connection: ASGIConnection) -> None:
+    async def store_in_message(
+        self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
+    ) -> None:
+        """Stores the necessary information in the outgoing `Message` by
+        setting a cookie containing the session-ID. If the session is empty, a
+        null-cookie will be set. Otherwise, the serialised data will be stored
+        using [set][ServerSideBackend], under the current session-id. If no
+        session-ID exists, a new ID will be generated using.
+
+        [generate_session_id].
+
+        Args:
+            scope_session: Current session to store
+            message: Outgoing send-message
+            connection: Originating ASGIConnection containing the scope
+        """
+
         scope = connection.scope
         headers = MutableHeaders(scope=message)
-        scope_session = scope.get("session")
-
         session_id = connection.cookies.get(self.config.key, self.generate_session_id())
 
         serialised_data = self.serialise_data(scope_session, scope)
@@ -191,6 +228,18 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT]):
             )
 
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
+        """Load session data from a connection and return it as a dictionary to
+        be used in the current application scope.
+
+        The session-ID will be gathered from a cookie with the key set in the
+        [configuration[BaseBackendConfig.key]. If a cookie is found, its value will
+        be used as the session-ID and data associated with this ID will be loaded
+        using [get][ServerSideBackend.get]. If no cookie was found or no data was loaded
+        from the store, this will return an empty dictionary.
+
+        Args:
+            connection: Originating ASGIConnection
+        """
         session_id = connection.cookies.get(self.config.key)
         if session_id:
             data = await self.get(session_id)
@@ -208,6 +257,13 @@ class SessionMiddleware(MiddlewareProtocol, Generic[B]):
     __slots__ = ("backend",)
 
     def __init__(self, app: "ASGIApp", backend: B) -> None:
+        """Starlite session middleware for storing session data.
+
+        Args:
+            app: An ASGI application
+            backend: A SessionBackend instance used to store and retrieve session data
+        """
+
         self.app = app
         self.backend = backend
 
@@ -235,7 +291,9 @@ class SessionMiddleware(MiddlewareProtocol, Generic[B]):
                 await connection.send(message)
                 return
 
-            await self.backend.store_in_message(message, connection)
+            scope_session = connection.scope.get("session")
+
+            await self.backend.store_in_message(scope_session, message, connection)
             await connection.send(message)
 
         return wrapped_send

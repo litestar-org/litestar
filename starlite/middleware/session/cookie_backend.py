@@ -23,8 +23,7 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
-    from starlite.types import Message, Scope
-
+    from starlite.types import Message, Scope, ScopeSession
 
 NONCE_SIZE = 12
 CHUNK_SIZE = 4096 - 64
@@ -85,12 +84,27 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
         return {}
 
     def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
+        """Return a list of cookie-keys from the connection if they match the
+        session-cookie pattern."""
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
-    async def store_in_message(self, message: "Message", connection: "ASGIConnection") -> None:
+    async def store_in_message(
+        self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
+    ) -> None:
+        """Store data from `scope_session` in `Message` in the form of cookies.
+        If the contents of `scope_session` are too large to fit a single
+        cookie, it will be split across several cookies, following the naming
+        scheme of `<cookie key>-<n>`. If the session is empty or shrinks,
+        cookies will be cleared by setting their value to `null`
+
+        Args:
+            scope_session: Current session to store
+            message: Outgoing send-message
+            connection: Originating ASGIConnection containing the scope
+        """
+
         scope = connection.scope
         headers = MutableHeaders(scope=message)
-        scope_session = scope.get("session")
         cookie_keys = self.get_cookie_keys(connection)
 
         if scope_session:
@@ -119,6 +133,12 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
             )
 
     async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
+        """Load session data from a connection's session-cookies and return it
+        as a dictionary.
+
+        Args:
+            connection: Originating ASGIConnection
+        """
         cookie_keys = self.get_cookie_keys(connection)
         if cookie_keys:
             data = [connection.cookies[key].encode("utf-8") for key in cookie_keys]

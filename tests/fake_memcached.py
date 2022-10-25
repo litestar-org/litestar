@@ -1,5 +1,5 @@
-from typing import Dict, Optional, Union
 import time
+from typing import Dict, Optional, Union
 
 from aiomcache.client import Client
 
@@ -14,10 +14,9 @@ class FakeAsyncMemcached(Client):
         normalised_key = key.decode() if isinstance(key, bytes) else key
         if normalised_key in self._cache:
             expiry = self.ttl(key)
-            added = self._added_times.get(normalised_key)
-            now = time.monotonic()
-            if not expiry or (added + expiry > now):
+            if not expiry or (self._added_times[normalised_key] + expiry > time.monotonic()):
                 return self._cache[normalised_key]
+        return None
 
     async def set(self, key: Union[bytes, str], value: bytes, exptime: Optional[int] = 0) -> None:  # type: ignore[override]
         normalised_key = key.decode() if isinstance(key, bytes) else key

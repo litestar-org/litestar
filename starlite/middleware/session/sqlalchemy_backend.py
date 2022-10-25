@@ -1,13 +1,13 @@
 import abc
 import datetime
-from typing import Generic, Optional, TYPE_CHECKING, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, Optional, Type, TypeVar, Union, cast
 
 import anyio.to_thread
 import sqlalchemy as sa
 from pydantic import validator
 from sqlalchemy.ext.asyncio import AsyncSession as AsyncSASession
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import DeclarativeMeta, Mapped
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Session as SASession
 from sqlalchemy.orm import declarative_mixin, registry
 
@@ -18,49 +18,91 @@ if TYPE_CHECKING:
     from sqlalchemy.sql import Select
     from sqlalchemy.sql.elements import BooleanClauseList
 
+    from starlite.plugins.sql_alchemy import SQLAlchemyConfig as SQLAlchemyPluginConfig
+
 
 AnySASession = Union[SASession, AsyncSASession]
-AnySAessionT = TypeVar("AnySAessionT", bound=AnySASession)
+AnySASessionT = TypeVar("AnySASessionT", bound=AnySASession)
 
 
 @declarative_mixin
 class SessionModelMixin:
+    """Mixin for session storage."""
+
     session_id: Mapped[str] = sa.Column(sa.String, nullable=False, unique=True, index=True)  # pyright: ignore
     data: Mapped[bytes] = sa.Column(sa.BLOB, nullable=False)  # pyright: ignore
     expires: Mapped[datetime.datetime] = sa.Column(sa.DateTime, nullable=False)  # pyright: ignore
 
     @hybrid_property
     def expired(self) -> bool:  # pyright: ignore
+        """Boolean indicating if the session has expired."""
         return datetime.datetime.utcnow().replace(tzinfo=None) > self.expires
 
     @expired.expression  # type: ignore[no-redef]
     def expired(cls) -> "BooleanClauseList":  # pylint: disable=no-self-argument
+        """SQL-Expression to check if the session has expired."""
         return datetime.datetime.utcnow().replace(tzinfo=None) > cls.expires  # pyright: ignore
 
 
-def create_session_model(base: type[DeclarativeMeta], table_name: str = "session") -> type[SessionModelMixin]:
-    class SessionModel(base, SessionModelMixin):  # type: ignore[valid-type, misc]
+class SessionModel(SessionModelMixin):
+    """Session storage model."""
+
+    __tablename__ = "session"
+    id: Mapped[int] = sa.Column(sa.Integer, primary_key=True)  # pyright: ignore
+
+
+def create_session_model(base: Type[Any], table_name: str = "session") -> Type[SessionModelMixin]:
+    """Dynamically generate a session storage model and register it with the
+    declarative base.
+
+    Args:
+        base: SQLAlchemy declarative base
+        table_name: Alternative table name
+
+    Returns:
+        A mapped model subclassing `base` and `SessionModelMixin`
+    """
+
+    class Model(base, SessionModelMixin):  # type: ignore[valid-type,misc]
         __tablename__ = table_name
         id: Mapped[int] = sa.Column(sa.Integer, primary_key=True)  # pyright: ignore
 
-    return SessionModel
+    return Model
 
 
 SessionModelT = TypeVar("SessionModelT", bound=SessionModelMixin)
 
 
-def register_session_model(model: type[SessionModelT], registry_: registry) -> type[SessionModelT]:
-    return registry_.mapped(model)
+def register_session_model(base: Union[registry, Any], model: Type[SessionModelT]) -> Type[SessionModelT]:
+    """Map and register a pre-existing model subclassing `SessionModelMixin`
+    with a declarative base or registry.
+
+    Args:
+        base: Either a `orm.registry` or `DeclarativeBase`
+        model: SQLAlchemy model to register
+
+    Returns:
+        A mapped model subclassing `SessionModelMixin`, and registered in `registry`
+    """
+    registry_ = base.registry if not isinstance(base, registry) else base
+    return cast("Type[SessionModelT]", registry_.map_declaratively(model))
 
 
-class BaseSQLAlchemySessionBackend(Generic[AnySAessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
+class BaseSQLAlchemySessionBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
+        """Session backend to store data in a database with SQLAlchemy. Works
+        with both sync and async engines.
+
+        Notes:
+            - Requires `sqlalchemy` which needs to be installed separately, and a configured
+            [SQLALchemyPlugin][starlite.plugins.sql_alchemy.SQLALchemyPlugin]
+        """
         super().__init__(config=config)
         self._model = config.model
         self._session_maker = cast("SQLAlchemyPluginConfig", config.plugin._config).session_maker
 
-    def _create_sa_session(self) -> AnySAessionT:
-        return cast("S", self._session_maker())
+    def _create_sa_session(self) -> AnySASessionT:
+        return cast("AnySASessionT", self._session_maker())
 
     def _select_session_obj(self, session_id: str) -> "Select":
         return sa.select(self._model).where(self._model.session_id == session_id)
@@ -209,13 +251,16 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
     plugin: SQLAlchemyPlugin
 
     @validator("plugin", always=True)
-    def validate_plugin_config(cls, value: SQLAlchemyPlugin) -> SQLAlchemyPlugin:
-        if not (value._config and value._config.session_maker):
+    def validate_plugin_config(cls, value: SQLAlchemyPlugin) -> SQLAlchemyPlugin:  # pylint: disable=no-self-argument)
+        """Check if the SQLAlchemyPlugin is configured."""
+        if not (value._config and value._config.session_maker):  # pylint: disable=protected-access
             raise ValueError("Plugin needs to be configured")
         return value
 
     @property
-    def _backend_class(self) -> Type[BaseSQLAlchemySessionBackend]:  # type: ignore[override]
-        if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:
+    def _backend_class(self) -> Type[Union[SQLAlchemyBackend, AsyncSQLAlchemyBackend]]:  # type: ignore[override]
+        """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`,
+        depending on the engine type configured in the `SQLAlchemyPlugin`"""
+        if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:  # pylint: disable=protected-access
             return AsyncSQLAlchemyBackend
         return SQLAlchemyBackend
