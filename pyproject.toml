@@ -7,7 +7,8 @@ maintainers = [
   "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
   "Peter Schutt <peter.github@proton.me>",
   "Cody Fincher <cody.fincher@gmail.com>",
-  "Janek Nouvertné <provinzkraut@posteo.de>"
+  "Janek Nouvertné <provinzkraut@posteo.de>",
+  "Konstantin Mikhailov <konstantin.mikhailov@proton.me>"
 ]
 license = "MIT"
 readme = "README.md"
