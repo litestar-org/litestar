@@ -261,7 +261,8 @@ class SessionMiddleware(MiddlewareProtocol, Generic[B]):
 
         Args:
             app: An ASGI application
-            backend: A SessionBackend instance used to store and retrieve session data
+            backend: A [SessionBackend][starlite.middleware.session.base.SessionBackend]
+                instance used to store and retrieve session data
         """
 
         self.app = app

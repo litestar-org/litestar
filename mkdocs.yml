@@ -204,6 +204,16 @@ nav:
           - reference/middleware/2-logging-middleware.md
           - reference/middleware/3-rate-limit-middleware.md
           - reference/middleware/4-session-middleware.md
+          - Session Middleware:
+              - reference/middleware/session-middleware/0-middleware.md
+              - Backends:
+                  - reference/middleware/session-middleware/1-base-backend.md
+                  - reference/middleware/session-middleware/2-cookie-backend.md
+                  - reference/middleware/session-middleware/3-file-backend.md
+                  - reference/middleware/session-middleware/4-memcached-backend.md
+                  - reference/middleware/session-middleware/5-memory-backend.md
+                  - reference/middleware/session-middleware/6-redis-backend.md
+                  - reference/middleware/session-middleware/7-sqlalchemy-backend.md
           - reference/middleware/5-compression-middleware.md
           - reference/middleware/6-csrf-middleware.md
           - reference/middleware/7-exceptions-middleware.md
