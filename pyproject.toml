@@ -80,6 +80,7 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 trio = "*"
+responses = "^0.22.0"
 
 [tool.poetry.extras]
 testing = ["httpx", "cryptography"]
