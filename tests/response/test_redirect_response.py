@@ -6,11 +6,10 @@ meant to ensure our compatibility with their API.
 from typing import TYPE_CHECKING
 
 import pytest
-import responses  # type: ignore
 
-from starlite import ImproperlyConfiguredException, Response, Starlite, get
+from starlite import ImproperlyConfiguredException, Response
 from starlite.response import RedirectResponse
-from starlite.status_codes import HTTP_200_OK, HTTP_301_MOVED_PERMANENTLY
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
 if TYPE_CHECKING:
@@ -29,37 +28,6 @@ def test_redirect_response() -> None:
     response = client.get("/redirect")
     assert response.text == "hello, world"
     assert response.url == "http://testserver/"
-
-
-@pytest.mark.xfail
-@responses.activate
-def test_external_redirect_response() -> None:
-    external_url = "https://example.com"
-    content = "external redirect"
-
-    @get(path="/first")
-    def first() -> RedirectResponse:
-        return RedirectResponse(url=external_url)
-
-    @get(path="/last")
-    def last() -> str:
-        return content
-
-    app = Starlite(route_handlers=[first, last])
-
-    client = TestClient(app)
-    responses.add(
-        responses.Response(
-            responses.GET,
-            url=external_url,
-            status=HTTP_301_MOVED_PERMANENTLY,
-            headers={"Location": f"{client.base_url}/last"},
-            auto_calculate_content_length=True,
-        )
-    )
-    response = client.get("/first", follow_redirects=True)
-
-    assert response.text == content
 
 
 def test_quoting_redirect_response() -> None:

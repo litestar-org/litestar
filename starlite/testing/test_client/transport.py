@@ -60,7 +60,7 @@ class TestClientTransport(BaseTransport):
 
             body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
             request_event: "HTTPRequestEvent" = {"type": "http.request", "body": b"", "more_body": False}
-            if isinstance(body, GeneratorType):
+            if isinstance(body, GeneratorType):  # pragma: no cover
                 try:
                     chunk = body.send(None)
                     request_event["body"] = body = chunk if isinstance(chunk, bytes) else chunk.encode("utf-8")
@@ -96,7 +96,7 @@ class TestClientTransport(BaseTransport):
                 if not more_body:
                     context["raw_kwargs"]["stream"].seek(0)
                     await context["response_complete"].set()
-            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap]
+            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap] # pragma: no cover
                 context["template"] = message["template"]  # type: ignore[unreachable]
                 context["context"] = message["context"]
 
@@ -165,14 +165,14 @@ class TestClientTransport(BaseTransport):
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),
                 )
-        except BaseException as exc:
+        except BaseException as exc:  # pragma: no cover
             if self.raise_server_exceptions:
                 raise exc
             return Response(
                 status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
             )
         else:
-            if not context["response_started"]:
+            if not context["response_started"]:  # pragma: no cover
                 if self.raise_server_exceptions:
                     assert context["response_started"], "TestClient did not receive any response."
                 return Response(

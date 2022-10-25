@@ -116,6 +116,8 @@ repos:
             types-beautifulsoup4,
             types-freezegun,
             types-redis,
+            types-requests,
+            requests,
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
@@ -234,4 +236,6 @@ repos:
             types-beautifulsoup4,
             types-freezegun,
             types-redis,
+            types-requests,
+            requests,
           ]
