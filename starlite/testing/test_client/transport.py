@@ -95,8 +95,8 @@ class TestClientTransport(BaseTransport):
                     context["raw_kwargs"]["stream"].write(body)
                 if not more_body:
                     context["raw_kwargs"]["stream"].seek(0)
-                    await context["response_complete"].set()
-            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap] # pragma: no cover
+                    context["response_complete"].set()
+            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap] # pragma: no coverx
                 context["template"] = message["template"]  # type: ignore[unreachable]
                 context["context"] = message["context"]
 
