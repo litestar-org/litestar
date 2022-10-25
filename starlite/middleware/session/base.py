@@ -98,7 +98,6 @@ class BaseBackendConfig(BaseModel):
 
 class ServerSideSessionConfig(BaseBackendConfig):
     session_id_bytes: int = 32
-    identity_mode: Literal["cookie", "header"] = "cookie"
 
 
 ConfigT = TypeVar("ConfigT", bound=BaseBackendConfig)
@@ -173,8 +172,7 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT]):
         headers = MutableHeaders(scope=message)
         scope_session = scope.get("session")
 
-        session_id_source = connection.cookies if self.config.identity_mode == "cookie" else connection.headers
-        session_id = session_id_source.get(self.config.key, self.generate_session_id())
+        session_id = connection.cookies.get(self.config.key, self.generate_session_id())
 
         serialised_data = self.serialise_data(scope_session, scope)
         await self.set(session_id=session_id, data=serialised_data)
