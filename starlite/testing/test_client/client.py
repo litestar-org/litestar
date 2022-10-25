@@ -47,7 +47,6 @@ T = TypeVar("T", bound=ASGIApp)
 
 class TestClient(Client, Generic[T]):
     task: "Future[None]"
-    portal: Optional[BlockingPortal] = None
     lifespan_handler: LifeSpanHandler
     exit_stack: "ExitStack"
 
@@ -75,12 +74,14 @@ class TestClient(Client, Generic[T]):
             backend_options: 'anyio' options.
             session_config: Configuration for Session Middleware class to create raw session cookies for request to the
                 route handlers.
-            cookies: ...
+            cookies: Cookies to set on the client.
         """
+        self.portal: Optional[BlockingPortal] = None
         self.backend = backend
         self.backend_options = backend_options
         self.app = app
         self.session = SessionMiddleware(app=self.app, config=session_config) if session_config else None
+
         super().__init__(
             app=self.app,
             base_url=base_url,
@@ -133,6 +134,26 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a request.
+
+        Args:
+            method: An HTTP method.
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().request(
             url=self.base_url.join(url),
             method=method.value if isinstance(method, HttpMethod) else method,
@@ -161,6 +182,21 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a GET request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().get(
             url,
             params=params,
@@ -184,6 +220,21 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends an OPTIONS request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().options(
             url,
             params=params,
@@ -207,6 +258,21 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a HEAD request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().head(
             url,
             params=params,
@@ -234,6 +300,25 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a POST request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().post(
             url,
             content=content,
@@ -265,6 +350,25 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a PUT request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().put(
             url,
             content=content,
@@ -296,6 +400,25 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a PATCH request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().patch(
             url,
             content=content,
@@ -323,6 +446,21 @@ class TestClient(Client, Generic[T]):
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         extensions: Optional[Dict[str, Any]] = None,
     ) -> Response:
+        """Sends a DELETE request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
         return super().delete(
             url,
             params=params,
@@ -335,18 +473,52 @@ class TestClient(Client, Generic[T]):
         )
 
     def websocket_connect(
-        self, url: str, subprotocols: Optional[Sequence[str]] = None, **kwargs: Any
+        self,
+        url: str,
+        subprotocols: Optional[Sequence[str]] = None,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
     ) -> "WebSocketTestSession":
+        """Sends a GET request to establish a websocket connection.
+
+        Args:
+            url: Request URL.
+            subprotocols: Websocket subprotocols.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An [WebSocketTestSession][starlite.testing.test_client.WebSocketTestSession] instance.
+        """
         url = urljoin("ws://testserver", url)
-        headers = kwargs.get("headers", {})
-        headers.setdefault("connection", "upgrade")
-        headers.setdefault("sec-websocket-key", "testserver==")
-        headers.setdefault("sec-websocket-version", "13")
+        default_headers: Dict[str, str] = {}
+        default_headers.setdefault("connection", "upgrade")
+        default_headers.setdefault("sec-websocket-key", "testserver==")
+        default_headers.setdefault("sec-websocket-version", "13")
         if subprotocols is not None:
-            headers.setdefault("sec-websocket-protocol", ", ".join(subprotocols))
-        kwargs["headers"] = headers
+            default_headers.setdefault("sec-websocket-protocol", ", ".join(subprotocols))
         try:
-            super().request("GET", url, **kwargs)
+            super().request(
+                "GET",
+                url,
+                headers={**dict(headers or {}), **default_headers},  # type: ignore
+                params=params,
+                cookies=cookies,
+                auth=auth,
+                follow_redirects=follow_redirects,
+                timeout=timeout,
+                extensions=extensions,
+            )
         except ConnectionUpgradeException as exc:
             return exc.session
         else:

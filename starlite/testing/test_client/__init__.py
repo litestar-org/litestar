@@ -31,5 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from .client import TestClient
+from .websocket_test_session import WebSocketTestSession
 
-__all__ = ("TestClient",)
+__all__ = ("TestClient", "WebSocketTestSession")

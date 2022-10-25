@@ -94,9 +94,16 @@ class WebSocketTestSession:
     def send(
         self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
     ) -> None:
-        """The 'send' here is the inverse of the ASGI 'send',
+        """Sends a "receive" event. This is the inverse of the ASGI send
+        method.
 
-        that is - it receives 'eceive' events rather than 'send' events.
+        Args:
+            data: Either a string or a byte string.
+            mode: The key to use - 'text' or 'bytes'
+            encoding: The encoding to use when encoding or decoding data.
+
+        Returns:
+            None.
         """
         if mode == "text":
             data = data.decode(encoding) if isinstance(data, bytes) else data
@@ -108,21 +115,63 @@ class WebSocketTestSession:
             self.receive_queue.put(binary_event)
 
     def send_text(self, data: str, encoding: str = "utf-8") -> None:
+        """Sends the data using the 'text' key.
+
+        Args:
+            data: Data to send.
+            encoding: Encoding to use.
+
+        Returns:
+            None
+        """
         self.send(data=data, mode="text", encoding=encoding)
 
     def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
+        """Sends the data using the 'bytes' key.
+
+        Args:
+            data: Data to send.
+            encoding: Encoding to use.
+
+        Returns:
+            None
+        """
         self.send(data=data, mode="binary", encoding=encoding)
 
     def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:
+        """Sends the given data as JSON.
+
+        Args:
+            data: The data to send.
+            mode: Either 'text' or 'binary'
+
+        Returns:
+            None.
+        """
         self.send(
             data=dumps(data, default=default_serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS), mode=mode
         )
 
-    def close(self, code: int = 1000) -> None:
+    def close(self, code: int = WS_1000_NORMAL_CLOSURE) -> None:
+        """Sends an 'websocket.disconnect' event.
+
+        Args:
+            code: status code for closing the connection.
+
+        Returns:
+            None.
+        """
         event: "WebSocketDisconnectEvent" = {"type": "websocket.disconnect", "code": code}
         self.receive_queue.put(event)
 
     def receive(self) -> "WebSocketSendMessage":
+        """This is the base receive method.
+
+        Notes:
+            - you can use one of the other receive methods to extract the data from the message.
+        Returns:
+            A websocket message.
+        """
         message = cast("WebSocketSendMessage", self.send_queue.get())
         if isinstance(message, BaseException):
             raise message
@@ -134,14 +183,31 @@ class WebSocketTestSession:
         return message
 
     def receive_text(self) -> str:
+        """
+
+        Returns:
+            A string value.
+        """
         message = self.receive()
         return cast("str", message.get("text", ""))
 
     def receive_bytes(self) -> bytes:
+        """
+        Returns:
+            A bytes string value.
+        """
         message = self.receive()
         return cast("bytes", message.get("bytes", b""))
 
     def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:
+        """Receives JSON.
+
+        Args:
+            mode: Either 'text' or 'binary'
+
+        Returns:
+            An arbitrary value
+        """
         message = self.receive()
         if mode == "text":
             return loads(cast("str", message.get("text", "")))
