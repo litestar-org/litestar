@@ -1,4 +1,4 @@
-from typing import ClassVar, Dict, Optional, Type, cast
+from typing import Dict, Optional, Type, cast
 
 from aiomcache import Client as MemcacheClient  # pylint: disable=import-error
 
@@ -40,6 +40,6 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
 
 
 class MemcachedBackendConfig(ServerSideSessionConfig):
-    _backend_class: ClassVar[Type[MemcachedBackend]] = MemcachedBackend
+    _backend_class: Type[MemcachedBackend] = MemcachedBackend
     memcached: MemcacheClient
     key_prefix: str = "STARLITE_SESSION"

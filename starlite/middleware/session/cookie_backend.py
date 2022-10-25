@@ -4,7 +4,7 @@ import re
 import time
 from base64 import b64decode, b64encode
 from os import urandom
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
 from orjson import dumps, loads
 from pydantic import SecretBytes, validator
@@ -131,7 +131,7 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
 class CookieBackendConfig(BaseBackendConfig):
     """Configuration for [SessionMiddleware] middleware."""
 
-    _backend_class: ClassVar[Type[CookieBackend]] = CookieBackend
+    _backend_class: Type[CookieBackend] = CookieBackend
 
     secret: SecretBytes
     """

@@ -1,15 +1,6 @@
 import abc
 import datetime
-from typing import (
-    TYPE_CHECKING,
-    ClassVar,
-    Generic,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Generic, Optional, TYPE_CHECKING, Type, TypeVar, Union, cast
 
 import anyio.to_thread
 import sqlalchemy as sa
@@ -20,7 +11,6 @@ from sqlalchemy.orm import DeclarativeMeta, Mapped
 from sqlalchemy.orm import Session as SASession
 from sqlalchemy.orm import declarative_mixin, registry
 
-from starlite import ImproperlyConfiguredException
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
@@ -28,12 +18,9 @@ if TYPE_CHECKING:
     from sqlalchemy.sql import Select
     from sqlalchemy.sql.elements import BooleanClauseList
 
-    from starlite.plugins.sql_alchemy import SQLAlchemyConfig as SQLAlchemyPluginConfig
-
 
 AnySASession = Union[SASession, AsyncSASession]
-
-S = TypeVar("S", bound=AnySASession)
+AnySAessionT = TypeVar("AnySAessionT", bound=AnySASession)
 
 
 @declarative_mixin
@@ -51,28 +38,28 @@ class SessionModelMixin:
         return datetime.datetime.utcnow().replace(tzinfo=None) > cls.expires  # pyright: ignore
 
 
-def create_session_model(base: type[DeclarativeMeta]) -> type[DeclarativeMeta]:
+def create_session_model(base: type[DeclarativeMeta], table_name: str = "session") -> type[SessionModelMixin]:
     class SessionModel(base, SessionModelMixin):  # type: ignore[valid-type, misc]
+        __tablename__ = table_name
         id: Mapped[int] = sa.Column(sa.Integer, primary_key=True)  # pyright: ignore
 
     return SessionModel
 
 
-T = TypeVar("T", bound=SessionModelMixin)
-C = TypeVar("C", bound="BaseSQLAlchemySessionConfig")
+SessionModelT = TypeVar("SessionModelT", bound=SessionModelMixin)
 
 
-def register_session_model(model: type[T], registry_: registry) -> type[T]:
+def register_session_model(model: type[SessionModelT], registry_: registry) -> type[SessionModelT]:
     return registry_.mapped(model)
 
 
-class BaseSQLAlchemySessionBackend(Generic[S, C], ServerSideBackend[C], abc.ABC):
-    def __init__(self, config: C) -> None:
+class BaseSQLAlchemySessionBackend(Generic[AnySAessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
+    def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
         super().__init__(config=config)
         self._model = config.model
         self._session_maker = cast("SQLAlchemyPluginConfig", config.plugin._config).session_maker
 
-    def _create_sa_session(self) -> S:
+    def _create_sa_session(self) -> AnySAessionT:
         return cast("S", self._session_maker())
 
     def _select_session_obj(self, session_id: str) -> "Select":
@@ -88,7 +75,7 @@ class BaseSQLAlchemySessionBackend(Generic[S, C], ServerSideBackend[C], abc.ABC)
         """Delete all expired session from the database."""
 
 
-class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession, "AsyncSQLAlchemySessionConfig"]):
+class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession]):
     async def _get_session_obj(self, *, sa_session: AsyncSASession, session_id: str) -> Optional[SessionModelMixin]:
         result = await sa_session.scalars(self._select_session_obj(session_id))
         return result.one_or_none()
@@ -101,7 +88,6 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession, "Async
         """
         sa_session = self._create_sa_session()
         session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
-
         if session_obj:
             if not session_obj.expired:
                 self._update_session_expiry(session_obj)  # type: ignore[unreachable]
@@ -146,7 +132,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession, "Async
         await sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
 
-class SQLAlchemyBackend(BaseSQLAlchemySessionBackend[SASession, "SQLAlchemySessionConfig"]):
+class SQLAlchemyBackend(BaseSQLAlchemySessionBackend[SASession]):
     def _get_session_obj(self, *, sa_session: SASession, session_id: str) -> Optional[SessionModelMixin]:
         return sa_session.scalars(self._select_session_obj(session_id)).one_or_none()
 
@@ -218,10 +204,7 @@ class SQLAlchemyBackend(BaseSQLAlchemySessionBackend[SASession, "SQLAlchemySessi
         await anyio.to_thread.run_sync(self._delete_expired)
 
 
-class BaseSQLAlchemySessionConfig(ServerSideSessionConfig):
-    _backend_class: ClassVar[Type[BaseSQLAlchemySessionBackend]]
-    _needs_session_class: ClassVar[Type[AnySASession]]
-
+class SQLAlchemyBackendConfig(ServerSideSessionConfig):
     model: Type[SessionModelMixin]
     plugin: SQLAlchemyPlugin
 
@@ -229,19 +212,10 @@ class BaseSQLAlchemySessionConfig(ServerSideSessionConfig):
     def validate_plugin_config(cls, value: SQLAlchemyPlugin) -> SQLAlchemyPlugin:
         if not (value._config and value._config.session_maker):
             raise ValueError("Plugin needs to be configured")
-        sessionmaker_class = value._config.session_maker.class_  #
-        expected_session_class = cls._needs_session_class
-        if not issubclass(sessionmaker_class, expected_session_class):
-            raise ImproperlyConfiguredException(f"Expected {expected_session_class} not {sessionmaker_class} for {cls}")
-
         return value
 
-
-class SQLAlchemySessionConfig(BaseSQLAlchemySessionConfig):
-    _backend_class: ClassVar[Type[SQLAlchemyBackend]] = SQLAlchemyBackend
-    _needs_session_class: ClassVar[Type[SASession]] = SASession
-
-
-class AsyncSQLAlchemySessionConfig(BaseSQLAlchemySessionConfig):
-    _backend_class: ClassVar[Type[AsyncSQLAlchemyBackend]] = AsyncSQLAlchemyBackend
-    _needs_session_class: ClassVar[Type[AsyncSASession]] = AsyncSASession
+    @property
+    def _backend_class(self) -> Type[BaseSQLAlchemySessionBackend]:  # type: ignore[override]
+        if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:
+            return AsyncSQLAlchemyBackend
+        return SQLAlchemyBackend

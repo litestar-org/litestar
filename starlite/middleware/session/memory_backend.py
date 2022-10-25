@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import ClassVar, Dict, Optional, Type
+from typing import Dict, Optional, Type
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
@@ -33,4 +33,4 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
 
 
 class MemoryBackendConfig(ServerSideSessionConfig):
-    _backend_class: ClassVar[Type[MemoryBackend]] = MemoryBackend
+    _backend_class: Type[MemoryBackend] = MemoryBackend

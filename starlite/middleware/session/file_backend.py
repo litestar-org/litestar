@@ -1,7 +1,7 @@
 import shutil
 from datetime import datetime, timedelta
 from os import PathLike
-from typing import ClassVar, Optional, Tuple, Type
+from typing import Optional, Tuple, Type
 
 import anyio
 import orjson
@@ -30,6 +30,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
+        await self.path.mkdir(exist_ok=True)
         path = self._id_to_storage_path(session_id)
         wrapped_data: FileStorageMetadataWrapper = (
             (datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age)).isoformat(),
@@ -43,9 +44,9 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
     async def delete_all(self) -> None:
         await anyio.to_thread.run_sync(shutil.rmtree, self.path, True)
-        await self.path.mkdir()
 
 
 class FileBackendConfig(ServerSideSessionConfig):
-    _backend_class: ClassVar[Type[FileBackend]] = FileBackend
+    _backend_class: Type[FileBackend] = FileBackend
     storage_path: PathLike
+    """Session files will be stored here. Note that this directory might be deleted by the backend"""

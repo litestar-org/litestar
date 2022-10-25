@@ -5,7 +5,6 @@ from typing import (
     Any,
     Awaitable,
     Callable,
-    ClassVar,
     Dict,
     Generic,
     Optional,
@@ -16,7 +15,7 @@ from typing import (
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
-from pydantic import BaseConfig, BaseModel, conint, conlist, constr
+from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
 from starlette.datastructures import MutableHeaders
 from typing_extensions import Literal
 
@@ -32,7 +31,7 @@ ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 class BaseBackendConfig(BaseModel):
-    _backend_class: ClassVar[Type["SessionBackend"]]
+    _backend_class: Type["SessionBackend"] = PrivateAttr()
 
     """Configuration for Session middleware cookies."""
 
@@ -102,12 +101,12 @@ class ServerSideSessionConfig(BaseBackendConfig):
     identity_mode: Literal["cookie", "header"] = "cookie"
 
 
-Config = TypeVar("Config", bound=BaseBackendConfig)
-ServerConfig = TypeVar("ServerConfig", bound=ServerSideSessionConfig)
+ConfigT = TypeVar("ConfigT", bound=BaseBackendConfig)
+ServerConfigT = TypeVar("ServerConfigT", bound=ServerSideSessionConfig)
 
 
-class SessionBackend(abc.ABC, Generic[Config]):
-    def __init__(self, config: Config) -> None:
+class SessionBackend(abc.ABC, Generic[ConfigT]):
+    def __init__(self, config: ConfigT) -> None:
         self.config = config
 
     @staticmethod
@@ -133,8 +132,8 @@ class SessionBackend(abc.ABC, Generic[Config]):
         pass
 
 
-class ServerSideBackend(Generic[ServerConfig], SessionBackend[ServerConfig]):
-    def __init__(self, config: ServerConfig) -> None:
+class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT]):
+    def __init__(self, config: ServerConfigT) -> None:
         """Starlite session middleware for storing session data server-side."""
 
         super().__init__(config=config)
