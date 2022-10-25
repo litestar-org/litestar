@@ -30,7 +30,7 @@ def test_session_middleware_not_installed_raises() -> None:
         assert response.json()["detail"] == "'session' is not defined in scope, install a SessionMiddleware to set it"
 
 
-def test_integration(session_backend_config: BaseBackendConfig) -> None:
+def test_integration(session_backend_config: "BaseBackendConfig") -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
     def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
@@ -56,7 +56,7 @@ def test_integration(session_backend_config: BaseBackendConfig) -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_use_of_custom_response_serializer_with_http_handler(session_backend_config: BaseBackendConfig) -> None:
+def test_use_of_custom_response_serializer_with_http_handler(session_backend_config: "BaseBackendConfig") -> None:
     class Obj:
         inner: str
 
@@ -83,7 +83,7 @@ def test_use_of_custom_response_serializer_with_http_handler(session_backend_con
 
 
 async def test_use_of_custom_response_serializer_with_websocket_handler(
-    session_backend_config: BaseBackendConfig,
+    session_backend_config: "BaseBackendConfig",
 ) -> None:
     class Obj:
         inner: str
