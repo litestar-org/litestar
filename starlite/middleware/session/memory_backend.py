@@ -8,8 +8,8 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
     def __init__(self, config: "MemoryBackendConfig") -> None:
         """Session backend to store data in memory.
 
-        Notes:
-            - This should not be used in production and serves mainly as a dummy backend
+        Warning:
+            This should not be used in production and serves mainly as a dummy backend
             for easy testing. It is not thread or process-safe, and data won't be persisted
         """
         super().__init__(config=config)

@@ -53,7 +53,7 @@ class BaseBackendConfig(BaseModel):
     """Scopes for the middleware - options are 'http' and 'websocket' with the default being both"""
     path: str = "/"
     """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
-    domain: str | None = None
+    domain: Optional[str] = None
     """Domain for which the cookie is valid."""
     secure: bool = False
     """Https is required for the cookie."""
