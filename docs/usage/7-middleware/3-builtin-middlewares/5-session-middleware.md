@@ -35,13 +35,12 @@ add its middleware to your application's middleware stack:
     --8<-- "examples/middleware/session/cookies_full_example.py"
     ```
 
-## Configuration
-
-Since both client- and server-side sessions rely on cookies (one for storing the actual session
-data, the other for storing the session ID), they share most of the cookie configuration.
-A complete reference of the cookie configuration can be found here:
-
-[BaseBackendConfig][starlite.middleware.session.base.BaseBackendConfig]
+!!! note 
+    Since both client- and server-side sessions rely on cookies (one for storing the actual session
+    data, the other for storing the session ID), they share most of the cookie configuration.
+    A complete reference of the cookie configuration can be found here:
+    
+    [BaseBackendConfig][starlite.middleware.session.base.BaseBackendConfig]
 
 ## Client-side sessions
 
@@ -49,11 +48,8 @@ Client side sessions are available through the [CookieBackend][starlite.middlewa
 which offers strong AES-CGM encryption security best practices while support cookie splitting.
 
 !!! important
-    Although the `CookieBackend` offer compatible functionality with
-    [Starlette SessionMiddleware](https://www.starlette.io/middleware/#sessionmiddleware),
-    `CookieBackend` offers stronger security and is recommended. Using it requires
-    the [cryptography](https://cryptography.io/en/latest/) library, which can be installed
-    together with starlite as an extra using `pip install starlite[cryptography]`
+    `CookieBackend` requires the [cryptography](https://cryptography.io/en/latest/) library, 
+    which can be installed together with starlite as an extra using `pip install starlite[cryptography]`
 
 ```py title="cookie_backend.py"
 --8<-- "examples/middleware/session/cookie_backend.py"
