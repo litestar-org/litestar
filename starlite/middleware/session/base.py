@@ -29,6 +29,10 @@ if TYPE_CHECKING:
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
+ConfigT = TypeVar("ConfigT", bound="BaseBackendConfig")
+ServerConfigT = TypeVar("ServerConfigT", bound="ServerSideSessionConfig")
+BaseSessionBackendT = TypeVar("BaseSessionBackendT", bound="BaseSessionBackend")
+
 
 class BaseBackendConfig(BaseModel):
     _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
@@ -99,15 +103,11 @@ class ServerSideSessionConfig(BaseBackendConfig):
     """
 
 
-ConfigT = TypeVar("ConfigT", bound=BaseBackendConfig)
-ServerConfigT = TypeVar("ServerConfigT", bound=ServerSideSessionConfig)
-
-
 class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
     def __init__(self, config: ConfigT) -> None:
         """Abstract session backend defining the interface between a storage
-        mechanism and the
-        [SessionMiddleware][starlite.middleware.session.SessionMiddleware].
+        mechanism and the [SessionMiddleware][
+        starlite.middleware.session.SessionMiddleware].
 
         This serves as the base class for all client- and server-side
         backends
@@ -307,13 +307,10 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
         return {}
 
 
-B = TypeVar("B", bound=BaseSessionBackend)
-
-
-class SessionMiddleware(MiddlewareProtocol, Generic[B]):
+class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
     __slots__ = ("backend",)
 
-    def __init__(self, app: "ASGIApp", backend: B) -> None:
+    def __init__(self, app: "ASGIApp", backend: BaseSessionBackendT) -> None:
         """Starlite session middleware for storing session data.
 
         Args:

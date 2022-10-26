@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 AnySASession = Union[SASession, AsyncSASession]
 AnySASessionT = TypeVar("AnySASessionT", bound=AnySASession)
+SessionModelT = TypeVar("SessionModelT", bound="SessionModelMixin")
 
 
 @declarative_mixin
@@ -68,9 +69,6 @@ def create_session_model(base: Type[Any], table_name: str = "session") -> Type[S
         id: Mapped[int] = sa.Column(sa.Integer, primary_key=True)  # pyright: ignore
 
     return Model
-
-
-SessionModelT = TypeVar("SessionModelT", bound=SessionModelMixin)
 
 
 def register_session_model(base: Union[registry, Any], model: Type[SessionModelT]) -> Type[SessionModelT]:
