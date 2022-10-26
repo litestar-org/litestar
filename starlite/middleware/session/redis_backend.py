@@ -1,6 +1,6 @@
 from typing import Type, Union
 
-from redis.asyncio import Redis  # pylint: disable=import-error
+from redis.asyncio import Redis
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
