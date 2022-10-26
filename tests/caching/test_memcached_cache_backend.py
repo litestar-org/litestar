@@ -1,6 +1,8 @@
 import pickle
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Generator, Optional
 from unittest.mock import Mock, patch
+
+import pytest
 
 from starlite.cache.memcached_cache_backend import (
     MemcachedCacheBackend,
@@ -30,17 +32,23 @@ class FakeAsyncMemcached:
         return self._expirations.get(key)
 
 
+@pytest.fixture()
+def memcached_client_mock() -> Generator[Mock, None, None]:
+    with patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client") as mock:
+        yield mock
+
+
 @patch("starlite.cache.memcached_cache_backend.Client")
-def test_config_memcached_default(memcached_client_mock: Mock) -> None:
+def test_config_memcached_default(memcached_mock: Mock) -> None:
     host = "127.0.0.1"
     config = MemcachedCacheBackendConfig(host=host)
     cache = MemcachedCacheBackend(config)
     assert cache._memcached_client
-    memcached_client_mock.assert_called_once_with(host=host)
+    memcached_mock.assert_called_once_with(host=host)
 
 
 @patch("starlite.cache.memcached_cache_backend.Client")
-def test_config_memcached_non_default(memcached_client_mock: Mock) -> None:
+def test_config_memcached_non_default(memcached_mock: Mock) -> None:
     host = "127.0.0.1"
     port = 22122
     pool_size = 10
@@ -48,10 +56,9 @@ def test_config_memcached_non_default(memcached_client_mock: Mock) -> None:
     config = MemcachedCacheBackendConfig(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
     cache = MemcachedCacheBackend(config)
     assert cache._memcached_client
-    memcached_client_mock.assert_called_once_with(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
+    memcached_mock.assert_called_once_with(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
 
 
-@patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client")
 async def test_get_from_cache(memcached_client_mock: Mock) -> None:
     key = "key"
     value = "value"
@@ -67,7 +74,6 @@ async def test_get_from_cache(memcached_client_mock: Mock) -> None:
     assert cached_value == value
 
 
-@patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client")
 async def test_set_in_cache(memcached_client_mock: Mock) -> None:
     key = "key"
     value = "value"
@@ -86,7 +92,6 @@ async def test_set_in_cache(memcached_client_mock: Mock) -> None:
     assert fake_memcached.ttl(key.encode()) == exp
 
 
-@patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client")
 async def test_delete_from_cache(memcached_client_mock: Mock) -> None:
     key = "key"
     fake_memcached = FakeAsyncMemcached()
@@ -102,7 +107,6 @@ async def test_delete_from_cache(memcached_client_mock: Mock) -> None:
     assert fake_memcached_value is None
 
 
-@patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client")
 async def test_non_default_serialization(memcached_client_mock: Mock) -> None:
     serialized_data = b"serialized"
     deserialized_data = "deserialized"

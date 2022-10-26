@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Generator, Optional
 from unittest.mock import Mock, patch
 
 import pytest
@@ -36,6 +36,12 @@ def mock_redis() -> None:
     patch("starlite.cache.redis_cache_backend.Redis")
 
 
+@pytest.fixture()
+def redis_client_mock() -> Generator[Mock, None, None]:
+    with patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis") as redis_mock:
+        yield redis_mock
+
+
 @patch("starlite.cache.redis_cache_backend.ConnectionPool.from_url")
 @pytest.mark.usefixtures("mock_redis")
 def test_config_redis_default(connection_pool_from_url_mock: Mock) -> None:
@@ -62,14 +68,13 @@ def test_config_redis_non_default(connection_pool_from_url_mock: Mock) -> None:
     )
 
 
-@patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_get_from_cache(redis_mock: Mock) -> None:
+async def test_get_from_cache(redis_client_mock: Mock) -> None:
     key = "key"
     value = "value"
     fake_redis = FakeAsyncRedis()
     await fake_redis.set(key, value, 60)
 
-    redis_mock.get = fake_redis.get
+    redis_client_mock.get = fake_redis.get
 
     config = RedisCacheBackendConfig(url="url")
     cache = RedisCacheBackend(config)
@@ -78,36 +83,36 @@ async def test_get_from_cache(redis_mock: Mock) -> None:
     assert cached_value == value
 
 
-@patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_set_in_cache(redis_mock: Mock) -> None:
+async def test_set_in_cache(redis_client_mock: Mock) -> None:
     key = "key"
     value = "value"
     exp = 60
 
     fake_redis = FakeAsyncRedis()
 
-    redis_mock.set = fake_redis.set
+    redis_client_mock.set = fake_redis.set
 
     config = RedisCacheBackendConfig(url="url")
     cache = RedisCacheBackend(config)
 
     await cache.set(key, value, exp)
+
     fake_redis_value = await fake_redis.get(key)
     assert fake_redis_value == value
     assert fake_redis.ttl(key) == exp
 
 
-@patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis")
-async def test_delete_from_cache(redis_mock: Mock) -> None:
+async def test_delete_from_cache(redis_client_mock: Mock) -> None:
     key = "key"
     fake_redis = FakeAsyncRedis()
     await fake_redis.set(key, "value", 60)
 
-    redis_mock.delete = fake_redis.delete
+    redis_client_mock.delete = fake_redis.delete
 
     config = RedisCacheBackendConfig(url="url")
     cache = RedisCacheBackend(config)
 
     await cache.delete(key)
+
     fake_redis_value = await fake_redis.get(key)
     assert fake_redis_value is None
