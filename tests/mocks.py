@@ -1,7 +1,7 @@
 import time
 from typing import Dict, Optional, Union
 
-from aiomcache.client import Client
+from aiomcache import Client
 
 
 class FakeAsyncMemcached(Client):

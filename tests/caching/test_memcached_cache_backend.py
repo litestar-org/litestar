@@ -8,7 +8,7 @@ from starlite.cache.memcached_cache_backend import (
     MemcachedCacheBackend,
     MemcachedCacheBackendConfig,
 )
-from tests.fake_memcached import FakeAsyncMemcached
+from tests.mocks import FakeAsyncMemcached
 
 
 @pytest.fixture()

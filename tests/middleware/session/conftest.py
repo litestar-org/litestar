@@ -40,7 +40,7 @@ from starlite.plugins.sql_alchemy import (
     SQLAlchemyEngineConfig,
     SQLAlchemyPlugin,
 )
-from tests.fake_memcached import FakeAsyncMemcached
+from tests.mocks import FakeAsyncMemcached
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
