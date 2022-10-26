@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta
 from os import PathLike
-from typing import Optional, Tuple, Type
+from typing import Dict, NamedTuple, Optional, Type
 
 import orjson
 from anyio import Path
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
-FileStorageMetadataWrapper = Tuple[str, str]
+
+class FileStorageMetadataWrapper(NamedTuple):
+    expires: str
+    data: str
 
 
 class FileBackend(ServerSideBackend["FileBackendConfig"]):
@@ -21,12 +24,12 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
     @staticmethod
     async def _load_from_path(path: Path) -> FileStorageMetadataWrapper:
-        wrapped_data: FileStorageMetadataWrapper = orjson.loads(await path.read_bytes())
-        return wrapped_data
+        data = orjson.loads(await path.read_bytes())
+        return FileStorageMetadataWrapper(**data)
 
     @staticmethod
     def _is_expired(wrapped_data: FileStorageMetadataWrapper) -> bool:
-        return datetime.fromisoformat(wrapped_data[0]) > datetime.utcnow().replace(tzinfo=None)
+        return datetime.fromisoformat(wrapped_data.expires) > datetime.utcnow().replace(tzinfo=None)
 
     async def get(self, session_id: str) -> Optional[bytes]:
         """Load data associated with `session_id` from a file.
@@ -42,7 +45,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         if await path.exists():
             wrapped_data = await self._load_from_path(path)
             if self._is_expired(wrapped_data):
-                return wrapped_data[1].encode()
+                return wrapped_data.data.encode()
             await path.unlink()
         return None
 
@@ -60,11 +63,11 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         """
         await self.path.mkdir(exist_ok=True)
         path = self._id_to_storage_path(session_id)
-        wrapped_data: FileStorageMetadataWrapper = (
-            (datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age)).isoformat(),
-            data.decode(),
+        wrapped_data = FileStorageMetadataWrapper(
+            expires=(datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age)).isoformat(),
+            data=data.decode(),
         )
-        await path.write_bytes(orjson.dumps(wrapped_data))
+        await path.write_bytes(orjson.dumps(wrapped_data._asdict()))
 
     async def delete(self, session_id: str) -> None:
         """Delete the file associated with `session_id`.
