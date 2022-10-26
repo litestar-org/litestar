@@ -1,5 +1,5 @@
-import abc
-import datetime
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Generic, Optional, Type, TypeVar, Union, cast
 
 import anyio.to_thread
@@ -32,17 +32,17 @@ class SessionModelMixin:
 
     session_id: Mapped[str] = sa.Column(sa.String, nullable=False, unique=True, index=True)  # pyright: ignore
     data: Mapped[bytes] = sa.Column(sa.BLOB, nullable=False)  # pyright: ignore
-    expires: Mapped[datetime.datetime] = sa.Column(sa.DateTime, nullable=False)  # pyright: ignore
+    expires: Mapped[datetime] = sa.Column(sa.DateTime, nullable=False)  # pyright: ignore
 
     @hybrid_property
     def expired(self) -> bool:  # pyright: ignore
         """Boolean indicating if the session has expired."""
-        return datetime.datetime.utcnow().replace(tzinfo=None) > self.expires
+        return datetime.utcnow().replace(tzinfo=None) > self.expires
 
     @expired.expression  # type: ignore[no-redef]
     def expired(cls) -> "BooleanClauseList":  # pylint: disable=no-self-argument
         """SQL-Expression to check if the session has expired."""
-        return datetime.datetime.utcnow().replace(tzinfo=None) > cls.expires  # pyright: ignore
+        return datetime.utcnow().replace(tzinfo=None) > cls.expires  # pyright: ignore
 
 
 class SessionModel(SessionModelMixin):
@@ -86,7 +86,7 @@ def register_session_model(base: Union[registry, Any], model: Type[SessionModelT
     return cast("Type[SessionModelT]", registry_.map_declaratively(model))
 
 
-class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
+class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], ABC):
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
         """Session backend to store data in a database with SQLAlchemy. Works
         with both sync and async engines.
@@ -106,11 +106,9 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
         return sa.select(self._model).where(self._model.session_id == session_id)
 
     def _update_session_expiry(self, session_obj: SessionModelMixin) -> None:
-        session_obj.expires = datetime.datetime.utcnow().replace(tzinfo=None) + datetime.timedelta(
-            seconds=self.config.max_age
-        )
+        session_obj.expires = datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age)
 
-    @abc.abstractmethod
+    @abstractmethod
     async def delete_expired(self) -> None:
         """Delete all expired session from the database."""
 

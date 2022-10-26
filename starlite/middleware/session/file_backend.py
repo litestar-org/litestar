@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from os import PathLike
 from typing import Optional, Tuple, Type
 
-import anyio
 import orjson
+from anyio import Path
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
@@ -14,13 +14,13 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
     def __init__(self, config: "FileBackendConfig") -> None:
         """Session backend to store data in files."""
         super().__init__(config=config)
-        self.path = anyio.Path(config.storage_path)
+        self.path = Path(config.storage_path)
 
-    def _id_to_storage_path(self, session_id: str) -> anyio.Path:
+    def _id_to_storage_path(self, session_id: str) -> Path:
         return self.path / session_id
 
     @staticmethod
-    async def _load_from_path(path: anyio.Path) -> FileStorageMetadataWrapper:
+    async def _load_from_path(path: Path) -> FileStorageMetadataWrapper:
         wrapped_data: FileStorageMetadataWrapper = orjson.loads(await path.read_bytes())
         return wrapped_data
 

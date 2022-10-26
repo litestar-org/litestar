@@ -1,5 +1,5 @@
-import abc
 import secrets
+from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -103,7 +103,7 @@ class ServerSideSessionConfig(BaseBackendConfig):
     """
 
 
-class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
+class BaseSessionBackend(ABC, Generic[ConfigT]):
     def __init__(self, config: ConfigT) -> None:
         """Abstract session backend defining the interface between a storage
         mechanism and the [SessionMiddleware][
@@ -143,7 +143,7 @@ class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
         """
         return cast("Dict[str, Any]", loads(data))
 
-    @abc.abstractmethod
+    @abstractmethod
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
     ) -> None:
@@ -158,7 +158,7 @@ class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
             None
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to
         be used in the current application scope.
@@ -175,7 +175,7 @@ class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
         """
 
 
-class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT], abc.ABC):
+class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT]):
     def __init__(self, config: ServerConfigT) -> None:
         """Base class for server-side backends. Implements.
 
@@ -184,7 +184,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
         """
         super().__init__(config=config)
 
-    @abc.abstractmethod
+    @abstractmethod
     async def get(self, session_id: str) -> Union[bytes, str, Dict[str, Any], None]:
         """Retrieve data associated with `session_id`.
 
@@ -195,7 +195,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             The session data, if existing, otherwise `None`.
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     async def set(self, session_id: str, data: bytes) -> None:
         """Store `data` under the `session_id` for later retrieval.
 
@@ -210,7 +210,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with `session_id`. Fails silently if no
         such session-ID exists.
@@ -222,7 +222,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     async def delete_all(self) -> None:
         """Delete all session data stored within this backend.
 
