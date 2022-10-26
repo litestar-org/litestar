@@ -1,5 +1,10 @@
 # Cookie Backend
 
+::: starlite.middleware.session.cookie_backend.CookieBackendConfig
+    options:
+        members:
+            - secret
+
 ::: starlite.middleware.session.cookie_backend.CookieBackend
     options:
         members:
@@ -9,8 +14,3 @@
             - get_cookie_keys
             - store_in_message
             - load_from_connection
-
-::: starlite.middleware.session.cookie_backend.CookieBackendConfig
-    options:
-        members:
-            - secret

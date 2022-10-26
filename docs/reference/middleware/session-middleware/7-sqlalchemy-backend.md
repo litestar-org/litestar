@@ -1,5 +1,11 @@
 # SQLAlchemy backends
 
+::: starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig
+    options:
+        members:
+            - models
+            - plugin
+
 ::: starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend
     options:
         members:
@@ -25,12 +31,6 @@
             - delete
             - delete_all
             - delete_expired
-
-::: starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig
-    options:
-        members:
-            - models
-            - plugin
 
 ::: starlite.middleware.session.sqlalchemy_backend.create_session_model
 

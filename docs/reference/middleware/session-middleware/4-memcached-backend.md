@@ -1,5 +1,10 @@
 # Memcached backend
 
+::: starlite.middleware.session.memcached_backend.MemcachedBackendConfig
+    options:
+        members:
+            - memcached
+
 ::: starlite.middleware.session.memcached_backend.MemcachedBackend
     options:
         members:
@@ -8,8 +13,3 @@
             - set
             - delete
             - delete_all
-
-::: starlite.middleware.session.memcached_backend.MemcachedBackendConfig
-    options:
-        members:
-            - memcached

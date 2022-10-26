@@ -1,5 +1,10 @@
 # Redis backend
 
+::: starlite.middleware.session.redis_backend.RedisBackendConfig
+    options:
+        members:
+            - redis
+
 ::: starlite.middleware.session.redis_backend.RedisBackend
     options:
         members:
@@ -8,8 +13,3 @@
             - set
             - delete
             - delete_all
-
-::: starlite.middleware.session.redis_backend.RedisBackendConfig
-    options:
-        members:
-            - redis

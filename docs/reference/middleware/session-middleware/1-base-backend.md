@@ -1,5 +1,23 @@
 # Base backend
 
+::: starlite.middleware.session.base.BaseBackendConfig
+    options:
+        members:
+            - key
+            - max_age
+            - scopes
+            - path
+            - domain
+            - secure
+            - httponly
+            - samesite
+            - middleware
+
+::: starlite.middleware.session.base.ServerSideSessionConfig
+    options:
+        members:
+            - session_id_bytes
+
 ::: starlite.middleware.session.base.SessionBackend
     options:
         members:
@@ -20,23 +38,3 @@
             - delete
             - delete_all
             - generate_session_id
-
-## Configuration
-
-::: starlite.middleware.session.base.BaseBackendConfig
-    options:
-        members:
-            - key
-            - max_age
-            - scopes
-            - path
-            - domain
-            - secure
-            - httponly
-            - samesite
-            - middleware
-
-::: starlite.middleware.session.base.ServerSideSessionConfig
-    options:
-        members:
-            - session_id_bytes
