@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
-from typing import Dict, Optional, Type
+from typing import Optional, Type, cast
 
+from starlite.cache.simple_cache_backend import SimpleCacheBackend
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
 
@@ -10,10 +10,10 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
 
         Warning:
             This should not be used in production and serves mainly as a dummy backend
-            for easy testing. It is not thread or process-safe, and data won't be persisted
+            for easy testing. It is not process-safe, and data won't be persisted
         """
         super().__init__(config=config)
-        self._store: Dict[str, tuple[datetime, bytes]] = {}
+        self._cache = SimpleCacheBackend()
 
     async def get(self, session_id: str) -> Optional[bytes]:
         """Retrieve data associated with `session_id`.
@@ -24,13 +24,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        wrapped_data = self._store.get(session_id)
-        if wrapped_data:
-            expires, data = wrapped_data
-            if expires > datetime.utcnow().replace(tzinfo=None):
-                return data
-            del self._store[session_id]
-        return None
+        return cast("Optional[bytes]", await self._cache.get(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store `data` under the `session_id` for later retrieval.
@@ -45,10 +39,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             None
         """
-        self._store[session_id] = (
-            datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age),
-            data,
-        )
+        await self._cache.set(session_id, data, expiration=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with `session_id`. Fails silently if no
@@ -60,8 +51,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             None
         """
-        if session_id in self._store:
-            del self._store[session_id]
+        await self._cache.delete(session_id)
 
     async def delete_all(self) -> None:
         """Delete all session data.
@@ -69,7 +59,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             None
         """
-        self._store = {}
+        self._cache = SimpleCacheBackend()
 
 
 class MemoryBackendConfig(ServerSideSessionConfig):

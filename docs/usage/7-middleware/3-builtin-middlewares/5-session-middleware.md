@@ -126,7 +126,7 @@ session data in memory.
 
 !!! Danger
     This should not be used in production. It primarily exists as a dummy backend for
-    testing purposes. It is not thread or process safe, and data will not be persisted.
+    testing purposes. It is not process safe, and data will not be persisted.
 
 ```py title="memory_backend.py"
 --8<-- "examples/middleware/session/memory_backend.py"
