@@ -2,11 +2,10 @@ from typing import TYPE_CHECKING, Any, Dict
 
 import pytest
 from pydantic import BaseModel
-from starlette.websockets import WebSocketDisconnect
 
 from starlite import Starlite, get, websocket
 from starlite.connection import Request, WebSocket
-from starlite.exceptions import PermissionDeniedException
+from starlite.exceptions import PermissionDeniedException, WebSocketDisconnect
 from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,

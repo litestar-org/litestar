@@ -2,10 +2,10 @@ from asyncio import sleep
 from typing import Any, Dict
 
 import pytest
-from starlette.websockets import WebSocketDisconnect
 
 from starlite import Controller, Provide, websocket
 from starlite.connection import WebSocket
+from starlite.exceptions import WebSocketDisconnect
 from starlite.testing import create_test_client
 
 

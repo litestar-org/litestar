@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any
 import anyio
 import pytest
 from starlette.datastructures import Headers
-from starlette.websockets import WebSocketDisconnect
 
-from starlite import WebSocketException, websocket
 from starlite.connection import WebSocket
+from starlite.exceptions import WebSocketDisconnect, WebSocketException
+from starlite.handlers.websocket import websocket
 from starlite.status_codes import WS_1001_GOING_AWAY
 from starlite.testing import TestClient, create_test_client
 
@@ -57,10 +57,11 @@ async def test_accept_set_headers(headers: Any) -> None:
     @websocket("/")
     async def handler(socket: WebSocket) -> None:
         await socket.accept(headers=headers)
+        await socket.send_text("abc")
         await socket.close()
 
     with create_test_client(route_handlers=[handler]).websocket_connect("/") as ws:
-        ws.receive()
+        assert dict(ws.scope["headers"])[b"test"] == b"hello-world"
 
 
 async def test_custom_request_class() -> None:
@@ -77,8 +78,7 @@ async def test_custom_request_class() -> None:
         await socket.accept()
         await socket.close()
 
-    with create_test_client(route_handlers=[handler], websocket_class=MyWebSocket).websocket_connect("/") as ws:
-        ws.receive()
+    with create_test_client(route_handlers=[handler], websocket_class=MyWebSocket).websocket_connect("/"):
         assert value["called"]
 
 
@@ -322,7 +322,7 @@ def test_websocket_close_reason() -> None:
     with TestClient(app).websocket_connect("/") as websocket, pytest.raises(WebSocketDisconnect) as exc:
         websocket.receive_text()
         assert exc.value.code == WS_1001_GOING_AWAY
-        assert exc.value.reason == "Going Away"
+        assert exc.value.detail == "Going Away"
 
 
 def test_receive_text_before_accept() -> None:

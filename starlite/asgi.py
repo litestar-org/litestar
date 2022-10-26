@@ -239,11 +239,16 @@ class ASGIRouter:
         """
         message = await receive()
         try:
+            shutdown_event: "LifeSpanShutdownCompleteEvent" = {"type": "lifespan.shutdown.complete"}
+
             if message["type"] == "lifespan.startup":
                 await self.startup()
                 startup_event: "LifeSpanStartupCompleteEvent" = {"type": "lifespan.startup.complete"}
                 await send(startup_event)
                 await receive()
+            else:
+                await self.shutdown()
+                await send(shutdown_event)
         except BaseException as e:
             if message["type"] == "lifespan.startup":
                 startup_failure_event: "LifeSpanStartupFailedEvent" = {
@@ -260,7 +265,6 @@ class ASGIRouter:
             raise e
         else:
             await self.shutdown()
-            shutdown_event: "LifeSpanShutdownCompleteEvent" = {"type": "lifespan.shutdown.complete"}
             await send(shutdown_event)
 
     async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:

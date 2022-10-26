@@ -15,7 +15,7 @@ from starlite import (
     Router,
     get,
 )
-from starlite.testing import create_test_client
+from starlite.testing.create_test_client import create_test_client
 
 
 def test_middleware_call_order() -> None:
