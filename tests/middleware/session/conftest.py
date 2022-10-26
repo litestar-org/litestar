@@ -12,8 +12,8 @@ from sqlalchemy.pool import StaticPool
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import (
     BaseBackendConfig,
+    BaseSessionBackend,
     ServerSideBackend,
-    SessionBackend,
 )
 from starlite.middleware.session.cookie_backend import (
     CookieBackend,
@@ -167,8 +167,8 @@ def session_backend_config(request: pytest.FixtureRequest) -> BaseBackendConfig:
         pytest.param("async_sqlalchemy_session_backend", id="sqlalchemy-async"),
     ]
 )
-def session_backend(request: pytest.FixtureRequest) -> SessionBackend:
-    return cast("SessionBackend", request.getfixturevalue(request.param))
+def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
+    return cast("BaseSessionBackend", request.getfixturevalue(request.param))
 
 
 @pytest.fixture(
@@ -186,7 +186,7 @@ def server_side_backend(request: pytest.FixtureRequest) -> ServerSideBackend:
 
 
 @pytest.fixture
-def session_middleware(session_backend: SessionBackend) -> SessionMiddleware[Any]:
+def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware[Any]:
     return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
 
 

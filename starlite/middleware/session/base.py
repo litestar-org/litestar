@@ -31,7 +31,7 @@ ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 class BaseBackendConfig(BaseModel):
-    _backend_class: Type["SessionBackend"] = PrivateAttr()
+    _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
 
     """Configuration for Session middleware cookies."""
 
@@ -103,11 +103,10 @@ ConfigT = TypeVar("ConfigT", bound=BaseBackendConfig)
 ServerConfigT = TypeVar("ServerConfigT", bound=ServerSideSessionConfig)
 
 
-class SessionBackend(abc.ABC, Generic[ConfigT]):
+class BaseSessionBackend(abc.ABC, Generic[ConfigT]):
     def __init__(self, config: ConfigT) -> None:
         """Abstract session backend defining the interface between a storage
-        mechanism and the.
-
+        mechanism and the
         [SessionMiddleware][starlite.middleware.session.SessionMiddleware].
 
         This serves as the base class for all client- and server-side
@@ -176,11 +175,11 @@ class SessionBackend(abc.ABC, Generic[ConfigT]):
         """
 
 
-class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], abc.ABC):
+class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT], abc.ABC):
     def __init__(self, config: ServerConfigT) -> None:
         """Base class for server-side backends. Implements.
 
-        [SessionBackend][starlite.middleware.session.SessionBackend] and defines and
+        [BaseSessionBackend][starlite.middleware.session.BaseSessionBackend] and defines and
         interface which subclasses can implement to facilitate the storage of session data
         """
         super().__init__(config=config)
@@ -308,7 +307,7 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], a
         return {}
 
 
-B = TypeVar("B", bound=SessionBackend)
+B = TypeVar("B", bound=BaseSessionBackend)
 
 
 class SessionMiddleware(MiddlewareProtocol, Generic[B]):
@@ -319,7 +318,7 @@ class SessionMiddleware(MiddlewareProtocol, Generic[B]):
 
         Args:
             app: An ASGI application
-            backend: A [SessionBackend][starlite.middleware.session.base.SessionBackend]
+            backend: A [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend]
                 instance used to store and retrieve session data
         """
 

@@ -13,7 +13,7 @@ from starlette.datastructures import MutableHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 
-from .base import BaseBackendConfig, SessionBackend
+from .base import BaseBackendConfig, BaseSessionBackend
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -30,7 +30,7 @@ CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
 
 
-class CookieBackend(SessionBackend["CookieBackendConfig"]):
+class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
     def __init__(self, config: "CookieBackendConfig") -> None:
         """Starlite CookieSessionMiddleware.
 

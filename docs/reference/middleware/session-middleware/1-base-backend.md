@@ -18,7 +18,7 @@
         members:
             - session_id_bytes
 
-::: starlite.middleware.session.base.SessionBackend
+::: starlite.middleware.session.base.BaseSessionBackend
     options:
         members:
             - __init__

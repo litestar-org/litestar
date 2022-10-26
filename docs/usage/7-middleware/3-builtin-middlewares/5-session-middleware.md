@@ -2,7 +2,7 @@
 
 Starlite includes a [SessionMiddleware][starlite.middleware.session.SessionMiddleware],
 offering client- and server-side sessions. Different storage mechanisms are available through
-[SessionBackends][starlite.middleware.session.base.SessionBackend], and include support for
+[SessionBackends][starlite.middleware.session.base.BaseSessionBackend], and include support for
 storing data in:
 
 - [Cookies](#client-side-sessions)
