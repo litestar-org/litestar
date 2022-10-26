@@ -16,7 +16,14 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         self._store: Dict[str, tuple[datetime, bytes]] = {}
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Load data associate with `session_id`"""
+        """Retrieve data associated with `session_id`.
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
+        """
         wrapped_data = self._store.get(session_id)
         if wrapped_data:
             expires, data = wrapped_data
@@ -26,10 +33,17 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` for `session_id`.
+        """Store `data` under the `session_id` for later retrieval.
 
-        Previously existing data will be overwritten and expiry times
-        will be updated
+        If there is already data associated with `session_id`, replace
+        it with `data` and reset its expiry time
+
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         self._store[session_id] = (
             datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age),
@@ -37,15 +51,24 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         )
 
     async def delete(self, session_id: str) -> None:
-        """Delete data associated with `session_id`.
+        """Delete the data associated with `session_id`. Fails silently if no
+        such session-ID exists.
 
-        Fails silently if no such session-ID exists
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
         """
         if session_id in self._store:
             del self._store[session_id]
 
     async def delete_all(self) -> None:
-        """Delete all session data stored in redis."""
+        """Delete all session data.
+
+        Returns:
+            None
+        """
         self._store = {}
 
 

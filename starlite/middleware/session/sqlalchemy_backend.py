@@ -123,10 +123,13 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         return result.one_or_none()
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associate with `session_id`.
+        """Retrieve data associated with `session_id`.
 
-        If no data for the given `session_id` exists, return an empty
-        dict
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
         """
         sa_session = self._create_sa_session()
         session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
@@ -144,6 +147,13 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
 
         If there is already data associated with `session_id`, replace
         it with `data` and reset its expiry time
+
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         sa_session = self._create_sa_session()
         session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
@@ -156,20 +166,36 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         await sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`"""
+        """Delete the data associated with `session_id`. Fails silently if no
+        such session-ID exists.
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
+        """
         sa_session = self._create_sa_session()
         await sa_session.execute(sa.delete(self._model).where(self._model.session_id == session_id))
         await sa_session.commit()
 
     async def delete_all(self) -> None:
-        """Delete all data stored within this backend."""
+        """Delete all session data.
+
+        Returns:
+            None
+        """
         sa_session = self._create_sa_session()
 
         await sa_session.execute(sa.delete(self._model))
         await sa_session.commit()
 
     async def delete_expired(self) -> None:
-        """Delete all expired session from the database."""
+        """Delete all expired session from the database.
+
+        Returns:
+            None
+        """
         sa_session = self._create_sa_session()
         await sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
@@ -192,10 +218,13 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         return None
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associate with `session_id`.
+        """Retrieve data associated with `session_id`.
 
-        If no data for the given `session_id` exists, return an empty
-        dict
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
         """
         return await anyio.to_thread.run_sync(self._get, session_id)
 
@@ -215,6 +244,13 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
 
         If there is already data associated with `session_id`, replace
         it with `data` and reset its expiry time
+
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         return await anyio.to_thread.run_sync(self._set, session_id, data)
 
@@ -224,7 +260,15 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`"""
+        """Delete the data associated with `session_id`. Fails silently if no
+        such session-ID exists.
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
+        """
         return await anyio.to_thread.run_sync(self._delete, session_id)
 
     def _delete_all(self) -> None:
@@ -234,7 +278,11 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.commit()
 
     async def delete_all(self) -> None:
-        """Delete all data stored within this backend."""
+        """Delete all session data.
+
+        Returns:
+            None
+        """
         await anyio.to_thread.run_sync(self._delete_all)
 
     def _delete_expired(self) -> None:
@@ -242,7 +290,11 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
     async def delete_expired(self) -> None:
-        """Delete all expired session from the database."""
+        """Delete all expired session from the database.
+
+        Returns:
+            None
+        """
         await anyio.to_thread.run_sync(self._delete_expired)
 
 

@@ -51,13 +51,13 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
             scope: The ASGI connection scope.
 
         Notes:
-            - The returned list is composed of a chunks of a single base64 encoded
-                string that is encrypted using AES-CGM.
+            The returned list is composed of a chunks of a single base64 encoded
+            string that is encrypted using AES-CGM.
 
         Returns:
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
-        serialized = self.serialise_data(data, scope)
+        serialized = self.serlialize_data(data, scope)
         associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
         encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
@@ -80,12 +80,19 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
         if associated_data and loads(associated_data)["expires_at"] > round(time.time()):
             encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
             decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
-            return self.deserialise_data(decrypted)
+            return self.deserialize_data(decrypted)
         return {}
 
     def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
         """Return a list of cookie-keys from the connection if they match the
-        session-cookie pattern."""
+        session-cookie pattern.
+
+        Args:
+            connection: An ASGIConnection instance
+
+        Returns:
+            A list of session-cookie keys
+        """
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
     async def store_in_message(
@@ -101,6 +108,9 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
             scope_session: Current session to store
             message: Outgoing send-message
             connection: Originating ASGIConnection containing the scope
+
+        Returns:
+            None
         """
 
         scope = connection.scope
@@ -138,6 +148,9 @@ class CookieBackend(SessionBackend["CookieBackendConfig"]):
 
         Args:
             connection: Originating ASGIConnection
+
+        Returns:
+            The session data
         """
         cookie_keys = self.get_cookie_keys(connection)
         if cookie_keys:

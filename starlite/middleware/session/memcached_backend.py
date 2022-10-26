@@ -10,7 +10,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         """Session backend to store data in memcached.
 
         Notes:
-            - Requires `aiomcache`. Install with `pip install starlite[memcached]`
+            Requires `aiomcache`. Install with `pip install starlite[memcached]`
         """
         super().__init__(config=config)
         self.memcached = config.memcached
@@ -19,30 +19,51 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         return f"{self.config.key_prefix}:{session_id}".encode()
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Load data associate with `session_id` from memcached."""
+        """Retrieve data associated with `session_id` from memcached.
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
+        """
         data = await self.memcached.get(key=self._id_to_storage_key(session_id))  # type: ignore[call-overload]
         return cast("Optional[bytes]", data)
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` in memcached under `<prefix>:<session_id>`.
+        """Store `data` in memcached under `<prefix>:<session_id>`. If there is
+        already data associated with `session_id`, replace it with `data` and
+        reset its expiry time.
 
-        Previously existing data will be overwritten and expiry times
-        will be updated
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         await self.memcached.set(key=self._id_to_storage_key(session_id), value=data, exptime=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete data associated with `session_id` from memcached.
+        """Delete the data associated with `session_id`. Fail silently if no
+        such session-ID exists.
 
-        Fails silently if no such key exists
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
         """
         await self.memcached.delete(self._id_to_storage_key(session_id))
 
     async def delete_all(self) -> None:
-        """Delete all session data stored in memcached.
+        """Delete all data stored within this backend.
+
+        Returns:
+            None
 
         Notes:
-            - This has poor performance since memcached does not offer utilities to
+            This has poor performance since memcached does not offer utilities to
             properly scan or match keys by prefix.
         """
         stats: Dict[bytes, Optional[bytes]] = await self.memcached.stats("items")

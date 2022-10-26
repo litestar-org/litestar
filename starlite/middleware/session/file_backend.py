@@ -29,10 +29,13 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         return datetime.fromisoformat(wrapped_data[0]) > datetime.utcnow().replace(tzinfo=None)
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Load data associate with `session_id` from a file.
+        """Load data associated with `session_id` from a file.
 
-        If no such file exists, or the session has expired, return
-        `None`. If the session is expired, delete the file
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
         """
 
         path = self._id_to_storage_path(session_id)
@@ -45,10 +48,15 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store `data` alongside metadata under the `session_id`, using the ID
-        as a filename.
+        as a filename. If a file already exists for `session_id`, replace it
+        with `data` and reset its expiry time.
 
-        If a file already exists for `session_id`, replace it with
-        `data` and reset its expiry time
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         await self.path.mkdir(exist_ok=True)
         path = self._id_to_storage_path(session_id)
@@ -62,17 +70,31 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         """Delete the file associated with `session_id`.
 
         Fails silently if no such file exists
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
         """
         path = self._id_to_storage_path(session_id)
         await path.unlink(missing_ok=True)
 
     async def delete_all(self) -> None:
-        """Delete all files in the storage path."""
+        """Delete all files in the storage path.
+
+        Returns:
+            None
+        """
         async for file in self.path.iterdir():
             await file.unlink(missing_ok=True)
 
     async def delete_expired(self) -> None:
-        """Delete expired session files."""
+        """Delete expired session files.
+
+        Return:
+            None
+        """
         async for file in self.path.iterdir():
             wrapper = await self._load_from_path(file)
             if self._is_expired(wrapper):
@@ -82,4 +104,4 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 class FileBackendConfig(ServerSideSessionConfig):
     _backend_class: Type[FileBackend] = FileBackend
     storage_path: PathLike
-    """Session files will be stored here"""
+    """Disk path under which to store session files."""

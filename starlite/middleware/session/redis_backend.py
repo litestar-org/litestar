@@ -19,26 +19,50 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
         return f"{self.config.key_prefix}:{session_id}"
 
     async def get(self, session_id: str) -> Union[bytes, str, None]:
-        """Load data associate with `session_id` from redis."""
+        """Load data associated with `session_id` from redis.
+
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            The session data, if existing, otherwise `None`.
+        """
+
         return await self.redis.get(self._id_to_storage_key(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` in redis under `<prefix>:<session_id>`.
+        """Store `data` in redis under `<prefix>:<session_id>`
 
-        Previously existing data will be overwritten and expiry times
-        will be updated
+        If there is already data associated with `session_id`, replace
+        it with `data` and reset its expiry time
+
+        Args:
+            session_id: The session-ID
+            data: Serialized session data
+
+        Returns:
+            None
         """
         await self.redis.set(self._id_to_storage_key(session_id), data, ex=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete data associated with `session_id` from redis.
+        """Delete the data associated with `session_id` from redis. Fail
+        silently if no such session-ID exists.
 
-        Fails silently if no such key exists
+        Args:
+            session_id: The session-ID
+
+        Returns:
+            None
         """
         await self.redis.delete(self._id_to_storage_key(session_id))
 
     async def delete_all(self) -> None:
-        """Delete all session data stored in redis."""
+        """Delete all session data stored in redis.
+
+        Returns:
+            None
+        """
         pattern = f"{self.config.key_prefix}:*"
         cursor: int | None = None
         while (cursor is None) or cursor > 0:
