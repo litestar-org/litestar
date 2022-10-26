@@ -1,5 +1,5 @@
 import pickle
-from typing import TYPE_CHECKING, Generator, Optional
+from typing import Generator
 from unittest.mock import Mock, patch
 
 import pytest
