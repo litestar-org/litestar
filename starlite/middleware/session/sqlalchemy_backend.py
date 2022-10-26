@@ -204,7 +204,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
     def _get_session_obj(self, *, sa_session: SASession, session_id: str) -> Optional[SessionModelMixin]:
         return sa_session.scalars(self._select_session_obj(session_id)).one_or_none()
 
-    def _get(self, session_id: str) -> Optional[bytes]:
+    def _get_sync(self, session_id: str) -> Optional[bytes]:
         sa_session = self._create_sa_session()
         session_obj = self._get_session_obj(sa_session=sa_session, session_id=session_id)
 
@@ -226,9 +226,9 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        return await anyio.to_thread.run_sync(self._get, session_id)
+        return await anyio.to_thread.run_sync(self._get_sync, session_id)
 
-    def _set(self, session_id: str, data: bytes) -> None:
+    def _set_sync(self, session_id: str, data: bytes) -> None:
         sa_session = self._create_sa_session()
         session_obj = self._get_session_obj(sa_session=sa_session, session_id=session_id)
 
@@ -252,9 +252,9 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        return await anyio.to_thread.run_sync(self._set, session_id, data)
+        return await anyio.to_thread.run_sync(self._set_sync, session_id, data)
 
-    def _delete(self, session_id: str) -> None:
+    def _delete_sync(self, session_id: str) -> None:
         sa_session = self._create_sa_session()
         sa_session.execute(sa.delete(self._model).where(self._model.session_id == session_id))
         sa_session.commit()
@@ -269,9 +269,9 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        return await anyio.to_thread.run_sync(self._delete, session_id)
+        return await anyio.to_thread.run_sync(self._delete_sync, session_id)
 
-    def _delete_all(self) -> None:
+    def _delete_all_sync(self) -> None:
         sa_session = self._create_sa_session()
 
         sa_session.execute(sa.delete(self._model))
@@ -283,9 +283,9 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        await anyio.to_thread.run_sync(self._delete_all)
+        await anyio.to_thread.run_sync(self._delete_all_sync)
 
-    def _delete_expired(self) -> None:
+    def _delete_expired_sync(self) -> None:
         sa_session = self._create_sa_session()
         sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
@@ -295,7 +295,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        await anyio.to_thread.run_sync(self._delete_expired)
+        await anyio.to_thread.run_sync(self._delete_expired_sync)
 
 
 class SQLAlchemyBackendConfig(ServerSideSessionConfig):
