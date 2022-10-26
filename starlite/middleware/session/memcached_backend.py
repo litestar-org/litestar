@@ -1,6 +1,6 @@
 from typing import Dict, Optional, Type, cast
 
-from aiomcache import Client as MemcacheClient  # pylint: disable=import-error
+from aiomcache import Client as MemcacheClient
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
 
@@ -10,7 +10,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         """Session backend to store data in memcached.
 
         Notes:
-            - Requires `aiomemcache`. Install with `pip install starlite[memcached]`
+            - Requires `aiomcache`. Install with `pip install starlite[memcached]`
         """
         super().__init__(config=config)
         self.memcached = config.memcached

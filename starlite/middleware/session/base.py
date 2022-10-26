@@ -179,9 +179,9 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], a
         """Delete all data stored within this backend."""
 
     def generate_session_id(self) -> str:
-        """Generate a new session-id, with
-        n=[session_id_bytes][ServerSideSessionMiddleware.session_id_bytes]
-        random bytes."""
+        """Generate a new session-id, with n=[session_id_bytes][starlite.middle
+        ware.session.base.ServerSideSessionConfig.session_id_bytes] random
+        bytes."""
         return secrets.token_hex(self.config.session_id_bytes)
 
     async def store_in_message(
@@ -190,8 +190,9 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], a
         """Stores the necessary information in the outgoing `Message` by
         setting a cookie containing the session-ID. If the session is empty, a
         null-cookie will be set. Otherwise, the serialised data will be stored
-        using [set][ServerSideBackend], under the current session-id. If no
-        session-ID exists, a new ID will be generated using.
+        using [set][starlite.middleware.session.base.ServerSideBackend.get],
+        under the current session-id. If no session-ID exists, a new ID will be
+        generated using.
 
         [generate_session_id].
 
@@ -228,7 +229,7 @@ class ServerSideBackend(Generic[ServerConfigT], SessionBackend[ServerConfigT], a
         The session-ID will be gathered from a cookie with the key set in the
         [configuration[BaseBackendConfig.key]. If a cookie is found, its value will
         be used as the session-ID and data associated with this ID will be loaded
-        using [get][ServerSideBackend.get]. If no cookie was found or no data was loaded
+        using [get][starlite.middleware.session.base.ServerSideBackend.get]. If no cookie was found or no data was loaded
         from the store, this will return an empty dictionary.
 
         Args:

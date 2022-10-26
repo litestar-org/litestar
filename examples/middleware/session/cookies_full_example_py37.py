@@ -1,15 +1,16 @@
 from os import urandom
+from typing import Dict
 
 from starlite import Request, Starlite, delete, get, post
-from starlite.middleware.session import SessionCookieConfig
+from starlite.middleware.session.cookie_backend import CookieBackendConfig
 
 # we initialize to config with a 16 byte key, i.e. 128 a bit key.
 # in real world usage we should inject the secret from the environment
-session_config = SessionCookieConfig(secret=urandom(16))  # type: ignore[arg-type]
+session_config = CookieBackendConfig(secret=urandom(16))  # type: ignore[arg-type]
 
 
 @get("/session")
-def check_session_handler(request: Request) -> dict[str, bool]:
+def check_session_handler(request: Request) -> Dict[str, bool]:
     """Handler function that accesses request.session."""
     return {"has_session": request.session != {}}
 

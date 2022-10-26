@@ -203,7 +203,6 @@ nav:
           - reference/middleware/1-authentication-middleware.md
           - reference/middleware/2-logging-middleware.md
           - reference/middleware/3-rate-limit-middleware.md
-          - reference/middleware/4-session-middleware.md
           - Session Middleware:
               - reference/middleware/session-middleware/0-middleware.md
               - Backends:
@@ -271,6 +270,8 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed:
+        alternate_style: true
 plugins:
   - search:
       lang: en

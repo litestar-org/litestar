@@ -34,7 +34,6 @@
             - secure
             - httponly
             - samesite
-            - backend
             - middleware
 
 ::: starlite.middleware.session.base.ServerSideSessionConfig

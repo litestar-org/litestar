@@ -8,6 +8,7 @@
             - set
             - delete
             - delete_all
+            - delete_expired
 
 ::: starlite.middleware.session.file_backend.FileBackendConfig
     options:

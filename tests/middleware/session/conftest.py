@@ -3,7 +3,7 @@ import secrets
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Generator, cast
 
 import fakeredis.aioredis  # type: ignore
-import py
+import py  # type: ignore
 import pytest
 from pydantic import SecretBytes
 from sqlalchemy.orm import declarative_base

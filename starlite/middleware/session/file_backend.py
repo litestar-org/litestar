@@ -19,6 +19,15 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
     def _id_to_storage_path(self, session_id: str) -> anyio.Path:
         return self.path / session_id
 
+    @staticmethod
+    async def _load_from_path(path: anyio.Path) -> FileStorageMetadataWrapper:
+        wrapped_data: FileStorageMetadataWrapper = orjson.loads(await path.read_bytes())
+        return wrapped_data
+
+    @staticmethod
+    def _is_expired(wrapped_data: FileStorageMetadataWrapper) -> bool:
+        return datetime.fromisoformat(wrapped_data[0]) > datetime.utcnow().replace(tzinfo=None)
+
     async def get(self, session_id: str) -> Optional[bytes]:
         """Load data associate with `session_id` from a file.
 
@@ -28,10 +37,9 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
         path = self._id_to_storage_path(session_id)
         if await path.exists():
-            wrapped_data: FileStorageMetadataWrapper = orjson.loads(await path.read_bytes())
-            expires, data = wrapped_data
-            if datetime.fromisoformat(expires) > datetime.utcnow().replace(tzinfo=None):
-                return data.encode()
+            wrapped_data = await self._load_from_path(path)
+            if self._is_expired(wrapped_data):
+                return wrapped_data[1].encode()
             await path.unlink()
         return None
 
@@ -62,6 +70,13 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         """Delete all files in the storage path."""
         async for file in self.path.iterdir():
             await file.unlink(missing_ok=True)
+
+    async def delete_expired(self) -> None:
+        """Delete expired session files."""
+        async for file in self.path.iterdir():
+            wrapper = await self._load_from_path(file)
+            if self._is_expired(wrapper):
+                await file.unlink()
 
 
 class FileBackendConfig(ServerSideSessionConfig):

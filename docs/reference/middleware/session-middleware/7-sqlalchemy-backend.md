@@ -1,5 +1,11 @@
 # SQLAlchemy backends
 
+::: starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend
+    options:
+        members:
+            - __init__
+            - delete_expired
+
 ::: starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend
     options:
         members:

@@ -88,14 +88,14 @@ def register_session_model(base: Union[registry, Any], model: Type[SessionModelT
     return cast("Type[SessionModelT]", registry_.map_declaratively(model))
 
 
-class BaseSQLAlchemySessionBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
+class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], abc.ABC):
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
         """Session backend to store data in a database with SQLAlchemy. Works
         with both sync and async engines.
 
         Notes:
             - Requires `sqlalchemy` which needs to be installed separately, and a configured
-            [SQLALchemyPlugin][starlite.plugins.sql_alchemy.SQLALchemyPlugin]
+            [SQLALchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin]
         """
         super().__init__(config=config)
         self._model = config.model
@@ -117,7 +117,7 @@ class BaseSQLAlchemySessionBackend(Generic[AnySASessionT], ServerSideBackend["SQ
         """Delete all expired session from the database."""
 
 
-class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession]):
+class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
     async def _get_session_obj(self, *, sa_session: AsyncSASession, session_id: str) -> Optional[SessionModelMixin]:
         result = await sa_session.scalars(self._select_session_obj(session_id))
         return result.one_or_none()
@@ -174,7 +174,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemySessionBackend[AsyncSASession]):
         await sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
 
-class SQLAlchemyBackend(BaseSQLAlchemySessionBackend[SASession]):
+class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
     def _get_session_obj(self, *, sa_session: SASession, session_id: str) -> Optional[SessionModelMixin]:
         return sa_session.scalars(self._select_session_obj(session_id)).one_or_none()
 
