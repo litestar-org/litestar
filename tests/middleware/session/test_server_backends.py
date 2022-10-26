@@ -98,6 +98,13 @@ async def test_file_backend_path(file_session_backend: "FileBackend", session_da
     assert await (file_session_backend.path / "foo").exists()
 
 
+async def test_file_backend_custom_filename(file_session_backend: "FileBackend", session_data: bytes) -> None:
+    file_session_backend.config.make_filename = lambda s: f"{s}.txt"
+    await file_session_backend.set("foo", session_data)
+
+    assert await (file_session_backend.path / "foo.txt").exists()
+
+
 async def test_load_file_not_found_returns_emtpy_session(
     file_session_backend: "FileBackend", session_data: bytes
 ) -> None:

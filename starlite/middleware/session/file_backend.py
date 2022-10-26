@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from os import PathLike
-from typing import Dict, NamedTuple, Optional, Type
+from typing import Callable, NamedTuple, Optional, Type
 
 import orjson
 from anyio import Path
@@ -20,7 +20,8 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         self.path = Path(config.storage_path)
 
     def _id_to_storage_path(self, session_id: str) -> Path:
-        return self.path / session_id
+        file_name = self.config.make_filename(session_id) if self.config.make_filename else session_id
+        return self.path / file_name
 
     @staticmethod
     async def _load_from_path(path: Path) -> FileStorageMetadataWrapper:
@@ -108,3 +109,8 @@ class FileBackendConfig(ServerSideSessionConfig):
     _backend_class: Type[FileBackend] = FileBackend
     storage_path: PathLike
     """Disk path under which to store session files."""
+    make_filename: Optional[Callable[[str], str]] = None
+    """
+    Callable that turns a session-ID into a filename used for storage. By default, the
+    session-ID will be used as a filename
+    """
