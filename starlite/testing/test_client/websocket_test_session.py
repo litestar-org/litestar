@@ -3,7 +3,6 @@ from queue import Queue
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
 
 from anyio import sleep
-from anyio.from_thread import start_blocking_portal
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 from typing_extensions import Literal
 
@@ -40,9 +39,8 @@ class WebSocketTestSession:
 
     def __enter__(self) -> "WebSocketTestSession":
         self.exit_stack = ExitStack()
-        portal = self.exit_stack.enter_context(
-            start_blocking_portal(backend=self.client.backend, backend_options=self.client.backend_options)
-        )
+
+        portal = self.exit_stack.enter_context(self.client.portal())
 
         try:
             portal.start_task_soon(self.do_asgi_call)

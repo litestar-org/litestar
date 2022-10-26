@@ -1,6 +1,15 @@
-from concurrent.futures import Future
-from contextlib import ExitStack
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, Sequence, TypeVar, Union
+from contextlib import ExitStack, contextmanager
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generator,
+    Generic,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+)
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
@@ -46,7 +55,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 
 class TestClient(Client, Generic[T]):
-    task: "Future[None]"
+    blocking_portal: "BlockingPortal"
     lifespan_handler: LifeSpanHandler
     exit_stack: "ExitStack"
 
@@ -76,10 +85,9 @@ class TestClient(Client, Generic[T]):
                 route handlers.
             cookies: Cookies to set on the client.
         """
-        self.portal: Optional[BlockingPortal] = None
+        self.app = app
         self.backend = backend
         self.backend_options = backend_options
-        self.app = app
         self.session = SessionMiddleware(app=self.app, config=session_config) if session_config else None
 
         super().__init__(
@@ -95,16 +103,22 @@ class TestClient(Client, Generic[T]):
             ),
         )
 
+    @contextmanager
+    def portal(self) -> Generator["BlockingPortal", None, None]:
+        if hasattr(self, "blocking_portal"):
+            yield self.blocking_portal
+        else:
+            with start_blocking_portal(backend=self.backend, backend_options=self.backend_options) as portal:
+                yield portal
+
     def __enter__(self) -> "TestClient[T]":
         with ExitStack() as stack:
-            self.portal = portal = stack.enter_context(
-                start_blocking_portal(backend=self.backend, backend_options=self.backend_options)
-            )
-            self.lifespan_handler = LifeSpanHandler(portal=portal, app=self.app)
+            self.blocking_portal = portal = stack.enter_context(self.portal())
+            self.lifespan_handler = LifeSpanHandler(client=self)
 
             @stack.callback
             def reset_portal() -> None:
-                self.portal = None
+                delattr(self, "blocking_portal")
 
             @stack.callback
             def wait_shutdown() -> None:

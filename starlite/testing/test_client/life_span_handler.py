@@ -5,11 +5,9 @@ from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
 if TYPE_CHECKING:
-    from anyio.from_thread import BlockingPortal
-
+    from starlite.testing import TestClient
     from starlite.types import LifeSpanReceiveMessage  # noqa: F401  # nopycln: import
     from starlite.types import (
-        ASGIApp,
         LifeSpanSendMessage,
         LifeSpanShutdownEvent,
         LifeSpanStartupEvent,
@@ -17,16 +15,16 @@ if TYPE_CHECKING:
 
 
 class LifeSpanHandler:
-    __slots__ = ("stream_send", "stream_receive", "app", "portal", "task")
+    __slots__ = ("stream_send", "stream_receive", "client", "task")
 
-    def __init__(self, portal: "BlockingPortal", app: "ASGIApp"):
-        self.app = app
-        self.portal = portal
+    def __init__(self, client: "TestClient"):
+        self.client = client
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))
-        self.task = portal.start_task_soon(self.lifespan)
 
-        portal.call(self.wait_startup)
+        with self.client.portal() as portal:
+            self.task = portal.start_task_soon(self.lifespan)
+            portal.call(self.wait_startup)
 
     async def receive(self) -> "LifeSpanSendMessage":
         message = await self.stream_send.receive()
@@ -62,6 +60,6 @@ class LifeSpanHandler:
     async def lifespan(self) -> None:
         scope = {"type": "lifespan"}
         try:
-            await self.app(scope, self.stream_receive.receive, self.stream_send.send)  # type: ignore
+            await self.client.app(scope, self.stream_receive.receive, self.stream_send.send)
         finally:
             await self.stream_send.send(None)

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
-from anyio.from_thread import start_blocking_portal
 from httpx import BaseTransport, ByteStream, Request, Response
 from typing_extensions import TypedDict
 
@@ -147,9 +146,7 @@ class TestClientTransport(BaseTransport):
         raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
 
         try:
-            with start_blocking_portal(
-                backend=self.client.backend, backend_options=self.client.backend_options
-            ) as portal:
+            with self.client.portal() as portal:
                 response_complete = portal.call(Event)
                 context: SendReceiveContext = {
                     "response_complete": response_complete,
