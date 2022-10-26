@@ -63,12 +63,6 @@ class BaseBackendConfig(BaseModel):
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
 
     @property
-    def backend(self) -> "SessionBackend":
-        """Return an instance of the associated session backend, passing `self`
-        as the configuration."""
-        return self._backend_class(config=self)
-
-    @property
     def middleware(self) -> DefineMiddleware:
         """Use this property to insert the config into a middleware list on one
         of the application layers.
@@ -95,7 +89,7 @@ class BaseBackendConfig(BaseModel):
         Returns:
             An instance of DefineMiddleware including 'self' as the config kwarg value.
         """
-        return DefineMiddleware(SessionMiddleware, backend=self.backend)
+        return DefineMiddleware(SessionMiddleware, backend=self._backend_class(config=self))
 
 
 class ServerSideSessionConfig(BaseBackendConfig):
