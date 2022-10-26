@@ -1,5 +1,9 @@
 # Changelog
 
+[1.33.0]
+
+- add `TestClient` to replace Starlette.
+
 [1.32.0]
 
 - add `BackgroundTask` and `BackgroundTasks` to replace Starlette.
