@@ -264,6 +264,7 @@ markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
+  - def_list
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
