@@ -111,3 +111,78 @@ async def test_use_of_custom_response_serializer_with_websocket_handler(
     ).websocket_connect("/create-session") as ws:
         data = ws.receive_json()
         assert data == {"has_session": True}
+
+
+def get_session_installed(request: Request) -> Dict[str, bool]:
+    return {"has_session": "session" in request.scope}
+
+
+def test_middleware_exclude_pattern(memory_session_backend_config) -> None:
+    memory_session_backend_config.exclude = ["north", "south"]
+
+    @get("/north")
+    def north_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    @get("/south")
+    def south_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    @get("/west")
+    def west_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    with create_test_client(
+        route_handlers=[north_handler, south_handler, west_handler],
+        middleware=[memory_session_backend_config.middleware],
+    ) as client:
+        response = client.get("/north")
+        assert response.json() == {"has_session": False}
+
+        response = client.get("/south")
+        assert response.json() == {"has_session": False}
+
+        response = client.get("/west")
+        assert response.json() == {"has_session": True}
+
+
+def test_middleware_exclude_flag(memory_session_backend_config) -> None:
+    @get("/north")
+    def north_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    @get("/south", skip_session=True)
+    def south_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    with create_test_client(
+        route_handlers=[north_handler, south_handler],
+        middleware=[memory_session_backend_config.middleware],
+    ) as client:
+        response = client.get("/north")
+        assert response.json() == {"has_session": True}
+
+        response = client.get("/south")
+        assert response.json() == {"has_session": False}
+
+
+def test_middleware_exclude_custom_key(memory_session_backend_config) -> None:
+    memory_session_backend_config.exclude_opt_key = "my_exclude_key"
+
+    @get("/north")
+    def north_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    @get("/south", my_exclude_key=True)
+    def south_handler(request: Request) -> Dict[str, bool]:
+        return get_session_installed(request)
+
+    with create_test_client(
+        route_handlers=[north_handler, south_handler],
+        middleware=[memory_session_backend_config.middleware],
+    ) as client:
+        response = client.get("/north")
+        assert response.json() == {"has_session": True}
+
+        response = client.get("/south")
+        assert response.json() == {"has_session": False}

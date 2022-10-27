@@ -1,6 +1,6 @@
 import json
 import os
-from typing import TYPE_CHECKING, Any, Callable, Dict, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Union, cast
 
 import pytest
 from pydantic import BaseModel, SecretBytes
@@ -21,11 +21,29 @@ from starlite.testing import RequestFactory, TestClient
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.middleware.session.base import (
+        BaseBackendConfig,
+        ServerSideSessionConfig,
+    )
+    from starlite.middleware.session.cookie_backend import CookieBackendConfig
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
 pet = PetFactory.build()
+
+
+@pytest.fixture(
+    params=[
+        pytest.param("cookie_session_backend_config", id="cookie"),
+        pytest.param("memory_session_backend_config", id="memory"),
+        pytest.param("file_session_backend_config", id="file"),
+        pytest.param("memcached_session_backend_config", id="memcached"),
+        pytest.param("sqlalchemy_session_backend_config", id="sqlalchemy"),
+        pytest.param("async_sqlalchemy_session_backend_config", id="sqlalchemy-async"),
+    ]
+)
+def session_config(request: pytest.FixtureRequest) -> Union["ServerSideSessionConfig", "CookieBackendConfig"]:
+    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
 
 
 def test_request_factory_no_cookie_header() -> None:
@@ -225,33 +243,33 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
 
 
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_set_session_data(with_domain: bool, session_backend_config: "BaseBackendConfig") -> None:
+def test_test_client_set_session_data(with_domain: bool, session_config: "BaseBackendConfig") -> None:
     session_data = {"foo": "bar"}
 
     if with_domain:
-        session_backend_config.domain = "testserver"
+        session_config.domain = "testserver"
 
     @get(path="/test")
     def get_session_data(request: Request) -> Dict[str, Any]:
         return request.session
 
-    app = Starlite(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
+    app = Starlite(route_handlers=[get_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_backend_config) as client:
+    with TestClient(app=app, session_config=session_config) as client:
         client.set_session_data(session_data)
         assert session_data == client.get("/test").json()
 
 
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_get_session_data(with_domain: bool, session_backend_config: "BaseBackendConfig") -> None:
+def test_test_client_get_session_data(with_domain: bool, session_config: "BaseBackendConfig") -> None:
     session_data = {"foo": "bar"}
 
     @post(path="/test")
     def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
-    app = Starlite(route_handlers=[set_session_data], middleware=[session_backend_config.middleware])
+    app = Starlite(route_handlers=[set_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_backend_config) as client:
+    with TestClient(app=app, session_config=session_config) as client:
         client.post("/test")
         assert client.get_session_data() == session_data

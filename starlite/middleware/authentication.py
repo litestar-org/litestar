@@ -6,6 +6,7 @@ from pydantic import BaseConfig, BaseModel
 
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
+from starlite.middleware.util import should_bypass_middleware
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Receive, Scope, Send
@@ -65,13 +66,12 @@ class AbstractAuthenticationMiddleware(ABC):
         Returns:
             None
         """
-        exclude_from_auth = scope["route_handler"].opt.get(self.exclude_from_auth_key)
-        if (
-            not exclude_from_auth
-            and (not self.exclude or not self.exclude.findall(scope["path"]))
-            and scope["type"] in self.scopes
+        if not should_bypass_middleware(
+            scope=scope,
+            scopes=self.scopes,
+            exclude_path_pattern=self.exclude,
+            exclude_opt_key=self.exclude_from_auth_key,
         ):
-
             auth_result = await self.authenticate_request(ASGIConnection(scope))
             scope["user"] = auth_result.user
             scope["auth"] = auth_result.auth

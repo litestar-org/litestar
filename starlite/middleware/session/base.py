@@ -1,3 +1,4 @@
+import re
 import secrets
 from abc import ABC, abstractmethod
 from typing import (
@@ -7,7 +8,9 @@ from typing import (
     Callable,
     Dict,
     Generic,
+    List,
     Optional,
+    Pattern,
     Type,
     TypeVar,
     Union,
@@ -21,6 +24,7 @@ from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.middleware.base import MiddlewareProtocol
+from starlite.middleware.util import should_bypass_middleware
 from starlite.utils import default_serializer, get_serializer_from_scope
 
 if TYPE_CHECKING:
@@ -65,6 +69,10 @@ class BaseBackendConfig(BaseModel):
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    exclude: Optional[Union[str, List[str]]] = None
+    """A pattern or list of patterns to skip in the session middleware."""
+    exclude_opt_key: str = "skip_session"
+    """An identifier to use on routes to disable the session middleware for a particular route"""
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -312,7 +320,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
 
 class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
-    __slots__ = ("backend",)
+    __slots__ = ("backend", "_exclude_pattern", "_exclude_opt_key")
 
     def __init__(self, app: "ASGIApp", backend: BaseSessionBackendT) -> None:
         """Starlite session middleware for storing session data.
@@ -325,6 +333,12 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
 
         self.app = app
         self.backend = backend
+        self._exclude_pattern: Optional[Pattern[str]] = None
+        self._exclude_opt_key = backend.config.exclude_opt_key
+
+        if backend.config.exclude:
+            exclude = backend.config.exclude
+            self._exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
         """
@@ -367,7 +381,12 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         Returns:
             None
         """
-        if scope["type"] in self.backend.config.scopes:
+        if not should_bypass_middleware(
+            scope=scope,
+            scopes=self.backend.config.scopes,
+            exclude_opt_key=self._exclude_opt_key,
+            exclude_path_pattern=self._exclude_pattern,
+        ):
             connection = ASGIConnection[Any, Any, Any](scope, receive=receive, send=send)
             scope["session"] = await self.backend.load_from_connection(connection)
 
