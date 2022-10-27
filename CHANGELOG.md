@@ -1,5 +1,15 @@
 # Changelog
 
+[1.34.0]
+
+- Add support for server-side sessions
+- Fix an issue where header values would be forced to lower case
+- Add a `__test__ = False` attribute to the `TestClient` so it won't get collected by pytest
+  together with an async test
+- Fix an issue that caused test to fail on Python < 3.7 when using `unittest.mock.patch`
+- Test against the newly released Python 3.11
+- Add Konstantin Mikhailov as a maintainer
+
 [1.33.0]
 
 - add `TestClient` to replace Starlette.
