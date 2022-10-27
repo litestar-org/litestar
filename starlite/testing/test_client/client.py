@@ -55,6 +55,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 
 class TestClient(Client, Generic[T]):
+    __test__ = False
     blocking_portal: "BlockingPortal"
     lifespan_handler: LifeSpanHandler
     exit_stack: "ExitStack"
