@@ -97,3 +97,8 @@ article center > p {
     border-top: none;
   }
 }
+
+
+dt {
+  font-weight: bolder;
+}

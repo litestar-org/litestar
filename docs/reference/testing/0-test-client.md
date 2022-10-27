@@ -13,8 +13,8 @@
             - delete
             - options
             - head
-            - create_session_cookies
-            - get_session_from_cookies
+            - set_session_data
+            - get_session_data
 
 ::: starlite.testing.test_client.WebSocketTestSession
     options:

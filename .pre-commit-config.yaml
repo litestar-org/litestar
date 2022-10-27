@@ -52,7 +52,13 @@ repos:
     hooks:
       - id: markdownlint
         args:
-          [--disable=MD013, --disable=MD033, --disable=MD050, --disable=MD052]
+          [
+            --disable=MD013,
+            --disable=MD033,
+            --disable=MD046,
+            --disable=MD050,
+            --disable=MD052,
+          ]
   - repo: https://github.com/PyCQA/docformatter
     rev: v1.5.0
     hooks:
@@ -167,6 +173,8 @@ repos:
             starlite_multipart,
             structlog,
             tortoise_orm,
+            aiomcache,
+            redis,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.982"
