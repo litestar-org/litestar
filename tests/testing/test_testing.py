@@ -1,16 +1,27 @@
 import json
 import os
-from typing import Any, Callable, Dict, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Union
 
 import pytest
 from pydantic import BaseModel, SecretBytes
 
-from starlite import HttpMethod, Request, RequestEncodingType, Starlite, State, get
+from starlite import (
+    HttpMethod,
+    Request,
+    RequestEncodingType,
+    Starlite,
+    State,
+    get,
+    post,
+)
 from starlite.datastructures import Cookie
 from starlite.enums import ParamType
 from starlite.middleware.session import SessionCookieConfig
 from starlite.testing import RequestFactory, TestClient
 from tests import Pet, PetFactory
+
+if TYPE_CHECKING:
+    from starlite.middleware.session.base import BaseBackendConfig
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
@@ -201,7 +212,9 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
     session_config = SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
     app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_config if enable_session else None) as client:
+    with TestClient(
+        app=app, session_config=session_config if enable_session else None
+    ) as client, pytest.deprecated_call():
         cookies = client.create_session_cookies(session_data=session_data)
         for key, value in cookies.items():
             client.cookies.set(key, value, domain=client.base_url.host)
@@ -209,3 +222,31 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
         session = client.get_session_from_cookies()
         assert session == session_data
         assert app.state.value == 1
+
+
+def test_test_client_set_session(session_backend_config: "BaseBackendConfig") -> None:
+    session_data = {"foo": "bar"}
+
+    @get(path="/test")
+    def get_session_data(request: Request) -> Dict[str, Any]:
+        return request.session
+
+    app = Starlite(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
+
+    with TestClient(app=app, session_config=session_backend_config) as client:
+        client.set_session_data(session_data)
+        assert session_data == client.get("/test").json()
+
+
+def test_test_client_set_session_data(session_backend_config: "BaseBackendConfig") -> None:
+    session_data = {"foo": "bar"}
+
+    @post(path="/test")
+    def set_session_data(request: Request) -> None:
+        request.session.update(session_data)
+
+    app = Starlite(route_handlers=[set_session_data], middleware=[session_backend_config.middleware])
+
+    with TestClient(app=app, session_config=session_backend_config) as client:
+        client.post("/test")
+        assert client.get_session_data() == session_data

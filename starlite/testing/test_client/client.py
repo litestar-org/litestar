@@ -1,3 +1,4 @@
+import warnings
 from contextlib import ExitStack, contextmanager
 from typing import (
     TYPE_CHECKING,
@@ -9,14 +10,20 @@ from typing import (
     Sequence,
     TypeVar,
     Union,
+    cast,
 )
 from urllib.parse import urljoin
 
+import anyio
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
-from starlite import HttpMethod
+from starlite import HttpMethod, ImproperlyConfiguredException
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.session import SessionMiddleware
+from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
+from starlite.middleware.session.cookie_backend import (
+    CookieBackend,
+    CookieBackendConfig,
+)
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
@@ -47,11 +54,25 @@ if TYPE_CHECKING:
     )
     from typing_extensions import Literal
 
-    from starlite.middleware.session import SessionCookieConfig
+    from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)
+AnySessionBackend = Union[CookieBackend, ServerSideBackend]
+AnySessionConfig = Union["ServerSideSessionConfig", "CookieBackendConfig"]
+
+
+def raise_for_unsupported_session_backend(backend: "BaseSessionBackend") -> None:
+    raise ImproperlyConfiguredException(f"Backend of type {type(backend)!r} is currently not supported")
+
+
+def warn_for_deprecated_session_interface() -> None:
+    warnings.warn(
+        "Accessing the session via this property is considered legacy and will be deprecated"
+        "in future versions. To access the session backend directly, use the session_backend attribute",
+        PendingDeprecationWarning,
+    )
 
 
 class TestClient(Client, Generic[T]):
@@ -68,7 +89,7 @@ class TestClient(Client, Generic[T]):
         root_path: str = "",
         backend: "Literal['asyncio', 'trio' ]" = "asyncio",
         backend_options: Optional[Dict[str, Any]] = None,
-        session_config: Optional["SessionCookieConfig"] = None,
+        session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ) -> None:
         """A client implementation providing a context manager for testing
@@ -86,10 +107,12 @@ class TestClient(Client, Generic[T]):
                 route handlers.
             cookies: Cookies to set on the client.
         """
+        self._session_backend: Optional["BaseSessionBackend"] = None
+        if session_config:
+            self._session_backend = session_config._backend_class(config=session_config)
         self.app = app
         self.backend = backend
         self.backend_options = backend_options
-        self.session = SessionMiddleware(app=self.app, config=session_config) if session_config else None
 
         super().__init__(
             app=self.app,
@@ -103,6 +126,24 @@ class TestClient(Client, Generic[T]):
                 root_path=root_path,
             ),
         )
+
+    @property
+    def session(self) -> "CookieBackend":
+        warn_for_deprecated_session_interface()
+        if not isinstance(self._session_backend, CookieBackend):
+            raise ImproperlyConfiguredException(
+                f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
+            )
+        return self._session_backend
+
+    @property
+    def session_backend(self) -> "BaseSessionBackend":
+        if not self._session_backend:
+            raise ImproperlyConfiguredException(
+                "Session has not been initialized for this TestClient instance. You can"
+                "do so by passing a configuration object to TestClient: TestClient(app=app, session_config=...)"
+            )
+        return self._session_backend
 
     @contextmanager
     def portal(self) -> Generator["BlockingPortal", None, None]:
@@ -551,6 +592,9 @@ class TestClient(Client, Generic[T]):
         Returns:
             A dictionary with cookie name as key and cookie value as value.
 
+        Notes:
+            Deprecated. Use the explicit `TestClient.set_session_data` method
+
         Examples:
 
             ```python
@@ -575,10 +619,10 @@ class TestClient(Client, Generic[T]):
                     test_client.get(url="/my_route")
             ```
         """
-        if self.session is None:
+        if self._session_backend is None:
+            warn_for_deprecated_session_interface()
             return {}
-        encoded_data = self.session.dump_data(data=session_data)
-        return {f"{self.session.config.key}-{i}": chunk.decode("utf-8") for i, chunk in enumerate(encoded_data)}
+        return self._create_session_cookies(self.session, session_data)
 
     def get_session_from_cookies(self) -> Dict[str, Any]:
         """Raw session cookies are a serialized image of session which are
@@ -589,6 +633,9 @@ class TestClient(Client, Generic[T]):
         Returns:
             A dictionary containing session data.
 
+        Notes:
+            Deprecated. Use the explicit `TestClient.get_session_data` method
+
         Examples:
 
             ```python
@@ -598,7 +645,107 @@ class TestClient(Client, Generic[T]):
                 assert "user" in session
             ```
         """
-        if self.session is None:
+        if self._session_backend is None:
             return {}
-        raw_data = [self.cookies[key].encode("utf-8") for key in self.cookies if self.session.config.key in key]
-        return self.session.load_data(data=raw_data)
+        return self.get_session_data()
+
+    @staticmethod
+    def _create_session_cookies(backend: CookieBackend, data: Dict[str, Any]) -> Dict[str, str]:
+        encoded_data = backend.dump_data(data=data)
+        return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data, {})}
+
+    async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
+        # TODO: Expose this in the async client
+
+        if isinstance(self.session_backend, ServerSideBackend):
+            serialized_data = self.session_backend.serlialize_data(data)
+            session_id = self.cookies.setdefault(
+                self.session_backend.config.key, self.session_backend.generate_session_id()
+            )
+            await self.session_backend.set(session_id, serialized_data)
+        elif isinstance(self.session_backend, CookieBackend):
+            for key, value in self._create_session_cookies(self.session_backend, data).items():
+                self.cookies.set(key, value)
+        else:
+            raise_for_unsupported_session_backend(self.session_backend)
+
+    async def _get_session_data_async(self) -> Dict[str, Any]:
+        # TODO: Expose this in the async client
+
+        if isinstance(self.session_backend, ServerSideBackend):
+            session_id = self.cookies.get(self.session_backend.config.key)
+            if session_id:
+                data = await self.session_backend.get(session_id)
+                return self.session_backend.deserialize_data(data)
+        elif isinstance(self.session_backend, CookieBackend):
+            raw_data = [
+                self.cookies[key].encode("utf-8") for key in self.cookies if self.session_backend.config.key in key
+            ]
+            if raw_data:
+                return self.session_backend.load_data(data=raw_data)
+        else:
+            raise_for_unsupported_session_backend(self.session_backend)
+        return {}
+
+    def set_session_data(self, data: Dict[str, Any]) -> None:
+        """Set session data.
+
+        Args:
+            data: Session data
+
+        Returns:
+            None
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @get(path="/test")
+            def get_session_data(request: Request) -> Dict[str, Any]:
+                return request.session
+
+
+            app = Starlite(
+                route_handlers=[get_session_data], middleware=[session_config.middleware]
+            )
+
+            with TestClient(app=app, session_config=session_config) as client:
+                client.set_session_data({"foo": "bar"})
+                assert client.get("/test").json() == {"foo": "bar"}
+            ```
+        """
+        anyio.run(self._set_session_data_async, data)
+
+    def get_session_data(self) -> Dict[str, Any]:
+        """Get session data.
+
+        Returns:
+            A dictionary containing session data.
+
+        Examples:
+            ```python
+            from starlite import Starlite, post
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @post(path="/test")
+            def set_session_data(request: Request) -> None:
+                request.session["foo"] == "bar"
+
+
+            app = Starlite(
+                route_handlers=[set_session_data], middleware=[session_config.middleware]
+            )
+
+            with TestClient(app=app, session_config=session_config) as client:
+                client.post("/test")
+                assert client.get_session_data() == {"foo": "bar"}
+            ```
+        """
+        return anyio.run(self._get_session_data_async)

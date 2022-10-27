@@ -68,7 +68,7 @@ def test_load_data_should_return_empty_if_session_expired(
     assert plaintext == {}
 
 
-def test_set_session_cookies(cookie_backend_config: CookieBackendConfig) -> None:
+def test_set_session_cookies(cookie_session_backend_config: "CookieBackendConfig") -> None:
     """Should set session cookies from session in response."""
     chunks_multiplier = 2
 
@@ -80,7 +80,7 @@ def test_set_session_cookies(cookie_backend_config: CookieBackendConfig) -> None
 
     with create_test_client(
         route_handlers=[handler],
-        middleware=[cookie_backend_config.middleware],
+        middleware=[cookie_session_backend_config.middleware],
     ) as client:
         response = client.get("/test")
 
@@ -90,7 +90,7 @@ def test_set_session_cookies(cookie_backend_config: CookieBackendConfig) -> None
     assert "session-0" in response.cookies
 
 
-def test_session_cookie_name_matching(cookie_backend_config: CookieBackendConfig) -> None:
+def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBackendConfig") -> None:
     session_data = {"foo": "bar"}
 
     @get("/")
@@ -103,10 +103,10 @@ def test_session_cookie_name_matching(cookie_backend_config: CookieBackendConfig
 
     with create_test_client(
         route_handlers=[handler, set_session_data],
-        middleware=[cookie_backend_config.middleware],
+        middleware=[cookie_session_backend_config.middleware],
     ) as client:
         client.post("/")
-        client.cookies[f"thisisnnota{cookie_backend_config.key}cookie"] = "foo"
+        client.cookies[f"thisisnnota{cookie_session_backend_config.key}cookie"] = "foo"
         response = client.get("/")
         assert response.json() == session_data
 

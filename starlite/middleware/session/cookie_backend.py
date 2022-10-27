@@ -97,6 +97,13 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
+    def _create_session_cookies(self, data: List[bytes], cookie_params: Dict[str, Any]) -> List[Cookie]:
+        """Create a list of cookies containing the session data."""
+        return [
+            Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
+            for i, datum in enumerate(data, start=0)
+        ]
+
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
     ) -> None:
@@ -122,13 +129,8 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         if scope_session:
             data = self.dump_data(scope_session, scope=scope)
             cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
-            for i, datum in enumerate(data, start=0):
-                headers.append(
-                    "Set-Cookie",
-                    Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params).to_header(
-                        header=""
-                    ),
-                )
+            for cookie in self._create_session_cookies(data, cookie_params):
+                headers.append("Set-Cookie", cookie.to_header(header=""))
             # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
             # cookies, first check how many session cookies will not be overwritten in this upcoming response.
             # If leftover cookies are greater than or equal to 1, that means older session cookies have to be

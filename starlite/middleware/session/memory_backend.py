@@ -5,7 +5,8 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
-    __slots__ = ("_cache",)
+    __slots__ = ()
+    _cache = SimpleCacheBackend()
 
     def __init__(self, config: "MemoryBackendConfig") -> None:
         """Session backend to store data in memory.
@@ -15,7 +16,6 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
             for easy testing. It is not process-safe, and data won't be persisted
         """
         super().__init__(config=config)
-        self._cache = SimpleCacheBackend()
 
     async def get(self, session_id: str) -> Optional[bytes]:
         """Retrieve data associated with `session_id`.
@@ -41,6 +41,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             None
         """
+
         await self._cache.set(session_id, data, expiration=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
@@ -61,7 +62,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         Returns:
             None
         """
-        self._cache = SimpleCacheBackend()
+        self._cache._store = {}  # pylint: disable=protected-access)
 
 
 class MemoryBackendConfig(ServerSideSessionConfig):
