@@ -112,7 +112,7 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
 
     @abstractmethod
     async def delete_expired(self) -> None:
-        """Delete all expired session from the database."""
+        """Delete all expired sessions from the database."""
 
 
 class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
