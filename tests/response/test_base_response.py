@@ -31,6 +31,18 @@ def test_response_headers() -> None:
         assert response.headers["content-type"] == "text/plain; charset=utf-8"
 
 
+def test_response_headers_do_not_lowercase_values() -> None:
+    # reproduces: https://github.com/starlite-api/starlite/issues/693
+
+    @get("/")
+    def handler() -> Response:
+        return Response(content="hello world", media_type=MediaType.TEXT, headers={"foo": "BaR"})
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.headers["foo"] == "BaR"
+
+
 def test_set_cookie() -> None:
     @get("/")
     def handler() -> Response:

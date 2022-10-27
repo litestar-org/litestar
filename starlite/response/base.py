@@ -255,7 +255,7 @@ class Response(Generic[T]):
             content_type = self.media_type
 
         encoded_headers = [
-            *((k.lower().encode("latin-1"), str(v).lower().encode("latin-1")) for k, v in self.headers.items()),
+            *((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
             *((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
             (b"content-type", content_type.encode("latin-1")),
         ]
