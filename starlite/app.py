@@ -1,35 +1,23 @@
-from collections import defaultdict
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
-from starlette.middleware import Middleware as StarletteMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from typing_extensions import TypedDict
 
-from starlite.asgi import (
-    ASGIRouter,
-    PathParameterTypePathDesignator,
-    PathParamNode,
-    RouteMapNode,
-)
+from starlite.asgi import ASGIRouter, get_route_handlers, wrap_in_exception_handler
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    NoRouteMatchFoundException,
-)
+from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
-from starlite.middleware.csrf import CSRFMiddleware
-from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.router import Router
-from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.utils import as_async_callable_list, join_paths, unique
 
@@ -37,7 +25,6 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
-    from starlite.asgi import ComponentsSet, PathParamPlaceholderType
     from starlite.config import (
         BaseLoggingConfig,
         CompressionConfig,
@@ -49,7 +36,6 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag, Provide
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.routes.base import PathParameterDefinition
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -109,22 +95,8 @@ class HandlerIndex(TypedDict):
     """Unique identifier of the handler. Either equal to the 'name' attribute or the __str__ value of the handler."""
 
 
-class HandlerNode(TypedDict):
-    """This class encapsulates a route handler node."""
-
-    asgi_app: "ASGIApp"
-    """ASGI App stack"""
-    handler: "RouteHandlerType"
-    """Route handler instance."""
-
-
 class Starlite(Router):
     __slots__ = (
-        "_init",
-        "_registered_routes",
-        "_route_handler_index",
-        "_route_mapping",
-        "_static_paths",
         "after_exception",
         "after_shutdown",
         "after_startup",
@@ -146,7 +118,6 @@ class Starlite(Router):
         "on_startup",
         "openapi_config",
         "openapi_schema",
-        "plain_routes",
         "plugins",
         "request_class",
         "route_map",
@@ -277,17 +248,12 @@ class Starlite(Router):
             websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
                 websocket connections.
         """
-        self._registered_routes: Set[BaseRoute] = set()
-        self._route_mapping: Dict[str, List[BaseRoute]] = defaultdict(list)
-        self._route_handler_index: Dict[str, "RouteHandlerType"] = {}
-        self._static_paths: Set[str] = set()
         self.openapi_schema: Optional["OpenAPI"] = None
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
-        self.plain_routes: Set[str] = set()
-        self.route_map: RouteMapNode = {}
         self.routes: List[BaseRoute] = []
         self.state = State()
+        self.asgi_router = ASGIRouter(app=self)
 
         # creates app config object from parameters
         config = AppConfig(
@@ -391,10 +357,9 @@ class Starlite(Router):
         for static_config in (
             self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
         ):
-            self._static_paths.add(static_config.path)
+            self.asgi_router.static_paths.add(static_config.path)
             self.register(asgi(path=static_config.path, name=static_config.name)(static_config.to_static_files_app()))
 
-        self.asgi_router = ASGIRouter(app=self)
         self.asgi_handler = self._create_asgi_handler()
 
     async def __call__(
@@ -417,7 +382,7 @@ class Starlite(Router):
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
-            await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
+            await self.asgi_router._lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
@@ -435,7 +400,7 @@ class Starlite(Router):
         """
         routes = super().register(value=value)
         for route in routes:
-            route_handlers = self._get_route_handlers(route)
+            route_handlers = get_route_handlers(route)
             for route_handler in route_handlers:
 
                 self._create_handler_signature_model(route_handler=route_handler)
@@ -449,7 +414,7 @@ class Starlite(Router):
                 route.create_handler_map()
             elif isinstance(route, WebSocketRoute):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
-        self._construct_route_map()
+        self.asgi_router.construct_route_map()
 
     def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
         """Receives a route handler name and returns an optional dictionary
@@ -478,12 +443,12 @@ class Starlite(Router):
         Returns:
             A [HandlerIndex][starlite.app.HandlerIndex] instance or None.
         """
-        handler = self._route_handler_index.get(name)
+        handler = self.asgi_router.route_handler_index.get(name)
         if not handler:
             return None
 
         identifier = handler.name or str(handler)
-        routes = self._route_mapping[identifier]
+        routes = self.asgi_router.route_mapping[identifier]
         paths = sorted(unique([route.path for route in routes]))
 
         return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
@@ -526,7 +491,9 @@ class Starlite(Router):
         output: List[str] = []
 
         routes = sorted(
-            self._route_mapping[handler_index["identifier"]], key=lambda r: len(r.path_parameters), reverse=True
+            self.asgi_router.route_mapping[handler_index["identifier"]],
+            key=lambda r: len(r.path_parameters),
+            reverse=True,
         )
         passed_parameters = set(path_parameters.keys())
 
@@ -586,7 +553,7 @@ class Starlite(Router):
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 
-        return join_paths([handler_index["paths"][0], file_path])  # type: ignore [unreachable]
+        return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
 
     @property
     def route_handler_method_view(self) -> Dict[str, List[str]]:
@@ -595,7 +562,7 @@ class Starlite(Router):
             A dictionary mapping route handlers to paths.
         """
         route_map: Dict[str, List[str]] = {}
-        for handler, routes in self._route_mapping.items():
+        for handler, routes in self.asgi_router.route_mapping.items():
             route_map[handler] = [route.path for route in routes]
 
         return route_map
@@ -614,163 +581,8 @@ class Starlite(Router):
             asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)  # type: ignore
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())  # type: ignore
-        return self._wrap_in_exception_handler(asgi_handler, exception_handlers=self.exception_handlers or {})
-
-    def _wrap_in_exception_handler(self, app: "ASGIApp", exception_handlers: "ExceptionHandlersMap") -> "ASGIApp":
-        """Wraps the given ASGIApp in an instance of
-        ExceptionHandlerMiddleware."""
-        return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=self.debug)
-
-    def _add_node_to_route_map(self, route: BaseRoute) -> RouteMapNode:
-        """Adds a new route path (e.g. '/foo/bar/{param:int}') into the
-        route_map tree.
-
-        Inserts non-parameter paths ('plain routes') off the tree's root
-        node. For paths containing parameters, splits the path on '/'
-        and nests each path segment under the previous segment's node
-        (see prefix tree / trie).
-        """
-        current_node = self.route_map
-        path = route.path
-
-        if route.path_parameters or path in self._static_paths:
-            components = cast(
-                "List[Union[str, PathParamPlaceholderType, PathParameterDefinition]]", ["/", *route.path_components]
-            )
-            for component in components:
-                components_set = cast("ComponentsSet", current_node["_components"])
-
-                if isinstance(component, dict):
-                    # The rest of the path should be regarded as a parameter value.
-                    if component["type"] is Path:
-                        components_set.add(PathParameterTypePathDesignator)
-                    # Represent path parameters using a special value
-                    component = PathParamNode
-
-                components_set.add(component)
-
-                if component not in current_node:
-                    current_node[component] = {"_components": set()}
-                current_node = cast("RouteMapNode", current_node[component])
-                if "_static_path" in current_node:
-                    raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
-        else:
-            if path not in self.route_map:
-                self.route_map[path] = {"_components": set()}
-            self.plain_routes.add(path)
-            current_node = self.route_map[path]
-        self._configure_route_map_node(route, current_node)
-        return current_node
-
-    @staticmethod
-    def _get_route_handlers(route: BaseRoute) -> List["RouteHandlerType"]:
-        """Retrieve handler(s) as a list for given route."""
-        route_handlers: List["RouteHandlerType"] = []
-        if isinstance(route, (WebSocketRoute, ASGIRoute)):
-            route_handlers.append(route.route_handler)
-        else:
-            route_handlers.extend(cast("HTTPRoute", route).route_handlers)
-
-        return route_handlers
-
-    def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
-        """Stores the mapping of route handlers to routes and to route handler
-        names.
-
-        Args:
-            route: A Route instance.
-
-        Returns:
-            None
-        """
-        route_handlers = self._get_route_handlers(route)
-
-        for handler in route_handlers:
-            if handler.name in self._route_handler_index and str(self._route_handler_index[handler.name]) != str(
-                handler
-            ):
-                raise ImproperlyConfiguredException(
-                    f"route handler names must be unique - {handler.name} is not unique."
-                )
-            identifier = handler.name or str(handler)
-            self._route_mapping[identifier].append(route)
-            self._route_handler_index[identifier] = handler
-
-    def _configure_route_map_node(self, route: BaseRoute, node: RouteMapNode) -> None:
-        """Set required attributes and route handlers on route_map tree
-        node."""
-        if "_path_parameters" not in node:
-            node["_path_parameters"] = route.path_parameters
-        if "_asgi_handlers" not in node:
-            node["_asgi_handlers"] = {}
-        if "_is_asgi" not in node:
-            node["_is_asgi"] = False
-        if route.path in self._static_paths:
-            if node["_components"]:
-                raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
-            node["_static_path"] = route.path
-            node["_is_asgi"] = True
-        asgi_handlers = cast("Dict[str, HandlerNode]", node["_asgi_handlers"])
-        if isinstance(route, HTTPRoute):
-            for method, handler_mapping in route.route_handler_map.items():
-                handler, _ = handler_mapping
-                asgi_handlers[method] = HandlerNode(
-                    asgi_app=self._build_route_middleware_stack(route, handler),
-                    handler=handler,
-                )
-        elif isinstance(route, WebSocketRoute):
-            asgi_handlers["websocket"] = HandlerNode(
-                asgi_app=self._build_route_middleware_stack(route, route.route_handler),
-                handler=route.route_handler,
-            )
-        elif isinstance(route, ASGIRoute):
-            asgi_handlers["asgi"] = HandlerNode(
-                asgi_app=self._build_route_middleware_stack(route, route.route_handler),
-                handler=route.route_handler,
-            )
-            node["_is_asgi"] = True
-
-    def _construct_route_map(self) -> None:
-        """Create a map of the app's routes.
-
-        This map is used in the asgi router to route requests.
-        """
-        if "_components" not in self.route_map:
-            self.route_map["_components"] = set()
-        new_routes = [route for route in self.routes if route not in self._registered_routes]
-        for route in new_routes:
-            node = self._add_node_to_route_map(route)
-            if node["_path_parameters"] != route.path_parameters:
-                raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
-            self._store_handler_to_route_mapping(route)
-            self._registered_routes.add(route)
-
-    def _build_route_middleware_stack(
-        self,
-        route: Union[HTTPRoute, WebSocketRoute, ASGIRoute],
-        route_handler: "RouteHandlerType",
-    ) -> "ASGIApp":
-        """Constructs a middleware stack that serves as the point of entry for
-        each route."""
-
-        # we wrap the route.handle method in the ExceptionHandlerMiddleware
-        asgi_handler = self._wrap_in_exception_handler(
-            app=route.handle, exception_handlers=route_handler.resolve_exception_handlers()  # type: ignore[arg-type]
-        )
-
-        if self.csrf_config:
-            asgi_handler = CSRFMiddleware(app=asgi_handler, config=self.csrf_config)
-
-        for middleware in route_handler.resolve_middleware():
-            if isinstance(middleware, StarletteMiddleware):
-                handler, kwargs = middleware
-                asgi_handler = handler(app=asgi_handler, **kwargs)
-            else:
-                asgi_handler = middleware(app=asgi_handler)  # type: ignore
-
-        # we wrap the entire stack again in ExceptionHandlerMiddleware
-        return self._wrap_in_exception_handler(
-            app=asgi_handler, exception_handlers=route_handler.resolve_exception_handlers()  # pyright: ignore
+        return wrap_in_exception_handler(
+            debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:

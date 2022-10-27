@@ -183,17 +183,11 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         try:
             if "picologging" in str(dumps(self.handlers)):
 
-                from picologging import (  # pylint: disable=import-outside-toplevel
-                    config,
-                    getLogger,
-                )
+                from picologging import config, getLogger
 
                 values = self.dict(exclude_none=True, exclude={"incremental"})
             else:
-                from logging import (  # type: ignore[no-redef]  # pylint: disable=import-outside-toplevel
-                    config,
-                    getLogger,
-                )
+                from logging import config, getLogger  # type: ignore[no-redef]
 
                 values = self.dict(exclude_none=True)
             config.dictConfig(values)
@@ -209,7 +203,7 @@ def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright:
         An optional list of processors.
     """
     try:
-        import structlog  # pylint: disable=import-outside-toplevel
+        import structlog
 
         return [
             structlog.contextvars.merge_contextvars,
@@ -230,7 +224,7 @@ def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignor
     """
 
     try:
-        import structlog  # pylint: disable=import-outside-toplevel
+        import structlog
 
         return structlog.make_filtering_bound_logger(INFO)
     except ImportError:  # pragma: no cover
@@ -244,7 +238,7 @@ def default_logger_factory() -> Optional[Callable[..., WrappedLogger]]:
         An optional logger factory.
     """
     try:
-        import structlog  # pylint: disable=import-outside-toplevel
+        import structlog
 
         return structlog.BytesLoggerFactory()
     except ImportError:  # pragma: no cover
@@ -276,10 +270,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
             A 'logging.getLogger' like function.
         """
         try:
-            from structlog import (  # pylint: disable=import-outside-toplevel
-                configure,
-                get_logger,
-            )
+            from structlog import configure, get_logger
 
             # we now configure structlog
             configure(**self.dict(exclude={"standard_lib_logging_config"}))

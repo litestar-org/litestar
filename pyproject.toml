@@ -110,6 +110,7 @@ disable = [
   "cyclic-import",
   "duplicate-code",
   "fixme",
+  "import-outside-toplevel",
   "line-too-long",
   "missing-class-docstring",
   "missing-module-docstring",

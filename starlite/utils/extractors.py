@@ -13,7 +13,7 @@ from typing import (
 
 from typing_extensions import Literal, TypedDict
 
-from starlite.connection import Request
+from starlite.connection.request import Request
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.parsers import parse_cookie_string

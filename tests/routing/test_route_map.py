@@ -66,7 +66,7 @@ def test_route_map_starts_empty() -> None:
         ...
 
     client = create_test_client(handler_fn)
-    route_map = client.app.route_map
+    route_map = client.app.asgi_router.route_map
     assert route_map["_components"] == set()
     assert list(route_map.keys()) == ["_components", "/"]
 
@@ -83,14 +83,14 @@ def test_add_route_map_path(test_paths: List[RouteMapTestCase]) -> None:
 
     client = create_test_client(handler_fn)
     app = client.app
-    route_map = app.route_map
+    route_map = app.asgi_router.route_map
     for router_path, _, path_params in test_paths:
         assert is_path_in_route_map(route_map, router_path, path_params) is False
         route = HTTPRoute(
             path=router_path,
             route_handlers=[get(path=router_path)(handler_fn)],
         )
-        app._add_node_to_route_map(route)
+        app.asgi_router._add_node_to_route_map(route)
         assert is_path_in_route_map(route_map, router_path, path_params) is True
 
 
@@ -105,7 +105,7 @@ def test_handler_paths_added(test_paths: List[RouteMapTestCase]) -> None:
         ...
 
     client = create_test_client(handler_fn)
-    route_map = client.app.route_map
+    route_map = client.app.asgi_router.route_map
     for router_path, _, path_params in test_paths:
         assert is_path_in_route_map(route_map, router_path, path_params) is True
 
@@ -127,7 +127,7 @@ def test_find_existing_asgi_handlers(test_paths: List[RouteMapTestCase]) -> None
             path=router_path,
             route_handlers=[get(path=router_path)(handler_fn)],
         )
-        app._add_node_to_route_map(route)
+        app.asgi_router._add_node_to_route_map(route)
         asgi_handlers, is_asgi = router._parse_scope_to_route({"path": request_path})  # type: ignore[arg-type]
         assert "GET" in asgi_handlers
         assert isinstance(asgi_handlers["GET"]["asgi_app"], ExceptionHandlerMiddleware)
@@ -151,5 +151,5 @@ def test_missing_asgi_handlers(test_paths: List[RouteMapTestCase]) -> None:
             path=router_path,
             route_handlers=[get(path=router_path)(handler_fn)],
         )
-        app._add_node_to_route_map(route)
+        app.asgi_router._add_node_to_route_map(route)
         assert router._parse_scope_to_route({"path": request_path}) == ({}, False)  # type: ignore[arg-type]
