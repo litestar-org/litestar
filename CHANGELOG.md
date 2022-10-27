@@ -1,5 +1,12 @@
 # Changelog
 
+[1.34.0]
+
+- Add support for server-side sessions
+- Fix an issue where header values would be forced to lower case
+- Add a `__test__ = False` attribute to the `TestClient` so it won't get collected by pytest
+  together with an async test
+
 [1.33.0]
 
 - add `TestClient` to replace Starlette.
