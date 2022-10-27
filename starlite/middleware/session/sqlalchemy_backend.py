@@ -147,7 +147,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         it with `data` and reset its expiry time
 
         Args:
-            session_id: The session-ID
+            session_id: The session-ID.
             data: Serialized session data
 
         Returns:
