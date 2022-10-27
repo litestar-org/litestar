@@ -79,7 +79,7 @@ def test_file_response_with_chinese_filename(tmpdir: Path) -> None:
     app = FileResponse(path=path, filename=filename)
     client = TestClient(app)
     response = client.get("/")
-    expected_disposition = "attachment; filename*=utf-8''%e4%bd%a0%e5%a5%bd.txt"
+    expected_disposition = "attachment; filename*=utf-8''%E4%BD%A0%E5%A5%BD.txt"
     assert response.status_code == HTTP_200_OK
     assert response.content == content
     assert response.headers["content-disposition"] == expected_disposition
