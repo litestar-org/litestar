@@ -16,6 +16,7 @@ from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
 
 def test_session_middleware_not_installed_raises() -> None:
@@ -117,7 +118,7 @@ def get_session_installed(request: Request) -> Dict[str, bool]:
     return {"has_session": "session" in request.scope}
 
 
-def test_middleware_exclude_pattern(memory_session_backend_config) -> None:
+def test_middleware_exclude_pattern(memory_session_backend_config: "MemoryBackendConfig") -> None:
     memory_session_backend_config.exclude = ["north", "south"]
 
     @get("/north")
@@ -146,7 +147,7 @@ def test_middleware_exclude_pattern(memory_session_backend_config) -> None:
         assert response.json() == {"has_session": True}
 
 
-def test_middleware_exclude_flag(memory_session_backend_config) -> None:
+def test_middleware_exclude_flag(memory_session_backend_config: "MemoryBackendConfig") -> None:
     @get("/north")
     def north_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
@@ -166,7 +167,7 @@ def test_middleware_exclude_flag(memory_session_backend_config) -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_middleware_exclude_custom_key(memory_session_backend_config) -> None:
+def test_middleware_exclude_custom_key(memory_session_backend_config: "MemoryBackendConfig") -> None:
     memory_session_backend_config.exclude_opt_key = "my_exclude_key"
 
     @get("/north")
