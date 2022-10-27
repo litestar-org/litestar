@@ -6,6 +6,8 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
+    __slots__ = ("memcached",)
+
     def __init__(self, config: "MemcachedBackendConfig") -> None:
         """Session backend to store data in memcached.
 

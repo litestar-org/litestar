@@ -87,6 +87,8 @@ def register_session_model(base: Union[registry, Any], model: Type[SessionModelT
 
 
 class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], ABC):
+    __slots__ = ("_model", "_session_maker")
+
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
         """Session backend to store data in a database with SQLAlchemy. Works
         with both sync and async engines.

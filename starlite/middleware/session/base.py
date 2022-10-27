@@ -104,6 +104,8 @@ class ServerSideSessionConfig(BaseBackendConfig):
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
+    __slots__ = ("config",)
+
     def __init__(self, config: ConfigT) -> None:
         """Abstract session backend defining the interface between a storage
         mechanism and the [SessionMiddleware][
@@ -176,6 +178,8 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
 
 
 class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT]):
+    __slots__ = ()
+
     def __init__(self, config: ServerConfigT) -> None:
         """Base class for server-side backends. Implements.
 

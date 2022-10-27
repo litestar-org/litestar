@@ -14,6 +14,8 @@ class FileStorageMetadataWrapper(NamedTuple):
 
 
 class FileBackend(ServerSideBackend["FileBackendConfig"]):
+    __slots__ = ("path",)
+
     def __init__(self, config: "FileBackendConfig") -> None:
         """Session backend to store data in files."""
         super().__init__(config=config)
