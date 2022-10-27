@@ -69,7 +69,7 @@ def raise_for_unsupported_session_backend(backend: "BaseSessionBackend") -> None
 
 def warn_for_deprecated_session_interface() -> None:
     warnings.warn(
-        "Accessing the session via this property is considered legacy and will be deprecated"
+        "Accessing the session via this property is deprecated and will be removed in future version."
         "in future versions. To access the session backend directly, use the session_backend attribute",
         PendingDeprecationWarning,
     )
