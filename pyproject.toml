@@ -81,7 +81,6 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 trio = "*"
-types-redis = "^4.3.21.2"
 fakeredis = "^1.9.4"
 
 [tool.poetry.extras]
