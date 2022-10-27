@@ -634,7 +634,7 @@ class TestClient(Client, Generic[T]):
             A dictionary containing session data.
 
         Notes:
-            Deprecated. Use the explicit `TestClient.get_session_data` method
+            - Deprecated. Use the explicit `TestClient.get_session_data` method
 
         Examples:
 
