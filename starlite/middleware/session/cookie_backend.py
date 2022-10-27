@@ -53,7 +53,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             scope: The ASGI connection scope.
 
         Notes:
-            The returned list is composed of a chunks of a single base64 encoded
+            - The returned list is composed of a chunks of a single base64 encoded
             string that is encrypted using AES-CGM.
 
         Returns:
