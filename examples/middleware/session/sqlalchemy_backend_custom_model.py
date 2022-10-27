@@ -17,18 +17,20 @@ class SessionModel(Base, SessionModelMixin):  # pyright: ignore [reportGeneralTy
     additional_data = Column(String)
 
 
-sqlalchemy_plugin = SQLAlchemyPlugin(
-    config=SQLAlchemyConfig(
-        connection_string="sqlite+aiosqlite://",
-    )
-)
+sqlalchemy_config = SQLAlchemyConfig(connection_string="sqlite+aiosqlite://")
+sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 session_config = SQLAlchemyBackendConfig(
     plugin=sqlalchemy_plugin,
     model=SessionModel,
 )
 
+
+async def on_startup() -> None:
+    """Initialize the database."""
+    async with sqlalchemy_config.engine.begin() as conn:  # type: ignore
+        await conn.run_sync(Base.metadata.create_all)  # pyright: ignore
+
+
 app = Starlite(
-    route_handlers=[],
-    middleware=[session_config.middleware],
-    plugins=[sqlalchemy_plugin],
+    route_handlers=[], middleware=[session_config.middleware], plugins=[sqlalchemy_plugin], on_startup=[on_startup]
 )
