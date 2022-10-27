@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from starlite import ImproperlyConfiguredException, Starlite, get
+from starlite import MediaType, get
 from starlite.config import StaticFilesConfig
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -57,17 +58,18 @@ def test_path_inside_static(tmpdir: "Path") -> None:
     path = tmpdir / "test.txt"
     path.write_text("content", "utf-8")
 
-    @get("/static/strange/{f:str}")
+    @get("/static/sub/{f:str}", media_type=MediaType.TEXT)
     def handler(f: str) -> str:
         return f
 
-    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
-    with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler], static_files_config=static_files_config)
+    with create_test_client(
+        handler, static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir])
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK
 
-    app = Starlite(route_handlers=[], static_files_config=static_files_config)
-    with pytest.raises(ImproperlyConfiguredException):
-        app.register(handler)
+        response = client.get("/static/sub/abc")
+        assert response.status_code == HTTP_200_OK
 
 
 def test_multiple_configs(tmpdir: "Path") -> None:

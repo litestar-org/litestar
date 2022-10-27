@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.schema import Schema
 
     from starlite.handlers import BaseRouteHandler
-    from starlite.routes.base import PathParameterDefinition
     from starlite.types import Dependencies
+    from starlite.types.internal import PathParameterDefinition
 
 
 def create_path_parameter_schema(
@@ -29,7 +29,7 @@ def create_path_parameter_schema(
 ) -> "Schema":
     """Create a path parameter from the given path_param definition."""
     field.sub_fields = None
-    field.outer_type_ = path_parameter["type"]
+    field.outer_type_ = path_parameter.type
     return create_schema(field=field, generate_examples=generate_examples, plugins=[])
 
 
@@ -83,10 +83,10 @@ def create_parameter(
     is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
     extra = model_field.field_info.extra
 
-    if any(path_param["name"] == parameter_name for path_param in path_parameters):
+    if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
         is_required = True
-        path_parameter = [p for p in path_parameters if parameter_name in p["name"]][0]
+        path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
         schema = create_path_parameter_schema(
             path_parameter=path_parameter,
             field=model_field,

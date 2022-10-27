@@ -7,7 +7,8 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.staticfiles import StaticFiles
 from typing_extensions import TypedDict
 
-from starlite.asgi import ASGIRouter, get_route_handlers, wrap_in_exception_handler
+from starlite.asgi import ASGIRouter
+from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
@@ -17,8 +18,9 @@ from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.router import Router
-from starlite.routes import BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
+from starlite.types.internal import PathParameterDefinition
 from starlite.utils import as_async_callable_list, join_paths, unique
 
 if TYPE_CHECKING:
@@ -251,7 +253,7 @@ class Starlite(Router):
         self.openapi_schema: Optional["OpenAPI"] = None
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
-        self.routes: List[BaseRoute] = []
+        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.state = State()
         self.asgi_router = ASGIRouter(app=self)
 
@@ -357,7 +359,7 @@ class Starlite(Router):
         for static_config in (
             self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
         ):
-            self.asgi_router.static_paths.add(static_config.path)
+            self.asgi_router.static_routes.add(static_config.path)
             self.register(asgi(path=static_config.path, name=static_config.name)(static_config.to_static_files_app()))
 
         self.asgi_handler = self._create_asgi_handler()
@@ -382,7 +384,7 @@ class Starlite(Router):
         """
         scope["app"] = self
         if scope["type"] == "lifespan":
-            await self.asgi_router._lifespan(receive=receive, send=send)  # type: ignore[arg-type]
+            await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
@@ -399,22 +401,27 @@ class Starlite(Router):
             None
         """
         routes = super().register(value=value)
+
         for route in routes:
             route_handlers = get_route_handlers(route)
-            for route_handler in route_handlers:
 
+            for route_handler in route_handlers:
                 self._create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
+
                 if isinstance(route_handler, HTTPRouteHandler):
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_response()
                     route_handler.resolve_response_handler()
+
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
+
             elif isinstance(route, WebSocketRoute):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
-        self.asgi_router.construct_route_map()
+
+        self.asgi_router.construct_routing_trie()
 
     def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
         """Receives a route handler name and returns an optional dictionary
@@ -499,19 +506,18 @@ class Starlite(Router):
 
         selected_route = routes[-1]
         for route in routes:
-            if passed_parameters.issuperset({param["name"] for param in route.path_parameters}):
+            if passed_parameters.issuperset({param.name for param in route.path_parameters}):
                 selected_route = route
                 break
 
         for component in selected_route.path_components:
-            if isinstance(component, dict):
-                val = path_parameters.get(component["name"])
+            if isinstance(component, PathParameterDefinition):
+                val = path_parameters.get(component.name)
                 if not (
-                    isinstance(val, component["type"])
-                    or (component["type"] in allow_str_instead and isinstance(val, str))
+                    isinstance(val, component.type) or (component.type in allow_str_instead and isinstance(val, str))
                 ):
                     raise NoRouteMatchFoundException(
-                        f"Received type for path parameter {component['name']} doesn't match declared type {component['type']}"
+                        f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
                     )
                 output.append(str(val))
             else:

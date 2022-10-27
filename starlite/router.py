@@ -138,7 +138,7 @@ class Router:
         self.response_class = response_class
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
-        self.routes: List["BaseRoute"] = []
+        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.security = security or []
         self.tags = tags or []
 
@@ -161,7 +161,9 @@ class Router:
         for route_path, handler_or_method_map in self._map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route: "BaseRoute" = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = WebSocketRoute(
+                    path=path, route_handler=handler_or_method_map
+                )
                 self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)
