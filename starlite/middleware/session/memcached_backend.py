@@ -12,7 +12,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         """Session backend to store data in memcached.
 
         Notes:
-            Requires `aiomcache`. Install with `pip install starlite[memcached]`
+            - Requires `aiomcache`. Install with `pip install starlite[memcached]`
         """
         super().__init__(config=config)
         self.memcached = config.memcached
