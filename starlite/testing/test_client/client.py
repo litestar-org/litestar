@@ -593,7 +593,7 @@ class TestClient(Client, Generic[T]):
             A dictionary with cookie name as key and cookie value as value.
 
         Notes:
-            Deprecated. Use the explicit `TestClient.set_session_data` method
+            - Deprecated. Use the explicit `TestClient.set_session_data` method
 
         Examples:
 
