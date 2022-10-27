@@ -97,8 +97,12 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
-    def _create_session_cookies(self, data: List[bytes], cookie_params: Dict[str, Any]) -> List[Cookie]:
+    def _create_session_cookies(
+        self, data: List[bytes], cookie_params: Optional[Dict[str, Any]] = None
+    ) -> List[Cookie]:
         """Create a list of cookies containing the session data."""
+        if cookie_params is None:
+            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
         return [
             Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
             for i, datum in enumerate(data, start=0)

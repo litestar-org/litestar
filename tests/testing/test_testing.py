@@ -224,8 +224,12 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
         assert app.state.value == 1
 
 
-def test_test_client_set_session(session_backend_config: "BaseBackendConfig") -> None:
+@pytest.mark.parametrize("with_domain", [False, True])
+def test_test_client_set_session_data(with_domain: bool, session_backend_config: "BaseBackendConfig") -> None:
     session_data = {"foo": "bar"}
+
+    if with_domain:
+        session_backend_config.domain = "testserver"
 
     @get(path="/test")
     def get_session_data(request: Request) -> Dict[str, Any]:
@@ -238,7 +242,8 @@ def test_test_client_set_session(session_backend_config: "BaseBackendConfig") ->
         assert session_data == client.get("/test").json()
 
 
-def test_test_client_set_session_data(session_backend_config: "BaseBackendConfig") -> None:
+@pytest.mark.parametrize("with_domain", [False, True])
+def test_test_client_get_session_data(with_domain: bool, session_backend_config: "BaseBackendConfig") -> None:
     session_data = {"foo": "bar"}
 
     @post(path="/test")

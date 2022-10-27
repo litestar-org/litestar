@@ -14,7 +14,7 @@ from typing import (
 )
 from urllib.parse import urljoin
 
-import anyio
+from anyio import run as anyio_run
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
 from starlite import HttpMethod, ImproperlyConfiguredException
@@ -65,14 +65,6 @@ AnySessionConfig = Union["ServerSideSessionConfig", "CookieBackendConfig"]
 
 def raise_for_unsupported_session_backend(backend: "BaseSessionBackend") -> None:
     raise ImproperlyConfiguredException(f"Backend of type {type(backend)!r} is currently not supported")
-
-
-def warn_for_deprecated_session_interface() -> None:
-    warnings.warn(
-        "Accessing the session via this property is deprecated and will be removed in future version."
-        "in future versions. To access the session backend directly, use the session_backend attribute",
-        PendingDeprecationWarning,
-    )
 
 
 class TestClient(Client, Generic[T]):
@@ -129,7 +121,11 @@ class TestClient(Client, Generic[T]):
 
     @property
     def session(self) -> "CookieBackend":
-        warn_for_deprecated_session_interface()
+        warnings.warn(
+            "Accessing the session via this property is deprecated and will be removed in future version."
+            "To access the session backend directly, use the session_backend attribute",
+            PendingDeprecationWarning,
+        )
         if not isinstance(self._session_backend, CookieBackend):
             raise ImproperlyConfiguredException(
                 f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
@@ -619,8 +615,12 @@ class TestClient(Client, Generic[T]):
                     test_client.get(url="/my_route")
             ```
         """
+        warnings.warn(
+            "This method is deprecated and will be removed in a future version. Use"
+            "TestClient.set_session_data instead",
+            PendingDeprecationWarning,
+        )
         if self._session_backend is None:
-            warn_for_deprecated_session_interface()
             return {}
         return self._create_session_cookies(self.session, session_data)
 
@@ -645,6 +645,11 @@ class TestClient(Client, Generic[T]):
                 assert "user" in session
             ```
         """
+        warnings.warn(
+            "This method is deprecated and will be removed in a future version. Use"
+            "TestClient.get_session_data instead",
+            PendingDeprecationWarning,
+        )
         if self._session_backend is None:
             return {}
         return self.get_session_data()
@@ -652,7 +657,7 @@ class TestClient(Client, Generic[T]):
     @staticmethod
     def _create_session_cookies(backend: CookieBackend, data: Dict[str, Any]) -> Dict[str, str]:
         encoded_data = backend.dump_data(data=data)
-        return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data, {})}
+        return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
 
     async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
         # TODO: Expose this in the async client
@@ -718,7 +723,7 @@ class TestClient(Client, Generic[T]):
                 assert client.get("/test").json() == {"foo": "bar"}
             ```
         """
-        anyio.run(self._set_session_data_async, data)
+        anyio_run(self._set_session_data_async, data)
 
     def get_session_data(self) -> Dict[str, Any]:
         """Get session data.
@@ -748,4 +753,4 @@ class TestClient(Client, Generic[T]):
                 assert client.get_session_data() == {"foo": "bar"}
             ```
         """
-        return anyio.run(self._get_session_data_async)
+        return anyio_run(self._get_session_data_async)

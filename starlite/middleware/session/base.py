@@ -183,7 +183,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
     def __init__(self, config: ServerConfigT) -> None:
         """Base class for server-side backends. Implements.
 
-        [BaseSessionBackend][starlite.middleware.session.BaseSessionBackend] and defines and
+        [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend] and defines and
         interface which subclasses can implement to facilitate the storage of session data
         """
         super().__init__(config=config)

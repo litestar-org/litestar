@@ -71,91 +71,25 @@ def test_health_check(test_client: TestClient):
         assert response.text == "healthy"
 ```
 
-### Create Session Cookies
+### Using sessions
 
 If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
-across requests then your route handlers may expect preloaded session when mocking the request. To mock request with raw session
-cookies, you can use [`TestClient.create_session_cookies`][starlite.testing.test_client.TestClient.create_session_cookies]. The
-session middleware will then load the session data from the session cookies that you provide.
+across requests, then you might want to inject or inspect session data outside a request. For this, `TestClient` provides
+two methods:
 
-To use the same session configuration that you have used in your app for session middleware, import
-[`SessionCookieConfig`][starlite.middleware.session.SessionCookieConfig] instance from your app.
-
-```python title="tests/test_route_handlers.py"
-import pytest
-from starlite.testing import TestClient
-
-from my_app.main import app, session_cookie_config_instance
-
-
-class TestClass:
-
-    @pytest.fixture()
-    def test_client(self) -> TestClient:
-        with TestClient(app=app, base_url="example.com", session_config=session_cookie_config_instance) as client:
-            yield client
-
-    def test_something(self, test_client: TestClient) -> None:
-        cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
-        # Set raw session cookies to the "cookies" attribute of test_client instance.
-        test_client.cookies = cookies
-        test_client.get(url="/my_route")
-```
-
-#### Set Cookies With Domain
-
-If you have set `domain` in `SessionCookieConfig` instance, the `domain` argument here must take the same parameter. The
-domain must follow the format specified in RFC 2109, that is, setting a cookie domain without a preceding dot, like,
-*example.com* instead of *.example.com*, is invalid and will not set the cookie.
-
-If you have not set `domain` in `SessionCookieConfig`, the `domain` argument here must match with the domain name in the
-`base_url` argument of `TestClient` instance. See the example below.
-
-```python
-def test_something(test_client) -> None:
-    cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
-    # Get domain
-    domain = test_client.session.config.domain or test_client.base_url.host
-    # Set cookies
-    for key, value in cookies.items():
-        test_client.cookies.set(key=key, value=value, domain=domain)
-    test_client.get(url="/my_route")
-```
-
-### Create Session from Raw Cookies
-
-If your route handlers modify data in session, you may want to assert session data to confirm the modification. If you
-are using **Session Middleware**, the response from the route handlers will include raw session cookies which are a
-serialized image of the session. To assert data in session,
-[`TestClient.get_session_from_cookies`][starlite.testing.test_client.TestClient.get_session_from_cookies] method deserializes
-raw session cookies and creates session from them.
-
-```python title="tests/test_route_handlers.py"
-import pytest
-from starlite.testing import TestClient
-
-from my_app.main import app, session_cookie_config_instance
-
-
-class TestClass:
-
-    @pytest.fixture()
-    def test_client(self) -> TestClient:
-        with TestClient(app=app, session_config=session_cookie_config_instance) as client:
-            yield client
-
-    def test_something(self, test_client: TestClient) -> None:
-        test_client.get(url="/test")
-        session = test_client.get_session_from_cookies()
-        assert "user" in session
-```
+- [set_session_data][starlite.testing.test_client.TestClient.set_session_data]
+- [set_session_data][starlite.testing.test_client.TestClient.get_session_data]
 
 !!! important
     The **Session Middleware** must be enabled in Starlite app provided to the TestClient to use sessions.
 
-!!! important
-    Use the test client as a context manager (i.e. with the `with`) keyword if you want to use the Starlite app's
-    `on_startup` and `on_shutdown`.
+```py title="Setting session data"
+--8<-- "examples/testing/set_session_data.py"
+```
+
+```py title="Getting session data"
+--8<-- "examples/testing/get_session_data.py"
+```
 
 ## Creating a Test App
 
