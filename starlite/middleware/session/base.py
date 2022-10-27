@@ -172,7 +172,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
             The session data
 
         Notes:
-            This should not modify the connection's scope. The data returned by this
+            - This should not modify the connection's scope. The data returned by this
             method will be stored in the application scope by the middleware
         """
 
