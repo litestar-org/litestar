@@ -1,5 +1,6 @@
 import os
 import pathlib
+import sys
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
 
 import fakeredis.aioredis  # type: ignore
@@ -205,6 +206,25 @@ async def async_sqlalchemy_session_backend(
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
+    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
+
+
+@pytest.fixture(
+    params=[
+        pytest.param("cookie_session_backend_config", id="cookie"),
+        pytest.param("memory_session_backend_config", id="memory"),
+        pytest.param("file_session_backend_config", id="file"),
+        pytest.param("redis_session_backend_config", id="redis"),
+        pytest.param("memcached_session_backend_config", id="memcached"),
+        pytest.param("sqlalchemy_session_backend_config", id="sqlalchemy"),
+        pytest.param("async_sqlalchemy_session_backend_config", id="sqlalchemy-async"),
+    ]
+)
+def session_backend_config_async_safe(
+    request: pytest.FixtureRequest,
+) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
+    if sys.version_info < (3, 10) and request.param == "redis_session_backend_config":
+        return pytest.skip("")
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
 
 

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         TemplateConfig,
         WebSocket,
     )
-    from starlite.middleware.session import SessionCookieConfig
+    from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -73,7 +73,7 @@ def create_test_client(
     request_class: Optional[Type["Request"]] = None,
     response_class: Optional["ResponseType"] = None,
     root_path: str = "",
-    session_config: Optional["SessionCookieConfig"] = None,
+    session_config: Optional["BaseBackendConfig"] = None,
     static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
     template_config: Optional["TemplateConfig"] = None,
     websocket_class: Optional[Type["WebSocket"]] = None,
