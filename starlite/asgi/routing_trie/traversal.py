@@ -21,9 +21,23 @@ from starlite.exceptions import (
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
-    from starlite.asgi.routing_trie.types import AsgiHandlerNodeMapping, RouteTrieNode
-    from starlite.types import ASGIApp, RouteHandlerType, Scope
+    from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
+    from starlite.types import Scope
     from starlite.types.internal import PathParameterDefinition
+
+
+parsers_map: Dict[Any, Callable] = {
+    str: str,
+    float: float,
+    int: int,
+    Decimal: Decimal,
+    UUID: UUID,
+    Path: lambda x: Path(sub("//+", "", (x.lstrip("/")))),
+    date: parse_date,
+    datetime: parse_datetime,
+    time: parse_time,
+    timedelta: parse_duration,
+}
 
 
 def traverse_route_map(
@@ -44,8 +58,10 @@ def traverse_route_map(
     Returns:
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
-    if current_node["is_static"]:
-        scope["path"] = normalize_path(path + "/")
+
+    if current_node["is_mount"]:
+        if current_node["is_static"]:
+            scope["path"] = normalize_path(path + "/")
         return current_node, path_params
 
     if path in current_node["child_keys"]:
@@ -67,7 +83,7 @@ def traverse_route_map(
         if path.startswith(child_path):
             return traverse_route_map(
                 current_node=current_node["children"][child_path],
-                path=path.removeprefix(child_path),
+                path=path[len(child_path) :],
                 scope=scope,
                 path_params=path_params,
             )
@@ -79,7 +95,7 @@ def traverse_route_map(
         component = [p for p in path.split("/") if p][0]
 
         path_params.append(component)
-        path = path.removeprefix(f"/{component}")
+        path = path[len(f"/{component}") :]
 
         return traverse_route_map(
             current_node=current_node["children"][current_node["path_param_type"]],  # type: ignore[index]
@@ -89,35 +105,6 @@ def traverse_route_map(
         )
 
     raise NotFoundException()
-
-
-parsers_map: Dict[Any, Callable] = {
-    str: str,
-    float: float,
-    int: int,
-    Decimal: Decimal,
-    UUID: UUID,
-    Path: lambda x: Path(sub("//+", "", (x.lstrip("/")))),
-    date: parse_date,
-    datetime: parse_datetime,
-    time: parse_time,
-    timedelta: parse_duration,
-}
-
-
-def resolve_handler_node(
-    scope: "Scope", asgi_handlers: "AsgiHandlerNodeMapping", is_mount: bool
-) -> Tuple["ASGIApp", "RouteHandlerType"]:
-    """Given a scope, returns the ASGI App and route handler for the route."""
-    if is_mount:
-        node = asgi_handlers["asgi"]
-    elif scope["type"] == ScopeType.HTTP:
-        if scope["method"] not in asgi_handlers:
-            raise MethodNotAllowedException()
-        node = asgi_handlers[scope["method"]]
-    else:
-        node = asgi_handlers["websocket"]
-    return node["asgi_app"], node["handler"]
 
 
 def parse_path_parameters(
@@ -147,9 +134,7 @@ def parse_path_parameters(
         raise ValidationException(f"unable to parse path parameters {','.join(request_path_parameter_values)}") from e
 
 
-def parse_scope_to_route(
-    root_node: "RouteTrieNode", scope: "Scope", plain_routes: Set[str]
-) -> Tuple["AsgiHandlerNodeMapping", bool]:
+def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_routes: Set[str]) -> "ASGIHandlerTuple":
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean
     values from correct trie node."""
 
@@ -170,4 +155,11 @@ def parse_scope_to_route(
             else {}
         )
 
-    return current_node["asgi_handlers"], current_node["is_mount"]
+    try:
+        if current_node["is_asgi"]:
+            return current_node["asgi_handlers"]["asgi"]
+        if scope["type"] == ScopeType.HTTP:
+            return current_node["asgi_handlers"][scope["method"]]
+        return current_node["asgi_handlers"]["websocket"]
+    except KeyError as e:
+        raise MethodNotAllowedException() from e

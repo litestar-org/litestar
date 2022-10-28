@@ -1,12 +1,13 @@
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import BaseModel, DirectoryPath, constr, validator
 from starlette.staticfiles import StaticFiles
 
+from starlite.handlers import asgi
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp
+    from starlite.handlers import ASGIRouteHandler
 
 
 class StaticFilesConfig(BaseModel):
@@ -49,7 +50,7 @@ class StaticFilesConfig(BaseModel):
             raise ValueError("path parameters are not supported for static files")
         return normalize_path(value)
 
-    def to_static_files_app(self) -> "ASGIApp":
+    def to_static_files_app(self) -> "ASGIRouteHandler":
         """Returns an ASGI app serving static files based on the config.
 
                 Returns:
@@ -61,4 +62,4 @@ class StaticFilesConfig(BaseModel):
             directory=str(self.directories[0]),
         )
         static_files.all_directories = self.directories  # type: ignore[assignment]
-        return cast("ASGIApp", static_files)
+        return asgi(path=self.path, name=self.name, is_static=True)(static_files)

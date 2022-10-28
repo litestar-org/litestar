@@ -22,9 +22,10 @@ class RouteTrieNode(TypedDict):
     """This class represents a radix trie node."""
 
     asgi_handlers: AsgiHandlerNodeMapping
+    child_keys: List[str]
     children: Dict[Union[str, Type], "RouteTrieNode"]  # type: ignore[misc]
-    path_param_type: Optional[Type]
+    is_asgi: bool
     is_mount: bool
     is_static: bool
+    path_param_type: Optional[Type]
     path_parameters: List["PathParameterDefinition"]
-    child_keys: List[str]

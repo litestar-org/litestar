@@ -14,7 +14,6 @@ from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.exceptions import NoRouteMatchFoundException
-from starlite.handlers.asgi import asgi
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.router import Router
@@ -359,8 +358,7 @@ class Starlite(Router):
         for static_config in (
             self.static_files_config if isinstance(self.static_files_config, list) else [self.static_files_config]
         ):
-            self.asgi_router.static_routes.add(static_config.path)
-            self.register(asgi(path=static_config.path, name=static_config.name)(static_config.to_static_files_app()))
+            self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
 

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, List, Set, Type, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 
-from starlite.asgi.routing_trie.types import ASGIHandlerMapping
+from starlite.asgi.routing_trie.types import ASGIHandlerTuple
 from starlite.asgi.utils import wrap_in_exception_handler
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal import PathParameterDefinition
@@ -20,7 +20,6 @@ def map_route_to_trie(
     app: "Starlite",
     root_node: "RouteTrieNode",
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    static_routes: Set[str],
     plain_routes: Set[str],
 ) -> "RouteTrieNode":
     """Adds a new route path (e.g. '/foo/bar/{param:int}') into the route_map
@@ -34,7 +33,9 @@ def map_route_to_trie(
     current_node = root_node
     path = route.path
 
-    if route.path_parameters or path in static_routes:
+    is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # type: ignore[union-attr]
+
+    if route.path_parameters or is_mount:
         for component in construct_route_path_components(route_path_components=route.path_components):
             if isinstance(component, PathParameterDefinition):
                 current_node["path_param_type"] = component.type
@@ -51,15 +52,13 @@ def map_route_to_trie(
                 current_node["children"][next_node_key] = create_node()
 
             current_node = current_node["children"][next_node_key]
-            if current_node["is_static"] and current_node["path_param_type"] is not None:
-                raise ImproperlyConfiguredException("Cannot have path parameters configured for a static path.")
     else:
         if path not in root_node["children"]:
             root_node["children"][path] = create_node()
         plain_routes.add(path)
         current_node = root_node["children"][path]
 
-    configure_node(route=route, app=app, node=current_node, static_routes=static_routes)
+    configure_node(route=route, app=app, node=current_node)
     return current_node
 
 
@@ -118,6 +117,7 @@ def create_node() -> "RouteTrieNode":
         "is_static": False,
         "path_param_type": None,
         "path_parameters": [],
+        "is_asgi": False,
     }
 
 
@@ -125,7 +125,6 @@ def configure_node(
     app: "Starlite",
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
     node: "RouteTrieNode",
-    static_routes: Set[str],
 ) -> None:
     """Set required attributes and route handlers on route_map tree node."""
     from starlite.routes import HTTPRoute, WebSocketRoute
@@ -135,31 +134,31 @@ def configure_node(
     if not node["path_parameters"]:
         node["path_parameters"] = route.path_parameters
 
-    if route.path in static_routes:
-        # if node["children"]:
-        #     raise ImproperlyConfiguredException("Cannot have configured routes below a static path")
-        node["is_static"] = True
-
     if isinstance(route, HTTPRoute):
         for method, handler_mapping in route.route_handler_map.items():
             handler, _ = handler_mapping
-            node["asgi_handlers"][method] = ASGIHandlerMapping(
+            node["asgi_handlers"][method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
             )
 
     elif isinstance(route, WebSocketRoute):
-        node["asgi_handlers"]["websocket"] = ASGIHandlerMapping(
+        node["asgi_handlers"]["websocket"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
 
     else:
-        node["asgi_handlers"]["asgi"] = ASGIHandlerMapping(
+        node["asgi_handlers"]["asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
-        node["is_mount"] = True
+        node["is_asgi"] = True
+        node["is_mount"] = route.route_handler.is_mount or route.route_handler.is_static
+        node["is_static"] = route.route_handler.is_static
+
+        if node["is_mount"] and node["path_param_type"] is not None:
+            raise ImproperlyConfiguredException("Cannot have path parameters configured for a static path.")
 
 
 def build_route_middleware_stack(
