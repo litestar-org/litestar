@@ -129,15 +129,15 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        sa_session = self._create_sa_session()
-        session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
-        if session_obj:
-            if not session_obj.expired:
-                self._update_session_expiry(session_obj)  # type: ignore[unreachable]
+        async with self._create_sa_session() as sa_session:
+            session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
+            if session_obj:
+                if not session_obj.expired:
+                    self._update_session_expiry(session_obj)  # type: ignore[unreachable]
+                    await sa_session.commit()
+                    return session_obj.data
+                await sa_session.delete(session_obj)
                 await sa_session.commit()
-                return session_obj.data
-            await sa_session.delete(session_obj)
-            await sa_session.commit()
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
@@ -153,15 +153,15 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         Returns:
             None
         """
-        sa_session = self._create_sa_session()
-        session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
+        async with self._create_sa_session() as sa_session:
+            session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
 
-        if not session_obj:
-            session_obj = self._model(session_id=session_id)  # type: ignore[call-arg]
-            sa_session.add(session_obj)
-        session_obj.data = data
-        self._update_session_expiry(session_obj)
-        await sa_session.commit()
+            if not session_obj:
+                session_obj = self._model(session_id=session_id)  # type: ignore[call-arg]
+                sa_session.add(session_obj)
+            session_obj.data = data
+            self._update_session_expiry(session_obj)
+            await sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with `session_id`. Fails silently if no
@@ -173,9 +173,9 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         Returns:
             None
         """
-        sa_session = self._create_sa_session()
-        await sa_session.execute(sa.delete(self._model).where(self._model.session_id == session_id))
-        await sa_session.commit()
+        async with self._create_sa_session() as sa_session:
+            await sa_session.execute(sa.delete(self._model).where(self._model.session_id == session_id))
+            await sa_session.commit()
 
     async def delete_all(self) -> None:
         """Delete all session data.
@@ -183,10 +183,9 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         Returns:
             None
         """
-        sa_session = self._create_sa_session()
-
-        await sa_session.execute(sa.delete(self._model))
-        await sa_session.commit()
+        async with self._create_sa_session() as sa_session:
+            await sa_session.execute(sa.delete(self._model))
+            await sa_session.commit()
 
     async def delete_expired(self) -> None:
         """Delete all expired session from the database.
@@ -194,8 +193,8 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         Returns:
             None
         """
-        sa_session = self._create_sa_session()
-        await sa_session.execute(sa.delete(self._model).where(self._model.expired))
+        async with self._create_sa_session() as sa_session:
+            await sa_session.execute(sa.delete(self._model).where(self._model.expired))
 
 
 class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):

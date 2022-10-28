@@ -19,6 +19,7 @@ target/
 # files
 **/*.so
 **/*.sqlite
+**/*.sqlite*
 *.iml
 .DS_Store
 .coverage
