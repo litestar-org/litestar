@@ -58,7 +58,7 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
         assert response.json() == {"has_session": False}
 
 
-def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
+def test_set_empty(session_backend_config_async_safe: "BaseBackendConfig") -> None:
     @post("/create-session")
     def create_session_handler(request: Request) -> None:
         request.set_session({"foo": "bar"})
@@ -69,8 +69,8 @@ def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
 
     with create_test_client(
         route_handlers=[create_session_handler, empty_session_handler],
-        middleware=[session_backend_config.middleware],
-        session_config=session_backend_config,
+        middleware=[session_backend_config_async_safe.middleware],
+        session_config=session_backend_config_async_safe,
     ) as client:
         client.post("/create-session")
         client.post("/empty-session")
