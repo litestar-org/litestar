@@ -12,6 +12,7 @@ from starlette.datastructures import MutableHeaders
 
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
+from starlite.types import Empty
 
 from .base import BaseBackendConfig, BaseSessionBackend
 
@@ -130,7 +131,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         headers = MutableHeaders(scope=message)
         cookie_keys = self.get_cookie_keys(connection)
 
-        if scope_session:
+        if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
             cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
             for cookie in self._create_session_cookies(data, cookie_params):

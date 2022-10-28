@@ -661,7 +661,6 @@ class TestClient(Client, Generic[T]):
 
     async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
         # TODO: Expose this in the async client
-
         if isinstance(self.session_backend, ServerSideBackend):
             serialized_data = self.session_backend.serlialize_data(data)
             session_id = self.cookies.setdefault(
@@ -681,7 +680,8 @@ class TestClient(Client, Generic[T]):
             session_id = self.cookies.get(self.session_backend.config.key)
             if session_id:
                 data = await self.session_backend.get(session_id)
-                return self.session_backend.deserialize_data(data)
+                if data:
+                    return self.session_backend.deserialize_data(data)
         elif isinstance(self.session_backend, CookieBackend):
             raw_data = [
                 self.cookies[key].encode("utf-8") for key in self.cookies if self.session_backend.config.key in key

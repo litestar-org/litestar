@@ -5,6 +5,7 @@ from typing import (
     Generic,
     List,
     Optional,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -260,7 +261,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         return self.app.cache
 
-    def set_session(self, value: Union[Dict[str, Any], "BaseModel"]) -> None:
+    def set_session(self, value: Union[Dict[str, Any], "BaseModel", Type["Empty"]]) -> None:
         """Helper method to set the session in scope.
 
         If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is

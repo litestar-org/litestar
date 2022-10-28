@@ -13,6 +13,7 @@ from starlite import (
     websocket,
 )
 from starlite.testing import create_test_client
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from starlite.middleware.session.base import BaseBackendConfig
@@ -55,6 +56,25 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
 
         response = client.get("/session")
         assert response.json() == {"has_session": False}
+
+
+def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
+    @post("/create-session")
+    def create_session_handler(request: Request) -> None:
+        request.set_session({"foo": "bar"})
+
+    @post("/empty-session")
+    def empty_session_handler(request: Request) -> None:
+        request.set_session(Empty)
+
+    with create_test_client(
+        route_handlers=[create_session_handler, empty_session_handler],
+        middleware=[session_backend_config.middleware],
+        session_config=session_backend_config,
+    ) as client:
+        client.post("/create-session")
+        client.post("/empty-session")
+        assert not client.get_session_data()
 
 
 def test_use_of_custom_response_serializer_with_http_handler(session_backend_config: "BaseBackendConfig") -> None:

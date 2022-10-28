@@ -25,6 +25,7 @@ from typing_extensions import Literal
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.middleware.util import should_bypass_middleware
+from starlite.types import Empty
 from starlite.utils import default_serializer, get_serializer_from_scope
 
 if TYPE_CHECKING:
@@ -276,17 +277,18 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
         headers = MutableHeaders(scope=message)
         session_id = connection.cookies.get(self.config.key, self.generate_session_id())
 
-        serialised_data = self.serlialize_data(scope_session, scope)
-        await self.set(session_id=session_id, data=serialised_data)
-
         cookie_params = self.config.dict(
             exclude_none=True,
             exclude={"secret", "key"} | set(self.config.__fields__) - set(BaseBackendConfig.__fields__),
         )
 
-        if scope_session:
+        if scope_session is not Empty:
+            serialised_data = self.serlialize_data(scope_session, scope)
+            await self.set(session_id=session_id, data=serialised_data)
+
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
         else:
+            await self.delete(session_id)
             headers.append(
                 "Set-Cookie",
                 Cookie(value="null", key=self.config.key, expires=0, **cookie_params).to_header(header=""),
