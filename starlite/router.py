@@ -169,10 +169,16 @@ class Router:
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             else:
-                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
+                existing_handlers = self.route_handler_method_map.get(path, {})
+
+                if not isinstance(existing_handlers, dict):
+                    raise ImproperlyConfiguredException(
+                        "Cannot have both HTTP routes and websocket / asgi route handlers on the same path"
+                    )
+
                 route_handlers = unique(list(handler_or_method_map.values()))
                 if existing_handlers:
-                    route_handlers.extend(unique(existing_handlers))
+                    route_handlers.extend(unique(list(existing_handlers.values())))
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
                     )

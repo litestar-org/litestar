@@ -140,8 +140,8 @@ class TestClientTransport(BaseTransport):
             )
             session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))
             raise ConnectionUpgradeException(session)
-        else:
-            scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
+
+        scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
 
         raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
 

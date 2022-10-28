@@ -5,7 +5,6 @@ from starlette.middleware import Middleware as StarletteMiddleware
 
 from starlite.asgi.routing_trie.types import ASGIHandlerTuple
 from starlite.asgi.utils import wrap_in_exception_handler
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal import PathParameterDefinition
 from starlite.utils import normalize_path
 
@@ -34,29 +33,27 @@ def map_route_to_trie(
     path = route.path
 
     is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # type: ignore[union-attr]
+    is_plain_route = not (route.path_parameters or is_mount)
 
-    if route.path_parameters or is_mount:
-        for component in construct_route_path_components(route_path_components=route.path_components):
-            if isinstance(component, PathParameterDefinition):
-                current_node["path_param_type"] = component.type
-                if component.type is Path:
-                    break
+    for component in construct_route_path_components(route_path_components=route.path_components) or [path]:
+        if isinstance(component, PathParameterDefinition):
+            current_node["path_param_type"] = component.type
+            if component.type is Path:
+                break
 
-                next_node_key: Union[str, Type] = component.type
+            next_node_key: Union[str, Type] = component.type
 
-            else:
-                next_node_key = component
-                current_node["child_keys"].append(component)
+        else:
+            next_node_key = component
+            current_node["child_keys"].append(component)
 
-            if next_node_key not in current_node["children"]:
-                current_node["children"][next_node_key] = create_node()
+        if next_node_key not in current_node["children"]:
+            current_node["children"][next_node_key] = create_node()
 
-            current_node = current_node["children"][next_node_key]
-    else:
-        if path not in root_node["children"]:
-            root_node["children"][path] = create_node()
+        current_node = current_node["children"][next_node_key]
+
+    if is_plain_route:
         plain_routes.add(path)
-        current_node = root_node["children"][path]
 
     configure_node(route=route, app=app, node=current_node)
     return current_node
@@ -156,9 +153,6 @@ def configure_node(
         node["is_asgi"] = True
         node["is_mount"] = route.route_handler.is_mount or route.route_handler.is_static
         node["is_static"] = route.route_handler.is_static
-
-        if node["is_mount"] and node["path_param_type"] is not None:
-            raise ImproperlyConfiguredException("Cannot have path parameters configured for a static path.")
 
 
 def build_route_middleware_stack(

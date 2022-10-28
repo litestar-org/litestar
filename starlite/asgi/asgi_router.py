@@ -2,6 +2,7 @@ from collections import defaultdict
 from traceback import format_exc
 from typing import TYPE_CHECKING, Dict, List, Set, Union
 
+from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import create_node, map_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
 from starlite.asgi.utils import get_route_handlers
@@ -120,6 +121,8 @@ class ASGIRouter:
 
             self._store_handler_to_route_mapping(route)
             self._registered_routes.add(route)
+
+        validate_node(node=self.root_route_map_node)
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
         """Handles the ASGI "lifespan" event on application startup and

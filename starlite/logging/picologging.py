@@ -12,7 +12,7 @@ except ImportError as e:
     raise MissingDependencyException("picologging is not installed") from e
 
 
-class QueueListenerHandler(QueueHandler):  # type: ignore[misc]
+class QueueListenerHandler(QueueHandler):
     def __init__(self, handlers: Optional[List[Any]] = None) -> None:
         """Configures queue listener and handler to support non-blocking
         logging configuration.
