@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing_extensions import get_args
 
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from tests.plugins.sql_alchemy_plugin import Pet, User
+from tests.plugins.sql_alchemy_plugin import Company, Pet, User
 
 
 def test_relationship() -> None:
@@ -23,7 +23,11 @@ def test_relationship() -> None:
 
 
 def test_table_name() -> None:
-    pet_table = Pet
-    user_table = User
-    assert pet_table.__tablename__ == "pet"
-    assert user_table.__tablename__ == "user"
+    assert Pet.__tablename__ == "pet"
+    assert User.__tablename__ == "user"
+
+
+def test_plugin_to_dict_with_relationship() -> None:
+    plugin = SQLAlchemyPlugin()
+    user = User(id=1, name="A. Person", company=Company(id=1, name="Mega Corp", worth=1.0))
+    plugin.to_dict(user)  # type:ignore[arg-type]
