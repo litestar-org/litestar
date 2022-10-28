@@ -137,13 +137,14 @@ async def test_sqlalchemy_async_backend_delete_expired(
     await async_sqlalchemy_session_backend.set("foo", generate_session_data())
     await async_sqlalchemy_session_backend.set("bar", generate_session_data())
 
-    session = async_sqlalchemy_session_backend._create_sa_session()
     model = async_sqlalchemy_session_backend.config.model
-    await session.execute(
-        sa.update(model)
-        .where(model.session_id == "foo")
-        .values(expires=datetime.datetime.utcnow().replace(tzinfo=None))
-    )
+    async with async_sqlalchemy_session_backend._create_sa_session() as sa_session:
+        await sa_session.execute(
+            sa.update(model)
+            .where(model.session_id == "foo")
+            .values(expires=datetime.datetime.utcnow() - datetime.timedelta(days=60))
+        )
+        await sa_session.commit()
     await async_sqlalchemy_session_backend.delete_expired()
 
     assert not await async_sqlalchemy_session_backend.get("foo")
