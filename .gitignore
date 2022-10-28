@@ -19,7 +19,7 @@ target/
 # files
 **/*.so
 **/*.sqlite
-**/*.sqlite-jounal
+**/*.sqlite*
 *.iml
 .DS_Store
 .coverage
