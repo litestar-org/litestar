@@ -390,7 +390,9 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
                     # we are treating back-references as any to avoid infinite recursion
                     else:
                         field_definitions[name] = (Any, None)
-            self._model_namespace_map[model_name] = create_model(model_name, **field_definitions)
+            self._model_namespace_map[model_name] = create_model(
+                model_name, __config__=type("Config", (), {"orm_mode": True}), **field_definitions
+            )
             for related_entity_class in related_entity_classes:
                 self.to_pydantic_model_class(model_class=related_entity_class)
         model = self._model_namespace_map[model_name]
@@ -426,7 +428,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         pydantic_model = self._model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
             model_class=model_class
         )
-        return pydantic_model(**{field: getattr(model_instance, field) for field in pydantic_model.__fields__}).dict()
+        return pydantic_model.from_orm(model_instance).dict()  # type:ignore[pydantic-unexpected]
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
         """Given a dictionary of kwargs, return an instance of the given
