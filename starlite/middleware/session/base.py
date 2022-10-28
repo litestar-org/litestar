@@ -282,7 +282,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             exclude={"secret", "key"} | set(self.config.__fields__) - set(BaseBackendConfig.__fields__),
         )
 
-        if scope_session is not Empty:
+        if scope_session and scope_session is not Empty:
             serialised_data = self.serlialize_data(scope_session, scope)
             await self.set(session_id=session_id, data=serialised_data)
 

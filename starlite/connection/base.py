@@ -5,7 +5,6 @@ from typing import (
     Generic,
     List,
     Optional,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -25,6 +24,7 @@ if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.cache import Cache
+    from starlite.types import EmptyType
     from starlite.types.asgi_types import Message, Receive, Scope, Send
     from starlite.types.protocols import Logger
 
@@ -261,7 +261,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         return self.app.cache
 
-    def set_session(self, value: Union[Dict[str, Any], "BaseModel", Type["Empty"]]) -> None:
+    def set_session(self, value: Union[Dict[str, Any], "BaseModel", "EmptyType"]) -> None:
         """Helper method to set the session in scope.
 
         If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is
