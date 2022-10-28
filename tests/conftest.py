@@ -223,7 +223,7 @@ def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSe
 def session_backend_config_async_safe(
     request: pytest.FixtureRequest,
 ) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
-    if sys.version_info < (3, 9) and request.param == "redis_session_backend_config":
+    if sys.version_info < (3, 10) and request.param == "redis_session_backend_config":
         return pytest.skip("")
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
 
