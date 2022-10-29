@@ -84,7 +84,7 @@ trio = "*"
 fakeredis = "^1.9.4"
 
 [tool.poetry.extras]
-testing = ["httpx", "cryptography"]
+testing = ["httpx"]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
