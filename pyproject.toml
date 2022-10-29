@@ -168,3 +168,6 @@ all = true
 [tool.pyright]
 include = ["starlite", "tests", "examples"]
 exclude = ["starlite/plugins", "tests/plugins", "starlite/openapi", "tests/openapi"]
+
+[tool.slotscheck]
+strict-imports = false
