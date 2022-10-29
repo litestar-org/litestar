@@ -178,7 +178,7 @@ class Router:
 
                 route_handlers = unique(list(handler_or_method_map.values()))
                 if existing_handlers:
-                    route_handlers.extend(unique(list(existing_handlers.values())))
+                    route_handlers.extend(unique(existing_handlers.values()))
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
                     )
