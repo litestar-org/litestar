@@ -21,6 +21,7 @@ from starlite.testing import RequestFactory, TestClient
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
+
     from starlite.middleware.session.base import (
         BaseBackendConfig,
         ServerSideSessionConfig,
@@ -283,12 +284,17 @@ def test_test_client_get_session_data(
 ) -> None:
     session_data = {"foo": "bar"}
 
+    if with_domain:
+        session_config.domain = "testserver.local"
+
     @post(path="/test")
     def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
     app = Starlite(route_handlers=[set_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
+    with TestClient(
+        app=app, session_config=session_config, backend=test_client_backend, base_url="http://testserver.local"
+    ) as client:
         client.post("/test")
         assert client.get_session_data() == session_data
