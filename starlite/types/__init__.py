@@ -65,7 +65,7 @@ from .composite import (
     ResponseHeadersMap,
 )
 from .empty import Empty, EmptyType
-from .helpers import SingleOrList, SyncOrAsyncUnion
+from .helpers import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -77,6 +77,7 @@ from .partial import Partial
 from .protocols import Logger
 
 __all__ = (
+    "AnyIOBackend",
     "ASGIApp",
     "ASGIApp",
     "ASGIVersion",

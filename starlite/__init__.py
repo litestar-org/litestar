@@ -77,6 +77,7 @@ from starlite.plugins import PluginProtocol
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.testing import TestClient, create_test_client  # type: ignore[no-redef]
 from starlite.types.partial import Partial
 
 __all__ = (
@@ -97,6 +98,7 @@ __all__ = (
     "CompressionConfig",
     "Controller",
     "Cookie",
+    "create_test_client",
     "DTOFactory",
     "DefineMiddleware",
     "Dependency",
@@ -142,6 +144,7 @@ __all__ = (
     "Template",
     "TemplateConfig",
     "TooManyRequestsException",
+    "TestClient",
     "UploadFile",
     "ValidationException",
     "WebSocket",

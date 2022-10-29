@@ -14,7 +14,6 @@ from typing import (
 )
 from urllib.parse import urljoin
 
-from anyio import run as anyio_run
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
 from starlite import HttpMethod, ImproperlyConfiguredException
@@ -29,7 +28,7 @@ from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
     TestClientTransport,
 )
-from starlite.types import ASGIApp
+from starlite.types import AnyIOBackend, ASGIApp
 
 try:
     from httpx import USE_CLIENT_DEFAULT, Client, Response
@@ -52,7 +51,6 @@ if TYPE_CHECKING:
         TimeoutTypes,
         URLTypes,
     )
-    from typing_extensions import Literal
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
@@ -79,7 +77,7 @@ class TestClient(Client, Generic[T]):
         base_url: str = "http://testserver",
         raise_server_exceptions: bool = True,
         root_path: str = "",
-        backend: "Literal['asyncio', 'trio' ]" = "asyncio",
+        backend: AnyIOBackend = "asyncio",
         backend_options: Optional[Dict[str, Any]] = None,
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
@@ -723,7 +721,8 @@ class TestClient(Client, Generic[T]):
                 assert client.get("/test").json() == {"foo": "bar"}
             ```
         """
-        anyio_run(self._set_session_data_async, data)
+        with self.portal() as portal:
+            portal.call(self._set_session_data_async, data)
 
     def get_session_data(self) -> Dict[str, Any]:
         """Get session data.
@@ -753,4 +752,5 @@ class TestClient(Client, Generic[T]):
                 assert client.get_session_data() == {"foo": "bar"}
             ```
         """
-        return anyio_run(self._get_session_data_async)
+        with self.portal() as portal:
+            return portal.call(self._get_session_data_async)
