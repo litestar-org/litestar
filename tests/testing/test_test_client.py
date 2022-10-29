@@ -8,6 +8,7 @@ from starlite.testing import TestClient
 
 if TYPE_CHECKING:
     from starlite.types import (
+        AnyIOBackend,
         HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
         Receive,
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     )
 
 
-def test_use_testclient_in_endpoint() -> None:
+def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None:
     """this test is taken from starlette."""
 
     @get("/")
@@ -27,7 +28,7 @@ def test_use_testclient_in_endpoint() -> None:
 
     @get("/")
     def homepage() -> Any:
-        client = TestClient(mock_service)
+        client = TestClient(mock_service, backend=test_client_backend)
         response = client.get("/")
         return response.json()
 
@@ -42,18 +43,22 @@ def raise_error() -> NoReturn:
     raise RuntimeError()
 
 
-def test_error_handling_on_startup() -> None:
-    with pytest.raises(RuntimeError), TestClient(Starlite(route_handlers=[], on_startup=[raise_error])):
+def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
+    with pytest.raises(RuntimeError), TestClient(
+        Starlite(route_handlers=[], on_startup=[raise_error]), backend=test_client_backend
+    ):
         pass
 
 
-def test_error_handling_on_shutdown() -> None:
-    with pytest.raises(RuntimeError), TestClient(Starlite(route_handlers=[], on_shutdown=[raise_error])):
+def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
+    with pytest.raises(RuntimeError), TestClient(
+        Starlite(route_handlers=[], on_shutdown=[raise_error]), backend=test_client_backend
+    ):
         pass
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-def test_client_interface(method: str) -> None:
+def test_client_interface(method: str, test_client_backend: "AnyIOBackend") -> None:
     async def asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         start_event: "HTTPResponseStartEvent" = {
             "type": "http.response.start",
@@ -64,7 +69,7 @@ def test_client_interface(method: str) -> None:
         body_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
         await send(body_event)
 
-    client = TestClient(asgi_app)
+    client = TestClient(asgi_app, backend=test_client_backend)
     if method == "get":
         response = client.get("/")
     elif method == "post":

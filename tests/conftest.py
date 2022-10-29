@@ -46,7 +46,7 @@ from starlite.plugins.sql_alchemy import (
 from tests.mocks import FakeAsyncMemcached
 
 if TYPE_CHECKING:
-    from starlite.types import Receive, Scope, Send
+    from starlite.types import AnyIOBackend, Receive, Scope, Send
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -265,3 +265,8 @@ def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware
 @pytest.fixture
 def cookie_session_middleware(cookie_session_backend: CookieBackend) -> SessionMiddleware[CookieBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
+
+
+@pytest.fixture
+def test_client_backend(anyio_backend_name: str) -> "AnyIOBackend":
+    return cast("AnyIOBackend", anyio_backend_name)

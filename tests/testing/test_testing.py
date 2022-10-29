@@ -26,6 +26,7 @@ if TYPE_CHECKING:
         ServerSideSessionConfig,
     )
     from starlite.middleware.session.cookie_backend import CookieBackendConfig
+    from starlite.types import AnyIOBackend
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
@@ -42,8 +43,15 @@ pet = PetFactory.build()
         pytest.param("async_sqlalchemy_session_backend_config", id="sqlalchemy-async"),
     ]
 )
-def session_config(request: pytest.FixtureRequest) -> Union["ServerSideSessionConfig", "CookieBackendConfig"]:
-    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
+def session_config(
+    request: pytest.FixtureRequest, test_client_backend: "AnyIOBackend"
+) -> Union["ServerSideSessionConfig", "CookieBackendConfig"]:
+    param = request.param
+    if param == "async_sqlalchemy_session_backend_config" and test_client_backend == "trio":
+        #  Skip if it uses the AsyncSQLAlchemyBackend for SessionMiddleware and trio as the async backend, as SQLAlchemy
+        #  does not currently support trio
+        pytest.skip("Async SQLAlchemy does not currently support trio")
+    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(param))
 
 
 def test_request_factory_no_cookie_header() -> None:
@@ -218,7 +226,7 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
 
 
 @pytest.mark.parametrize("enable_session, session_data", [(True, {"user": "test-user"}), (False, {})])
-def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None:
+def test_test_client(enable_session: bool, session_data: Dict[str, str], test_client_backend: "AnyIOBackend") -> None:
     def start_up_handler(state: State) -> None:
         state.value = 1
 
@@ -231,7 +239,9 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
     app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
     with TestClient(
-        app=app, session_config=session_config if enable_session else None
+        app=app,
+        session_config=session_config if enable_session else None,
+        backend=test_client_backend,
     ) as client, pytest.deprecated_call():
         cookies = client.create_session_cookies(session_data=session_data)
         for key, value in cookies.items():
@@ -243,7 +253,12 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str]) -> None
 
 
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_set_session_data(with_domain: bool, session_config: "BaseBackendConfig") -> None:
+def test_test_client_set_session_data(
+    with_domain: bool,
+    session_config: "BaseBackendConfig",
+    test_client_backend: "AnyIOBackend",
+) -> None:
+
     session_data = {"foo": "bar"}
 
     if with_domain:
@@ -255,13 +270,17 @@ def test_test_client_set_session_data(with_domain: bool, session_config: "BaseBa
 
     app = Starlite(route_handlers=[get_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_config) as client:
+    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
         client.set_session_data(session_data)
         assert session_data == client.get("/test").json()
 
 
 @pytest.mark.parametrize("with_domain", [False, True])
-def test_test_client_get_session_data(with_domain: bool, session_config: "BaseBackendConfig") -> None:
+def test_test_client_get_session_data(
+    with_domain: bool,
+    session_config: "BaseBackendConfig",
+    test_client_backend: "AnyIOBackend",
+) -> None:
     session_data = {"foo": "bar"}
 
     @post(path="/test")
@@ -270,6 +289,6 @@ def test_test_client_get_session_data(with_domain: bool, session_config: "BaseBa
 
     app = Starlite(route_handlers=[set_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_config) as client:
+    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
         client.post("/test")
         assert client.get_session_data() == session_data
