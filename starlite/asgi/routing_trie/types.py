@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, NamedTuple, Optional, Set, Type, Union
+from typing import TYPE_CHECKING, Dict, List, NamedTuple, Set, Type, Union
 
 from typing_extensions import TypedDict
 
@@ -8,55 +8,54 @@ if TYPE_CHECKING:
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal import PathParameterDefinition
 
-AsgiHandlerNodeMapping = Dict[Union["Method", "Literal['websocket', 'asgi']"], "ASGIHandlerTuple"]
+
+class PathParameterSentinel:
+    """Sentinel class designating a path parameter."""
 
 
 class ASGIHandlerTuple(NamedTuple):
     """This class encapsulates a route handler node."""
 
     asgi_app: "ASGIApp"
+    """An ASGI stack, composed of a handler function and layers of middleware that wrap it."""
     handler: "RouteHandlerType"
+    """The route handler instance."""
 
 
 class RouteTrieNode(TypedDict):
     """This class represents a radix trie node."""
 
-    asgi_handlers: AsgiHandlerNodeMapping
-    child_keys: List[str]
-    non_parameter_values: Set[str]
-    children: Dict[Union[str, Type], "RouteTrieNode"]  # type: ignore[misc]
-    is_asgi: bool
-    is_mount: bool
-    is_static: bool
-    path_param_type: Optional[Type]
-    path_parameters: List["PathParameterDefinition"]
-    parent: Optional["RouteTrieNode"]  # type: ignore[misc]
-
-
-def create_node(parent: Optional["RouteTrieNode"]) -> "RouteTrieNode":
-    """Creates a RouteMapNode instance.
-
-    Returns:
-        A route map node instance.
+    asgi_handlers: Dict[Union["Method", "Literal['websocket', 'asgi']"], "ASGIHandlerTuple"]
     """
-
-    return {
-        "asgi_handlers": {},
-        "child_keys": [],
-        "children": {},
-        "is_asgi": False,
-        "is_mount": False,
-        "is_static": False,
-        "non_parameter_values": set(),
-        "parent": parent,
-        "path_param_type": None,
-        "path_parameters": [],
-    }
-
-
-__all__ = (
-    "ASGIHandlerTuple",
-    "AsgiHandlerNodeMapping",
-    "RouteTrieNode",
-    "create_node",
-)
+    A mapping of ASGI handlers stored on the node.
+    """
+    child_keys: Set[Union[str, Type[PathParameterSentinel]]]
+    """
+    A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
+    """
+    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]  # type: ignore[misc]
+    """
+    A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
+    """
+    is_asgi: bool
+    """
+    Designate the node as having an `@asgi` type handler.
+    """
+    is_mount: bool
+    """
+    Designates the node as a "mount" path, meaning that the handler function will be forwarded all sub paths.
+    """
+    is_path_type: bool
+    """
+        Designates the node as expecting a path parameter of type 'Path',
+        which means that any sub path under the node is considered to be a path parameter value rather than a url.
+    """
+    is_static: bool
+    """
+        Designates the node as a static path node, which means that any sub path under the node is considered to be
+        a file path in one of the static directories.
+    """
+    path_parameters: List["PathParameterDefinition"]
+    """
+    A list of tuples containing path parameter definitions. This is used for parsing extracted path parameter values.
+    """

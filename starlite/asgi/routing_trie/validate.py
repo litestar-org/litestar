@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING
 
+from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-    from starlite.asgi.routing_trie.types import (  # type: ignore[attr-defined]
-        RouteTrieNode,
-    )
+    from starlite.asgi.routing_trie.types import RouteTrieNode
 
 
 def validate_node(node: "RouteTrieNode") -> None:
@@ -23,10 +22,10 @@ def validate_node(node: "RouteTrieNode") -> None:
     if node["is_asgi"] and bool(set(node["asgi_handlers"].keys()).difference({"asgi"})):
         raise ImproperlyConfiguredException("ASGI handlers must have a unique path not shared by other route handlers.")
 
-    if node["is_mount"] and node["path_param_type"] is not None:
+    if node["is_static"] and PathParameterSentinel in node["child_keys"]:
         raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
 
-    if node["is_mount"] and node["children"]:
+    if (node["is_mount"] and not node["is_static"]) and node["children"]:
         raise ImproperlyConfiguredException("Cannot declare routes for sub paths below an ASGI mount route handler.")
 
     for child in node["children"].values():

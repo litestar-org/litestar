@@ -50,7 +50,9 @@ def test_guards_with_http_handler() -> None:
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json().get("detail") == "local"
-        client.app.route_map["/secret"]["_asgi_handlers"]["GET"]["handler"].opt["allow_all"] = True
+        client.app.asgi_router.root_route_map_node["children"]["/secret"]["asgi_handlers"]["GET"][1].opt[
+            "allow_all"
+        ] = True
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_200_OK
 
@@ -68,7 +70,9 @@ def test_guards_with_asgi_handler() -> None:
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json().get("detail") == "local"
-        client.app.route_map["/secret"]["_asgi_handlers"]["asgi"]["handler"].opt["allow_all"] = True
+        client.app.asgi_router.root_route_map_node["children"]["/secret"]["asgi_handlers"]["asgi"][1].opt[
+            "allow_all"
+        ] = True
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_200_OK
 
@@ -87,7 +91,7 @@ def test_guards_with_websocket_handler() -> None:
     with pytest.raises(WebSocketDisconnect), client.websocket_connect("/") as ws:
         ws.send_json({"data": "123"})
 
-    client.app.route_map["/"]["_asgi_handlers"]["websocket"]["handler"].opt["allow_all"] = True
+    client.app.asgi_router.root_route_map_node["children"]["/"]["asgi_handlers"]["websocket"][1].opt["allow_all"] = True
 
     with client.websocket_connect("/") as ws:
         ws.send_json({"data": "123"})
@@ -101,5 +105,19 @@ def test_guards_layering_for_same_route_handler() -> None:
     router = Router(path="/router", route_handlers=[http_route_handler], guards=[router_guard])
     app = Starlite(route_handlers=[http_route_handler, router], guards=[app_guard])
 
-    assert len(app.route_map["/http"]["_asgi_handlers"]["GET"]["handler"]._resolved_guards) == 2
-    assert len(app.route_map["/router/http"]["_asgi_handlers"]["GET"]["handler"]._resolved_guards) == 3
+    assert (
+        len(
+            app.asgi_router.root_route_map_node["children"]["/http"]["asgi_handlers"]["GET"][
+                1
+            ]._resolved_guards  # pyright: ignore
+        )
+        == 2
+    )
+    assert (
+        len(
+            app.asgi_router.root_route_map_node["children"]["/router/http"]["asgi_handlers"]["GET"][
+                1
+            ]._resolved_guards  # pyright: ignore
+        )
+        == 3
+    )

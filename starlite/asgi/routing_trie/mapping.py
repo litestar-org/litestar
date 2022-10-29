@@ -1,12 +1,12 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Set, Tuple, Type, Union, cast
+from typing import TYPE_CHECKING, Set, Type, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 
-from starlite.asgi.routing_trie.types import ASGIHandlerTuple, create_node
+from starlite.asgi.routing_trie.types import ASGIHandlerTuple, PathParameterSentinel
+from starlite.asgi.routing_trie.utils import create_node
 from starlite.asgi.utils import wrap_in_exception_handler
 from starlite.types.internal import PathParameterDefinition
-from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -33,77 +33,33 @@ def map_route_to_trie(
     path = route.path
 
     is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # type: ignore[union-attr]
-    is_plain_route = not (route.path_parameters or is_mount)
 
-    for non_parameter_value, component in construct_route_path_components(
-        route_path_components=route.path_components
-    ) or [(path, path)]:
-        if isinstance(component, PathParameterDefinition):
-            current_node["path_param_type"] = component.type
-            if component.type is Path:
-                break
-
-            next_node_key: Union[str, Type] = component.type
-
-        else:
-            next_node_key = component
-            current_node["child_keys"].append(component)
-
-            if non_parameter_value:
-                current_node["non_parameter_values"].add(non_parameter_value)
-
-        if next_node_key not in current_node["children"]:
-            current_node["children"][next_node_key] = create_node(parent=current_node)
-
-        current_node = current_node["children"][next_node_key]
-
-    if is_plain_route:
+    if not (route.path_parameters or is_mount):
         plain_routes.add(path)
+        if path not in root_node["children"]:
+            current_node["children"][path] = create_node()
+        current_node = root_node["children"][path]
+    else:
+        for component in route.path_components:
+            if isinstance(component, PathParameterDefinition):
+                if component.type is Path:
+                    current_node["is_path_type"] = True
+                    break
+
+                next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
+
+            else:
+                next_node_key = component
+
+            if next_node_key not in current_node["children"]:
+                current_node["children"][next_node_key] = create_node()
+
+            current_node["child_keys"] = set(current_node["children"].keys())
+
+            current_node = current_node["children"][next_node_key]
 
     configure_node(route=route, app=app, node=current_node)
     return current_node
-
-
-def construct_route_path_components(
-    route_path_components: List[Union[str, "PathParameterDefinition"]]
-) -> List[Tuple[str, Union[str, "PathParameterDefinition"]]]:
-    """Takes a list of path components and normalizes it to contain continuous
-    sections rather than short segments.
-
-    Examples:
-        Given a list ["base", "sub", "path"] returns ["/base/sub/spath"].
-
-    Args:
-        route_path_components: A given Route's parsed path components list.
-
-    Returns:
-        A normalized path components list.
-    """
-    path_components: List[Tuple[str, Union[str, "PathParameterDefinition"]]] = []
-    last_continuous_plain_path_segment = ""
-    non_parameter_value = ""
-
-    for component in route_path_components:
-        if isinstance(component, PathParameterDefinition):
-            if last_continuous_plain_path_segment:
-                path_components.append((non_parameter_value, normalize_path(last_continuous_plain_path_segment)))
-                last_continuous_plain_path_segment = ""
-                non_parameter_value = ""
-
-            path_components.append((non_parameter_value, component))
-
-            if component.type is Path:
-                break
-        else:
-            if not non_parameter_value:
-                non_parameter_value = component
-
-            last_continuous_plain_path_segment += f"/{component}"
-
-    if last_continuous_plain_path_segment:
-        path_components.append((non_parameter_value, last_continuous_plain_path_segment))
-
-    return path_components
 
 
 def configure_node(
@@ -113,8 +69,6 @@ def configure_node(
 ) -> None:
     """Set required attributes and route handlers on route_map tree node."""
     from starlite.routes import HTTPRoute, WebSocketRoute
-
-    node["child_keys"] = sorted(node["child_keys"], reverse=True)
 
     if not node["path_parameters"]:
         node["path_parameters"] = route.path_parameters
@@ -139,7 +93,7 @@ def configure_node(
             handler=route.route_handler,
         )
         node["is_asgi"] = True
-        node["is_mount"] = route.route_handler.is_mount or route.route_handler.is_static
+        node["is_mount"] = route.route_handler.is_mount
         node["is_static"] = route.route_handler.is_static
 
 

@@ -28,15 +28,15 @@ def test_supports_mounting() -> None:
     with create_test_client(asgi_handler) as client:
         response = client.get("/base/sub/path")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/base/sub/path"
+        assert response.text == "/"
 
         response = client.get("/base/sub/path/abcd")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/base/sub/path/abcd"
+        assert response.text == "/abcd"
 
         response = client.get("/base/sub/path/abcd/complex/123/terminus")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/base/sub/path/abcd/complex/123/terminus"
+        assert response.text == "/abcd/complex/123/terminus"
 
 
 def test_supports_sub_routes_below_asgi_handlers() -> None:
@@ -74,20 +74,6 @@ def test_does_not_support_asgi_handlers_on_same_level_as_websockets() -> None:
 
     @websocket("/base/sub/path")
     async def regular_handler(socket: "WebSocket") -> None:
-        return
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[asgi_handler, regular_handler])
-
-
-def test_does_not_support_nested_routes_below_mounts() -> None:
-    @asgi("/base/sub/path", is_mount=True)
-    async def asgi_handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        response = Response(scope["path"], media_type=MediaType.TEXT, status_code=HTTP_200_OK)
-        await response(scope, receive, send)
-
-    @get("/base/sub/path/abc")
-    def regular_handler() -> None:
         return
 
     with pytest.raises(ImproperlyConfiguredException):
