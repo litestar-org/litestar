@@ -125,7 +125,7 @@ class TestClient(Client, Generic[T]):
             "To access the session backend directly, use the session_backend attribute",
             PendingDeprecationWarning,
         )
-        return self._session_backend
+        return self.session_backend
 
     @property
     def session_backend(self) -> "BaseSessionBackend":
@@ -617,7 +617,10 @@ class TestClient(Client, Generic[T]):
         )
         if self._session_backend is None:
             return {}
-        return self._create_session_cookies(self.session, session_data)
+        return self._create_session_cookies(
+            self.session,  # type: ignore[arg-type]
+            session_data,
+        )
 
     def get_session_from_cookies(self) -> Dict[str, Any]:
         """Raw session cookies are a serialized image of session which are
