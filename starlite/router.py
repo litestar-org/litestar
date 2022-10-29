@@ -176,7 +176,7 @@ class Router:
                         "Cannot have both HTTP routes and websocket / asgi route handlers on the same path"
                     )
 
-                route_handlers = unique(list(handler_or_method_map.values()))
+                route_handlers = unique(handler_or_method_map.values())
                 if existing_handlers:
                     route_handlers.extend(unique(existing_handlers.values()))
                     existing_route_index = find_index(
