@@ -25,8 +25,5 @@ def validate_node(node: "RouteTrieNode") -> None:
     if node["is_static"] and PathParameterSentinel in node["child_keys"]:
         raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
 
-    if (node["is_mount"] and not node["is_static"]) and node["children"]:
-        raise ImproperlyConfiguredException("Cannot declare routes for sub paths below an ASGI mount route handler.")
-
     for child in node["children"].values():
         validate_node(node=child)

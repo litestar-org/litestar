@@ -36,8 +36,7 @@ from starlite.utils import normalize_path
 if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
     from starlite.types import Scope
-    from starlite.types.internal import PathParameterDefinition
-
+    from starlite.types.internal_types import PathParameterDefinition
 
 parsers_map: Dict[Any, Callable] = {
     str: str,

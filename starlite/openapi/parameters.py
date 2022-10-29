@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from starlite.handlers import BaseRouteHandler
     from starlite.types import Dependencies
-    from starlite.types.internal import PathParameterDefinition
+    from starlite.types.internal_types import PathParameterDefinition
 
 
 def create_path_parameter_schema(

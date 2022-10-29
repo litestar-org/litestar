@@ -7,7 +7,7 @@ from starlite.asgi.routing_trie.mapping import map_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
 from starlite.asgi.routing_trie.utils import create_node
 from starlite.asgi.utils import get_route_handlers
-from starlite.exceptions import ImproperlyConfiguredException, NotFoundException
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
@@ -59,12 +59,9 @@ class ASGIRouter:
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """The main entry point to the Router class."""
-        try:
-            asgi_app, handler = parse_scope_to_route(
-                root_node=self.root_route_map_node, scope=scope, plain_routes=self._plain_routes
-            )
-        except KeyError as e:
-            raise NotFoundException() from e
+        asgi_app, handler = parse_scope_to_route(
+            root_node=self.root_route_map_node, scope=scope, plain_routes=self._plain_routes
+        )
         scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
 

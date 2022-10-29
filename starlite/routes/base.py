@@ -11,7 +11,7 @@ from typing_extensions import TypedDict
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
-from starlite.types.internal import PathParameterDefinition
+from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import join_paths, normalize_path
 
 if TYPE_CHECKING:

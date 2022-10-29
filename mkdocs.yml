@@ -60,6 +60,7 @@ nav:
           - usage/1-routing/2-routers.md
           - usage/1-routing/3-controllers.md
           - usage/1-routing/4-registering-components-multiple-times.md
+          - usage/1-routing/5-mounting-asgi-apps.md
       - Route Handlers:
           - usage/2-route-handlers/0-route-handlers-concept.md
           - usage/2-route-handlers/1-http-route-handlers.md

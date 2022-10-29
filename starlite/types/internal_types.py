@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, NamedTuple, Type, Union
 
 from typing_extensions import Literal
 
@@ -27,3 +27,9 @@ RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandl
 ResponseType = Type[Response]
 ControllerRouterHandler = Union[Type[Controller], RouteHandlerType, Router, Callable[..., Any]]
 RouteHandlerMapItem = Union[WebsocketRouteHandler, ASGIRouteHandler, Dict[Method, HTTPRouteHandler]]
+
+
+class PathParameterDefinition(NamedTuple):
+    name: str
+    full: str
+    type: Type

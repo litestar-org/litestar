@@ -6,7 +6,7 @@ from starlette.middleware import Middleware as StarletteMiddleware
 from starlite.asgi.routing_trie.types import ASGIHandlerTuple, PathParameterSentinel
 from starlite.asgi.routing_trie.utils import create_node
 from starlite.asgi.utils import wrap_in_exception_handler
-from starlite.types.internal import PathParameterDefinition
+from starlite.types.internal_types import PathParameterDefinition
 
 if TYPE_CHECKING:
     from starlite.app import Starlite

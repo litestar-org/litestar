@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from typing_extensions import Literal
 
     from starlite.types import ASGIApp, Method, RouteHandlerType
-    from starlite.types.internal import PathParameterDefinition
+    from starlite.types.internal_types import PathParameterDefinition
 
 
 class PathParameterSentinel:

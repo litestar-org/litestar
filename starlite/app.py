@@ -19,7 +19,7 @@ from starlite.middleware.compression.base import CompressionMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
-from starlite.types.internal import PathParameterDefinition
+from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import as_async_callable_list, join_paths, unique
 
 if TYPE_CHECKING:
