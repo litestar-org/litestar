@@ -61,9 +61,7 @@ class ExceptionResponseContent(BaseModel):
         Returns:
             A response instance.
         """
-        from starlite.response import (  # pylint: disable=import-outside-toplevel
-            Response,
-        )
+        from starlite.response import Response
 
         return Response(
             content=self.dict(exclude_none=True, exclude={"headers"}),

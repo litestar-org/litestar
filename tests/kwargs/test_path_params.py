@@ -131,6 +131,7 @@ def test_duplicate_path_param_validation() -> None:
         ["datetime", datetime, datetime.now().isoformat()],
         ["timedelta", timedelta, timedelta(days=1).total_seconds()],
         ["path", Path, "/1/2/3/4/some-file.txt"],
+        ["path", Path, "1/2/3/4/some-file.txt"],
     ],
 )
 def test_path_param_type_resolution(param_type_name: str, param_type_class: Any, value: Any) -> None:

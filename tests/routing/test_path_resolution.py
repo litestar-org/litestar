@@ -111,7 +111,7 @@ def test_handler_multi_paths() -> None:
         assert some_id
         return str(some_id)
 
-    with create_test_client(handler_fn) as client:
+    with create_test_client(handler_fn, openapi_config=None) as client:
         first_response = client.get("/")
         assert first_response.status_code == HTTP_200_OK
         assert first_response.text == "1"
@@ -167,7 +167,7 @@ def test_path_order() -> None:
     def handler_fn(some_id: int = 1) -> str:
         return str(some_id)
 
-    with create_test_client(handler_fn) as client:
+    with create_test_client(handler_fn, openapi_config=None) as client:
         first_response = client.get("/something/5")
         assert first_response.status_code == HTTP_200_OK
         assert first_response.text == "5"

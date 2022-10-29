@@ -1,10 +1,9 @@
-import os
-import pathlib
-import sys
+from os import environ, urandom
+from pathlib import Path
+from sys import version_info
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
 
-import fakeredis.aioredis  # type: ignore
-import py  # type: ignore
+import fakeredis.aioredis  # pyright: ignore
 import pytest
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
@@ -51,11 +50,11 @@ if TYPE_CHECKING:
 
 def pytest_generate_tests(metafunc: Callable) -> None:
     """Sets ENV variables for testing."""
-    os.environ.update(PICCOLO_CONF="tests.piccolo_conf")
+    environ.update(PICCOLO_CONF="tests.piccolo_conf")
 
 
 @pytest.fixture()
-def template_dir(tmp_path: pathlib.Path) -> pathlib.Path:
+def template_dir(tmp_path: Path) -> Path:
     return tmp_path
 
 
@@ -105,7 +104,7 @@ async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> Non
 
 @pytest.fixture
 def cookie_session_backend_config() -> CookieBackendConfig:
-    return CookieBackendConfig(secret=SecretBytes(os.urandom(16)))
+    return CookieBackendConfig(secret=SecretBytes(urandom(16)))
 
 
 @pytest.fixture()
@@ -119,7 +118,7 @@ def memory_session_backend_config() -> MemoryBackendConfig:
 
 
 @pytest.fixture
-def file_session_backend_config(tmpdir: py.path.local) -> FileBackendConfig:
+def file_session_backend_config(tmpdir: Path) -> FileBackendConfig:
     return FileBackendConfig(storage_path=tmpdir)
 
 
@@ -223,7 +222,7 @@ def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSe
 def session_backend_config_async_safe(
     request: pytest.FixtureRequest,
 ) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
-    if sys.version_info < (3, 10) and request.param == "redis_session_backend_config":
+    if version_info < (3, 10) and request.param == "redis_session_backend_config":
         return pytest.skip("")
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
 

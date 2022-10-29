@@ -77,7 +77,7 @@ from starlite.plugins import PluginProtocol
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from starlite.testing import TestClient, create_test_client  # type: ignore[no-redef]
+from starlite.testing import TestClient, create_test_client
 from starlite.types.partial import Partial
 
 __all__ = (

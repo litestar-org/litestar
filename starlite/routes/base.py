@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 from uuid import UUID
 
 from typing_extensions import TypedDict
@@ -11,6 +11,7 @@ from typing_extensions import TypedDict
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
+from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import join_paths, normalize_path
 
 if TYPE_CHECKING:
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from starlite.types import Method, Receive, Scope, Send
 
 param_match_regex = re.compile(r"{(.*?)}")
+
 param_type_map = {
     "str": str,
     "int": int,
@@ -33,12 +35,6 @@ param_type_map = {
 }
 
 
-class PathParameterDefinition(TypedDict):
-    name: str
-    full: str
-    type: Type
-
-
 class RouteHandlerIndex(TypedDict):
     name: str
     handler: "BaseRouteHandler"
@@ -49,7 +45,6 @@ class BaseRoute(ABC):
         "app",
         "handler_names",
         "methods",
-        "param_convertors",
         "path",
         "path_format",
         "path_parameters",
@@ -76,7 +71,7 @@ class BaseRoute(ABC):
         """
         self.path, self.path_format, self.path_components = self._parse_path(path)
         self.path_parameters: List[PathParameterDefinition] = [
-            component for component in self.path_components if isinstance(component, dict)
+            component for component in self.path_components if isinstance(component, PathParameterDefinition)
         ]
         self.handler_names = handler_names
         self.scope_type = scope_type
@@ -105,10 +100,9 @@ class BaseRoute(ABC):
 
         path_parameters = set()
         for param in self.path_parameters:
-            param_name = param["name"]
-            if param_name in path_parameters:
-                raise ImproperlyConfiguredException(f"Duplicate parameter '{param_name}' detected in '{self.path}'.")
-            path_parameters.add(param_name)
+            if param.name in path_parameters:
+                raise ImproperlyConfiguredException(f"Duplicate parameter '{param.name}' detected in '{self.path}'.")
+            path_parameters.add(param.name)
 
         return KwargsModel.create_for_signature_model(
             signature_model=signature_model,

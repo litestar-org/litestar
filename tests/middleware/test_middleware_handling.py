@@ -84,7 +84,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         assert app.middleware == [middleware]
 
         unpacked_middleware = []
-        cur = client.app.route_map["/"]["_asgi_handlers"]["GET"]["asgi_app"]
+        cur = client.app.asgi_router.root_route_map_node["children"]["/"]["asgi_handlers"]["GET"][0]
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast("ASGIApp", cur.app)

@@ -83,14 +83,10 @@ class CompressionConfig(BaseModel):
             A middleware instance
         """
         if self.backend == "gzip":
-            from starlite.middleware.compression.gzip import (  # pylint: disable=import-outside-toplevel
-                GZipMiddleware,
-            )
+            from starlite.middleware.compression.gzip import GZipMiddleware
 
             return cast("ASGIApp", GZipMiddleware(app=app, **self.dict()))
 
-        from starlite.middleware.compression.brotli import (  # pylint: disable=import-outside-toplevel
-            BrotliMiddleware,
-        )
+        from starlite.middleware.compression.brotli import BrotliMiddleware
 
         return BrotliMiddleware(app=app, **self.dict())

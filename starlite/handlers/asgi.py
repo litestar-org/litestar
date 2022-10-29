@@ -13,6 +13,8 @@ if TYPE_CHECKING:
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
+    __slots__ = ("is_mount", "is_static")
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -22,6 +24,8 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         guards: Optional[List[Guard]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
+        is_mount: bool = False,
+        is_static: bool = False,
         **kwargs: Any,
     ) -> None:
         """ASGI Route Handler decorator. Use this decorator to decorate ASGI
@@ -33,8 +37,15 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
             name: A string identifying the route handler.
             opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
+            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path accept
+                any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path `/some-path/`
+                will accept requests for `/some-path/` and any sub path under this, e.g. `/some-path/sub-path/` etc.
+            is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
+                are used to deliver static files.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        self.is_mount = is_mount or is_static
+        self.is_static = is_static
         super().__init__(path, exception_handlers=exception_handlers, guards=guards, name=name, opt=opt, **kwargs)
 
     def __call__(self, fn: "AnyCallable") -> "ASGIRouteHandler":
@@ -53,10 +64,12 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
         if signature.return_annotation is not None:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
+
         if any(key not in signature.parameters for key in ("scope", "send", "receive")):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
+
         if not is_async_callable(fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 

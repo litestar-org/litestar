@@ -138,7 +138,7 @@ class Router:
         self.response_class = response_class
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
-        self.routes: List["BaseRoute"] = []
+        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.security = security or []
         self.tags = tags or []
 
@@ -161,16 +161,24 @@ class Router:
         for route_path, handler_or_method_map in self._map_route_handlers(value=validated_value):
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route: "BaseRoute" = WebSocketRoute(path=path, route_handler=handler_or_method_map)
+                route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = WebSocketRoute(
+                    path=path, route_handler=handler_or_method_map
+                )
                 self.routes.append(route)
             elif isinstance(handler_or_method_map, ASGIRouteHandler):
                 route = ASGIRoute(path=path, route_handler=handler_or_method_map)
                 self.routes.append(route)
             else:
-                existing_handlers: List[HTTPRouteHandler] = list(self.route_handler_method_map.get(path, {}).values())  # type: ignore
-                route_handlers = unique(list(handler_or_method_map.values()))
+                existing_handlers = self.route_handler_method_map.get(path, {})
+
+                if not isinstance(existing_handlers, dict):
+                    raise ImproperlyConfiguredException(
+                        "Cannot have both HTTP routes and websocket / asgi route handlers on the same path"
+                    )
+
+                route_handlers = unique(handler_or_method_map.values())
                 if existing_handlers:
-                    route_handlers.extend(unique(existing_handlers))
+                    route_handlers.extend(unique(existing_handlers.values()))
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
                     )

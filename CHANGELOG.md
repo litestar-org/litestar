@@ -1,11 +1,21 @@
 # Changelog
 
+[1.35.0]
+
+- add context-manager when using SQLAlchemy sessions.
+- add support for mounting ASGI applications.
+- fix `SQLAlchemyPlugin.to_dict()` where instance has relationship raising an exception.
+- update route registration to ensure unique handlers.
+- update routing logic to use a cleaner architecture.
+- update sessions to support explicitly setting to `Empty`.
+- update test client to run session creation in the client's portal.
+
 [1.34.0]
 
-- Add support for server-side sessions
-- Fix an issue where header values would be forced to lower case
-- Add a `__test__ = False` attribute to the `TestClient` so it won't get collected by pytest
-  together with an async test
+- add a `__test__ = False` attribute to the `TestClient` so it won't get collected by pytest together with an async
+  test.
+- add support for server-side sessions.
+- fix an issue where header values would be forced to lower case.
 
 [1.33.0]
 
@@ -102,7 +112,8 @@
 
 - add `**kwargs` support to route handlers.
 - breaking: remove `create_test_request`.
-- breaking: update Starlette to version `0.21.0`. This version changes the TestClient to use `httpx` instead of `requests`, which is a breaking change.
+- breaking: update Starlette to version `0.21.0`. This version changes the TestClient to use `httpx` instead
+  of `requests`, which is a breaking change.
 - fix add default empty session to `RequestFactory`.
 
 [1.21.2]
@@ -124,7 +135,8 @@
 
 [1.20.0]
 
-- update ASGI typings (`scope`, `receive`, `send`, `message` and `ASGIApp`) to use strong types derived from [asgiref](https://github.com/django/asgiref).
+- update ASGI typings (`scope`, `receive`, `send`, `message` and `ASGIApp`) to use strong types derived
+  from [asgiref](https://github.com/django/asgiref).
 - update `SessionMiddleware` to use custom serializer used on request.
 - update `openapi-pydantic-schema` to `v1.3.0` adding support for `__schema_name__`.
 
@@ -252,7 +264,8 @@
 [1.8.0]
 
 - add [Stoplights Elements](https://stoplight.io/open-source/elements) OpenAPI support @aedify-swi
-- breaking replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic) with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
+- breaking replace [openapi-pydantic-schema](https://github.com/kuimono/openapi-schema-pydantic)
+  with [pydantic-openapi-schema](https://github.com/starlite-api/pydantic-openapi-schema).
 
 [1.7.3]
 
@@ -434,7 +447,8 @@
 
 - add template support @ashwinvin.
 - update `starlite.request` by renaming it to `starlite.connection`.
-- update the kwarg parsing and data injection logic to compute required kwargs for each route handler during application bootstrap.
+- update the kwarg parsing and data injection logic to compute required kwargs for each route handler during application
+  bootstrap.
 - update the redoc UI path from `/schema/redoc` to `/schema` @yudjinn.
 
 [0.7.2]
