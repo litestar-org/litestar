@@ -3,8 +3,9 @@ from traceback import format_exc
 from typing import TYPE_CHECKING, Dict, List, Set, Union
 
 from starlite.asgi.routing_trie import validate_node
-from starlite.asgi.routing_trie.mapping import create_node, map_route_to_trie
+from starlite.asgi.routing_trie.mapping import map_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
+from starlite.asgi.routing_trie.types import create_node
 from starlite.asgi.utils import get_route_handlers
 from starlite.exceptions import ImproperlyConfiguredException, NotFoundException
 from starlite.utils import AsyncCallable
@@ -52,7 +53,7 @@ class ASGIRouter:
         self._plain_routes: Set[str] = set()
         self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
         self.app = app
-        self.root_route_map_node: "RouteTrieNode" = create_node()
+        self.root_route_map_node: "RouteTrieNode" = create_node(parent=None)
         self.route_handler_index: Dict[str, "RouteHandlerType"] = {}
         self.route_mapping: Dict[str, List["BaseRoute"]] = defaultdict(list)
 

@@ -74,10 +74,28 @@ def traverse_route_map(
 
     has_path_param = current_node["path_param_type"] is not None
 
-    if path in {"/", ""}:
+    if path in {"", "/"}:
         if has_path_param or not current_node["asgi_handlers"]:
             raise NotFoundException()
         return current_node, path_params
+
+    if has_path_param:
+        if current_node["path_param_type"] is Path:
+            path_params.append(normalize_path(path))
+            return current_node, path_params
+
+        path_components = [component for component in path.split("/") if component]
+        param_value = path_components[0]
+
+        if param_value not in current_node["non_parameter_values"]:
+            path_params.append(param_value)
+
+            return traverse_route_map(
+                current_node=current_node["children"][current_node["path_param_type"]],  # type: ignore[index]
+                path=normalize_path("/".join(path_components[1:])),
+                scope=scope,
+                path_params=path_params,
+            )
 
     for child_path in current_node["child_keys"]:
         if path.startswith(child_path):
@@ -87,22 +105,6 @@ def traverse_route_map(
                 scope=scope,
                 path_params=path_params,
             )
-
-    if has_path_param:
-        if current_node["path_param_type"] is Path:
-            path_params.append("/".join(path.split("/")[1:]))
-            return current_node, path_params
-        component = [p for p in path.split("/") if p][0]
-
-        path_params.append(component)
-        path = path[len(f"/{component}") :]
-
-        return traverse_route_map(
-            current_node=current_node["children"][current_node["path_param_type"]],  # type: ignore[index]
-            path=path,
-            scope=scope,
-            path_params=path_params,
-        )
 
     raise NotFoundException()
 

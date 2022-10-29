@@ -1,9 +1,9 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Set, Type, Union, cast
+from typing import TYPE_CHECKING, List, Set, Tuple, Type, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 
-from starlite.asgi.routing_trie.types import ASGIHandlerTuple
+from starlite.asgi.routing_trie.types import ASGIHandlerTuple, create_node
 from starlite.asgi.utils import wrap_in_exception_handler
 from starlite.types.internal import PathParameterDefinition
 from starlite.utils import normalize_path
@@ -35,7 +35,9 @@ def map_route_to_trie(
     is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # type: ignore[union-attr]
     is_plain_route = not (route.path_parameters or is_mount)
 
-    for component in construct_route_path_components(route_path_components=route.path_components) or [path]:
+    for non_parameter_value, component in construct_route_path_components(
+        route_path_components=route.path_components
+    ) or [(path, path)]:
         if isinstance(component, PathParameterDefinition):
             current_node["path_param_type"] = component.type
             if component.type is Path:
@@ -47,8 +49,11 @@ def map_route_to_trie(
             next_node_key = component
             current_node["child_keys"].append(component)
 
+            if non_parameter_value:
+                current_node["non_parameter_values"].add(non_parameter_value)
+
         if next_node_key not in current_node["children"]:
-            current_node["children"][next_node_key] = create_node()
+            current_node["children"][next_node_key] = create_node(parent=current_node)
 
         current_node = current_node["children"][next_node_key]
 
@@ -61,7 +66,7 @@ def map_route_to_trie(
 
 def construct_route_path_components(
     route_path_components: List[Union[str, "PathParameterDefinition"]]
-) -> List[Union[str, "PathParameterDefinition"]]:
+) -> List[Tuple[str, Union[str, "PathParameterDefinition"]]]:
     """Takes a list of path components and normalizes it to contain continuous
     sections rather than short segments.
 
@@ -74,48 +79,31 @@ def construct_route_path_components(
     Returns:
         A normalized path components list.
     """
-    path_components: List[Union[str, "PathParameterDefinition"]] = []
+    path_components: List[Tuple[str, Union[str, "PathParameterDefinition"]]] = []
     last_continuous_plain_path_segment = ""
+    non_parameter_value = ""
 
     for component in route_path_components:
         if isinstance(component, PathParameterDefinition):
-
             if last_continuous_plain_path_segment:
-                path_components.append(normalize_path(last_continuous_plain_path_segment))
+                path_components.append((non_parameter_value, normalize_path(last_continuous_plain_path_segment)))
                 last_continuous_plain_path_segment = ""
+                non_parameter_value = ""
+
+            path_components.append((non_parameter_value, component))
 
             if component.type is Path:
-                path_components.append(component)
                 break
-
-            path_components.append(component)
-
         else:
+            if not non_parameter_value:
+                non_parameter_value = component
+
             last_continuous_plain_path_segment += f"/{component}"
 
     if last_continuous_plain_path_segment:
-        path_components.append(last_continuous_plain_path_segment)
+        path_components.append((non_parameter_value, last_continuous_plain_path_segment))
 
     return path_components
-
-
-def create_node() -> "RouteTrieNode":
-    """Creates a RouteMapNode instance.
-
-    Returns:
-        A route map node instance.
-    """
-
-    return {
-        "asgi_handlers": {},
-        "child_keys": [],
-        "children": {},
-        "is_mount": False,
-        "is_static": False,
-        "path_param_type": None,
-        "path_parameters": [],
-        "is_asgi": False,
-    }
 
 
 def configure_node(
