@@ -723,7 +723,8 @@ class TestClient(Client, Generic[T]):
                 assert client.get("/test").json() == {"foo": "bar"}
             ```
         """
-        anyio_run(self._set_session_data_async, data)
+        with self.portal() as portal:
+            portal.call(self._set_session_data_async, data)
 
     def get_session_data(self) -> Dict[str, Any]:
         """Get session data.
@@ -753,4 +754,5 @@ class TestClient(Client, Generic[T]):
                 assert client.get_session_data() == {"foo": "bar"}
             ```
         """
-        return anyio_run(self._get_session_data_async)
+        with self.portal() as portal:
+            return portal.call(self._get_session_data_async)
