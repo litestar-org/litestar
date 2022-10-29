@@ -15,12 +15,13 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    runtime_checkable,
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
 from starlette.datastructures import MutableHeaders
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.middleware.base import MiddlewareProtocol
@@ -29,6 +30,7 @@ from starlite.types import Empty
 from starlite.utils import default_serializer, get_serializer_from_scope
 
 if TYPE_CHECKING:
+    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send
 
 
@@ -319,6 +321,91 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             if data is not None:
                 return self.deserialize_data(data)
         return {}
+
+
+@runtime_checkable
+class CookieBackendProtocol(Protocol):
+    __slots__ = ()
+
+    def __init__(self, config: "CookieBackendConfig") -> None:
+        """Starlite CookieSessionMiddleware.
+
+        Args:
+            config: SessionCookieConfig instance.
+        """
+        ...
+
+    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
+        """Given orjson serializable data, including pydantic models and numpy
+        types, dump it into a bytes string, encrypt, encode and split it into
+        chunks of the desirable size.
+
+        Args:
+            data: Data to serialize, encrypt, encode and chunk.
+            scope: The ASGI connection scope.
+
+        Notes:
+            - The returned list is composed of a chunks of a single base64 encoded
+            string that is encrypted using AES-CGM.
+
+        Returns:
+            List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
+        """
+        ...
+
+    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
+        """Given a list of strings, decodes them into the session object.
+
+        Args:
+            data: A list of strings derived from the request's session cookie(s).
+
+        Returns:
+            A deserialized session value.
+        """
+        ...
+
+    def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
+        """Return a list of cookie-keys from the connection if they match the
+        session-cookie pattern.
+
+        Args:
+            connection: An ASGIConnection instance
+
+        Returns:
+            A list of session-cookie keys
+        """
+        ...
+
+    async def store_in_message(
+        self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
+    ) -> None:
+        """Store data from `scope_session` in `Message` in the form of cookies.
+        If the contents of `scope_session` are too large to fit a single
+        cookie, it will be split across several cookies, following the naming
+        scheme of `<cookie key>-<n>`. If the session is empty or shrinks,
+        cookies will be cleared by setting their value to `null`
+
+        Args:
+            scope_session: Current session to store
+            message: Outgoing send-message
+            connection: Originating ASGIConnection containing the scope
+
+        Returns:
+            None
+        """
+        ...
+
+    async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
+        """Load session data from a connection's session-cookies and return it
+        as a dictionary.
+
+        Args:
+            connection: Originating ASGIConnection
+
+        Returns:
+            The session data
+        """
+        ...
 
 
 class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):

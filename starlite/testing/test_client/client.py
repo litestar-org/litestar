@@ -18,11 +18,7 @@ from anyio.from_thread import BlockingPortal, start_blocking_portal
 
 from starlite import HttpMethod, ImproperlyConfiguredException
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
-from starlite.middleware.session.cookie_backend import (
-    CookieBackend,
-    CookieBackendConfig,
-)
+from starlite.middleware.session.base import CookieBackendProtocol, ServerSideBackend
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
@@ -52,12 +48,17 @@ if TYPE_CHECKING:
         URLTypes,
     )
 
-    from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
+    from starlite.middleware.session.base import (
+        BaseBackendConfig,
+        BaseSessionBackend,
+        ServerSideSessionConfig,
+    )
+    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)
-AnySessionBackend = Union[CookieBackend, ServerSideBackend]
+AnySessionBackend = Union[CookieBackendProtocol, ServerSideBackend]
 AnySessionConfig = Union["ServerSideSessionConfig", "CookieBackendConfig"]
 
 
@@ -118,16 +119,12 @@ class TestClient(Client, Generic[T]):
         )
 
     @property
-    def session(self) -> "CookieBackend":
+    def session(self) -> "BaseSessionBackend":
         warnings.warn(
             "Accessing the session via this property is deprecated and will be removed in future version."
             "To access the session backend directly, use the session_backend attribute",
             PendingDeprecationWarning,
         )
-        if not isinstance(self._session_backend, CookieBackend):
-            raise ImproperlyConfiguredException(
-                f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
-            )
         return self._session_backend
 
     @property
@@ -653,9 +650,12 @@ class TestClient(Client, Generic[T]):
         return self.get_session_data()
 
     @staticmethod
-    def _create_session_cookies(backend: CookieBackend, data: Dict[str, Any]) -> Dict[str, str]:
+    def _create_session_cookies(backend: CookieBackendProtocol, data: Dict[str, Any]) -> Dict[str, str]:
         encoded_data = backend.dump_data(data=data)
-        return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
+        return {
+            cookie.key: cast("str", cookie.value)
+            for cookie in backend._create_session_cookies(encoded_data)  # type: ignore[attr-defined]
+        }
 
     async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
         # TODO: Expose this in the async client
@@ -665,7 +665,7 @@ class TestClient(Client, Generic[T]):
                 self.session_backend.config.key, self.session_backend.generate_session_id()
             )
             await self.session_backend.set(session_id, serialized_data)
-        elif isinstance(self.session_backend, CookieBackend):
+        elif isinstance(self.session_backend, CookieBackendProtocol):
             for key, value in self._create_session_cookies(self.session_backend, data).items():
                 self.cookies.set(key, value)
         else:
@@ -680,7 +680,7 @@ class TestClient(Client, Generic[T]):
                 data = await self.session_backend.get(session_id)
                 if data:
                     return self.session_backend.deserialize_data(data)
-        elif isinstance(self.session_backend, CookieBackend):
+        elif isinstance(self.session_backend, CookieBackendProtocol):
             raw_data = [
                 self.cookies[key].encode("utf-8") for key in self.cookies if self.session_backend.config.key in key
             ]
