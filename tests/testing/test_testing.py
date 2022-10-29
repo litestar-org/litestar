@@ -18,6 +18,7 @@ from starlite.datastructures import Cookie
 from starlite.enums import ParamType
 from starlite.middleware.session import SessionCookieConfig
 from starlite.testing import RequestFactory, TestClient
+from starlite.testing.create_test_client import create_test_client
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
@@ -293,8 +294,11 @@ def test_test_client_get_session_data(
 
     app = Starlite(route_handlers=[set_session_data], middleware=[session_config.middleware])
 
-    with TestClient(
-        app=app, session_config=session_config, backend=test_client_backend, base_url="http://testserver.local"
-    ) as client:
+    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
         client.post("/test")
         assert client.get_session_data() == session_data
+
+
+def test_create_test_clientwarns_problematic_domain() -> None:
+    with pytest.warns(UserWarning):
+        create_test_client(base_url="http://testserver", route_handlers=[])

@@ -74,7 +74,7 @@ class TestClient(Client, Generic[T]):
     def __init__(
         self,
         app: T,
-        base_url: str = "http://testserver",
+        base_url: str = "http://testserver.local",
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: AnyIOBackend = "asyncio",
@@ -97,6 +97,13 @@ class TestClient(Client, Generic[T]):
                 route handlers.
             cookies: Cookies to set on the client.
         """
+        if "." not in base_url:
+            warnings.warn(
+                f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
+                f"'{base_url}.local'",
+                UserWarning,
+            )
+
         self._session_backend: Optional["BaseSessionBackend"] = None
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
