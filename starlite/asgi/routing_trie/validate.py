@@ -19,7 +19,7 @@ def validate_node(node: "RouteTrieNode") -> None:
     Returns:
         None
     """
-    if node["is_asgi"] and bool(set(node["asgi_handlers"].keys()).difference({"asgi"})):
+    if node["is_asgi"] and bool(set(node["asgi_handlers"]).difference({"asgi"})):
         raise ImproperlyConfiguredException("ASGI handlers must have a unique path not shared by other route handlers.")
 
     if node["is_static"] and PathParameterSentinel in node["child_keys"]:
