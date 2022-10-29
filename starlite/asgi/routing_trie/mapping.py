@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from starlite.types import ASGIApp, RouteHandlerType
 
 
-def map_route_to_trie(
+def add_map_route_to_trie(
     app: "Starlite",
     root_node: "RouteTrieNode",
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
@@ -28,6 +28,15 @@ def map_route_to_trie(
     node. For paths containing parameters, splits the path on '/' and
     nests each path segment under the previous segment's node (see
     prefix tree / trie).
+
+    Args:
+        app: The Starlite app instance.
+        root_node: The root trie node.
+        route: The route that is being added.
+        plain_routes: The set of plain routes.
+
+    Returns:
+        A RouteTrieNode instance.
     """
     current_node = root_node
     path = route.path
@@ -67,7 +76,16 @@ def configure_node(
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
     node: "RouteTrieNode",
 ) -> None:
-    """Set required attributes and route handlers on route_map tree node."""
+    """Set required attributes and route handlers on route_map tree node.
+
+    Args:
+        app: The Starlite app instance.
+        route: The route that is being added.
+        node: The trie node being configured.
+
+    Returns:
+        None
+    """
     from starlite.routes import HTTPRoute, WebSocketRoute
 
     if not node["path_parameters"]:
@@ -103,7 +121,16 @@ def build_route_middleware_stack(
     route_handler: "RouteHandlerType",
 ) -> "ASGIApp":
     """Constructs a middleware stack that serves as the point of entry for each
-    route."""
+    route.
+
+    Args:
+        app: The Starlite app instance.
+        route: The route that is being added.
+        route_handler: The route handler that is being wrapped.
+
+    Returns:
+        An ASGIApp that is composed of a "stack" of middlewares.
+    """
     from starlite.middleware.csrf import CSRFMiddleware
 
     # we wrap the route.handle method in the ExceptionHandlerMiddleware

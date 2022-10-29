@@ -47,13 +47,13 @@ class RouteTrieNode(TypedDict):
     """
     is_path_type: bool
     """
-        Designates the node as expecting a path parameter of type 'Path',
-        which means that any sub path under the node is considered to be a path parameter value rather than a url.
+    Designates the node as expecting a path parameter of type 'Path',
+    which means that any sub path under the node is considered to be a path parameter value rather than a url.
     """
     is_static: bool
     """
-        Designates the node as a static path node, which means that any sub path under the node is considered to be
-        a file path in one of the static directories.
+    Designates the node as a static path node, which means that any sub path under the node is considered to be
+    a file path in one of the static directories.
     """
     path_parameters: List["PathParameterDefinition"]
     """

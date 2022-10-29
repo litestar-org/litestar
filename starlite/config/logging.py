@@ -180,20 +180,22 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         Returns:
             A 'logging.getLogger' like function.
         """
-        try:
-            if "picologging" in str(dumps(self.handlers)):
 
+        if "picologging" in str(dumps(self.handlers)):
+            try:
                 from picologging import config, getLogger
-
-                values = self.dict(exclude_none=True, exclude={"incremental"})
+            except ImportError as e:  # pragma: no cover
+                raise MissingDependencyException("picologging is not installed") from e
             else:
-                from logging import config, getLogger  # type: ignore[no-redef]
+                values = self.dict(exclude_none=True, exclude={"incremental"})
 
-                values = self.dict(exclude_none=True)
-            config.dictConfig(values)
-            return cast("Callable[[str], Logger]", getLogger)
-        except ImportError as e:  # pragma: no cover
-            raise MissingDependencyException("picologging is not installed") from e
+        else:
+            from logging import config, getLogger  # type: ignore[no-redef]
+
+            values = self.dict(exclude_none=True)
+
+        config.dictConfig(values)
+        return cast("Callable[[str], Logger]", getLogger)
 
 
 def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright: ignore

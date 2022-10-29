@@ -9,14 +9,30 @@ if TYPE_CHECKING:
 
 
 def wrap_in_exception_handler(debug: bool, app: "ASGIApp", exception_handlers: "ExceptionHandlersMap") -> "ASGIApp":
-    """Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware."""
+    """Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware.
+
+    Args:
+        debug: Dictates whether exceptions are raised in debug mode.
+        app: The ASGI app that is being wrapped.
+        exception_handlers: A mapping of exceptions to handler functions.
+
+    Returns:
+        A wrapped ASGIApp.
+    """
     from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 
     return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=debug)
 
 
 def get_route_handlers(route: "BaseRoute") -> List["RouteHandlerType"]:
-    """Retrieve handler(s) as a list for given route."""
+    """Retrieve handler(s) as a list for given route.
+
+    Args:
+        route: The route from which the route handlers are extracted.
+
+    Returns:
+        The route handlers defined on the route.
+    """
     route_handlers: List["RouteHandlerType"] = []
     if hasattr(route, "route_handlers"):
         route_handlers.extend(cast("HTTPRoute", route).route_handlers)

@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope
     from starlite.types.internal_types import PathParameterDefinition
 
-parsers_map: Dict[Any, Callable] = {
+parsers_map: Dict[Any, Callable[[Any], Any]] = {
     str: str,
     float: float,
     int: int,
@@ -150,7 +150,19 @@ def parse_path_parameters(
 
 def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_routes: Set[str]) -> "ASGIHandlerTuple":
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean
-    values from correct trie node."""
+    values from correct trie node.
+
+    Args:
+        root_node: The root trie node.
+        scope: The ASGI scope instance.
+        plain_routes: The set of plain routes.
+
+    Raises:
+        MethodNotAllowedException: if no matching method is found.
+
+    Returns:
+        A tuple containing the stack of middlewares and the route handler that is wrapped by it.
+    """
 
     path = scope["path"].strip().rstrip("/") or "/"
 
