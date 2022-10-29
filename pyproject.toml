@@ -44,7 +44,7 @@ aiomcache = {version = "*", optional = true}
 anyio = ">=3"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
-httpx = { version = ">=0.22", optional = true }
+httpx = { version = ">=0.22" }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
@@ -84,10 +84,9 @@ trio = "*"
 fakeredis = "^1.9.4"
 
 [tool.poetry.extras]
-testing = ["httpx"]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["httpx", "brotli", "cryptography", "picologging", "structlog"]
+full = ["brotli", "cryptography", "picologging", "structlog"]
 picologging = ["picologging"]
 structlog = ["structlog"]
 redis = ["redis"]
