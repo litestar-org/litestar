@@ -47,7 +47,7 @@ def test_route_handler_property() -> None:
         await socket.close()
 
     with create_test_client(route_handlers=[handler]).websocket_connect("/"):
-        assert value["handler"] is handler
+        assert str(value["handler"]) == str(handler)
 
 
 @pytest.mark.parametrize(

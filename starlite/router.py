@@ -1,4 +1,5 @@
 import collections
+from copy import copy
 from typing import TYPE_CHECKING, Dict, ItemsView, List, Optional, Union, cast
 
 from pydantic import validate_arguments
@@ -221,12 +222,13 @@ class Router:
     def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> ItemsView[str, RouteHandlerMapItem]:
         """Maps route handlers to HTTP methods for an input
         BaseRouteHandler."""
+        value_ = copy(value)
         handlers_map: Dict[str, RouteHandlerMapItem] = {}
-        for path in value.paths:
-            if isinstance(value, HTTPRouteHandler):
-                handlers_map[path] = {http_method: value for http_method in value.http_methods}
-            elif isinstance(value, (WebsocketRouteHandler, ASGIRouteHandler)):
-                handlers_map[path] = value
+        for path in value_.paths:
+            if isinstance(value_, HTTPRouteHandler):
+                handlers_map[path] = {http_method: value_ for http_method in value_.http_methods}
+            elif isinstance(value_, (WebsocketRouteHandler, ASGIRouteHandler)):
+                handlers_map[path] = value_
         return handlers_map.items()
 
     @classmethod
