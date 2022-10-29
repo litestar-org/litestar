@@ -98,7 +98,7 @@ def test_route_handler_property() -> None:
 
     with create_test_client(route_handlers=[handler]) as client:
         client.get("/")
-        assert value["handler"] is handler
+        assert str(value["handler"]) == str(handler)
 
 
 def test_custom_request_class() -> None:

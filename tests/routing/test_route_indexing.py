@@ -42,17 +42,17 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     handler_index = app.get_handler_index_by_name("handler-name")
     assert handler_index
     assert handler_index["paths"] == ["/router-path/path-one/{param:str}"]
-    assert handler_index["handler"] == handler
+    assert str(handler_index["handler"]) == str(handler)
 
     handler_index = app.get_handler_index_by_name("asgi-name")
     assert handler_index
     assert handler_index["paths"] == ["/asgi-path"]
-    assert handler_index["handler"] == asgi_handler
+    assert str(handler_index["handler"]) == str(asgi_handler)
 
     handler_index = app.get_handler_index_by_name("websocket-name")
     assert handler_index
     assert handler_index["paths"] == ["/websocket-path"]
-    assert handler_index["handler"] == websocket_handler
+    assert str(handler_index["handler"]) == str(websocket_handler)
 
     assert app.get_handler_index_by_name("nope") is None
 
@@ -80,7 +80,7 @@ def test_default_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     handler_index = app.get_handler_index_by_name(str(handler))
     assert handler_index
     assert handler_index["paths"] == ["/router/handler"]
-    assert handler_index["handler"] == handler
+    assert str(handler_index["handler"]) == str(handler)
     assert handler_index["identifier"] == str(handler)
 
     handler_index = app.get_handler_index_by_name(str(MyController.handler))
@@ -111,12 +111,12 @@ def test_indexes_handlers_with_multiple_paths(decorator: Type[HTTPRouteHandler])
     handler_index = app.get_handler_index_by_name("handler")
     assert handler_index
     assert handler_index["paths"] == ["/path-one", "/path-one/{param:str}"]
-    assert handler_index["handler"] == handler
+    assert str(handler_index["handler"]) == str(handler)
 
     handler_index = app.get_handler_index_by_name("handler-two")
     assert handler_index
     assert handler_index["paths"] == ["/router-one/path-two", "/router-two/path-two"]
-    assert handler_index["handler"] == handler_two
+    assert str(handler_index["handler"]) == str(handler_two)
 
 
 def test_indexing_validation(tmp_path: "Path") -> None:
