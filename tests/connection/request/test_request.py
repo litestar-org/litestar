@@ -63,7 +63,7 @@ def test_request_url_for() -> None:
 
     with create_test_client(route_handlers=[proxy, root, test_none]) as client:
         response = client.get("/test")
-        assert response.json() == {"url": "http://testserver/proxy"}
+        assert response.json() == {"url": "http://testserver.local/proxy"}
 
         response = client.get("/test-none")
         assert response.status_code == 500
@@ -83,7 +83,7 @@ def test_request_asset_url(tmp_path: "Path") -> None:
         static_files_config=StaticFilesConfig(path="/static/js", directories=[tmp_path], name="js"),
     ) as client:
         response = client.get("/resolver")
-        assert response.json() == {"url": "http://testserver/static/js/main.js"}
+        assert response.json() == {"url": "http://testserver.local/static/js/main.js"}
 
         response = client.get("/resolver-none")
         assert response.status_code == 500
@@ -127,7 +127,7 @@ def test_request_url() -> None:
 
     client = TestClient(app)
     response = client.get("/123?a=abc")
-    assert response.json() == {"method": "GET", "url": "http://testserver/123?a=abc"}
+    assert response.json() == {"method": "GET", "url": "http://testserver.local/123?a=abc"}
 
     response = client.get("https://example.org:123/")
     assert response.json() == {"method": "GET", "url": "https://example.org:123/"}

@@ -50,7 +50,7 @@ def create_test_client(
     allowed_hosts: Optional[List[str]] = None,
     backend: "Literal['asyncio', 'trio']" = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
-    base_url: str = "http://testserver",
+    base_url: str = "http://testserver.local",
     before_request: Optional["BeforeRequestHookHandler"] = None,
     before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
     before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
