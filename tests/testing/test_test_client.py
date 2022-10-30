@@ -85,3 +85,12 @@ def test_client_interface(method: str, test_client_backend: "AnyIOBackend") -> N
     else:
         response = client.options("/")
     assert response.status_code == HTTP_200_OK
+
+
+async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    pass
+
+
+def test_warns_problematic_domain() -> None:
+    with pytest.warns(UserWarning):
+        TestClient(app=mock_asgi_app, base_url="http://testserver")

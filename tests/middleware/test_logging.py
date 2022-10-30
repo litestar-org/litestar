@@ -48,7 +48,7 @@ def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture") -> None:
 
         assert (
             caplog.messages[0] == 'HTTP Request: path=/, method=GET, content_type=["",{}], '
-            'headers={"host":"testserver","accept":"*/*","accept-encoding":"gzip, '
+            'headers={"host":"testserver.local","accept":"*/*","accept-encoding":"gzip, '
             'deflate, br","connection":"keep-alive","user-agent":"testclient",'
             '"request-header":"1","cookie":"request-cookie=abc"}, '
             'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
@@ -77,7 +77,7 @@ def test_logging_middleware_struct_logger() -> None:
             "body": None,
             "content_type": ("", {}),
             "headers": {
-                "host": "testserver",
+                "host": "testserver.local",
                 "accept": "*/*",
                 "accept-encoding": "gzip, deflate, br",
                 "connection": "keep-alive",

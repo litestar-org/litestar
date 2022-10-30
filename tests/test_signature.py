@@ -180,7 +180,7 @@ def test_dependency_validation_failure_raises_500() -> None:
         resp = client.get("/?param=13")
 
     assert resp.json() == {
-        "detail": "A dependency failed validation for GET http://testserver/?param=13",
+        "detail": "A dependency failed validation for GET http://testserver.local/?param=13",
         "extra": [{"loc": ["dep"], "msg": "value is not a valid integer", "type": "type_error.integer"}],
         "status_code": 500,
     }
@@ -197,7 +197,7 @@ def test_validation_failure_raises_400() -> None:
         resp = client.get("/?param=thirteen")
 
     assert resp.json() == {
-        "detail": "Validation failed for GET http://testserver/?param=thirteen",
+        "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
         "extra": [{"loc": ["param"], "msg": "value is not a valid integer", "type": "type_error.integer"}],
         "status_code": 400,
     }
@@ -214,7 +214,7 @@ def test_client_error_precedence_over_server_error() -> None:
         resp = client.get("/?param=thirteen")
 
     assert resp.json() == {
-        "detail": "Validation failed for GET http://testserver/?param=thirteen",
+        "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
         "extra": [{"loc": ["param"], "msg": "value is not a valid integer", "type": "type_error.integer"}],
         "status_code": 400,
     }

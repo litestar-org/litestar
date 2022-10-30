@@ -272,27 +272,30 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
         Returns:
             None
         """
-
         scope = connection.scope
         headers = MutableHeaders(scope=message)
-        session_id = connection.cookies.get(self.config.key, self.generate_session_id())
+        session_id = connection.cookies.get(self.config.key)
+        if session_id == "null":
+            session_id = None
+        if not session_id:
+            session_id = self.generate_session_id()
 
         cookie_params = self.config.dict(
             exclude_none=True,
             exclude={"secret", "key"} | set(self.config.__fields__) - set(BaseBackendConfig.__fields__),
         )
 
-        if scope_session and scope_session is not Empty:
-            serialised_data = self.serlialize_data(scope_session, scope)
-            await self.set(session_id=session_id, data=serialised_data)
-
-            headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
-        else:
+        if scope_session is Empty:
             await self.delete(session_id)
             headers.append(
                 "Set-Cookie",
                 Cookie(value="null", key=self.config.key, expires=0, **cookie_params).to_header(header=""),
             )
+        else:
+            serialised_data = self.serlialize_data(scope_session, scope)
+            await self.set(session_id=session_id, data=serialised_data)
+
+            headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to

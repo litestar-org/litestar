@@ -27,7 +27,7 @@ def test_redirect_response() -> None:
     client = TestClient(app)
     response = client.get("/redirect")
     assert response.text == "hello, world"
-    assert response.url == "http://testserver/"
+    assert response.url == "http://testserver.local/"
 
 
 def test_quoting_redirect_response() -> None:
@@ -41,7 +41,7 @@ def test_quoting_redirect_response() -> None:
     client = TestClient(app)
     response = client.get("/redirect", follow_redirects=True)
     assert response.text == "hello, world"
-    assert str(response.url) == "http://testserver/test/"
+    assert str(response.url) == "http://testserver.local/test/"
 
 
 def test_redirect_response_content_length_header() -> None:
@@ -54,7 +54,7 @@ def test_redirect_response_content_length_header() -> None:
 
     client: TestClient = TestClient(app)
     response = client.request("GET", "/redirect", follow_redirects=False)
-    assert str(response.url) == "http://testserver/redirect"
+    assert str(response.url) == "http://testserver.local/redirect"
     assert "content-length" not in response.headers
 
 
