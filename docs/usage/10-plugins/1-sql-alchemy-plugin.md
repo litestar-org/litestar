@@ -10,37 +10,18 @@ pass optional configuration to the plugin to create a DB engine / connection and
 You can simply pass an instance of `SQLAlchemyPlugin` without passing config to the Starlite constructor. This will
 extend support for serialization, deserialization and DTO creation for SQLAlchemy declarative models:
 
-```python
-from starlite import Starlite
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+=== "Async"
 
-from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.orm import declarative_base
-from starlite import post, get
+    ```py title="Hello World"
+    --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_async.py"
+    ```
 
-Base = declarative_base()
+=== "Sync"
 
+    ```py title="Hello World"
+    --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_sync.py"
+    ```
 
-class Company(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
-
-
-@post(path="/companies")
-def create_company(data: Company) -> Company:
-    ...
-
-
-@get(path="/companies")
-def get_companies() -> list[Company]:
-    ...
-
-
-app = Starlite(
-    route_handlers=[create_company, get_companies], plugins=[SQLAlchemyPlugin()]
-)
-```
 
 !!! important
     The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
