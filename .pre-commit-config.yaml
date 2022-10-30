@@ -1,3 +1,5 @@
+default_language_version:
+  python: "3.11"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
@@ -5,12 +7,13 @@ repos:
       - id: check-ast
       - id: check-case-conflict
       - id: check-merge-conflict
+      - id: check-toml
       - id: debug-statements
       - id: end-of-file-fixer
-        exclude: "\\.idea/(.)*"
+      - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.1.0
+    rev: v3.2.0
     hooks:
       - id: pyupgrade
         args: ["--py37-plus"]
@@ -88,43 +91,6 @@ repos:
     rev: v0.4.0
     hooks:
       - id: flake8-markdown
-  - repo: https://github.com/dosisod/refurb
-    rev: v1.4.0
-    hooks:
-      - id: refurb
-        args: [--ignore, "120", --ignore, "128"]
-        additional_dependencies:
-          [
-            aiomcache,
-            beautifulsoup4,
-            brotli,
-            cryptography,
-            freezegun,
-            httpx,
-            hypothesis,
-            mako,
-            orjson,
-            piccolo,
-            picologging,
-            pydantic,
-            pydantic_factories,
-            pydantic_openapi_schema,
-            pytest,
-            pyyaml,
-            redis,
-            sqlalchemy,
-            sqlalchemy2-stubs,
-            starlette,
-            starlite_multipart,
-            structlog,
-            tortoise-orm,
-            types-PyYAML,
-            types-beautifulsoup4,
-            types-freezegun,
-            types-redis,
-            types-requests,
-            requests,
-          ]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.14.1
     hooks:
@@ -132,8 +98,10 @@ repos:
         exclude: "test_*"
         additional_dependencies:
           [
+            aiomcache,
             brotli,
             cryptography,
+            httpx,
             jinja2,
             mako,
             orjson,
@@ -142,16 +110,14 @@ repos:
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
+            pytest,
             pyyaml,
-            httpx,
+            redis,
             sqlalchemy,
             starlette,
-            structlog,
             starlite_multipart,
+            structlog,
             tortoise_orm,
-            pytest,
-            redis,
-            aiomcache,
           ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.5"
@@ -180,17 +146,10 @@ repos:
     rev: "v0.982"
     hooks:
       - id: mypy
-        args: [--show-traceback, --pdb]
         additional_dependencies:
           [
             aiomcache,
-            beautifulsoup4,
-            brotli,
-            cryptography,
-            freezegun,
             httpx,
-            hypothesis,
-            mako,
             orjson,
             piccolo,
             picologging,
@@ -198,15 +157,13 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pytest,
-            pyyaml,
-            redis,
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
             starlite_multipart,
             structlog,
             tortoise-orm,
-            types-PyYAML,
+            types-pyyaml,
             types-beautifulsoup4,
             types-freezegun,
             types-redis,
@@ -226,6 +183,7 @@ repos:
             hypothesis,
             mako,
             orjson,
+            jinja2,
             piccolo,
             picologging,
             pydantic,
@@ -239,11 +197,4 @@ repos:
             starlette,
             starlite_multipart,
             structlog,
-            tortoise-orm,
-            types-PyYAML,
-            types-beautifulsoup4,
-            types-freezegun,
-            types-redis,
-            types-requests,
-            requests,
           ]
