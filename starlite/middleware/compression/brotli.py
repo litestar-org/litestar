@@ -2,7 +2,8 @@ import io
 from enum import Enum
 from typing import TYPE_CHECKING, Optional, cast
 
-from starlette.datastructures import Headers, MutableHeaders
+from starlette.datastructures import MutableHeaders
+from starlite.datastructures.headers import Headers
 from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
