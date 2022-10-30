@@ -1,6 +1,11 @@
-from typing import TYPE_CHECKING, Any, Callable
+import re
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Pattern, Set, Union
 
-from typing_extensions import Protocol, runtime_checkable
+from typing_extensions import Literal, Protocol, runtime_checkable
+
+from starlite.enums import ScopeType
+from starlite.middleware.utils import wrap_asgi_app
 
 if TYPE_CHECKING:
     from starlite.types.asgi_types import ASGIApp, Receive, Scope, Send
@@ -65,3 +70,60 @@ class DefineMiddleware:
         """
 
         return self.middleware(*self.args, app=app, **self.kwargs)
+
+
+class AbstractMiddleware(ABC):
+    __slots__ = ("app", "scopes")
+
+    def __init__(
+        self,
+        app: "ASGIApp",
+        exclude: Optional[Union[str, List[str]]] = None,
+        exclude_opt_key: Optional[str] = None,
+        scopes: Optional[Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"]] = None,
+    ) -> None:
+        """
+
+        Args:
+            app: The 'next' ASGI app to call.
+            exclude: A pattern or list of patterns to match against a request's path.
+                If a match is found, the middleware will be skipped. .
+            exclude_opt_key: An identifier that is set in the route handler
+                'opt' key which allows skipping the middleware.
+            scopes: ASGI scope types, should be a set including
+                either or both 'ScopeType.HTTP' and 'ScopeType.WEBSOCKET'.
+        """
+        self.app = app
+        self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
+
+        exclude_pattern: Optional[Pattern] = None
+        if exclude is not None:
+            exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+
+        wrapped_call = wrap_asgi_app(
+            current_app=self.__call__,
+            exclude_opt_key=exclude_opt_key,
+            exclude_path_pattern=exclude_pattern,
+            next_app=self.app,
+            scopes=self.scopes,
+        )
+        setattr(self, "__call__", wrapped_call)  # noqa: B010
+
+    @abstractmethod
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """Executes the ASGI middleware.
+
+        Called by the previous middleware in the stack if a response is not awaited prior.
+
+        Upon completion, middleware should call the next ASGI handler and await it - or await a response created in its
+        closure.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+        raise NotImplementedError("abstract method must be implemented")

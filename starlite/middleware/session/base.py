@@ -24,7 +24,7 @@ from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.middleware.base import MiddlewareProtocol
-from starlite.middleware.util import should_bypass_middleware
+from starlite.middleware.utils import should_bypass_middleware
 from starlite.types import Empty
 from starlite.utils import default_serializer, get_serializer_from_scope
 
