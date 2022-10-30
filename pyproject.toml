@@ -81,7 +81,7 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 trio = "*"
-fakeredis = "^1.9.4"
+fakeredis = "*"
 
 [tool.poetry.extras]
 brotli = ["brotli"]

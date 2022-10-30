@@ -1134,7 +1134,7 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "140f18c26212d0d8e787086d15ba04aa7b8ac2095dd0e19143c8e03c72f882ac"
+content-hash = "416c4f61a33cfb6efde867abb686e9bb20a5300fef6faee8ba98d4c559acf34e"
 
 [metadata.files]
 aiomcache = [
