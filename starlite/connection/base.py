@@ -5,6 +5,7 @@ from starlette.datastructures import URL, Address, URLPath
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.multi_dicts import QueryMultiDict
 from starlite.datastructures.state import State
+from starlite.datastructures.headers import Headers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_cookie_string
 from starlite.types.empty import Empty
