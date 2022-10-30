@@ -104,7 +104,7 @@ class _AbstractMiddlewareMetaClass(ABCMeta):
             namespace: A mapping of method names to callables.
             **kwargs: Any other kwargs passed to 'type()' call.
         """
-        if name != "AbstractMiddleware":
+        if name != "AbstractMiddleware" and "__call__" in namespace:
             call_method = namespace.pop("__call__")
 
             async def wrapped_call(self: Any, scope: "Scope", receive: "Receive", send: "Send") -> None:
