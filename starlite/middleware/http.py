@@ -59,10 +59,8 @@ from starlite.middleware.base import AbstractMiddleware
 from starlite.response import Response, StreamingResponse
 from starlite.utils import AsyncCallable
 
-DispatchFunction = Callable[
-    ["Request[Any, Any]", Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]],
-    "Response[Any]",
-]
+CallNext = Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]
+DispatchFunction = Callable[["Request[Any, Any]", CallNext], "Response[Any]"]
 
 if TYPE_CHECKING:
     from anyio.abc import TaskGroup
@@ -145,9 +143,7 @@ def _create_body_stream(
     return body_stream()
 
 
-def _create_call_next(
-    app: "ASGIApp", response_sent: Event, task_group: "TaskGroup", receive: "Receive"
-) -> Callable[["Request[Any, Any]"], Awaitable["Response"]]:
+def _create_call_next(app: "ASGIApp", response_sent: Event, task_group: "TaskGroup", receive: "Receive") -> CallNext:
     async def call_next(request: "Request[Any, Any]") -> Response:
         exception_context: "_ExceptionContext" = {"exc": None}
         send_stream, receive_stream = create_memory_object_stream()
@@ -205,9 +201,7 @@ class BaseHTTPMiddleware(AbstractMiddleware, ABC):
             response_sent.set()
 
     @abstractmethod
-    async def dispatch(
-        self, request: "Request[Any, Any]", call_next: Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]
-    ) -> "Response[Any]":
+    async def dispatch(self, request: "Request[Any, Any]", call_next: CallNext) -> "Response[Any]":
         """
 
         Args:
