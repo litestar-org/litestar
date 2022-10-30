@@ -214,9 +214,9 @@ nav:
                   - reference/middleware/session-middleware/5-memory-backend.md
                   - reference/middleware/session-middleware/6-redis-backend.md
                   - reference/middleware/session-middleware/7-sqlalchemy-backend.md
-          - reference/middleware/5-compression-middleware.md
-          - reference/middleware/6-csrf-middleware.md
-          - reference/middleware/7-exceptions-middleware.md
+          - reference/middleware/4-compression-middleware.md
+          - reference/middleware/5-csrf-middleware.md
+          - reference/middleware/6-exceptions-middleware.md
       - OpenAPI:
           - reference/openapi/0-openapi-controller.md
           - reference/openapi/1-openapi-response-spec.md
