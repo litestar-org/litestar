@@ -107,6 +107,7 @@ class AbstractMiddleware(ABC):
             next_app=self.app,
             scopes=self.scopes,
         )
+
         setattr(self, "__call__", wrapped_call)  # noqa: B010
 
     @abstractmethod

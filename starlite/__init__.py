@@ -65,11 +65,17 @@ from starlite.handlers import (
     route,
     websocket,
 )
-from starlite.middleware.authentication import (
+from starlite.middleware import (
     AbstractAuthenticationMiddleware,
+    AbstractMiddleware,
     AuthenticationResult,
+    BaseHTTPMiddleware,
+    CallNext,
+    DefineMiddleware,
+    DispatchCallable,
+    MiddlewareProtocol,
+    http_middleware,
 )
-from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.params import Body, Dependency, Parameter
@@ -85,9 +91,11 @@ __all__ = (
     "ASGIRoute",
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
+    "AbstractMiddleware",
     "AuthenticationResult",
     "BackgroundTask",
     "BackgroundTasks",
+    "BaseHTTPMiddleware",
     "BaseLoggingConfig",
     "BaseRoute",
     "BaseRouteHandler",
@@ -95,13 +103,14 @@ __all__ = (
     "CORSConfig",
     "CSRFConfig",
     "CacheConfig",
+    "CallNext",
     "CompressionConfig",
     "Controller",
     "Cookie",
-    "create_test_client",
     "DTOFactory",
     "DefineMiddleware",
     "Dependency",
+    "DispatchCallable",
     "File",
     "FormMultiDict",
     "HTTPException",
@@ -143,8 +152,8 @@ __all__ = (
     "StructLoggingConfig",
     "Template",
     "TemplateConfig",
-    "TooManyRequestsException",
     "TestClient",
+    "TooManyRequestsException",
     "UploadFile",
     "ValidationException",
     "WebSocket",
@@ -152,8 +161,10 @@ __all__ = (
     "WebSocketRoute",
     "WebsocketRouteHandler",
     "asgi",
+    "create_test_client",
     "delete",
     "get",
+    "http_middleware",
     "patch",
     "post",
     "put",

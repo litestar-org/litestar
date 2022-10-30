@@ -9,8 +9,15 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from anyio import create_task_group, move_on_after
 
-from starlite import DefineMiddleware, Response, create_test_client, get
+from starlite import (
+    DefineMiddleware,
+    Response,
+    ValidationException,
+    create_test_client,
+    get,
+)
 from starlite.middleware.http import BaseHTTPMiddleware
+from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
     from starlite import Request
@@ -39,6 +46,71 @@ def test_custom_http_middleware() -> None:
     with create_test_client(handler, middleware=[DefineMiddleware(SubclassMiddleware)]) as client:
         response = client.get("/")
         assert response.headers["test"] == "123"
+
+
+def test_dispatch_raises_exception() -> None:
+    class SubclassMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: "Request[Any, Any]", call_next: "CallNext") -> Response[Any]:
+            raise ValidationException(detail="nope")
+
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(handler, middleware=[DefineMiddleware(SubclassMiddleware)]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+def test_handler_raises_exception() -> None:
+    class SubclassMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: "Request[Any, Any]", call_next: "CallNext") -> Response[Any]:
+            return await call_next(request)
+
+    @get("/")
+    def handler() -> dict:
+        raise ValidationException(detail="nope")
+
+    with create_test_client(handler, middleware=[DefineMiddleware(SubclassMiddleware)]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+def test_internal_server_exception_raised_if_no_response() -> None:
+    class SubclassMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: "Request[Any, Any]", call_next: "CallNext") -> Response[Any]:
+            return  # type: ignore
+
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(handler, middleware=[DefineMiddleware(SubclassMiddleware)]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+
+
+def test_next_middleware_raises_exception() -> None:
+    class SubclassMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: "Request[Any, Any]", call_next: "CallNext") -> Response[Any]:
+            return await call_next(request)
+
+    class ExceptionRaisingMiddleware:
+        def __init__(self, app: "ASGIApp") -> None:
+            self.app = app
+
+        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            raise ValidationException(detail="nope")
+
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(
+        handler, middleware=[DefineMiddleware(SubclassMiddleware), DefineMiddleware(ExceptionRaisingMiddleware)]
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
 
 
 def test_state_data_across_multiple_middlewares() -> None:

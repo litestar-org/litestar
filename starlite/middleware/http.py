@@ -55,18 +55,20 @@ from typing_extensions import TypedDict
 
 from starlite.connection import Request
 from starlite.enums import ScopeType
-from starlite.middleware.base import AbstractMiddleware
+from starlite.exceptions import InternalServerException
+from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.response import Response, StreamingResponse
 from starlite.utils import AsyncCallable
-
-CallNext = Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]
-DispatchFunction = Callable[["Request[Any, Any]", CallNext], "Response[Any]"]
 
 if TYPE_CHECKING:
     from anyio.abc import TaskGroup
 
     from starlite.types import ASGIApp, Message, Receive, ReceiveMessage, Scope, Send
     from starlite.types.asgi_types import HTTPDisconnectEvent
+
+
+CallNext = Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]
+DispatchCallable = Callable[["Request[Any, Any]", CallNext], "Response[Any]"]
 
 
 class _ExceptionContext(TypedDict):
@@ -122,9 +124,7 @@ async def _call_next_app(
         send_stream.close()
 
 
-def _create_body_stream(
-    receive_stream: "MemoryObjectReceiveStream[Message]", exception_context: _ExceptionContext
-) -> AsyncGenerator[bytes, None]:
+def _create_body_stream(receive_stream: "MemoryObjectReceiveStream[Message]") -> AsyncGenerator[bytes, None]:
     async def body_stream() -> AsyncGenerator[bytes, None]:
         async with receive_stream:
             async for message in receive_stream:
@@ -134,11 +134,6 @@ def _create_body_stream(
                         yield body
                     if not message.get("more_body", False):
                         break
-                elif message["type"] == "http.disconnect":
-                    break
-
-        if isinstance(exception_context["exc"], Exception):
-            raise exception_context["exc"]
 
     return body_stream()
 
@@ -162,11 +157,11 @@ def _create_call_next(app: "ASGIApp", response_sent: Event, task_group: "TaskGro
         except EndOfStream as e:
             if isinstance(exception_context["exc"], Exception):
                 raise exception_context["exc"] from e  # pylint: disable=raising-bad-type
-            raise RuntimeError("No response returned.") from e
+            raise InternalServerException(detail="No response returned.") from e
 
         response = StreamingResponse(
             status_code=message["status"],
-            content=_create_body_stream(receive_stream=receive_stream, exception_context=exception_context),
+            content=_create_body_stream(receive_stream=receive_stream),
         )
         response.headers = {k.decode(response.encoding): v.decode(response.encoding) for k, v in message["headers"]}
         return response
@@ -180,10 +175,34 @@ class BaseHTTPMiddleware(AbstractMiddleware, ABC):
     def __init__(
         self,
         app: "ASGIApp",
-        dispatch: Optional[DispatchFunction] = None,
+        dispatch: Optional[DispatchCallable] = None,
         exclude: Optional[Union[str, List[str]]] = None,
         exclude_opt_key: Optional[str] = None,
     ) -> None:
+        """This class is a utility class for creating easy to use middleware
+        that runs on HTTP requests (that is, not requests with the scope type
+        'websocket'). Its derived from the Starlette class of the same name and
+        is compatible with it.
+
+        Notes:
+             - In order to provide the "expressJS" like interface of the dispatch function, this middleware does some rather
+              complex work. While the user is not exposed to this, this creates certain limitations:
+                1. this middleware is incompatible with contextvars.
+                2. background tasks will not be executed on the response for any handler function for which this
+                    middleware is defined.
+                3. this middleware does impact performance.
+
+              You should therefore evaluate the ease of use it offers vis-a-vis the downsides for your use case.
+
+        Args:
+            app: The 'next' ASGI app to call.
+            dispatch: An optional [DispatchCallable][starlite.middleware.http.DispatchCallable]. If provided it will
+                supersede the class `dispatch` method.
+            exclude: A pattern or list of patterns to match against a request's path.
+                If a match is found, the middleware will be skipped. .
+            exclude_opt_key: An identifier that is set in the route handler
+                'opt' key which allows skipping the middleware.
+        """
         super().__init__(app=app, exclude=exclude, exclude_opt_key=exclude_opt_key, scopes={ScopeType.HTTP})
         self.dispatch_handler = AsyncCallable(dispatch) if dispatch else None
 
@@ -205,10 +224,62 @@ class BaseHTTPMiddleware(AbstractMiddleware, ABC):
         """
 
         Args:
-            request:
-            call_next:
+            request: A [Request][starlite.connection.Request] instance.
+            call_next: A callable that receives a [Request][starlite.connection.Request]
+                and returns a [Response][starlite.response.Response].
 
         Returns:
-
+            A [Response][starlite.response.Response] instance.
         """
-        raise NotImplementedError("this method must be implemented by subclasses.")
+        raise NotImplementedError("this method must be implemented by subclasses.")  # pragma: no cover
+
+
+def http_middleware(
+    exclude: Optional[Union[str, List[str]]] = None,
+    exclude_opt_key: Optional[str] = None,
+) -> Callable[[DispatchCallable], DefineMiddleware]:
+    """This is a decorator that can be used to define middleware by decorating
+    a [DispatchCallable][starlite.middleware.http.DispatchCallable]:
+
+    Examples:
+
+        ```python
+        from typing import Any
+        from starlite import Starlite, Request, Response, CallNext, http_middleware
+
+
+        @http_middleware()
+        async def my_middleware(
+            request: Request[Any, Any], call_next: CallNext
+        ) -> Response[Any]:
+            response = await call_next(request)
+            response.set_header("X-My-Header", "123")
+
+
+        app = Starlite(route_handlers=[], middleware=[my_middleware])
+        ```
+
+    Args:
+        exclude: A pattern or list of patterns to match against a request's path.
+            If a match is found, the middleware will be skipped. .
+        exclude_opt_key: An identifier that is set in the route handler
+            'opt' key which allows skipping the middleware.
+
+    Returns:
+        A decorator that accepts a [DispatchCallable][starlite.middleware.http.DispatchCallable].
+    """
+
+    def decorator(
+        dispatch: DispatchCallable,
+    ) -> DefineMiddleware:
+        """
+
+        Args:
+            dispatch: A [DispatchCallable][starlite.middleware.http.DispatchCallable]
+
+        Returns:
+            An instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware].
+        """
+        return DefineMiddleware(BaseHTTPMiddleware, dispatch=dispatch, exclude=exclude, exclude_opt_key=exclude_opt_key)
+
+    return decorator
