@@ -12,7 +12,8 @@ from typing import (
 )
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
-from starlette.datastructures import Headers
+from starlite.datastructures.headers import Headers
+
 
 from starlite.connection.base import (
     ASGIConnection,

@@ -1,13 +1,58 @@
 import re
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Dict, Optional
+from typing import Any, ClassVar, Dict, Iterator, List, Mapping, Optional, Tuple
+from multidict import MultiDict, CIMultiDictProxy, CIMultiDict
 
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
+from starlette.datastructures import MutableHeaders
 from typing_extensions import Annotated
 
 from starlite.exceptions import ImproperlyConfiguredException
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
+
+
+class Headers(CIMultiDictProxy[str, str]):
+    """
+    An immutable, case-insensitive multidict.
+    """
+
+    def __init__(
+        self,
+        headers: Optional[Mapping[str, str]] = None,
+        raw: Optional[List[Tuple[bytes, bytes]]] = None,
+        scope: Optional[Mapping[str, Any]] = None,
+    ) -> None:
+        _list: List[Tuple[str, str]] = []
+        if headers is not None:
+            assert raw is None, 'Cannot set both "headers" and "raw".'
+            assert scope is None, 'Cannot set both "headers" and "scope".'
+            _list = [(key.lower(), value) for key, value in headers.items()]
+        elif raw is not None:
+            assert scope is None, 'Cannot set both "raw" and "scope".'
+            _list = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in raw]
+        elif scope is not None:
+            _list = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in scope["headers"]]
+        super().__init__(CIMultiDict(_list))
+
+    @property
+    def raw(self) -> List[Tuple[bytes, bytes]]:
+        return [(key.encode("latin-1"), value.encode("latin-1")) for key in self for value in self.getlist(key)]
+
+    def getlist(self, key: str) -> List[str]:
+        return super().getall(key, [])
+
+    def mutablecopy(self) -> "MutableHeaders":
+        return MutableHeaders(raw=self.raw)
+
+    def keys(self) -> List[str]:
+        return list(super().keys())
+
+    def values(self) -> List[str]:
+        return list(super().values())
+
+    def items(self) -> List[str]:
+        return list(super().items())
 
 
 class Header(BaseModel, ABC):

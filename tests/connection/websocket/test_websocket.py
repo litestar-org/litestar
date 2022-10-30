@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import anyio
 import pytest
-from starlette.datastructures import Headers
+from starlite.datastructures.headers import Headers
 
 from starlite.connection import WebSocket
 from starlite.exceptions import WebSocketDisconnect, WebSocketException

@@ -10,9 +10,10 @@ from typing import (
     cast,
 )
 
-from starlette.datastructures import URL, Address, Headers, URLPath
+from starlette.datastructures import URL, Address, URLPath
 
 from starlite.datastructures.state import State
+from starlite.datastructures.headers import Headers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_cookie_string, parse_query_params
 from starlite.types.empty import Empty
