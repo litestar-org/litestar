@@ -284,7 +284,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         Returns:
             None.
         """
-        self.scope["session"] = {}
+        self.scope["session"] = Empty
 
     def url_for(self, name: str, **path_parameters: Dict[str, Any]) -> str:
         """
