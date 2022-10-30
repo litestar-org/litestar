@@ -1,4 +1,4 @@
-"""A large part of the tests in this file were adapted from:
+"""A parts of the tests in this file were adapted from:
 
 https://github.com/encode/starlette/blob/master/tests/middleware/test_base.py. And are
 meant to ensure our compatibility with their API.

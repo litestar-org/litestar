@@ -1,5 +1,5 @@
-"""The code in this file was adapted from https://github.com/encode/starlette/b
-lob/master/starlette/middleware/base.py.
+"""This file includes code that has been adapted from
+https://github.com/encode/starlette/b lob/master/starlette/middleware/base.py.
 
 Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).
 All rights reserved.
@@ -30,7 +30,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -68,7 +67,7 @@ if TYPE_CHECKING:
 
 
 CallNext = Callable[["Request[Any, Any]"], Awaitable["Response[Any]"]]
-DispatchCallable = Callable[["Request[Any, Any]", CallNext], "Response[Any]"]
+DispatchCallable = Callable[["Request[Any, Any]", CallNext], Awaitable["Response[Any]"]]
 
 
 class _ExceptionContext(TypedDict):
@@ -169,7 +168,7 @@ def _create_call_next(app: "ASGIApp", response_sent: Event, task_group: "TaskGro
     return call_next
 
 
-class BaseHTTPMiddleware(AbstractMiddleware, ABC):
+class BaseHTTPMiddleware(AbstractMiddleware):
     __slots__ = ("dispatch_handler",)
 
     def __init__(
@@ -216,10 +215,9 @@ class BaseHTTPMiddleware(AbstractMiddleware, ABC):
                 app=self.app, response_sent=response_sent, task_group=task_group, receive=receive
             )
             response = await dispatch(request, call_next)
-            await response(scope, receive, send)
+            await response(scope, receive, send)  # pyright: ignore
             response_sent.set()
 
-    @abstractmethod
     async def dispatch(self, request: "Request[Any, Any]", call_next: CallNext) -> "Response[Any]":
         """
 
@@ -250,10 +248,11 @@ def http_middleware(
 
         @http_middleware()
         async def my_middleware(
-            request: Request[Any, Any], call_next: CallNext
-        ) -> Response[Any]:
+            request: "Request[Any, Any]", call_next: "CallNext"
+        ) -> "Response[Any]":
             response = await call_next(request)
             response.set_header("X-My-Header", "123")
+            return response
 
 
         app = Starlite(route_handlers=[], middleware=[my_middleware])

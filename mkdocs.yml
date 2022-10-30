@@ -201,9 +201,10 @@ nav:
           - reference/handlers/3-asgi-handlers.md
       - Middleware:
           - reference/middleware/0-base.md
-          - reference/middleware/1-authentication-middleware.md
-          - reference/middleware/2-logging-middleware.md
-          - reference/middleware/3-rate-limit-middleware.md
+          - reference/middleware/1-http-middleware.md
+          - reference/middleware/2-authentication-middleware.md
+          - reference/middleware/3-logging-middleware.md
+          - reference/middleware/4-rate-limit-middleware.md
           - Session Middleware:
               - reference/middleware/session-middleware/0-middleware.md
               - Backends:
