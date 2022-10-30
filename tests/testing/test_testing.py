@@ -263,7 +263,7 @@ def test_test_client_set_session_data(
     session_data = {"foo": "bar"}
 
     if with_domain:
-        session_config.domain = "testserver"
+        session_config.domain = "testserver.local"
 
     @get(path="/test")
     def get_session_data(request: Request) -> Dict[str, Any]:
@@ -271,7 +271,9 @@ def test_test_client_set_session_data(
 
     app = Starlite(route_handlers=[get_session_data], middleware=[session_config.middleware])
 
-    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
+    with TestClient(
+        app=app, session_config=session_config, backend=test_client_backend, base_url="http://testserver.local"
+    ) as client:
         client.set_session_data(session_data)
         assert session_data == client.get("/test").json()
 
