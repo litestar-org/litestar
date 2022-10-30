@@ -40,7 +40,7 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
         if request.method == HttpMethod.DELETE:
             request.clear_session()
         else:
-            request.set_session({"username": "moishezuchmir"})
+            request.session["username"] = "moishezuchmir"
         return None
 
     with create_test_client(route_handlers=[session_handler], middleware=[session_backend_config.middleware]) as client:
@@ -56,6 +56,11 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
 
         response = client.get("/session")
         assert response.json() == {"has_session": False}
+
+        client.post("/session")
+
+        response = client.get("/session")
+        assert response.json() == {"has_session": True}
 
 
 def test_set_empty(session_backend_config_async_safe: "BaseBackendConfig") -> None:

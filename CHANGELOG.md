@@ -1,5 +1,10 @@
 # Changelog
 
+[1.35.1]
+
+- fix hard dependency on external `cryptography` package when importing `starlite`
+- fix invalid default `base_url` for `TestClient`
+
 [1.35.0]
 
 - add context-manager when using SQLAlchemy sessions.

@@ -1,5 +1,6 @@
 import warnings
 from contextlib import ExitStack, contextmanager
+from http.cookiejar import CookieJar
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -15,23 +16,19 @@ from typing import (
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
+from starlette.datastructures import MutableHeaders
 
-from starlite import HttpMethod, ImproperlyConfiguredException
+from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
-from starlite.middleware.session.cookie_backend import (
-    CookieBackend,
-    CookieBackendConfig,
-)
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
     TestClientTransport,
 )
-from starlite.types import AnyIOBackend, ASGIApp
+from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 
 try:
-    from httpx import USE_CLIENT_DEFAULT, Client, Response
+    from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -53,16 +50,40 @@ if TYPE_CHECKING:
     )
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
+    from starlite.middleware.session.cookie_backend import CookieBackend
     from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)
-AnySessionBackend = Union[CookieBackend, ServerSideBackend]
-AnySessionConfig = Union["ServerSideSessionConfig", "CookieBackendConfig"]
 
 
-def raise_for_unsupported_session_backend(backend: "BaseSessionBackend") -> None:
-    raise ImproperlyConfiguredException(f"Backend of type {type(backend)!r} is currently not supported")
+def fake_http_send_message(headers: MutableHeaders) -> HTTPResponseStartEvent:
+    headers.setdefault("content-type", "application/text")
+    return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.raw)
+
+
+def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any]:
+    scope = {
+        "type": "http",
+        "path": "/",
+        "raw_path": b"/",
+        "root_path": "",
+        "scheme": "http",
+        "query_string": b"",
+        "client": ("testclient", 50000),
+        "server": ("testserver", 80),
+        "method": "GET",
+        "http_version": "1.1",
+        "extensions": {"http.response.template": {}},
+        "app": app,
+        "state": {},
+        "path_params": {},
+        "route_handler": None,
+        "_cookies": cookies,
+    }
+    return ASGIConnection[Any, Any, Any](
+        scope=scope,  # type: ignore[arg-type]
+    )
 
 
 class TestClient(Client, Generic[T]):
@@ -74,7 +95,7 @@ class TestClient(Client, Generic[T]):
     def __init__(
         self,
         app: T,
-        base_url: str = "http://testserver",
+        base_url: str = "http://testserver.local",
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: AnyIOBackend = "asyncio",
@@ -97,6 +118,13 @@ class TestClient(Client, Generic[T]):
                 route handlers.
             cookies: Cookies to set on the client.
         """
+        if "." not in base_url:
+            warnings.warn(
+                f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
+                f"'{base_url}.local'",
+                UserWarning,
+            )
+
         self._session_backend: Optional["BaseSessionBackend"] = None
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
@@ -124,11 +152,13 @@ class TestClient(Client, Generic[T]):
             "To access the session backend directly, use the session_backend attribute",
             PendingDeprecationWarning,
         )
-        if not isinstance(self._session_backend, CookieBackend):
+        from starlite.middleware.session.cookie_backend import CookieBackend
+
+        if not isinstance(self.session_backend, CookieBackend):
             raise ImproperlyConfiguredException(
                 f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
             )
-        return self._session_backend
+        return self.session_backend
 
     @property
     def session_backend(self) -> "BaseSessionBackend":
@@ -653,42 +683,35 @@ class TestClient(Client, Generic[T]):
         return self.get_session_data()
 
     @staticmethod
-    def _create_session_cookies(backend: CookieBackend, data: Dict[str, Any]) -> Dict[str, str]:
+    def _create_session_cookies(backend: "CookieBackend", data: Dict[str, Any]) -> Dict[str, str]:
         encoded_data = backend.dump_data(data=data)
         return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
 
     async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
         # TODO: Expose this in the async client
-        if isinstance(self.session_backend, ServerSideBackend):
-            serialized_data = self.session_backend.serlialize_data(data)
-            session_id = self.cookies.setdefault(
-                self.session_backend.config.key, self.session_backend.generate_session_id()
-            )
-            await self.session_backend.set(session_id, serialized_data)
-        elif isinstance(self.session_backend, CookieBackend):
-            for key, value in self._create_session_cookies(self.session_backend, data).items():
-                self.cookies.set(key, value)
-        else:
-            raise_for_unsupported_session_backend(self.session_backend)
+        mutable_headers = MutableHeaders({})
+        await self.session_backend.store_in_message(
+            scope_session=data,
+            message=fake_http_send_message(mutable_headers),
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),
+            ),
+        )
+        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.raw)
+
+        cookies = Cookies(CookieJar())
+        cookies.extract_cookies(response)
+        self.cookies.update(cookies)
 
     async def _get_session_data_async(self) -> Dict[str, Any]:
         # TODO: Expose this in the async client
-
-        if isinstance(self.session_backend, ServerSideBackend):
-            session_id = self.cookies.get(self.session_backend.config.key)
-            if session_id:
-                data = await self.session_backend.get(session_id)
-                if data:
-                    return self.session_backend.deserialize_data(data)
-        elif isinstance(self.session_backend, CookieBackend):
-            raw_data = [
-                self.cookies[key].encode("utf-8") for key in self.cookies if self.session_backend.config.key in key
-            ]
-            if raw_data:
-                return self.session_backend.load_data(data=raw_data)
-        else:
-            raise_for_unsupported_session_backend(self.session_backend)
-        return {}
+        return await self.session_backend.load_from_connection(
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),
+            ),
+        )
 
     def set_session_data(self, data: Dict[str, Any]) -> None:
         """Set session data.
