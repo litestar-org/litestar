@@ -130,8 +130,8 @@ class AppConfig(BaseModel):
     """
     etag: Optional[ETag]
     """
-        An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
-        Can be overridden by route handlers.
+    An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
+    Can be overridden by route handlers.
     """
     exception_handlers: ExceptionHandlersMap
     """

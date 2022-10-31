@@ -20,6 +20,7 @@
             - csrf_config
             - debug
             - dependencies
+            - etag
             - exception_handlers
             - guards
             - logging_config
