@@ -34,4 +34,4 @@ assert handler.opt["my_key"] == "some-value"
 
 You can specify the `opt` dictionary at all levels of your application. On specific route handlers, on a controller, a router, and even on the app instance itself.
 
-Resulting dictionary is constructed by merging opt dictionaries of all levels. If multiple layers define the same key, the value from the closest layer to the response handler will take precedence
+The resulting dictionary is constructed by merging opt dictionaries of all levels. If multiple layers define the same key, the value from the closest layer to the response handler will take precedence
