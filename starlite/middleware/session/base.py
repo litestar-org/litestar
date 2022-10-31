@@ -19,7 +19,7 @@ from typing import (
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableHeaders
 from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware

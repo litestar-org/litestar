@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
 from orjson import dumps, loads
 from pydantic import SecretBytes, validator
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableHeaders
 
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException

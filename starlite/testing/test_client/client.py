@@ -16,7 +16,7 @@ from typing import (
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableHeaders
 
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.exceptions import MissingDependencyException

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict
 
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableHeaders
 
 from starlite import get
 from starlite.status_codes import HTTP_200_OK

@@ -16,7 +16,7 @@ from typing import (
 
 from orjson import dumps, loads
 from pydantic import BaseModel, validator
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableHeaders
 from typing_extensions import Literal
 
 from starlite.connection import Request

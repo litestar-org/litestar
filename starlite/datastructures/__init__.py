@@ -13,6 +13,7 @@ from starlite.datastructures.response_containers import (
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import State
 from starlite.datastructures.upload_file import UploadFile
+from starlite.datastructures.headers import MutableHeaders, Headers
 
 __all__ = (
     "BackgroundTask",
@@ -22,6 +23,8 @@ __all__ = (
     "ETag",
     "File",
     "FormMultiDict",
+    "Headers",
+    "MutableHeaders",
     "Provide",
     "Redirect",
     "ResponseContainer",

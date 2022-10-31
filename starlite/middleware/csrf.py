@@ -2,8 +2,7 @@ import re
 import secrets
 from typing import TYPE_CHECKING, Any, Optional, Pattern
 
-from starlette.datastructures import MutableHeaders
-
+from starlite.datastructures import MutableHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import RequestEncodingType, ScopeType
 from starlite.exceptions import PermissionDeniedException
