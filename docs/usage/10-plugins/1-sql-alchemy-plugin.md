@@ -1,130 +1,126 @@
-# SQL-Alchemy Plugin
+# SQLAlchemy Plugin
 
-Starlite offers extensive support for [SQLAlchemy](https://docs.sqlalchemy.org/) using with the
-[`SQLAlchemyPlugin`][starlite.plugins.sql_alchemy.SQLAlchemyPlugin]. This plugin offers
-support for SQLAlchemy declarative models, which can be used as if they were pydantic models. Additionally, you can
-pass optional configuration to the plugin to create a DB engine / connection and setup DB sessions dependency injection.
+Starlite comes with built-in support for [SQLAlchemy](https://docs.sqlalchemy.org/) via
+the[`SQLAlchemyPlugin`][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
+
+## Features
+
+- Managed [sessions](https://docs.sqlalchemy.org/en/14/orm/session.html) (sync and async) including dependency injection
+- Automatic serialization of SQLAlchemy models powered pydantic
+- Data validation based on SQLAlchemy models powered pydantic
+
+!!! info
+    The following examples use SQLAlchemy's "2.0 Style" introduced in SQLAlchemy 1.4.
+
+    If you are unfamiliar with it, you can find a comprehensive migration guide in SQLAlchemy's
+    documentation [here](https://docs.sqlalchemy.org/en/14/changelog/migration_14.html#what-s-new-in-sqlalchemy-1-4),
+    and [a handy table](https://docs.sqlalchemy.org/en/14/changelog/migration_20.html#migration-orm-usage)
+    comparing the ORM usage
+
+!!! important
+    The `SQLAlchemyPlugin` supports only
+    [mapped classes](https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#declaring-mapped-classes).
+    [Tables](https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#setting-up-metadata-with-table-objects) are currently
+    not supported since they are not easy to convert to pydantic models.
 
 ## Basic Use
 
 You can simply pass an instance of `SQLAlchemyPlugin` without passing config to the Starlite constructor. This will
 extend support for serialization, deserialization and DTO creation for SQLAlchemy declarative models:
 
-```python
-from starlite import Starlite
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+=== "Async"
 
-from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.orm import declarative_base
-from starlite import post, get
+    ```py title="sqlalchemy_plugin.py"
+    --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_async.py"
+    ```
 
-Base = declarative_base()
+=== "Sync"
 
+    ```py title="sqlalchemy_plugin.py"
+    --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_sync.py"
+    ```
 
-class Company(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
-
-
-@post(path="/companies")
-def create_company(data: Company) -> Company:
-    ...
-
-
-@get(path="/companies")
-def get_companies() -> list[Company]:
-    ...
+!!! Example "Using imperative mappings"
+    [Imperative mappings](https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping)
+    are supported as well, just make sure to use a mapped class instead of the table itself
+    ```python
+    company_table = Table(
+        "company",
+        Base.registry.metadata,
+        Column("id", Integer, primary_key=True),
+        Column("name", String),
+        Column("worth", Float),
+    )
 
 
-app = Starlite(
-    route_handlers=[create_company, get_companies], plugins=[SQLAlchemyPlugin()]
-)
-```
+    class Company:
+        pass
+
+
+    Base.registry.map_imperatively(Company, company_table)
+    ```
+
+## Relationships
 
 !!! important
-    The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
-    because this style does not use classes, and is very hard to convert to pydantic correctly.
+    Currently only to-one relationships are supported because of the way the SQLAlchemy plugin handles relationships.
+      Since it recursively traverses relationships, a cyclic reference will result in an endless loop. To prevent this,
+      these relationships will be type as `Any` in the pydantic model
 
-## Handling of Relationships
+!!! important
+    Relationships are typed as `Optional` in the pydantic model by default so sending incomplete models won't cause any issues
 
-The SQLAlchemy plugin handles relationships by traversing and recursively converting the related tables into pydantic
-models.
-This approach, while powerful, poses some difficulties. For example, consider these two tables:
+### Simple relationships
 
-```python
-from sqlalchemy import Column, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship, declarative_base
+Simple relationships can be handled by the plugin automatically:
 
-Base = declarative_base()
-
-
-class Pet(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    age = Column(Float)
-    owner_id = Column(Integer, ForeignKey("user.id"))
-    owner = relationship("User", back_populates="pets")
-
-
-class User(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String, default="moishe")
-    pets = relationship(
-        "Pet",
-        back_populates="owner",
-    )
+```py title="sqlalchemy_relationships.py"
+--8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_relationships.py"
 ```
 
-The `User` table references the `Pet` table, which back references the `User` table. Hence, the resulting pydantic model
-will include a circular reference. To avoid this, the plugin sets relationships of this kind in the pydantic model type
-`Any` with a default of `None`. This means you can provide any value for them - or none at all, and validation will not
-break.
+!!! example "In action"
+    Run the above with `uvicorn sqlalchemy_relationships:app`, navigate your browser to `http://127.0.0.0:8000/user/1`
+    and you will see:
 
-Additionally, all relationships are defined as `Optional` in the pydantic model, following the assumption you might not
-send complete data structures using the API.
+    ```json
+    {
+      "id": 1,
+      "name": "Peter",
+      "company_id": 1,
+      "company": {
+        "id": 1,
+        "name": "Peter Co.",
+        "worth": 0
+      }
+    }
+    ```
 
-## SQLAlchemy Config
+### To-Many relationships and circular references
 
-You can also pass an instance of [`SQLAlchemyConfig`][starlite.plugins.sql_alchemy.SQLAlchemyConfig] to the plugin
-constructor:
+For to-many relationships or those that contain circular references you need to define the pydantic models yourself:
 
-```python
-from starlite import Starlite
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin, SQLAlchemyConfig
-
-from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlite import post
-
-Base = declarative_base()
-
-
-class Company(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
-
-
-@post(path="/companies")
-async def create_company(data: Company, async_session: AsyncSession) -> Company:
-    ...
-
-
-app = Starlite(
-    route_handlers=[],
-    plugins=[
-        SQLAlchemyPlugin(
-            config=SQLAlchemyConfig(
-                connection_string="sqlite+aiosqlite://", dependency_key="async_session"
-            )
-        ),
-    ],
-)
+```py title="sqlalchemy_relationships_to_many"
+--8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_relationships_to_many.py"
 ```
 
-In the above, the `SQLAlchemyPlugin` will establish a db connection using the given connection string, and add a
-dependency injection under the `async_session` key on the application level. See
-the [API Reference][starlite.plugins.sql_alchemy.config.SQLAlchemyConfig] for a full reference of the
-`SQLAlchemyConfig` kwargs.
+!!! example "In action"
+    Run the above with `uvicorn sqlalchemy_relationships_to_many:app`, navigate your browser to `http://127.0.0.0:8000/user/1`
+    and you will see:
+
+    ```json
+    {
+      "id": 1,
+      "name": "Peter",
+      "pets": [
+        {
+          "id": 1,
+          "name": "Paul"
+        }
+      ]
+    }
+    ```
+
+## Configuration
+
+You can configure the Plugin using the `SQLAlchemyPluginConfig` object. See the API Reference for a full
+list all the options available on [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig].

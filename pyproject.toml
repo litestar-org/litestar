@@ -4,11 +4,11 @@ version = "1.35.1"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
-  "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-  "Peter Schutt <peter.github@proton.me>",
-  "Cody Fincher <cody.fincher@gmail.com>",
-  "Janek Nouvertné <provinzkraut@posteo.de>",
-  "Konstantin Mikhailov <konstantin.mikhailov@proton.me>"
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+    "Konstantin Mikhailov <konstantin.mikhailov@proton.me>"
 ]
 license = "MIT"
 readme = "README.md"
@@ -17,21 +17,21 @@ repository = "https://github.com/starlite-api/starlite"
 documentation = "https://starlite-api.github.io/starlite"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi", "framework", "websocket"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Environment :: Web Environment",
-  "License :: OSI Approved :: MIT License",
-  "Natural Language :: English",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python",
-  "Topic :: Internet :: WWW/HTTP",
-  "Topic :: Software Development :: Libraries",
-  "Topic :: Software Development",
-  "Typing :: Typed",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
 ]
 include = ["CHANGELOG.md"]
 packages = [
@@ -40,7 +40,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-aiomcache = {version = "*", optional = true}
+aiomcache = { version = "*", optional = true }
 anyio = ">=3"
 brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
@@ -51,7 +51,7 @@ pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 pyyaml = "*"
-redis = {version = "*", optional = true, extras = ["hiredis"]}
+redis = { version = "*", optional = true, extras = ["hiredis"] }
 starlette = ">=0.21"
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
@@ -107,28 +107,28 @@ multi_line_output = 3
 
 [tool.pylint.MESSAGE_CONTROL]
 disable = [
-  "cyclic-import",
-  "duplicate-code",
-  "fixme",
-  "import-outside-toplevel",
-  "line-too-long",
-  "missing-class-docstring",
-  "missing-module-docstring",
-  "super-init-not-called",
-  "too-few-public-methods",
-  "too-many-ancestors",
-  "too-many-arguments",
-  "too-many-branches",
-  "too-many-instance-attributes",
-  "too-many-lines",
-  "too-many-locals",
-  "too-many-return-statements",
-  "ungrouped-imports",
-  "unnecessary-ellipsis",
-  "unused-import",
+    "cyclic-import",
+    "duplicate-code",
+    "fixme",
+    "import-outside-toplevel",
+    "line-too-long",
+    "missing-class-docstring",
+    "missing-module-docstring",
+    "super-init-not-called",
+    "too-few-public-methods",
+    "too-many-ancestors",
+    "too-many-arguments",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-lines",
+    "too-many-locals",
+    "too-many-return-statements",
+    "ungrouped-imports",
+    "unnecessary-ellipsis",
+    "unused-import",
 ]
 enable = "useless-suppression"
-extension-pkg-allow-list = ["pydantic","orjson","picologging"]
+extension-pkg-allow-list = ["pydantic", "orjson", "picologging"]
 
 [tool.pylint.REPORTS]
 reports = "no"
@@ -141,10 +141,10 @@ ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
 good-names = "_,__,i,e,k,v,fn,get,post,put,patch,delete,route,asgi,websocket,Dependency,Body,Parameter,HandlerType,ScopeType,Auth,User,it"
-no-docstring-rgx="(__.*__|main|test.*|.*test|.*Test|^_.*)$"
+no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test|^_.*)$"
 
 [tool.pylint.LOGGING]
-logging-modules=["logging","picologging", "structlog"]
+logging-modules = ["logging", "picologging", "structlog"]
 
 [tool.coverage.run]
 omit = ["*/tests/*"]
@@ -167,4 +167,10 @@ all = true
 
 [tool.pyright]
 include = ["starlite", "tests", "examples"]
-exclude = ["starlite/plugins", "tests/plugins", "starlite/openapi", "tests/openapi"]
+exclude = [
+    "starlite/plugins",
+    "tests/plugins",
+    "starlite/openapi",
+    "tests/openapi",
+    "examples/plugins/sqlalchemy_plugin"
+]
