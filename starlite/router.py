@@ -1,6 +1,6 @@
 import collections
 from copy import copy
-from typing import TYPE_CHECKING, Dict, ItemsView, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, ItemsView, List, Optional, Union, cast
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -53,6 +53,7 @@ class Router:
         "exception_handlers",
         "guards",
         "middleware",
+        "opt",
         "owner",
         "parameters",
         "path",
@@ -78,6 +79,7 @@ class Router:
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         middleware: Optional[List[Middleware]] = None,
+        opt: Optional[Dict[str, Any]] = None,
         parameters: Optional[ParametersMap] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
@@ -108,6 +110,7 @@ class Router:
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
                 application paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
@@ -132,6 +135,7 @@ class Router:
         self.exception_handlers = exception_handlers or {}
         self.guards = guards or []
         self.middleware = middleware or []
+        self.opt: Dict[str, Any] = opt or {}
         self.owner: Optional["Router"] = None
         self.parameters = parameters or {}
         self.path = normalize_path(path)

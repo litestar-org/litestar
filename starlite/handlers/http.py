@@ -321,7 +321,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -691,7 +691,7 @@ class get(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -829,7 +829,7 @@ class post(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -966,7 +966,7 @@ class put(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1105,7 +1105,7 @@ class patch(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1242,7 +1242,7 @@ class delete(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.

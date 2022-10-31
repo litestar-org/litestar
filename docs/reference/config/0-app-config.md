@@ -20,6 +20,7 @@
             - csrf_config
             - debug
             - dependencies
+            - etag
             - exception_handlers
             - guards
             - logging_config
@@ -27,6 +28,7 @@
             - on_shutdown
             - on_startup
             - openapi_config
+            - opt
             - parameters
             - plugins
             - request_class

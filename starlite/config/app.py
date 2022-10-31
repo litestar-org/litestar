@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 from pydantic import BaseConfig, BaseModel
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -130,8 +130,8 @@ class AppConfig(BaseModel):
     """
     etag: Optional[ETag]
     """
-        An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
-        Can be overridden by route handlers.
+    An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
+    Can be overridden by route handlers.
     """
     exception_handlers: ExceptionHandlersMap
     """
@@ -160,6 +160,12 @@ class AppConfig(BaseModel):
     openapi_config: Optional[OpenAPIConfig]
     """
     Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
+    """
+    opt: Dict[str, Any]
+    """
+    A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you
+    have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope]. Can be overridden
+    by routers and router handlers.
     """
     parameters: ParametersMap
     """
