@@ -1,6 +1,6 @@
 # SQLAlchemy Plugin
 
-Starlite come with built-in support for [SQLAlchemy](https://docs.sqlalchemy.org/) via
+Starlite comes with built-in support for [SQLAlchemy](https://docs.sqlalchemy.org/) via
 the[`SQLAlchemyPlugin`][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
 
 ## Features
@@ -21,7 +21,7 @@ the[`SQLAlchemyPlugin`][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
     The `SQLAlchemyPlugin` supports only
     [mapped classes](https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#declaring-mapped-classes).
     [Tables](https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#setting-up-metadata-with-table-objects) are currently
-    not supported since they aren't easily converted to pydantic models.
+    not supported since they are not easy to convert to pydantic models.
 
 ## Basic Use
 
@@ -72,7 +72,7 @@ extend support for serialization, deserialization and DTO creation for SQLAlchem
 
 ### Simple relationships
 
-Simple relationship can be handled by the plugin automatically:
+Simple relationships can be handled by the plugin automatically:
 
 ```py title="sqlalchemy_relationships.py"
 --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_relationships.py"
