@@ -3,7 +3,6 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are
 meant to ensure our compatibility with their API.
 """
-from datetime import datetime
 from email.utils import formatdate
 from pathlib import Path
 from typing import TYPE_CHECKING, AsyncIterator
@@ -21,10 +20,10 @@ if TYPE_CHECKING:
 
 
 def test_file_response(tmpdir: Path) -> None:
-    date_string = formatdate(datetime.now().timestamp(), usegmt=True)
     path = tmpdir / "xyz"
     content = b"<file content>" * 1000
     Path(path).write_bytes(content)
+    date_string = formatdate(Path(path).stat().st_mtime, usegmt=True)
 
     filled_by_bg_task = ""
 
