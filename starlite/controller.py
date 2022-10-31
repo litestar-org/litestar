@@ -1,5 +1,5 @@
 from copy import copy
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
@@ -40,6 +40,7 @@ class Controller:
         "exception_handlers",
         "guards",
         "middleware",
+        "opt",
         "owner",
         "parameters",
         "path",
@@ -91,6 +92,11 @@ class Controller:
     middleware: Optional[List["Middleware"]]
     """
         A list of [Middleware][starlite.types.Middleware].
+    """
+    opt: Optional[Dict[str, Any]]
+    """
+        A string key dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+        wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
     """
     owner: "Router"
     """

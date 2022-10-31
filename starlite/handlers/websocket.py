@@ -35,7 +35,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed [Guards][starlite.types.Guard].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """

@@ -28,6 +28,7 @@
             - on_shutdown
             - on_startup
             - openapi_config
+            - opt
             - parameters
             - plugins
             - request_class

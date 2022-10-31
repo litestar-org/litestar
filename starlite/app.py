@@ -158,6 +158,7 @@ class Starlite(Router):
         on_shutdown: Optional[List["LifeSpanHandler"]] = None,
         on_startup: Optional[List["LifeSpanHandler"]] = None,
         openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
+        opt: Optional[Dict[str, Any]] = None,
         parameters: Optional["ParametersMap"] = None,
         plugins: Optional[List["PluginProtocol"]] = None,
         request_class: Optional[Type["Request"]] = None,
@@ -229,6 +230,8 @@ class Starlite(Router):
             on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
                 application startup.
             openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you
+                have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
                 application paths.
             plugins: List of plugins.
@@ -283,6 +286,7 @@ class Starlite(Router):
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
             openapi_config=openapi_config,
+            opt=opt,
             parameters=parameters or {},
             plugins=plugins or [],
             request_class=request_class,
@@ -331,6 +335,7 @@ class Starlite(Router):
             exception_handlers=config.exception_handlers,
             guards=config.guards,
             middleware=config.middleware,
+            opt=config.opt,
             parameters=config.parameters,
             path="",
             response_class=config.response_class,
@@ -407,7 +412,7 @@ class Starlite(Router):
                 self._create_handler_signature_model(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
-
+                route_handler.resolve_opts()
                 if isinstance(route_handler, HTTPRouteHandler):
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_response()
