@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from starlite.asgi.routing_trie.types import RouteTrieNode  # type: ignore[attr-defined] # isort: skip
+    from starlite.asgi.routing_trie.types import RouteTrieNode
 
 
 def create_node() -> "RouteTrieNode":

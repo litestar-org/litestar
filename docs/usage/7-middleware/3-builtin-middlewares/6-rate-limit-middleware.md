@@ -5,16 +5,8 @@ the [IETF RateLimit draft specification](https://datatracker.ietf.org/doc/draft-
 
 To use the rate limit middleware, use the [`RateLimitConfig`][starlite.middleware.rate_limit.RateLimitConfig]:
 
-```python
-from starlite import Starlite
-from starlite.middleware import RateLimitConfig
-
-RateLimitConfig(
-    rate_limit=("second", 1),
-    exclude=["/schema"],
-)
-
-app = Starlite(route_handlers=[...], middleware=[RateLimitConfig.middleware])
+``` py
+--8<-- "examples/middleware/rate_limit.py"
 ```
 
 The only required configuration kwarg is `rate_limit`, which expects a tuple containing a time-unit (`second`, `minute`
