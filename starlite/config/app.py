@@ -161,7 +161,7 @@ class AppConfig(BaseModel):
     """
     Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
     """
-    opt: Optional[Dict[str, Any]]
+    opt: Dict[str, Any]
     """
     A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you
     have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope]. Can be overridden

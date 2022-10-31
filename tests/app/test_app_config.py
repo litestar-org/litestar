@@ -36,7 +36,7 @@ def app_config_object() -> AppConfig:
         on_shutdown=[],
         on_startup=[],
         openapi_config=None,
-        opt=None,
+        opt={},
         parameters={},
         plugins=[],
         response_class=None,

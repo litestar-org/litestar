@@ -286,7 +286,7 @@ class Starlite(Router):
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
             openapi_config=openapi_config,
-            opt=opt,
+            opt=opt or {},
             parameters=parameters or {},
             plugins=plugins or [],
             request_class=request_class,
