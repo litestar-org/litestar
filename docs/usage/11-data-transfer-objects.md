@@ -37,6 +37,7 @@ Base = declarative_base()
 
 
 class Company(Base):
+    __tablename__ = "company"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     worth = Column(Float)

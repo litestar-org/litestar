@@ -13,7 +13,7 @@ sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 dto_factory = DTOFactory(plugins=[sqlalchemy_plugin])
 
 
-class Company(Base):  # type: ignore
+class Company(Base):  # pyright: ignore
     __tablename__ = "company"
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -30,10 +30,11 @@ async def on_startup() -> None:
 
 @post(path="/companies")
 def create_company(
-    data: CreateCompanyDTO,  # type: ignore
+    data: CreateCompanyDTO,  # type: ignore[valid-type]
     db_session: Session,
 ) -> Company:
-    company = Company(**data.dict())
+    """Create a new company and return it."""
+    company: Company = data.to_model_instance()  # type: ignore[attr-defined]
     db_session.add(company)
     db_session.commit()
     return company
@@ -41,7 +42,8 @@ def create_company(
 
 @get(path="/companies/{company_id:int}")
 def get_company(company_id: str, db_session: Session) -> Optional[Company]:
-    return db_session.scalar(select(Company).where(Company.id == company_id))
+    """Get a company by ID and return it if found, else return None."""
+    return db_session.scalars(select(Company).where(Company.id == company_id)).one_or_none()
 
 
 app = Starlite(

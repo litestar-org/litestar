@@ -22,7 +22,6 @@ extend support for serialization, deserialization and DTO creation for SQLAlchem
     --8<-- "examples/plugins/sqlalchemy_plugin/sqlalchemy_sync.py"
     ```
 
-
 !!! important
     The `SQLAlchemyPlugin` supports only `declarative` style classes, it does not support the older `imperative` style
     because this style does not use classes, and is very hard to convert to pydantic correctly.
@@ -41,6 +40,7 @@ Base = declarative_base()
 
 
 class Pet(Base):
+    __tablename__ = "pet"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     age = Column(Float)
@@ -49,6 +49,7 @@ class Pet(Base):
 
 
 class User(Base):
+    __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     name = Column(String, default="moishe")
     pets = relationship(
