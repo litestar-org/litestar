@@ -7,24 +7,19 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    env:
-      PRE_COMMIT_HOME: "$GITHUB_WORKSPACE/.cache/pre-commit"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+      - name: Install Pre-Commit
+        run: python -m pip install pre-commit && pre-commit install
       - name: Load cached Pre-Commit Dependencies
         id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
-          path: $PRE_COMMIT_HOME
-          key: pre-commit-venv-${{ runner.os }}-3.11-${{ hashFiles('**/.pre-commit-config.yaml') }}
-          restore-keys: |
-            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
-            v1-venv-${{ runner.os }}
-      - name: Install Pre-Commit
-        run: python -m pip install pre-commit && pre-commit install
+          path: ~/.cache/pre-commit/
+          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
   test:
