@@ -48,9 +48,6 @@ jobs:
         with:
           path: .venv
           key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
-            v1-venv-${{ runner.os }}
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
       - name: Set pythonpath
