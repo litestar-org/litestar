@@ -93,33 +93,10 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.14.1
+    rev: v0.16
     hooks:
       - id: slotscheck
         exclude: "test_*"
-        additional_dependencies:
-          [
-            aiomcache,
-            brotli,
-            cryptography,
-            httpx,
-            jinja2,
-            mako,
-            orjson,
-            piccolo,
-            picologging,
-            pydantic,
-            pydantic_factories,
-            pydantic_openapi_schema,
-            pytest,
-            pyyaml,
-            redis,
-            sqlalchemy,
-            starlette,
-            starlite_multipart,
-            structlog,
-            tortoise_orm,
-          ]
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.5"
     hooks:

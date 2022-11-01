@@ -23,7 +23,6 @@ jobs:
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
   test:
-    needs: validate
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -66,6 +65,7 @@ jobs:
   sonar:
     needs:
       - test
+      - validate
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -85,6 +85,7 @@ jobs:
   snyk:
     needs:
       - test
+      - validate
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -106,24 +107,14 @@ jobs:
   codeql:
     needs:
       - test
+      - validate
     runs-on: ubuntu-latest
     permissions:
       security-events: write
     steps:
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: python
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
-            v1-venv-${{ runner.os }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

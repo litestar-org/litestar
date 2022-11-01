@@ -174,3 +174,6 @@ exclude = [
     "tests/openapi",
     "examples/plugins/sqlalchemy_plugin"
 ]
+
+[tool.slotscheck]
+strict-imports = false
