@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
 from orjson import dumps, loads
 from pydantic import SecretBytes, validator
-from starlite.datastructures import MutableHeaders
 
+from starlite.datastructures import MutableHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.types import Empty
@@ -128,7 +128,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
 
         scope = connection.scope
-        headers = MutableHeaders(scope=message)
+        headers = MutableHeaders.from_message(message)
         cookie_keys = self.get_cookie_keys(connection)
 
         if scope_session and scope_session is not Empty:

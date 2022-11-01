@@ -2,11 +2,11 @@ import io
 from enum import Enum
 from typing import TYPE_CHECKING, Optional, cast
 
-from starlite.datastructures import MutableHeaders
-from starlite.datastructures.headers import Headers
 from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
+from starlite.datastructures import MutableHeaders
+from starlite.datastructures.headers import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import MiddlewareProtocol
@@ -76,7 +76,7 @@ class BrotliMiddleware(MiddlewareProtocol):
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
-            headers = Headers(scope=scope)
+            headers = Headers.from_scope(scope)
             if CompressionEncoding.BROTLI in headers.get("Accept-Encoding", ""):
                 await self.brotli_responder(scope, receive, send)
                 return
@@ -172,7 +172,7 @@ class BrotliResponder:
                 elif not more_body:
                     # Standard Brotli response.
                     body = self.br_file.process(body) + self.br_file.finish()
-                    headers = MutableHeaders(raw=initial_message["headers"])
+                    headers = MutableHeaders(initial_message["headers"])
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers["Content-Length"] = str(len(body))
                     headers.add_vary_header("Accept-Encoding")
@@ -182,7 +182,7 @@ class BrotliResponder:
                     await send(message)
                 else:
                     # Initial body in streaming Brotli response.
-                    headers = MutableHeaders(raw=initial_message["headers"])
+                    headers = MutableHeaders(initial_message["headers"])
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers.add_vary_header("Accept-Encoding")
                     del headers["Content-Length"]

@@ -12,8 +12,8 @@ from typing import (
 
 from starlette.datastructures import URL, Address, URLPath
 
-from starlite.datastructures.state import State
 from starlite.datastructures.headers import Headers
+from starlite.datastructures.state import State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_cookie_string, parse_query_params
 from starlite.types.empty import Empty
@@ -152,7 +152,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._headers is Empty:
             self.scope.setdefault("headers", [])
-            self._headers = self.scope["_headers"] = Headers(scope=self.scope)  # type: ignore[typeddict-item]
+            self._headers = self.scope["_headers"] = Headers.from_scope(self.scope)  # type: ignore[typeddict-item]
         return cast("Headers", self._headers)
 
     @property

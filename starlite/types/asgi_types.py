@@ -69,7 +69,7 @@ class BaseScope(TypedDict):
     auth: Any
     client: Optional[Tuple[str, int]]
     extensions: Optional[Dict[str, Dict[object, object]]]
-    headers: List[Tuple[bytes, bytes]]
+    headers: "RawHeadersList"
     http_version: str
     path: str
     path_params: Dict[str, str]
@@ -109,7 +109,7 @@ class HTTPRequestEvent(TypedDict):
 class HTTPResponseStartEvent(TypedDict):
     type: Literal["http.response.start"]
     status: int
-    headers: List[Tuple[bytes, bytes]]
+    headers: "RawHeadersList"
 
 
 class HTTPResponseBodyEvent(TypedDict):
@@ -121,7 +121,7 @@ class HTTPResponseBodyEvent(TypedDict):
 class HTTPServerPushEvent(TypedDict):
     type: Literal["http.response.push"]
     path: str
-    headers: List[Tuple[bytes, bytes]]
+    headers: "RawHeadersList"
 
 
 class HTTPDisconnectEvent(TypedDict):
@@ -135,7 +135,7 @@ class WebSocketConnectEvent(TypedDict):
 class WebSocketAcceptEvent(TypedDict):
     type: Literal["websocket.accept"]
     subprotocol: Optional[str]
-    headers: List[Tuple[bytes, bytes]]
+    headers: "RawHeadersList"
 
 
 class WebSocketReceiveEvent(TypedDict):
@@ -153,7 +153,7 @@ class WebSocketSendEvent(TypedDict):
 class WebSocketResponseStartEvent(TypedDict):
     type: Literal["websocket.http.response.start"]
     status: int
-    headers: List[Tuple[bytes, bytes]]
+    headers: "RawHeadersList"
 
 
 class WebSocketResponseBodyEvent(TypedDict):
@@ -239,3 +239,4 @@ Scope = Union[HTTPScope, WebSocketScope]
 Receive = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
 Send = Callable[[Message], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
+RawHeadersList = List[Tuple[bytes, bytes]]

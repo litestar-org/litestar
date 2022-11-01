@@ -111,7 +111,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         return send_wrapper
 
     def _set_cookie_if_needed(self, message: "HTTPSendMessage", token: str) -> None:
-        headers = MutableHeaders(scope=message)
+        headers = MutableHeaders.from_message(message)
         cookie = Cookie(
             key=self.config.cookie_name,
             value=token,

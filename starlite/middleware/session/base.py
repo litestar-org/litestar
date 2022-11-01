@@ -19,10 +19,10 @@ from typing import (
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
-from starlite.datastructures import MutableHeaders
 from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
+from starlite.datastructures import MutableHeaders
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.middleware.util import should_bypass_middleware
 from starlite.types import Empty
@@ -273,7 +273,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
         scope = connection.scope
-        headers = MutableHeaders(scope=message)
+        headers = MutableHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
         if session_id == "null":
             session_id = None
