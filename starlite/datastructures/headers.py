@@ -55,6 +55,8 @@ from typing_extensions import Annotated
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import deprecated
 
+from starlette.datastructures import Headers
+
 if TYPE_CHECKING:
     from starlite.types.asgi_types import Message, RawHeadersList, Scope
 
@@ -66,7 +68,8 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
 
 
 class Headers(CIMultiDictProxy[str]):
-    """An immutable, case-insensitive multidict."""
+    """An immutable, case-insensitive [multidict](https://multidict.aio-
+    libs.org/en/stable/multidict.html#cimultidictproxy) for HTTP headers."""
 
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList"]] = None) -> None:
         headers_: Union[Mapping[str, str], List[Tuple[str, str]]] = {}
@@ -163,6 +166,8 @@ class Headers(CIMultiDictProxy[str]):
 
 
 class MutableHeaders(Mapping):
+    """A case-insensitive multidict for HTTP headers."""
+
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList"]] = None) -> None:
         self._list: "RawHeadersList" = []
         if headers:

@@ -185,7 +185,7 @@ nav:
           - reference/datastructures/0-state.md
           - reference/datastructures/1-cookie.md
           - reference/datastructures/2-provide.md
-          - reference/datastructures/3-header.md
+          - reference/datastructures/3-headers.md
           - reference/datastructures/4-background.md
           - reference/datastructures/5-response-containers.md
           - reference/datastructures/6-upload-file.md
