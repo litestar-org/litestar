@@ -23,7 +23,6 @@ jobs:
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
   test:
-    needs: validate
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -66,6 +65,7 @@ jobs:
   sonar:
     needs:
       - test
+      - validate
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -85,6 +85,7 @@ jobs:
   snyk:
     needs:
       - test
+      - validate
     if: github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     steps:
@@ -106,6 +107,7 @@ jobs:
   codeql:
     needs:
       - test
+      - validate
     runs-on: ubuntu-latest
     permissions:
       security-events: write
