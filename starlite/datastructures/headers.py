@@ -55,8 +55,6 @@ from typing_extensions import Annotated
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import deprecated
 
-from starlette.datastructures import Headers
-
 if TYPE_CHECKING:
     from starlite.types.asgi_types import Message, RawHeadersList, Scope
 
