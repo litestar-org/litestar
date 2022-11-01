@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from starlette.datastructures import MutableHeaders
 
@@ -47,9 +47,7 @@ def test_raises_exception() -> None:
 
 def test_exclude_by_pattern() -> None:
     class SubclassMiddleware(AbstractMiddleware):
-        def __init__(self, **kwargs: Any) -> None:
-            kwargs.update(exclude="route-123")
-            super().__init__(**kwargs)
+        exclude = "123"
 
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
@@ -60,20 +58,62 @@ def test_exclude_by_pattern() -> None:
 
             await self.app(scope, receive, _send)
 
-    @get("/route-123")
-    def handler() -> dict:
+    @get("/123")
+    def first_handler() -> dict:
         return {"hello": "world"}
 
-    with create_test_client(handler, middleware=[DefineMiddleware(SubclassMiddleware)]) as client:
-        response = client.get("/")
+    @get("/456")
+    def second_handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(
+        [first_handler, second_handler], middleware=[DefineMiddleware(SubclassMiddleware)]
+    ) as client:
+        response = client.get("/123")
         assert "test" not in response.headers
+        response = client.get("/456")
+        assert "test" in response.headers
+
+
+def test_exclude_by_pattern_list() -> None:
+    class SubclassMiddleware(AbstractMiddleware):
+        exclude = ["123", "456"]
+
+        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            async def _send(message: "Message") -> None:
+                if message["type"] == "http.response.start":
+                    headers = MutableHeaders(scope=message)
+                    headers.append("test", str(123))
+                await send(message)
+
+            await self.app(scope, receive, _send)
+
+    @get("/123")
+    def first_handler() -> dict:
+        return {"hello": "world"}
+
+    @get("/456")
+    def second_handler() -> dict:
+        return {"hello": "world"}
+
+    @get("/789")
+    def third_handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(
+        [first_handler, second_handler, third_handler], middleware=[DefineMiddleware(SubclassMiddleware)]
+    ) as client:
+        response = client.get("/123")
+        assert "test" not in response.headers
+        response = client.get("/456")
+        assert "test" not in response.headers
+        response = client.get("/789")
+        assert "test" in response.headers
 
 
 def test_exclude_by_opt_key() -> None:
     class SubclassMiddleware(AbstractMiddleware):
-        def __init__(self, **kwargs: Any) -> None:
-            kwargs.update(exclude_opt_key="exclude_route")
-            super().__init__(**kwargs)
+        exclude_opt_key = "exclude_route"
 
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:

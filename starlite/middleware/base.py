@@ -124,7 +124,9 @@ class _AbstractMiddlewareMetaClass(ABCMeta):
 
 
 class AbstractMiddleware(metaclass=_AbstractMiddlewareMetaClass):
-    __slots__ = ("app", "scopes", "exclude_opt_key", "exclude_pattern")
+    scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"] = {ScopeType.HTTP, ScopeType.WEBSOCKET}
+    exclude: Optional[Union[str, List[str]]] = None
+    exclude_opt_key: Optional[str] = None
 
     def __init__(
         self,
@@ -145,10 +147,12 @@ class AbstractMiddleware(metaclass=_AbstractMiddlewareMetaClass):
                 either or both 'ScopeType.HTTP' and 'ScopeType.WEBSOCKET'.
         """
         self.app = app
-        self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
+        self.scopes = scopes or self.scopes
+        self.exclude_opt_key = exclude_opt_key or self.exclude_opt_key
 
-        self.exclude_opt_key = exclude_opt_key
         self.exclude_pattern: Optional[Pattern] = None
+
+        exclude = exclude or self.exclude
         if exclude is not None:
             self.exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
 
