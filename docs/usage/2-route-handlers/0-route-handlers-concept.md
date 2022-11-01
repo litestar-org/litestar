@@ -99,7 +99,7 @@ Additionally, you can specify the following special kwargs, what's called "reser
 ```python
 from typing import Any, Dict
 from starlite import State, Request, get
-from starlette.datastructures import Headers
+from starlite.datastructures import Headers
 
 
 @get(path="/")
