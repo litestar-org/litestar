@@ -4,3 +4,4 @@
     options:
         members:
             - close
+            - multi_items
