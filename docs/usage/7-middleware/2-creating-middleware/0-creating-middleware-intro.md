@@ -20,5 +20,5 @@ def middleware_factory(app: ASGIApp) -> ASGIApp:
 ```
 
 While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
-two base classes you can use for this purpose - the Starlette [BaseHTTPMiddleware](1-using-basehttp-middleware.md) or the
-Starlite [MiddlewareProtocol](2-using-middleware-protocol.md).
+two base classes you can use for this purpose - the [MiddlewareProtocol](1-using-middleware-protocol.md), which gives a
+barebone type, or the [AbstractMiddleware](2-using-abstract-middleware.md) that offers a base class with some built in functionality.
