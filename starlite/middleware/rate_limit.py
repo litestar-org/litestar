@@ -16,10 +16,10 @@ from typing import (
 
 from orjson import dumps, loads
 from pydantic import BaseModel, validator
-from starlite.datastructures import MutableHeaders
 from typing_extensions import Literal
 
 from starlite.connection import Request
+from starlite.datastructures import MutableHeaders
 from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import DefineMiddleware
@@ -128,7 +128,7 @@ class RateLimitMiddleware:
             """
             if message["type"] == "http.response.start":
                 message.setdefault("headers", [])
-                headers = MutableHeaders(scope=message)
+                headers = MutableHeaders.from_message(message)
                 for key, value in self.create_response_headers(cache_object=cache_object).items():
                     headers.append(key, value)
             await send(message)

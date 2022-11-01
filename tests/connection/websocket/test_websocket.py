@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, Any
 
 import anyio
 import pytest
-from starlite.datastructures.headers import Headers
 
 from starlite.connection import WebSocket
+from starlite.datastructures.headers import Headers
 from starlite.exceptions import WebSocketDisconnect, WebSocketException
 from starlite.handlers.websocket import websocket
 from starlite.status_codes import WS_1001_GOING_AWAY

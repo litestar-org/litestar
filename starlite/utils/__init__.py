@@ -1,3 +1,5 @@
+from starlite.utils.deprecation import deprecated, warn_deprecation
+
 from .csrf import generate_csrf_hash, generate_csrf_token
 from .dependency import is_dependency_field, should_skip_dependency_validation
 from .exception import (
@@ -44,6 +46,8 @@ __all__ = (
     "create_exception_response",
     "create_parsed_model_field",
     "default_serializer",
+    "deprecated",
+    "warn_deprecation",
     "find_index",
     "generate_csrf_hash",
     "generate_csrf_token",
