@@ -26,6 +26,7 @@ from starlite.testing.test_client.transport import (
     TestClientTransport,
 )
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
+from starlite.utils import deprecated
 
 try:
     from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
@@ -146,12 +147,8 @@ class TestClient(Client, Generic[T]):
         )
 
     @property
+    @deprecated("1.34.0", alternative="session_backend", pending=True, kind="property")
     def session(self) -> "CookieBackend":
-        warnings.warn(
-            "Accessing the session via this property is deprecated and will be removed in future version."
-            "To access the session backend directly, use the session_backend attribute",
-            PendingDeprecationWarning,
-        )
         from starlite.middleware.session.cookie_backend import CookieBackend
 
         if not isinstance(self.session_backend, CookieBackend):
@@ -604,6 +601,7 @@ class TestClient(Client, Generic[T]):
         else:
             raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
 
+    @deprecated("1.34.0", alternative="set_session_data", pending=True)
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
         """Creates raw session cookies that are loaded into the session by the
         Session Middleware. It creates cookies the same way as if they are
@@ -643,15 +641,11 @@ class TestClient(Client, Generic[T]):
                     test_client.get(url="/my_route")
             ```
         """
-        warnings.warn(
-            "This method is deprecated and will be removed in a future version. Use"
-            "TestClient.set_session_data instead",
-            PendingDeprecationWarning,
-        )
         if self._session_backend is None:
             return {}
         return self._create_session_cookies(self.session, session_data)
 
+    @deprecated("1.34.0", alternative="get_session_data", pending=True)
     def get_session_from_cookies(self) -> Dict[str, Any]:
         """Raw session cookies are a serialized image of session which are
         created by session middleware and sent with the response. To assert
@@ -673,11 +667,6 @@ class TestClient(Client, Generic[T]):
                 assert "user" in session
             ```
         """
-        warnings.warn(
-            "This method is deprecated and will be removed in a future version. Use"
-            "TestClient.get_session_data instead",
-            PendingDeprecationWarning,
-        )
         if self._session_backend is None:
             return {}
         return self.get_session_data()
