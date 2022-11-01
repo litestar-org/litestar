@@ -112,20 +112,9 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: python
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            v1-venv-${{ runner.os }}-${{ matrix.python-version }}
-            v1-venv-${{ runner.os }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
