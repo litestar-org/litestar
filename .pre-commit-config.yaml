@@ -105,6 +105,7 @@ repos:
             httpx,
             jinja2,
             mako,
+            multidict,
             orjson,
             piccolo,
             picologging,
