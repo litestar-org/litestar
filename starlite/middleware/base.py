@@ -1,18 +1,6 @@
 import re
-from abc import ABCMeta, abstractmethod
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Pattern,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Pattern, Set, Union
 
 from typing_extensions import Literal, Protocol, runtime_checkable
 
@@ -84,46 +72,7 @@ class DefineMiddleware:
         return self.middleware(*self.args, app=app, **self.kwargs)
 
 
-class _AbstractMiddlewareMetaClass(ABCMeta):
-    app: "ASGIApp"
-    exclude: Optional[Union[str, List[str]]]
-    exclude_opt_key: Optional[str]
-    scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"]
-
-    def __new__(cls, name: str, bases: Tuple[Type, ...], namespace: Dict[str, Callable], **kwargs: Any) -> Any:
-        """This metaclass override intercepts the creation of subclasses and
-        wraps their call method.
-
-        Notes:
-            - This is somewhat magical, and as such - suboptimal. There is no other way though to wrap the __call__
-                method because it is a read only attribute on class instances and classes that are already created.
-
-        Args:
-            name: The name of class that is being created.
-            bases: A tuple of super classes.
-            namespace: A mapping of method names to callables.
-            **kwargs: Any other kwargs passed to 'type()' call.
-        """
-        if name != "AbstractMiddleware" and "__call__" in namespace:
-            call_method = namespace.pop("__call__")
-
-            async def wrapped_call(self: Any, scope: "Scope", receive: "Receive", send: "Send") -> None:
-                if should_bypass_middleware(
-                    scope=scope,
-                    scopes=getattr(self, "scopes", {ScopeType.HTTP, ScopeType.WEBSOCKET}),  # pyright: ignore
-                    exclude_path_pattern=getattr(self, "exclude_pattern", None),
-                    exclude_opt_key=getattr(self, "exclude_opt_key", None),
-                ):
-                    await self.app(scope, receive, send)
-                else:
-                    await call_method(self, scope, receive, send)
-
-            namespace["__call__"] = wrapped_call
-
-        return super().__new__(cls, name, bases, namespace, **kwargs)
-
-
-class AbstractMiddleware(metaclass=_AbstractMiddlewareMetaClass):
+class AbstractMiddleware:
     scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"] = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     exclude: Optional[Union[str, List[str]]] = None
     exclude_opt_key: Optional[str] = None
@@ -155,6 +104,26 @@ class AbstractMiddleware(metaclass=_AbstractMiddlewareMetaClass):
         exclude = exclude or self.exclude
         if exclude is not None:
             self.exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+
+        original__call__ = cls.__call__
+
+        async def wrapped_call(self: AbstractMiddleware, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            if should_bypass_middleware(
+                scope=scope,
+                scopes=self.scopes,
+                exclude_path_pattern=self.exclude_pattern,
+                exclude_opt_key=self.exclude_opt_key,
+            ):
+                await self.app(scope, receive, send)
+            else:
+                await original__call__(self, scope, receive, send)
+
+        # https://github.com/python/mypy/issues/2427#issuecomment-384229898
+        setattr(cls, "__call__", wrapped_call)  # noqa: B010
 
     @abstractmethod
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
