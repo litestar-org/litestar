@@ -56,7 +56,7 @@ starlette = ">=0.21"
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-multidict = "^6.0.2"
+multidict = ">=6.0.2"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
