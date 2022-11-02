@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Set, Union
 from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import add_map_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
-from starlite.asgi.routing_trie.utils import create_node
+from starlite.asgi.routing_trie.types import create_node
 from starlite.asgi.utils import get_route_handlers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable
