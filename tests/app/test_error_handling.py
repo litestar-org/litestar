@@ -34,7 +34,7 @@ def test_using_custom_http_exception_handler() -> None:
 def test_debug_response_created() -> None:
     # this will test exception causes are recorded in output
     # since frames include code in context we should not raise
-    # exception directly 
+    # exception directly
     def exception_thrower() -> float:
         return 1 / 0
 
@@ -66,4 +66,3 @@ def test_handler_error_return_status_500() -> None:
     with create_test_client(my_route_handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-

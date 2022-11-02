@@ -1,5 +1,5 @@
-import inspect
 from html import escape
+from inspect import getinnerframes
 from pathlib import Path
 from traceback import format_exception
 from typing import TYPE_CHECKING, List
@@ -9,12 +9,14 @@ from starlite.response import Response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
+    from inspect import FrameInfo
+
     from starlite.connection import Request
 
 tpl_dir = Path(__file__).parent / "templates"
 
 
-def get_symbol_name(frame: inspect.FrameInfo) -> str:
+def get_symbol_name(frame: "FrameInfo") -> str:
     """Return full name of the function that is being executed by the given
     frame."""
     classname = ""
@@ -48,7 +50,7 @@ def create_line_html(
     return template.format(**data)
 
 
-def create_frame_html(frame: inspect.FrameInfo, collapsed: bool) -> str:
+def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
     """Return html representation of the given frame object including filename
     containing source code and name of the function being executed."""
     frame_tpl = (tpl_dir / "frame.html").read_text()
@@ -69,7 +71,7 @@ def create_frame_html(frame: inspect.FrameInfo, collapsed: bool) -> str:
 
 def create_exception_html(exc: BaseException, frame_limit: int) -> str:
     """Return html representation of exception frames."""
-    frames = inspect.getinnerframes(exc.__traceback__, frame_limit) if exc.__traceback__ else []
+    frames = getinnerframes(exc.__traceback__, frame_limit) if exc.__traceback__ else []
     result = []
     for idx, frame in enumerate(reversed(frames)):
         result.append(create_frame_html(frame=frame, collapsed=(idx > 0)))
@@ -77,7 +79,7 @@ def create_exception_html(exc: BaseException, frame_limit: int) -> str:
     return "".join(result)
 
 
-def create_html_response_contet(exc: Exception, request: "Request", frame_limit: int = 15) -> str:
+def create_html_response_content(exc: Exception, request: "Request", frame_limit: int = 15) -> str:
     """Return exception traceback in HTML."""
     exception_data: List[str] = [create_exception_html(exc, frame_limit)]
     cause = exc.__cause__
@@ -103,7 +105,7 @@ def create_html_response_contet(exc: Exception, request: "Request", frame_limit:
     )
 
 
-def create_plain_text_response_contet(exc: Exception) -> str:
+def create_plain_text_response_content(exc: Exception) -> str:
     """Return exception traceback in plain text."""
     return "".join(format_exception(type(exc), value=exc, tb=exc.__traceback__))
 
@@ -112,10 +114,10 @@ def create_debug_response(request: "Request", exc: Exception) -> Response:
     """Create debug response either in plain text or html depending on client
     capabilities."""
     if "text/html" in request.headers.get("accept", ""):
-        content = create_html_response_contet(exc=exc, request=request)
+        content = create_html_response_content(exc=exc, request=request)
         media_type = MediaType.HTML
     else:
-        content = create_plain_text_response_contet(exc)
+        content = create_plain_text_response_content(exc)
         media_type = MediaType.TEXT
 
     return Response(content=content, media_type=media_type, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
