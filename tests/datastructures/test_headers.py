@@ -4,7 +4,12 @@ import pytest
 from pydantic import ValidationError
 from pytest import FixtureRequest
 
-from starlite.datastructures import CacheControlHeader, ETag, MutableScopeHeaders
+from starlite.datastructures import (
+    CacheControlHeader,
+    ETag,
+    Headers,
+    MutableScopeHeaders,
+)
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
@@ -25,6 +30,30 @@ def mutable_headers(raw_headers: "RawHeadersList") -> MutableScopeHeaders:
 @pytest.fixture(params=[True, False])
 def existing_headers_key(request: FixtureRequest) -> str:
     return "Foo" if request.param else "foo"
+
+
+def test_headers_from_mapping() -> None:
+    headers = Headers({"foo": "bar", "baz": "zab"})
+    assert headers["foo"] == "bar"
+    assert headers["baz"] == "zab"
+
+
+def test_headers_from_raw_list() -> None:
+    headers = Headers([(b"foo", b"bar"), (b"foo", b"baz")])
+    assert headers.getall("foo") == ["bar", "baz"]
+
+
+def test_headers_from_scope(raw_headers: "RawHeadersList") -> None:
+    headers = Headers.from_scope(
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"foo", b"baz")])
+    )
+    assert headers.getall("foo") == ["bar", "baz"]
+
+
+def test_headers_to_header_list() -> None:
+    raw = [(b"foo", b"bar"), (b"foo", b"baz")]
+    headers = Headers(raw)
+    assert headers.to_header_list() == raw
 
 
 def test_mutable_scope_headers_from_message(raw_headers: "RawHeadersList") -> None:

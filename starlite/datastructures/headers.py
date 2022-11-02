@@ -174,7 +174,7 @@ class MutableScopeHeaders(MutableMapping):
 
     def __iter__(self) -> Iterator[str]:
         """iter over header names including duplicates."""
-        return iter(h[0].decode("utf-8") for h in self.headers)
+        return iter(h[0].decode("latin-1") for h in self.headers)
 
 
 class Header(BaseModel, ABC):
