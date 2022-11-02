@@ -1,9 +1,12 @@
 from typing import TYPE_CHECKING
+
 import pytest
 from pydantic import ValidationError
+from pytest import FixtureRequest
 
 from starlite.datastructures import CacheControlHeader, ETag, MutableScopeHeaders
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 if TYPE_CHECKING:
     from starlite.types.asgi_types import RawHeadersList
@@ -15,23 +18,25 @@ def raw_headers() -> "RawHeadersList":
 
 
 @pytest.fixture
-def mutable_headers(raw_headers) -> MutableScopeHeaders:
+def mutable_headers(raw_headers: "RawHeadersList") -> MutableScopeHeaders:
     return MutableScopeHeaders({"headers": raw_headers})
 
 
 @pytest.fixture(params=[True, False])
-def existing_headers_key(request) -> str:
+def existing_headers_key(request: FixtureRequest) -> str:
     return "Foo" if request.param else "foo"
 
 
-def test_mutable_scope_headers_from_message(raw_headers) -> None:
-    headers = MutableScopeHeaders.from_message({"type": "http.response.start", "status": 200, "headers": raw_headers})
+def test_mutable_scope_headers_from_message(raw_headers: "RawHeadersList") -> None:
+    headers = MutableScopeHeaders.from_message(
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers)
+    )
     assert headers.headers == raw_headers
 
 
 def test_mutable_scope_headers_from_message_invalid_type() -> None:
     with pytest.raises(ValueError):
-        MutableScopeHeaders.from_message({"type": "http.response.body", "body": b"", "more_body": False})
+        MutableScopeHeaders.from_message(HTTPResponseBodyEvent(type="http.response.body", body=b"", more_body=False))
 
 
 def test_mutable_scope_headers_add(
@@ -54,21 +59,25 @@ def test_mutable_scope_headers_getall_multi_value(
     assert mutable_headers.getall("foo") == ["bar", "baz"]
 
 
-def test_mutable_scope_headers_getall_not_found_no_default(mutable_headers) -> None:
+def test_mutable_scope_headers_getall_not_found_no_default(mutable_headers: MutableScopeHeaders) -> None:
     with pytest.raises(KeyError):
         mutable_headers.getall("bar")
 
 
-def test_mutable_scope_headers_getall_not_found_default(mutable_headers) -> None:
+def test_mutable_scope_headers_getall_not_found_default(mutable_headers: MutableScopeHeaders) -> None:
     assert mutable_headers.getall("bar", ["default"]) == ["default"]
 
 
-def test_mutable_scope_headers_extend_header_value(raw_headers: "RawHeadersList", mutable_headers) -> None:
+def test_mutable_scope_headers_extend_header_value(
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+) -> None:
     mutable_headers.extend_header_value("foo", "baz")
     assert raw_headers == [(b"foo", b"bar, baz")]
 
 
-def test_mutable_scope_headers_extend_header_value_new_header(raw_headers: "RawHeadersList", mutable_headers) -> None:
+def test_mutable_scope_headers_extend_header_value_new_header(
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+) -> None:
     mutable_headers.extend_header_value("bar", "baz")
     assert raw_headers == [(b"foo", b"bar"), (b"bar", b"baz")]
 
@@ -77,7 +86,7 @@ def test_mutable_scope_headers_getitem(mutable_headers: MutableScopeHeaders, exi
     assert mutable_headers[existing_headers_key] == "bar"
 
 
-def test_mutable_scope_headers_getitem_not_found(mutable_headers) -> None:
+def test_mutable_scope_headers_getitem_not_found(mutable_headers: MutableScopeHeaders) -> None:
     with pytest.raises(KeyError):
         mutable_headers["bar"]
 
@@ -89,7 +98,9 @@ def test_mutable_scope_headers_setitem_existing_key(
     assert raw_headers == [(b"foo", b"baz")]
 
 
-def test_mutable_scope_headers_setitem_new_key(raw_headers: "RawHeadersList", mutable_headers) -> None:
+def test_mutable_scope_headers_setitem_new_key(
+    raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
+) -> None:
     mutable_headers["bar"] = "baz"
     assert raw_headers == [(b"foo", b"bar"), (b"bar", b"baz")]
 
@@ -103,7 +114,7 @@ def test_mutable_scope_headers_setitem_delitem(
     assert raw_headers == [(b"bar", b"baz")]
 
 
-def test_mutable_scope_header_len(mutable_headers) -> None:
+def test_mutable_scope_header_len(mutable_headers: MutableScopeHeaders) -> None:
     assert len(mutable_headers) == 1
     mutable_headers.add("foo", "bar")
     assert len(mutable_headers) == 2
@@ -111,7 +122,7 @@ def test_mutable_scope_header_len(mutable_headers) -> None:
     assert len(mutable_headers) == 3
 
 
-def test_mutable_scope_header_iter(mutable_headers) -> None:
+def test_mutable_scope_header_iter(mutable_headers: MutableScopeHeaders) -> None:
     mutable_headers.add("foo", "baz")
     mutable_headers["bar"] = "zab"
     assert list(mutable_headers) == ["foo", "foo", "bar"]
