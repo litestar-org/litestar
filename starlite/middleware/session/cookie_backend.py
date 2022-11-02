@@ -128,7 +128,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
 
         scope = connection.scope
-        headers = MutableScopeHeaders(message)
+        headers = MutableScopeHeaders.from_message(message)
         cookie_keys = self.get_cookie_keys(connection)
 
         if scope_session and scope_session is not Empty:

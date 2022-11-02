@@ -1,6 +1,20 @@
 import re
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, TYPE_CHECKING, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
@@ -9,7 +23,7 @@ from typing_extensions import Annotated
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-    from starlite.types.asgi_types import RawHeadersList, Scope
+    from starlite.types.asgi_types import HeaderScope, Message, RawHeadersList
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
 
@@ -29,16 +43,12 @@ class Headers(CIMultiDictProxy[str]):
                 headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
             elif headers:
                 headers_ = headers
-            headers_dict = CIMultiDict(headers_)
+            super().__init__(CIMultiDict(headers_))
         else:
-            headers_dict = headers
-        super().__init__(headers_dict)
-
-    def getall(self, key: str, default: Optional[List[str]] = None) -> List[str]:
-        return super().getall(key, default or [])
+            super().__init__(headers)
 
     @classmethod
-    def from_scope(cls, scope: "Scope") -> "Headers":
+    def from_scope(cls, scope: "HeaderScope") -> "Headers":
         """
         Create headers from a send-message.
         Args:
@@ -61,58 +71,91 @@ class Headers(CIMultiDictProxy[str]):
         return _encode_headers((key, value) for key in set(self) for value in self.getall(key))
 
 
-class MutableScopeHeaders:
-    def __init__(self, scope: Optional["Scope"] = None) -> None:
+class MutableScopeHeaders(MutableMapping):
+    """A case-insensitive, multidict-like structure that can be used to mutate
+    headers within a [Scope][starlite.types.Scope]."""
+
+    def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
+        self.headers: "RawHeadersList"
         if scope is not None:
             self.headers = scope["headers"]
         else:
             self.headers = []
 
+    @classmethod
+    def from_message(cls, message: "Message") -> "MutableScopeHeaders":
+        """Construct a header from a [Message][starlite.types.Message].
+
+        Raises:
+            ValueError: If the message does not have a `headers` key
+        """
+        if "headers" not in message:
+            raise ValueError(f"Invalid message type: {message['type']!r}")
+        return cls(cast("HeaderScope", message))
+
     def add(self, name: str, value: str) -> None:
-        """Add a header to the scope keeping duplicates"""
+        """Add a header to the scope keeping duplicates."""
         self.headers.append((name.lower().encode("latin-1"), value.encode("latin-1")))
 
-    def get(self, name: str, default: Optional[str] = None) -> Optional[str]:
-        try:
-            return self[name]
-        except KeyError:
-            return default
+    def getall(self, name: str, default: Optional[List[str]] = None) -> List[str]:
+        """Get all values of a header.
 
-    def getall(self, name: str, default: Optional[Tuple[str, ...]] = None) -> Optional[Tuple[str, ...]]:
+        Args:
+            name: Header name
+            default: Default value to return if `name` is not found
+
+        Returns:
+            A list of strings
+
+        Raises:
+            `KeyError` if no header for `name` was found and `default` is not given
+        """
         name = name.lower()
-        values = tuple(
+        values = [
             header_value.decode("latin-1")
             for header_name, header_value in self.headers
             if header_name.decode("latin-1").lower() == name
-        )
-        return values or default
-
-    def setdefault(self, name: str, value: str) -> str:
-        return_value = self.get(name)
-        if return_value is None:
-            return_value = value
-            self[name] = value
-        return return_value
+        ]
+        if not values:
+            if default:
+                return default
+            raise KeyError
+        return values
 
     def extend_header_value(self, name: str, value: str) -> None:
+        """Extend a multivalued header (that is, a header that can take a comma
+        separated list). If the header previously did not exist, it will be
+        added.
+
+        Args:
+            name: Header name
+            value: Header value to add
+
+        Returns:
+            None
+        """
         existing = self.get(name)
         if existing is not None:
             value = ", ".join([*existing.split(","), value])
         self[name] = value
 
     def __getitem__(self, name: str) -> str:
+        """Get the first header matching `name`"""
         name = name.lower()
         for header in self.headers:
             if header[0].decode("latin-1").lower() == name:
                 return header[1].decode("latin-1")
         raise KeyError
 
-    def __setitem__(self, name: str, value: str) -> None:
-        """Set a header in the scope, overwriting duplicates"""
+    def _find_indices(self, name: str) -> List[int]:
         name = name.lower()
-        name_encoded = name.encode("latin-1")
+        return [i for i, (name_, _) in enumerate(self.headers) if name_.decode("latin-1").lower() == name]
+
+    def __setitem__(self, name: str, value: str) -> None:
+        """Set a header in the scope, overwriting duplicates."""
+        name_encoded = name.lower().encode("latin-1")
         value_encoded = value.encode("latin-1")
-        indices = [i for i, (name_, _) in enumerate(self.headers) if name_.decode("latin-1").lower() == name]
+        indices = self._find_indices(name)
         if not indices:
             self.headers.append((name_encoded, value_encoded))
         else:
@@ -121,14 +164,17 @@ class MutableScopeHeaders:
             self.headers[indices[0]] = (name_encoded, value_encoded)
 
     def __delitem__(self, name: str) -> None:
-        name = name.lower()
-        for i, header in enumerate(self.headers[::-1]):
-            if header[0].decode("latin-1").lower() == name:
-                del self.headers[i]
+        """Delete all headers matching `name`"""
+        indices = self._find_indices(name)
+        for i in indices[::-1]:
+            del self.headers[i]
 
-    def __contains__(self, name: str) -> bool:
-        name = name.lower()
-        return any(h[0].decode("latin-1").lower() == name for h in self.headers)
+    def __len__(self) -> int:
+        return len(self.headers)
+
+    def __iter__(self) -> Iterator[str]:
+        """iter over header names including duplicates."""
+        return iter(h[0].decode("utf-8") for h in self.headers)
 
 
 class Header(BaseModel, ABC):

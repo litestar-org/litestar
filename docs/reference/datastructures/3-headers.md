@@ -5,33 +5,14 @@
         members:
             - __init__
             - from_scope
-            - from_message
-            - raw
-            - keys
-            - values
-            - items
-            - getlist
-            - mutablecopy
 
-
-::: starlite.datastructures.MutableHeaders
+::: starlite.datastructures.MutableScopeHeaders
     options:
         members:
             - __init__
-            - from_scope
-            - from_message
-            - raw
-            - keys
-            - values
-            - items
+            - add
             - getall
-            - getlist
-            - mutablecopy
-            - setdefault
-            - update
-            - append
-            - add_vary_header
-
+            - extend_header_value
 
 ::: starlite.datastructures.ResponseHeader
     options:

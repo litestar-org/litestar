@@ -63,13 +63,16 @@ class ASGIVersion(TypedDict):
     version: Literal["3.0"]
 
 
-class BaseScope(TypedDict):
+class HeaderScope(TypedDict):
+    headers: "RawHeadersList"
+
+
+class BaseScope(HeaderScope):
     app: "Starlite"
     asgi: ASGIVersion
     auth: Any
     client: Optional[Tuple[str, int]]
     extensions: Optional[Dict[str, Dict[object, object]]]
-    headers: "RawHeadersList"
     http_version: str
     path: str
     path_params: Dict[str, str]
@@ -106,10 +109,9 @@ class HTTPRequestEvent(TypedDict):
     more_body: bool
 
 
-class HTTPResponseStartEvent(TypedDict):
+class HTTPResponseStartEvent(HeaderScope):
     type: Literal["http.response.start"]
     status: int
-    headers: "RawHeadersList"
 
 
 class HTTPResponseBodyEvent(TypedDict):
@@ -118,10 +120,9 @@ class HTTPResponseBodyEvent(TypedDict):
     more_body: bool
 
 
-class HTTPServerPushEvent(TypedDict):
+class HTTPServerPushEvent(HeaderScope):
     type: Literal["http.response.push"]
     path: str
-    headers: "RawHeadersList"
 
 
 class HTTPDisconnectEvent(TypedDict):
@@ -132,10 +133,9 @@ class WebSocketConnectEvent(TypedDict):
     type: Literal["websocket.connect"]
 
 
-class WebSocketAcceptEvent(TypedDict):
+class WebSocketAcceptEvent(HeaderScope):
     type: Literal["websocket.accept"]
     subprotocol: Optional[str]
-    headers: "RawHeadersList"
 
 
 class WebSocketReceiveEvent(TypedDict):
@@ -150,10 +150,9 @@ class WebSocketSendEvent(TypedDict):
     text: Optional[str]
 
 
-class WebSocketResponseStartEvent(TypedDict):
+class WebSocketResponseStartEvent(HeaderScope):
     type: Literal["websocket.http.response.start"]
     status: int
-    headers: "RawHeadersList"
 
 
 class WebSocketResponseBodyEvent(TypedDict):

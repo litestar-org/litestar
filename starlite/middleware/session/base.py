@@ -273,7 +273,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
         scope = connection.scope
-        headers = MutableScopeHeaders(message)
+        headers = MutableScopeHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
         if session_id == "null":
             session_id = None
