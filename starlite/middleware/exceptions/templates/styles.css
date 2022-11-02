@@ -5,6 +5,7 @@
   --code-color-light: #546996;
   --code-font-family: Consolas, monospace;
   --header-color: #303b55;
+  --warn-color: hsl(356, 92%, 60%);
   --text-font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial,
     sans-serif;
 }
@@ -37,6 +38,11 @@ h2 {
   font-size: 1.83rem;
 }
 
+h3 span,
+h4 span {
+  color: var(--warn-color);
+}
+
 .frame {
   background-color: var(--code-background-color);
   border-radius: 0.2rem;
@@ -48,8 +54,23 @@ h2 {
   padding: 10px 16px;
 }
 
+.frame.collapsed .frame-name {
+  border-bottom: none;
+}
+
 .frame-name span {
   font-weight: 700;
+}
+
+span.expander {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: transform 0.33s ease-in-out;
+}
+
+.frame.collapsed span.expander {
+  transform: rotate(-90deg);
 }
 
 .frame-name span.breakable {
@@ -57,10 +78,17 @@ h2 {
 }
 
 .code-snippet-wrapper {
-  padding: 10px 16px;
+  height: auto;
+  overflow-y: hidden;
+  transition: height 0.33s ease-in-out;
+}
+
+.frame.collapsed .code-snippet-wrapper {
+  height: 0;
 }
 
 .code-snippet {
+  margin: 10px 16px;
   border-spacing: 0 0;
   color: var(--code-color);
   font-family: var(--code-font-family);
@@ -86,4 +114,8 @@ td.code_line {
 
 tr.current_line {
   background-color: var(--code-background-color-dark);
+}
+
+.cause-wrapper {
+  margin-top: 50px;
 }
