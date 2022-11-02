@@ -3,8 +3,11 @@ from typing import TYPE_CHECKING, Set, Type, Union, cast
 
 from starlette.middleware import Middleware as StarletteMiddleware
 
-from starlite.asgi.routing_trie.types import ASGIHandlerTuple, PathParameterSentinel
-from starlite.asgi.routing_trie.utils import create_node
+from starlite.asgi.routing_trie.types import (
+    ASGIHandlerTuple,
+    PathParameterSentinel,
+    create_node,
+)
 from starlite.asgi.utils import wrap_in_exception_handler
 from starlite.types.internal_types import PathParameterDefinition
 

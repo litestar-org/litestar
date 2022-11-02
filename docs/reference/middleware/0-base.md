@@ -10,3 +10,8 @@
     options:
         members:
             - __init__
+
+::: starlite.middleware.AbstractMiddleware
+    options:
+        members:
+            - __init__

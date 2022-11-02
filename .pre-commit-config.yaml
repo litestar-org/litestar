@@ -149,7 +149,7 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.277
+    rev: v1.1.278
     hooks:
       - id: pyright
         additional_dependencies:
