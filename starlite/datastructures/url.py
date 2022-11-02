@@ -26,6 +26,9 @@ class URL(SplitResult):
             result = urlsplit(url)
         return super().__new__(cls, *result)
 
+    def __init__(self, url: Union[str, SplitResult]) -> None:
+        pass
+
     @classmethod
     def from_components(
         cls,
