@@ -34,8 +34,8 @@ from starlite.utils import (
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
-    from starlette.datastructures import URL
 
+    from starlite.datastructures import URL
     from starlite.types import AnyCallable
 
 

@@ -18,8 +18,10 @@ from starlite.datastructures.response_containers import (
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import State
 from starlite.datastructures.upload_file import UploadFile
+from starlite.datastructures.url import URL, Address, make_absolute_url
 
 __all__ = (
+    "Address",
     "BackgroundTask",
     "BackgroundTasks",
     "CacheControlHeader",
@@ -37,4 +39,6 @@ __all__ = (
     "Stream",
     "Template",
     "UploadFile",
+    "URL",
+    "make_absolute_url",
 )

@@ -10,11 +10,10 @@ from unittest.mock import patch
 
 import pytest
 from orjson import JSONDecodeError
-from starlette.datastructures import Address
 
 from starlite import InternalServerException, MediaType, StaticFilesConfig, get
 from starlite.connection import Request, empty_send
-from starlite.datastructures import State
+from starlite.datastructures import Address, State
 from starlite.response import Response
 from starlite.testing import TestClient, create_test_client
 
