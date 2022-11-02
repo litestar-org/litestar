@@ -22,7 +22,7 @@ from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
 from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
-from starlite.datastructures import MutableHeaders
+from starlite.datastructures import MutableScopeHeaders
 from starlite.middleware.base import MiddlewareProtocol
 from starlite.middleware.util import should_bypass_middleware
 from starlite.types import Empty
@@ -273,7 +273,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
         scope = connection.scope
-        headers = MutableHeaders.from_message(message)
+        headers = MutableScopeHeaders(message)
         session_id = connection.cookies.get(self.config.key)
         if session_id == "null":
             session_id = None
@@ -287,7 +287,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
         if scope_session is Empty:
             await self.delete(session_id)
-            headers.append(
+            headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=self.config.key, expires=0, **cookie_params).to_header(header=""),
             )

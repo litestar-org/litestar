@@ -137,10 +137,10 @@ class WebSocket(
             _headers: List[Tuple[bytes, bytes]] = headers if isinstance(headers, list) else []
 
             if isinstance(headers, dict):
-                _headers = Headers(headers=headers).raw
+                _headers = Headers(headers=headers).to_header_list()
 
             if isinstance(headers, Headers):
-                _headers = headers.raw
+                _headers = headers.to_header_list()
 
             event: "WebSocketAcceptEvent" = {
                 "type": "websocket.accept",

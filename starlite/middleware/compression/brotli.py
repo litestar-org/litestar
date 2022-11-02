@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional, cast
 from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
-from starlite.datastructures import MutableHeaders
+from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.headers import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
@@ -172,19 +172,19 @@ class BrotliResponder:
                 elif not more_body:
                     # Standard Brotli response.
                     body = self.br_file.process(body) + self.br_file.finish()
-                    headers = MutableHeaders(initial_message["headers"])
+                    headers = MutableScopeHeaders(initial_message)
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers["Content-Length"] = str(len(body))
-                    headers.add_vary_header("Accept-Encoding")
+                    headers.extend_header_value("vary", "Accept-Encoding")
                     message["body"] = body
 
                     await send(initial_message)
                     await send(message)
                 else:
                     # Initial body in streaming Brotli response.
-                    headers = MutableHeaders(initial_message["headers"])
+                    headers = MutableScopeHeaders(initial_message)
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
-                    headers.add_vary_header("Accept-Encoding")
+                    headers.extend_header_value("vary", "Accept-Encoding")
                     del headers["Content-Length"]
                     self.br_buffer.write(self.br_file.process(body) + self.br_file.flush())
                     message["body"] = self.br_buffer.getvalue()

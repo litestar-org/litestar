@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Dict
 
 from starlite import get
-from starlite.datastructures import MutableHeaders
+from starlite.datastructures import MutableScopeHeaders
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
@@ -17,8 +17,8 @@ def test_before_send() -> None:
 
     async def before_send_hook_handler(message: "Message", state: "State") -> None:
         if message["type"] == "http.response.start":
-            headers = MutableHeaders.from_message(message)
-            headers.append("My Header", state.message)
+            headers = MutableScopeHeaders(message)
+            headers.add("My Header", state.message)
 
     def on_startup(state: "State") -> None:
         state.message = "value injected during send"

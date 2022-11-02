@@ -5,7 +5,7 @@ from starlite.datastructures.headers import (
     CacheControlHeader,
     ETag,
     Headers,
-    MutableHeaders,
+    MutableScopeHeaders,
 )
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
@@ -22,13 +22,13 @@ from starlite.datastructures.upload_file import UploadFile
 __all__ = (
     "BackgroundTask",
     "BackgroundTasks",
-    "Cookie",
     "CacheControlHeader",
+    "Cookie",
     "ETag",
     "File",
     "FormMultiDict",
     "Headers",
-    "MutableHeaders",
+    "MutableScopeHeaders",
     "Provide",
     "Redirect",
     "ResponseContainer",

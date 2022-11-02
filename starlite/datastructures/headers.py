@@ -1,62 +1,15 @@
-"""The code for `MutableHeaders` and parts of `Headers` was adopted from https:
-
-//github.com/encode/starlette/blob/e7d000a76d9e4ea5951a8b3b028a057e4df9484c/sta
-rlette/datastructures.py.
-
-Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-
 import re
 from abc import ABC, abstractmethod
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    ClassVar,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, TYPE_CHECKING, Tuple, Union
 
-from multidict import CIMultiDict, CIMultiDictProxy
+from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
 from typing_extensions import Annotated
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import deprecated
 
 if TYPE_CHECKING:
-    from starlite.types.asgi_types import Message, RawHeadersList, Scope
+    from starlite.types.asgi_types import RawHeadersList, Scope
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
 
@@ -69,326 +22,113 @@ class Headers(CIMultiDictProxy[str]):
     """An immutable, case-insensitive [multidict](https://multidict.aio-
     libs.org/en/stable/multidict.html#cimultidictproxy) for HTTP headers."""
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList"]] = None) -> None:
-        headers_: Union[Mapping[str, str], List[Tuple[str, str]]] = {}
-        if isinstance(headers, list):
-            headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
-        elif headers:
-            headers_ = headers
+    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
+        if not isinstance(headers, MultiMapping):
+            headers_: Union[Mapping[str, str], List[Tuple[str, str]]] = {}
+            if isinstance(headers, list):
+                headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
+            elif headers:
+                headers_ = headers
+            headers_dict = CIMultiDict(headers_)
+        else:
+            headers_dict = headers
+        super().__init__(headers_dict)
 
-        super().__init__(CIMultiDict(headers_))
+    def getall(self, key: str, default: Optional[List[str]] = None) -> List[str]:
+        return super().getall(key, default or [])
 
     @classmethod
     def from_scope(cls, scope: "Scope") -> "Headers":
-        """Create headers from a `Scope`.
-
-        Args:
-            scope: An ASGI Scope
-
-        Returns:
-            Headers
-        """
-        return cls(list(scope["headers"]))
-
-    @classmethod
-    def from_message(cls, message: "Message") -> "Headers":
         """
         Create headers from a send-message.
         Args:
-            message: An message
+            scope: An ASGI Scope
 
         Returns:
             Headers
 
         Raises:
             ValueError: If the message does not have a `headers` key
-        """
-        try:
-            return cls(message["headers"])  # type: ignore[typeddict-item]
-        except KeyError as exc:
-            raise ValueError(f"Unsupported message type: {message['type']!r}") from exc
-
-    @property
-    def raw(self) -> "RawHeadersList":
-        """Raw header value.
-
-        Returns:
-            A list of tuples contain the header and header-value as bytes
-        """
-        return _encode_headers((key, value) for key in set(self) for value in self.getlist(key))
-
-    def keys(self) -> List[str]:  # type: ignore[override]
-        """Get a list of all header names. Contains duplicates.
-
-        Returns:
-            A list of strings
-        """
-        return list(super().keys())
-
-    def values(self) -> List[str]:  # type: ignore[override]
-        """Get a list of all header values, including values of duplicate
-        headers.
-
-        Returns:
-            A list of strings
-        """
-        return list(super().values())
-
-    def items(self) -> List[Tuple[str, str]]:  # type: ignore[override]
-        """Get a list of all headers and values.
-
-        Returns:
-            A list of tuples containing header names and values
-        """
-        return list(super().items())
-
-    @deprecated("1.36.0", alternative="Headers.getall")
-    def getlist(self, key: str) -> List[str]:
-        """Get all values of a header.
-
-        Args:
-            key: Name of the header
-
-        Returns:
-            A list of values
-        """
-        return super().getall(key, [])
-
-    def mutablecopy(self) -> "MutableHeaders":
-        """Create a mutable copy.
-
-        Returns:
-            A [MutableHeaders][starlite.datastructures.headers.MutableHeaders] instance
-        """
-        return MutableHeaders(self.raw[:])
-
-
-class MutableHeaders(Mapping):
-    """A case-insensitive multidict for HTTP headers."""
-
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList"]] = None) -> None:
-        self._list: "RawHeadersList" = []
-        if headers:
-            if not isinstance(headers, list):
-                self._list = _encode_headers(headers.items())
-            else:
-                self._list = headers
-
-    @classmethod
-    def from_scope(cls, scope: "Scope") -> "MutableHeaders":
-        """Create headers from a `Scope`.
-
-        Args:
-            scope: An ASGI Scope
-
-        Returns:
-            Headers
         """
         return cls(scope["headers"])
 
-    @classmethod
-    def from_message(cls, message: "Message") -> "MutableHeaders":
-        """
-        Create headers from a send-message.
-        Args:
-            message: An message
-
-        Returns:
-            Headers
-
-        Raises:
-            ValueError: If the message does not have a `headers` key
-        """
-        try:
-            return cls(message["headers"])  # type: ignore[typeddict-item]
-        except KeyError as exc:
-            raise ValueError(f"Unsupported message type: {message['type']!r}") from exc
-
-    @property
-    def raw(self) -> "RawHeadersList":
+    def to_header_list(self) -> "RawHeadersList":
         """Raw header value.
 
         Returns:
             A list of tuples contain the header and header-value as bytes
         """
-        return self._list
+        return _encode_headers((key, value) for key in set(self) for value in self.getall(key))
 
-    def keys(self) -> List[str]:  # type: ignore[override]
-        """Get a list of all header names.
 
-        Returns:
-            A list of strings
-        """
-        return [key.decode("latin-1") for key, value in self._list]
-
-    def values(self) -> List[str]:  # type: ignore[override]
-        """Get a list of all header values, including values of duplicate
-        headers.
-
-        Returns:
-            A list of strings
-        """
-        return [value.decode("latin-1") for key, value in self._list]
-
-    def items(self) -> List[Tuple[str, str]]:  # type: ignore[override]
-        """Get a list of all headers and values.
-
-        Returns:
-            A list of tuples containing header names and values
-        """
-        return [(key.decode("latin-1"), value.decode("latin-1")) for key, value in self._list]
-
-    def getall(self, key: str) -> List[str]:
-        """Get all values of a header.
-
-        Args:
-            key: Name of the header
-
-        Returns:
-            A list of values
-        """
-        get_header_key = key.lower().encode("latin-1")
-        return [item_value.decode("latin-1") for item_key, item_value in self._list if item_key == get_header_key]
-
-    @deprecated("1.36.0", alternative="MutableHeaders.getall")
-    def getlist(self, key: str) -> List[str]:
-        """Get all values of a header.
-
-        Args:
-            key: Name of the header
-
-        Returns:
-            A list of values
-        """
-        return self.getall(key)
-
-    def mutablecopy(self) -> "MutableHeaders":
-        """Create a mutable copy.
-
-        Returns:
-            A [MutableHeaders][starlite.datastructures.headers.MutableHeaders] instance
-        """
-        return MutableHeaders(self._list[:])
-
-    def setdefault(self, key: str, value: str) -> str:
-        """If the header `key` does not exist, then set it to `value`.
-
-        Returns the header value.
-        """
-        set_key = key.lower().encode("latin-1")
-        set_value = value.encode("latin-1")
-
-        for item_key, item_value in self._list:
-            if item_key == set_key:
-                return item_value.decode("latin-1")
-        self._list.append((set_key, set_value))
-        return value
-
-    def update(self, other: Mapping) -> None:
-        """Update headers.
-
-        Args:
-            other: A mapping containing header names and values
-
-        Returns:
-            None
-        """
-        for key, val in other.items():
-            self[key] = val
-
-    def append(self, key: str, value: str) -> None:
-        """Append a header, preserving any duplicate entries.
-
-        Args:
-            key: Header name
-            value: Header value
-        """
-        append_key = key.lower().encode("latin-1")
-        append_value = value.encode("latin-1")
-        self._list.append((append_key, append_value))
-
-    def add_vary_header(self, vary: str) -> None:
-        """Add a `vary` header, updating an existing one.
-
-        Args:
-            vary: Header value
-
-        Returns:
-            None
-        """
-        existing = self.get("vary")
-        if existing is not None:
-            vary = ", ".join([existing, vary])
-        self["vary"] = vary
-
-    def __getitem__(self, key: str) -> str:
-        get_header_key = key.lower().encode("latin-1")
-        for header_key, header_value in self._list:
-            if header_key == get_header_key:
-                return header_value.decode("latin-1")
-        raise KeyError(key)
-
-    def __contains__(self, key: Any) -> bool:
-        encoded_header_key = key.lower().encode("latin-1")
-        return any(header_key == encoded_header_key for header_key, _ in self._list)
-
-    def __iter__(self) -> Iterator[Any]:
-        return iter(self.keys())
-
-    def __len__(self) -> int:
-        return len(self._list)
-
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Headers):
-            return False
-        return sorted(self.raw) == sorted(other.raw)
-
-    def __setitem__(self, key: str, value: str) -> None:
-        """Set the header `key` to `value`, removing any duplicate entries.
-
-        Retains insertion order.
-        """
-        set_key = key.lower().encode("latin-1")
-        set_value = value.encode("latin-1")
-
-        found_indexes = []
-        for idx, (item_key, _) in enumerate(self._list):
-            if item_key == set_key:
-                found_indexes.append(idx)
-
-        for idx in reversed(found_indexes[1:]):
-            del self._list[idx]
-
-        if found_indexes:
-            idx = found_indexes[0]
-            self._list[idx] = (set_key, set_value)
+class MutableScopeHeaders:
+    def __init__(self, scope: Optional["Scope"] = None) -> None:
+        if scope is not None:
+            self.headers = scope["headers"]
         else:
-            self._list.append((set_key, set_value))
+            self.headers = []
 
-    def __delitem__(self, key: str) -> None:
-        """Remove the header `key`."""
-        del_key = key.lower().encode("latin-1")
+    def add(self, name: str, value: str) -> None:
+        """Add a header to the scope keeping duplicates"""
+        self.headers.append((name.lower().encode("latin-1"), value.encode("latin-1")))
 
-        pop_indexes = []
-        for idx, (item_key, _) in enumerate(self._list):
-            if item_key == del_key:
-                pop_indexes.append(idx)
+    def get(self, name: str, default: Optional[str] = None) -> Optional[str]:
+        try:
+            return self[name]
+        except KeyError:
+            return default
 
-        for idx in reversed(pop_indexes):
-            del self._list[idx]
+    def getall(self, name: str, default: Optional[Tuple[str, ...]] = None) -> Optional[Tuple[str, ...]]:
+        name = name.lower()
+        values = tuple(
+            header_value.decode("latin-1")
+            for header_name, header_value in self.headers
+            if header_name.decode("latin-1").lower() == name
+        )
+        return values or default
 
-    def __ior__(self, other: Mapping) -> "MutableHeaders":
-        if not isinstance(other, Mapping):
-            raise TypeError(f"Expected a mapping but got {other.__class__.__name__}")
-        self.update(other)
-        return self
+    def setdefault(self, name: str, value: str) -> str:
+        return_value = self.get(name)
+        if return_value is None:
+            return_value = value
+            self[name] = value
+        return return_value
 
-    def __or__(self, other: Mapping) -> "MutableHeaders":
-        if not isinstance(other, Mapping):
-            raise TypeError(f"Expected a mapping but got {other.__class__.__name__}")
-        new = self.mutablecopy()
-        new.update(other)
-        return new
+    def extend_header_value(self, name: str, value: str) -> None:
+        existing = self.get(name)
+        if existing is not None:
+            value = ", ".join([*existing.split(","), value])
+        self[name] = value
+
+    def __getitem__(self, name: str) -> str:
+        name = name.lower()
+        for header in self.headers:
+            if header[0].decode("latin-1").lower() == name:
+                return header[1].decode("latin-1")
+        raise KeyError
+
+    def __setitem__(self, name: str, value: str) -> None:
+        """Set a header in the scope, overwriting duplicates"""
+        name = name.lower()
+        name_encoded = name.encode("latin-1")
+        value_encoded = value.encode("latin-1")
+        indices = [i for i, (name_, _) in enumerate(self.headers) if name_.decode("latin-1").lower() == name]
+        if not indices:
+            self.headers.append((name_encoded, value_encoded))
+        else:
+            for i in indices[1:]:
+                del self.headers[i]
+            self.headers[indices[0]] = (name_encoded, value_encoded)
+
+    def __delitem__(self, name: str) -> None:
+        name = name.lower()
+        for i, header in enumerate(self.headers[::-1]):
+            if header[0].decode("latin-1").lower() == name:
+                del self.headers[i]
+
+    def __contains__(self, name: str) -> bool:
+        name = name.lower()
+        return any(h[0].decode("latin-1").lower() == name for h in self.headers)
 
 
 class Header(BaseModel, ABC):

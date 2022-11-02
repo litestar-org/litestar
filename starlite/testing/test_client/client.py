@@ -18,7 +18,7 @@ from urllib.parse import urljoin
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
-from starlite.datastructures import MutableHeaders
+from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
@@ -58,9 +58,9 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=ASGIApp)
 
 
-def fake_http_send_message(headers: MutableHeaders) -> HTTPResponseStartEvent:
+def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEvent:
     headers.setdefault("content-type", "application/text")
-    return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.raw)
+    return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.headers)
 
 
 def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any]:
@@ -678,7 +678,7 @@ class TestClient(Client, Generic[T]):
 
     async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
         # TODO: Expose this in the async client
-        mutable_headers = MutableHeaders({})
+        mutable_headers = MutableScopeHeaders()
         await self.session_backend.store_in_message(
             scope_session=data,
             message=fake_http_send_message(mutable_headers),
@@ -687,7 +687,7 @@ class TestClient(Client, Generic[T]):
                 cookies=dict(self.cookies),
             ),
         )
-        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.raw)
+        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
 
         cookies = Cookies(CookieJar())
         cookies.extract_cookies(response)
