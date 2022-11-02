@@ -84,7 +84,7 @@ def create_html_response_contet(exc: Exception, request: "Request", frame_limit:
     while cause:
         cause_data = create_exception_html(cause, frame_limit)
         cause_header = '<h4 class="cause-header">The above exception was caused by</h4>'
-        cause_error_description = f"<h3><span>{cause}</span></h3>"
+        cause_error_description = f"<h3><span>{escape(str(cause))}</span></h3>"
         cause_error = f"<h4><span>{escape(cause.__class__.__name__)}</span></h4>"
         exception_data.append(
             f'<div class="cause-wrapper">{cause_header}{cause_error}{cause_error_description}{cause_data}</div>'
@@ -97,8 +97,8 @@ def create_html_response_contet(exc: Exception, request: "Request", frame_limit:
     return body_tpl.format(
         scripts=scripts,
         styles=styles,
-        error=f"<span>{escape(exc.__class__.__name__)}</span> on {request.method} {request.url.path}",
-        error_description=f"{exc}",
+        error=f"<span>{escape(exc.__class__.__name__)}</span> on {request.method} {escape(request.url.path)}",
+        error_description=escape(str(exc)),
         exception_data="".join(exception_data),
     )
 
