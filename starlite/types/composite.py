@@ -1,3 +1,5 @@
+from os import PathLike
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -52,3 +54,4 @@ ParametersMap = Dict[str, FieldInfo]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
+PathType = Union[Path, PathLike, str]

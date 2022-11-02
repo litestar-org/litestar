@@ -1,9 +1,14 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pydantic import BaseModel, DirectoryPath, constr, validator
-from starlette.staticfiles import StaticFiles
+from pydantic import BaseConfig, BaseModel, DirectoryPath, constr, validator
 
 from starlite.handlers import asgi
+from starlite.static_files.base import (
+    LocalFilesBackend,
+    StaticFiles,
+    StaticFilesBackend,
+)
+from starlite.types import ExceptionHandlersMap, Guard
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
@@ -17,6 +22,9 @@ class StaticFilesConfig(BaseModel):
     [Starlite][starlite.app.Starlite] constructor using the
     'static_files_config' key.
     """
+
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
 
     path: constr(min_length=1)  # type: ignore
     """
@@ -34,6 +42,26 @@ class StaticFilesConfig(BaseModel):
     name: Optional[str] = None
     """
         An optional string identifying the static files handler.
+    """
+    backend: StaticFilesBackend = LocalFilesBackend()
+    """
+        The backend to use for serving files.
+
+        Notes:
+            - A backend is a class that implements the
+                [StaticFilesBackend][starlite.static_files.base.StaticFilesBackend] protocol.
+    """
+    opt: Optional[Dict[str, Any]] = None
+    """
+        A string key dictionary of arbitrary values that will be added to the static files handler.
+    """
+    guards: Optional[List[Guard]] = None
+    """
+        A list of [Guard][starlite.types.Guard] callables.
+    """
+    exception_handlers: Optional[ExceptionHandlersMap] = None
+    """
+        A dictionary that maps handler functions to status codes and/or exception types.
     """
 
     @validator("path", always=True)
@@ -56,10 +84,12 @@ class StaticFilesConfig(BaseModel):
                 Returns:
         ^           [StaticFiles][starlette.static_files.StaticFiles]
         """
-        static_files = StaticFiles(
-            html=self.html_mode,
-            check_dir=False,
-            directory=str(self.directories[0]),
-        )
-        static_files.all_directories = self.directories  # type: ignore[assignment]
-        return asgi(path=self.path, name=self.name, is_static=True)(static_files)
+        static_files = StaticFiles(html_mode=self.html_mode, directories=self.directories, backend=self.backend)  # type: ignore
+        return asgi(
+            path=self.path,
+            name=self.name,
+            is_static=True,
+            opt=self.opt,
+            guards=self.guards,
+            exception_handlers=self.exception_handlers,
+        )(static_files)

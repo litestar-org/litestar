@@ -61,6 +61,7 @@ from .composite import (
     ExceptionHandlersMap,
     Middleware,
     ParametersMap,
+    PathType,
     ResponseCookies,
     ResponseHeadersMap,
 )
@@ -77,7 +78,6 @@ from .partial import Partial
 from .protocols import Logger
 
 __all__ = (
-    "AnyIOBackend",
     "ASGIApp",
     "ASGIApp",
     "ASGIVersion",
@@ -85,6 +85,7 @@ __all__ = (
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
     "AnyCallable",
+    "AnyIOBackend",
     "AsyncAnyCallable",
     "BaseScope",
     "BeforeMessageSendHookHandler",
@@ -131,6 +132,7 @@ __all__ = (
     "OnAppInitHandler",
     "ParametersMap",
     "Partial",
+    "PathType",
     "Receive",
     "Receive",
     "ReceiveMessage",

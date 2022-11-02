@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.staticfiles import StaticFiles
 from typing_extensions import TypedDict
 
 from starlite.asgi import ASGIRouter
@@ -554,6 +553,8 @@ class Starlite(Router):
         Returns:
             A url path to the asset.
         """
+        from starlite.static_files.base import StaticFiles
+
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
