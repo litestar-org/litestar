@@ -105,6 +105,7 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            multidict,
             orjson,
             piccolo,
             picologging,
@@ -128,6 +129,7 @@ repos:
           [
             aiomcache,
             httpx,
+            multidict,
             orjson,
             piccolo,
             picologging,
@@ -160,6 +162,7 @@ repos:
             httpx,
             hypothesis,
             mako,
+            multidict,
             orjson,
             jinja2,
             piccolo,

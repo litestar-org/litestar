@@ -2,10 +2,11 @@ import io
 from enum import Enum
 from typing import TYPE_CHECKING, Optional, cast
 
-from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.gzip import GZipResponder
 from typing_extensions import Literal
 
+from starlite.datastructures import MutableScopeHeaders
+from starlite.datastructures.headers import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import MiddlewareProtocol
@@ -75,7 +76,7 @@ class BrotliMiddleware(MiddlewareProtocol):
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
-            headers = Headers(scope=scope)
+            headers = Headers.from_scope(scope)
             if CompressionEncoding.BROTLI in headers.get("Accept-Encoding", ""):
                 await self.brotli_responder(scope, receive, send)
                 return
@@ -171,19 +172,19 @@ class BrotliResponder:
                 elif not more_body:
                     # Standard Brotli response.
                     body = self.br_file.process(body) + self.br_file.finish()
-                    headers = MutableHeaders(raw=initial_message["headers"])
+                    headers = MutableScopeHeaders(initial_message)
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
                     headers["Content-Length"] = str(len(body))
-                    headers.add_vary_header("Accept-Encoding")
+                    headers.extend_header_value("vary", "Accept-Encoding")
                     message["body"] = body
 
                     await send(initial_message)
                     await send(message)
                 else:
                     # Initial body in streaming Brotli response.
-                    headers = MutableHeaders(raw=initial_message["headers"])
+                    headers = MutableScopeHeaders(initial_message)
                     headers["Content-Encoding"] = CompressionEncoding.BROTLI
-                    headers.add_vary_header("Accept-Encoding")
+                    headers.extend_header_value("vary", "Accept-Encoding")
                     del headers["Content-Length"]
                     self.br_buffer.write(self.br_file.process(body) + self.br_file.flush())
                     message["body"] = self.br_buffer.getvalue()

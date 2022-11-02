@@ -1,5 +1,19 @@
 # Headers
 
+::: starlite.datastructures.Headers
+    options:
+        members:
+            - __init__
+            - from_scope
+
+::: starlite.datastructures.MutableScopeHeaders
+    options:
+        members:
+            - __init__
+            - add
+            - getall
+            - extend_header_value
+
 ::: starlite.datastructures.ResponseHeader
     options:
         members:

@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
 from orjson import dumps, loads
 from pydantic import SecretBytes, validator
-from starlette.datastructures import MutableHeaders
 
+from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.types import Empty
@@ -128,14 +128,14 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
 
         scope = connection.scope
-        headers = MutableHeaders(scope=message)
+        headers = MutableScopeHeaders.from_message(message)
         cookie_keys = self.get_cookie_keys(connection)
 
         if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
             cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
             for cookie in self._create_session_cookies(data, cookie_params):
-                headers.append("Set-Cookie", cookie.to_header(header=""))
+                headers.add("Set-Cookie", cookie.to_header(header=""))
             # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
             # cookies, first check how many session cookies will not be overwritten in this upcoming response.
             # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
@@ -146,7 +146,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         for cookie_key in cookies_to_clear:
             cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
-            headers.append(
+            headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
             )

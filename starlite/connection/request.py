@@ -197,6 +197,6 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if "http.response.push" in extensions:
             raw_headers = []
             for name in SERVER_PUSH_HEADERS:
-                for value in self.headers.getlist(name):
+                for value in self.headers.getall(name, []):
                     raw_headers.append((name.encode("latin-1"), value.encode("latin-1")))
             await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})
