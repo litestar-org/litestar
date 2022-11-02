@@ -15,7 +15,7 @@ def warn_deprecation(
     deprecated_name: str,
     kind: DeprecatedKind,
     *,
-    removal_in: str ="next major version",
+    removal_in: Optional[str] = None,
     alternative: Optional[str] = None,
     info: Optional[str] = None,
     pending: bool = False,
