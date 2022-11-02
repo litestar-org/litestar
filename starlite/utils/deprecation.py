@@ -15,7 +15,7 @@ def warn_deprecation(
     deprecated_name: str,
     kind: DeprecatedKind,
     *,
-    removal_in: str ="next major version",
+    removal_in: Optional[str] = None,
     alternative: Optional[str] = None,
     info: Optional[str] = None,
     pending: bool = False,
@@ -33,6 +33,7 @@ def warn_deprecation(
     """
     parts = []
     access_type = "Call to" if kind in {"function", "method"} else "Use of"
+    removal_in = removal_in or "the next major version"
     if pending:
         parts.append(f"{access_type} {kind} awaiting deprecation {deprecated_name!r}")
     else:
