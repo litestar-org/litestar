@@ -56,7 +56,7 @@ from .callable_types import (
     OnAppInitHandler,
     Serializer,
 )
-from .composite import (
+from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
     Middleware,
@@ -66,7 +66,7 @@ from .composite import (
     ResponseHeadersMap,
 )
 from .empty import Empty, EmptyType
-from .helpers import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,

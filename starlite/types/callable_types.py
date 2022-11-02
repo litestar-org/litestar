@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, Union
 
 from .asgi_types import ASGIApp, Message, Scope
-from .helpers import SyncOrAsyncUnion
+from .helper_types import SyncOrAsyncUnion
 from .internal_types import StarliteType
 
 if TYPE_CHECKING:

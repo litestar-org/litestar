@@ -318,6 +318,37 @@ python-versions = ">=3.6"
 python-dateutil = ">=2.7"
 
 [[package]]
+name = "fsspec"
+version = "2022.10.0"
+description = "File-system specification"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+abfs = ["adlfs"]
+adl = ["adlfs"]
+arrow = ["pyarrow (>=1)"]
+dask = ["dask", "distributed"]
+dropbox = ["dropbox", "dropboxdrivefs", "requests"]
+entrypoints = ["importlib-metadata"]
+fuse = ["fusepy"]
+gcs = ["gcsfs"]
+git = ["pygit2"]
+github = ["requests"]
+gs = ["gcsfs"]
+gui = ["panel"]
+hdfs = ["pyarrow (>=1)"]
+http = ["aiohttp (!=4.0.0a0,!=4.0.0a1)", "requests"]
+libarchive = ["libarchive-c"]
+oci = ["ocifs"]
+s3 = ["s3fs"]
+sftp = ["paramiko"]
+smb = ["smbprotocol"]
+ssh = ["paramiko"]
+tqdm = ["tqdm"]
+
+[[package]]
 name = "greenlet"
 version = "2.0.0"
 description = "Lightweight in-process concurrent programming"
@@ -1143,7 +1174,7 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4.0"
-content-hash = "e835c4bd2da968e91397efb8cce21b54bce462ca15aad6d267d1fef5d7fda911"
+content-hash = "2ee18688cc4335fd985a86ce52221213b7e54e5d2e49f0f7375339b7d5bdf915"
 
 [metadata.files]
 aiomcache = [
@@ -1461,6 +1492,10 @@ filelock = [
 freezegun = [
     {file = "freezegun-1.2.2-py3-none-any.whl", hash = "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"},
     {file = "freezegun-1.2.2.tar.gz", hash = "sha256:cd22d1ba06941384410cd967d8a99d5ae2442f57dfafeff2fda5de8dc5c05446"},
+]
+fsspec = [
+    {file = "fsspec-2022.10.0-py3-none-any.whl", hash = "sha256:6b7c6ab3b476cdf17efcfeccde7fca28ef5a48f73a71010aaceec5fc15bf9ebf"},
+    {file = "fsspec-2022.10.0.tar.gz", hash = "sha256:cb6092474e90487a51de768170f3afa50ca8982c26150a59072b16433879ff1d"},
 ]
 greenlet = [
     {file = "greenlet-2.0.0-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:4be4dedbd2fa9b7c35627f322d6d3139cb125bc18d5ef2f40237990850ea446f"},

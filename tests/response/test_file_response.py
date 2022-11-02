@@ -11,6 +11,7 @@ import anyio
 import pytest
 
 from starlite import BackgroundTask, ImproperlyConfiguredException
+from starlite.connection import empty_send
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
@@ -59,15 +60,15 @@ def test_file_response(tmpdir: Path) -> None:
     assert filled_by_bg_task == "6, 7, 8, 9"
 
 
-def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:
+async def test_file_response_with_directory_raises_error(tmpdir: Path) -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        FileResponse(path=tmpdir, filename="example.png")
+        await FileResponse(path=tmpdir, filename="example.png").start_response(empty_send)
 
 
-def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
+async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> None:
     path = tmpdir / "404.txt"
     with pytest.raises(ImproperlyConfiguredException):
-        FileResponse(path=path, filename="404.txt")
+        await FileResponse(path=path, filename="404.txt").start_response(empty_send)
 
 
 def test_file_response_with_chinese_filename(tmpdir: Path) -> None:

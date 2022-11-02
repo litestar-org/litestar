@@ -1,14 +1,12 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from fsspec.implementations.local import LocalFileSystem
 from pydantic import BaseConfig, BaseModel, DirectoryPath, constr, validator
 
 from starlite.handlers import asgi
-from starlite.static_files.base import (
-    LocalFilesBackend,
-    StaticFiles,
-    StaticFilesBackend,
-)
+from starlite.static_files.base import StaticFiles
 from starlite.types import ExceptionHandlersMap, Guard
+from starlite.types.file_types import FileSystemType
 from starlite.utils import normalize_path
 
 if TYPE_CHECKING:
@@ -43,7 +41,7 @@ class StaticFilesConfig(BaseModel):
     """
         An optional string identifying the static files handler.
     """
-    backend: StaticFilesBackend = LocalFilesBackend()
+    file_system: FileSystemType = LocalFileSystem()
     """
         The backend to use for serving files.
 
@@ -84,7 +82,7 @@ class StaticFilesConfig(BaseModel):
                 Returns:
         ^           [StaticFiles][starlette.static_files.StaticFiles]
         """
-        static_files = StaticFiles(html_mode=self.html_mode, directories=self.directories, backend=self.backend)  # type: ignore
+        static_files = StaticFiles(html_mode=self.html_mode, directories=self.directories, file_system=self.file_system)  # type: ignore
         return asgi(
             path=self.path,
             name=self.name,

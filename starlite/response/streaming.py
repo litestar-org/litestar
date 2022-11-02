@@ -15,7 +15,7 @@ from anyio import CancelScope, create_task_group
 from starlite.enums import MediaType
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
-from starlite.types.composite import StreamType
+from starlite.types.composite_types import StreamType
 from starlite.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:

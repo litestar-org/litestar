@@ -18,4 +18,4 @@ def test_file_sets_etag_correctly(tmpdir: Path) -> None:
     response = file_container.to_response(
         status_code=HTTP_200_OK, media_type=None, headers={}, app=request.app, request=request
     )
-    assert response.headers["etag"] == '"special"'
+    assert response.etag == etag

@@ -35,7 +35,7 @@ from starlite.response import (
     TemplateResponse,
 )
 from starlite.response.file import ONE_MEGA_BYTE
-from starlite.types.composite import StreamType
+from starlite.types.composite_types import StreamType
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
