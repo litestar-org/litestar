@@ -404,6 +404,18 @@ class KwargsModel:
             raise ValidationException(f"Missing required parameter(s) {', '.join(missing_params)} for url {url}")
         return {p.field_name: params.get(p.field_alias, p.default_value) for p in expected}
 
+    async def _resolve_dependency(
+        self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any
+    ) -> Any:
+        """Recursively resolve the dependency graph."""
+        signature_model = get_signature_model(dependency.provide)
+        for sub_dependency in dependency.dependencies:
+            kwargs[sub_dependency.key] = await self.resolve_dependency(
+                dependency=sub_dependency, connection=connection, **kwargs
+            )
+        dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+        return await dependency.provide(**dependency_kwargs)
+
     async def resolve_dependency(
         self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any
     ) -> Any:
@@ -417,13 +429,17 @@ class KwargsModel:
 
         Returns:
         """
-        signature_model = get_signature_model(dependency.provide)
-        for sub_dependency in dependency.dependencies:
-            kwargs[sub_dependency.key] = await self.resolve_dependency(
-                dependency=sub_dependency, connection=connection, **kwargs
-            )
-        dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        return await dependency.provide(**dependency_kwargs)
+        if dependency.provide.cache_per_request:
+            async with dependency.provide.lock:
+                cache = connection.state.setdefault("_dependency_cache", {})
+                if dependency.provide.cache_key in cache:
+                    return cache[dependency.provide.cache_key]
+
+                value = await self._resolve_dependency(dependency, connection, **kwargs)
+                cache[dependency.provide.cache_key] = value
+                return value
+        else:
+            return await self._resolve_dependency(dependency, connection, **kwargs)
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
