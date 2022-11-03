@@ -6,6 +6,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
 from starlite.utils import get_name
+from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket
@@ -84,8 +85,10 @@ class WebSocketRoute(BaseRoute):
 
         signature_model = get_signature_model(self.route_handler)
         kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
-        for dependency in self.handler_parameter_model.expected_dependencies:
-            kwargs[dependency.key] = await self.handler_parameter_model.resolve_dependency(
-                dependency=dependency, connection=websocket, **kwargs
-            )
+        await resolve_dependencies_concurrently(
+            self.handler_parameter_model,
+            self.handler_parameter_model.expected_dependencies,
+            websocket,
+            kwargs,
+        )
         return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs)

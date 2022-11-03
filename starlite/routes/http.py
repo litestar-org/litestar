@@ -13,6 +13,7 @@ from starlite.response import RedirectResponse
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
 from starlite.utils import get_name, is_async_callable
+from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
     from starlite.handlers.http import HTTPRouteHandler
@@ -172,10 +173,12 @@ class HTTPRoute(BaseRoute):
             request_data = kwargs.get("data")
             if request_data:
                 kwargs["data"] = await request_data
-            for dependency in parameter_model.expected_dependencies:
-                kwargs[dependency.key] = await parameter_model.resolve_dependency(
-                    dependency=dependency, connection=request, **kwargs
-                )
+            await resolve_dependencies_concurrently(
+                parameter_model,
+                parameter_model.expected_dependencies,
+                request,
+                kwargs,
+            )
             parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
         else:
             parsed_kwargs = {}
