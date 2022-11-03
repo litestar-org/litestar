@@ -46,8 +46,9 @@ class StaticFilesConfig(BaseModel):
         The file_system spec to use for serving files.
 
         Notes:
-            - A file_system spec is a class that implements the either the "AbstractFileSystem" or "AsyncFileSystem"
-                from the fsspec library.
+            - A file_system is a class that adheres to the
+                [FileSystemProtocol][starlite.types.file_types.FileSystemProtocol].
+            - You can use any of the file systems exported from the `fsspec` library for this purpose.
     """
     opt: Optional[Dict[str, Any]] = None
     """
