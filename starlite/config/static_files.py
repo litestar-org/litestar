@@ -43,11 +43,11 @@ class StaticFilesConfig(BaseModel):
     """
     file_system: FileSystemType = LocalFileSystem()
     """
-        The backend to use for serving files.
+        The file_system spec to use for serving files.
 
         Notes:
-            - A backend is a class that implements the
-                [StaticFilesBackend][starlite.static_files.base.StaticFilesBackend] protocol.
+            - A file_system spec is a class that implements the either the "AbstractFileSystem" or "AsyncFileSystem"
+                from the fsspec library.
     """
     opt: Optional[Dict[str, Any]] = None
     """

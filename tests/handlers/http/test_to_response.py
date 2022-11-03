@@ -238,7 +238,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
             data=route_handler.fn(), plugins=[], app=client.app, request=RequestFactory().get("/")  # type: ignore
         )
         assert isinstance(response, FileResponse)
-        assert response.stat_result
+        assert response.fs_info
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
         cookies = response.cookies

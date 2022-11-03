@@ -1,5 +1,5 @@
 from os.path import commonpath, join
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, List, Tuple, Union
 
 from starlite.enums import ScopeType
 from starlite.exceptions import (
@@ -10,10 +10,9 @@ from starlite.exceptions import (
 )
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
-from starlite.utils import AsyncCallable
+from starlite.utils.fs import FileSystemAdapter
 
 if TYPE_CHECKING:
-    from typing import Awaitable, Callable
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
@@ -21,13 +20,12 @@ if TYPE_CHECKING:
 
 
 class StaticFiles:
-    __slots__ = ("html_mode", "directories", "file_info", "file_system")
+    __slots__ = ("html_mode", "directories", "fs_adapter")
 
     def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemType"):
         self.html_mode = html_mode
         self.directories = directories
-        self.file_system = file_system
-        self.file_info = cast("Callable[[str], Awaitable[Optional[FSInfo]]]", AsyncCallable(file_system.info))
+        self.fs_adapter = FileSystemAdapter(file_system)
 
     async def get_fs_info(
         self, directories: List["PathType"], file_path: str
@@ -46,7 +44,7 @@ class StaticFiles:
         for directory in directories:
             try:
                 joined_path = join(directory, file_path)  # noqa: PL118
-                file_info = await self.file_info(joined_path)
+                file_info = await self.fs_adapter.info(joined_path)
                 if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
                     return joined_path, file_info
             except FileNotFoundError:
@@ -74,7 +72,7 @@ class StaticFiles:
             await FileResponse(
                 path=resolved_path or joined_path,
                 fs_info=fs_info,
-                file_system=self.file_system,
+                file_system=self.fs_adapter.fs,
                 is_head_response=scope["method"] == "HEAD",
                 status_code=HTTP_200_OK,
             )(scope, receive, send)
@@ -86,7 +84,7 @@ class StaticFiles:
                 await FileResponse(
                     path=resolved_path or joined_path,
                     fs_info=fs_info,
-                    file_system=self.file_system,
+                    file_system=self.fs_adapter.fs,
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
                 )(scope, receive, send)
