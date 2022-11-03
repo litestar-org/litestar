@@ -45,7 +45,7 @@ RequestExtractorField = Literal[
     "path", "method", "content_type", "headers", "cookies", "query", "path_params", "body", "scheme", "client"
 ]
 
-ResponseExtractorField = Literal["status_code", "method", "headers", "body", "cookies"]
+ResponseExtractorField = Literal["status_code", "headers", "body", "cookies"]
 
 
 class ExtractedRequestData(TypedDict, total=False):
