@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope
 
 
-QueryParamValue = Union[str, bool, int]
+QueryParamValue = Union[str, bool]
 QueryParams = MultiDict[QueryParamValue]
 
 
@@ -40,12 +40,6 @@ def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
 _boolean_values = {"true": True, "1": True, "false": False, "0": False}
 
 
-def _parse_param_value(value: str) -> QueryParamValue:
-    if value.isdigit():
-        return int(value)
-    return _boolean_values.get(value.lower(), value)
-
-
 def parse_query_params(query: str) -> QueryParams:
     """Parse query params from a string into a.
 
@@ -59,7 +53,9 @@ def parse_query_params(query: str) -> QueryParams:
         A mutable [MultiDict][multidict.MultiDict]
     """
     params = parse_qs(query, keep_blank_values=True)
-    unwrapped_params = [(param, _parse_param_value(value)) for param, values in params.items() for value in values]
+    unwrapped_params = [
+        (param, _boolean_values.get(value.lower(), value)) for param, values in params.items() for value in values
+    ]
     return MultiDict(unwrapped_params)
 
 
@@ -204,11 +200,11 @@ class URL:
         if isinstance(query, MultiDict):
             query = urlencode(query=query)
         return URL.from_components(
-            scheme=self.scheme or scheme,
-            netloc=self.netloc or netloc,
-            path=self.path or path,
-            query=self.query or query,
-            fragment=self.fragment or fragment,
+            scheme=scheme or self.scheme,
+            netloc=netloc or self.netloc,
+            path=path or self.path,
+            query=query or self.query,
+            fragment=fragment or self.fragment,
         )
 
     @property
@@ -236,3 +232,6 @@ class URL:
         if isinstance(other, (str, URL)):
             return str(self) == str(other)
         return NotImplemented
+
+    def __repr__(self) -> str:
+        return f"{type(self)}({self._url!r})"
