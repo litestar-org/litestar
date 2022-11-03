@@ -176,6 +176,7 @@ class LoggingMiddleware(MiddlewareProtocol):
             )
         )
         for key in self.config.response_log_fields:
+            value: Any
             value = extracted_data.get(key)
             if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
                 value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
