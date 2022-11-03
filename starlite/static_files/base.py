@@ -16,13 +16,13 @@ if TYPE_CHECKING:
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
-    from starlite.types.file_types import FileSystemType, FSInfo
+    from starlite.types.file_types import FileSystemProtocol, FSInfo
 
 
 class StaticFiles:
     __slots__ = ("html_mode", "directories", "fs_adapter")
 
-    def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemType"):
+    def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol"):
         self.html_mode = html_mode
         self.directories = directories
         self.fs_adapter = FileSystemAdapter(file_system)

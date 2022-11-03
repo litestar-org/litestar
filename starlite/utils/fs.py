@@ -1,20 +1,36 @@
 from stat import S_ISDIR, S_ISLNK
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from starlite.types import PathType
+from starlite.types.file_types import FileSystemProtocol
 from starlite.utils.sync import is_async_callable
 
 if TYPE_CHECKING:
     from os import stat_result
 
-    from starlite.types.file_types import FileSystemType, FSInfo
+    from starlite.types import PathType
+    from starlite.types.file_types import FSInfo
+
+
+class BaseLocalFileSystem(FileSystemProtocol):
+    async def info(self, path: str, **kwargs: Any) -> Dict[str, Any]:  # pylint: disable=W0236
+        """Retrieves information about a given file path.
+
+        Args:
+            path: A file path.
+            **kwargs: Any additional kwargs.
+
+        Returns:
+            A dictionary of file info.
+        """
+        result = await Path(path).stat()
+        return await FileSystemAdapter.parse_stat_result(path=path, result=result)  # type: ignore
 
 
 class FileSystemAdapter:
-    def __init__(self, fs: "FileSystemType"):
+    def __init__(self, fs: "FileSystemProtocol"):
         self.fs = fs
 
     async def info(self, path: "PathType") -> "FSInfo":
@@ -27,7 +43,7 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        awaitable = self.fs.info(path) if is_async_callable(self.fs.info) else run_sync(self.fs.info, path)
+        awaitable = self.fs.info(str(path)) if is_async_callable(self.fs.info) else run_sync(self.fs.info, str(path))
         return cast("FSInfo", await awaitable)
 
     @staticmethod
@@ -63,7 +79,7 @@ class FileSystemAdapter:
             "islink": is_sym_link,
             "mode": result.st_mode,
             "mtime": result.st_mtime,
-            "name": str(PathType),
+            "name": str(path),
             "nlink": result.st_nlink,
             "size": file_size,
             "type": value_type,  # type: ignore[typeddict-item]

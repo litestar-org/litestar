@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from fsspec.implementations.local import LocalFileSystem
 from pydantic import BaseConfig, BaseModel, DirectoryPath, constr, validator
 
 from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
 from starlite.types import ExceptionHandlersMap, Guard
-from starlite.types.file_types import FileSystemType
+from starlite.types.file_types import FileSystemProtocol
 from starlite.utils import normalize_path
+from starlite.utils.fs import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.handlers import ASGIRouteHandler
@@ -41,7 +41,7 @@ class StaticFilesConfig(BaseModel):
     """
         An optional string identifying the static files handler.
     """
-    file_system: FileSystemType = LocalFileSystem()
+    file_system: Any = BaseLocalFileSystem()
     """
         The file_system spec to use for serving files.
 
@@ -75,6 +75,20 @@ class StaticFilesConfig(BaseModel):
         if "{" in value:
             raise ValueError("path parameters are not supported for static files")
         return normalize_path(value)
+
+    @validator("file_system", always=True)
+    def validate_file_system(cls, value: FileSystemProtocol) -> FileSystemProtocol:  # pylint: disable=no-self-argument
+        """Ensures the value is a file system spec.
+
+        Args:
+            value: A file system spec.
+
+        Returns:
+            A file system spec.
+        """
+        if not callable(getattr(value, "info", None)):
+            raise ValueError("file_system must adhere to the FileSystemProtocol type")
+        return value
 
     def to_static_files_app(self) -> "ASGIRouteHandler":
         """Returns an ASGI app serving static files based on the config.

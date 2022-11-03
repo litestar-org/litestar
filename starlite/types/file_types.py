@@ -1,8 +1,6 @@
-from typing import Optional, Union
+from typing import Any, Awaitable, Dict, Optional, Union
 
-from fsspec import AbstractFileSystem
-from fsspec.asyn import AsyncFileSystem
-from typing_extensions import Literal, TypedDict
+from typing_extensions import Literal, Protocol, TypedDict
 
 
 class FSInfo(TypedDict):
@@ -20,4 +18,15 @@ class FSInfo(TypedDict):
     destination: Optional[bytes]
 
 
-FileSystemType = Union["AbstractFileSystem", "AsyncFileSystem"]
+class FileSystemProtocol(Protocol):
+    def info(self, path: str, **kwargs: Any) -> Union[Dict[str, Any], Awaitable[Dict[str, Any]]]:
+        """Retrieves information about a given file path.
+
+        Args:
+            path: A file path.
+            **kwargs: Any additional kwargs.
+
+        Returns:
+            A dictionary of file info.
+        """
+        ...

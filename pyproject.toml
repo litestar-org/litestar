@@ -57,7 +57,6 @@ starlette = ">=0.21"
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-fsspec = ">=2022.10.0"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
@@ -67,6 +66,7 @@ brotli = "*"
 cryptography = "*"
 fakeredis = "*"
 freezegun = "*"
+fsspec = "*"
 greenlet = "*"
 hypothesis = "*"
 jinja2 = "*"
@@ -83,6 +83,7 @@ structlog = "*"
 tortoise-orm = "*"
 tox = "*"
 trio = "*"
+
 
 [tool.poetry.extras]
 brotli = ["brotli"]

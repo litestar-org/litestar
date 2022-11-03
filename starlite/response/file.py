@@ -15,13 +15,12 @@ from urllib.parse import quote
 from zlib import adler32
 
 from anyio import Path, open_file
-from fsspec.implementations.local import LocalFileSystem
 
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils.fs import FileSystemAdapter
+from starlite.utils.fs import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -31,7 +30,7 @@ if TYPE_CHECKING:
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import PathType, ResponseCookies, Send
-    from starlite.types.file_types import FileSystemType, FSInfo
+    from starlite.types.file_types import FileSystemProtocol, FSInfo
 
 ONE_MEGA_BYTE: int = 1024 * 1024
 
@@ -84,7 +83,7 @@ class FileResponse(StreamingResponse):
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
         etag: Optional["ETag"] = None,
-        file_system: Optional["FileSystemType"] = None,
+        file_system: Optional["FileSystemProtocol"] = None,
         filename: Optional[str] = None,
         fs_info: Optional["FSInfo"] = None,
         headers: Optional[Dict[str, Any]] = None,
@@ -140,7 +139,7 @@ class FileResponse(StreamingResponse):
         self.etag = etag
         self.file_path = path
         self.filename = filename or ""
-        self.fs_adapter = FileSystemAdapter(file_system or LocalFileSystem())
+        self.fs_adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
 
         if fs_info:
             self.fs_info: Union["FSInfo", "Coroutine[Any, Any, 'FSInfo']"] = fs_info
@@ -175,7 +174,7 @@ class FileResponse(StreamingResponse):
 
     async def start_response(self, send: "Send") -> None:
         try:
-            self.fs_info = fs_info = cast("FSInfo", (await self.fs_info if iscoroutine(self.fs_info) else self.fs_info))
+            fs_info = self.fs_info = cast("FSInfo", (await self.fs_info if iscoroutine(self.fs_info) else self.fs_info))
         except FileNotFoundError as e:
             raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
 
