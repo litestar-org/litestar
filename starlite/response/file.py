@@ -95,7 +95,7 @@ class FileResponse(StreamingResponse):
         """This class allows streaming a file as response body.
 
         Notes:
-            - This class extends the [StreamingReesponse][starlite.response.StreamingResponse] class.
+            - This class extends the [StreamingResponse][starlite.response.StreamingResponse] class.
 
         Args:
             path: A file path in one of the supported formats.
