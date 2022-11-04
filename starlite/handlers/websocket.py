@@ -64,7 +64,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         fn = cast("AnyCallable", self.fn)
         signature = Signature.from_callable(fn)
 
-        if signature.return_annotation is not None:
+        if signature.return_annotation not in {None, "None"}:
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
         if "socket" not in signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
