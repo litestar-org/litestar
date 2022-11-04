@@ -117,7 +117,8 @@ class FileResponse(StreamingResponse):
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
             etag: An optional [ETag][starlite.datastructures.ETag] instance.
                 If not provided, an etag will be automatically generated.
-            file_system: An fsspec filesystem implementation. If provided it will be used to load the file.
+            file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided 
+                it will be used to load the file.
             fs_info: The output of calling fsspec file_system.info(..), equivalent to providing a stat_result.
         """
         if not media_type:
