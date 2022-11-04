@@ -1,7 +1,7 @@
 from stat import S_ISDIR, S_ISLNK
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, AnyStr, Optional, cast
 
-from anyio import Path
+from anyio import AsyncFile, Path, open_file
 from anyio.to_thread import run_sync
 
 from starlite.types.file_types import FileSystemProtocol
@@ -9,6 +9,8 @@ from starlite.utils.sync import is_async_callable
 
 if TYPE_CHECKING:
     from os import stat_result
+
+    from _typeshed import OpenBinaryMode
 
     from starlite.types import PathType
     from starlite.types.file_types import FileInfo
@@ -27,6 +29,24 @@ class BaseLocalFileSystem(FileSystemProtocol):
         """
         result = await Path(path).stat()
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
+
+    async def open(  # pylint: disable=invalid-overridden-method
+        self,
+        file: "PathType",
+        mode: str,
+        buffering: int = -1,
+    ) -> AsyncFile[AnyStr]:
+        """Returns a file-like object from the filesystem.
+
+        Notes:
+            - The return value must function correctly in a context `with` block.
+
+        Args:
+            file: Path to the target file.
+            mode: Mode, similar to the built `open`.
+            buffering: Buffer size.
+        """
+        return await open_file(file=file, mode=mode, buffering=buffering)  # type: ignore
 
 
 class FileSystemAdapter:
@@ -55,6 +75,33 @@ class FileSystemAdapter:
             else run_sync(self.file_system.info, str(path))
         )
         return cast("FileInfo", await awaitable)
+
+    async def open(
+        self,
+        file: "PathType",
+        mode: "OpenBinaryMode" = "rb",
+        buffering: int = -1,
+    ) -> AsyncFile[bytes]:
+        """Returns a file-like object from the filesystem.
+
+        Notes:
+            - The return value must function correctly in a context `with` block.
+
+        Args:
+            file: Path to the target file.
+            mode: Mode, similar to the built `open`.
+            buffering: Buffer size.
+        """
+        if is_async_callable(self.file_system.open):  # pyright: ignore
+            return cast(
+                "AsyncFile[bytes]",
+                await self.file_system.open(
+                    file=file,
+                    mode=mode,
+                    buffering=buffering,
+                ),
+            )
+        return AsyncFile(await run_sync(self.file_system.open, file, mode, buffering))  # type: ignore
 
     @staticmethod
     async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":

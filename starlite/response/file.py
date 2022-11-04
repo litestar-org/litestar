@@ -14,8 +14,6 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
-from anyio import Path, open_file
-
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
@@ -26,6 +24,7 @@ if TYPE_CHECKING:
     from os import PathLike
     from os import stat_result as stat_result_type
 
+    from anyio import Path
     from typing_extensions import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
@@ -35,17 +34,21 @@ if TYPE_CHECKING:
 ONE_MEGA_BYTE: int = 1024 * 1024
 
 
-async def async_file_iterator(file_path: "PathType", chunk_size: int) -> AsyncGenerator[bytes, None]:
+async def async_file_iterator(
+    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
+) -> AsyncGenerator[bytes, None]:
     """
     A generator function that asynchronously reads a file and yields its chunks.
     Args:
         file_path: A path to a file.
         chunk_size: The chunk file to use.
+        adapter: File system adapter class.
+        adapter: File system adapter class.
 
     Returns:
         An async generator.
     """
-    async with await open_file(file_path, mode="rb") as file:
+    async with await adapter.open(file_path, mode="rb") as file:
         yield await file.read(chunk_size)
 
 
@@ -69,7 +72,7 @@ class FileResponse(StreamingResponse):
         "etag",
         "file_path",
         "filename",
-        "fs_adapter",
+        "adapter",
         "fs_info",
     )
 
@@ -125,8 +128,14 @@ class FileResponse(StreamingResponse):
             mimetype, _ = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
 
+        self.content_disposition_type = content_disposition_type
+        self.etag = etag
+        self.file_path = path
+        self.filename = filename or ""
+        self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
+
         super().__init__(
-            content=async_file_iterator(file_path=path, chunk_size=chunk_size),
+            content=async_file_iterator(file_path=path, chunk_size=chunk_size, adapter=self.adapter),
             status_code=status_code,
             media_type=media_type,
             background=background,
@@ -136,18 +145,12 @@ class FileResponse(StreamingResponse):
             is_head_response=is_head_response,
         )
 
-        self.content_disposition_type = content_disposition_type
-        self.etag = etag
-        self.file_path = path
-        self.filename = filename or ""
-        self.fs_adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
-
         if fs_info:
             self.fs_info: Union["FileInfo", "Coroutine[Any, Any, 'FileInfo']"] = fs_info
         elif stat_result:
-            self.fs_info = self.fs_adapter.parse_stat_result(result=stat_result, path=path)
+            self.fs_info = self.adapter.parse_stat_result(result=stat_result, path=path)
         else:
-            self.fs_info = self.fs_adapter.info(self.file_path)
+            self.fs_info = self.adapter.info(self.file_path)
 
     @property
     def content_disposition(self) -> str:

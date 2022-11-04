@@ -1,6 +1,12 @@
-from typing import Any, Awaitable, Optional, Union
+from typing import IO, TYPE_CHECKING, Any, AnyStr, Awaitable, Optional, Union, overload
 
 from typing_extensions import Literal, Protocol, TypedDict
+
+if TYPE_CHECKING:
+    from _typeshed import OpenBinaryMode, OpenTextMode  # pylint: disable=import-error
+    from anyio import AsyncFile
+
+    from starlite.types.composite_types import PathType
 
 
 class FileInfo(TypedDict):
@@ -46,5 +52,61 @@ class FileSystemProtocol(Protocol):
 
         Returns:
             A dictionary of file info.
+        """
+        ...
+
+    @overload
+    def open(
+        self,
+        file: "PathType",
+        mode: "OpenBinaryMode",
+        buffering: int = -1,
+    ) -> Union[IO[bytes], Awaitable["AsyncFile[bytes]"]]:
+        """Returns a file-like object from the filesystem.
+
+        Notes:
+            - The return value must function correctly in a context `with` block.
+
+        Args:
+            file: Path to the target file.
+            mode: Mode, similar to the built `open`.
+            buffering: Buffer size.
+        """
+        ...
+
+    @overload
+    def open(
+        self,
+        file: "PathType",
+        mode: "OpenTextMode",
+        buffering: int = -1,
+    ) -> Union[IO[str], Awaitable["AsyncFile[str]"]]:
+        """Returns a file-like object from the filesystem.
+
+        Notes:
+            - The return value must function correctly in a context `with` block.
+
+        Args:
+            file: Path to the target file.
+            mode: Mode, similar to the built `open`.
+            buffering: Buffer size.
+        """
+        ...
+
+    def open(  # pyright: ignore
+        self,
+        file: "PathType",
+        mode: str,
+        buffering: int = -1,
+    ) -> Union[IO[AnyStr], Awaitable["AsyncFile[AnyStr]"]]:
+        """Returns a file-like object from the filesystem.
+
+        Notes:
+            - The return value must function correctly in a context `with` block.
+
+        Args:
+            file: Path to the target file.
+            mode: Mode, similar to the built `open`.
+            buffering: Buffer size.
         """
         ...
