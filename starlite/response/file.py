@@ -119,7 +119,7 @@ class FileResponse(StreamingResponse):
                 If not provided, an etag will be automatically generated.
             file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided 
                 it will be used to load the file.
-            fs_info: The output of calling fsspec file_system.info(..), equivalent to providing a stat_result.
+            fs_info: The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
