@@ -62,7 +62,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         fn = cast("AnyCallable", self.fn)
         signature = Signature.from_callable(fn)
 
-        if signature.return_annotation is not None:
+        if signature.return_annotation not in {None, "None"}:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
 
         if any(key not in signature.parameters for key in ("scope", "send", "receive")):
