@@ -15,9 +15,9 @@ To contribute code changes or update the documentation, please follow these step
 
 1. If you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
    is mandatory and tests should be well written.
-2. All public functions and methods should be documented with a doc string. The project uses
-   the [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
-   Private methods should have a doc string explaining what they do, but do not require an elaborate doc string.
+2. All functions and methods should be documented with a doc string. The project uses the
+   [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html). If you come
+   across a function or method that doesn't conform to this standard, please update it as you go.
 3. If adding a new public interface to the library API ensure interface is included in the reference documentation and
    public members are listed, e.g.:
 
