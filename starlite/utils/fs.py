@@ -48,8 +48,7 @@ class FileSystemAdapter:
 
     @staticmethod
     async def parse_stat_result(path: "PathType", result: "stat_result") -> "FSInfo":
-        """Converts a [stat_result][os.stat_result] instance into an.
-
+        """Converts a [stat_result][os.stat_result] instance into an
         [FSInfo][starlite.types.file_types.FSInfo]
 
         Args:
