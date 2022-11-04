@@ -7,7 +7,7 @@ from starlite.static_files.base import StaticFiles
 from starlite.types import ExceptionHandlersMap, Guard
 from starlite.types.file_types import FileSystemProtocol
 from starlite.utils import normalize_path
-from starlite.utils.fs import BaseLocalFileSystem
+from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.handlers import ASGIRouteHandler
@@ -35,7 +35,7 @@ class StaticFilesConfig(BaseModel):
     """
     html_mode: bool = False
     """
-        Flag dictating whether or not serving html. If true, the default file will be 'index.html'.
+        Flag dictating whether serving html. If true, the default file will be 'index.html'.
     """
     name: Optional[str] = None
     """
@@ -47,8 +47,9 @@ class StaticFilesConfig(BaseModel):
 
         Notes:
             - A file_system is a class that adheres to the
-                [FileSystemProtocol][starlite.types.file_types.FileSystemProtocol].
-            - You can use any of the file systems exported from the `fsspec` library for this purpose.
+                [FileSystemProtocol][starlite.types.FileSystemProtocol].
+            - You can use any of the file systems exported from the
+                [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
     opt: Optional[Dict[str, Any]] = None
     """
@@ -94,10 +95,10 @@ class StaticFilesConfig(BaseModel):
     def to_static_files_app(self) -> "ASGIRouteHandler":
         """Returns an ASGI app serving static files based on the config.
 
-                Returns:
-                    [StaticFiles][starlette.static_files.StaticFiles]
+        Returns:
+            [StaticFiles][starlette.static_files.StaticFiles]
         """
-        static_files = StaticFiles(html_mode=self.html_mode, directories=self.directories, file_system=self.file_system)  # type: ignore
+        static_files = StaticFiles(is_html_mode=self.html_mode, directories=self.directories, file_system=self.file_system)  # type: ignore
         return asgi(
             path=self.path,
             name=self.name,

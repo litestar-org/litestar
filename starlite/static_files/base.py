@@ -10,27 +10,35 @@ from starlite.exceptions import (
 )
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
-from starlite.utils.fs import FileSystemAdapter
+from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
-    from starlite.types.file_types import FileSystemProtocol, FSInfo
+    from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 
 class StaticFiles:
-    __slots__ = ("html_mode", "directories", "fs_adapter")
+    __slots__ = ("is_html_mode", "directories", "adapter")
 
-    def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol") -> None:
-        self.html_mode = html_mode
+    def __init__(self, is_html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol") -> None:
+        """This class is an ASGI App that handles file sending.
+
+        Args:
+            is_html_mode: Flag dictating whether serving html. If true, the default file will be 'index.html'.
+            directories: A list of directories to serve files from.
+            file_system: The file_system spec to use for serving files.
+        """
+        self.adapter = FileSystemAdapter(file_system)
         self.directories = directories
-        self.fs_adapter = FileSystemAdapter(file_system)
+        self.is_html_mode = is_html_mode
 
     async def get_fs_info(
         self, directories: List["PathType"], file_path: str
-    ) -> Union[Tuple[str, "FSInfo"], Tuple[None, None]]:
-        """Resolves the file path and returns the resolved path and a
+    ) -> Union[Tuple[str, "FileInfo"], Tuple[None, None]]:
+        """Resolves the file path and returns the resolved path and a.
+
         [stat_result][os.stat_result].
 
         Args:
@@ -43,7 +51,7 @@ class StaticFiles:
         for directory in directories:
             try:
                 joined_path = join(directory, file_path)  # noqa: PL118
-                file_info = await self.fs_adapter.info(joined_path)
+                file_info = await self.adapter.info(joined_path)
                 if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
                     return joined_path, file_info
             except FileNotFoundError:
@@ -62,7 +70,7 @@ class StaticFiles:
         joined_path = join(*scope["path"].split("/"))  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
 
-        if fs_info and fs_info["type"] == "directory" and self.html_mode:
+        if fs_info and fs_info["type"] == "directory" and self.is_html_mode:
             resolved_path, fs_info = await self.get_fs_info(
                 directories=self.directories, file_path=join(resolved_path or joined_path, "index.html")
             )
@@ -71,19 +79,19 @@ class StaticFiles:
             await FileResponse(
                 path=resolved_path or joined_path,
                 fs_info=fs_info,
-                file_system=self.fs_adapter.fs,
+                file_system=self.adapter.file_system,
                 is_head_response=scope["method"] == "HEAD",
                 status_code=HTTP_200_OK,
             )(scope, receive, send)
             return
 
-        if self.html_mode:
+        if self.is_html_mode:
             resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path="404.html")
             if fs_info and fs_info["type"] == "file":
                 await FileResponse(
                     path=resolved_path or joined_path,
                     fs_info=fs_info,
-                    file_system=self.fs_adapter.fs,
+                    file_system=self.adapter.file_system,
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
                 )(scope, receive, send)

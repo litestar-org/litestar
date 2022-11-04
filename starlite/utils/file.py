@@ -1,5 +1,5 @@
 from stat import S_ISDIR, S_ISLNK
-from typing import TYPE_CHECKING, Any, Dict, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from anyio import Path
 from anyio.to_thread import run_sync
@@ -11,11 +11,11 @@ if TYPE_CHECKING:
     from os import stat_result
 
     from starlite.types import PathType
-    from starlite.types.file_types import FSInfo
+    from starlite.types.file_types import FileInfo
 
 
 class BaseLocalFileSystem(FileSystemProtocol):
-    async def info(self, path: str, **kwargs: Any) -> Dict[str, Any]:  # pylint: disable=W0236
+    async def info(self, path: str, **kwargs: Any) -> "FileInfo":  # pylint: disable=W0236
         """Retrieves information about a given file path.
 
         Args:
@@ -26,14 +26,20 @@ class BaseLocalFileSystem(FileSystemProtocol):
             A dictionary of file info.
         """
         result = await Path(path).stat()
-        return await FileSystemAdapter.parse_stat_result(path=path, result=result)  # type: ignore
+        return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
 
 class FileSystemAdapter:
-    def __init__(self, fs: "FileSystemProtocol"):
-        self.fs = fs
+    def __init__(self, file_system: "FileSystemProtocol"):
+        """This class is a wrapper around a file_system, normalizing
+        interaction with it.
 
-    async def info(self, path: "PathType") -> "FSInfo":
+        Args:
+            file_system: A filesystem class adhering to the [FileSystemProtocol][starlite.types.FileSystemProtocol]
+        """
+        self.file_system = file_system
+
+    async def info(self, path: "PathType") -> "FileInfo":
         """Proxies the call to the underlying FS Spec's 'info' method, ensuring
         it's done in an async fashion and with strong typing.
 
@@ -43,13 +49,18 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        awaitable = self.fs.info(str(path)) if is_async_callable(self.fs.info) else run_sync(self.fs.info, str(path))
-        return cast("FSInfo", await awaitable)
+        awaitable = (
+            self.file_system.info(str(path))
+            if is_async_callable(self.file_system.info)
+            else run_sync(self.file_system.info, str(path))
+        )
+        return cast("FileInfo", await awaitable)
 
     @staticmethod
-    async def parse_stat_result(path: "PathType", result: "stat_result") -> "FSInfo":
-        """Converts a [stat_result][os.stat_result] instance into an
-        [FSInfo][starlite.types.file_types.FSInfo]
+    async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":
+        """Converts a [stat_result][os.stat_result] instance into an.
+
+        [FileInfo][starlite.types.file_types.FileInfo]
 
         Args:
             path: The file path for which the [stat_result][os.stat_result] is provided.

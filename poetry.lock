@@ -257,7 +257,7 @@ idna = ">=2.0.0"
 
 [[package]]
 name = "exceptiongroup"
-version = "1.0.0"
+version = "1.0.1"
 description = "Backport of PEP 654 (exception groups)"
 category = "dev"
 optional = false
@@ -268,7 +268,7 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "15.1.3"
+version = "15.2.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -721,7 +721,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "1.13.0"
+version = "1.14.0"
 description = "Mock data generation for pydantic based models and python dataclasses"
 category = "main"
 optional = false
@@ -731,7 +731,6 @@ python-versions = ">=3.7,<4.0"
 faker = "*"
 pydantic = ">=1.10.0"
 typing-extensions = "*"
-xeger = "*"
 
 [[package]]
 name = "pydantic-openapi-schema"
@@ -1143,14 +1142,6 @@ optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 
 [[package]]
-name = "xeger"
-version = "0.3.5"
-description = "A library for generating random strings from a valid regular expression."
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "zipp"
 version = "3.10.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -1474,12 +1465,12 @@ email-validator = [
     {file = "email_validator-1.3.0.tar.gz", hash = "sha256:553a66f8be2ec2dea641ae1d3f29017ab89e9d603d4a25cdaac39eefa283d769"},
 ]
 exceptiongroup = [
-    {file = "exceptiongroup-1.0.0-py3-none-any.whl", hash = "sha256:2ac84b496be68464a2da60da518af3785fff8b7ec0d090a581604bc870bdee41"},
-    {file = "exceptiongroup-1.0.0.tar.gz", hash = "sha256:affbabf13fb6e98988c38d9c5650e701569fe3c1de3233cfb61c5f33774690ad"},
+    {file = "exceptiongroup-1.0.1-py3-none-any.whl", hash = "sha256:4d6c0aa6dd825810941c792f53d7b8d71da26f5e5f84f20f9508e8f2d33b140a"},
+    {file = "exceptiongroup-1.0.1.tar.gz", hash = "sha256:73866f7f842ede6cb1daa42c4af078e2035e5f7607f0e2c762cc51bb31bbe7b2"},
 ]
 faker = [
-    {file = "Faker-15.1.3-py3-none-any.whl", hash = "sha256:bd922a6ad210bb96a5b31987e10918851131c9670429172d5bfb3a5ede238a79"},
-    {file = "Faker-15.1.3.tar.gz", hash = "sha256:1bfb1b447cd45169a74a09f821cee47f51548508b62a29f6dfdab1d001d448a4"},
+    {file = "Faker-15.2.0-py3-none-any.whl", hash = "sha256:8066d5ef0ca116469292d947593ae4cdf1d97dd83f557dd8a749826cf960020a"},
+    {file = "Faker-15.2.0.tar.gz", hash = "sha256:f35b9b47fb84d7334645feba0dd87bbf5aba2b617cd83ec8e1b8c6dcd859a710"},
 ]
 fakeredis = [
     {file = "fakeredis-1.10.0-py3-none-any.whl", hash = "sha256:0be420a79fabda234963a2730c4ce609a6d44a598e8dd253ce97785bef944285"},
@@ -1829,8 +1820,8 @@ pydantic = [
     {file = "pydantic-1.10.2.tar.gz", hash = "sha256:91b8e218852ef6007c2b98cd861601c6a09f1aa32bbbb74fab5b1c33d4a1e410"},
 ]
 pydantic-factories = [
-    {file = "pydantic_factories-1.13.0-py3-none-any.whl", hash = "sha256:bc118ecf7f805f2d1136817a9b5ea5aef6effcb444ce47d64bbd8b5ba74a830c"},
-    {file = "pydantic_factories-1.13.0.tar.gz", hash = "sha256:6ce8332c660fbe569fa3c6165d906e13dc4a3cc6217636621a9da78414da1434"},
+    {file = "pydantic_factories-1.14.0-py3-none-any.whl", hash = "sha256:ca6a054128c8688f0dd27248e35e8665b294a7e589c48f0f0ccf8891266bf322"},
+    {file = "pydantic_factories-1.14.0.tar.gz", hash = "sha256:6fe375055e9774e9be2466a83417b1fb20056f473d337b551a3c2003cb1576f7"},
 ]
 pydantic-openapi-schema = [
     {file = "pydantic-openapi-schema-1.3.0.tar.gz", hash = "sha256:2aed6913080f1dae94234e00d0905504c6aab65ab6afe246ed7aa98da989f69e"},
@@ -2117,9 +2108,6 @@ wrapt = [
     {file = "wrapt-1.14.1-cp39-cp39-win32.whl", hash = "sha256:dee0ce50c6a2dd9056c20db781e9c1cfd33e77d2d569f5d1d9321c641bb903d5"},
     {file = "wrapt-1.14.1-cp39-cp39-win_amd64.whl", hash = "sha256:dee60e1de1898bde3b238f18340eec6148986da0455d8ba7848d50470a7a32fb"},
     {file = "wrapt-1.14.1.tar.gz", hash = "sha256:380a85cf89e0e69b7cfbe2ea9f765f004ff419f34194018a6827ac0e3edfed4d"},
-]
-xeger = [
-    {file = "xeger-0.3.5.tar.gz", hash = "sha256:2a91341fc2c814b27917b8bd24e8d212c8a3b904d98e9a6703d27484c2cb0f82"},
 ]
 zipp = [
     {file = "zipp-3.10.0-py3-none-any.whl", hash = "sha256:4fcb6f278987a6605757302a6e40e896257570d11c51628968ccb2a47e80c6c1"},

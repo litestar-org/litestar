@@ -20,7 +20,7 @@ from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils.fs import BaseLocalFileSystem, FileSystemAdapter
+from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
     from os import PathLike
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import PathType, ResponseCookies, Send
-    from starlite.types.file_types import FileSystemProtocol, FSInfo
+    from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 ONE_MEGA_BYTE: int = 1024 * 1024
 
@@ -85,7 +85,7 @@ class FileResponse(StreamingResponse):
         etag: Optional["ETag"] = None,
         file_system: Optional["FileSystemProtocol"] = None,
         filename: Optional[str] = None,
-        fs_info: Optional["FSInfo"] = None,
+        fs_info: Optional["FileInfo"] = None,
         headers: Optional[Dict[str, Any]] = None,
         is_head_response: bool = False,
         media_type: Optional[Union["Literal[MediaType.TEXT]", str]] = None,
@@ -117,7 +117,7 @@ class FileResponse(StreamingResponse):
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
             etag: An optional [ETag][starlite.datastructures.ETag] instance.
                 If not provided, an etag will be automatically generated.
-            file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided 
+            file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided
                 it will be used to load the file.
             fs_info: The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
         """
@@ -143,7 +143,7 @@ class FileResponse(StreamingResponse):
         self.fs_adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
 
         if fs_info:
-            self.fs_info: Union["FSInfo", "Coroutine[Any, Any, 'FSInfo']"] = fs_info
+            self.fs_info: Union["FileInfo", "Coroutine[Any, Any, 'FileInfo']"] = fs_info
         elif stat_result:
             self.fs_info = self.fs_adapter.parse_stat_result(result=stat_result, path=path)
         else:
@@ -175,7 +175,9 @@ class FileResponse(StreamingResponse):
 
     async def start_response(self, send: "Send") -> None:
         try:
-            fs_info = self.fs_info = cast("FSInfo", (await self.fs_info if iscoroutine(self.fs_info) else self.fs_info))
+            fs_info = self.fs_info = cast(
+                "FileInfo", (await self.fs_info if iscoroutine(self.fs_info) else self.fs_info)
+            )
         except FileNotFoundError as e:
             raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
 

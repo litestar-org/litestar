@@ -33,10 +33,16 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
 
 
 class Headers(CIMultiDictProxy[str]):
-    """An immutable, case-insensitive [multidict](https://multidict.aio-
-    libs.org/en/stable/multidict.html#cimultidictproxy) for HTTP headers."""
-
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
+        """An immutable, case-insensitive for HTTP headers.
+
+        Notes:
+            - This class inherits from [multidict](https://multidict.aio-
+                libs.org/en/stable/multidict.html#cimultidictproxy).
+
+        Args:
+            headers: Initial value.
+        """
         if not isinstance(headers, MultiMapping):
             headers_: Union[Mapping[str, str], List[Tuple[str, str]]] = {}
             if isinstance(headers, list):
@@ -52,7 +58,7 @@ class Headers(CIMultiDictProxy[str]):
         """
         Create headers from a send-message.
         Args:
-            scope: An ASGI Scope
+            scope: The ASGI connection scope.
 
         Returns:
             Headers
@@ -72,10 +78,13 @@ class Headers(CIMultiDictProxy[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to mutate
-    headers within a [Scope][starlite.types.Scope]."""
-
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
+        """A case-insensitive, multidict-like structure that can be used to
+        mutate headers within a [Scope][starlite.types.Scope].
+
+        Args:
+            scope: The ASGI connection scope.
+        """
         self.headers: "RawHeadersList"
         if scope is not None:
             self.headers = scope["headers"]
@@ -84,33 +93,51 @@ class MutableScopeHeaders(MutableMapping):
 
     @classmethod
     def from_message(cls, message: "Message") -> "MutableScopeHeaders":
-        """Construct a header from a [Message][starlite.types.Message].
+        """Constructs a header from a message object.
+
+        Args:
+            message: [Message][starlite.types.Message].
+
+        Returns:
+            MutableScopeHeaders.
 
         Raises:
-            ValueError: If the message does not have a `headers` key
+            ValueError: If the message does not have a `headers` key.
         """
         if "headers" not in message:
             raise ValueError(f"Invalid message type: {message['type']!r}")
+
         return cls(cast("HeaderScope", message))
 
-    def add(self, name: str, value: str) -> None:
-        """Add a header to the scope keeping duplicates."""
-        self.headers.append((name.lower().encode("latin-1"), value.encode("latin-1")))
+    def add(self, key: str, value: str) -> None:
+        """Adds a header to the scope.
 
-    def getall(self, name: str, default: Optional[List[str]] = None) -> List[str]:
+        Notes:
+             - This method keeps duplicates.
+
+        Args:
+            key: Header key.
+            value: Header value.
+
+        Returns:
+            None.
+        """
+        self.headers.append((key.lower().encode("latin-1"), value.encode("latin-1")))
+
+    def getall(self, key: str, default: Optional[List[str]] = None) -> List[str]:
         """Get all values of a header.
 
         Args:
-            name: Header name
-            default: Default value to return if `name` is not found
+            key: Header key.
+            default: Default value to return if `name` is not found.
 
         Returns:
-            A list of strings
+            A list of strings.
 
         Raises:
-            `KeyError` if no header for `name` was found and `default` is not given
+            KeyError: if no header for `name` was found and `default` is not given.
         """
-        name = name.lower()
+        name = key.lower()
         values = [
             header_value.decode("latin-1")
             for header_name, header_value in self.headers
@@ -122,40 +149,42 @@ class MutableScopeHeaders(MutableMapping):
             raise KeyError
         return values
 
-    def extend_header_value(self, name: str, value: str) -> None:
-        """Extend a multivalued header (that is, a header that can take a comma
-        separated list). If the header previously did not exist, it will be
-        added.
+    def extend_header_value(self, key: str, value: str) -> None:
+        """Extends a multivalued header.
+
+        Notes:
+            - A multivalues header is a header that can take a comma separated list.
+            - If the header previously did not exist, it will be added.
 
         Args:
-            name: Header name
-            value: Header value to add
+            key: Header key.
+            value: Header value to add,
 
         Returns:
             None
         """
-        existing = self.get(name)
+        existing = self.get(key)
         if existing is not None:
             value = ", ".join([*existing.split(","), value])
-        self[name] = value
+        self[key] = value
 
-    def __getitem__(self, name: str) -> str:
+    def __getitem__(self, key: str) -> str:
         """Get the first header matching `name`"""
-        name = name.lower()
+        name = key.lower()
         for header in self.headers:
             if header[0].decode("latin-1").lower() == name:
                 return header[1].decode("latin-1")
         raise KeyError
 
-    def _find_indices(self, name: str) -> List[int]:
-        name = name.lower()
+    def _find_indices(self, key: str) -> List[int]:
+        name = key.lower()
         return [i for i, (name_, _) in enumerate(self.headers) if name_.decode("latin-1").lower() == name]
 
-    def __setitem__(self, name: str, value: str) -> None:
+    def __setitem__(self, key: str, value: str) -> None:
         """Set a header in the scope, overwriting duplicates."""
-        name_encoded = name.lower().encode("latin-1")
+        name_encoded = key.lower().encode("latin-1")
         value_encoded = value.encode("latin-1")
-        indices = self._find_indices(name)
+        indices = self._find_indices(key)
         if not indices:
             self.headers.append((name_encoded, value_encoded))
         else:
@@ -163,9 +192,9 @@ class MutableScopeHeaders(MutableMapping):
                 del self.headers[i]
             self.headers[indices[0]] = (name_encoded, value_encoded)
 
-    def __delitem__(self, name: str) -> None:
+    def __delitem__(self, key: str) -> None:
         """Delete all headers matching `name`"""
-        indices = self._find_indices(name)
+        indices = self._find_indices(key)
         for i in indices[::-1]:
             del self.headers[i]
 

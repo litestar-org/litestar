@@ -244,6 +244,7 @@ nav:
           - reference/types/4-protocol-types.md
           - reference/types/5-composite-types.md
           - reference/types/6-partial-types.md
+          - reference/types/7-file-types.md
       - Utils:
           - reference/utils/0-predicate-utils.md
           - reference/utils/1-sync-utils.md
