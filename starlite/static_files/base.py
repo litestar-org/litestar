@@ -38,7 +38,7 @@ class StaticFiles:
             file_path: A file path to resolve
 
         Returns:
-            A tuple with an optional resolved [Path][anyio.Path] instance and an optional [state_result][os.stat_result].
+            A tuple with an optional resolved [Path][anyio.Path] instance and an optional [stat_result][os.stat_result].
         """
         for directory in directories:
             try:
