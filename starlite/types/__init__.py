@@ -66,6 +66,7 @@ from .composite_types import (
     ResponseHeadersMap,
 )
 from .empty import Empty, EmptyType
+from .file_types import FileSystemProtocol, FSInfo
 from .helper_types import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
