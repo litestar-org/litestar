@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, List
 from starlite.enums import MediaType
 from starlite.response import Response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.utils import get_name
 
 if TYPE_CHECKING:
     from inspect import FrameInfo
@@ -18,17 +19,25 @@ tpl_dir = Path(__file__).parent / "templates"
 
 def get_symbol_name(frame: "FrameInfo") -> str:
     """Return full name of the function that is being executed by the given
-    frame."""
-    classname = ""
+    frame.
+
+    Args:
+        frame: An instance of [FrameInfo](https://docs.python.org/3/library/inspect.html#inspect.FrameInfo).
+
+    Notes:
+        - class detection assumes standard names (self and cls) of params.
+        - if current class name can not be determined only function (method) name will be returned.
+        - we can not distinguish static methods from ordinary functions at the moment.
+
+    Returns:
+        A string containing full function name.
+    """
+
     locals_dict = frame.frame.f_locals
-    # probably we are inside of an instance method
     # this piece assumes that the code uses standard names "self" and "cls"
     # in instance and class methods
-    if locals_dict.get("self"):
-        classname = f"{type(locals_dict['self']).__name__}."
-    # inside a class method?
-    elif locals_dict.get("cls"):
-        classname = f"{locals_dict['cls'].__name__}."
+    instance_or_cls = locals_dict.get("self") or locals_dict.get("cls")
+    classname = f"{get_name(instance_or_cls)}." if instance_or_cls else ""
 
     return f"{classname}{frame.function}"
 
@@ -39,20 +48,40 @@ def create_line_html(
     frame_index: int,
     idx: int,
 ) -> str:
-    """Return html representation of a line including real line number in the
-    source code."""
+    """Produce HTML representation of a line including real line number in the
+    source code.
+
+    Args:
+        line: A string representing the current line.
+        line_no: The line number associated with the executed line.
+        frame_index: Index of the executed line in the code context.
+        idx: Index of the current line in the code context.
+
+    Returns:
+        A string containing HTML representation of the given line
+    """
     template = '<tr class="{line_class}"><td class="line_no">{line_no}</td><td class="code_line">{line}</td></tr>'
     data = {
+        # line_no - frame_index produces actual line number of the very first line in the frame code context.
+        # so adding index (aka relative number) of a line in the code context we can calculate its actual number in the source file,
         "line_no": line_no - frame_index + idx,
         "line": escape(line).replace(" ", "&nbsp"),
-        "line_class": "current_line" if idx == frame_index else "",
+        "line_class": "executed-line" if idx == frame_index else "",
     }
     return template.format(**data)
 
 
 def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
-    """Return html representation of the given frame object including filename
-    containing source code and name of the function being executed."""
+    """Produce html representation of the given frame object including filename
+    containing source code and name of the function being executed.
+
+    Args:
+        frame: An instance of [FrameInfo](https://docs.python.org/3/library/inspect.html#inspect.FrameInfo).
+        collapsed: Flag controlling whether frame should be collapsed on the page load.
+
+    Returns:
+        A string containing HTML representation of the execution frame.
+    """
     frame_tpl = (tpl_dir / "frame.html").read_text()
 
     code_lines: List[str] = []
@@ -69,9 +98,19 @@ def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
     return frame_tpl.format(**data)
 
 
-def create_exception_html(exc: BaseException, frame_limit: int) -> str:
-    """Return html representation of exception frames."""
-    frames = getinnerframes(exc.__traceback__, frame_limit) if exc.__traceback__ else []
+def create_exception_html(exc: BaseException, line_limit: int) -> str:
+    """Produce html representation of the exception.
+
+    [frames](https://docs.python.org/3/reference/datamodel.html#frame-objects).
+
+    Args:
+        exc: An Exception instance to generate .
+        line_limit: Number of lines of code context to return, which are centered around the executed line.
+
+    Returns:
+        A string containing HTML repsentation of the execution frames related to the exception.
+    """
+    frames = getinnerframes(exc.__traceback__, line_limit) if exc.__traceback__ else []
     result = []
     for idx, frame in enumerate(reversed(frames)):
         result.append(create_frame_html(frame=frame, collapsed=(idx > 0)))
@@ -79,12 +118,21 @@ def create_exception_html(exc: BaseException, frame_limit: int) -> str:
     return "".join(result)
 
 
-def create_html_response_content(exc: Exception, request: "Request", frame_limit: int = 15) -> str:
-    """Return exception traceback in HTML."""
-    exception_data: List[str] = [create_exception_html(exc, frame_limit)]
+def create_html_response_content(exc: Exception, request: "Request", line_limit: int = 15) -> str:
+    """Given an exception, produces its traceback in HTML.
+
+    Args:
+        exc: An Exception instance to render debug response from.
+        request: A [Request][starlite.connection.Request] instance.
+        line_limit: Number of lines of code context to return, which are centered around the executed line.
+
+    Returns:
+        A string containing HTML page with exception traceback.
+    """
+    exception_data: List[str] = [create_exception_html(exc, line_limit)]
     cause = exc.__cause__
     while cause:
-        cause_data = create_exception_html(cause, frame_limit)
+        cause_data = create_exception_html(cause, line_limit)
         cause_header = '<h4 class="cause-header">The above exception was caused by</h4>'
         cause_error_description = f"<h3><span>{escape(str(cause))}</span></h3>"
         cause_error = f"<h4><span>{escape(cause.__class__.__name__)}</span></h4>"
@@ -106,13 +154,28 @@ def create_html_response_content(exc: Exception, request: "Request", frame_limit
 
 
 def create_plain_text_response_content(exc: Exception) -> str:
-    """Return exception traceback in plain text."""
+    """Given an exception, produces its traceback in plain text.
+
+    Args:
+        exc: An Exception instance to render debug response from.
+
+    Returns:
+        A string containing exception traceback.
+    """
     return "".join(format_exception(type(exc), value=exc, tb=exc.__traceback__))
 
 
 def create_debug_response(request: "Request", exc: Exception) -> Response:
     """Create debug response either in plain text or html depending on client
-    capabilities."""
+    capabilities.
+
+    Args:
+        request: A [Request][starlite.connection.Request] instance.
+        exc: An Exception instance to render debug response from.
+
+    Returns:
+        A response with a rendered exception traceback.
+    """
     if "text/html" in request.headers.get("accept", ""):
         content = create_html_response_content(exc=exc, request=request)
         media_type = MediaType.HTML

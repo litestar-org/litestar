@@ -112,7 +112,7 @@ td.code_line {
   width: 99%;
 }
 
-tr.current_line {
+tr.executed-line {
   background-color: var(--code-background-color-dark);
 }
 
