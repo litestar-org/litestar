@@ -533,6 +533,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "smithk86",
+      "name": "Kyle Smith",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1161424?v=4",
+      "profile": "http://www.kylesmith.me",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
