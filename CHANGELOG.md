@@ -1,5 +1,15 @@
 # Changelog
 
+[1.36.0]
+
+- Removes "method" from `ResponseExtractorField`.
+- add `AbstractMiddleware` class.
+- add layering for opt dictionary
+- add per request caching of dependencies.
+- add`Headers`, `MutableHeaders` and update `FormMultiDict` to use the `multidict` library.
+- fix asgi/websocket handlers when **future** annotations is used.
+- update dependency resolution in kwargs model to run concurrently.
+
 [1.35.1]
 
 - fix hard dependency on external `cryptography` package when importing `starlite`
