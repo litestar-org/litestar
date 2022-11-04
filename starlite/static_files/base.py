@@ -31,7 +31,7 @@ class StaticFiles:
         self, directories: List["PathType"], file_path: str
     ) -> Union[Tuple[str, "FSInfo"], Tuple[None, None]]:
         """Resolves the file path and returns the resolved path and a
-        [state_result][os.stat_result].
+        [stat_result][os.stat_result].
 
         Args:
             directories: A list of directory paths.
