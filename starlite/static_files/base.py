@@ -89,4 +89,4 @@ class StaticFiles:
                 )(scope, receive, send)
             return
 
-        raise NotFoundException(f"no file or directory match the path {joined_path or joined_path} was found")
+        raise NotFoundException(f"no file or directory match the path {resolved_path or joined_path} was found")
