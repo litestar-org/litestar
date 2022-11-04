@@ -47,3 +47,15 @@ app = Starlite(
 url_path = app.url_for_static_asset("static", "file.pdf")
 # /some_folder/static/path/file.pdf
 ```
+
+## File System Support and Cloud Files
+
+The [`StaticFilesConfig`][starlite.config.static_files.StaticFilesConfig] class accepts a value called `file_system`,
+which can be any class adhereing to the Starlite [`FileSystemProtocol`][starlite.types.FileSystemProtocol].
+
+This protocol is by design similar to the file systems defined by [fsspec][https://filesystem-spec.readthedocs.io/en/latest/],
+which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, `ftp` etc.).
+
+Thus, in order to use any file system, simply use [fsspec][https://filesystem-spec.readthedocs.io/en/latest/] or one of
+the libraries based upon it, or provide a custom implementation adhering to the
+[`FileSystemProtocol`][starlite.types.FileSystemProtocol].
