@@ -53,7 +53,7 @@ class FileSystemAdapter:
 
         Args:
             path: The file path for which the [stat_result][os.stat_result] is provided.
-            result: The [stat_result][os.stat_result] instance
+            result: The [stat_result][os.stat_result] instance.
 
         Returns:
             A dictionary of file info.
