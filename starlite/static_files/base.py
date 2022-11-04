@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class StaticFiles:
     __slots__ = ("html_mode", "directories", "fs_adapter")
 
-    def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol"):
+    def __init__(self, html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol") -> None:
         self.html_mode = html_mode
         self.directories = directories
         self.fs_adapter = FileSystemAdapter(file_system)
