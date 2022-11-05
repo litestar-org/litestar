@@ -78,7 +78,7 @@ class StaticFiles:
         if fs_info and fs_info["type"] == "file":
             await FileResponse(
                 path=resolved_path or joined_path,
-                fs_info=fs_info,
+                file_info=fs_info,
                 file_system=self.adapter.file_system,
                 is_head_response=scope["method"] == "HEAD",
                 status_code=HTTP_200_OK,
@@ -90,7 +90,7 @@ class StaticFiles:
             if fs_info and fs_info["type"] == "file":
                 await FileResponse(
                     path=resolved_path or joined_path,
-                    fs_info=fs_info,
+                    file_info=fs_info,
                     file_system=self.adapter.file_system,
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,

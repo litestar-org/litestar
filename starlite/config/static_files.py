@@ -5,12 +5,12 @@ from pydantic import BaseConfig, BaseModel, DirectoryPath, constr, validator
 from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
 from starlite.types import ExceptionHandlersMap, Guard
-from starlite.types.file_types import FileSystemProtocol
 from starlite.utils import normalize_path
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.handlers import ASGIRouteHandler
+    from starlite.types.file_types import FileSystemProtocol
 
 
 class StaticFilesConfig(BaseModel):
@@ -79,7 +79,9 @@ class StaticFilesConfig(BaseModel):
         return normalize_path(value)
 
     @validator("file_system", always=True)
-    def validate_file_system(cls, value: FileSystemProtocol) -> FileSystemProtocol:  # pylint: disable=no-self-argument
+    def validate_file_system(  # pylint: disable=no-self-argument
+        cls, value: "FileSystemProtocol"
+    ) -> "FileSystemProtocol":
         """Ensures the value is a file system spec.
 
         Args:
@@ -88,7 +90,7 @@ class StaticFilesConfig(BaseModel):
         Returns:
             A file system spec.
         """
-        if not callable(getattr(value, "info", None)):
+        if not callable(getattr(value, "info", None)) or not callable(getattr(value, "info", None)):
             raise ValueError("file_system must adhere to the FileSystemProtocol type")
         return value
 
