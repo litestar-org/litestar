@@ -113,6 +113,7 @@ disable = [
     "duplicate-code",
     "fixme",
     "import-outside-toplevel",
+    "invalid-name",
     "line-too-long",
     "missing-class-docstring",
     "missing-module-docstring",
@@ -142,7 +143,6 @@ max-line-length = "120"
 ignored-argument-names = "args|kwargs|_|__"
 
 [tool.pylint.BASIC]
-good-names = "_,__,i,e,k,v,fn,fs,get,post,put,patch,delete,route,asgi,websocket,Dependency,Body,Parameter,HandlerType,ScopeType,Auth,User,it"
 no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test|^_.*)$"
 
 [tool.pylint.LOGGING]
