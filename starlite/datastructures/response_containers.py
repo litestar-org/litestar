@@ -149,7 +149,7 @@ class File(ResponseContainer[FileResponse]):
         Returns:
             A file system spec.
         """
-        if not callable(getattr(value, "info", None)) or not callable(getattr(value, "info", None)):
+        if not (callable(getattr(value, "info", None)) and callable(getattr(value, "open", None))):
             raise ValueError("file_system must adhere to the FileSystemProtocol type")
         return value
 

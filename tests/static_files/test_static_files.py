@@ -161,6 +161,31 @@ def test_validation_of_static_path_and_path_parameter(tmpdir: "Path") -> None:
         Starlite(route_handlers=[handler], static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir]))
 
 
+def test_validation_of_file_system(tmpdir: "Path") -> None:
+    class FSWithoutOpen:
+        def info(self) -> None:
+            return
+
+    with pytest.raises(ValidationError):
+        StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutOpen())
+
+    class FSWithoutInfo:
+        def open(self) -> None:
+            return
+
+    with pytest.raises(ValidationError):
+        StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutInfo())
+
+    class ImplementedFS:
+        def info(self) -> None:
+            return
+
+        def open(self) -> None:
+            return
+
+    assert StaticFilesConfig(path="/static", directories=[tmpdir], file_system=ImplementedFS())
+
+
 def test_static_substring_of_self(tmpdir: "Path") -> None:
     path = tmpdir.mkdir("static_part").mkdir("static") / "test.txt"  # type: ignore
     path.write_text("content", "utf-8")
