@@ -90,8 +90,6 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
     async def json(self) -> Any:
         """Method to retrieve the json request body from the request.
 
-        This method overrides the Starlette method using the much faster orjson.loads() function
-
         Returns:
             An arbitrary value
         """

@@ -16,5 +16,3 @@ See the [API Reference][starlite.config.CORSConfig] for full details on the `COR
 
 !!! note
     The asterisks symbol in the above kwargs means "match any".
-
-You can read more about this middleware in the [starlette docs](https://www.starlette.io/middleware/#corsmiddleware).

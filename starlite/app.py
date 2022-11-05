@@ -181,8 +181,7 @@ class Starlite(Router):
                 or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
                 it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
-                object has been resolved. Receives the response object which may be either an instance of
-                [Response][starlite.response.Response] or `starlette.Response`.
+                object has been resolved. Receives the response object.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
             after_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or

@@ -110,7 +110,7 @@ class TestClient(Client, Generic[T]):
         Args:
             app: The instance of [Starlite][starlite.app.Starlite] under test.
             base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
-            raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
+            raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
             root_path: Path prefix for requests.
             backend: The async backend to use, options are "asyncio" or "trio".

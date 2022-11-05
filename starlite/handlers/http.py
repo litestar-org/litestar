@@ -168,7 +168,7 @@ def _create_response_handler(
 def _create_generic_asgi_response_handler(
     after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
-    """Creates a handler function for Starlette Responses."""
+    """Creates a handler function for Responses."""
 
     async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
         normalized_cookies = _normalize_cookies(cookies, [])

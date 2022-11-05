@@ -56,8 +56,7 @@ class AppConfig(BaseModel):
     after_request: Optional[AfterRequestHookHandler]
     """
     A sync or async function executed after the route handler function returned and the response object has been
-    resolved. Receives the response object which may be either an instance of [Response][starlite.response.Response] or
-    `starlette.Response`.
+    resolved. Receives the response object which may be any subclass of [Response][starlite.response.Response].
     """
     after_response: Optional[AfterResponseHookHandler]
     """

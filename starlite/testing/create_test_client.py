@@ -111,8 +111,8 @@ def create_test_client(
             This hook is called after an exception occurs. In difference to exception handlers, it is not meant to
             return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
         after_request: A sync or async function executed after the route handler function returned and the response
-            object has been resolved. Receives the response object which may be either an instance of
-            [Response][starlite.response.Response] or `starlette.Response`.
+            object has been resolved. Receives the response object which may be any subclass of
+            [Response][starlite.response.Response].
         after_response: A sync or async function called after the response has been awaited. It receives the
             [Request][starlite.connection.Request] object and should not return any values.
         after_shutdown: An application level [LifeSpan hook handler][starlite.types.LifeSpanHookHandler].
@@ -154,7 +154,7 @@ def create_test_client(
         plugins: List of plugins.
         request_class: An optional subclass of [Request][starlite.connection.request.Request] to use for
             http connections.
-        raise_server_exceptions: Flag for underlying Starlette test client to raise server exceptions instead of
+        raise_server_exceptions: Flag for underlying the test client to raise server exceptions instead of
             wrapping them in an HTTP response.
         response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
         root_path: Path prefix for requests.
