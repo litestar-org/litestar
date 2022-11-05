@@ -38,6 +38,7 @@ verb, which correlates with their name:
 
 - [`delete`][starlite.handlers.delete]
 - [`get`][starlite.handlers.get]
+- [`head`][starlite.handlers.head]
 - [`patch`][starlite.handlers.patch]
 - [`post`][starlite.handlers.post]
 - [`put`][starlite.handlers.put]
@@ -45,7 +46,7 @@ verb, which correlates with their name:
 These are used exactly like `route` with the sole exception that you cannot configure the `http_method` kwarg:
 
 ```python
-from starlite import Partial, delete, get, patch, post, put
+from starlite import Partial, delete, get, patch, post, put, head
 from pydantic import BaseModel
 
 
@@ -65,6 +66,11 @@ def create_resource(data: Resource) -> Resource:
 
 @get(path="/resources/{pk:int}")
 def retrieve_resource(pk: int) -> Resource:
+    ...
+
+
+@head(path="/resources/{pk:int}")
+def retrieve_resource_head(pk: int) -> None:
     ...
 
 
