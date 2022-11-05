@@ -16,7 +16,6 @@ from starlite import InternalServerException, MediaType, StaticFilesConfig, get
 from starlite.connection import Request, empty_send
 from starlite.datastructures import State
 from starlite.response import Response
-from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
@@ -122,7 +121,7 @@ def test_request_url() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         data = {"method": request.method, "url": str(request.url)}
-        response = Response(content=data, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content=data)
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -137,7 +136,7 @@ def test_request_query_params() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         params = dict(request.query_params)
-        response = Response(content={"params": params}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"params": params})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -149,7 +148,7 @@ def test_request_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         headers = dict(request.headers)
-        response = Response(content={"headers": headers}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"headers": headers})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -182,7 +181,7 @@ def test_request_body() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         body = await request.body()
-        response = Response(content={"body": body.decode()}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"body": body.decode()})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -203,7 +202,7 @@ def test_request_stream() -> None:
         body = b""
         async for chunk in request.stream():
             body += chunk
-        response = Response(content={"body": body.decode()}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"body": body.decode()})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -222,7 +221,7 @@ def test_request_form_urlencoded() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         form = await request.form()
-        response = Response(content={"form": dict(form)}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"form": dict(form)})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -238,11 +237,7 @@ def test_request_body_then_stream() -> None:
         chunks = b""
         async for chunk in request.stream():
             chunks += chunk
-        response = Response(
-            content={"body": body.decode(), "stream": chunks.decode()},
-            status_code=HTTP_200_OK,
-            media_type=MediaType.JSON,
-        )
+        response = Response(content={"body": body.decode(), "stream": chunks.decode()})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -261,11 +256,7 @@ def test_request_stream_then_body() -> None:
             body = await request.body()
         except InternalServerException:
             body = b"<stream consumed>"
-        response = Response(
-            content={"body": body.decode(), "stream": chunks.decode()},
-            status_code=HTTP_200_OK,
-            media_type=MediaType.JSON,
-        )
+        response = Response(content={"body": body.decode(), "stream": chunks.decode()})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -278,7 +269,7 @@ def test_request_json() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         data = await request.json()
-        response = Response(content={"json": data}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"json": data})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -291,7 +282,7 @@ def test_request_raw_path() -> None:
         request = Request[Any, Any](scope, receive)
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
-        response = Response(content=f"{path}, {raw_path}", status_code=HTTP_200_OK, media_type=MediaType.TEXT)
+        response = Response(content=f"{path}, {raw_path}", media_type=MediaType.TEXT)
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -309,7 +300,7 @@ def test_request_without_setting_receive() -> None:
             data = await request.json()
         except RuntimeError:
             data = "Receive channel not available"
-        response = Response(content={"json": data}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"json": data})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -351,9 +342,7 @@ def test_request_state() -> None:
         scope["state"] = {}
         request = Request[Any, Any](scope, receive)
         request.state.example = 123
-        response = Response(
-            content={"state.example": request.state.example}, status_code=HTTP_200_OK, media_type=MediaType.JSON
-        )
+        response = Response(content={"state.example": request.state.example})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -367,9 +356,9 @@ def test_request_cookies() -> None:
         request = Request[Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:
-            response = Response(content=mycookie, media_type="text/plain", status_code=HTTP_200_OK)
+            response = Response(content=mycookie, media_type="text/plain")
         else:
-            response = Response(content="Hello, world!", media_type=MediaType.TEXT, status_code=HTTP_200_OK)
+            response = Response(content="Hello, world!", media_type=MediaType.TEXT)
             response.set_cookie("mycookie", "Hello, cookies!")
 
         await response(scope, receive, send)
@@ -385,7 +374,7 @@ def test_chunked_encoding() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)
         body = await request.body()
-        response = Response(content={"body": body.decode()}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"body": body.decode()})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -406,7 +395,7 @@ def test_request_send_push_promise() -> None:
         request = Request[Any, Any](scope, receive, send)
         await request.send_push_promise("/style.css")
 
-        response = Response(content={"json": "OK"}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"json": "OK"})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -424,7 +413,7 @@ def test_request_send_push_promise_without_push_extension() -> None:
         request = Request[Any, Any](scope)
         await request.send_push_promise("/style.css")
 
-        response = Response(content={"json": "OK"}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"json": "OK"})
         await response(scope, receive, send)
 
     client = TestClient(app)
@@ -448,7 +437,7 @@ def test_request_send_push_promise_without_setting_send() -> None:
             await request.send_push_promise("/style.css")
         except RuntimeError:
             data = "Send channel not available"
-        response = Response(content={"json": data}, status_code=HTTP_200_OK, media_type=MediaType.JSON)
+        response = Response(content={"json": data})
         await response(scope, receive, send)
 
     client = TestClient(app)

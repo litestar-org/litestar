@@ -189,7 +189,7 @@ class BaseRouteHandler(Generic[T]):
         return resolved_exception_handlers
 
     def resolve_opts(self) -> None:
-        """Build route handler opt dictionary by going from top to bottom.
+        """Builds the route handler opt dictionary by going from top to bottom.
 
         If multiple layers define the same key, the value from the
         closest layer to the response handler will take precedence.
@@ -199,8 +199,6 @@ class BaseRouteHandler(Generic[T]):
         for layer in self.ownership_layers:
             opt.update(layer.opt or {})
 
-        # we are operating on a copy of route handler so
-        # we can safely update self.opt
         self.opt = opt
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:

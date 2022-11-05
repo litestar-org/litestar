@@ -10,8 +10,6 @@ example will work perfectly fine:
 from pydantic import BaseModel
 from starlite import Response, get
 from starlite.datastructures import Cookie
-from starlite.enums import MediaType
-from starlite.status_codes import HTTP_200_OK
 
 
 class Resource(BaseModel):
@@ -28,8 +26,6 @@ def retrieve_resource() -> Response[Resource]:
         ),
         headers={"MY-HEADER": "xyz"},
         cookies=[Cookie(key="my-cookie", value="abc")],
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
     )
 ```
 

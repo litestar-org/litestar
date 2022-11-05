@@ -19,7 +19,7 @@ async def test_file_adapter_open(tmpdir: Path, file_system: "FileSystemProtocol"
     file.write_bytes(b"test")
     adapter = FileSystemAdapter(file_system=file_system)
 
-    async with await adapter.open(file=file, mode="rb") as opened_file:
+    async with await adapter.open(file=file) as opened_file:
         assert await opened_file.read() == b"test"
 
 
@@ -33,7 +33,7 @@ async def test_file_adapter_open_handles_permission_exception(tmpdir: Path, file
     adapter = FileSystemAdapter(file_system=file_system)
 
     with pytest.raises(NotAuthorizedException):
-        async with await adapter.open(file=file, mode="rb"):
+        async with await adapter.open(file=file):
             pass
 
     Path(tmpdir).chmod(owner_permissions)
@@ -44,7 +44,7 @@ async def test_file_adapter_open_handles_file_not_found_exception(file_system: "
     adapter = FileSystemAdapter(file_system=file_system)
 
     with pytest.raises(InternalServerException):
-        async with await adapter.open(file="non_existing_file.txt", mode="rb"):
+        async with await adapter.open(file="non_existing_file.txt"):
             pass
 
 

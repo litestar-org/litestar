@@ -4,8 +4,7 @@ If you need to write your own ASGI application, you can do so using the [`asgi`]
 
 ```python
 from starlite.types import Scope, Receive, Send
-from starlite.enums import MediaType
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite import Response, asgi
 
 
@@ -13,15 +12,11 @@ from starlite import Response, asgi
 async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     if scope["type"] == "http":
         if scope["method"] == "GET":
-            response = Response(
-                {"hello": "world"}, status_code=HTTP_200_OK, media_type=MediaType.JSON
-            )
+            response = Response({"hello": "world"})
             await response(scope=scope, receive=receive, send=send)
         return
     response = Response(
-        {"detail": "unsupported request"},
-        status_code=HTTP_400_BAD_REQUEST,
-        media_type=MediaType.JSON,
+        {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
     )
     await response(scope=scope, receive=receive, send=send)
 ```
@@ -32,8 +27,7 @@ the code below is equivalent to the one above:
 
 ```python
 from starlite.types import Scope, Receive, Send
-from starlite.enums import MediaType
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite import ASGIRouteHandler, Response
 
 
@@ -41,15 +35,11 @@ from starlite import ASGIRouteHandler, Response
 async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     if scope["type"] == "http":
         if scope["method"] == "GET":
-            response = Response(
-                {"hello": "world"}, status_code=HTTP_200_OK, media_type=MediaType.JSON
-            )
+            response = Response({"hello": "world"})
             await response(scope=scope, receive=receive, send=send)
         return
     response = Response(
-        {"detail": "unsupported request"},
-        status_code=HTTP_400_BAD_REQUEST,
-        media_type=MediaType.JSON,
+        {"detail": "unsupported request"}, status_code=HTTP_400_BAD_REQUEST
     )
     await response(scope=scope, receive=receive, send=send)
 ```

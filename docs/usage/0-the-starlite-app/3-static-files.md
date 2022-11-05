@@ -51,7 +51,7 @@ url_path = app.url_for_static_asset("static", "file.pdf")
 ## File System Support and Cloud Files
 
 The [`StaticFilesConfig`][starlite.config.static_files.StaticFilesConfig] class accepts a value called `file_system`,
-which can be any class adhereing to the Starlite [`FileSystemProtocol`][starlite.types.FileSystemProtocol].
+which can be any class adhering to the Starlite [`FileSystemProtocol`][starlite.types.FileSystemProtocol].
 
 This protocol is by design similar to the file systems defined by [fsspec][https://filesystem-spec.readthedocs.io/en/latest/],
 which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, `ftp` etc.).

@@ -22,8 +22,8 @@
     options:
         members:
             - __init__
-            - serialise_data
-            - deserialise_data
+            - serialize_data
+            - deserialize_data
             - store_in_message
             - load_from_connection
 

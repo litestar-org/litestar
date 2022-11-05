@@ -58,7 +58,7 @@ def session_config(
 
 def test_request_factory_no_cookie_header() -> None:
     headers: Dict[str, str] = {}
-    RequestFactory._create_cookie_header(headers, None)
+    RequestFactory._create_cookie_header(headers)
     assert headers == {}
 
 
@@ -129,7 +129,7 @@ async def test_request_factory_create_with_content_type(
 
 
 def test_request_factory_create_with_default_params() -> None:
-    request = RequestFactory().get("/")
+    request = RequestFactory().get()
     assert isinstance(request.app, Starlite)
     assert request.url == request.base_url == _DEFAULT_REQUEST_FACTORY_URL
     assert request.method == HttpMethod.GET
@@ -192,7 +192,7 @@ def test_request_factory_create_with_params() -> None:
 def test_request_factory_get() -> None:
     query_params = {"p1": "a", "p2": 2, "p3": ["c", "d"]}
     headers = {"header1": "value1"}
-    request = RequestFactory().get("/", headers=headers, query_params=query_params)  # type: ignore[arg-type]
+    request = RequestFactory().get(headers=headers, query_params=query_params)  # type: ignore[arg-type]
     assert request.method == HttpMethod.GET
     assert request.url == f"{_DEFAULT_REQUEST_FACTORY_URL}?p1=a&p2=2&p3=c&p3=d"
     assert len(request.headers.keys()) == 1
@@ -201,7 +201,7 @@ def test_request_factory_get() -> None:
 
 def test_request_factory_delete() -> None:
     headers = {"header1": "value1"}
-    request = RequestFactory().delete("/", headers=headers)
+    request = RequestFactory().delete(headers=headers)
     assert request.method == HttpMethod.DELETE
     assert request.url == _DEFAULT_REQUEST_FACTORY_URL
     assert len(request.headers.keys()) == 1
@@ -272,9 +272,7 @@ def test_test_client_set_session_data(
 
     app = Starlite(route_handlers=[get_session_data], middleware=[session_config.middleware])
 
-    with TestClient(
-        app=app, session_config=session_config, backend=test_client_backend, base_url="http://testserver.local"
-    ) as client:
+    with TestClient(app=app, session_config=session_config, backend=test_client_backend) as client:
         client.set_session_data(session_data)
         assert session_data == client.get("/test").json()
 
@@ -301,6 +299,6 @@ def test_test_client_get_session_data(
         assert client.get_session_data() == session_data
 
 
-def test_create_test_clientwarns_problematic_domain() -> None:
+def test_create_test_client_warns_problematic_domain() -> None:
     with pytest.warns(UserWarning):
         create_test_client(base_url="http://testserver", route_handlers=[])

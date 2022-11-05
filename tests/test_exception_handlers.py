@@ -5,7 +5,6 @@ import pytest
 from starlite import (
     Controller,
     InternalServerException,
-    MediaType,
     NotFoundException,
     Request,
     Response,
@@ -38,11 +37,7 @@ def test_exception_handling(exc_to_raise: Exception, expected_layer: str) -> Non
             assert isinstance(exc, expected_exception)
             assert isinstance(req, Request)
             caller["name"] = caller_name
-            return Response(
-                media_type=MediaType.JSON,
-                content={},
-                status_code=HTTP_400_BAD_REQUEST,
-            )
+            return Response(content={}, status_code=HTTP_400_BAD_REQUEST)
 
         return handler
 

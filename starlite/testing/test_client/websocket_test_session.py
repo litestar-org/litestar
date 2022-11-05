@@ -57,7 +57,7 @@ class WebSocketTestSession:
 
     def __exit__(self, *args: Any) -> None:
         try:
-            self.close(WS_1000_NORMAL_CLOSURE)
+            self.close()
         finally:
             self.exit_stack.close()
         while not self.send_queue.empty():
@@ -122,7 +122,7 @@ class WebSocketTestSession:
         Returns:
             None
         """
-        self.send(data=data, mode="text", encoding=encoding)
+        self.send(data=data, encoding=encoding)
 
     def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
         """Sends the data using the 'bytes' key.

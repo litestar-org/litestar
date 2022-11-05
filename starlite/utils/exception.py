@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
 
 from pydantic import BaseModel
 
-from starlite.enums import MediaType
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
@@ -66,7 +65,6 @@ class ExceptionResponseContent(BaseModel):
         return Response(
             content=self.dict(exclude_none=True, exclude={"headers"}),
             headers=self.headers,
-            media_type=MediaType.JSON,
             status_code=self.status_code,
         )
 

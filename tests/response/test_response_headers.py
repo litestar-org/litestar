@@ -126,7 +126,7 @@ def test_explicit_response_headers(
             "app": app_header,
         }.items():
             response = client.get(path)
-            assert response.headers[expected_value.HEADER_NAME] == expected_value.to_header(include_header_name=False)
+            assert response.headers[expected_value.HEADER_NAME] == expected_value.to_header()
 
 
 @pytest.mark.parametrize(
@@ -171,4 +171,4 @@ def test_explicit_headers_override_response_headers(
 
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
     resolved_headers = route_handler.resolve_response_headers()
-    assert resolved_headers[header.HEADER_NAME].value == header.to_header(include_header_name=False)
+    assert resolved_headers[header.HEADER_NAME].value == header.to_header()

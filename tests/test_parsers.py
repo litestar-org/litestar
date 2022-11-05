@@ -18,7 +18,7 @@ def test_parse_query_params() -> None:
         "healthy": True,
         "polluting": False,
     }
-    request = RequestFactory().get("/", query_params=query)  # type: ignore[arg-type]
+    request = RequestFactory().get(query_params=query)  # type: ignore[arg-type]
     result = parse_query_params(query_string=request.scope.get("query_string", b""))
     assert result == {
         "value": ["10"],
@@ -60,7 +60,7 @@ def test_parse_form_data() -> None:
     "cookie_string, expected",
     (
         ("ABC    = 123;   efg  =   456", {"ABC": "123", "efg": "456"}),
-        (("foo= ; bar="), {"foo": "", "bar": ""}),
+        ("foo= ; bar=", {"foo": "", "bar": ""}),
         ('foo="bar=123456789&name=moisheZuchmir"', {"foo": "bar=123456789&name=moisheZuchmir"}),
         ("email=%20%22%2c%3b%2f", {"email": ' ",;/'}),
         ("foo=%1;bar=bar", {"foo": "%1", "bar": "bar"}),

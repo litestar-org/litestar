@@ -19,7 +19,7 @@ combination of the path `"/"` and the http verb `GET`. In this case it will be a
 header of `text/plain`.
 
 What the decorator does, is wrap the function or method within a class instance that inherits from
-[`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler]. These classesare optimized
+[`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler]. These classes are optimized
 descriptor classes that record all the data necessary for the given function or method - this includes a modelling of
 the function signature, which allows for injection of kwargs and dependencies, as well as data pertinent to OpenAPI
 spec generation.

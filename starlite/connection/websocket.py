@@ -274,7 +274,7 @@ class WebSocket(
         Returns:
             None
         """
-        await self.send_data(data=data, mode="text", encoding=encoding)
+        await self.send_data(data=data, encoding=encoding)
 
     @overload
     async def send_bytes(self, data: bytes) -> None:

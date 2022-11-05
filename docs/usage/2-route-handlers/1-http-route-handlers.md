@@ -36,11 +36,11 @@ See the [API Reference][starlite.handlers.HTTPRouteHandler] for full details on 
 Starlite also includes "semantic" decorators, that is, decorators the pre-set the `http_method` kwarg to a specific HTTP
 verb, which correlates with their name:
 
-- `delete`
-- `get`
-- `patch`
-- `post`
-- `put`
+- [`delete`][starlite.handlers.delete]
+- [`get`][starlite.handlers.get]
+- [`patch`][starlite.handlers.patch]
+- [`post`][starlite.handlers.post]
+- [`put`][starlite.handlers.put]
 
 These are used exactly like `route` with the sole exception that you cannot configure the `http_method` kwarg:
 

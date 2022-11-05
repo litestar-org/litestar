@@ -47,16 +47,7 @@ def test_set_cookie() -> None:
     @get("/")
     def handler() -> Response:
         response = Response(content=None)
-        response.set_cookie(
-            "test",
-            "abc",
-            max_age=60,
-            expires=60,
-            path="/",
-            secure=True,
-            httponly=True,
-            samesite="lax",
-        )
+        response.set_cookie("test", "abc", max_age=60, expires=60, secure=True, httponly=True)
         assert len(response.cookies) == 1
         return response
 
@@ -69,16 +60,7 @@ def test_delete_cookie() -> None:
     @get("/create")
     def create_cookie_handler() -> Response:
         response = Response(content=None)
-        response.set_cookie(
-            "test",
-            "abc",
-            max_age=60,
-            expires=60,
-            path="/",
-            secure=True,
-            httponly=True,
-            samesite="lax",
-        )
+        response.set_cookie("test", "abc", max_age=60, expires=60, secure=True, httponly=True)
         assert len(response.cookies) == 1
         return response
 

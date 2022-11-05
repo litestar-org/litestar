@@ -8,7 +8,7 @@ from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 from starlite.response import Response
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from starlite.status_codes import HTTP_404_NOT_FOUND
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
@@ -172,16 +172,8 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(
-                content=self.get_schema_from_request(request),
-                status_code=HTTP_200_OK,
-                media_type=OpenAPIMediaType.OPENAPI_YAML,
-            )
-        return Response(
-            content={},
-            status_code=HTTP_404_NOT_FOUND,
-            media_type=MediaType.JSON,
-        )
+            return Response(content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_YAML)
+        return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
@@ -199,16 +191,8 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(
-                content=self.get_schema_from_request(request),
-                status_code=HTTP_200_OK,
-                media_type=OpenAPIMediaType.OPENAPI_JSON,
-            )
-        return Response(
-            content={},
-            status_code=HTTP_404_NOT_FOUND,
-            media_type=MediaType.JSON,
-        )
+            return Response(content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_JSON)
+        return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
     def root(self, request: Request) -> Response:
@@ -233,7 +217,7 @@ class OpenAPIController(Controller):
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
-            return Response(content=render_method(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+            return Response(content=render_method(request), media_type=MediaType.HTML)
         return Response(
             content=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
@@ -255,7 +239,7 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(content=self.render_swagger_ui(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+            return Response(content=self.render_swagger_ui(request), media_type=MediaType.HTML)
         return Response(
             content=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
@@ -277,9 +261,7 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(
-                content=self.render_stoplight_elements(request), status_code=HTTP_200_OK, media_type=MediaType.HTML
-            )
+            return Response(content=self.render_stoplight_elements(request), media_type=MediaType.HTML)
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False)
@@ -297,7 +279,7 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(content=self.render_redoc(request), status_code=HTTP_200_OK, media_type=MediaType.HTML)
+            return Response(content=self.render_redoc(request), media_type=MediaType.HTML)
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     def render_swagger_ui(self, request: Request) -> str:

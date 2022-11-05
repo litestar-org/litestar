@@ -36,7 +36,7 @@ Or using a `Mako:`
 ## Adding CSRF Inputs
 
 Similar to other frameworks such as Django or Laravel, Starlite offers an easy way to add a hidden `<input>` element to
-an html form that contains a CSRF token. To use this functionality, you should first configure
+a html form that contains a CSRF token. To use this functionality, you should first configure
 [CSRF protection](../7-middleware/3-builtin-middlewares/3-csrf-middleware.md) for the application. With that in place,
 you can now insert the CSRF input field inside an HTML form:
 

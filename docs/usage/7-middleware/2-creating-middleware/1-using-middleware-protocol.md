@@ -64,7 +64,6 @@ another example - redirecting the request to a different url from a middleware:
 
 ```python
 from starlite.types import ASGIApp, Receive, Scope, Send
-from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 
 from starlite.response import RedirectResponse
 from starlite import Request
@@ -78,9 +77,7 @@ class RedirectMiddleware(MiddlewareProtocol):
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if Request(scope).session is None:
-            response = RedirectResponse(
-                url="/login", status_code=HTTP_307_TEMPORARY_REDIRECT
-            )
+            response = RedirectResponse(url="/login")
             await response(scope, receive, send)
         else:
             await self.app(scope, receive, send)

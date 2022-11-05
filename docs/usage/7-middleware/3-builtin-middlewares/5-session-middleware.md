@@ -166,8 +166,8 @@ it will automatically pick the correct backend to use based on the engine config
 
 #### Supplying your own session model
 
-If you wish to extend the built-in session model, you can subclass the
-[SessionModelMixin][starlite.middleware.session.sqlalchemy_backend.SessionModelMixin]:
+If you wish to extend the built-in session model, you can mixin the
+[SessionModelMixin][starlite.middleware.session.sqlalchemy_backend.SessionModelMixin] into your own classes:
 
 ```py title="sqlalchemy_backend_custom_model.py"
 --8<-- "examples/middleware/session/sqlalchemy_backend_custom_model.py"

@@ -211,7 +211,7 @@ def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright:
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.format_exc_info,
-            structlog.processors.TimeStamper(fmt="iso", utc=True),
+            structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.JSONRenderer(serializer=dumps),
         ]
     except ImportError:  # pragma: no cover

@@ -28,7 +28,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
         Returns:
             A dictionary of file info.
         """
-        result = await Path(path).stat(follow_symlinks=True)
+        result = await Path(path).stat()
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
     async def open(  # pylint: disable=invalid-overridden-method
@@ -146,7 +146,7 @@ class FileSystemAdapter:
         if file_info["islink"]:
             file_info["destination"] = str(await Path(path).readlink()).encode("utf-8")
             try:
-                file_info["size"] = (await Path(path).stat(follow_symlinks=True)).st_size
+                file_info["size"] = (await Path(path).stat()).st_size
             except OSError:  # pragma: no cover
                 file_info["size"] = result.st_size
 

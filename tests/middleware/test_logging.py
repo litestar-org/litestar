@@ -3,14 +3,7 @@ from typing import TYPE_CHECKING
 
 from structlog.testing import capture_logs
 
-from starlite import (
-    Cookie,
-    LoggingConfig,
-    MediaType,
-    Response,
-    StructLoggingConfig,
-    get,
-)
+from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK
@@ -24,8 +17,6 @@ if TYPE_CHECKING:
 def handler() -> Response:
     return Response(
         content={"hello": "world"},
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
         headers={"token": "123", "regular": "abc"},
         cookies=[Cookie(key="first-cookie", value="abc"), Cookie(key="second-cookie", value="xxx")],
     )

@@ -77,10 +77,8 @@ as you see fit, e.g.:
 
 ```python
 from pydantic import BaseModel
-from starlite.status_codes import HTTP_200_OK
 from starlite import Response, get
 from starlite.datastructures import ResponseHeader
-from starlite.enums import MediaType
 from random import randint
 
 
@@ -104,8 +102,6 @@ def retrieve_resource() -> Response[Resource]:
             name="my resource",
         ),
         headers={"Random-Header": str(randint(1, 100))},
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
     )
 ```
 
@@ -124,10 +120,8 @@ the headers on the corresponding layer:
 from random import randint
 
 from pydantic import BaseModel
-from starlite.status_codes import HTTP_200_OK
 from starlite import Response, Router, get
 from starlite.datastructures import ResponseHeader
-from starlite.enums import MediaType
 
 
 class Resource(BaseModel):
@@ -151,8 +145,6 @@ def retrieve_resource() -> Response[Resource]:
             name="my resource",
         ),
         headers={"Random-Header": str(randint(100, 1000))},
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
     )
 
 

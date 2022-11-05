@@ -95,7 +95,7 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
 
         Notes:
             - Requires `sqlalchemy` which needs to be installed separately, and a configured
-            [SQLALchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
+            [SQLAlchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
         """
         super().__init__(config=config)
         self._model = config.model

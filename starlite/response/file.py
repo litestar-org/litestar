@@ -48,7 +48,7 @@ async def async_file_iterator(
     Returns:
         An async generator.
     """
-    async with await adapter.open(file_path, mode="rb") as file:
+    async with await adapter.open(file_path) as file:
         yield await file.read(chunk_size)
 
 

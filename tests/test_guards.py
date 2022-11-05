@@ -4,7 +4,6 @@ import pytest
 
 from starlite import (
     BaseRouteHandler,
-    MediaType,
     Request,
     Response,
     Router,
@@ -60,7 +59,7 @@ def test_guards_with_http_handler() -> None:
 def test_guards_with_asgi_handler() -> None:
     @asgi(path="/secret", guards=[local_guard])
     async def my_asgi_handler(scope: Scope, receive: Receive, send: Send) -> None:
-        response = Response(media_type=MediaType.JSON, status_code=HTTP_200_OK, content={"hello": "world"})
+        response = Response(content={"hello": "world"})
         await response(scope=scope, receive=receive, send=send)
 
     with create_test_client(guards=[app_guard], route_handlers=[my_asgi_handler]) as client:

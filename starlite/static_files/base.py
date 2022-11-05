@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.response import FileResponse
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
@@ -71,7 +71,6 @@ class StaticFiles:
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
                 is_head_response=scope["method"] == "HEAD",
-                status_code=HTTP_200_OK,
             )(scope, receive, send)
             return
 

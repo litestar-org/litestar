@@ -13,7 +13,7 @@ def test_connection_base_properties() -> None:
     user = {"name": "moishe"}
     auth = {"key": "value"}
     session = {"session": "abc"}
-    scope = RequestFactory(app=app).get("/", route_handler=handler, user=user, auth=auth, session=session).scope
+    scope = RequestFactory(app=app).get(route_handler=handler, user=user, auth=auth, session=session).scope
     connection = ASGIConnection[Any, Any, Any](scope)
 
     assert connection.app

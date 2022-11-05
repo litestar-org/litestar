@@ -130,14 +130,15 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         """Serialize data into bytes for storage in the backend.
 
         Args:
-            data: Session data of the current scope
-            scope: A scope, if applicable, from which to extract a serializer
+            data: Session data of the current scope.
+            scope: A scope, if applicable, from which to extract a serializer.
+
+        Notes:
+            - The serializer will be extracted from `scope` or fall back
+                to [default_serializer][starlite.utils.default_serializer]
 
         Returns:
-            `data` serialized as bytes
-
-        The serializer will be
-        extracted from `scope` or fall back to [default_serializer][starlite.utils.default_serializer]
+            `data` serialized as bytes.
         """
         serializer = (get_serializer_from_scope(scope) if scope else None) or default_serializer
         return dumps(data, default=serializer, option=OPT_SERIALIZE_NUMPY)

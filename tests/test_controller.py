@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from starlite import (
     Controller,
     HttpMethod,
-    MediaType,
     Response,
     delete,
     get,
@@ -28,7 +27,7 @@ from tests import Person, PersonFactory
             get,
             HttpMethod.GET,
             HTTP_200_OK,
-            Response(content=PersonFactory.build(), status_code=HTTP_200_OK, media_type=MediaType.JSON),
+            Response(content=PersonFactory.build()),
             Response[Person],
         ),
         (get, HttpMethod.GET, HTTP_200_OK, PersonFactory.build(), Person),

@@ -99,7 +99,7 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
 
 
 def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
-    request = RequestFactory().get(path="/")
+    request = RequestFactory().get()
 
     path = tmpdir / "file.txt"
     content = b"<file content>"

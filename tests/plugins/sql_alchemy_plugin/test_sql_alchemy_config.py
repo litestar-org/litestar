@@ -32,7 +32,7 @@ def test_sets_engine_and_session_maker(connection_string: str) -> None:
 def test_dependency_creates_session(connection_string: str) -> None:
     config = SQLAlchemyConfig(connection_string=connection_string, use_async_engine="+aiosqlite" in connection_string)
     app = Starlite(route_handlers=[], plugins=[SQLAlchemyPlugin(config=config)])
-    request = RequestFactory().get("/")
+    request = RequestFactory().get()
     session = config.create_db_session_dependency(state=app.state, scope=request.scope)
     assert session
     assert request.scope[SESSION_SCOPE_KEY]  # type: ignore

@@ -106,7 +106,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
         return [
             Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
-            for i, datum in enumerate(data, start=0)
+            for i, datum in enumerate(data)
         ]
 
     async def store_in_message(

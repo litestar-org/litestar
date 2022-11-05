@@ -68,7 +68,7 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
 
 @pytest.mark.parametrize(
     "complex_path_param",
-    [("time", time(hour=14, minute=0, second=0), "14:00"), ("float", float(1 / 3), "0.33")],
+    [("time", time(hour=14), "14:00"), ("float", float(1 / 3), "0.33")],
 )
 def test_route_reverse_validation_complex_params(complex_path_param) -> None:  # type: ignore
     param_type, param_value, param_manual_str = complex_path_param

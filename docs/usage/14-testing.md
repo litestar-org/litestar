@@ -250,7 +250,7 @@ Another helper is the [`RequestFactory`][starlite.testing.RequestFactory] class,
 you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
-from the [guards](9-guards.md) documentation:
+from the [route guards](9-guards.md) documentation:
 
 ```python title="my_app/guards.py"
 from starlite import Request, RouteHandler, NotAuthorizedException

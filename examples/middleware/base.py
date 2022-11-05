@@ -35,7 +35,7 @@ class MyMiddleware(AbstractMiddleware):
 @websocket("/my-websocket")
 async def websocket_handler(socket: "WebSocket") -> None:
     """
-    Websocket handler - is excluded because the middleware's scopes includes on ScopeType.HTTP
+    Websocket handler - is excluded because the middleware scopes includes 'ScopeType.HTTP'
     """
     await socket.accept()
     await socket.send_json({"hello websocket"})
@@ -57,7 +57,7 @@ def second_handler() -> dict[str, str]:
 @get("/third_path", exclude_from_middleware=True)
 def third_handler() -> dict[str, str]:
     """Handler is excluded due to the opt key 'exclude_from_middleware'
-    matching the middleware's 'exclude_opt_key'."""
+    matching the middleware 'exclude_opt_key'."""
     return {"hello": "second"}
 
 

@@ -62,7 +62,7 @@ class TestClientTransport(BaseTransport):
             if isinstance(body, GeneratorType):  # pragma: no cover
                 try:
                     chunk = body.send(None)
-                    request_event["body"] = body = chunk if isinstance(chunk, bytes) else chunk.encode("utf-8")
+                    request_event["body"] = chunk if isinstance(chunk, bytes) else chunk.encode("utf-8")
                     request_event["more_body"] = True
                 except StopIteration:
                     context["request_complete"] = True
@@ -95,7 +95,7 @@ class TestClientTransport(BaseTransport):
                 if not more_body:
                     context["raw_kwargs"]["stream"].seek(0)
                     context["response_complete"].set()
-            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap] # pragma: no coverx
+            elif message["type"] == "http.response.template":  # type: ignore[comparison-overlap] # pragma: no cover
                 context["template"] = message["template"]  # type: ignore[unreachable]
                 context["context"] = message["context"]
 

@@ -98,7 +98,7 @@ def test_streaming_response() -> None:
         async def numbers_for_cleanup(start: int = 1, stop: int = 5) -> None:
             nonlocal filled_by_bg_task
             async for thing in numbers(start, stop):
-                filled_by_bg_task = filled_by_bg_task + thing
+                filled_by_bg_task += thing
 
         cleanup_task = BackgroundTask(numbers_for_cleanup, start=6, stop=9)
         generator = numbers(1, 5)

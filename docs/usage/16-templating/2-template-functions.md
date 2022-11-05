@@ -40,7 +40,7 @@ def my_template_function(ctx: dict) -> str:
 
 
 template_config.engine.register_template_callable(
-    "check_context_key", template_callable=my_template_function
+    key="check_context_key", template_callable=my_template_function
 )
 
 app = Starlite(

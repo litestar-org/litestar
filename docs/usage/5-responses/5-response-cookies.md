@@ -111,10 +111,8 @@ as you see fit, e.g.:
 from random import randint
 
 from pydantic import BaseModel
-from starlite.status_codes import HTTP_200_OK
 from starlite import Response, get
 from starlite.datastructures import Cookie
-from starlite.enums import MediaType
 
 
 class Resource(BaseModel):
@@ -139,8 +137,6 @@ def retrieve_resource() -> Response[Resource]:
             name="my resource",
         ),
         cookies=[Cookie(key="Random-Cookie", value=str(randint(1, 100)))],
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
     )
 ```
 
@@ -210,10 +206,8 @@ different value range:
 from random import randint
 
 from pydantic import BaseModel
-from starlite.status_codes import HTTP_200_OK
 from starlite import Response, Router, get
 from starlite.datastructures import Cookie
-from starlite.enums import MediaType
 
 
 class Resource(BaseModel):
@@ -238,8 +232,6 @@ def retrieve_resource() -> Response[Resource]:
             name="my resource",
         ),
         cookies=[Cookie(key="Random-Cookie", value=str(randint(100, 1000)))],
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
     )
 
 

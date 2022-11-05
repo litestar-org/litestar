@@ -2,7 +2,7 @@ from typing import Any, List
 
 import pytest
 
-from starlite import Cookie, MediaType, Request, RequestEncodingType, Response
+from starlite import Cookie, Request, RequestEncodingType, Response
 from starlite.connection import empty_receive
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory
@@ -40,7 +40,7 @@ def test_parse_query() -> None:
         query_params={"first": ["1", "2", "3"], "second": ["jeronimo"]},
     )
     parsed_extracted_data = ConnectionDataExtractor(parse_query=True)(request)
-    unparsed_extracted_data = ConnectionDataExtractor(parse_query=False)(request)
+    unparsed_extracted_data = ConnectionDataExtractor()(request)
     assert parsed_extracted_data.get("query") == request.query_params
     assert unparsed_extracted_data.get("query") == request.scope["query_string"]
     # Close to avoid warnings about un-awaited coroutines.
@@ -51,7 +51,7 @@ def test_parse_query() -> None:
 async def test_parse_json_data() -> None:
     request = factory.post(path="/a/b/c", data={"hello": "world"})
     assert await ConnectionDataExtractor(parse_body=True)(request).get("body") == await request.json()  # type: ignore
-    assert await ConnectionDataExtractor(parse_body=False)(request).get("body") == await request.body()  # type: ignore
+    assert await ConnectionDataExtractor()(request).get("body") == await request.body()  # type: ignore
 
 
 async def test_parse_form_data() -> None:
@@ -64,9 +64,7 @@ async def test_parse_url_encoded() -> None:
     assert await ConnectionDataExtractor(parse_body=True)(request).get("body") == dict(await request.form())  # type: ignore
 
 
-@pytest.mark.parametrize(
-    "req", [factory.get(path="/", headers={"Special": "123"}), factory.get(path="/", headers={"special": "123"})]
-)
+@pytest.mark.parametrize("req", [factory.get(headers={"Special": "123"}), factory.get(headers={"special": "123"})])
 def test_request_extraction_header_obfuscation(req: Request[Any, Any]) -> None:
     extractor = ConnectionDataExtractor(obfuscate_headers={"special"})
     extracted_data = extractor(req)
@@ -78,8 +76,8 @@ def test_request_extraction_header_obfuscation(req: Request[Any, Any]) -> None:
 @pytest.mark.parametrize(
     "req, key",
     [
-        (factory.get(path="/", cookies=[Cookie(key="special")]), "special"),
-        (factory.get(path="/", cookies=[Cookie(key="Special")]), "Special"),
+        (factory.get(cookies=[Cookie(key="special")]), "special"),
+        (factory.get(cookies=[Cookie(key="Special")]), "Special"),
     ],
 )
 def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str) -> None:
@@ -93,12 +91,7 @@ def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str)
 async def test_response_data_extractor() -> None:
     headers = {"common": "abc", "special": "123", "content-type": "application/json"}
     cookies = [Cookie(key="regular"), Cookie(key="auth")]
-    response = Response(
-        media_type=MediaType.JSON,
-        status_code=HTTP_200_OK,
-        content={"hello": "world"},
-        headers=headers,
-    )
+    response = Response(content={"hello": "world"}, headers=headers)
     for cookie in cookies:
         response.set_cookie(**cookie.dict(exclude={"documentation_only", "description"}))
     extractor = ResponseDataExtractor()

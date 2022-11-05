@@ -99,7 +99,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     monkeypatch.setattr(Router, "__init__", MagicMock())
 
     # instantiates the app with an `on_app_config` that returns our patched `AppConfig` object.
-    Starlite(route_handlers=[], debug=False, on_app_init=[MagicMock(return_value=app_config_object)])
+    Starlite(route_handlers=[], on_app_init=[MagicMock(return_value=app_config_object)])
 
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
     for mock in property_mocks:
