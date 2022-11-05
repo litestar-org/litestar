@@ -2,11 +2,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
-from pydantic import ValidationError
 
-from starlite import ImproperlyConfiguredException, MediaType, Starlite, get
+from starlite import MediaType, get
 from starlite.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 from starlite.utils.file import BaseLocalFileSystem
 
@@ -96,32 +95,6 @@ def test_static_files_config_with_multiple_directories(tmpdir: "Path", file_syst
         assert response.text == "content2"
 
 
-@pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
-def test_staticfiles_is_html_mode(tmpdir: "Path", file_system: "FileSystemProtocol") -> None:
-    path = tmpdir / "index.html"
-    path.write_text("content", "utf-8")
-    static_files_config = StaticFilesConfig(
-        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
-    )
-    with create_test_client([], static_files_config=static_files_config) as client:
-        response = client.get("/static")
-        assert response.status_code == HTTP_200_OK
-        assert response.text == "content"
-
-
-@pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
-def test_staticfiles_is_html_mode_serves_404_when_prsent(tmpdir: "Path", file_system: "FileSystemProtocol") -> None:
-    path = tmpdir / "404.html"
-    path.write_text("not found", "utf-8")
-    static_files_config = StaticFilesConfig(
-        path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
-    )
-    with create_test_client([], static_files_config=static_files_config) as client:
-        response = client.get("/static")
-        assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.text == "not found"
-
-
 def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
@@ -131,17 +104,6 @@ def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
         response = client.get("/text.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
-
-
-def test_config_validation(tmpdir: "Path") -> None:
-    path = tmpdir / "text.txt"
-    path.write_text("content", "utf-8")
-
-    with pytest.raises(ValidationError):
-        StaticFilesConfig(path="", directories=[tmpdir])
-
-    with pytest.raises(ValidationError):
-        StaticFilesConfig(path="/{param:int}", directories=[tmpdir])
 
 
 def test_sub_path_under_static_path(tmpdir: "Path") -> None:
@@ -160,43 +122,6 @@ def test_sub_path_under_static_path(tmpdir: "Path") -> None:
 
         response = client.get("/static/sub/abc")
         assert response.status_code == HTTP_200_OK
-
-
-def test_validation_of_static_path_and_path_parameter(tmpdir: "Path") -> None:
-    path = tmpdir / "test.txt"
-    path.write_text("content", "utf-8")
-
-    @get("/static/{f:str}", media_type=MediaType.TEXT)
-    def handler(f: str) -> str:
-        return f
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler], static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir]))
-
-
-def test_validation_of_file_system(tmpdir: "Path") -> None:
-    class FSWithoutOpen:
-        def info(self) -> None:
-            return
-
-    with pytest.raises(ValidationError):
-        StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutOpen())
-
-    class FSWithoutInfo:
-        def open(self) -> None:
-            return
-
-    with pytest.raises(ValidationError):
-        StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutInfo())
-
-    class ImplementedFS:
-        def info(self) -> None:
-            return
-
-        def open(self) -> None:
-            return
-
-    assert StaticFilesConfig(path="/static", directories=[tmpdir], file_system=ImplementedFS())
 
 
 def test_static_substring_of_self(tmpdir: "Path") -> None:

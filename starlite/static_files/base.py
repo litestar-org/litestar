@@ -85,6 +85,6 @@ class StaticFiles:
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
                 )(scope, receive, send)
-            return
+                return
 
         raise NotFoundException(f"no file or directory match the path {resolved_path or joined_path} was found")
