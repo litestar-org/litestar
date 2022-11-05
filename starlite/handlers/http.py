@@ -936,7 +936,8 @@ class head(HTTPRouteHandler):
         its return annotations."""
         super()._validate_handler_function()
 
-        if self.signature.return_annotation not in {None, "None"}:
+        # we allow here File and FileResponse because these have special setting for head responses
+        if self.signature.return_annotation not in {None, "None", File, "File", FileResponse, "FileResponse"}:
             raise ImproperlyConfiguredException(
                 "A response to a head request should not have a body",
             )
