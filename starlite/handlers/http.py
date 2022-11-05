@@ -34,7 +34,7 @@ from starlite.exceptions import (
 from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
-from starlite.response import Response
+from starlite.response import FileResponse, Response
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -611,28 +611,42 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Validates the route handler function once it is set by inspecting
         its return annotations."""
         super()._validate_handler_function()
-        return_annotation = self.signature.return_annotation
-        if return_annotation is Signature.empty:
+
+        if self.signature.return_annotation is Signature.empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
                 "If your function doesn't return a value, annotate it as returning 'None'."
             )
+
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and return_annotation is not None:
+        ) and self.signature.return_annotation not in {None, "None"}:
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
-        if is_class_and_subclass(return_annotation, Redirect) and self.status_code not in REDIRECT_STATUS_CODES:
+
+        if (
+            is_class_and_subclass(self.signature.return_annotation, Redirect)
+            and self.status_code not in REDIRECT_STATUS_CODES
+        ):
             raise ValidationException(
                 f"Redirect responses should have one of "
                 f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             )
-        if is_class_and_subclass(return_annotation, File) and self.media_type in (MediaType.JSON, MediaType.HTML):
+
+        if (
+            is_class_and_subclass(self.signature.return_annotation, File)
+            or is_class_and_subclass(self.signature.return_annotation, FileResponse)
+        ) and self.media_type in (
+            MediaType.JSON,
+            MediaType.HTML,
+        ):
             self.media_type = MediaType.TEXT
+
         if "socket" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
+
         if "data" in self.signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
@@ -648,7 +662,6 @@ class get(HTTPRouteHandler):
         *,
         after_request: Optional[AfterRequestHookHandler] = None,
         after_response: Optional[AfterResponseHookHandler] = None,
-        allow_head: bool = False,
         background: Optional[Union[BackgroundTask, BackgroundTasks]] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache: Union[bool, int] = False,
@@ -685,9 +698,6 @@ class get(HTTPRouteHandler):
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
         for GET requests.
 
-        Notes:
-            - This decorator can be used to handle HEAD requests as well as GET.
-
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
                 If not given defaults to '/'
@@ -696,8 +706,6 @@ class get(HTTPRouteHandler):
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
                 [Request][starlite.connection.Request] object and should not return any values.
-            allow_head: A boolean dictating whether to allow head requests to the route handler. If True, the route handler
-                will accept both GET and HEAD requests.
             background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
                 [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
                 Defaults to None.
@@ -760,7 +768,7 @@ class get(HTTPRouteHandler):
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
-            http_method=HttpMethod.GET if not allow_head else [HttpMethod.GET, HttpMethod.HEAD],
+            http_method=HttpMethod.GET,
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
@@ -828,9 +836,8 @@ class head(HTTPRouteHandler):
         for HEAD requests.
 
         Notes:
-            - In many circumstances it might be preferable to use the `get` decorator with `allow_head=True` instead
-                of this decorator. This decorator should be used only when it is preferable to separate the two methods
-                handling completely.
+            - A response to a head request cannot include a body.
+                See: [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD).
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -923,6 +930,16 @@ class head(HTTPRouteHandler):
             tags=tags,
             **kwargs,
         )
+
+    def _validate_handler_function(self) -> None:
+        """Validates the route handler function once it is set by inspecting
+        its return annotations."""
+        super()._validate_handler_function()
+
+        if self.signature.return_annotation not in {None, "None"}:
+            raise ImproperlyConfiguredException(
+                "A response to a head request should not have a body",
+            )
 
 
 class post(HTTPRouteHandler):
@@ -1152,8 +1169,8 @@ class put(HTTPRouteHandler):
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
-                This list should describe all exceptions raised within the route handler's function/method. T
-                he Starlite ValidationException will be added automatically for the schema if any validation is involved.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.

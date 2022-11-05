@@ -15,6 +15,11 @@
         members:
             - __init__
 
+::: starlite.handlers.head
+    options:
+        members:
+            - __init__
+
 ::: starlite.handlers.post
     options:
         members:
