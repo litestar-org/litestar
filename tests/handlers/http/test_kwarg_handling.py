@@ -17,6 +17,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.handlers.http import _get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path
@@ -58,10 +59,10 @@ def test_route_handler_kwarg_handling(
             path=path,
         )
         result = decorator(dummy_method)
-        if not isinstance(http_method, list) or len(http_method) > 1:
-            assert result.http_method == http_method
+        if isinstance(http_method, list):
+            assert all(method in result.http_methods for method in http_method)
         else:
-            assert result.http_method == http_method[0]
+            assert http_method in result.http_methods
         assert result.media_type == media_type
         assert result.include_in_schema == include_in_schema
         assert result.response_class == response_class
@@ -70,18 +71,7 @@ def test_route_handler_kwarg_handling(
             assert result.paths == {"/"}
         else:
             assert list(result.paths)[0] == normalize_path(path)
-        if isinstance(http_method, list) and len(http_method) == 1:
-            http_method = http_method[0]
-        if status_code:
-            assert result.status_code == status_code
-        elif isinstance(http_method, list):
-            assert result.status_code == HTTP_200_OK
-        elif http_method == HttpMethod.POST:
-            assert result.status_code == HTTP_201_CREATED
-        elif http_method == HttpMethod.DELETE:
-            assert result.status_code == HTTP_204_NO_CONTENT
-        else:
-            assert result.status_code == HTTP_200_OK
+        assert result.status_code == status_code or _get_default_status_code(http_methods=result.http_methods)
 
 
 @pytest.mark.parametrize(
@@ -98,7 +88,7 @@ def test_semantic_route_handlers_disallow_http_method_assignment(
     sub: Any, http_method: Any, expected_status_code: int
 ) -> None:
     result = sub()(dummy_method)
-    assert result.http_method == http_method
+    assert http_method in result.http_methods
     assert result.status_code == expected_status_code
 
     with pytest.raises(ImproperlyConfiguredException):

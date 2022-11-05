@@ -8,6 +8,7 @@ from typing import (
     Dict,
     List,
     Optional,
+    Set,
     Type,
     Union,
     cast,
@@ -211,6 +212,42 @@ def _create_data_handler(
     return handler
 
 
+def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]]) -> Set["Method"]:
+    """
+
+    Args:
+        http_methods: A value for http method.
+
+    Returns:
+        A normalized set of http methods.
+    """
+    output: Set[str] = set()
+
+    for method in http_methods if isinstance(http_methods, list) else [http_methods]:
+        if isinstance(method, HttpMethod):
+            output.add(method.value.upper())
+        else:
+            output.add(method.upper())
+
+    return cast("Set[Method]", output)
+
+
+def _get_default_status_code(http_methods: Set["Method"]) -> int:
+    """
+
+    Args:
+        http_methods: A set of Method strings.
+
+    Returns:
+        A status code integer.
+    """
+    if HttpMethod.POST in http_methods:
+        return HTTP_201_CREATED
+    if HttpMethod.DELETE in http_methods:
+        return HTTP_204_NO_CONTENT
+    return HTTP_200_OK
+
+
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
         "_resolved_after_response",
@@ -228,7 +265,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "deprecated",
         "description",
         "etag",
-        "http_method",
+        "http_methods",
         "include_in_schema",
         "media_type",
         "operation_id",
@@ -348,20 +385,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         if not http_method:
             raise ImproperlyConfiguredException("An http_method kwarg is required")
-        if isinstance(http_method, list):
-            self.http_method: Union[List[str], str] = [v.upper() for v in http_method]
-            if len(http_method) == 1:
-                self.http_method = http_method[0]
-        else:
-            self.http_method = http_method.value if isinstance(http_method, HttpMethod) else http_method
-        if status_code:
-            self.status_code = status_code
-        elif self.http_method == HttpMethod.POST:
-            self.status_code = HTTP_201_CREATED
-        elif self.http_method == HttpMethod.DELETE:
-            self.status_code = HTTP_204_NO_CONTENT
-        else:
-            self.status_code = HTTP_200_OK
+
+        self.http_methods = _normalize_http_method(http_methods=http_method)
+        self.status_code = status_code or _get_default_status_code(http_methods=self.http_methods)
+
         super().__init__(
             path,
             dependencies=dependencies,
@@ -372,6 +399,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             opt=opt,
             **kwargs,
         )
+
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.background = background
@@ -572,14 +600,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
     @property
-    def http_methods(self) -> List["Method"]:
-        """
-        Returns:
-            A list of the RouteHandler's [HttpMethod][starlite.types.Method] strings
-        """
-        return cast("List[Method]", self.http_method if isinstance(self.http_method, list) else [self.http_method])
-
-    @property
     def signature(self) -> Signature:
         """
         Returns:
@@ -659,6 +679,7 @@ class get(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        allow_head: bool = False,
         **kwargs: Any,
     ) -> None:
         """GET Route Decorator. Use this decorator to decorate an HTTP handler
@@ -734,7 +755,7 @@ class get(HTTPRouteHandler):
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
-            http_method=HttpMethod.GET,
+            http_method=HttpMethod.GET if not allow_head else [HttpMethod.GET, HttpMethod.HEAD],
             include_in_schema=include_in_schema,
             media_type=media_type,
             middleware=middleware,
