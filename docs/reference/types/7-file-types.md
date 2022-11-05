@@ -20,3 +20,4 @@
     options:
         members:
             - info
+            - open
