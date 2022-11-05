@@ -19,8 +19,7 @@ the issue.
 
 ## Application Exceptions
 
-For application exceptions, Starlite uses the class `HTTPException`, which inherits from both `StarliteException`
-and `starlette.exceptions.HTTPException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
+For application exceptions, Starlite uses the class `HTTPException`, which inherits from `StarliteException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
 the `HTTPException` class and the kwargs it accepts.
 
 ```json
@@ -49,8 +48,8 @@ See the [API Reference section for exceptions](../reference/exceptions/0-base-ex
 ## Exception Handling
 
 Starlite handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
-either the `starlette.exceptions.HTTPException` or the `starlite.exceptions.HTTPException`, the responses will include
-the appropriate `status_code`. Otherwise, the responses will **default to 500** - "Internal Server Error".
+[`HTTPException`][starlite.exceptions.HTTPException], the responses will include the appropriate `status_code`.
+Otherwise, the responses will **default to 500** - "Internal Server Error".
 
 You can **customize exception handling** by passing a dictionary – mapping either `error status codes`,
 or `exception classes`, to callables. For example, if you would like to replace the default exception handler with a

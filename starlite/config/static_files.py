@@ -98,7 +98,7 @@ class StaticFilesConfig(BaseModel):
         """Returns an ASGI app serving static files based on the config.
 
         Returns:
-            [StaticFiles][starlette.static_files.StaticFiles]
+            [StaticFiles][starlite.static_files.StaticFiles]
         """
         static_files = StaticFiles(is_html_mode=self.html_mode, directories=self.directories, file_system=self.file_system)  # type: ignore
         return asgi(

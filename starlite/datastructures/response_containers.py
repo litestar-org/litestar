@@ -74,8 +74,7 @@ class ResponseContainer(ABC, GenericModel, Generic[R]):
         app: "Starlite",
         request: "Request",
     ) -> "R":  # pragma: no cover
-        """Abstract method that should be implemented by subclasses. Returns a
-        Starlette compatible Response instance.
+        """Abstract method that should be implemented by subclasses.
 
         Args:
             headers: A dictionary of headers.

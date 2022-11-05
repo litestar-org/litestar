@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from time import time
 
 from starlite import AbstractMiddleware, ScopeType
-from starlette.datastructures import MutableHeaders
+from starlite.datastructures import MutableScopeHeaders
 
 
 if TYPE_CHECKING:
@@ -25,8 +25,8 @@ class MyMiddleware(AbstractMiddleware):
         async def send_wrapper(message: "Message") -> None:
             if message["type"] == "http.response.start":
                 process_time = time() - start_time
-                headers = MutableHeaders(scope=message)
-                headers.append("X-Process-Time", str(process_time))
+                headers = MutableScopeHeaders.from_message(message=message)
+                headers["X-Process-Time"] = str(process_time)
                 await send(message)
 
         await self.app(scope, receive, send_wrapper)

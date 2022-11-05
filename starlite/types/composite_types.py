@@ -43,7 +43,6 @@ else:
     MiddlewareProtocol = Any
     Provide = Any
     ResponseHeader = Any
-    StarletteMiddleware = Any
 
 T = TypeVar("T")
 

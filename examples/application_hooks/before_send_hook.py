@@ -1,8 +1,7 @@
 from typing import TYPE_CHECKING, Dict
 
-from starlette.datastructures import MutableHeaders
-
 from starlite import Starlite, get
+from starlite.datastructures import MutableScopeHeaders
 
 if TYPE_CHECKING:
     from starlite.datastructures import State
@@ -21,8 +20,8 @@ async def before_send_hook_handler(message: "Message", state: "State") -> None:
     We therefore ensure it runs only on the message start event.
     """
     if message["type"] == "http.response.start":
-        headers = MutableHeaders(scope=message)
-        headers.append("My Header", state.message)
+        headers = MutableScopeHeaders.from_message(message=message)
+        headers["My Header"] = state.message
 
 
 def on_startup(state: "State") -> None:
