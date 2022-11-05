@@ -5,6 +5,8 @@
         members:
             - DELETE
             - GET
+            - HEAD
+            - OPTIONS
             - PATCH
             - POST
             - PUT

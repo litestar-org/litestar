@@ -105,6 +105,8 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
+            aiomcache,
+            fsspec,
             multidict,
             orjson,
             piccolo,
@@ -113,13 +115,12 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pyyaml,
+            redis,
             sqlalchemy,
             starlette,
             starlite_multipart,
             structlog,
             tortoise_orm,
-            aiomcache,
-            redis,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.982"
@@ -128,6 +129,7 @@ repos:
         additional_dependencies:
           [
             aiomcache,
+            fsspec,
             httpx,
             multidict,
             orjson,
@@ -143,9 +145,9 @@ repos:
             starlite_multipart,
             structlog,
             tortoise-orm,
-            types-pyyaml,
             types-beautifulsoup4,
             types-freezegun,
+            types-pyyaml,
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
@@ -159,12 +161,13 @@ repos:
             brotli,
             cryptography,
             freezegun,
+            fsspec,
             httpx,
             hypothesis,
+            jinja2,
             mako,
             multidict,
             orjson,
-            jinja2,
             piccolo,
             picologging,
             pydantic,

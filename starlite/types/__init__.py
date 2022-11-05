@@ -56,16 +56,18 @@ from .callable_types import (
     OnAppInitHandler,
     Serializer,
 )
-from .composite import (
+from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
     Middleware,
     ParametersMap,
+    PathType,
     ResponseCookies,
     ResponseHeadersMap,
 )
 from .empty import Empty, EmptyType
-from .helpers import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
+from .file_types import FileInfo, FileSystemProtocol
+from .helper_types import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -77,7 +79,6 @@ from .partial import Partial
 from .protocols import Logger
 
 __all__ = (
-    "AnyIOBackend",
     "ASGIApp",
     "ASGIApp",
     "ASGIVersion",
@@ -85,6 +86,7 @@ __all__ = (
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
     "AnyCallable",
+    "AnyIOBackend",
     "AsyncAnyCallable",
     "BaseScope",
     "BeforeMessageSendHookHandler",
@@ -96,6 +98,8 @@ __all__ = (
     "EmptyType",
     "ExceptionHandler",
     "ExceptionHandlersMap",
+    "FileInfo",
+    "FileSystemProtocol",
     "Guard",
     "HTTPDisconnectEvent",
     "HTTPReceiveMessage",
@@ -131,6 +135,7 @@ __all__ = (
     "OnAppInitHandler",
     "ParametersMap",
     "Partial",
+    "PathType",
     "Receive",
     "Receive",
     "ReceiveMessage",

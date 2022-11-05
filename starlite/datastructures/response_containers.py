@@ -35,7 +35,9 @@ from starlite.response import (
     TemplateResponse,
 )
 from starlite.response.file import ONE_MEGA_BYTE
-from starlite.types.composite import StreamType
+from starlite.types import FileInfo, FileSystemProtocol
+from starlite.types.composite_types import StreamType
+from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -105,6 +107,20 @@ class File(ResponseContainer[FileResponse]):
     """
     An optional [ETag][starlite.datastructures.ETag] instance. If not provided, an etag will be automatically generated.
     """
+    file_system: Any = BaseLocalFileSystem()
+    """
+    The file_system spec to use loading the file.
+
+    Notes:
+        - A file_system is a class that adheres to the
+            [FileSystemProtocol][starlite.types.FileSystemProtocol].
+        - You can use any of the file systems exported from the
+            [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
+    """
+    file_info: Optional[FileInfo] = None
+    """
+    The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
+    """
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -120,6 +136,22 @@ class File(ResponseContainer[FileResponse]):
             A stat_result
         """
         return value or Path(cast("str", values.get("path"))).stat()
+
+    @validator("file_system", always=True)
+    def validate_file_system(  # pylint: disable=no-self-argument
+        cls, value: "FileSystemProtocol"
+    ) -> "FileSystemProtocol":
+        """Ensures the value is a file system spec.
+
+        Args:
+            value: A file system spec.
+
+        Returns:
+            A file system spec.
+        """
+        if not (callable(getattr(value, "info", None)) and callable(getattr(value, "open", None))):
+            raise ValueError("file_system must adhere to the FileSystemProtocol type")
+        return value
 
     def to_response(
         self,
@@ -146,13 +178,15 @@ class File(ResponseContainer[FileResponse]):
             chunk_size=self.chunk_size,
             content_disposition_type=self.content_disposition_type,
             encoding=self.encoding,
+            etag=self.etag,
+            file_info=self.file_info,
+            file_system=self.file_system,
             filename=self.filename,
             headers=headers,
             media_type=media_type,
             path=self.path,
             stat_result=self.stat_result,
             status_code=status_code,
-            etag=self.etag,
         )
 
 

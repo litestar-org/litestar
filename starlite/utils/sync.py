@@ -102,6 +102,8 @@ def async_partial(fn: Callable) -> Callable:
 
 
 class AsyncIteratorWrapper(Generic[T]):
+    __slots__ = ("iterator", "generator")
+
     def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:
         """Take a sync iterator or iterable and yields values from it
         asynchronously.

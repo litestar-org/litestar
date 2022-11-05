@@ -1,70 +1,104 @@
 from email.utils import formatdate
+from inspect import iscoroutine
 from mimetypes import guess_type
-from os.path import basename
-from pathlib import Path
-from stat import S_ISREG
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Optional, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Coroutine,
+    Dict,
+    Optional,
+    Union,
+    cast,
+)
 from urllib.parse import quote
 from zlib import adler32
-
-from anyio import open_file
 
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
 from starlite.status_codes import HTTP_200_OK
+from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
-
     from os import PathLike
     from os import stat_result as stat_result_type
 
+    from anyio import Path
     from typing_extensions import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
-    from starlite.types import ResponseCookies
+    from starlite.types import PathType, ResponseCookies, Send
+    from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 ONE_MEGA_BYTE: int = 1024 * 1024
 
 
-async def async_file_iterator(file_path: Union[str, "PathLike", Path], chunk_size: int) -> AsyncGenerator[bytes, None]:
+async def async_file_iterator(
+    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
+) -> AsyncGenerator[bytes, None]:
     """
     A generator function that asynchronously reads a file and yields its chunks.
     Args:
         file_path: A path to a file.
         chunk_size: The chunk file to use.
+        adapter: File system adapter class.
+        adapter: File system adapter class.
 
     Returns:
         An async generator.
     """
-    async with await open_file(file_path, mode="rb") as file:
+    async with await adapter.open(file_path, mode="rb") as file:
         yield await file.read(chunk_size)
 
 
+def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
+    """Creates an etag.
+
+    Notes:
+        - Function is derived from flask.
+
+    Returns:
+        An etag.
+    """
+    check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
+    return f'"{modified_time}-{file_size}-{check}"'
+
+
 class FileResponse(StreamingResponse):
-    __slots__ = ("stat_result", "filename", "chunk_size")
+    __slots__ = (
+        "chunk_size",
+        "content_disposition_type",
+        "etag",
+        "file_path",
+        "filename",
+        "adapter",
+        "file_info",
+    )
 
     def __init__(
         self,
         path: Union[str, "PathLike", "Path"],
         *,
-        status_code: int = HTTP_200_OK,
-        media_type: Optional[Union["Literal[MediaType.TEXT]", str]] = None,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
-        encoding: str = "utf-8",
-        is_head_response: bool = False,
-        filename: Optional[str] = None,
-        stat_result: Optional["stat_result_type"] = None,
         chunk_size: int = ONE_MEGA_BYTE,
         content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
+        cookies: Optional["ResponseCookies"] = None,
+        encoding: str = "utf-8",
         etag: Optional["ETag"] = None,
+        file_system: Optional["FileSystemProtocol"] = None,
+        filename: Optional[str] = None,
+        file_info: Optional["FileInfo"] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        is_head_response: bool = False,
+        media_type: Optional[Union["Literal[MediaType.TEXT]", str]] = None,
+        stat_result: Optional["stat_result_type"] = None,
+        status_code: int = HTTP_200_OK,
     ) -> None:
         """This class allows streaming a file as response body.
 
         Notes:
-            - This class extends the [StreamingReesponse][starlite.response.StreamingResponse] class.
+            - This class extends the [StreamingResponse][starlite.response.StreamingResponse] class.
 
         Args:
             path: A file path in one of the supported formats.
@@ -86,13 +120,22 @@ class FileResponse(StreamingResponse):
             content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
             etag: An optional [ETag][starlite.datastructures.ETag] instance.
                 If not provided, an etag will be automatically generated.
+            file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided
+                it will be used to load the file.
+            file_info: The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
 
+        self.content_disposition_type = content_disposition_type
+        self.etag = etag
+        self.file_path = path
+        self.filename = filename or ""
+        self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
+
         super().__init__(
-            content=async_file_iterator(file_path=path, chunk_size=chunk_size),
+            content=async_file_iterator(file_path=path, chunk_size=chunk_size, adapter=self.adapter),
             status_code=status_code,
             media_type=media_type,
             background=background,
@@ -101,62 +144,26 @@ class FileResponse(StreamingResponse):
             encoding=encoding,
             is_head_response=is_head_response,
         )
-        self.stat_result = cast("stat_result_type", self._get_stat_result(path=path, stat_result=stat_result))
-        self.set_header("last-modified", formatdate(self.stat_result.st_mtime, usegmt=True))
-        self.set_header(
-            "content-disposition",
-            self._get_content_disposition(
-                filename=filename or basename(path), content_disposition_type=content_disposition_type
-            ),
-        )
-        self.set_etag(etag or self._create_etag(path=path))
 
-    def _create_etag(self, path: Union[str, "PathLike"]) -> str:
-        """Creates an etag.
+        if file_info:
+            self.file_info: Union["FileInfo", "Coroutine[Any, Any, 'FileInfo']"] = file_info
+        elif stat_result:
+            self.file_info = self.adapter.parse_stat_result(result=stat_result, path=path)
+        else:
+            self.file_info = self.adapter.info(self.file_path)
 
-        Notes:
-            - Function is derived from flask.
-
-        Returns:
-            An etag.
+    @property
+    def content_disposition(self) -> str:
         """
-        check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
-        return f'"{self.stat_result.st_mtime}-{self.stat_result.st_size}-{check}"'
-
-    @staticmethod
-    def _get_stat_result(path: Union[str, "PathLike"], stat_result: Optional["stat_result_type"]) -> "stat_result_type":
-        """
-
-        Args:
-            stat_result: An optional [stat_result][os.stat_result] instance.
-
-        Returns:
-            An [stat_result][os.stat_result] instance.
-        """
-        try:
-            if stat_result is None:
-                stat_result = Path(path).stat()
-            if not S_ISREG(stat_result.st_mode):
-                raise ImproperlyConfiguredException(f"{path} is not a file")
-            return stat_result
-        except FileNotFoundError as e:
-            raise ImproperlyConfiguredException(f"file {path} doesn't exist") from e
-
-    @staticmethod
-    def _get_content_disposition(filename: str, content_disposition_type: "Literal['attachment', 'inline']") -> str:
-        """
-
-        Args:
-            content_disposition_type: The Content-Disposition type of the file.
 
         Returns:
             A value for the 'Content-Disposition' header.
         """
-        quoted_filename = quote(filename)
-        is_utf8 = quoted_filename == filename
+        quoted_filename = quote(self.filename)
+        is_utf8 = quoted_filename == self.filename
         if is_utf8:
-            return f'{content_disposition_type}; filename="{filename}"'
-        return f"{content_disposition_type}; filename*=utf-8''{quoted_filename}"
+            return f'{self.content_disposition_type}; filename="{self.filename}"'
+        return f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
 
     @property
     def content_length(self) -> Optional[int]:
@@ -165,4 +172,26 @@ class FileResponse(StreamingResponse):
         Returns:
             Returns the value of 'self.stat_result.st_size' to populate the 'Content-Length' header.
         """
-        return self.stat_result.st_size
+        if isinstance(self.file_info, dict):
+            return self.file_info["size"]
+        return 0
+
+    async def start_response(self, send: "Send") -> None:
+        try:
+            fs_info = self.file_info = cast(
+                "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info)
+            )
+        except FileNotFoundError as e:
+            raise ImproperlyConfiguredException(f"{self.file_path} does not exist") from e
+
+        if fs_info["type"] != "file":
+            raise ImproperlyConfiguredException(f"{self.file_path} is not a file")
+
+        self.set_header("last-modified", formatdate(fs_info["mtime"], usegmt=True))
+        self.set_header("content-disposition", self.content_disposition)
+        self.set_etag(
+            self.etag
+            or create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"])
+        )
+
+        await super().start_response(send=send)

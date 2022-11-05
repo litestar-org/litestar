@@ -19,6 +19,8 @@
             - cookies
             - encoding
             - etag
+            - file_info
+            - file_system
             - filename
             - headers
             - media_type

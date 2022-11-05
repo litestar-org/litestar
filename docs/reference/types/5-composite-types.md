@@ -9,3 +9,5 @@
 ::: starlite.types.ResponseCookies
 
 ::: starlite.types.ResponseHeadersMap
+
+::: starlite.types.PathType
