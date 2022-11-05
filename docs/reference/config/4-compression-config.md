@@ -11,3 +11,6 @@
             - brotli_lgwin
             - brotli_lgblock
             - brotli_gzip_fallback
+            - middleware_class
+            - exclude
+            - exclude_opt_key

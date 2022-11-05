@@ -14,7 +14,7 @@ from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.middleware.compression.base import CompressionMiddleware
+from starlite.middleware.compression import CompressionMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -40,7 +40,6 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -66,7 +65,7 @@ if TYPE_CHECKING:
         Send,
         SingleOrList,
     )
-    from starlite.types.callable_types import GetLogger
+    from starlite.types.callable_types import AnyCallable, GetLogger
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """

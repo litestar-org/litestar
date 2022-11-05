@@ -1,16 +1,14 @@
-from typing import TYPE_CHECKING, Optional, Pattern, Set
+from typing import TYPE_CHECKING, Optional, Pattern
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
-    from starlite.enums import ScopeType
-    from starlite.types import Scope
+    from starlite.types import Scope, Scopes
 
 
 def should_bypass_middleware(
     *,
     scope: "Scope",
-    scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"],
+    scopes: "Scopes",
     exclude_opt_key: Optional[str] = None,
     exclude_path_pattern: Optional[Pattern] = None,
 ) -> bool:

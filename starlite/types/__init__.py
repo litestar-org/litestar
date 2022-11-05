@@ -64,6 +64,7 @@ from .composite_types import (
     PathType,
     ResponseCookies,
     ResponseHeadersMap,
+    Scopes,
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
@@ -148,6 +149,7 @@ __all__ = (
     "Scope",
     "Scope",
     "ScopeSession",
+    "Scopes",
     "Send",
     "Send",
     "Serializer",

@@ -1,13 +1,14 @@
 import re
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Pattern, Set, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Pattern, Union
 
-from typing_extensions import Literal, Protocol, runtime_checkable
+from typing_extensions import Protocol, runtime_checkable
 
 from starlite.enums import ScopeType
 from starlite.middleware.utils import should_bypass_middleware
 
 if TYPE_CHECKING:
+    from starlite.types import Scopes
     from starlite.types.asgi_types import ASGIApp, Receive, Scope, Send
 
 
@@ -73,7 +74,7 @@ class DefineMiddleware:
 
 
 class AbstractMiddleware:
-    scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"] = {ScopeType.HTTP, ScopeType.WEBSOCKET}
+    scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     exclude: Optional[Union[str, List[str]]] = None
     exclude_opt_key: Optional[str] = None
 
@@ -82,7 +83,7 @@ class AbstractMiddleware:
         app: "ASGIApp",
         exclude: Optional[Union[str, List[str]]] = None,
         exclude_opt_key: Optional[str] = None,
-        scopes: Optional[Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"]] = None,
+        scopes: Optional["Scopes"] = None,
     ) -> None:
         """
 

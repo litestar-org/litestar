@@ -1,6 +1,6 @@
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Set, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Union
 
 from pydantic import BaseConfig, BaseModel
 
@@ -9,9 +9,8 @@ from starlite.enums import ScopeType
 from starlite.middleware.utils import should_bypass_middleware
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Scopes, Send
 
 
 class AuthenticationResult(BaseModel):
@@ -31,7 +30,7 @@ class AuthenticationResult(BaseModel):
 
 
 class AbstractAuthenticationMiddleware(ABC):
-    scopes: Set["Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]"] = {ScopeType.HTTP, ScopeType.WEBSOCKET}
+    scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """
     Scopes supported by the middleware.
     """

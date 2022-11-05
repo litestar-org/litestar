@@ -10,15 +10,21 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Set,
     Type,
     TypeVar,
     Union,
 )
 
+from typing_extensions import Literal
+
+from starlite.enums import ScopeType
+
 from .asgi_types import ASGIApp
 from .callable_types import ExceptionHandler
 
 if TYPE_CHECKING:
+
     from pydantic.fields import FieldInfo  # noqa: TC004
     from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
     from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
@@ -55,3 +61,4 @@ ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
 PathType = Union[Path, PathLike, str]
+Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
