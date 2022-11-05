@@ -56,3 +56,10 @@ class ParamType(str, Enum):
     QUERY = "query"
     COOKIE = "cookie"
     HEADER = "header"
+
+
+class CompressionEncoding(str, Enum):
+    """An Enum for supported compression encodings."""
+
+    GZIP = "gzip"
+    BROTLI = "br"

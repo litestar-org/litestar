@@ -3,7 +3,7 @@ from typing import IO, TYPE_CHECKING, Any, AnyStr, Awaitable, Optional, Union, o
 from typing_extensions import Literal, NotRequired, Protocol, TypedDict
 
 if TYPE_CHECKING:
-    from _typeshed import OpenBinaryMode, OpenTextMode  # pylint: disable=import-error
+    from _typeshed import OpenBinaryMode, OpenTextMode
     from anyio import AsyncFile
 
     from starlite.types.composite_types import PathType

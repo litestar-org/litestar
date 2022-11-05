@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Union, cast
+from typing import Any, Generic, Optional, TypeVar, Union, cast
+
+T = TypeVar("T")
 
 
 def get_name(value: Any) -> str:
@@ -29,3 +32,13 @@ def get_enum_string_value(value: Union[Enum, str]) -> str:
         A string.
     """
     return cast("str", value.value) if isinstance(value, Enum) else value
+
+
+@dataclass
+class Ref(Generic[T]):
+    """A helper class that encapsulates a value."""
+
+    __slots__ = ("value",)
+
+    value: Optional[T]
+    """The value wrapped by the ref."""

@@ -1,11 +1,9 @@
-from typing import TYPE_CHECKING, Any, Dict, cast
+from typing import List, Optional, Type, Union
 
 from pydantic import BaseModel, conint
 from typing_extensions import Literal
 
-if TYPE_CHECKING:
-
-    from starlite.types import ASGIApp
+from starlite.middleware.compression import CompressionMiddleware
 
 
 class CompressionConfig(BaseModel):
@@ -48,45 +46,17 @@ class CompressionConfig(BaseModel):
     """
     brotli_gzip_fallback: bool = True
     """
-        Use GZIP if Brotli not supported.
+        Use GZIP if Brotli is not supported.
     """
-
-    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        """Returns a dictionary representation of the CompressionConfig.
-
-        Returns:
-            dictionary representation of the selected CompressionConfig.  Only columns for the selected backend are included
-        """
-        brotli_keys = {
-            "minimum_size",
-            "brotli_quality",
-            "brotli_mode",
-            "brotli_lgwin",
-            "brotli_lgblock",
-            "brotli_gzip_fallback",
-        }
-        gzip_keys = {"minimum_size", "gzip_compress_level"}
-        if self.backend == "gzip":
-            kwargs["include"] = gzip_keys
-        elif self.backend == "brotli":
-            kwargs["include"] = brotli_keys
-
-        return super().dict(*args, **kwargs)
-
-    def to_middleware(self, app: "ASGIApp") -> "ASGIApp":
-        """Creates a middleware instance from the config.
-
-        Args:
-            app: The [Starlite][starlite.app.Starlite] App instance.
-
-        Returns:
-            A middleware instance
-        """
-        if self.backend == "gzip":
-            from starlite.middleware.compression.gzip import GZipMiddleware
-
-            return cast("ASGIApp", GZipMiddleware(app=app, **self.dict()))
-
-        from starlite.middleware.compression.brotli import BrotliMiddleware
-
-        return BrotliMiddleware(app=app, **self.dict())
+    middleware_class: Type[CompressionMiddleware] = CompressionMiddleware
+    """
+    Middleware class to use, should be a subclass of CompressionMiddleware.
+    """
+    exclude: Optional[Union[str, List[str]]] = None
+    """
+    An identifier to use on routes to disable authentication for a particular route.
+    """
+    exclude_opt_key: Optional[str] = None
+    """
+    A pattern or list of patterns to skip in the authentication middleware.
+    """
