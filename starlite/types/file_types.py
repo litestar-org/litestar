@@ -1,6 +1,6 @@
 from typing import IO, TYPE_CHECKING, Any, AnyStr, Awaitable, Optional, Union, overload
 
-from typing_extensions import Literal, Protocol, TypedDict
+from typing_extensions import Literal, NotRequired, Protocol, TypedDict
 
 if TYPE_CHECKING:
     from _typeshed import OpenBinaryMode, OpenTextMode  # pylint: disable=import-error
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class FileInfo(TypedDict):
     created: float
     """Created time stamp, equal to 'stat_result.st_ctime'."""
-    destination: Optional[bytes]
+    destination: NotRequired[Optional[bytes]]
     """Output of loading a symbolic link."""
     gid: int
     """Group ID of owner."""
@@ -43,7 +43,7 @@ class FileSystemProtocol(Protocol):
     exported by the [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library.
     """
 
-    def info(self, path: str, **kwargs: Any) -> Union[FileInfo, Awaitable[FileInfo]]:
+    def info(self, path: "PathType", **kwargs: Any) -> Union[FileInfo, Awaitable[FileInfo]]:
         """Retrieves information about a given file path.
 
         Args:

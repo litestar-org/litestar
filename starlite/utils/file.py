@@ -1,4 +1,4 @@
-from stat import S_ISDIR, S_ISLNK
+from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, AnyStr, Optional, cast
 
 from anyio import AsyncFile, Path, open_file
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class BaseLocalFileSystem(FileSystemProtocol):
-    async def info(self, path: str, **kwargs: Any) -> "FileInfo":  # pylint: disable=W0236
+    async def info(self, path: "PathType", **kwargs: Any) -> "FileInfo":  # pylint: disable=W0236
         """Retrieves information about a given file path.
 
         Args:
@@ -27,7 +27,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
         Returns:
             A dictionary of file info.
         """
-        result = await Path(path).stat()
+        result = await Path(path).stat(follow_symlinks=True)
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
     async def open(  # pylint: disable=invalid-overridden-method
@@ -116,7 +116,7 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        is_sym_link = S_ISLNK(result.st_mode)
+        is_sym_link = await Path(path).is_symlink()
         destination: Optional[bytes] = None
         file_size = result.st_size
 
@@ -124,7 +124,7 @@ class FileSystemAdapter:
             destination = str(await Path(path).readlink()).encode("utf-8")
             try:
                 file_size = (await Path(path).stat(follow_symlinks=True)).st_size
-            except OSError:
+            except OSError:  # pragma: no cover
                 file_size = 0
 
         value_type = "directory" if S_ISDIR(result.st_mode) else "file"
