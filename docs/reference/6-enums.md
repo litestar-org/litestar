@@ -45,3 +45,9 @@
             - QUERY
             - COOKIE
             - HEADER
+
+::: starlite.enums.CompressionEncoding
+    options:
+        members:
+            - GZIP
+            - BROTLI
