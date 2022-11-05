@@ -1,9 +1,10 @@
 from stat import S_ISDIR
-from typing import TYPE_CHECKING, Any, AnyStr, Optional, cast
+from typing import TYPE_CHECKING, Any, AnyStr, cast
 
 from anyio import AsyncFile, Path, open_file
 from anyio.to_thread import run_sync
 
+from starlite.exceptions import InternalServerException, NotAuthorizedException
 from starlite.types.file_types import FileSystemProtocol
 from starlite.utils.sync import is_async_callable
 
@@ -69,12 +70,19 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        awaitable = (
-            self.file_system.info(str(path))
-            if is_async_callable(self.file_system.info)
-            else run_sync(self.file_system.info, str(path))
-        )
-        return cast("FileInfo", await awaitable)
+        try:
+            awaitable = (
+                self.file_system.info(str(path))
+                if is_async_callable(self.file_system.info)
+                else run_sync(self.file_system.info, str(path))
+            )
+            return cast("FileInfo", await awaitable)
+        except FileNotFoundError as e:
+            raise e
+        except PermissionError as e:
+            raise NotAuthorizedException(f"failed to read {path} due to missing permissions") from e
+        except OSError as e:  # pragma: no cover
+            raise InternalServerException from e
 
     async def open(
         self,
@@ -92,16 +100,21 @@ class FileSystemAdapter:
             mode: Mode, similar to the built `open`.
             buffering: Buffer size.
         """
-        if is_async_callable(self.file_system.open):  # pyright: ignore
-            return cast(
-                "AsyncFile[bytes]",
-                await self.file_system.open(
-                    file=file,
-                    mode=mode,
-                    buffering=buffering,
-                ),
-            )
-        return AsyncFile(await run_sync(self.file_system.open, file, mode, buffering))  # type: ignore
+        try:
+            if is_async_callable(self.file_system.open):  # pyright: ignore
+                return cast(
+                    "AsyncFile[bytes]",
+                    await self.file_system.open(
+                        file=file,
+                        mode=mode,
+                        buffering=buffering,
+                    ),
+                )
+            return AsyncFile(await run_sync(self.file_system.open, file, mode, buffering))  # type: ignore
+        except PermissionError as e:
+            raise NotAuthorizedException(f"failed to open {file} due to missing permissions") from e
+        except OSError as e:
+            raise InternalServerException from e
 
     @staticmethod
     async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":
@@ -116,30 +129,25 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        is_sym_link = await Path(path).is_symlink()
-        destination: Optional[bytes] = None
-        file_size = result.st_size
-
-        if is_sym_link:
-            destination = str(await Path(path).readlink()).encode("utf-8")
-            try:
-                file_size = (await Path(path).stat(follow_symlinks=True)).st_size
-            except OSError:  # pragma: no cover
-                file_size = 0
-
-        value_type = "directory" if S_ISDIR(result.st_mode) else "file"
-
-        return {
+        file_info: "FileInfo" = {
             "created": result.st_ctime,
             "gid": result.st_gid,
-            "ino": result.st_uid,
-            "islink": is_sym_link,
+            "ino": result.st_ino,
+            "islink": await Path(path).is_symlink(),
             "mode": result.st_mode,
             "mtime": result.st_mtime,
             "name": str(path),
             "nlink": result.st_nlink,
-            "size": file_size,
-            "type": value_type,  # type: ignore[typeddict-item]
+            "size": result.st_size,
+            "type": "directory" if S_ISDIR(result.st_mode) else "file",
             "uid": result.st_uid,
-            "destination": destination,
         }
+
+        if file_info["islink"]:
+            file_info["destination"] = str(await Path(path).readlink()).encode("utf-8")
+            try:
+                file_info["size"] = (await Path(path).stat(follow_symlinks=True)).st_size
+            except OSError:  # pragma: no cover
+                file_info["size"] = result.st_size
+
+        return file_info

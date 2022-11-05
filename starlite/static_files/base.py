@@ -2,12 +2,7 @@ from os.path import commonpath, join
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 from starlite.enums import ScopeType
-from starlite.exceptions import (
-    InternalServerException,
-    MethodNotAllowedException,
-    NotAuthorizedException,
-    NotFoundException,
-)
+from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
@@ -56,11 +51,6 @@ class StaticFiles:
                     return joined_path, file_info
             except FileNotFoundError:
                 continue
-            except PermissionError as e:
-                raise NotAuthorizedException("failed to load file due to missing permissions") from e
-            except OSError as e:
-                raise InternalServerException from e
-
         return None, None
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
