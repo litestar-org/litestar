@@ -27,12 +27,16 @@ async def test_file_adapter_open(tmpdir: Path, file_system: "FileSystemProtocol"
 async def test_file_adapter_open_handles_permission_exception(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")
     file.write_bytes(b"test")
-    file.chmod(0o000)
+
+    owner_permissions = file.stat().st_mode
+    file.chmod(S_IRWXO)
     adapter = FileSystemAdapter(file_system=file_system)
 
     with pytest.raises(NotAuthorizedException):
         async with await adapter.open(file=file, mode="rb"):
             pass
+
+    Path(tmpdir).chmod(owner_permissions)
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
@@ -79,8 +83,12 @@ async def test_file_adapter_info_handles_file_not_found_exception(file_system: "
 async def test_file_adapter_info_handles_permission_exception(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")
     file.write_bytes(b"test")
+
+    owner_permissions = file.stat().st_mode
     Path(tmpdir).chmod(S_IRWXO)
     adapter = FileSystemAdapter(file_system=file_system)
 
     with pytest.raises(NotAuthorizedException):
         await adapter.info(path=file)
+
+    Path(tmpdir).chmod(owner_permissions)
