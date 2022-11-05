@@ -6,7 +6,6 @@ from typing import (
     AsyncGenerator,
     Awaitable,
     Callable,
-    Dict,
     Generic,
     Iterable,
     Iterator,
@@ -17,7 +16,9 @@ from typing import (
 )
 
 from anyio.to_thread import run_sync
-from typing_extensions import Literal, ParamSpec, TypeGuard
+from typing_extensions import ParamSpec, TypeGuard
+
+from starlite.utils.helpers import Ref
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -52,9 +53,7 @@ class AsyncCallable(Generic[P, T]):
 
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
-        self.wrapped_callable: Dict[Literal["fn"], Callable] = {
-            "fn": fn if is_async_callable(fn) else async_partial(fn)  # pyright: ignore
-        }
+        self.wrapped_callable = Ref[Callable](fn if is_async_callable(fn) else async_partial(fn))  # pyright: ignore
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         """A proxy to the wrapped function's call method.
@@ -66,7 +65,7 @@ class AsyncCallable(Generic[P, T]):
         Returns:
             The return value of the wrapped function.
         """
-        return cast("T", await self.wrapped_callable["fn"](*args, **kwargs))
+        return cast("T", await self.wrapped_callable.value(*args, **kwargs))  # type: ignore
 
 
 def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:

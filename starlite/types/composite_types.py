@@ -11,6 +11,7 @@ from typing import (
     Iterator,
     List,
     Set,
+    Tuple,
     Type,
     TypeVar,
     Union,
@@ -26,8 +27,6 @@ from .callable_types import ExceptionHandler
 if TYPE_CHECKING:
 
     from pydantic.fields import FieldInfo  # noqa: TC004
-    from starlette.middleware import Middleware as StarletteMiddleware  # noqa: TC004
-    from starlette.middleware.base import BaseHTTPMiddleware  # noqa: TC004
 
     from starlite.datastructures.cookie import Cookie  # noqa: TC004
     from starlite.datastructures.provide import Provide  # noqa: TC004
@@ -36,7 +35,6 @@ if TYPE_CHECKING:
         DefineMiddleware,
         MiddlewareProtocol,
     )
-
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
@@ -52,13 +50,13 @@ T = TypeVar("T")
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-
-Middleware = Union[
-    Callable[..., ASGIApp], DefineMiddleware, StarletteMiddleware, Type[BaseHTTPMiddleware], Type[MiddlewareProtocol]
-]
 ParametersMap = Dict[str, FieldInfo]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
 PathType = Union[Path, PathLike, str]
 Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
+
+Middleware = Union[
+    Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
+]

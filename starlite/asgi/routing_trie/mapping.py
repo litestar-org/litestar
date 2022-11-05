@@ -1,7 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Set, Type, Union, cast
-
-from starlette.middleware import Middleware as StarletteMiddleware
+from typing import TYPE_CHECKING, Any, Dict, Set, Tuple, Type, Union, cast
 
 from starlite.asgi.routing_trie.types import (
     ASGIHandlerTuple,
@@ -145,8 +143,8 @@ def build_route_middleware_stack(
         asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
 
     for middleware in route_handler.resolve_middleware():
-        if isinstance(middleware, StarletteMiddleware):
-            handler, kwargs = middleware
+        if hasattr(middleware, "__iter__"):
+            handler, kwargs = cast("Tuple[Any, Dict[str, Any]]", middleware)
             asgi_handler = handler(app=asgi_handler, **kwargs)
         else:
             asgi_handler = middleware(app=asgi_handler)  # type: ignore
