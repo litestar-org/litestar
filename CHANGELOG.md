@@ -1,13 +1,20 @@
 # Changelog
 
+[1.37.0]
+
+- add 'gzip' compression.
+- add `StaticFiles` to replace Starlette's version + support for `fsspec`.
+- add `head` decorator.
+- remove Starlette `Middleware` type from typing.
+
 [1.36.0]
 
-- Removes "method" from `ResponseExtractorField`.
 - add `AbstractMiddleware` class.
-- add layering for opt dictionary
+- add layering for opt dictionary.
 - add per request caching of dependencies.
 - add`Headers`, `MutableHeaders` and update `FormMultiDict` to use the `multidict` library.
 - fix asgi/websocket handlers when **future** annotations is used.
+- removed "method" from `ResponseExtractorField`.
 - update dependency resolution in kwargs model to run concurrently.
 
 [1.35.1]
