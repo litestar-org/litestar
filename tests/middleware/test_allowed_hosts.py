@@ -1,5 +1,8 @@
 from typing import TYPE_CHECKING
 
+import pytest
+from pydantic import ValidationError
+
 from starlite import MiddlewareProtocol, get
 from starlite.config import AllowedHostsConfig
 from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
@@ -112,3 +115,8 @@ def test_middleware_does_not_redirect_when_off() -> None:
         client.base_url = "http://moishe.zuchmir.com"  # type: ignore
         response = client.get("/")
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+def test_validation_raises_for_wrong_wildcard_domain() -> None:
+    with pytest.raises(ValidationError):
+        AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])
