@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type, Union
 
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseConfig, BaseModel, validator
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.connection import Request, WebSocket
@@ -25,6 +25,7 @@ from starlite.types import (
     SingleOrList,
 )
 
+from . import AllowedHostsConfig
 from .cache import CacheConfig
 from .compression import CompressionConfig
 from .cors import CORSConfig
@@ -73,9 +74,9 @@ class AppConfig(BaseModel):
     An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or list thereof. This hook is
     called during the ASGI startup, after all callables in the 'on_startup' list have been called.
     """
-    allowed_hosts: List[str]
+    allowed_hosts: Optional[Union[List[str], AllowedHostsConfig]]
     """
-    A list of allowed hosts - enables the builtin allowed hosts middleware.
+    If set enables the builtin allowed hosts middleware.
     """
     before_request: Optional[BeforeRequestHookHandler]
     """
@@ -216,3 +217,21 @@ class AppConfig(BaseModel):
     """
     An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for websocket connections.
     """
+
+    @validator("allowed_hosts", always=True)
+    def validate_allowed_hosts(  # pylint: disable=no-self-argument
+        cls, value: Optional[Union[List[str], AllowedHostsConfig]]
+    ) -> Optional[AllowedHostsConfig]:
+        """Normalizes the allowed hosts to be a config or None.
+
+        Args:
+            value: Optional a list of hosts or allowed hosts config
+
+        Returns:
+            Optional config.
+        """
+        if value:
+            if isinstance(value, list):
+                return AllowedHostsConfig(allowed_hosts=value)
+            return value
+        return None
