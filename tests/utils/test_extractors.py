@@ -30,7 +30,7 @@ async def test_connection_data_extractor() -> None:
     assert extracted_data.get("path") == request.scope["path"]
     assert extracted_data.get("path") == request.scope["path"]
     assert extracted_data.get("path_params") == request.scope["path_params"]
-    assert extracted_data.get("query") == request.query_params
+    assert extracted_data.get("query") == request.query_params.dict()
     assert extracted_data.get("scheme") == request.scope["scheme"]
 
 
@@ -41,7 +41,7 @@ def test_parse_query() -> None:
     )
     parsed_extracted_data = ConnectionDataExtractor(parse_query=True)(request)
     unparsed_extracted_data = ConnectionDataExtractor()(request)
-    assert parsed_extracted_data.get("query") == request.query_params
+    assert parsed_extracted_data.get("query") == request.query_params.dict()
     assert unparsed_extracted_data.get("query") == request.scope["query_string"]
     # Close to avoid warnings about un-awaited coroutines.
     parsed_extracted_data.get("body").close()  # type: ignore

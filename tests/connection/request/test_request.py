@@ -141,7 +141,7 @@ def test_request_query_params() -> None:
 
     client = TestClient(app)
     response = client.get("/?a=123&b=456")
-    assert response.json() == {"params": {"a": ["123"], "b": ["456"]}}
+    assert response.json() == {"params": {"a": "123", "b": "456"}}
 
 
 def test_request_headers() -> None:

@@ -190,7 +190,7 @@ nav:
           - reference/datastructures/4-background.md
           - reference/datastructures/5-response-containers.md
           - reference/datastructures/6-upload-file.md
-          - reference/datastructures/7-form-multi-dict.md
+          - reference/datastructures/7-multi-dicts.md
       - Exceptions:
           - reference/exceptions/0-base-exceptions.md
           - reference/exceptions/1-http-exceptions.md

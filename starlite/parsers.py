@@ -1,8 +1,7 @@
 from contextlib import suppress
-from functools import reduce
 from http.cookies import _unquote as unquote_cookie
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
-from urllib.parse import parse_qsl, unquote
+from typing import TYPE_CHECKING, Any, Dict
+from urllib.parse import unquote
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
@@ -15,44 +14,10 @@ if TYPE_CHECKING:
 
     from pydantic.fields import ModelField
 
-    from starlite.datastructures.form_multi_dict import FormMultiDict
+    from starlite.datastructures.multi_dicts import FormMultiDict
 
 _true_values = {"True", "true"}
 _false_values = {"False", "false"}
-
-
-def _query_param_reducer(acc: Dict[str, List[Any]], cur: Tuple[str, str]) -> Dict[str, List[str]]:
-    """
-    Reducer function - acc is a dictionary, cur is a tuple of key + value
-
-    We use reduce because python implements reduce in C, which makes it faster than a regular for loop in most cases.
-    """
-    key, value = cur
-
-    if value in _true_values:
-        value = True  # type: ignore
-    elif value in _false_values:
-        value = False  # type: ignore
-
-    if key in acc:
-        acc[key].append(value)
-    else:
-        acc[key] = [value]
-    return acc
-
-
-def parse_query_params(query_string: bytes) -> Dict[str, List[str]]:
-    """Parses and normalize a given connection's query parameters into a
-    regular dictionary.
-
-    Args:
-        query_string: A byte-string containing a query
-
-    Returns:
-        A string keyed dictionary of values.
-    """
-
-    return reduce(_query_param_reducer, parse_qsl(query_string.decode("utf-8"), keep_blank_values=True), {})
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:
