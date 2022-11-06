@@ -1,5 +1,6 @@
 from starlite.app import Starlite
 from starlite.config import (
+    AllowedHostsConfig,
     BaseLoggingConfig,
     CacheConfig,
     CompressionConfig,
@@ -90,6 +91,7 @@ __all__ = (
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
     "AbstractMiddleware",
+    "AllowedHostsConfig",
     "AuthenticationResult",
     "BackgroundTask",
     "BackgroundTasks",

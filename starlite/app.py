@@ -3,17 +3,17 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 from typing_extensions import TypedDict
 
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
-from starlite.config import AppConfig, CacheConfig, OpenAPIConfig
+from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.http import HTTPRouteHandler
+from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.middleware.compression import CompressionMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -135,7 +135,7 @@ class Starlite(Router):
         after_response: Optional["AfterResponseHookHandler"] = None,
         after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
         after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-        allowed_hosts: Optional[List[str]] = None,
+        allowed_hosts: Optional[Union[List[str], "AllowedHostsConfig"]] = None,
         before_request: Optional["BeforeRequestHookHandler"] = None,
         before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
         before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
@@ -300,10 +300,10 @@ class Starlite(Router):
         for handler in on_app_init or []:
             config = handler(config)
 
+        self.allowed_hosts = cast("Optional[AllowedHostsConfig]", config.allowed_hosts)
         self.after_exception = as_async_callable_list(config.after_exception)
         self.after_shutdown = as_async_callable_list(config.after_shutdown)
         self.after_startup = as_async_callable_list(config.after_startup)
-        self.allowed_hosts = config.allowed_hosts
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
@@ -586,7 +586,7 @@ class Starlite(Router):
         if self.compression_config:
             asgi_handler = CompressionMiddleware(app=asgi_handler, config=self.compression_config)
         if self.allowed_hosts:
-            asgi_handler = TrustedHostMiddleware(app=asgi_handler, allowed_hosts=self.allowed_hosts)  # type: ignore
+            asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=self.allowed_hosts)
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())  # type: ignore
         return wrap_in_exception_handler(

@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         TemplateConfig,
         WebSocket,
     )
+    from starlite.config import AllowedHostsConfig
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -47,7 +48,7 @@ def create_test_client(
     after_response: Optional["AfterResponseHookHandler"] = None,
     after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
     after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    allowed_hosts: Optional[List[str]] = None,
+    allowed_hosts: Optional[Union[List[str], "AllowedHostsConfig"]] = None,
     backend: "Literal['asyncio', 'trio']" = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver.local",

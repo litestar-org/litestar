@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from starlite import (
     Controller,
@@ -20,6 +19,7 @@ from starlite import (
     get,
     post,
 )
+from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -147,7 +147,7 @@ def test_setting_cors_middleware() -> None:
 
 
 def test_trusted_hosts_middleware() -> None:
-    client = create_test_client(route_handlers=[handler], allowed_hosts=["*"])
+    client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     unpacked_middleware = []
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
@@ -156,9 +156,9 @@ def test_trusted_hosts_middleware() -> None:
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 4
-    trusted_hosts_middleware = cast("Any", unpacked_middleware[1])
-    assert isinstance(trusted_hosts_middleware, TrustedHostMiddleware)
-    assert trusted_hosts_middleware.allowed_hosts == ["*"]
+    allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
+    assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
+    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore
 
 
 def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:
