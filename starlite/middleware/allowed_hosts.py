@@ -38,7 +38,9 @@ class AllowedHostsMiddleware(AbstractMiddleware):
         self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))
 
         if config.www_redirect:
-            redirect_domains: Set[str] = {rf"(?:www\.|){host}" for host in config.allowed_hosts if "*" not in host}
+            redirect_domains: Set[str] = {
+                host.removeprefix("www.") for host in config.allowed_hosts if host.startswith("www.")
+            }
             if redirect_domains:
                 self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
 
@@ -51,11 +53,11 @@ class AllowedHostsMiddleware(AbstractMiddleware):
         host = headers.get("host", headers.get("x-forwarded-host", "")).split(":")[0]
 
         if host:
-            if self.allowed_hosts_regex.findall(host):
+            if self.allowed_hosts_regex.fullmatch(host):
                 await self.app(scope, receive, send)
                 return
 
-            if self.redirect_domains is not None and self.redirect_domains.findall(host):
+            if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
                 url = URL(scope=scope)  # type: ignore
                 redirect_url = url.replace(netloc="www." + url.netloc)
                 await RedirectResponse(url=str(redirect_url))(scope, receive, send)

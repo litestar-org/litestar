@@ -159,7 +159,6 @@ def test_trusted_hosts_middleware() -> None:
     allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
     assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
     assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore
-    assert allowed_hosts_middleware.redirect_domains.pattern == "(?:www\\.|)moishe.zuchmir.com"  # type: ignore
 
 
 def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:

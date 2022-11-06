@@ -1,0 +1,114 @@
+from typing import TYPE_CHECKING
+
+from starlite import MiddlewareProtocol, get
+from starlite.config import AllowedHostsConfig
+from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlite.types import Receive, Scope, Send
+
+
+class DummyApp(MiddlewareProtocol):  # pyright: ignore
+    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        return
+
+
+def test_allowed_hosts_middleware_hosts_regex() -> None:
+    config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
+    middleware = AllowedHostsMiddleware(app=DummyApp(), config=config)  # type: ignore
+    assert middleware.allowed_hosts_regex is not None
+    assert middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"
+
+    assert middleware.allowed_hosts_regex.fullmatch("www.example.com")
+    assert middleware.allowed_hosts_regex.fullmatch("other.example.com")
+    assert middleware.allowed_hosts_regex.fullmatch("x.y.z.example.com")
+    assert middleware.allowed_hosts_regex.fullmatch("moishe.zuchmir.com")
+
+    assert not middleware.allowed_hosts_regex.fullmatch("www.example.x.com")
+    assert not middleware.allowed_hosts_regex.fullmatch("josh.zuchmir.com")
+    assert not middleware.allowed_hosts_regex.fullmatch("x.moishe.zuchmir.com")
+    assert not middleware.allowed_hosts_regex.fullmatch("moishe.zuchmir.x.com")
+
+
+def test_allowed_hosts_middleware_redirect_regex() -> None:
+    config = AllowedHostsConfig(
+        allowed_hosts=["*.example.com", "www.moishe.zuchmir.com", "www.yada.bada.bing.io", "example.com"]
+    )
+    middleware = AllowedHostsMiddleware(app=DummyApp(), config=config)  # type: ignore
+    assert middleware.redirect_domains is not None
+    assert middleware.redirect_domains.pattern == "moishe.zuchmir.com|yada.bada.bing.io"
+
+    assert middleware.redirect_domains.fullmatch("moishe.zuchmir.com")
+    assert middleware.redirect_domains.fullmatch("yada.bada.bing.io")
+
+
+def test_middleware_allowed_hosts() -> None:
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = AllowedHostsConfig(allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
+
+    with create_test_client(handler, allowed_hosts=config) as client:
+        client.base_url = "http://x.example.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        client.base_url = "http://x.y.example.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        client.base_url = "http://moishe.zuchmir.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        client.base_url = "http://x.moishe.zuchmir.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+        client.base_url = "http://x.example.x.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+def test_middleware_allow_all() -> None:
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    # contrived case - but if "*" is in hosts, we allow all.
+    config = AllowedHostsConfig(allowed_hosts=["*", "*.example.com", "moishe.zuchmir.com"])
+
+    with create_test_client(handler, allowed_hosts=config) as client:
+        client.base_url = "http://any.domain.allowed.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_middleware_redirect_on_www_by_default() -> None:
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = AllowedHostsConfig(allowed_hosts=["www.moishe.zuchmir.com"])
+
+    with create_test_client(handler, allowed_hosts=config) as client:
+        client.base_url = "http://moishe.zuchmir.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert str(response.url) == "http://www.moishe.zuchmir.com/"
+
+
+def test_middleware_does_not_redirect_when_off() -> None:
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    config = AllowedHostsConfig(allowed_hosts=["www.moishe.zuchmir.com"], www_redirect=False)
+
+    with create_test_client(handler, allowed_hosts=config) as client:
+        client.base_url = "http://moishe.zuchmir.com"  # type: ignore
+        response = client.get("/")
+        assert response.status_code == HTTP_400_BAD_REQUEST
