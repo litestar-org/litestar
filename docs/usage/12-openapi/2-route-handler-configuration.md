@@ -94,15 +94,15 @@ app = Starlite(
             Tag(name="public", description="This endpoint is for external users"),
             Tag(name="internal", description="This endpoint is for internal users"),
         ],
-    ),
-    security=[{"BearerToken": []}],
-    components=Components(
-        securitySchemes={
-            "BearerToken": SecurityScheme(
-                type="http",
-                scheme="bearer",
-            )
-        },
+        security=[{"BearerToken": []}],
+        components=Components(
+            securitySchemes={
+                "BearerToken": SecurityScheme(
+                    type="http",
+                    scheme="bearer",
+                )
+            },
+        ),
     ),
 )
 ```
