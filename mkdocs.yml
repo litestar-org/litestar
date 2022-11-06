@@ -171,6 +171,7 @@ nav:
           - reference/config/6-static-files-config.md
           - reference/config/7-template-config.md
           - reference/config/8-logging-config.md
+          - reference/config/9-allowed-hosts-config.md
       - Connection:
           - reference/connection/0-asgi-connection.md
           - reference/connection/1-request.md

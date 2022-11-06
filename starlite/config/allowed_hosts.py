@@ -36,7 +36,7 @@ class AllowedHostsConfig(BaseModel):
             A list of trusted hosts.
         """
         for host in value:
-            if host != "*" and "*" in host.removeprefix("*."):
+            if host != "*" and "*" in host and not host.startswith("*."):
                 raise ValueError(
                     "domain wildcards can only appear in the beginning of the domain, e.g. '*.example.com'"
                 )

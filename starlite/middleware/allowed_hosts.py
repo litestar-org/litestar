@@ -32,14 +32,14 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             return
 
         allowed_hosts: Set[str] = {
-            rf".*\.{host.removeprefix('*.')}$" if host.startswith("*.") else host for host in config.allowed_hosts
+            rf".*\.{host.replace('*.', '')}$" if host.startswith("*.") else host for host in config.allowed_hosts
         }
 
         self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))
 
         if config.www_redirect:
             redirect_domains: Set[str] = {
-                host.removeprefix("www.") for host in config.allowed_hosts if host.startswith("www.")
+                host.replace("www.", "") for host in config.allowed_hosts if host.startswith("www.")
             }
             if redirect_domains:
                 self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
