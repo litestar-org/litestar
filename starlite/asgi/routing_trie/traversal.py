@@ -165,11 +165,10 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
     """
 
     path = scope["path"].strip().rstrip("/") or "/"
+    scope["path_params"] = {}
 
     if path in plain_routes:
         current_node: "RouteTrieNode" = root_node["children"][path]
-        scope["path_params"] = {}
-
     else:
         current_node, path_params = traverse_route_map(
             current_node=root_node,
@@ -178,15 +177,11 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
             path_params=[],
             scope=scope,
         )
-        scope["path_params"] = (
-            parse_path_parameters(
+        if path_params:
+            scope["path_params"] = parse_path_parameters(
                 path_parameter_definitions=current_node["path_parameters"],
                 request_path_parameter_values=path_params,
             )
-            if path_params
-            else {}
-        )
-
     try:
         if current_node["is_asgi"]:
             return current_node["asgi_handlers"]["asgi"]
