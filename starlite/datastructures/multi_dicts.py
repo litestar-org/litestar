@@ -44,7 +44,7 @@ class FormMultiDict(MultiDictProxy[Any]):
                 await value.close()
 
 
-class QueryMultiDict(MultiDict[Any]):
+class QueryMultiDict(MultiDict[Union[str, bool]]):
     def __init__(
         self, args: Optional[Union["QueryMultiDict", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None
     ) -> None:
@@ -71,12 +71,4 @@ class QueryMultiDict(MultiDict[Any]):
         Returns:
             A dict of lists
         """
-        out: Dict[str, List[Any]] = {}
-
-        for k, v in self.items():
-            if k in out:
-                out[k].append(v)
-            else:
-                out[k] = [v]
-
-        return out
+        return {k: self.getall(k) for k in self.keys()}
