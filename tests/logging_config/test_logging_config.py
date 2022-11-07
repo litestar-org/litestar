@@ -77,6 +77,9 @@ def test_standard_queue_listener_logger(logger: "Logger", caplog: "LogCaptureFix
     with caplog.at_level("INFO"):
         logger.info("Testing now!")
         assert "Testing now!" in caplog.text
+        var = "test_var"
+        logger.info("%s", var)
+        assert var in caplog.text
 
 
 @pytest.mark.xfail(reason="see: https://github.com/microsoft/picologging/issues/90")
