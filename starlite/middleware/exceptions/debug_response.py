@@ -166,7 +166,7 @@ def create_plain_text_response_content(exc: Exception) -> str:
 
 
 def create_debug_response(request: "Request", exc: Exception) -> Response:
-    """Create debug response either in plain text or html depending on client
+    """Create debug response either in plain text or HTML depending on client
     capabilities.
 
     Args:
