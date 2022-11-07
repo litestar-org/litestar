@@ -20,7 +20,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -29,6 +29,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -48,7 +49,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -57,6 +58,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -76,7 +78,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -85,6 +87,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -104,7 +107,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -113,6 +116,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -132,7 +136,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -141,6 +145,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -160,7 +165,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -169,6 +174,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -192,7 +198,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -203,6 +209,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
 
@@ -222,7 +229,7 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
-             **kwargs: Any kwargs.
+             *args: Any args.
         """
         ...
 
@@ -231,5 +238,6 @@ class Logger(Protocol):  # pragma: no cover
 
         Args:
              event: Log message.
+             *args: Any args.
              **kwargs: Any kwargs.
         """
