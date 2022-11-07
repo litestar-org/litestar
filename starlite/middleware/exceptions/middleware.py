@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING, Any
 
-from starlette.middleware.errors import ServerErrorMiddleware
-
 from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
+from starlite.middleware.exceptions.debug_response import create_debug_response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.utils import create_exception_response
 from starlite.utils.exception import get_exception_handler
@@ -70,7 +69,5 @@ class ExceptionHandlerMiddleware:
         """Default handler for exceptions subclassed from HTTPException."""
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
-            # in debug mode, we just use the serve_middleware to create an HTML formatted response for us
-            server_middleware = ServerErrorMiddleware(app=self)  # type: ignore[arg-type]
-            return server_middleware.debug_response(request=request, exc=exc)  # type: ignore
+            return create_debug_response(request=request, exc=exc)
         return create_exception_response(exc)

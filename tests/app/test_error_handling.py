@@ -31,17 +31,31 @@ def test_using_custom_http_exception_handler() -> None:
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 
-def test_uses_starlette_debug_responses() -> None:
+def test_debug_response_created() -> None:
+    # this will test exception causes are recorded in output
+    # since frames include code in context we should not raise
+    # exception directly
+    def exception_thrower() -> float:
+        return 1 / 0
+
     @get("/")
     def my_route_handler() -> None:
-        raise InternalServerException()
+        try:
+            exception_thrower()
+        except Exception as e:
+            raise InternalServerException() from e
 
     app = Starlite(route_handlers=[my_route_handler], debug=True)
     client = TestClient(app=app)
 
+    response = client.get("/")
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert "text/plain" in response.headers["content-type"]
+
     response = client.get("/", headers={"accept": "text/html"})
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert "text/html" in response.headers["content-type"]
+    assert "ZeroDivisionError" in response.text
 
 
 def test_handler_error_return_status_500() -> None:
