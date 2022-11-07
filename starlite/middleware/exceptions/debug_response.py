@@ -99,8 +99,7 @@ def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
 
 
 def create_exception_html(exc: BaseException, line_limit: int) -> str:
-    """Produce html representation of the exception.
-
+    """Produce HTML representation of the exception
     [frames](https://docs.python.org/3/reference/datamodel.html#frame-objects).
 
     Args:
