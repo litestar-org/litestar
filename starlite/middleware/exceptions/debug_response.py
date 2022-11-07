@@ -72,7 +72,7 @@ def create_line_html(
 
 
 def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
-    """Produce html representation of the given frame object including filename
+    """Produce HTML representation of the given frame object including filename
     containing source code and name of the function being executed.
 
     Args:
