@@ -1,5 +1,14 @@
 # Changelog
 
+[1.38.0]
+
+- add 'AllowedHostsMiddleware`.
+- add `*args` override to `Logger` protocol.
+- add `QueryMultiDict` for `request.query` and `socket.query`.
+- add `ServerErrorMiddleware` with own exception printer.
+- fix resolving starlette responses.
+- update `path_params` key to always exist in scope.
+
 [1.37.0]
 
 - add 'gzip' compression.
