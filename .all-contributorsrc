@@ -542,6 +542,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "scott2b",
+      "name": "Scott Bradley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/307713?v=4",
+      "profile": "https://github.com/scott2b",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
