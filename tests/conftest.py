@@ -1,7 +1,18 @@
 from os import environ, urandom
 from pathlib import Path
 from sys import version_info
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Callable,
+    Dict,
+    Generator,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import fakeredis.aioredis  # pyright: ignore
 import pytest
@@ -45,7 +56,16 @@ from starlite.plugins.sql_alchemy import (
 from tests.mocks import FakeAsyncMemcached
 
 if TYPE_CHECKING:
-    from starlite.types import AnyIOBackend, Receive, Scope, Send
+    from starlite import Starlite
+    from starlite.types import (
+        AnyIOBackend,
+        ASGIVersion,
+        Receive,
+        RouteHandlerType,
+        Scope,
+        ScopeSession,
+        Send,
+    )
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -269,3 +289,58 @@ def cookie_session_middleware(cookie_session_backend: CookieBackend) -> SessionM
 @pytest.fixture
 def test_client_backend(anyio_backend_name: str) -> "AnyIOBackend":
     return cast("AnyIOBackend", anyio_backend_name)
+
+
+@pytest.fixture
+def create_scope() -> Callable[..., "Scope"]:
+    def inner(
+        *,
+        type: str = "http",
+        app: Optional[Starlite] = None,
+        asgi: Optional[ASGIVersion] = None,
+        auth: Any = None,
+        client: Optional[Tuple[str, int]] = ("testclient", 50000),
+        extensions: Optional[Dict[str, Dict[object, object]]] = None,
+        http_version: str = "1.1",
+        path: str = "/",
+        path_params: Optional[Dict[str, str]] = None,
+        query_string: str = "",
+        root_path: str = "",
+        route_handler: Optional[RouteHandlerType] = None,
+        scheme: str = "http",
+        server: Optional[Tuple[str, Optional[int]]] = ("testserver", 80),
+        session: ScopeSession = None,
+        state: Optional[Dict[str, Any]] = None,
+        user: Any = None,
+        **kwargs: Dict[str, Any]
+    ) -> "Scope":
+        scope = {
+            "app": app,
+            "asgi": asgi or {"spec_version": "2.0", "version": "3.0"},
+            "auth": auth,
+            "type": type,
+            "path": path,
+            "raw_path": path.encode(),
+            "root_path": root_path,
+            "scheme": scheme,
+            "query_string": query_string.encode(),
+            "client": client,
+            "server": server,
+            "method": "GET",
+            "http_version": http_version,
+            "extensions": extensions or {"http.response.template": {}},
+            "state": state or {},
+            "path_params": path_params or {},
+            "route_handler": route_handler,
+            "user": user,
+            "session": session,
+            **kwargs,
+        }
+        return cast("Scope", scope)
+
+    return inner
+
+
+@pytest.fixture
+def scope(create_scope: Callable[..., "Scope"]) -> "Scope":
+    return create_scope()

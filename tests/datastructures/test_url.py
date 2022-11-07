@@ -1,9 +1,12 @@
-from typing import Dict, List, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, TypeVar, Union
 
 import pytest
 from multidict import MultiDict
 
 from starlite.datastructures.url import URL, make_absolute_url, parse_query_params
+
+if TYPE_CHECKING:
+    from starlite.types import Scope
 
 T = TypeVar("T")
 
@@ -105,3 +108,29 @@ def test_url_with_replacements(component: str, replacement: str) -> None:
     url = url.with_replacements(**{component: replacement})
     for key, value in defaults.items():
         assert getattr(url, key) == value
+
+
+def test_url_from_scope(create_scope: Callable[..., "Scope"]) -> None:
+    scope = create_scope(
+        scheme="https",
+        server=("testserver.local", 70),
+        root_path="/foo",
+        path="/bar",
+        query_string="bar=baz",
+        headers=[],
+    )
+
+    url = URL.from_scope(scope)
+
+    assert url.scheme == "https"
+    assert url.netloc == "testserver.local:70"
+    assert url.path == "/foo/bar"
+    assert url.query == "bar=baz"
+
+
+def test_url_from_scope_with_host(create_scope: Callable[..., "Scope"]) -> None:
+    scope = create_scope(headers=[(b"host", b"testserver.local:42")])
+
+    url = URL.from_scope(scope)
+
+    assert url.netloc == "testserver.local:42"
