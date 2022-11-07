@@ -104,7 +104,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
     [frames](https://docs.python.org/3/reference/datamodel.html#frame-objects).
 
     Args:
-        exc: An Exception instance to generate .
+        exc: An Exception instance to generate.
         line_limit: Number of lines of code context to return, which are centered around the executed line.
 
     Returns:
