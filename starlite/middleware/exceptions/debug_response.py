@@ -58,7 +58,7 @@ def create_line_html(
         idx: Index of the current line in the code context.
 
     Returns:
-        A string containing HTML representation of the given line
+        A string containing HTML representation of the given line.
     """
     template = '<tr class="{line_class}"><td class="line_no">{line_no}</td><td class="code_line">{line}</td></tr>'
     data = {
