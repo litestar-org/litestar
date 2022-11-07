@@ -564,7 +564,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 )
             elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
-            elif is_async_callable(self.signature.return_annotation):
+            elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
+                ASGIApp,
+                "ASGIApp",
+            }:
                 handler = _create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
             else:
                 handler = _create_data_handler(
