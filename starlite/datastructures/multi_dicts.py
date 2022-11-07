@@ -1,4 +1,5 @@
-from typing import Any, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from urllib.parse import parse_qsl
 
 from multidict import MultiDict, MultiDictProxy
 
@@ -41,3 +42,33 @@ class FormMultiDict(MultiDictProxy[Any]):
         for _, value in self.multi_items():
             if isinstance(value, UploadFile):
                 await value.close()
+
+
+class QueryMultiDict(MultiDict[Union[str, bool]]):
+    def __init__(
+        self, args: Optional[Union["QueryMultiDict", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None
+    ) -> None:
+        super().__init__(MultiDict(args or {}))
+
+    @classmethod
+    def from_query_string(cls, query_string: str) -> "QueryMultiDict":
+        """Creates a QueryMultiDict from a query string.
+
+        Args:
+            query_string: A query string.
+
+        Returns:
+            A QueryMultiDict instance
+        """
+        _bools = {"true": True, "false": False, "True": True, "False": False}
+        return cls(
+            (k, v) if v not in _bools else (k, _bools[v]) for k, v in parse_qsl(query_string, keep_blank_values=True)
+        )
+
+    def dict(self) -> Dict[str, List[Any]]:
+        """
+
+        Returns:
+            A dict of lists
+        """
+        return {k: self.getall(k) for k in self.keys()}

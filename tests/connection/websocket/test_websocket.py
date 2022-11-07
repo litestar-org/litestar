@@ -118,7 +118,7 @@ def test_websocket_query_params() -> None:
 
     with TestClient(app).websocket_connect("/?a=abc&b=456") as websocket:
         data = websocket.receive_json()
-        assert data == {"params": {"a": ["abc"], "b": ["456"]}}
+        assert data == {"params": {"a": "abc", "b": "456"}}
 
 
 def test_websocket_headers() -> None:

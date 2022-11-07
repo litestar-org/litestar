@@ -372,7 +372,9 @@ class KwargsModel:
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
         """
-        connection_query_params = {k: self._sequence_or_scalar_param(k, v) for k, v in connection.query_params.items()}
+        connection_query_params = {
+            k: self._sequence_or_scalar_param(k, v) for k, v in connection.query_params.dict().items()
+        }
 
         path_params = self._collect_params(
             params=connection.path_params, expected=self.expected_path_params, url=connection.url

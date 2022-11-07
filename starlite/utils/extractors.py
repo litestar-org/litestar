@@ -224,7 +224,7 @@ class ConnectionDataExtractor:
         Returns:
             Either a dictionary with the connection's parsed query string or the raw query byte-string.
         """
-        return connection.query_params if self.parse_query else connection.scope.get("query_string", b"")
+        return connection.query_params.dict() if self.parse_query else connection.scope.get("query_string", b"")
 
     @staticmethod
     def extract_path_params(connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, Any]:

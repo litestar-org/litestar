@@ -21,7 +21,7 @@ def default_cache_key_builder(request: "Request[Any, Any]") -> str:
     Returns:
         str: combination of url path and query parameters
     """
-    query_params: List[Tuple[str, Any]] = list(request.query_params.items())
+    query_params: List[Tuple[str, Any]] = list(request.query_params.dict().items())
     query_params.sort(key=lambda x: x[0])
     return request.url.path + urlencode(query_params, doseq=True)
 
