@@ -3,10 +3,10 @@
 ::: starlite.config.static_files.StaticFilesConfig
     options:
         members:
-            - file_system
             - backend
             - directories
             - exception_handlers
+            - file_system
             - guards
             - html_mode
             - name
