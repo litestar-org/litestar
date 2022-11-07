@@ -71,4 +71,4 @@ class QueryMultiDict(MultiDict[Union[str, bool]]):
         Returns:
             A dict of lists
         """
-        return {k: self.getall(k) for k in self.keys()}
+        return {k: self.getall(k) for k in set(self.keys())}
