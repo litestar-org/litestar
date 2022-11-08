@@ -28,11 +28,24 @@ def _allowed_code_block_length(code_block: str) -> bool:
     return code_block.count("\n") <= 15
 
 
+EXAMPLE_TEST_TEMPLATE = """
+from {module_name} import app
+from starlite import TestClient
+
+
+def test_{name}() -> None:
+    with TestClient(app=app) as client:
+        pass
+"""
+
+
 def extract_examples(file_name: str, target_dir_name: str, name: str) -> None:
     file = Path(file_name)
     content = file.read_text()
     examples_dir = Path(target_dir_name)
     examples_dir.mkdir(parents=True, exist_ok=True)
+    tests_dir = Path("examples/tests") / examples_dir.relative_to("examples")
+    tests_dir.mkdir(parents=True, exist_ok=True)
 
     code_blocks: list[str] = CODE_BLOCK_RE.findall(content)
     for i, code_block in enumerate(code_blocks):
@@ -44,10 +57,21 @@ def extract_examples(file_name: str, target_dir_name: str, name: str) -> None:
         if len(code_blocks) > 1:
             target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
         target_path = target_path.with_suffix(".py")
+        test_file_path = tests_dir / f"test_{target_path.name}"
+
         content = content.replace(code_block, f'```python\n--8<-- "{target_path}"\n```\n')
         code = CODE_BLOCK_CODE.match(code_block).group(1).strip()
         target_path.write_text(code)
+
+        test_file_path.write_text(
+            EXAMPLE_TEST_TEMPLATE.format(
+                module_name=str(target_path.with_suffix("")).replace("/", "."), name=target_path.stem
+            )
+        )
+
         print(f"Extracted example to: {target_path}")
+        print(f"Created test stub in: {test_file_path}")
+
     file.write_text(content)
 
 
