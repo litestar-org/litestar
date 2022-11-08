@@ -5,49 +5,7 @@ available on all layers of the app - individual route handlers, controllers, rou
 itself:
 
 ```python
-from starlite import Starlite, Router, Controller, MediaType, get
-from starlite.datastructures import ResponseHeader
-
-
-class MyController(Controller):
-    path = "/controller-path"
-    response_headers = {
-        "controller-level-header": ResponseHeader(
-            value="controller header", description="controller level header"
-        )
-    }
-
-    @get(
-        path="/",
-        response_headers={
-            "my-local-header": ResponseHeader(
-                value="local header", description="local level header"
-            )
-        },
-        media_type=MediaType.TEXT,
-    )
-    def my_route_handler(self) -> str:
-        return "hello world"
-
-
-router = Router(
-    path="/router-path",
-    route_handlers=[MyController],
-    response_headers={
-        "router-level-header": ResponseHeader(
-            value="router header", description="router level header"
-        )
-    },
-)
-
-app = Starlite(
-    route_handlers=[router],
-    response_headers={
-        "app-level-header": ResponseHeader(
-            value="app header", description="app level header"
-        )
-    },
-)
+--8<-- "examples/responses/response_headers.py"
 ```
 
 In the above example the response returned from `my_route_handler` will have headers set from each layer of the
@@ -76,33 +34,7 @@ We can simply return a response instance directly from the route handler and set
 as you see fit, e.g.:
 
 ```python
-from pydantic import BaseModel
-from starlite import Response, get
-from starlite.datastructures import ResponseHeader
-from random import randint
-
-
-class Resource(BaseModel):
-    id: int
-    name: str
-
-
-@get(
-    "/resources",
-    response_headers={
-        "Random-Header": ResponseHeader(
-            description="a random number in the range 1 - 100", documentation_only=True
-        )
-    },
-)
-def retrieve_resource() -> Response[Resource]:
-    return Response(
-        Resource(
-            id=1,
-            name="my resource",
-        ),
-        headers={"Random-Header": str(randint(1, 100))},
-    )
+--8<-- "examples/responses/response_headers_2.py"
 ```
 
 In the above we use the `response_headers` kwarg to pass the `name` and `description` parameters for the `Random-Header`
@@ -117,52 +49,7 @@ the handler on different layers of the application as explained in the pertinent
 the headers on the corresponding layer:
 
 ```python
-from random import randint
-
-from pydantic import BaseModel
-from starlite import Response, Router, get
-from starlite.datastructures import ResponseHeader
-
-
-class Resource(BaseModel):
-    id: int
-    name: str
-
-
-@get(
-    "/resources",
-    response_headers={
-        "Random-Header": ResponseHeader(
-            description="a random number in the range 100 - 1000",
-            documentation_only=True,
-        )
-    },
-)
-def retrieve_resource() -> Response[Resource]:
-    return Response(
-        Resource(
-            id=1,
-            name="my resource",
-        ),
-        headers={"Random-Header": str(randint(100, 1000))},
-    )
-
-
-def after_request_handler(response: Response) -> Response:
-    response.headers.update({"Random-Header": str(randint(1, 100))})
-    return response
-
-
-router = Router(
-    path="/router-path",
-    route_handlers=[retrieve_resource],
-    after_request=after_request_handler,
-    response_headers={
-        "Random-Header": ResponseHeader(
-            description="a random number in the range 1 - 100", documentation_only=True
-        )
-    },
-)
+--8<-- "examples/response_headers_3.py"
 ```
 
 In the above we set the response header using an `after_request_handler` function on the router level. Because the
@@ -173,52 +60,7 @@ required. For example, lets say we have a router level header being set and a lo
 different value range:
 
 ```python
-from pydantic import BaseModel
-from starlite import Router, Response, get
-from starlite.datastructures import ResponseHeader
-from random import randint
-
-
-class Resource(BaseModel):
-    id: int
-    name: str
-
-
-@get(
-    "/resources",
-    response_headers={
-        "Random-Header": ResponseHeader(
-            description="a random number in the range 100 - 1000",
-            documentation_only=True,
-        )
-    },
-)
-def retrieve_resource() -> Response[Resource]:
-    return Response(
-        Resource(
-            id=1,
-            name="my resource",
-        ),
-        headers={"Random-Header": str(randint(100, 1000))},
-    )
-
-
-def after_request_handler(response: Response) -> Response:
-    response.headers.update({"Random-Header": str(randint(1, 100))})
-    return response
-
-
-router = Router(
-    route_handlers=[retrieve_resource],
-    after_request=after_request_handler,
-    response_headers={
-        "Random-Header": ResponseHeader(
-            description="a random number in the range 1 - 100", documentation_only=True
-        )
-    },
-)
-
-# ...
+--8<-- "examples/responses/response_headers_4.py"
 ```
 
 ## Specific Headers Implementation

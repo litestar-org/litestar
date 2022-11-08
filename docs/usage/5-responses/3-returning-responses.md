@@ -7,26 +7,7 @@ Starlite allows you to return any class inheriting from the [`Response`][starlit
 example will work perfectly fine:
 
 ```python
-from pydantic import BaseModel
-from starlite import Response, get
-from starlite.datastructures import Cookie
-
-
-class Resource(BaseModel):
-    id: int
-    name: str
-
-
-@get("/resources")
-def retrieve_resource() -> Response[Resource]:
-    return Response(
-        Resource(
-            id=1,
-            name="my resource",
-        ),
-        headers={"MY-HEADER": "xyz"},
-        cookies=[Cookie(key="my-cookie", value="abc")],
-    )
+--8<-- "examples/responses/returning_responses.py"
 ```
 
 !!! important
