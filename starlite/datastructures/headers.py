@@ -20,6 +20,7 @@ from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
 from typing_extensions import Annotated
 
+from starlite.datastructures.multi_dicts import MultiMixin
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
     return [(key.lower().encode("latin-1"), value.encode("latin-1")) for key, value in headers]
 
 
-class Headers(CIMultiDictProxy[str]):
+class Headers(CIMultiDictProxy[str], MultiMixin[str]):
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
         """An immutable, case-insensitive for HTTP headers.
 

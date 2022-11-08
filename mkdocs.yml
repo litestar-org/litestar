@@ -191,6 +191,7 @@ nav:
           - reference/datastructures/5-response-containers.md
           - reference/datastructures/6-upload-file.md
           - reference/datastructures/7-multi-dicts.md
+          - reference/datastructures/8-url.md
       - Exceptions:
           - reference/exceptions/0-base-exceptions.md
           - reference/exceptions/1-http-exceptions.md
@@ -284,6 +285,7 @@ plugins:
           import:
             - https://docs.python.org/3/objects.inv
             - https://starlite-api.github.io/pydantic-openapi-schema/objects.inv
+            - https://multidict.aio-libs.org/en/stable/objects.inv
           options:
             heading_level: 3
             members: []

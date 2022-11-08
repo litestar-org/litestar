@@ -6,7 +6,12 @@ from starlite.datastructures.headers import (
     Headers,
     MutableScopeHeaders,
 )
-from starlite.datastructures.multi_dicts import FormMultiDict
+from starlite.datastructures.multi_dicts import (
+    FormMultiDict,
+    ImmutableMultiDict,
+    MultiDict,
+    QueryMultiDict,
+)
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
     File,
@@ -18,8 +23,10 @@ from starlite.datastructures.response_containers import (
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import State
 from starlite.datastructures.upload_file import UploadFile
+from starlite.datastructures.url import URL, Address, make_absolute_url
 
 __all__ = (
+    "Address",
     "BackgroundTask",
     "BackgroundTasks",
     "CacheControlHeader",
@@ -28,8 +35,12 @@ __all__ = (
     "File",
     "FormMultiDict",
     "Headers",
+    "ImmutableMultiDict",
+    "make_absolute_url",
+    "MultiDict",
     "MutableScopeHeaders",
     "Provide",
+    "QueryMultiDict",
     "Redirect",
     "ResponseContainer",
     "ResponseHeader",
@@ -37,4 +48,5 @@ __all__ = (
     "Stream",
     "Template",
     "UploadFile",
+    "URL",
 )

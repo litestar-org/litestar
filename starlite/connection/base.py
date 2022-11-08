@@ -1,16 +1,14 @@
 from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
 
-from starlette.datastructures import URL, Address, URLPath
-
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.multi_dicts import QueryMultiDict
 from starlite.datastructures.state import State
+from starlite.datastructures.url import URL, Address, make_absolute_url
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.parsers import parse_cookie_string
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import MutableMapping
 
     from pydantic import BaseModel
 
@@ -112,7 +110,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A URL instance constructed from the request's scope.
         """
         if self._url is Empty:
-            self._url = self.scope["_url"] = URL(scope=cast("MutableMapping[str, Any]", self.scope))  # type: ignore[typeddict-item]
+            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-item]
         return cast("URL", self._url)
 
     @property
@@ -124,14 +122,14 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             (host + domain + prefix) of the request.
         """
         if self._base_url is Empty:
-            self._base_url = self.scope["_base_url"] = URL(  # type: ignore[typeddict-item]
-                scope={
-                    **self.scope,
-                    "path": "/",
-                    "query_string": b"",
-                    "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
-                }
-            )
+            scope = {
+                **self.scope,
+                "path": "/",
+                "query_string": b"",
+                "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
+            }
+            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-item]
+
         return cast("URL", self._base_url)
 
     @property
@@ -294,7 +292,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         starlite_instance = self.scope["app"]
         url_path = starlite_instance.route_reverse(name, **path_parameters)
 
-        return URLPath(url_path).make_absolute_url(self.base_url)
+        return make_absolute_url(url_path, self.base_url)
 
     def url_for_static_asset(self, name: str, file_path: str) -> str:
         """Receives a static files handler name, an asset file path and returns
@@ -313,4 +311,4 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         starlite_instance = self.scope["app"]
         url_path = starlite_instance.url_for_static_asset(name, file_path)
 
-        return URLPath(url_path).make_absolute_url(self.base_url)
+        return make_absolute_url(url_path, self.base_url)

@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import BaseModel, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
-from starlette.datastructures import URL
 
 from starlite import HTTPException, Provide, get
 from starlite.connection import WebSocket
+from starlite.datastructures import URL
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     InternalServerException,

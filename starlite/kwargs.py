@@ -26,13 +26,13 @@ from pydantic.fields import (
     Undefined,
 )
 from pydantic_factories.utils import is_optional
-from starlette.datastructures import URL
 
 from starlite.constants import (
     EXTRA_KEY_IS_PARAMETER,
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
+from starlite.datastructures import URL
 from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
