@@ -10,7 +10,7 @@ from starlite.datastructures.multi_dicts import (
     FormMultiDict,
     ImmutableMultiDict,
     MultiDict,
-    QueryMultiDict
+    QueryMultiDict,
 )
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
