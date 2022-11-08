@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
-from starlette.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
-
 from starlite import (
     HttpMethod,
     Request,
@@ -12,6 +10,7 @@ from starlite import (
     route,
     websocket,
 )
+from starlite.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 from starlite.types import Empty
 

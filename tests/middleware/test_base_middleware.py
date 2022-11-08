@@ -1,8 +1,7 @@
 from typing import TYPE_CHECKING
 
-from starlette.datastructures import MutableHeaders
-
 from starlite import AbstractMiddleware, DefineMiddleware, ValidationException, get
+from starlite.datastructures.headers import MutableScopeHeaders
 from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
@@ -16,8 +15,8 @@ def test_custom_middleware() -> None:
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
                 if message["type"] == "http.response.start":
-                    headers = MutableHeaders(scope=message)
-                    headers.append("test", str(123))
+                    headers = MutableScopeHeaders(message)
+                    headers.add("test", str(123))
                 await send(message)
 
             await self.app(scope, receive, _send)
@@ -52,8 +51,8 @@ def test_exclude_by_pattern() -> None:
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
                 if message["type"] == "http.response.start":
-                    headers = MutableHeaders(scope=message)
-                    headers.append("test", str(123))
+                    headers = MutableScopeHeaders(message)
+                    headers.add("test", str(123))
                 await send(message)
 
             await self.app(scope, receive, _send)
@@ -82,8 +81,8 @@ def test_exclude_by_pattern_list() -> None:
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
                 if message["type"] == "http.response.start":
-                    headers = MutableHeaders(scope=message)
-                    headers.append("test", str(123))
+                    headers = MutableScopeHeaders(message)
+                    headers.add("test", str(123))
                 await send(message)
 
             await self.app(scope, receive, _send)
@@ -118,8 +117,8 @@ def test_exclude_by_opt_key() -> None:
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
                 if message["type"] == "http.response.start":
-                    headers = MutableHeaders(scope=message)
-                    headers.append("test", str(123))
+                    headers = MutableScopeHeaders(message)
+                    headers.add("test", str(123))
                 await send(message)
 
                 await self.app(scope, receive, _send)
