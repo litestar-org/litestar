@@ -1,8 +1,10 @@
 import re
 from pathlib import Path
+import sys
 
 
 CODE_BLOCK_RE = re.compile(r".*```py[\w\W]+?```")
+CODE_BLOCK_CODE = re.compile(r".*```py(?:thon)([\w\W]+?)```")
 FILE_INCLUDE_RE = re.compile(r"--8<-- ?['\"].*['\"]")
 DISABLE_EXAMPLE_LINT = re.compile(r"<!-- ?disable-examplelint ?-->")
 
@@ -23,6 +25,26 @@ def _allowed_code_block_length(code_block: str) -> bool:
     if FILE_INCLUDE_RE.search(code_block):
         return True
     return code_block.count("\n") <= 15
+
+
+def extract_examples(file_name: str, target_dir_name: str, name: str) -> None:
+    file = Path(file_name)
+    content = file.read_text()
+    examples_dir = Path(target_dir_name)
+    examples_dir.mkdir(parents=True, exist_ok=True)
+
+    code_blocks: list[str] = CODE_BLOCK_RE.findall(content)
+    for i, code_block in enumerate(code_blocks):
+        if FILE_INCLUDE_RE.search(code_block):
+            continue
+        target_path = examples_dir / name
+        if len(code_blocks) > 1:
+            target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
+        target_path = target_path.with_suffix(".py")
+        content = content.replace(code_block, f'```python\n--8<-- "{target_path}"\n```\n')
+        code = CODE_BLOCK_CODE.match(code_block).group(1).strip()
+        target_path.write_text(code)
+    file.write_text(content)
 
 
 def check_examples_dir() -> int:
