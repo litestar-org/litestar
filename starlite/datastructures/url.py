@@ -174,7 +174,7 @@ class URL:
         """
         if isinstance(query, QueryMultiDict):
             query = urlencode(query=query)
-            
+
         return URL.from_components(
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
