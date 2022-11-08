@@ -109,6 +109,10 @@ class PersonController(Controller):
 
     @put(path="/{person_id:str}")
     def update_person(self, person_id: str, data: Person) -> Person:
+        """Multiline docstring example.
+
+        Line 3.
+        """
         return data
 
     @delete(path="/{person_id:str}")
