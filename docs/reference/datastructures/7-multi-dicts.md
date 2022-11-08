@@ -1,6 +1,6 @@
 # Multi-Dicts
 
-::: starlite.datastructures.MultiMixin
+::: starlite.datastructures.multi_dicts.MultiMixin
     options:
         members:
             - multi_items

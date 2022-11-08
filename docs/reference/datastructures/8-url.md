@@ -25,5 +25,3 @@
             - port
 
 ::: starlite.datastructures.url.make_absolute_url
-
-::: starlite.datastructures.url.parse_query_params
