@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
+from starlite.datastructures import QueryMultiDict
 from starlite.datastructures.url import URL, make_absolute_url
 
 if TYPE_CHECKING:
@@ -54,16 +55,17 @@ def test_url_from_components(component: str, value: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "component,replacement",
+    "component,replacement,expected",
     [
-        ("scheme", "http"),
-        ("netloc", "example.com"),
-        ("path", "/foo"),
-        ("query", "foo=baz"),
-        ("fragment", "anchor2"),
+        ("scheme", "http", "http"),
+        ("netloc", "example.com", "example.com"),
+        ("path", "/foo", "/foo"),
+        ("query", "foo=baz", "foo=baz"),
+        ("query", QueryMultiDict({"foo": "baz"}), "foo=baz"),
+        ("fragment", "anchor2", "anchor2"),
     ],
 )
-def test_url_with_replacements(component: str, replacement: str) -> None:
+def test_url_with_replacements(component: str, replacement: str, expected: str) -> None:
     defaults = {
         "scheme": "https",
         "netloc": "example.org",
@@ -72,7 +74,7 @@ def test_url_with_replacements(component: str, replacement: str) -> None:
         "fragment": "anchor",
     }
     url = URL.from_components(**defaults)
-    defaults[component] = replacement
+    defaults[component] = expected
     url = url.with_replacements(**{component: replacement})
     for key, value in defaults.items():
         assert getattr(url, key) == value
@@ -102,3 +104,14 @@ def test_url_from_scope_with_host(create_scope: Callable[..., "Scope"]) -> None:
     url = URL.from_scope(scope)
 
     assert url.netloc == "testserver.local:42"
+
+
+def test_url_eq() -> None:
+    assert URL("") == URL("")
+    assert URL("/foo") == "/foo"
+    assert URL("") != 1
+
+
+def test_url_repr() -> None:
+    url = URL("https://foo:bar@testserver.local:42")
+    assert repr(url) == "URL('https://foo:bar@testserver.local:42')"

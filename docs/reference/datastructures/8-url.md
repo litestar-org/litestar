@@ -18,8 +18,11 @@
             - with_replacements
             - query_params
 
-
 ::: starlite.datastructures.Address
+    options:
+        members:
+            - host
+            - port
 
 ::: starlite.datastructures.url.make_absolute_url
 

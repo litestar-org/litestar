@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
-from multidict import MultiDict
-
 from starlite.datastructures import Headers
 from starlite.datastructures.multi_dicts import QueryMultiDict
 
@@ -14,7 +12,9 @@ class Address(NamedTuple):
     """Just a network address."""
 
     host: str
+    """Address host"""
     port: int
+    """Address port"""
 
 
 def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
@@ -36,17 +36,17 @@ def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
 
 class URL:
     __slots__ = (
-        "scheme",
-        "netloc",
-        "path",
-        "fragment",
-        "query",
-        "username",
-        "password",
-        "port",
-        "hostname",
         "_query_params",
         "_url",
+        "fragment",
+        "hostname",
+        "netloc",
+        "password",
+        "path",
+        "port",
+        "query",
+        "scheme",
+        "username",
     )
 
     scheme: str
@@ -95,11 +95,11 @@ class URL:
     @classmethod
     def from_components(
         cls,
-        scheme: Optional[str] = None,
-        netloc: Optional[str] = None,
-        path: Optional[str] = None,
-        fragment: Optional[str] = None,
-        query: Optional[str] = None,
+        scheme: str = "",
+        netloc: str = "",
+        path: str = "",
+        fragment: str = "",
+        query: str = "",
     ) -> "URL":
         """Create a new URL from components.
 
@@ -115,11 +115,11 @@ class URL:
         """
         return cls(
             SplitResult(
-                scheme=scheme or "",
-                netloc=netloc or "",
-                path=path or "",
-                fragment=fragment or "",
-                query=query or "",
+                scheme=scheme,
+                netloc=netloc,
+                path=path,
+                fragment=fragment,
+                query=query,
             )
         )
 
@@ -134,11 +134,11 @@ class URL:
             A URL
         """
         scheme = scope.get("scheme", "http")
-        server = scope.get("server", None)
+        server = scope.get("server")
         path = scope.get("root_path", "") + scope["path"]
         query_string = scope.get("query_string", b"")
 
-        host = Headers.from_scope(scope).get("host")
+        host = Headers.from_scope(scope).get("host", "")
         if server and not host:
             host, port = server
             default_port = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}[scheme]
@@ -146,7 +146,7 @@ class URL:
                 host = f"{host}:{port}"
 
         return cls.from_components(
-            scheme=scheme if server else None,
+            scheme=scheme if server else "",
             query=query_string.decode(),
             netloc=host,
             path=path,
@@ -154,11 +154,11 @@ class URL:
 
     def with_replacements(
         self,
-        scheme: Optional[str] = None,
-        netloc: Optional[str] = None,
-        path: Optional[str] = None,
+        scheme: str = "",
+        netloc: str = "",
+        path: str = "",
         query: Optional[Union[str, QueryMultiDict]] = None,
-        fragment: Optional[str] = None,
+        fragment: str = "",
     ) -> "URL":
         """Create a new URL, replacing the given components.
 
@@ -172,7 +172,7 @@ class URL:
         Returns:
             A new URL with the given components replaced
         """
-        if isinstance(query, MultiDict):
+        if isinstance(query, QueryMultiDict):
             query = urlencode(query=query)
         return URL.from_components(
             scheme=scheme or self.scheme,
@@ -209,4 +209,4 @@ class URL:
         return NotImplemented
 
     def __repr__(self) -> str:
-        return f"{type(self)}({self._url!r})"
+        return f"{type(self).__name__}({self._url!r})"

@@ -11,7 +11,7 @@
         members:
             - as_immutable
 
-::: starlite.datastructures.MultiDict
+::: starlite.datastructures.ImmutableMultiDict
     options:
         members:
             - as_mutable
