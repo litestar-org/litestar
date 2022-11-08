@@ -209,7 +209,7 @@ repos:
     hooks:
     - id: doc-example-lint
       name: Lint documentation examples
-      entry: python check_docs_examples.py
+      entry: python check_docs_examples.py check
       pass_filenames: false
       language: python
       files: ".md"

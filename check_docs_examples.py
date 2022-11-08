@@ -1,6 +1,7 @@
 import re
-from pathlib import Path
 import sys
+from pathlib import Path
+from argparse import ArgumentParser
 
 
 CODE_BLOCK_RE = re.compile(r".*```py[\w\W]+?```")
@@ -37,6 +38,8 @@ def extract_examples(file_name: str, target_dir_name: str, name: str) -> None:
     for i, code_block in enumerate(code_blocks):
         if FILE_INCLUDE_RE.search(code_block):
             continue
+        if DISABLE_EXAMPLE_LINT.search(code_block):
+            continue
         target_path = examples_dir / name
         if len(code_blocks) > 1:
             target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
@@ -44,6 +47,7 @@ def extract_examples(file_name: str, target_dir_name: str, name: str) -> None:
         content = content.replace(code_block, f'```python\n--8<-- "{target_path}"\n```\n')
         code = CODE_BLOCK_CODE.match(code_block).group(1).strip()
         target_path.write_text(code)
+        print(f"Extracted example to: {target_path}")
     file.write_text(content)
 
 
@@ -68,4 +72,7 @@ def check_examples_dir() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(check_examples_dir())
+    if sys.argv[1] == "check":
+        raise SystemExit(check_examples_dir())
+    elif sys.argv[1] == "extract":
+        extract_examples(sys.argv[2], sys.argv[3], sys.argv[4])
