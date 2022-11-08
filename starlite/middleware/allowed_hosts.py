@@ -1,9 +1,7 @@
 import re
 from typing import TYPE_CHECKING, Optional, Pattern, Set
 
-from starlette.datastructures import URL
-
-from starlite.datastructures import MutableScopeHeaders
+from starlite.datastructures import URL, MutableScopeHeaders
 from starlite.middleware.base import AbstractMiddleware
 from starlite.response import RedirectResponse, Response
 from starlite.status_codes import HTTP_400_BAD_REQUEST
@@ -58,8 +56,8 @@ class AllowedHostsMiddleware(AbstractMiddleware):
                 return
 
             if self.redirect_domains is not None and self.redirect_domains.fullmatch(host):
-                url = URL(scope=scope)  # type: ignore
-                redirect_url = url.replace(netloc="www." + url.netloc)
+                url = URL.from_scope(scope)
+                redirect_url = url.with_replacements(netloc="www." + url.netloc)
                 await RedirectResponse(url=str(redirect_url))(scope, receive, send)
                 return
 
