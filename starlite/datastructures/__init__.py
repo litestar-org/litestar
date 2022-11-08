@@ -10,6 +10,7 @@ from starlite.datastructures.multi_dicts import (
     FormMultiDict,
     ImmutableMultiDict,
     MultiDict,
+    QueryMultiDict
 )
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
@@ -39,6 +40,7 @@ __all__ = (
     "MultiDict",
     "MutableScopeHeaders",
     "Provide",
+    "QueryMultiDict",
     "Redirect",
     "ResponseContainer",
     "ResponseHeader",
