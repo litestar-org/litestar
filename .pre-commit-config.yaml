@@ -205,3 +205,11 @@ repos:
             starlite_multipart,
             structlog,
           ]
+  - repo: local
+    hooks:
+    - id: doc-example-lint
+      name: Lint documentation examples
+      entry: python check_docs_examples.py
+      pass_filenames: false
+      language: python
+      files: ".md"
