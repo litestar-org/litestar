@@ -8,6 +8,9 @@ if TYPE_CHECKING:
     from starlite.types import Scope
 
 
+_DEFAULT_SCHEME_PORTS = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}
+
+
 class Address(NamedTuple):
     """Just a network address."""
 
@@ -141,7 +144,7 @@ class URL:
         host = Headers.from_scope(scope).get("host", "")
         if server and not host:
             host, port = server
-            default_port = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}[scheme]
+            default_port = _DEFAULT_SCHEME_PORTS[scheme]
             if port != default_port:
                 host = f"{host}:{port}"
 
