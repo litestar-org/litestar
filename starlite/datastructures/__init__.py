@@ -6,7 +6,11 @@ from starlite.datastructures.headers import (
     Headers,
     MutableScopeHeaders,
 )
-from starlite.datastructures.multi_dicts import FormMultiDict
+from starlite.datastructures.multi_dicts import (
+    FormMultiDict,
+    ImmutableMultiDict,
+    MultiDict,
+)
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
     File,
@@ -30,6 +34,9 @@ __all__ = (
     "File",
     "FormMultiDict",
     "Headers",
+    "ImmutableMultiDict",
+    "make_absolute_url",
+    "MultiDict",
     "MutableScopeHeaders",
     "Provide",
     "Redirect",
@@ -40,5 +47,4 @@ __all__ = (
     "Template",
     "UploadFile",
     "URL",
-    "make_absolute_url",
 )

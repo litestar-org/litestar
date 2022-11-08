@@ -296,8 +296,8 @@ def create_scope() -> Callable[..., "Scope"]:
     def inner(
         *,
         type: str = "http",
-        app: Optional[Starlite] = None,
-        asgi: Optional[ASGIVersion] = None,
+        app: Optional["Starlite"] = None,
+        asgi: Optional["ASGIVersion"] = None,
         auth: Any = None,
         client: Optional[Tuple[str, int]] = ("testclient", 50000),
         extensions: Optional[Dict[str, Dict[object, object]]] = None,
@@ -306,10 +306,10 @@ def create_scope() -> Callable[..., "Scope"]:
         path_params: Optional[Dict[str, str]] = None,
         query_string: str = "",
         root_path: str = "",
-        route_handler: Optional[RouteHandlerType] = None,
+        route_handler: Optional["RouteHandlerType"] = None,
         scheme: str = "http",
         server: Optional[Tuple[str, Optional[int]]] = ("testserver", 80),
-        session: ScopeSession = None,
+        session: "ScopeSession" = None,
         state: Optional[Dict[str, Any]] = None,
         user: Any = None,
         **kwargs: Dict[str, Any]

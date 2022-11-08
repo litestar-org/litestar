@@ -1,16 +1,13 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union
-from urllib.parse import SplitResult, parse_qs, urlencode, urlsplit, urlunsplit
+from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
 from multidict import MultiDict
 
 from starlite.datastructures import Headers
+from starlite.datastructures.multi_dicts import QueryMultiDict
 
 if TYPE_CHECKING:
     from starlite.types import Scope
-
-
-QueryParamValue = Union[str, bool]
-QueryParams = MultiDict[QueryParamValue]
 
 
 class Address(NamedTuple):
@@ -35,28 +32,6 @@ def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
     netloc = base.netloc
     path = base.path.rstrip("/") + str(path)
     return str(URL.from_components(scheme=base.scheme, netloc=netloc, path=path))
-
-
-_boolean_values = {"true": True, "1": True, "false": False, "0": False}
-
-
-def parse_query_params(query: str) -> QueryParams:
-    """Parse query params from a string into a.
-
-    [MultiDict][multidict.MultiDict]. Coerces parameter values into `str`,
-    `int` and `bool` where appropriate.
-
-    Args:
-        query: The query string
-
-    Returns:
-        A mutable [MultiDict][multidict.MultiDict]
-    """
-    params = parse_qs(query, keep_blank_values=True)
-    unwrapped_params = [
-        (param, _boolean_values.get(value.lower(), value)) for param, values in params.items() for value in values
-    ]
-    return MultiDict(unwrapped_params)
 
 
 class URL:
@@ -115,7 +90,7 @@ class URL:
         self.password = result.password
         self.port = result.port
         self.hostname = result.hostname
-        self._query_params: Optional[QueryParams] = None
+        self._query_params: Optional[QueryMultiDict] = None
 
     @classmethod
     def from_components(
@@ -182,7 +157,7 @@ class URL:
         scheme: Optional[str] = None,
         netloc: Optional[str] = None,
         path: Optional[str] = None,
-        query: Optional[Union[str, QueryParams]] = None,
+        query: Optional[Union[str, QueryMultiDict]] = None,
         fragment: Optional[str] = None,
     ) -> "URL":
         """Create a new URL, replacing the given components.
@@ -208,7 +183,7 @@ class URL:
         )
 
     @property
-    def query_params(self) -> QueryParams:
+    def query_params(self) -> QueryMultiDict:
         """Query parameters of a URL as a [MultiDict][multidict.MultiDict]
 
         Returns:
@@ -222,7 +197,7 @@ class URL:
                 [with_replacements][starlite.datastructures.URL.with_replacements]
         """
         if self._query_params is None:
-            self._query_params = parse_query_params(self.query)
+            self._query_params = QueryMultiDict.from_query_string(self.query)
         return self._query_params
 
     def __str__(self) -> str:

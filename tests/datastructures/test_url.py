@@ -1,21 +1,11 @@
-from typing import TYPE_CHECKING, Callable, Dict, List, TypeVar, Union
+from typing import TYPE_CHECKING, Callable
 
 import pytest
-from multidict import MultiDict
 
-from starlite.datastructures.url import URL, make_absolute_url, parse_query_params
+from starlite.datastructures.url import URL, make_absolute_url
 
 if TYPE_CHECKING:
     from starlite.types import Scope
-
-T = TypeVar("T")
-
-
-def multidict_to_list_dict(multidict: MultiDict[T]) -> Dict[str, List[T]]:
-    result = {}
-    for key in multidict:
-        result[key] = multidict.getall(key)
-    return result
 
 
 @pytest.mark.parametrize(
@@ -32,40 +22,18 @@ def test_make_absolute_url(path: str, base: str) -> None:
     assert make_absolute_url(path, base) == result
 
 
-@pytest.mark.parametrize(
-    "query,expected",
-    [
-        ("param=value&param2=1&param=value2&empty=", {"param": ["value", "value2"], "param2": [True], "empty": [""]}),
-        (
-            "param=0&param2=false&param3=FaLse&param4=1&param5=true&param6=TRue",
-            {
-                "param": [False],
-                "param2": [False],
-                "param3": [False],
-                "param4": [True],
-                "param5": [True],
-                "param6": [True],
-            },
-        ),
-    ],
-)
-def test_parse_query_params(query: str, expected: Dict[str, List[Union[str, bool]]]) -> None:
-    query_params = parse_query_params(query)
-    assert multidict_to_list_dict(query_params) == expected
-
-
 def test_url() -> None:
-    url = URL("https://foo:hunter2@example.org:81/bar/baz?query=param&bool=1#fragment")
+    url = URL("https://foo:hunter2@example.org:81/bar/baz?query=param&bool=true#fragment")
     assert url.scheme == "https"
     assert url.netloc == "foo:hunter2@example.org:81"
     assert url.path == "/bar/baz"
-    assert url.query == "query=param&bool=1"
+    assert url.query == "query=param&bool=true"
     assert url.fragment == "fragment"
     assert url.username == "foo"
     assert url.password == "hunter2"
     assert url.port == 81
     assert url.hostname == "example.org"
-    assert url.query_params == MultiDict({"query": "param", "bool": True})
+    assert url.query_params.dict() == {"query": ["param"], "bool": [True]}
 
 
 @pytest.mark.parametrize(
