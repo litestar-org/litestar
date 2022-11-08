@@ -41,3 +41,10 @@ def test_create_path_item_use_handler_docstring_true(route: HTTPRoute) -> None:
     assert schema.get.description == "Description in docstring."
     assert schema.patch
     assert schema.patch.description == "Description in decorator"
+    assert schema.put
+    assert schema.put.description
+    # make sure multiline docstring is fully included
+    assert "Line 3." in schema.put.description
+    # make sure internal docstring indentation used to line up with the code
+    # is removed from description
+    assert "    " not in schema.put.description

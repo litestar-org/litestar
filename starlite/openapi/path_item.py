@@ -1,3 +1,4 @@
+from inspect import cleandoc
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, cast
 
 from pydantic_openapi_schema.v3_1_0.operation import Operation
@@ -31,7 +32,7 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
     """
     handler_description = route_handler.description
     if handler_description is None and use_handler_docstrings:
-        return route_handler.fn.__doc__
+        return cleandoc(route_handler.fn.__doc__) if route_handler.fn.__doc__ else None
     return handler_description
 
 
