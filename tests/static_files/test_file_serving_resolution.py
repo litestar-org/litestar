@@ -133,3 +133,19 @@ def test_static_substring_of_self(tmpdir: "Path") -> None:
         response = client.get("/static/static_part/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+
+
+@pytest.mark.parametrize(
+    ("extension", "exp"),
+    [("css", "text/css"), ("js", "application/javascript"), ("html", "text/html"), ("json", "application/json")],
+)
+def test_static_files_response_mimetype(tmpdir: "Path", extension: str, exp: str) -> None:
+    fn = f"test.{extension}"
+    path = tmpdir / fn
+    path.write_text("content", "utf-8")
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
+
+    with create_test_client([], static_files_config=static_files_config) as client:
+        response = client.get(f"/static/{fn}")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"].startswith(exp)

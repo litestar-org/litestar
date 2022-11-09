@@ -25,6 +25,7 @@ def test_staticfiles_is_html_mode(tmpdir: "Path", file_system: "FileSystemProtoc
         response = client.get("/static")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+        assert response.headers["content-type"] == "text/html; charset=utf-8"
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
@@ -38,6 +39,7 @@ def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: "Path", file_s
         response = client.get("/static")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.text == "not found"
+        assert response.headers["content-type"] == "text/html; charset=utf-8"
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
