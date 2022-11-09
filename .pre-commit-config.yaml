@@ -18,7 +18,7 @@ repos:
       - id: pyupgrade
         args: ["--py37-plus"]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.1
+    rev: v2.1.2
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -123,7 +123,7 @@ repos:
             tortoise_orm,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.982"
+    rev: "v0.990"
     hooks:
       - id: mypy
         additional_dependencies:
@@ -151,7 +151,7 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.278
+    rev: v1.1.279
     hooks:
       - id: pyright
         additional_dependencies:
