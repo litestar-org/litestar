@@ -57,12 +57,15 @@ class StaticFiles:
         if scope["type"] != ScopeType.HTTP or scope["method"] not in {"GET", "HEAD"}:
             raise MethodNotAllowedException()
 
-        joined_path = join(*scope["path"].split("/"))  # noqa: PL118
+        split_path = scope["path"].split("/")
+        filename = split_path[-1]
+        joined_path = join(*split_path)  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
 
         if fs_info and fs_info["type"] == "directory" and self.is_html_mode:
+            filename = "index.html"
             resolved_path, fs_info = await self.get_fs_info(
-                directories=self.directories, file_path=join(resolved_path or joined_path, "index.html")
+                directories=self.directories, file_path=join(resolved_path or joined_path, filename)
             )
 
         if fs_info and fs_info["type"] == "file":
@@ -70,17 +73,20 @@ class StaticFiles:
                 path=resolved_path or joined_path,
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
+                filename=filename,
                 is_head_response=scope["method"] == "HEAD",
             )(scope, receive, send)
             return
 
         if self.is_html_mode:
-            resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path="404.html")
+            filename = "404.html"
+            resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=filename)
             if fs_info and fs_info["type"] == "file":
                 await FileResponse(
                     path=resolved_path or joined_path,
                     file_info=fs_info,
                     file_system=self.adapter.file_system,
+                    filename=filename,
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
                 )(scope, receive, send)
