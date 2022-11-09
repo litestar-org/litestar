@@ -1,12 +1,14 @@
-import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List, Optional, Pattern, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 from pydantic import BaseConfig, BaseModel
 
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
-from starlite.middleware.utils import should_bypass_middleware
+from starlite.middleware.utils import (
+    build_exclude_path_pattern,
+    should_bypass_middleware,
+)
 
 if TYPE_CHECKING:
 
@@ -51,11 +53,8 @@ class AbstractAuthenticationMiddleware(ABC):
             exclude_from_auth_key: An identifier to use on routes to disable authentication for a particular route.
         """
         self.app = app
-        self.exclude: Optional[Pattern[str]] = None
         self.exclude_from_auth_key = exclude_from_auth_key
-
-        if exclude:
-            self.exclude = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        self.exclude = build_exclude_path_pattern(exclude=exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """

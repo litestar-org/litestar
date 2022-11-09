@@ -4,13 +4,13 @@
     options:
         members:
             - backend
-            - minimum_size
-            - gzip_compress_level
-            - brotli_quality
-            - brotli_mode
-            - brotli_lgwin
-            - brotli_lgblock
             - brotli_gzip_fallback
-            - middleware_class
+            - brotli_lgblock
+            - brotli_lgwin
+            - brotli_mode
+            - brotli_quality
             - exclude
             - exclude_opt_key
+            - gzip_compress_level
+            - middleware_class
+            - minimum_size

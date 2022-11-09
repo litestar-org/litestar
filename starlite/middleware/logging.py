@@ -1,4 +1,3 @@
-import re
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
 
@@ -6,7 +5,7 @@ from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
 from starlite.enums import ScopeType
-from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
+from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.utils import default_serializer, get_serializer_from_scope
 from starlite.utils.extractors import (
     ConnectionDataExtractor,
@@ -28,8 +27,8 @@ except ImportError:
     structlog_installed = False  # pylint: disable=invalid-name
 
 
-class LoggingMiddleware(MiddlewareProtocol):
-    __slots__ = ("config", "logger", "exclude", "request_extractor", "response_extractor", "is_struct_logger")
+class LoggingMiddleware(AbstractMiddleware):
+    __slots__ = ("config", "logger", "request_extractor", "response_extractor", "is_struct_logger")
 
     logger: "Logger"
 
@@ -40,14 +39,12 @@ class LoggingMiddleware(MiddlewareProtocol):
             app: The 'next' ASGI app to call.
             config: An instance of LoggingMiddlewareConfig.
         """
-        self.app = app
+        super().__init__(
+            app=app, scopes={ScopeType.HTTP}, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key
+        )
         self.is_struct_logger = structlog_installed
         self.config = config
-        self.exclude = (
-            (re.compile("|".join(config.exclude)) if isinstance(config.exclude, list) else re.compile(config.exclude))
-            if config.exclude
-            else None
-        )
+
         self.request_extractor = ConnectionDataExtractor(
             extract_body="body" in self.config.request_log_fields,
             extract_client="client" in self.config.request_log_fields,
@@ -82,15 +79,13 @@ class LoggingMiddleware(MiddlewareProtocol):
         Returns:
             None
         """
-
-        if scope["type"] == ScopeType.HTTP and not (self.exclude and self.exclude.findall(scope["path"])):
-            if not hasattr(self, "logger"):
-                self.logger = scope["app"].get_logger(self.config.logger_name)
-                self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
-            if self.config.request_log_fields:
-                await self.log_request(scope=scope)
-            if self.config.response_log_fields:
-                send = self.create_send_wrapper(scope=scope, send=send)
+        if not hasattr(self, "logger"):
+            self.logger = scope["app"].get_logger(self.config.logger_name)
+            self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
+        if self.config.request_log_fields:
+            await self.log_request(scope=scope)
+        if self.config.response_log_fields:
+            send = self.create_send_wrapper(scope=scope, send=send)
         await self.app(scope, receive, send)
 
     async def log_request(self, scope: "Scope") -> None:
@@ -211,6 +206,10 @@ class LoggingMiddlewareConfig(BaseModel):
     exclude: Optional[Union[str, List[str]]] = None
     """
     List of paths to exclude from logging.
+    """
+    exclude_opt_key: Optional[str] = None
+    """
+    An identifier to use on routes to disable logging for a particular route.
     """
     logger_name: str = "starlite"
     """

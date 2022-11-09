@@ -1,8 +1,32 @@
-from typing import TYPE_CHECKING, Optional, Pattern
+import re
+from typing import TYPE_CHECKING, List, Optional, Pattern, Union
+
+from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
 
     from starlite.types import Scope, Scopes
+
+
+def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = None) -> Optional[Pattern]:
+    """Build single path pattern from list of patterns to opt-out from
+    middleware processing.
+
+    Args:
+        exclude: A pattern or a list of patterns.
+
+    Returns:
+        An optional pattern to match against scope["path"] to opt-out from middleware processing.
+    """
+    if exclude is None:
+        return None
+
+    try:
+        return re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+    except re.error as e:
+        raise ImproperlyConfiguredException(
+            "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
+        ) from e
 
 
 def should_bypass_middleware(

@@ -1,11 +1,13 @@
-import re
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Pattern, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union
 
 from typing_extensions import Protocol, runtime_checkable
 
 from starlite.enums import ScopeType
-from starlite.middleware.utils import should_bypass_middleware
+from starlite.middleware.utils import (
+    build_exclude_path_pattern,
+    should_bypass_middleware,
+)
 
 if TYPE_CHECKING:
     from starlite.types import Scopes
@@ -99,12 +101,7 @@ class AbstractMiddleware:
         self.app = app
         self.scopes = scopes or self.scopes
         self.exclude_opt_key = exclude_opt_key or self.exclude_opt_key
-
-        self.exclude_pattern: Optional[Pattern] = None
-
-        exclude = exclude or self.exclude
-        if exclude is not None:
-            self.exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        self.exclude_pattern = build_exclude_path_pattern(exclude=(exclude or self.exclude))
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:

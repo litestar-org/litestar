@@ -3,14 +3,14 @@
 ::: starlite.config.csrf.CSRFConfig
     options:
         members:
-            - secret
+            - cookie_domain
+            - cookie_httponly
             - cookie_name
             - cookie_path
-            - header_name
-            - cookie_secure
-            - cookie_httponly
             - cookie_samesite
-            - cookie_domain
-            - safe_methods
+            - cookie_secure
             - exclude
             - exclude_from_csrf_key
+            - header_name
+            - safe_methods
+            - secret

@@ -1,4 +1,3 @@
-import re
 import secrets
 from abc import ABC, abstractmethod
 from typing import (
@@ -10,7 +9,6 @@ from typing import (
     Generic,
     List,
     Optional,
-    Pattern,
     Type,
     TypeVar,
     Union,
@@ -24,7 +22,10 @@ from typing_extensions import Literal
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.datastructures import MutableScopeHeaders
 from starlite.middleware.base import MiddlewareProtocol
-from starlite.middleware.utils import should_bypass_middleware
+from starlite.middleware.utils import (
+    build_exclude_path_pattern,
+    should_bypass_middleware,
+)
 from starlite.types import Empty
 from starlite.utils import default_serializer, get_serializer_from_scope
 
@@ -339,12 +340,8 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
 
         self.app = app
         self.backend = backend
-        self._exclude_pattern: Optional[Pattern[str]] = None
+        self._exclude_pattern = build_exclude_path_pattern(exclude=backend.config.exclude)
         self._exclude_opt_key = backend.config.exclude_opt_key
-
-        if backend.config.exclude:
-            exclude = backend.config.exclude
-            self._exclude_pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
         """

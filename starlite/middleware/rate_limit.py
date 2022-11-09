@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass
 from time import time
 from typing import (
@@ -8,9 +7,9 @@ from typing import (
     Dict,
     List,
     Optional,
-    Pattern,
     Tuple,
     Type,
+    Union,
     cast,
 )
 
@@ -22,7 +21,7 @@ from starlite.connection import Request
 from starlite.datastructures import MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
-from starlite.middleware.base import DefineMiddleware
+from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.types import Message, SyncOrAsyncUnion
 from starlite.utils import AsyncCallable
 
@@ -45,12 +44,11 @@ class CacheObject:
     reset: int
 
 
-class RateLimitMiddleware:
+class RateLimitMiddleware(AbstractMiddleware):
     __slots__ = (
         "app",
         "cache",
         "check_throttle_handler",
-        "exclude",
         "max_requests",
         "unit",
         "request_quota",
@@ -66,13 +64,14 @@ class RateLimitMiddleware:
             app: The 'next' ASGI app to call.
             config: An instance of RateLimitConfig.
         """
-        self.app = app
+        super().__init__(
+            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
+        )
         self.check_throttle_handler = cast(
             "Optional[Callable[[Request], Awaitable[bool]]]", config.check_throttle_handler
         )
-        self.exclude: Optional[Pattern[str]] = re.compile("|".join(config.exclude)) if config.exclude else None
-        self.max_requests: int = config.rate_limit[1]
         self.config = config
+        self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -85,23 +84,22 @@ class RateLimitMiddleware:
         Returns:
             None
         """
-        if scope["type"] == ScopeType.HTTP:
-            if not hasattr(self, "cache"):
-                self.cache = scope["app"].cache
+        if not hasattr(self, "cache"):
+            self.cache = scope["app"].cache
 
-            request: "Request[Any, Any]" = scope["app"].request_class(scope)
-            if await self.should_check_request(request=request):
-                key = self.cache_key_from_request(request=request)
-                cache_object = await self.retrieve_cached_history(key)
-                if len(cache_object.history) >= self.max_requests:
-                    raise TooManyRequestsException(
-                        headers=self.create_response_headers(cache_object=cache_object)
-                        if self.config.set_rate_limit_headers
-                        else None
-                    )
-                await self.set_cached_history(key=key, cache_object=cache_object)
-                if self.config.set_rate_limit_headers:
-                    send = self.create_send_wrapper(send=send, cache_object=cache_object)
+        request: "Request[Any, Any]" = scope["app"].request_class(scope)
+        if await self.should_check_request(request=request):
+            key = self.cache_key_from_request(request=request)
+            cache_object = await self.retrieve_cached_history(key)
+            if len(cache_object.history) >= self.max_requests:
+                raise TooManyRequestsException(
+                    headers=self.create_response_headers(cache_object=cache_object)
+                    if self.config.set_rate_limit_headers
+                    else None
+                )
+            await self.set_cached_history(key=key, cache_object=cache_object)
+            if self.config.set_rate_limit_headers:
+                send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
         await self.app(scope, receive, send)
 
@@ -193,11 +191,9 @@ class RateLimitMiddleware:
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
         """
-        if not self.exclude or not self.exclude.findall(request.url.path):
-            if self.check_throttle_handler:
-                return await self.check_throttle_handler(request)
-            return True
-        return False
+        if self.check_throttle_handler:
+            return await self.check_throttle_handler(request)
+        return True
 
     def create_response_headers(self, cache_object: CacheObject) -> Dict[str, str]:
         """Creates ratelimit response headers.
@@ -226,8 +222,10 @@ class RateLimitMiddleware:
 class RateLimitConfig(BaseModel):
     rate_limit: Tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
-    exclude: Optional[List[str]] = None
-    """List of patterns to skip in the authentication middleware."""
+    exclude: Optional[Union[str, List[str]]] = None
+    """A pattern or list of patterns to skip in the rate limiting middleware."""
+    exclude_opt_key: Optional[str] = None
+    """An identifier to use on routes to disable rate limiting for a particular route."""
     check_throttle_handler: Optional[Callable[[Request[Any, Any]], SyncOrAsyncUnion[bool]]] = None
     """
     Handler callable that receives the request instance, returning a boolean dictating whether or not the
