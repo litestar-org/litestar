@@ -6,7 +6,7 @@ from starlite import Parameter, Starlite, get
 
 
 class Version(BaseModel):
-    id: conint(ge=1, le=10)
+    id: conint(ge=1, le=10)  # type: ignore[valid-type]
     specs: Json
 
 
@@ -21,7 +21,9 @@ def get_product_version(
         title="Available Product Versions",
         description="Get a specific version spec from the available specs",
         examples=[Example(value=1)],
-        external_docs=ExternalDocumentation(url="https://mywebsite.com/documentation/product#versions"),
+        external_docs=ExternalDocumentation(
+            url="https://mywebsite.com/documentation/product#versions",  # type: ignore[arg-type]
+        ),
     )
 ) -> Version:
     return VERSIONS[version]
