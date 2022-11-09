@@ -161,11 +161,8 @@ class SignatureParameter:
 
     @property
     def default_defined(self) -> bool:
-        """`True` if `self.default` is not one of the undefined sentinel types.
-
-        Returns
-        -------
-        bool
+        """Return a boolean, indicating if `self.default` is not one of the
+        undefined sentinel types.
         """
         return self.default not in UNDEFINED_SENTINELS
 
@@ -297,9 +294,9 @@ class SignatureModelFactory:
 
     @property
     def signature_parameters(self) -> Generator[SignatureParameter, None, None]:
-        """Iterable of `SignatureModel` instances, that represent the
-        parameters of the function signature that should be included in the
-        `SignatureModel` type.
+        """Create a generator of `SignatureParameters` to be included in the
+        `SignatureModel` by iterating over the parameters of the function
+        signature.
 
         Returns:
             Generator[SignatureParameter, None, None]
@@ -321,7 +318,7 @@ class SignatureModelFactory:
         return parameter.name in SKIP_VALIDATION_NAMES or should_skip_dependency_validation(parameter.default)
 
     def create_signature_model(self) -> Type[SignatureModel]:
-        """Constructs a `SignatureModel` type that represents the signature of
+        """Construct a `SignatureModel` type that represents the signature of
         `self.fn`
 
         Returns:
@@ -357,9 +354,7 @@ class SignatureModelFactory:
 
 
 def get_signature_model(value: Any) -> Type[SignatureModel]:
-    """Helper function to retrieve and validate the signature model from a
-    provider or handler.
-    """
+    """Retrieve and validate the signature model from a provider or handler."""
     try:
         return cast("Type[SignatureModel]", value.signature_model)
     except AttributeError as e:  # pragma: no cover

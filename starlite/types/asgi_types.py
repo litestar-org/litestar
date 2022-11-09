@@ -59,15 +59,21 @@ ScopeSession = Optional[Union["EmptyType", Dict[str, Any], "BaseModel"]]
 
 
 class ASGIVersion(TypedDict):
+    """ASGI spec version."""
+
     spec_version: str
     version: Literal["3.0"]
 
 
 class HeaderScope(TypedDict):
+    """Base class for ASGI-scopes that supports headers."""
+
     headers: "RawHeadersList"
 
 
 class BaseScope(HeaderScope):
+    """Base ASGI-scope."""
+
     app: "Starlite"
     asgi: ASGIVersion
     auth: Any
@@ -88,112 +94,156 @@ class BaseScope(HeaderScope):
 
 
 class HTTPScope(BaseScope):
+    """HTTP-ASGI-scope."""
+
     method: "Method"
     type: Literal[ScopeType.HTTP]
 
 
 class WebSocketScope(BaseScope):
+    """WebSocket-ASGI-scope."""
+
     subprotocols: List[str]
     type: Literal[ScopeType.WEBSOCKET]
 
 
 class LifeSpanScope(TypedDict):
+    """Lifespan-ASGI-scope."""
+
     app: "Starlite"
     asgi: ASGIVersion
     type: Literal["lifespan"]
 
 
 class HTTPRequestEvent(TypedDict):
+    """ASGI `http.request` event."""
+
     type: Literal["http.request"]
     body: bytes
     more_body: bool
 
 
 class HTTPResponseStartEvent(HeaderScope):
+    """ASGI `http.response.start` event."""
+
     type: Literal["http.response.start"]
     status: int
 
 
 class HTTPResponseBodyEvent(TypedDict):
+    """ASGI `http.response.body` event."""
+
     type: Literal["http.response.body"]
     body: bytes
     more_body: bool
 
 
 class HTTPServerPushEvent(HeaderScope):
+    """ASGI `http.response.push` event."""
+
     type: Literal["http.response.push"]
     path: str
 
 
 class HTTPDisconnectEvent(TypedDict):
+    """ASGI `http.disconnect` event."""
+
     type: Literal["http.disconnect"]
 
 
 class WebSocketConnectEvent(TypedDict):
+    """ASGI `websocket.connect` event."""
+
     type: Literal["websocket.connect"]
 
 
 class WebSocketAcceptEvent(HeaderScope):
+    """ASGI `websocket.accept` event."""
+
     type: Literal["websocket.accept"]
     subprotocol: Optional[str]
 
 
 class WebSocketReceiveEvent(TypedDict):
+    """ASGI `websocket.receive` event."""
+
     type: Literal["websocket.receive"]
     bytes: Optional[bytes]
     text: Optional[str]
 
 
 class WebSocketSendEvent(TypedDict):
+    """ASGI `websocket.send` event."""
+
     type: Literal["websocket.send"]
     bytes: Optional[bytes]
     text: Optional[str]
 
 
 class WebSocketResponseStartEvent(HeaderScope):
+    """ASGI `websocket.http.response.start` event."""
+
     type: Literal["websocket.http.response.start"]
     status: int
 
 
 class WebSocketResponseBodyEvent(TypedDict):
+    """ASGI `websocket.http.response.body` event."""
+
     type: Literal["websocket.http.response.body"]
     body: bytes
     more_body: bool
 
 
 class WebSocketDisconnectEvent(TypedDict):
+    """ASGI `websocket.disconnect` event."""
+
     type: Literal["websocket.disconnect"]
     code: int
 
 
 class WebSocketCloseEvent(TypedDict):
+    """ASGI `websocket.close` event."""
+
     type: Literal["websocket.close"]
     code: int
     reason: Optional[str]
 
 
 class LifeSpanStartupEvent(TypedDict):
+    """ASGI `lifespan.startup` event."""
+
     type: Literal["lifespan.startup"]
 
 
 class LifeSpanShutdownEvent(TypedDict):
+    """ASGI `lifespan.shutdown` event."""
+
     type: Literal["lifespan.shutdown"]
 
 
 class LifeSpanStartupCompleteEvent(TypedDict):
+    """ASGI `lifespan.startup.complete` event."""
+
     type: Literal["lifespan.startup.complete"]
 
 
 class LifeSpanStartupFailedEvent(TypedDict):
+    """ASGI `lifespan.startup.failed` event."""
+
     type: Literal["lifespan.startup.failed"]
     message: str
 
 
 class LifeSpanShutdownCompleteEvent(TypedDict):
+    """ASGI `lifespan.shutdown.complete` event."""
+
     type: Literal["lifespan.shutdown.complete"]
 
 
 class LifeSpanShutdownFailedEvent(TypedDict):
+    """ASGI `lifespan.shutdown.failed` event."""
+
     type: Literal["lifespan.shutdown.failed"]
     message: str
 

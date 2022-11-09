@@ -182,7 +182,7 @@ strict-imports = false
 
 
 [tool.pydocstyle]
-add-ignore = "D104,D415,D205,D100,D106"
-#add-select = "D401,D404" # disabled for now, conversion will happen at a later point
+add-ignore = "D100,D104,D105,D106,D202,D205,D415,D418"
+#add-select = "D401,D404,D417"
 convention = "google"
 match_dir = "starlite"

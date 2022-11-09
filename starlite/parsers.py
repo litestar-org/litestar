@@ -21,7 +21,7 @@ _false_values = {"False", "false"}
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:
-    """Transforms the multidict into a regular dict, try to load json on all
+    """Transform the multidict into a regular dict, try to load json on all
     non-file values.
 
     Supports lists.
@@ -47,7 +47,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
 
 
 def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
-    """Parses a cookie string into a dictionary of values.
+    """Parse a cookie string into a dictionary of values.
 
     Args:
         cookie_string: A cookie string.

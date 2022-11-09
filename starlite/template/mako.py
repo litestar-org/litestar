@@ -23,14 +23,31 @@ if TYPE_CHECKING:
 
 
 class MakoTemplate(TemplateProtocol):
+    """Mako template, implementing `TemplateProtocol`"""
+
     def __init__(
         self, template: "_MakoTemplate", template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]]
     ):
+        """Initialize a template.
+
+        Args:
+            template: Base `MakoTemplate` used by the underlying mako-engine
+            template_callables: List of callables passed to the template
+        """
         super().__init__()
         self.template = template
         self.template_callables = template_callables
 
     def render(self, *args: Any, **kwargs: Any) -> str:
+        """Render a template.
+
+        Args:
+            args: Positional arguments passed to the engines `render` function
+            kwargs: Keyword arguments passed to the engines `render` function
+
+        Returns:
+            Rendered template as a string
+        """
         for callable_key, template_callable in self.template_callables:
             kwargs_copy = {**kwargs}
             kwargs[callable_key] = partial(template_callable, kwargs_copy)
@@ -39,8 +56,10 @@ class MakoTemplate(TemplateProtocol):
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
+    """Mako based TemplateEngine."""
+
     def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
-        """Mako based TemplateEngine.
+        """Initialize template engine.
 
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
@@ -53,8 +72,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
 
     def get_template(self, template_name: str) -> MakoTemplate:
-        """
-        Retrieves a template by matching its name (dotted path) with files in the directory or directories provided.
+        """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
             template_name: A dotted path
 

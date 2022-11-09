@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
 
 class WebSocketRoute(BaseRoute):
+    """A websocket route, handling a single `WebsocketRouteHandler`"""
+
     __slots__ = (
         "route_handler",
         "handler_parameter_model",
@@ -33,7 +35,7 @@ class WebSocketRoute(BaseRoute):
         path: str,
         route_handler: "WebsocketRouteHandler",
     ) -> None:
-        """This class handles a single Websocket Route.
+        """Initialize the route.
 
         Args:
             path: The path for the route.

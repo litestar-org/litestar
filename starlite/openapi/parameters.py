@@ -44,6 +44,11 @@ class ParameterCollection:
     """
 
     def __init__(self, route_handler: "BaseRouteHandler") -> None:
+        """Initialize `ParameterCollection`.
+
+        Args:
+            route_handler: Associated route handler
+        """
         self.route_handler = route_handler
         self._parameters: Dict[str, Parameter] = {}
 

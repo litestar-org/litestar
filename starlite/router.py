@@ -229,7 +229,7 @@ class Router:
         cls,
         value: Union[Controller, BaseRouteHandler, "Router"],
     ) -> ItemsView[str, RouteHandlerMapItem]:
-        """Maps route handlers to HTTP methods."""
+        """Map route handlers to HTTP methods."""
         if isinstance(value, Router):
             return value.route_handler_method_map.items()
         if isinstance(value, BaseRouteHandler):
@@ -239,9 +239,7 @@ class Router:
 
     @staticmethod
     def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> ItemsView[str, RouteHandlerMapItem]:
-        """Maps route handlers to HTTP methods for an input
-        BaseRouteHandler.
-        """
+        """Map route handlers to HTTP methods for an input BaseRouteHandler."""
         value_ = copy(value)
         handlers_map: Dict[str, RouteHandlerMapItem] = {}
         for path in value_.paths:
@@ -253,7 +251,7 @@ class Router:
 
     @classmethod
     def _map_route_handlers_for_controller(cls, value: Controller) -> ItemsView[str, RouteHandlerMapItem]:
-        """Maps route handlers to HTTP methods for an input Controller."""
+        """Map route handlers to HTTP methods for an input Controller."""
         handlers_map: Dict[str, RouteHandlerMapItem] = {}
         for route_handler in value.get_route_handlers():
             for handler_path in route_handler.paths:
@@ -268,7 +266,7 @@ class Router:
     def _create_http_handler_item(
         handlers_map: Dict[str, RouteHandlerMapItem], route_handler: HTTPRouteHandler, path: str
     ) -> RouteHandlerMapItem:
-        """Creates a dict of HTTP method to route handler for a single
+        """Create a dict of HTTP method to route handler for a single
         controller path.
         """
         handler_item: Optional[RouteHandlerMapItem] = handlers_map.get(path)
@@ -281,9 +279,7 @@ class Router:
     def _validate_registration_value(
         self, value: ControllerRouterHandler
     ) -> Union[Controller, BaseRouteHandler, "Router"]:
-        """Validates that the value passed to the register method is
-        supported.
-        """
+        """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
             return value(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):

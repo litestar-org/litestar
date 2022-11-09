@@ -80,8 +80,7 @@ DEFAULT_CACHE_CONFIG = CacheConfig()
 
 
 class HandlerIndex(TypedDict):
-    """This class is used to map route handler names to a mapping of paths +
-    route handler.
+    """Map route handler names to a mapping of paths + route handler.
 
     It's returned from the 'get_handler_index_by_name' utility method.
     """
@@ -373,7 +372,7 @@ class Starlite(Router):
         receive: Union["Receive", "LifeSpanReceive"],
         send: Union["Send", "LifeSpanSend"],
     ) -> None:
-        """The application entry point.
+        """Application entry point.
 
         Lifespan events (startup / shutdown) are sent to the lifespan handler, otherwise the ASGI handler is used
 
@@ -393,8 +392,9 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
-        """Registers a route handler on the app. This method can be used to
-        dynamically add endpoints to an application.
+        """Register a route handler on the app.
+
+        This method can be used to dynamically add endpoints to an application.
 
         Args:
             value: an instance of [Router][starlite.router.Router], a subclasses of
@@ -580,7 +580,7 @@ class Starlite(Router):
         return route_map
 
     def _create_asgi_handler(self) -> "ASGIApp":
-        """Creates an ASGIApp that wraps the ASGI router inside an exception
+        """Create an ASGIApp that wraps the ASGI router inside an exception
         handler.
 
         If CORS or TrustedHost configs are provided to the constructor,
@@ -598,8 +598,8 @@ class Starlite(Router):
         )
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
-        """Creates function signature models for all route handler functions
-        and provider dependencies.
+        """Create function signature models for all route handler functions and
+        provider dependencies.
         """
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
@@ -616,7 +616,7 @@ class Starlite(Router):
                 ).create_signature_model()
 
     def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
-        """Wraps the ASGI send and handles any 'before send' hooks.
+        """Wrap the ASGI send and handles any 'before send' hooks.
 
         Args:
             send: The ASGI send function.

@@ -6,15 +6,14 @@ T = TypeVar("T")
 
 
 def get_name(value: Any) -> str:
-    """Helper to get the '__name__' dunder of a value.
+    """Get the `__name__` of an object.
 
     Args:
-        value: An arbitrary value.
+        value: An arbitrary object.
 
     Returns:
         A name string.
     """
-
     if hasattr(value, "__name__"):
         return cast("str", value.__name__)
     return type(value).__name__

@@ -243,7 +243,7 @@ class DTOFactory:
     def _get_fields_from_source(
         self, source: Type[T]  # pyright: ignore
     ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
-        """Converts a `BaseModel` subclass, [`TypedDict`][typing.TypedDict],
+        """Convert a `BaseModel` subclass, [`TypedDict`][typing.TypedDict],
         `dataclass` or any other type that has a plugin registered into a
         mapping of `str` to `ModelField`.
         """
@@ -272,7 +272,7 @@ class DTOFactory:
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]],
         fields: Dict[str, ModelField],
     ) -> Dict[str, Tuple[Any, Any]]:
-        """Populates `field_definitions`, ignoring fields in `exclude`, and
+        """Populate `field_definitions`, ignoring fields in `exclude`, and
         remapping fields in `field_mapping`.
         """
         for field_name, model_field in fields.items():
@@ -315,7 +315,7 @@ class DTOFactory:
     def _remap_field(
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]], field_name: str, field_type: Any
     ) -> Tuple[str, Any]:
-        """Returns tuple of field name and field type remapped according to
+        """Return tuple of field name and field type remapped according to
         entry in `field_mapping`.
         """
         mapping = field_mapping[field_name]

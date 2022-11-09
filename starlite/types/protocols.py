@@ -4,8 +4,10 @@ from typing_extensions import Protocol
 
 
 class Logger(Protocol):  # pragma: no cover
+    """Logger protocol."""
+
     def debug(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'DEBUG' level.
+        """Output a log message at 'DEBUG' level.
 
         Args:
              event: Log message.
@@ -14,7 +16,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def info(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'INFO' level.
+        """Output a log message at 'INFO' level.
 
         Args:
              event: Log message.
@@ -23,7 +25,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def warning(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'WARNING' level.
+        """Output a log message at 'WARNING' level.
 
         Args:
              event: Log message.
@@ -32,7 +34,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def warn(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'WARN' level.
+        """Output a log message at 'WARN' level.
 
         Args:
              event: Log message.
@@ -41,7 +43,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def error(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'ERROR' level.
+        """Output a log message at 'ERROR' level.
 
         Args:
              event: Log message.
@@ -50,7 +52,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def fatal(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'FATAL' level.
+        """Output a log message at 'FATAL' level.
 
         Args:
              event: Log message.
@@ -59,7 +61,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def exception(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Logs a message with level 'ERROR' on this logger. The arguments are
+        """Log a message with level 'ERROR' on this logger. The arguments are
         interpreted as for debug(). Exception info is added to the logging
         message.
 
@@ -70,7 +72,7 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def critical(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Outputs a log message at 'INFO' level.
+        """Output a log message at 'INFO' level.
 
         Args:
              event: Log message.

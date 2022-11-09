@@ -16,10 +16,12 @@ if TYPE_CHECKING:
 
 
 class StaticFiles:
+    """ASGI callable serving static files from a `FileSystemProtocol`"""
+
     __slots__ = ("is_html_mode", "directories", "adapter")
 
     def __init__(self, is_html_mode: bool, directories: List["PathType"], file_system: "FileSystemProtocol") -> None:
-        """This class is an ASGI App that handles file sending.
+        """Initialize the application.
 
         Args:
             is_html_mode: Flag dictating whether serving html. If true, the default file will be 'index.html'.
@@ -55,6 +57,16 @@ class StaticFiles:
         return None, None
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """ASGI callable.
+
+        Args:
+            scope: ASGI scope
+            receive: ASGI `receive` callable
+            send: ASGI `send` callable
+
+        Returns:
+            None
+        """
         if scope["type"] != ScopeType.HTTP or scope["method"] not in {"GET", "HEAD"}:
             raise MethodNotAllowedException()
 

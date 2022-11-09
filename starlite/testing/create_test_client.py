@@ -79,7 +79,7 @@ def create_test_client(
     template_config: Optional["TemplateConfig"] = None,
     websocket_class: Optional[Type["WebSocket"]] = None,
 ) -> TestClient["Starlite"]:
-    """Creates a Starlite app instance and initializes it.
+    """Create a Starlite app instance and initializes it.
 
     [TestClient][starlite.testing.TestClient] with it.
 
@@ -88,7 +88,6 @@ def create_test_client(
             handled correctly.
 
     Examples:
-
         ```python
         from starlite import get, create_test_client
 

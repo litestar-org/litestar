@@ -37,8 +37,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
 
     def get_template(self, template_name: str) -> "JinjaTemplate":
-        """
-        Retrieves a template by matching its name (dotted path) with files in the directory or directories provided.
+        """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
             template_name: A dotted path
 
@@ -54,7 +53,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             raise TemplateNotFoundException(template_name=template_name) from exc
 
     def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
-        """Registers a callable on the template engine.
+        """Register a callable on the template engine.
 
         Args:
             key: The callable key, i.e. the value to use inside the template to call the callable.

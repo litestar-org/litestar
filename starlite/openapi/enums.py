@@ -30,6 +30,8 @@ class OpenAPIFormat(str, Enum):
 
 
 class OpenAPIType(str, Enum):
+    """An OopenAPI type."""
+
     ARRAY = "array"
     BOOLEAN = "boolean"
     INTEGER = "integer"

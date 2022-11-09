@@ -229,9 +229,7 @@ def create_examples_for_field(field: ModelField) -> List[Example]:
 def create_schema(
     field: ModelField, generate_examples: bool, plugins: List["PluginProtocol"], ignore_optional: bool = False
 ) -> Schema:
-    """
-    Create a Schema model for a given ModelField and if needed - recursively traverse its sub_fields as well.
-    """
+    """Create a Schema model for a given ModelField and if needed - recursively traverse its sub_fields as well."""
 
     if is_optional(field) and not ignore_optional:
         non_optional_schema = create_schema(

@@ -134,15 +134,17 @@ class OpenAPIController(Controller):
 
     @property
     def favicon(self) -> str:
-        """
+        """A favicon `<link>` tag, if applicable.
+
         Returns:
-            A link tag if self.favicon_url is not empty, otherwise returns a placeholder meta tag.
+            A `<link>` tag if self.favicon_url is not empty, otherwise returns a placeholder meta tag.
         """
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @property
     def render_methods_map(self) -> Dict["Literal['redoc', 'swagger', 'elements']", Callable[[Request], str]]:
-        """
+        """Map render method names to render methods.
+
         Returns:
             A mapping of string keys to render methods.
         """
@@ -158,7 +160,7 @@ class OpenAPIController(Controller):
         include_in_schema=False,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
-        """Returns the OpenAPI schema as YAML with an
+        """Return the OpenAPI schema as YAML with an
         'application/vnd.oai.openapi' Content-Type header.
 
         Args:
@@ -177,7 +179,7 @@ class OpenAPIController(Controller):
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
-        """Returns the OpenAPI schema as JSON with an
+        """Return the OpenAPI schema as JSON with an
         'application/vnd.oai.openapi+json' Content-Type header.
 
         Args:

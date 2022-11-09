@@ -43,6 +43,10 @@ T = TypeVar("T")
 
 
 class Response(Generic[T]):
+    """Base Starlite HTTP response class, used as the basis for all other
+    response classes.
+    """
+
     __slots__ = (
         "status_code",
         "media_type",
@@ -67,8 +71,7 @@ class Response(Generic[T]):
         encoding: str = "utf-8",
         is_head_response: bool = False,
     ) -> None:
-        """This is the base Starlite HTTP response class, used as the basis for
-        all other response classes.
+        """Initialize the response.
 
         Args:
             content: A value for the response body that will be rendered into bytes string.
@@ -193,8 +196,8 @@ class Response(Generic[T]):
         return default_serializer(value)
 
     def render(self, content: Any) -> bytes:
-        """
-        Handles the rendering of content T into a bytes string.
+        """Handle the rendering of content T into a bytes string.
+
         Args:
             content: A value for the response body that will be rendered into bytes string.
 
@@ -229,7 +232,7 @@ class Response(Generic[T]):
 
     @property
     def content_length(self) -> Optional[int]:
-        """
+        """Content length of the response if applicable.
 
         Returns:
             The content length of the body (e.g. for use in a "Content-Length" header).
@@ -241,7 +244,8 @@ class Response(Generic[T]):
 
     @property
     def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
-        """
+        """Encoded response headers as a list of tuples of bytes.
+
         Notes:
             - A 'Content-Length' header will be added if appropriate and not provided by the user.
 
@@ -274,8 +278,9 @@ class Response(Generic[T]):
             await self.background()
 
     async def start_response(self, send: "Send") -> None:
-        """
-        Emits the start event of the response. This event includes the headers and status codes.
+        """Emit the start event of the response. This event includes the
+        headers and status codes.
+
         Args:
             send: The ASGI send function.
 
@@ -291,7 +296,7 @@ class Response(Generic[T]):
         await send(event)
 
     async def send_body(self, send: "Send", receive: "Receive") -> None:  # pylint: disable=unused-argument
-        """Emits the response body.
+        """Emit the response body.
 
         Args:
             send: The ASGI send function.

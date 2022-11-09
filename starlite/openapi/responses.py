@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 
 
 def create_cookie_schema(cookie: "Cookie") -> Schema:
-    """
-    Given a Cookie instance, return its corresponding OpenAPI schema
+    """Given a Cookie instance, return its corresponding OpenAPI schema.
+
     Args:
         cookie: Cookie
 

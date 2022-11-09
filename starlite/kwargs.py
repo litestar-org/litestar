@@ -88,8 +88,7 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 
 
 class KwargsModel:
-    """This class is used to model the required kwargs for a given RouteHandler
-    and its dependencies.
+    """Model required kwargs for a given RouteHandler and its dependencies.
 
     This is done once and is memoized during application bootstrap,
     ensuring minimal runtime overhead.
@@ -121,10 +120,7 @@ class KwargsModel:
         sequence_query_parameter_names: Set[str],
         is_data_optional: bool,
     ) -> None:
-        """This class is used to model the required kwargs for a given
-        RouteHandler and its dependencies.
-
-        This is done once and is memoized during application bootstrap, ensuring minimal runtime overhead.
+        """Initialize `KwargsModel`.
 
         Args:
             expected_cookie_params: Any expected cookie parameter kwargs
@@ -164,8 +160,8 @@ class KwargsModel:
         dependencies: Dict[str, Provide],
         signature_model_fields: Dict[str, ModelField],
     ) -> Tuple[Set[ParameterDefinition], set]:
-        """This function gets parameter_definitions for the construction of
-        KwargsModel instance.
+        """Get parameter_definitions for the construction of KwargsModel
+        instance.
 
         Args:
             path_parameters: Any expected path parameters.
@@ -255,9 +251,9 @@ class KwargsModel:
         path_parameters: Set[str],
         layered_parameters: Dict[str, ModelField],
     ) -> "KwargsModel":
-        """This function pre-determines what parameters are required for a
-        given combination of route + route handler. It is executed during the
-        application bootstrap process.
+        """Pre-determine what parameters are required for a given combination
+        of route + route handler. It is executed during the application
+        bootstrap process.
 
         Args:
             signature_model: A [SignatureModel][starlite.signature.SignatureModel] subclass.
@@ -410,7 +406,7 @@ class KwargsModel:
 
     @staticmethod
     def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:
-        """Collects request params, checking for missing required values."""
+        """Collect request params, checking for missing required values."""
         missing_params = [p.field_alias for p in expected if p.is_required and p.field_alias not in params]
         if missing_params:
             raise ValidationException(f"Missing required parameter(s) {', '.join(missing_params)} for url {url}")
@@ -453,7 +449,7 @@ class KwargsModel:
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
-        """Creates a graph like structure of dependencies, with each dependency
+        """Create a graph like structure of dependencies, with each dependency
         including its own dependencies as a list.
         """
         provide = dependencies[key]
@@ -468,7 +464,7 @@ class KwargsModel:
     def _create_parameter_definition(
         allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_sequence: bool
     ) -> ParameterDefinition:
-        """Creates a ParameterDefinition for the given pydantic FieldInfo
+        """Create a ParameterDefinition for the given pydantic FieldInfo
         instance and inserts it into the correct parameter set.
         """
         extra = field_info.extra
@@ -503,9 +499,7 @@ class KwargsModel:
         expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
         dependency_kwargs_model: "KwargsModel",
     ) -> None:
-        """Validates that the 'data' kwarg is compatible across
-        dependencies.
-        """
+        """Validate that the 'data' kwarg is compatible across dependencies."""
         if (expected_form_data and not dependency_kwargs_model.expected_form_data) or (
             not expected_form_data and dependency_kwargs_model.expected_form_data
         ):
@@ -528,7 +522,7 @@ class KwargsModel:
         model_fields: Dict[str, ModelField],
         layered_parameters: Dict[str, ModelField],
     ) -> None:
-        """Validates that there are no ambiguous kwargs, that is, kwargs
+        """Validate that there are no ambiguous kwargs, that is, kwargs
         declared using the same key in different places.
         """
         dependency_keys = set(dependencies.keys())
@@ -563,14 +557,14 @@ class KwargsModel:
             )
 
     def _sequence_or_scalar_param(self, key: str, value: List[str]) -> Union[str, List[str]]:
-        """Returns the first element of 'value' if we expect it to be a scalar
+        """Return the first element of 'value' if we expect it to be a scalar
         value (appears in self.sequence_query_parameter_names) and it contains
         only a single element.
         """
         return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 
     async def _get_request_data(self, request: "Request") -> Any:
-        """Retrieves the data - either json data or form data - from the request"""
+        """Retrieve the data - either json data or form data - from the request"""
         if self.expected_form_data:
             media_type, model_field = self.expected_form_data
             form_data = await request.form()

@@ -30,6 +30,8 @@ RouteHandlerMapItem = Union[WebsocketRouteHandler, ASGIRouteHandler, Dict[Method
 
 
 class PathParameterDefinition(NamedTuple):
+    """Path parameter tuple."""
+
     name: str
     full: str
     type: Type

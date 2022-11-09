@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 
 
 class RedirectResponse(Response[Any]):
+    """A redirect response."""
+
     def __init__(
         self,
         url: str,
@@ -25,7 +27,7 @@ class RedirectResponse(Response[Any]):
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
     ) -> None:
-        """This class is used to send redirect responses.
+        """Initialize the response.
 
         Args:
             url: A url to redirect to.
@@ -34,6 +36,7 @@ class RedirectResponse(Response[Any]):
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
+
         Raises:
             [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If status code is not a redirect status code.
         """

@@ -5,15 +5,14 @@ if TYPE_CHECKING:
 
 
 def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
-    """
-    Utility that returns a serializer given a scope object.
+    """Returns a serializer given a scope object.
+
     Args:
         scope: The ASGI connection scope.
 
     Returns:
         A serializer function
     """
-
     route_handler = scope["route_handler"]
     if hasattr(route_handler, "resolve_response_class"):
         return route_handler.resolve_response_class().serializer  # type: ignore
