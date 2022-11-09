@@ -194,7 +194,8 @@ def create_parameter_for_handler(
     generate_examples: bool,
 ) -> List[Parameter]:
     """Create a list of path/query/header Parameter models for the given
-    PathHandler."""
+    PathHandler.
+    """
     parameters = ParameterCollection(route_handler=route_handler)
     dependencies = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()

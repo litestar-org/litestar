@@ -309,7 +309,8 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
     @property
     def _backend_class(self) -> Type[Union[SQLAlchemyBackend, AsyncSQLAlchemyBackend]]:  # type: ignore[override]
         """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`,
-        depending on the engine type configured in the `SQLAlchemyPlugin`"""
+        depending on the engine type configured in the `SQLAlchemyPlugin`
+        """
         if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:  # pylint: disable=protected-access
             return AsyncSQLAlchemyBackend
         return SQLAlchemyBackend

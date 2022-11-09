@@ -23,7 +23,8 @@ if TYPE_CHECKING:
 
 class TortoiseORMPlugin(PluginProtocol[Model]):
     """Support (de)serialization and OpenAPI generation for Tortoise ORM
-    types."""
+    types.
+    """
 
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
@@ -87,7 +88,8 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[Model]":
         """Given a value of indeterminate type, determine if this value is
-        supported by the plugin."""
+        supported by the plugin.
+        """
         return isinstance(value, (Model, ModelMeta))
 
     def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
@@ -101,12 +103,14 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     async def to_dict(self, model_instance: Model) -> Dict[str, Any]:  # pylint: disable=invalid-overridden-method
         """Given an instance of a model supported by the plugin, return a
-        dictionary of serializable values."""
+        dictionary of serializable values.
+        """
         pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
         return cast("Dict[str, Any]", data.dict())
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:
         """Given a class supported by this plugin and a dict of values, create
-        an instance of the class."""
+        an instance of the class.
+        """
         return model_class().update_from_dict(**kwargs)

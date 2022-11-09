@@ -57,14 +57,16 @@ def second_handler() -> dict[str, str]:
 @get("/third_path", exclude_from_middleware=True)
 def third_handler() -> dict[str, str]:
     """Handler is excluded due to the opt key 'exclude_from_middleware'
-    matching the middleware 'exclude_opt_key'."""
+    matching the middleware 'exclude_opt_key'.
+    """
     return {"hello": "second"}
 
 
 @get("/greet")
 def not_excluded_handler() -> dict[str, str]:
     """This handler is not excluded, and thus the middleware will execute on
-    every incoming request to it."""
+    every incoming request to it.
+    """
     return {"hello": "world"}
 
 

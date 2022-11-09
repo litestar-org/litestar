@@ -120,13 +120,15 @@ def test_config_connection_string_or_engine_instance_validation() -> None:
 
 def test_config_session_maker_class_protocol() -> None:
     """Tests that pydantic allows the type, but also relies on mypy checking
-    that `sessionmaker` conforms to the protocol."""
+    that `sessionmaker` conforms to the protocol.
+    """
     SQLAlchemyConfig(connection_string="sqlite:///", session_maker_class=sessionmaker)
 
 
 def test_config_session_maker_instance_protocol() -> None:
     """Tests that pydantic allows the type, but also relies on mypy checking
-    that `sessionmaker` conforms to the protocol."""
+    that `sessionmaker` conforms to the protocol.
+    """
     SQLAlchemyConfig(connection_string="sqlite:///", session_maker_instance=sessionmaker())
     # instance can be any callable that returns a session type instance
     SQLAlchemyConfig(connection_string="sqlite:///", session_maker_instance=Session)

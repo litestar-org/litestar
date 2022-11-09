@@ -179,3 +179,9 @@ exclude = [
 
 [tool.slotscheck]
 strict-imports = false
+
+
+[tool.pydocstyle]
+add-ignore = "D104,D415,D205"
+convention = "google"
+match_dir = "starlite"

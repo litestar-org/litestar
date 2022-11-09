@@ -26,7 +26,8 @@ async def before_send_hook_handler(message: "Message", state: "State") -> None:
 
 def on_startup(state: "State") -> None:
     """A function that will populate the app state before any requests are
-    received."""
+    received.
+    """
     state.message = "value injected during send"
 
 

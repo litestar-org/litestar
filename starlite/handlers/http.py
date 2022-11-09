@@ -73,7 +73,8 @@ MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define ht
 
 def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
     """Given two lists of cookies, ensures the uniqueness of cookies by key and
-    returns a normalized dict ready to be set on the response."""
+    returns a normalized dict ready to be set on the response.
+    """
     filtered_cookies = [*local_cookies]
     for cookie in layered_cookies:
         if not any(c == cookie for c in filtered_cookies):
@@ -612,7 +613,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def _validate_handler_function(self) -> None:
         """Validates the route handler function once it is set by inspecting
-        its return annotations."""
+        its return annotations.
+        """
         super()._validate_handler_function()
 
         if self.signature.return_annotation is Signature.empty:
@@ -936,7 +938,8 @@ class head(HTTPRouteHandler):
 
     def _validate_handler_function(self) -> None:
         """Validates the route handler function once it is set by inspecting
-        its return annotations."""
+        its return annotations.
+        """
         super()._validate_handler_function()
 
         # we allow here File and FileResponse because these have special setting for head responses

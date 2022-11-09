@@ -157,7 +157,8 @@ def test_load_session_cookies_and_expire_previous(
 
 def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend: CookieBackend) -> None:
     """If AAD has been tampered with, the integrity of the data cannot be
-    verified and InavlidTag exception is raised."""
+    verified and InavlidTag exception is raised.
+    """
     encrypted_session = cookie_session_backend.dump_data(create_session())
     # The attacker will tamper with the AAD to increase the expiry time of the cookie.
     attacker_chosen_time = 300  # In seconds

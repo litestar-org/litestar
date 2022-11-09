@@ -233,7 +233,8 @@ class Router:
     @staticmethod
     def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> ItemsView[str, RouteHandlerMapItem]:
         """Maps route handlers to HTTP methods for an input
-        BaseRouteHandler."""
+        BaseRouteHandler.
+        """
         value_ = copy(value)
         handlers_map: Dict[str, RouteHandlerMapItem] = {}
         for path in value_.paths:
@@ -261,7 +262,8 @@ class Router:
         handlers_map: Dict[str, RouteHandlerMapItem], route_handler: HTTPRouteHandler, path: str
     ) -> RouteHandlerMapItem:
         """Creates a dict of HTTP method to route handler for a single
-        controller path."""
+        controller path.
+        """
         handler_item: Optional[RouteHandlerMapItem] = handlers_map.get(path)
         if not isinstance(handler_item, dict):
             handler_item = {}
@@ -273,7 +275,8 @@ class Router:
         self, value: ControllerRouterHandler
     ) -> Union[Controller, BaseRouteHandler, "Router"]:
         """Validates that the value passed to the register method is
-        supported."""
+        supported.
+        """
         if is_class_and_subclass(value, Controller):
             return value(owner=self)
         if not isinstance(value, (Router, BaseRouteHandler)):

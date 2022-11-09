@@ -86,7 +86,8 @@ class HTTPRoute(BaseRoute):
 
     def create_handler_map(self) -> None:
         """Parses the passed in route_handlers and returns a mapping of http-
-        methods and route handlers."""
+        methods and route handlers.
+        """
         for route_handler in self.route_handlers:
             kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
             for http_method in route_handler.http_methods:
@@ -166,7 +167,8 @@ class HTTPRoute(BaseRoute):
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
         """Determines what kwargs are required for the given route handler's
-        'fn' and calls it."""
+        'fn' and calls it.
+        """
         signature_model = get_signature_model(route_handler)
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
