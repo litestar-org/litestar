@@ -47,8 +47,8 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
 
 
 def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
-    """
-    Parses a cookie string into a dictionary of values.
+    """Parses a cookie string into a dictionary of values.
+
     Args:
         cookie_string: A cookie string.
 

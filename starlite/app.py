@@ -95,6 +95,14 @@ class HandlerIndex(TypedDict):
 
 
 class Starlite(Router):
+    """The Starlite application.
+
+    `Starlite` is the root level of the app - it has the base path of "/" and all root level
+    Controllers, Routers and Route Handlers should be registered on it.
+
+    Inherits from the [Router][starlite.router.Router] class
+    """
+
     __slots__ = (
         "after_exception",
         "after_shutdown",
@@ -169,12 +177,7 @@ class Starlite(Router):
         template_config: Optional["TemplateConfig"] = None,
         websocket_class: Optional[Type["WebSocket"]] = None,
     ) -> None:
-        """The Starlite application.
-
-        `Starlite` is the root level of the app - it has the base path of "/" and all root level
-        Controllers, Routers and Route Handlers should be registered on it.
-
-        It inherits from the [Router][starlite.router.Router] class.
+        """Initialize a `Starlite` application.
 
         Args:
             after_exception: An application level [exception hook handler][starlite.types.AfterExceptionHookHandler]
@@ -565,9 +568,10 @@ class Starlite(Router):
 
     @property
     def route_handler_method_view(self) -> Dict[str, List[str]]:
-        """
+        """Map route handlers to paths.
+
         Returns:
-            A dictionary mapping route handlers to paths.
+            A dictionary of router handlers and lists of paths as strings
         """
         route_map: Dict[str, List[str]] = {}
         for handler, routes in self.asgi_router.route_mapping.items():

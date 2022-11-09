@@ -45,6 +45,8 @@ SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope"}
 
 
 class SignatureModel(BaseModel):
+    """Pydantic model representing a signature."""
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -87,14 +89,12 @@ class SignatureModel(BaseModel):
 
         If both parameter and dependency values are invalid, we raise the client error first.
 
-        Parameters
-        ----------
-        connection : Request | WebSocket
-        exc : ValidationError
+        Args:
+            connection: A Request or WebSocket
+            exc: A ValidationError
 
-        Returns
-        -------
-        ValidationException | InternalServerException
+        Returns:
+            A ValidationException or InternalServerException
         """
         server_errors: List["ErrorDict"] = []
         client_errors: List["ErrorDict"] = []
@@ -127,14 +127,6 @@ class SignatureModel(BaseModel):
 class SignatureParameter:
     """Represents the parameters of a callable for purpose of signature model
     generation.
-
-    Parameters
-    ----------
-    fn_name : str
-        Name of function.
-    parameter_name : str
-        Name of parameter.
-    parameter : inspect.Parameter
     """
 
     __slots__ = (
@@ -150,6 +142,13 @@ class SignatureParameter:
     optional: bool
 
     def __init__(self, fn_name: str, parameter_name: str, parameter: Parameter) -> None:
+        """Initialize SignatureParameter.
+
+        Args:
+            fn_name: Name of function.
+            parameter_name: Name of parameter.
+            parameter: inspect.Parameter
+        """
         if parameter.annotation is Signature.empty:
             raise ImproperlyConfiguredException(
                 f"Kwarg {parameter_name} of {fn_name} does not have a type annotation. If it "
@@ -177,25 +176,14 @@ class SignatureModelFactory:
 
     Instance available at `SignatureModel.factory`.
 
-    Parameters
-    ----------
-    fn : AnyCallable
-    plugins : list[PluginProtocol]
-    dependency_names : Set[str]
-
     The following attributes are populated after the `model()` method has been called to generate
     the `SignatureModel` subclass.
 
-    Attributes
-    ----------
-    field_plugin_mappings : dict[str, PluginMapping]
-        Maps parameter name, to `PluginMapping` where a plugin has been applied.
-    field_definitions : dict[str, Tuple[Any, Any]
-        Maps parameter name to the `(<type>, <default>)` tuple passed to `pydantic.create_model()`.
-    defaults : dict[str, Any]
-        Maps parameter name to default value, if one defined.
-    dependency_name_set : set[str]
-        The names of all known dependency parameters.
+    Attributes:
+        field_plugin_mappings: Maps parameter name, to `PluginMapping` where a plugin has been applied.
+        field_definitions:  Maps parameter name to the `(<type>, <default>)` tuple passed to `pydantic.create_model()`.
+        defaults: Maps parameter name to default value, if one defined.
+        dependency_name_set: The names of all known dependency parameters.
     """
 
     __slots__ = (
@@ -209,6 +197,13 @@ class SignatureModelFactory:
     )
 
     def __init__(self, fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_names: Set[str]) -> None:
+        """Initialise `SignatureModelFactory`
+
+        Args:
+            fn: A callable
+            plugins: A list of plugins
+            dependency_names: Dependency names
+        """
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
         self.signature = Signature.from_callable(fn)
@@ -225,13 +220,11 @@ class SignatureModelFactory:
         defined without a default value, and it hasn't been provided to the
         handler.
 
-        Parameters
-        ----------
-        parameter : SignatureParameter
+        Args:
+            parameter  SignatureParameter
 
-        Raises
-        ------
-        `ImproperlyConfiguredException`
+        Raises:
+            `ImproperlyConfiguredException`
         """
         if parameter.optional:
             return
@@ -250,9 +243,8 @@ class SignatureModelFactory:
         """Add parameter name of dependencies declared using `Dependency()`
         function to the set of all dependency names.
 
-        Parameters
-        ----------
-        parameter : SignatureParameter
+        Args:
+            parameter: SignatureParameter
         """
         if is_dependency_field(parameter.default):
             self.dependency_name_set.add(parameter.name)
@@ -261,9 +253,8 @@ class SignatureModelFactory:
         """If `parameter` has defined default, map it to the parameter name in
         `self.defaults`.
 
-        Parameters
-        ----------
-        parameter : SignatureParameter
+        Args:
+            parameter: SignatureParameter
         """
         if parameter.default_defined:
             self.defaults[parameter.name] = parameter.default
@@ -272,14 +263,12 @@ class SignatureModelFactory:
         """Use plugin declared for parameter annotation type to generate a
         pydantic model.
 
-        Parameters
-        ----------
-        parameter : SignatureParameter
-        plugin : PluginProtocol
+        Args:
+            parameter:  SignatureParameter
+            plugin: PluginProtocol
 
-        Returns
-        -------
-        Any
+        Returns:
+            A pydantic model to be used as a type
         """
         type_args = get_args(parameter.annotation)
         type_value = type_args[0] if type_args else parameter.annotation
@@ -294,13 +283,11 @@ class SignatureModelFactory:
         """Construct an `(<annotation>, <default>)` tuple, appropriate for
         `pydantic.create_model()`.
 
-        Parameters
-        ----------
-        parameter : SignatureParameter
+        Args:
+            parameter: SignatureParameter
 
-        Returns
-        -------
-        tuple[Any, Any]
+        Returns:
+            tuple[Any, Any]
         """
         if parameter.default_defined:
             return parameter.annotation, parameter.default
@@ -314,9 +301,8 @@ class SignatureModelFactory:
         parameters of the function signature that should be included in the
         `SignatureModel` type.
 
-        Returns
-        -------
-        Generator[SignatureParameter, None, None]
+        Returns:
+            Generator[SignatureParameter, None, None]
         """
         for name, parameter in filter(lambda x: x[0] not in SKIP_NAMES, self.signature.parameters.items()):
             yield SignatureParameter(self.fn_name, name, parameter)
@@ -338,9 +324,8 @@ class SignatureModelFactory:
         """Constructs a `SignatureModel` type that represents the signature of
         `self.fn`
 
-        Returns
-        -------
-        type[SignatureModel]
+        Returns:
+            type[SignatureModel]
         """
         try:
             for parameter in self.signature_parameters:

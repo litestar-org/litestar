@@ -142,7 +142,6 @@ class Controller:
         Args:
             owner: An instance of 'Router'
         """
-
         # Since functions set on classes are bound, we need replace the bound instance with the class version and wrap
         # it to ensure it does not get bound.
         for key in ("after_request", "after_response", "before_request"):

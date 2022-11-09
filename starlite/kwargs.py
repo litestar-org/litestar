@@ -57,11 +57,12 @@ class ParameterDefinition(NamedTuple):
 
 
 class Dependency:
+    """Dependency graph of a given combination of `Route` + `RouteHandler`"""
+
     __slots__ = ("key", "provide", "dependencies")
 
     def __init__(self, key: str, provide: Provide, dependencies: List["Dependency"]) -> None:
-        """This class is used to create a dependency graph for a given
-        combination of Route + RouteHandler.
+        """Initialize a dependency.
 
         Args:
             key: The dependency key
@@ -87,6 +88,13 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 
 
 class KwargsModel:
+    """This class is used to model the required kwargs for a given RouteHandler
+    and its dependencies.
+
+    This is done once and is memoized during application bootstrap,
+    ensuring minimal runtime overhead.
+    """
+
     __slots__ = (
         "expected_cookie_params",
         "expected_dependencies",
@@ -127,6 +135,7 @@ class KwargsModel:
             expected_query_params:  Any expected query parameter kwargs
             expected_reserved_kwargs: Any expected reserved kwargs, e.g. 'state'
             sequence_query_parameter_names: Any query parameters that are sequences
+            is_data_optional: Treat data as optional
         """
         self.expected_cookie_params = expected_cookie_params
         self.expected_dependencies = expected_dependencies
@@ -259,7 +268,6 @@ class KwargsModel:
         Returns:
             An instance of KwargsModel
         """
-
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
             dependencies=dependencies,
@@ -335,7 +343,7 @@ class KwargsModel:
     def _collect_reserved_kwargs(
         self, connection: Union["WebSocket", "Request"], connection_query_params: Dict[str, Union[str, List[str]]]
     ) -> Dict[str, Any]:
-        """
+        """Create and populate dictionary of "reserved" keyword arguments.
 
         Args:
             connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
@@ -429,6 +437,7 @@ class KwargsModel:
             **kwargs: Any kwargs to pass recursively.
 
         Returns:
+            The resolved dependency value
         """
         if dependency.provide.cache_per_request:
             async with dependency.provide.lock:
@@ -561,9 +570,7 @@ class KwargsModel:
         return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 
     async def _get_request_data(self, request: "Request") -> Any:
-        """
-        Retrieves the data - either json data or form data - from the request
-        """
+        """Retrieves the data - either json data or form data - from the request"""
         if self.expected_form_data:
             media_type, model_field = self.expected_form_data
             form_data = await request.form()
