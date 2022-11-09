@@ -183,10 +183,8 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
     try:
         if current_node["is_asgi"]:
             return current_node["asgi_handlers"]["asgi"]
-
         if scope["type"] == ScopeType.HTTP:
             return current_node["asgi_handlers"][scope["method"]]
-
         return current_node["asgi_handlers"]["websocket"]
     except KeyError as e:
         raise MethodNotAllowedException() from e

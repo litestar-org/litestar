@@ -5,7 +5,6 @@ import pytest
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.middleware.cors import CORSMiddleware
 
 from starlite import (
     Controller,
@@ -20,6 +19,7 @@ from starlite import (
     post,
 )
 from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
+from starlite.middleware.cors import CORSMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -140,16 +140,16 @@ def test_setting_cors_middleware() -> None:
         assert len(unpacked_middleware) == 4
         cors_middleware = cast("Any", unpacked_middleware[1])
         assert isinstance(cors_middleware, CORSMiddleware)
-        assert cors_middleware.allow_headers == [
+        assert cors_middleware.config.allow_headers == [
             "*",
             "accept",
             "accept-language",
             "content-language",
             "content-type",
         ]
-        assert cors_middleware.allow_methods == ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
-        assert cors_middleware.allow_origins == cors_config.allow_origins
-        assert cors_middleware.allow_origin_regex == cors_config.allow_origin_regex
+        assert cors_middleware.config.allow_methods == ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+        assert cors_middleware.config.allow_origins == cors_config.allow_origins
+        assert cors_middleware.config.allow_origin_regex == cors_config.allow_origin_regex
 
 
 def test_trusted_hosts_middleware() -> None:

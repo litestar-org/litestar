@@ -98,7 +98,6 @@ def configure_node(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
             )
-
     elif isinstance(route, WebSocketRoute):
         node["asgi_handlers"]["websocket"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),

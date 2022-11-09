@@ -73,8 +73,6 @@ class BaseRoute(ABC):
         self.handler_names = handler_names
         self.scope_type = scope_type
         self.methods = set(methods or [])
-        if "GET" in self.methods:
-            self.methods.add("HEAD")
 
     @abstractmethod
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover

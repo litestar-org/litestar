@@ -8,6 +8,7 @@ from starlite.middleware.base import (
     MiddlewareProtocol,
 )
 from starlite.middleware.compression import CompressionMiddleware
+from starlite.middleware.cors import CORSMiddleware
 from starlite.middleware.csrf import CSRFMiddleware
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.middleware.logging import LoggingMiddleware, LoggingMiddlewareConfig
@@ -17,6 +18,7 @@ __all__ = (
     "AbstractAuthenticationMiddleware",
     "AbstractMiddleware",
     "AuthenticationResult",
+    "CORSMiddleware",
     "CSRFMiddleware",
     "CompressionMiddleware",
     "DefineMiddleware",
