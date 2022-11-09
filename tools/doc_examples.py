@@ -51,9 +51,14 @@ def extract_examples(
     target_dir_name: str = "examples",
     name: str | None = None,
     max_line_length: int = 15,
+    generate_tests: bool = True,
 ) -> None:
+    """Extract inline examples into separate files.
+
+    Additionally create stub test for it
+    """
     file = Path(file_name)
-    content = file.read_text()
+    content = file.read_text("utf-8")
 
     base_examples_dir = Path("examples")
     base_tests_dir = base_examples_dir / "tests"
@@ -71,7 +76,7 @@ def extract_examples(
 
     code_blocks = _find_code_blocks(content, max_line_length)
     for i, code_block in enumerate(code_blocks):
-        target_path = examples_dir / name
+        target_path = examples_dir / name  # pyright: ignore
         if len(code_blocks) > 1:
             target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
         target_path = target_path.with_suffix(".py")
@@ -82,20 +87,21 @@ def extract_examples(
             raise ValueError(f"Unexpectedly missing code block in {file}")
         code = code_match.group(1).strip()
         target_path.write_text(code)
+        print(f"Extracted example to: {target_path}")  # noqa: T201
 
-        test_file_path.write_text(
-            EXAMPLE_TEST_TEMPLATE.format(
-                module_name=str(target_path.with_suffix("")).replace("/", "."), name=target_path.stem
+        if generate_tests:
+            test_file_path.write_text(
+                EXAMPLE_TEST_TEMPLATE.format(
+                    module_name=str(target_path.with_suffix("")).replace("/", "."), name=target_path.stem
+                )
             )
-        )
+            print(f"Created test stub in: {test_file_path}")  # noqa: T201
 
-        print(f"Extracted example to: {target_path}")
-        print(f"Created test stub in: {test_file_path}")
-
-    file.write_text(content)
+    file.write_text(content, encoding="utf-8")
 
 
 def check_docs(max_line_length: int = 15) -> int:
+    """Check docs for inline code examples that should be separate files."""
     errors = 0
     for file in Path("docs").rglob("*.md"):
         content = file.read_text()
@@ -106,7 +112,7 @@ def check_docs(max_line_length: int = 15) -> int:
         for code_block in _find_code_blocks(content, max_line_length):
             errors += 1
             lineno = _find_matching_lineno(content_lines, code_block)
-            print(
+            print(  # noqa: T201
                 f"{file}:{lineno}: Inline code examples longer than 15 lines are not allowed "
                 "and should be put in a separate file"
             )
@@ -114,10 +120,12 @@ def check_docs(max_line_length: int = 15) -> int:
 
 
 def check_command(args: Namespace) -> None:
+    """Run `check_docs` with args from the CLI."""
     raise SystemExit(1 if check_docs(max_line_length=args.line_length) else 0)
 
 
 def extract_command(args: Namespace) -> None:
+    """Run `extract_examples` with args from the CLI."""
     extract_examples(
         file_name=args.filename,
         target_dir_name=args.directory,
@@ -127,17 +135,19 @@ def extract_command(args: Namespace) -> None:
 
 
 def cli() -> None:
+    """Convenience CLI."""
     parser = ArgumentParser()
     subparsers = parser.add_subparsers()
-    parser_check = subparsers.add_parser("check")
-    parser_extract = subparsers.add_parser("extract")
+    parser_check = subparsers.add_parser("check", help="check all doc files")
+    parser_extract = subparsers.add_parser("extract", help="extract inline code examples from a file")
 
-    parser_check.add_argument("--line-length", default=15)
+    parser_check.add_argument("--line-length", default=15, help="maximum line length for inline code blocks")
 
-    parser_extract.add_argument("filename")
-    parser_extract.add_argument("-n", "--name")
-    parser_extract.add_argument("-d", "--directory", default="examples")
-    parser_extract.add_argument("-l", "--line-length", default=15)
+    parser_extract.add_argument("filename", help="source file name")
+    parser_extract.add_argument("-n", "--name", help="name of the generated module without extension")
+    parser_extract.add_argument("-d", "--directory", default="examples", help="target directory for extracted files")
+    parser_extract.add_argument("-l", "--line-length", default=15, help="maximum line length for inline code blocks")
+    parser_extract.add_argument("-t", "--test-stub", action="store_true", default=True, help="generate test stubs")
 
     parser_check.set_defaults(func=check_command)
     parser_extract.set_defaults(func=extract_command)
