@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 
 class PiccoloORMPlugin(PluginProtocol[Table]):
     """Support (de)serialization and OpenAPI generation for Piccolo ORM
-    types."""
+    types.
+    """
 
     _models_map: Dict[Type[Table], Type["BaseModel"]] = {}
     _data_models_map: Dict[Type[Table], Type["BaseModel"]] = {}
@@ -47,7 +48,8 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[Table]":
         """Given a value of indeterminate type, determine if this value is
-        supported by the plugin."""
+        supported by the plugin.
+        """
         return isinstance(value, (Table, TableMetaclass))
 
     def from_pydantic_model_instance(self, model_class: Type[Table], pydantic_model_instance: "BaseModel") -> Table:
@@ -61,12 +63,14 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
 
     def to_dict(self, model_instance: Table) -> Dict[str, Any]:
         """Given an instance of a model supported by the plugin, return a
-        dictionary of serializable values."""
+        dictionary of serializable values.
+        """
         return model_instance.to_dict()
 
     def from_dict(self, model_class: Type[Table], **kwargs: Any) -> Table:
         """Given a class supported by this plugin and a dict of values, create
-        an instance of the class."""
+        an instance of the class.
+        """
         instance = model_class()
         for column in instance.all_columns():
             meta = column._meta  # pylint: disable=protected-access

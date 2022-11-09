@@ -61,7 +61,8 @@ def create_path_item(
     route: "HTTPRoute", create_examples: bool, plugins: List["PluginProtocol"], use_handler_docstrings: bool
 ) -> PathItem:
     """Create a PathItem model for the given route parsing all http_methods
-    into Operation Models."""
+    into Operation Models.
+    """
     path_item = PathItem()
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple

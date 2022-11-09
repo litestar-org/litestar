@@ -30,7 +30,8 @@ class OpenAPIMediaType(str, Enum):
 
 class RequestEncodingType(str, Enum):
     """An Enum for request 'Content-Type' header values designating encoding
-    formats."""
+    formats.
+    """
 
     JSON = "application/json"
     MULTI_PART = "multipart/form-data"

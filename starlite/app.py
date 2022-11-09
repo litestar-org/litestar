@@ -595,7 +595,8 @@ class Starlite(Router):
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
         """Creates function signature models for all route handler functions
-        and provider dependencies."""
+        and provider dependencies.
+        """
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
                 fn=cast("AnyCallable", route_handler.fn),

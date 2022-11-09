@@ -9,7 +9,8 @@ from tests.openapi.utils import PersonController, PetController
 
 class OpenAPIController(_OpenAPIController):
     """test class for usage in a couple "offline" tests and for without Google
-    fonts test."""
+    fonts test.
+    """
 
     redoc_google_fonts = False
     redoc_js_url = "https://offline_location/redoc.standalone.js"

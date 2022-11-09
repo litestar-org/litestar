@@ -75,7 +75,8 @@ class Dependency:
 
 def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterDefinition]) -> Set[ParameterDefinition]:
     """Given two sets of parameter definitions, coming from different
-    dependencies for example, merge them into a single set."""
+    dependencies for example, merge them into a single set.
+    """
     result: Set[ParameterDefinition] = first.intersection(second)
     difference = first.symmetric_difference(second)
     for param in difference:
@@ -444,7 +445,8 @@ class KwargsModel:
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
         """Creates a graph like structure of dependencies, with each dependency
-        including its own dependencies as a list."""
+        including its own dependencies as a list.
+        """
         provide = dependencies[key]
         sub_dependency_keys = [k for k in get_signature_model(provide).__fields__ if k in dependencies]
         return Dependency(
@@ -458,7 +460,8 @@ class KwargsModel:
         allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_sequence: bool
     ) -> ParameterDefinition:
         """Creates a ParameterDefinition for the given pydantic FieldInfo
-        instance and inserts it into the correct parameter set."""
+        instance and inserts it into the correct parameter set.
+        """
         extra = field_info.extra
         is_required = extra.get(EXTRA_KEY_REQUIRED, True)
         default_value = field_info.default if field_info.default is not Undefined else None
@@ -492,7 +495,8 @@ class KwargsModel:
         dependency_kwargs_model: "KwargsModel",
     ) -> None:
         """Validates that the 'data' kwarg is compatible across
-        dependencies."""
+        dependencies.
+        """
         if (expected_form_data and not dependency_kwargs_model.expected_form_data) or (
             not expected_form_data and dependency_kwargs_model.expected_form_data
         ):
@@ -516,7 +520,8 @@ class KwargsModel:
         layered_parameters: Dict[str, ModelField],
     ) -> None:
         """Validates that there are no ambiguous kwargs, that is, kwargs
-        declared using the same key in different places."""
+        declared using the same key in different places.
+        """
         dependency_keys = set(dependencies.keys())
 
         parameter_names = {
@@ -551,7 +556,8 @@ class KwargsModel:
     def _sequence_or_scalar_param(self, key: str, value: List[str]) -> Union[str, List[str]]:
         """Returns the first element of 'value' if we expect it to be a scalar
         value (appears in self.sequence_query_parameter_names) and it contains
-        only a single element."""
+        only a single element.
+        """
         return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 
     async def _get_request_data(self, request: "Request") -> Any:

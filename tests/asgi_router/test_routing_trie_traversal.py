@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 
 def test_parse_scope_to_route_adds_path_params_to_scope_on_404() -> None:
     """Test that 'path_params' key is added to scope when no route resolved for
-    path."""
+    path.
+    """
     node: "RouteTrieNode" = {
         "asgi_handlers": {},
         "child_keys": set(),

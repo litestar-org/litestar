@@ -55,7 +55,8 @@ def app_config_object() -> AppConfig:
 
 def test_app_params_defined_on_app_config_object() -> None:
     """Ensures that all parameters to the `Starlite` constructor are present on
-    the `AppConfig` object."""
+    the `AppConfig` object.
+    """
     starlite_signature = inspect.signature(Starlite)
     app_config_fields = AppConfig.__fields__
     for name in starlite_signature.parameters:

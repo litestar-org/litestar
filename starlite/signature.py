@@ -72,7 +72,8 @@ class SignatureModel(BaseModel):
 
     def resolve_field_value(self, key: str) -> Any:
         """Given a field key, return value using plugin mapping, if
-        available."""
+        available.
+        """
         value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
         mapping = self.field_plugin_mappings.get(key)
         return mapping.get_model_instance_for_value(value) if mapping else value
@@ -372,7 +373,8 @@ class SignatureModelFactory:
 
 def get_signature_model(value: Any) -> Type[SignatureModel]:
     """Helper function to retrieve and validate the signature model from a
-    provider or handler."""
+    provider or handler.
+    """
     try:
         return cast("Type[SignatureModel]", value.signature_model)
     except AttributeError as e:  # pragma: no cover

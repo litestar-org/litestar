@@ -43,7 +43,8 @@ async def _resolve_dependency_into_kwargs(
     model: "KwargsModel", dependency: "Dependency", connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]
 ) -> None:
     """Helper function to store the result of resolve_dependency in the
-    kwargs."""
+    kwargs.
+    """
     kwargs[dependency.key] = await model.resolve_dependency(dependency=dependency, connection=connection, **kwargs)
 
 

@@ -31,7 +31,8 @@ def test_config_validation_scenario() -> None:
 
 def test_config_validation_deep_copy() -> None:
     """test fix for issue-333: https://github.com/starlite-
-    api/starlite/issues/333."""
+    api/starlite/issues/333.
+    """
 
     Starlite(
         route_handlers=[],

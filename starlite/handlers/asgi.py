@@ -56,7 +56,8 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
     def _validate_handler_function(self) -> None:
         """Validates the route handler function once it's set by inspecting its
-        return annotations."""
+        return annotations.
+        """
         super()._validate_handler_function()
 
         fn = cast("AnyCallable", self.fn)

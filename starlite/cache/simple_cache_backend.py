@@ -20,7 +20,8 @@ class CacheObject:
 class SimpleCacheBackend(CacheBackendProtocol):
     def __init__(self) -> None:
         """This class offers a simple thread safe cache backend that stores
-        values in local memory using a `dict`."""
+        values in local memory using a `dict`.
+        """
         self._store: Dict[str, CacheObject] = {}
         self._lock = Lock()
 
