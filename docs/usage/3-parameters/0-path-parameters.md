@@ -4,7 +4,7 @@ Path parameters are parameters declared as part of the `path` component of the U
 syntax `{param_name:param_type}`:
 
 ```python
---8<-- "examples/parameters/path_parameters_1.py"
+--8 < --"examples/parameters/path_parameters_1.py"
 ```
 
 
@@ -37,7 +37,7 @@ function declaration is typed with a "higher" type to which the lower type can b
 consider this:
 
 ```python
---8<-- "examples/parameters/path_parameters_2.py"
+--8 < --"examples/parameters/path_parameters_2.py"
 ```
 
 
@@ -58,7 +58,7 @@ If you want to add validation or enhance the OpenAPI documentation generated for
 so using the [Parameter function](./3-the-parameter-function.md):
 
 ```python
---8<-- "examples/parameters/path_parameters_3.py"
+--8 < --"examples/parameters/path_parameters_3.py"
 ```
 
 

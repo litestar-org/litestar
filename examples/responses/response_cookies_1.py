@@ -1,4 +1,4 @@
-from starlite import Starlite, Router, Controller, MediaType, get
+from starlite import Controller, MediaType, Router, Starlite, get
 from starlite.datastructures import Cookie
 
 

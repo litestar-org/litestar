@@ -5,7 +5,7 @@ available on all layers of the app - individual route handlers, controllers, rou
 itself:
 
 ```python
---8<-- "examples/responses/response_headers.py"
+--8 < --"examples/responses/response_headers.py"
 ```
 
 In the above example the response returned from `my_route_handler` will have headers set from each layer of the
@@ -34,7 +34,7 @@ We can simply return a response instance directly from the route handler and set
 as you see fit, e.g.:
 
 ```python
---8<-- "examples/responses/response_headers_2.py"
+--8 < --"examples/responses/response_headers_2.py"
 ```
 
 In the above we use the `response_headers` kwarg to pass the `name` and `description` parameters for the `Random-Header`
@@ -49,7 +49,7 @@ the handler on different layers of the application as explained in the pertinent
 the headers on the corresponding layer:
 
 ```python
---8<-- "examples/response_headers_3.py"
+--8 < --"examples/response_headers_3.py"
 ```
 
 In the above we set the response header using an `after_request_handler` function on the router level. Because the
@@ -60,7 +60,7 @@ required. For example, lets say we have a router level header being set and a lo
 different value range:
 
 ```python
---8<-- "examples/responses/response_headers_4.py"
+--8 < --"examples/responses/response_headers_4.py"
 ```
 
 ## Specific Headers Implementation

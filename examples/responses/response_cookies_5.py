@@ -1,7 +1,8 @@
 from random import randint
 
 from pydantic import BaseModel
-from starlite import Starlite, Response, Router, get
+
+from starlite import Response, Router, Starlite, get
 from starlite.datastructures import Cookie
 
 

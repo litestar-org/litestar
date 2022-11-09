@@ -4,7 +4,7 @@ Unlike _Query_ parameters, _Header_ and _Cookie_ parameters have to be declared 
 [the Parameter function](3-the-parameter-function.md), for example:
 
 ```python
---8<-- "examples/parameters/header_and_cookie_parameters.py"
+--8 < --"examples/parameters/header_and_cookie_parameters.py"
 ```
 
 

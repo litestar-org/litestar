@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from starlite import Response, get, Starlite
+
+from starlite import Response, Starlite, get
 from starlite.datastructures import Cookie
 
 

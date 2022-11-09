@@ -3,7 +3,7 @@
 To return a streaming response use the [`Stream`][starlite.datastructures.Stream] class. The Stream class receives a single required kwarg - `iterator`:
 
 ```python
---8<-- "examples/responses/streaming_responses.py"
+--8 < --"examples/responses/streaming_responses.py"
 ```
 
 !!! note

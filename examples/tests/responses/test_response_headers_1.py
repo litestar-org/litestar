@@ -1,5 +1,5 @@
-from starlite import TestClient
 from examples.responses.response_headers_1 import app
+from starlite import TestClient
 
 
 def test_response_headers() -> None:

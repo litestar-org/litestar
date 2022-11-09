@@ -1,6 +1,8 @@
-from typing import List
 from datetime import datetime, timezone
+from typing import List
+
 from pydantic import BaseModel
+
 from starlite import Starlite, get
 
 

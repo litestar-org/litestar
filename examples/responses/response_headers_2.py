@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from starlite import Starlite, Response, get
-from starlite.datastructures import ResponseHeader
 from random import randint
+
+from pydantic import BaseModel
+
+from starlite import Response, Starlite, get
+from starlite.datastructures import ResponseHeader
 
 
 class Resource(BaseModel):

@@ -1,6 +1,6 @@
-from starlite import Starlite, get
 from pydantic import BaseModel
 
+from starlite import Starlite, get
 
 USER_DB = {1: {"id": 1, "name": "John Doe"}}
 

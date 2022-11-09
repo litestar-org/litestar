@@ -5,7 +5,7 @@ available on all layers of the app - individual route handlers, controllers, rou
 itself:
 
 ```python
---8<-- "examples/response_cookies_1.py"
+--8 < --"examples/response_cookies_1.py"
 ```
 
 In the above example, the response returned by `my_route_handler` will have cookies set by each layer of the
@@ -24,7 +24,7 @@ You can easily override cookies declared in higher levels by re-declaring a cook
 e.g.:
 
 ```python
---8<-- "examples/responses/response_cookies.py"
+--8 < --"examples/responses/response_cookies.py"
 ```
 
 Of the two declarations of `my-cookie` only the route handler one will be used, because its lower level:
@@ -50,7 +50,7 @@ We can simply return a response instance directly from the route handler and set
 as you see fit, e.g.:
 
 ```python
---8<-- "examples/response_cookies_3.py"
+--8 < --"examples/response_cookies_3.py"
 ```
 
 In the above we use the `response_cookies` kwarg to pass the `key` and `description` parameters for the `Random-Header`
@@ -65,7 +65,7 @@ the handler on different layers of the application as explained in the pertinent
 the cookies on the corresponding layer:
 
 ```python
---8<-- "examples/response_cookies_4.py"
+--8 < --"examples/response_cookies_4.py"
 ```
 
 In the above we set the cookie using an `after_request_handler` function on the router level. Because the
@@ -76,5 +76,5 @@ required. For example, lets say we have a router level cookie being set and a lo
 different value range:
 
 ```python
---8<-- "examples/response_cookies_5.py"
+--8 < --"examples/response_cookies_5.py"
 ```

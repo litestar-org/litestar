@@ -7,7 +7,7 @@ Starlite allows you to return any class inheriting from the [`Response`][starlit
 example will work perfectly fine:
 
 ```python
---8<-- "examples/responses/returning_responses.py"
+--8 < --"examples/responses/returning_responses.py"
 ```
 
 !!! important
