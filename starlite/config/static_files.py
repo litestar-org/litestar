@@ -63,6 +63,8 @@ class StaticFilesConfig(BaseModel):
     """
         A dictionary that maps handler functions to status codes and/or exception types.
     """
+    send_as_attachment: bool = False
+    """Whether to send the file as an attachment"""
 
     @validator("path", always=True)
     def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument
@@ -100,7 +102,12 @@ class StaticFilesConfig(BaseModel):
         Returns:
             [StaticFiles][starlite.static_files.StaticFiles]
         """
-        static_files = StaticFiles(is_html_mode=self.html_mode, directories=self.directories, file_system=self.file_system)  # type: ignore
+        static_files = StaticFiles(
+            is_html_mode=self.html_mode,
+            directories=self.directories,
+            file_system=self.file_system,
+            send_as_attachment=self.send_as_attachment,
+        )
         return asgi(
             path=self.path,
             name=self.name,

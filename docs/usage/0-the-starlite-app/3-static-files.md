@@ -20,6 +20,7 @@ app = Starlite(
 )
 ```
 
+
 Matching is done based on filename, for example, assume we have a request that is trying to retrieve the path
 `/files/file.txt`, the **directory for the base path** `/files` **will be searched** for the file `file.txt`. If it is
 found, the file will be sent, otherwise a **404 response** will be sent.
@@ -46,6 +47,29 @@ app = Starlite(
 
 url_path = app.url_for_static_asset("static", "file.pdf")
 # /some_folder/static/path/file.pdf
+```
+
+
+## Sending files as attachments
+
+By default, files are sent "inline", meaning they will have a `Content-Disposition: inline` header.
+To send them as attachments, use the `send_as_attachment=True` flag, which will add a
+`Content-Disposition: attachment` header:
+
+```python
+from starlite import Starlite, StaticFilesConfig
+
+app = Starlite(
+    route_handlers=[...],
+    static_files_config=[
+        StaticFilesConfig(
+            directories=["static"],
+            path="/some_folder/static/path",
+            name="static",
+            send_as_attachment=True,
+        ),
+    ],
+)
 ```
 
 ## File System Support and Cloud Files

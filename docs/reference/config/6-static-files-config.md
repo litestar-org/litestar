@@ -12,3 +12,4 @@
             - name
             - opt
             - path
+            - send_as_attachment
