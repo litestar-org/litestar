@@ -36,6 +36,8 @@ SERVER_PUSH_HEADERS = {
 
 
 class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
+    """The Starlite Request class."""
+
     __slots__ = ("_json", "_form", "_body", "_content_type", "is_connected")
 
     scope: "HTTPScope"
@@ -52,14 +54,13 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
     """
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
-        """The Starlite Request class.
+        """Initialize `Request`.
 
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
             send: The ASGI send function.
         """
-
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
         self._body: Any = scope.get("_body", Empty)
@@ -69,7 +70,8 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     @property
     def method(self) -> "Method":
-        """
+        """Return the request method
+
         Returns:
             The request [Method][starlite.types.Method]
         """
@@ -77,7 +79,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     @property
     def content_type(self) -> Tuple[str, Dict[str, str]]:
-        """Parses the request's 'Content-Type' header, returning the header
+        """Parse the request's 'Content-Type' header, returning the header
         value and any options as a dictionary.
 
         Returns:
@@ -88,7 +90,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("Tuple[str, Dict[str, str]]", self._content_type)
 
     async def json(self) -> Any:
-        """Method to retrieve the json request body from the request.
+        """Retrieve the json request body from the request.
 
         Returns:
             An arbitrary value
@@ -129,7 +131,8 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         yield b""
 
     async def body(self) -> bytes:
-        """
+        """Return the body of the request
+
         Returns:
             A byte-string representing the body of the request.
         """
@@ -141,14 +144,13 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
-        """Method to retrieve form data from the request. If the request is
+        """Retrieve form data from the request. If the request is
         either a 'multipart/form-data' or an 'application/x-www-form-
-        urlencoded', this method will return a FormMultiDict instance populated
-        with the values sent in the request. Otherwise, an empty instance is
-        returned.
+        urlencoded', return a FormMultiDict instance populated
+        with the values sent in the request, otherwise, an empty instance
 
         Returns:
-            A FormMultiDict instance.
+            A FormMultiDict instance
         """
         if self._form is Empty:
             content_type, options = self.content_type

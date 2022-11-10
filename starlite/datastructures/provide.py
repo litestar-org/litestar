@@ -13,6 +13,8 @@ if TYPE_CHECKING:
 
 
 class Provide:
+    """A wrapper class for dependency injection."""
+
     __slots__ = ("dependency", "use_cache", "cache_per_request", "cache_key", "lock", "value", "signature_model")
 
     def __init__(
@@ -23,7 +25,7 @@ class Provide:
         cache_key: Optional[str] = None,
         sync_to_thread: bool = False,
     ) -> None:
-        """A wrapper class used for dependency injection.
+        """Initialize `Provide`
 
         Args:
             dependency: Callable to inject, can be a function, method or class.
@@ -41,7 +43,7 @@ class Provide:
         self.signature_model: Optional["Type[SignatureModel]"] = None
 
     async def __call__(self, **kwargs: Any) -> Any:
-        """Proxies call to 'self.proxy'."""
+        """Proxy a call to 'self.proxy'."""
 
         if self.use_cache and self.value is not Empty:
             return self.value

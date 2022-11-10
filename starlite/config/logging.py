@@ -26,6 +26,7 @@ from starlite.exceptions import (
 if TYPE_CHECKING:
     from starlite.types import Logger
     from starlite.types.callable_types import GetLogger
+    from typing_extensions import NoReturn
 
 try:
     from structlog.types import BindableLogger, Processor, WrappedLogger
@@ -63,21 +64,18 @@ default_picologging_handlers: Dict[str, Dict[str, Any]] = {
 
 
 def get_default_handlers() -> Dict[str, Dict[str, Any]]:
-    """
+    """Return the default logging handlers for the config
 
     Returns:
-        The default handlers for the config.
+        A dictionary of logging handlers
     """
     if find_spec("picologging"):
         return default_picologging_handlers
     return default_handlers
 
 
-def get_logger_placeholder(_: str) -> Any:  # pragma: no cover
-    """
-    Raises:
-        ImproperlyConfiguredException
-    """
+def get_logger_placeholder(_: str) -> "NoReturn":  # pragma: no cover
+    """Raise an `ImproperlyConfiguredException"""
     raise ImproperlyConfiguredException(
         "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
     )
@@ -142,8 +140,8 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     def validate_handlers(  # pylint: disable=no-self-argument
         cls, value: Dict[str, Dict[str, Any]]
     ) -> Dict[str, Dict[str, Any]]:
-        """
-        Ensures that 'queue_listener' is always set
+        """Ensure that 'queue_listener' is always set
+
         Args:
             value: A dict of route handlers.
 
@@ -158,7 +156,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     def validate_loggers(  # pylint: disable=no-self-argument
         cls, value: Dict[str, Dict[str, Any]]
     ) -> Dict[str, Dict[str, Any]]:
-        """Ensures that the 'starlite' logger is always set.
+        """Ensure that the 'starlite' logger is always set.
 
         Args:
             value: A dict of loggers.
@@ -199,7 +197,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
 
 
 def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright: ignore
-    """Sets the default processors for structlog.
+    """Set the default processors for structlog.
 
     Returns:
         An optional list of processors.
@@ -219,7 +217,7 @@ def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright:
 
 
 def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignore
-    """Sets the default wrapper class for structlog.
+    """Set the default wrapper class for structlog.
 
     Returns:
         An optional wrapper class.
@@ -234,7 +232,7 @@ def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignor
 
 
 def default_logger_factory() -> Optional[Callable[..., WrappedLogger]]:
-    """Sets the default logger factory for structlog.
+    """Set the default logger factory for structlog.
 
     Returns:
         An optional logger factory.

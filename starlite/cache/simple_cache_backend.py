@@ -18,10 +18,10 @@ class CacheObject:
 
 
 class SimpleCacheBackend(CacheBackendProtocol):
+    """In-memory cache backend"""
+
     def __init__(self) -> None:
-        """This class offers a simple thread safe cache backend that stores
-        values in local memory using a `dict`.
-        """
+        """Initialize `SimpleCacheBackend`"""
         self._store: Dict[str, CacheObject] = {}
         self._lock = Lock()
 

@@ -9,11 +9,15 @@ P = ParamSpec("P")
 
 
 class BackgroundTask:
+    """A container for a 'background' task function. Background tasks are
+    called once a Response finishes.
+    """
+
     __slots__ = ("fn", "args", "kwargs")
 
     def __init__(self, fn: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
-        """A container for a 'background' task function. Background tasks are
-        called once a Response finishes.
+        """Initialize `BackgroundTask`.
+
         Args:
             fn: A sync or async function to call as the background task.
             *args: Args to pass to the func.
@@ -24,25 +28,25 @@ class BackgroundTask:
         self.kwargs = kwargs
 
     async def __call__(self) -> None:
-        """Calls the wrapped function with the passed in arguments.
+        """Call the wrapped function with the passed in arguments.
 
         Returns:
-            None.
+            None
         """
         await self.fn(*self.args, **self.kwargs)
 
 
 class BackgroundTasks:
-    __slots__ = (
-        "tasks",
-        "run_in_task_group",
-    )
+    """A container for multiple 'background' task functions.
+
+    Background tasks are called once a Response finishes.
+    """
+
+    __slots__ = ("tasks", "run_in_task_group")
 
     def __init__(self, tasks: Iterable[BackgroundTask], run_in_task_group: bool = False) -> None:
-        """A container for multiple 'background' task functions.
+        """Initialize `BackgroundTasks`.
 
-        Background
-        tasks are called once a Response finishes.
         Args:
             tasks: An iterable of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
             run_in_task_group: If you set this value to `True` than the tasks will run concurrently, using
@@ -53,7 +57,7 @@ class BackgroundTasks:
         self.run_in_task_group = run_in_task_group
 
     async def __call__(self) -> None:
-        """Calls the wrapped background tasks.
+        """Call the wrapped background tasks.
 
         Returns:
             None

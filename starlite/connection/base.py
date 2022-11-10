@@ -45,6 +45,8 @@ async def empty_send(_: "Message") -> None:  # pragma: no cover
 
 
 class ASGIConnection(Generic[Handler, User, Auth]):
+    """The base ASGI connection container."""
+
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
 
     scope: "Scope"
@@ -61,7 +63,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
     """
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
-        """The base ASGI connection container.
+        """Initialize `ASGIConnection`.
 
         Args:
             scope: The ASGI connection scope.
@@ -79,7 +81,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def app(self) -> "Starlite":
-        """
+        """Return the `app` for this connection.
+
         Returns:
             The [Starlite][starlite.app.Starlite] application instance
         """
@@ -87,7 +90,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def route_handler(self) -> Handler:
-        """
+        """Return the `route_handler` for this connection.
+
         Returns:
             The target route handler instance.
         """
@@ -95,7 +99,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def state(self) -> State:
-        """
+        """Return the `State` of this connection.
 
         Returns:
             A State instance constructed from the scope["state"] value.
@@ -104,7 +108,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def url(self) -> URL:
-        """
+        """Return the URL of this connection's `Scope`.
 
         Returns:
             A URL instance constructed from the request's scope.
@@ -115,7 +119,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def base_url(self) -> URL:
-        """
+        """Return the base URL of this connection's `Scope`.
 
         Returns:
             A URL instance constructed from the request's scope, representing only the base part
@@ -134,7 +138,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def headers(self) -> Headers:
-        """
+        """Return the headers of this connection's `Scope`.
 
         Returns:
             A Headers instance with the request's scope["headers"] value.
@@ -146,7 +150,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def query_params(self) -> QueryMultiDict:
-        """
+        """Return the query parameters of this connection's `Scope`.
+
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
@@ -156,7 +161,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def path_params(self) -> Dict[str, Any]:
-        """
+        """Return the `path_params` of this connection's `Scope`.
 
         Returns:
             A string keyed dictionary of path parameter values.
@@ -165,7 +170,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def cookies(self) -> Dict[str, str]:
-        """
+        """Return the `cookies` of this connection's `Scope`.
+
         Returns:
             Returns any cookies stored in the header as a parsed dictionary.
         """
@@ -179,7 +185,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def client(self) -> Optional[Address]:
-        """
+        """Return the `client` data of this connection's `Scope`.
 
         Returns:
             A two tuple of the host name and port number.
@@ -189,7 +195,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def auth(self) -> Auth:
-        """Allows access to auth data.
+        """Return the `auth` data of this connection's `Scope`.
 
         Raises:
             ImproperlyConfiguredException: If 'auth' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -203,7 +209,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def user(self) -> User:
-        """Allows access to user data.
+        """Return the `user` data of this connection's `Scope`.
 
         Raises:
             ImproperlyConfiguredException: If 'user' is not set in scope via an 'AuthMiddleware', raises an exception
@@ -217,7 +223,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def session(self) -> Dict[str, Any]:
-        """
+        """Return the session for this connection if a session was previously set in the `Scope`
+
         Returns:
             A dictionary representing the session value - if existing.
 
@@ -232,7 +239,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def logger(self) -> "Logger":
-        """
+        """Return the `Logger` instance for this connection
 
         Returns:
             A 'Logger' instance.
@@ -244,7 +251,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def cache(self) -> "Cache":
-        """
+        """Return the `Cache` for this connection
 
         Returns:
             A 'Cache' instance.
@@ -252,7 +259,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return self.app.cache
 
     def set_session(self, value: Union[Dict[str, Any], "BaseModel", "EmptyType"]) -> None:
-        """Helper method to set the session in scope.
+        """Set the session in the connection's `Scope`.
 
         If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is
         enabled, the session will be added to the response as a cookie header.
@@ -266,7 +273,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         self.scope["session"] = value
 
     def clear_session(self) -> None:
-        """Helper method to remove the session from scope.
+        """Remove the session from the connection's `Scope`.
 
         If the [Starlite SessionMiddleware][starlite.middleware.session.SessionMiddleware] is
         enabled, this will cause the session data to be cleared.
@@ -277,14 +284,15 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         self.scope["session"] = Empty
 
     def url_for(self, name: str, **path_parameters: Dict[str, Any]) -> str:
-        """
+        """Return the url for a given route handler name.
 
         Args:
             name: The 'name' of the request route handler.
             **path_parameters: Values for path parameters in the route
 
         Raises:
-            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in **path_parameters or have wrong type.
+            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in
+            **path_parameters or have wrong type.
 
         Returns:
             A string representing the absolute url of the route handler.

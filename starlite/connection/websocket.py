@@ -46,10 +46,9 @@ if TYPE_CHECKING:
 DISCONNECT_MESSAGE = "connection is disconnected"
 
 
-class WebSocket(
-    Generic[User, Auth],
-    ASGIConnection["WebsocketRouteHandler", User, Auth],
-):
+class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", User, Auth]):
+    """The Starlite WebSocket class."""
+
     __slots__ = ("connection_state",)
 
     scope: "WebSocketScope"
@@ -66,7 +65,7 @@ class WebSocket(
     """
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
-        """The Starlite WebSocket class.
+        """Initialize `WebSocket`.
 
         Args:
             scope: The ASGI connection scope.
@@ -77,7 +76,7 @@ class WebSocket(
         self.connection_state: "Literal['init', 'connect', 'receive', 'disconnect']" = "init"
 
     def receive_wrapper(self, receive: "Receive") -> "Receive":
-        """Wraps 'receive' to set 'self.connection_state' and validate events.
+        """Wrap 'receive' to set 'self.connection_state' and validate events.
 
         Args:
             receive: The ASGI receive function.
@@ -101,7 +100,7 @@ class WebSocket(
         return wrapped_receive
 
     def send_wrapper(self, send: "Send") -> "Send":
-        """Wraps 'send' to ensure that state is not disconnected.
+        """Wrap 'send' to ensure that state is not disconnected.
 
         Args:
             send: The ASGI send function.
@@ -122,7 +121,7 @@ class WebSocket(
         subprotocols: Optional[str] = None,
         headers: Optional[Union[Headers, Dict[str, Any], List[Tuple[bytes, bytes]]]] = None,
     ) -> None:
-        """Accepts the incoming connection. This method should be called before
+        """Accept the incoming connection. This method should be called before
         receiving data.
 
         Args:
@@ -150,8 +149,8 @@ class WebSocket(
             await self.send(event)
 
     async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: Optional[str] = None) -> None:
-        """
-        Sends an 'websocket.close' event.
+        """Send an 'websocket.close' event.
+
         Args:
             code: Status code.
             reason: Reason for closing the connection
@@ -204,7 +203,7 @@ class WebSocket(
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     async def receive_text(self) -> str:
-        """Receives data as text.
+        """Receive data as text.
 
         Returns:
             A string.
@@ -212,7 +211,7 @@ class WebSocket(
         return await self.receive_data(mode="text")
 
     async def receive_bytes(self) -> bytes:
-        """Receives data as bytes.
+        """Receive data as bytes.
 
         Returns:
             A byte-string.
@@ -223,7 +222,7 @@ class WebSocket(
         self,
         mode: "Literal['text', 'binary']" = "text",
     ) -> Any:
-        """Receives data and loads it into JSON using orson.
+        """Receive data and loads it into JSON using orson.
 
         Args:
             mode: Either 'text' or 'binary'.
@@ -237,7 +236,7 @@ class WebSocket(
     async def send_data(
         self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
     ) -> None:
-        """Sends a 'websocket.send' event.
+        """Send a 'websocket.send' event.
 
         Args:
             data: Data to send.
@@ -257,11 +256,11 @@ class WebSocket(
         await self.send(event)
 
     @overload
-    async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:
+    async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:  # noqa: D102
         ...
 
     @overload
-    async def send_text(self, data: str) -> None:
+    async def send_text(self, data: str) -> None:  # noqa: D102
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
@@ -277,15 +276,15 @@ class WebSocket(
         await self.send_data(data=data, encoding=encoding)
 
     @overload
-    async def send_bytes(self, data: bytes) -> None:
+    async def send_bytes(self, data: bytes) -> None:  # noqa: D102
         ...
 
     @overload
-    async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
+    async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:  # noqa: D102
         ...
 
     async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
-        """Sends data using the 'bytes' key of the send event.
+        """Send data using the 'bytes' key of the send event.
 
         Args:
             data: Data to send
@@ -310,6 +309,7 @@ class WebSocket(
             mode: Either 'text' or 'binary'.
             encoding: Encoding to use for binary data.
             serializer: A serializer function.
+
         Returns:
             None
         """
