@@ -68,7 +68,7 @@ def test_controller_with_websocket_handler() -> None:
 
         @get()
         def get_person(self) -> Person:
-            ...
+            return PersonFactory.build()
 
         @websocket(path="/socket")
         async def ws(self, socket: WebSocket) -> None:

@@ -16,7 +16,7 @@ def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
 
     route_handler = scope["route_handler"]
     if hasattr(route_handler, "resolve_response_class"):
-        return route_handler.resolve_response_class().serializer  # type: ignore
+        return route_handler.resolve_response_class().serializer  # pyright: ignore
 
     app = scope["app"]
     return app.response_class.serializer if app.response_class else None

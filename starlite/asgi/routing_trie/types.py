@@ -33,7 +33,7 @@ class RouteTrieNode(TypedDict):
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
-    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]  # type: ignore[misc]
+    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]
     """
     A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
     """

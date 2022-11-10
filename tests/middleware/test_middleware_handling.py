@@ -104,8 +104,8 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         )
         if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
             assert middleware_instance.kwarg == "123Jeronimo"
-        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
-            assert middleware_instance.arg == 1
+        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):  # type: ignore
+            assert middleware_instance.arg == 1  # type: ignore[unreachable]
 
 
 class JSONRequest(BaseModel):
@@ -120,7 +120,7 @@ def post_handler(data: JSONRequest) -> JSONRequest:
 
 
 def test_setting_cors_middleware() -> None:
-    cors_config = CORSConfig()
+    cors_config = CORSConfig()  # pyright: ignore
     assert cors_config.allow_credentials is False
     assert cors_config.allow_headers == ["*"]
     assert cors_config.allow_methods == ["*"]
@@ -134,13 +134,19 @@ def test_setting_cors_middleware() -> None:
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)  # type: ignore
+            cur = cast("Any", cur.app)
         else:
             unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
         cors_middleware = cast("Any", unpacked_middleware[1])
         assert isinstance(cors_middleware, CORSMiddleware)
-        assert cors_middleware.allow_headers == ["*", "accept", "accept-language", "content-language", "content-type"]
+        assert cors_middleware.allow_headers == [
+            "*",
+            "accept",
+            "accept-language",
+            "content-language",
+            "content-type",
+        ]
         assert cors_middleware.allow_methods == ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
         assert cors_middleware.allow_origins == cors_config.allow_origins
         assert cors_middleware.allow_origin_regex == cors_config.allow_origin_regex
@@ -152,7 +158,7 @@ def test_trusted_hosts_middleware() -> None:
     cur = client.app.asgi_handler
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)  # type: ignore
+        cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
     assert len(unpacked_middleware) == 4

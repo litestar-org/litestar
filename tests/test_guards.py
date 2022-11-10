@@ -106,17 +106,17 @@ def test_guards_layering_for_same_route_handler() -> None:
 
     assert (
         len(
-            app.asgi_router.root_route_map_node["children"]["/http"]["asgi_handlers"]["GET"][
+            app.asgi_router.root_route_map_node["children"]["/http"]["asgi_handlers"]["GET"][  # type: ignore
                 1
-            ]._resolved_guards  # pyright: ignore
+            ]._resolved_guards
         )
         == 2
     )
     assert (
         len(
-            app.asgi_router.root_route_map_node["children"]["/router/http"]["asgi_handlers"]["GET"][
+            app.asgi_router.root_route_map_node["children"]["/router/http"]["asgi_handlers"]["GET"][  # type: ignore
                 1
-            ]._resolved_guards  # pyright: ignore
+            ]._resolved_guards
         )
         == 3
     )

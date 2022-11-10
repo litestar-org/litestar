@@ -18,7 +18,7 @@ def naive_handler() -> Dict[str, int]:
 
 @get("/")
 def response_handler() -> Response[Any]:
-    ...
+    return Response(content=b"")
 
 
 class Sub(C):

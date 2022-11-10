@@ -176,7 +176,7 @@ def _create_generic_asgi_response_handler(
         normalized_cookies = _normalize_cookies(cookies, [])
         if hasattr(data, "set_cookie"):
             for cookie in normalized_cookies:
-                data.set_cookie(**cookie)  # type: ignore
+                data.set_cookie(**cookie)
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
@@ -555,7 +555,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
-            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore[misc]
+            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
                 handler = _create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,

@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from pathlib import Path
 
 import pytest
 from pydantic import BaseModel
@@ -35,7 +36,7 @@ from starlite.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_406_NOT_ACCEPTABLE,
 )
-from tests import Person
+from tests import Person, PersonFactory
 from tests.openapi.utils import PersonController, PetController, PetException
 
 
@@ -126,7 +127,7 @@ def test_create_success_response_with_headers() -> None:
         content_media_type="image/png",
     )
     def handler() -> list:
-        pass
+        return []
 
     response = create_success_response(handler, True, plugins=[])
     assert response.description == "test"
@@ -145,7 +146,7 @@ def test_create_success_response_with_cookies() -> None:
         ],
     )
     def handler() -> list:
-        pass
+        return []
 
     response = create_success_response(handler, True, plugins=[])
     assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True) == {  # type: ignore
@@ -165,7 +166,7 @@ def test_create_success_response_with_cookies() -> None:
 def test_create_success_response_with_response_class() -> None:
     @get(path="/test")
     def handler() -> Response[Person]:
-        pass
+        return Response(content=PersonFactory.build())
 
     response = create_success_response(handler, True, plugins=[])
     assert response.content["application/json"].media_type_schema.schema_class is Person  # type: ignore
@@ -174,7 +175,7 @@ def test_create_success_response_with_response_class() -> None:
 def test_create_success_response_with_stream() -> None:
     @get(path="/test")
     def handler() -> Stream:
-        pass
+        return Stream(iterator=iter([]))
 
     response = create_success_response(handler, True, plugins=[])
     assert response.description == "Stream Response"
@@ -194,7 +195,7 @@ def test_create_success_response_redirect() -> None:
 def test_create_success_response_file_data() -> None:
     @get(path="/test")
     def file_handler() -> File:
-        ...
+        return File(path=Path("test_responses.py"))
 
     response = create_success_response(file_handler, True, plugins=[])
     assert response.description == "File Download"
@@ -209,7 +210,7 @@ def test_create_success_response_file_data() -> None:
 def test_create_success_response_template() -> None:
     @get(path="/template")
     def template_handler() -> Template:
-        ...
+        return Template(name="none")
 
     response = create_success_response(template_handler, True, plugins=[])
     assert response.description == "Request fulfilled, document follows"
@@ -230,7 +231,7 @@ def test_create_additional_responses() -> None:
         }
     )
     def handler() -> Person:
-        pass
+        return PersonFactory.build()
 
     responses = create_additional_responses(handler, plugins=[])
 
@@ -258,7 +259,7 @@ def test_additional_responses_overlap_with_other_responses() -> None:
 
     @get(responses={200: ResponseSpec(model=OkResponse)})
     def handler() -> Person:
-        pass
+        return PersonFactory.build()
 
     with pytest.raises(
         ImproperlyConfiguredException,

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
 
@@ -9,10 +9,8 @@ from starlite import (
     create_test_client,
     head,
 )
+from starlite.response import FileResponse
 from starlite.status_codes import HTTP_200_OK
-
-if TYPE_CHECKING:
-    from starlite.response import FileResponse
 
 
 def test_head_decorator() -> None:
@@ -44,10 +42,10 @@ def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
 def test_head_decorator_does_not_raise_for_file() -> None:
     @head("/")
     def handler() -> File:
-        ...
+        return File(path=Path("test_head.py"))
 
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
     @head("/")
     def handler() -> "FileResponse":
-        ...
+        return FileResponse("test_to_response.py")
