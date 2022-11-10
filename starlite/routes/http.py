@@ -269,11 +269,10 @@ class HTTPRoute(BaseRoute):
                 response_headers = cors_config.preflight_headers.copy()
                 failures = []
 
-                if cors_config.is_origin_allowed(origin):
-                    if response_headers["Access-Control-Allow-Origin"] != "*":
-                        response_headers["Access-Control-Allow-Origin"] = origin
-                else:
+                if not cors_config.is_origin_allowed(origin):
                     failures.append("Origin")
+                elif response_headers.get("Access-Control-Allow-Origin") != "*":
+                    response_headers["Access-Control-Allow-Origin"] = origin
 
                 if not cors_config.is_allow_all_methods and pre_flight_method not in cors_config.allow_methods:
                     failures.append("method")
@@ -289,13 +288,26 @@ class HTTPRoute(BaseRoute):
                     ):
                         failures.append("headers")
 
-                if failures:
-                    return Response(
+                return (
+                    Response(
                         content=f"CORS failures: {', '.join(failures)}",
                         status_code=HTTP_400_BAD_REQUEST,
                         media_type=MediaType.TEXT,
                     )
-                return Response(content=b"")
-            return Response(content=b"", status_code=HTTP_204_NO_CONTENT, headers={"Allow": ", ".join(self.methods)})
+                    if failures
+                    else Response(
+                        content=None,
+                        status_code=HTTP_204_NO_CONTENT,
+                        media_type=MediaType.TEXT,
+                        headers=response_headers,
+                    )
+                )
+
+            return Response(
+                content=None,
+                status_code=HTTP_204_NO_CONTENT,
+                headers={"Allow": ", ".join(sorted(self.methods))},
+                media_type=MediaType.TEXT,
+            )
 
         return HTTPRouteHandler(path=path, http_method=[HttpMethod.OPTIONS])(options_handler)
