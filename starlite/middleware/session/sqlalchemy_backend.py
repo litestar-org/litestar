@@ -132,7 +132,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         async with self._create_sa_session() as sa_session:
             session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
             if session_obj:
-                if not session_obj.expired:
+                if not session_obj.expired:  # type: ignore[truthy-function]
                     self._update_session_expiry(session_obj)  # type: ignore[unreachable]
                     await sa_session.commit()
                     return session_obj.data
@@ -206,7 +206,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         session_obj = self._get_session_obj(sa_session=sa_session, session_id=session_id)
 
         if session_obj:
-            if not session_obj.expired:
+            if not session_obj.expired:  # type: ignore[truthy-function]
                 self._update_session_expiry(session_obj)  # type: ignore[unreachable]
                 sa_session.commit()
                 return session_obj.data

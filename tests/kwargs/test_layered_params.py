@@ -68,7 +68,7 @@ def test_layered_parameters_validation(parameter: str) -> None:
 
         @get("/{local:int}")
         def my_handler(self) -> dict:
-            ...
+            return {}
 
     router = Router(
         path="/router",

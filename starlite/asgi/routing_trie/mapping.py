@@ -42,7 +42,7 @@ def add_map_route_to_trie(
     current_node = root_node
     path = route.path
 
-    is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # type: ignore[union-attr]
+    is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # pyright: ignore
 
     if not (route.path_parameters or is_mount):
         plain_routes.add(path)

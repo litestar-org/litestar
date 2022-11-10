@@ -5,12 +5,12 @@ from tests.plugins.sql_alchemy_plugin import User
 
 @get(path="/user")
 def get_user() -> User:
-    ...
+    return User()
 
 
 @post(path="/user")
 def create_user(data: User) -> User:
-    ...
+    return data
 
 
 def test_sql_alchemy_models_openapi_generation() -> None:

@@ -113,10 +113,10 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
         ...
 
     def c_dep(other_param: float) -> float:
-        ...
+        return other_param
 
     def d_dep(other_param: float) -> float:
-        ...
+        return other_param
 
     @get("/test", dependencies={"a": Provide(ADep), "b": Provide(BDep), "c": Provide(c_dep), "d": Provide(d_dep)})
     def handler(a: ADep, b: BDep, c: float, d: float) -> str:
@@ -131,10 +131,10 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
 
 def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> None:
     def a_dep(query_param: int) -> int:
-        ...
+        return query_param
 
     def b_dep(query_param: str) -> int:
-        ...
+        return 1
 
     @get("/test", dependencies={"a": Provide(a_dep), "b": Provide(b_dep)})
     def handler(a: int, b: int) -> str:
@@ -150,7 +150,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 
     @get(dependencies={"dep": Provide(produce_dep)})
     def handler(dep: Optional[int] = Dependency()) -> None:
-        ...
+        return None
 
     app = Starlite(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
@@ -161,7 +161,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
 def test_dependency_not_in_doc_params_if_not_provided() -> None:
     @get()
     def handler(dep: Optional[int] = Dependency()) -> None:
-        ...
+        return None
 
     app = Starlite(route_handlers=[handler])
     assert cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters is None  # type: ignore
@@ -170,7 +170,7 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
 def test_non_dependency_in_doc_params_if_not_provided() -> None:
     @get()
     def handler(param: Optional[int]) -> None:
-        ...
+        return None
 
     app = Starlite(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
@@ -196,7 +196,7 @@ def test_layered_parameters() -> None:
             app2: List[str],
             controller2: float = StarliteParameter(ge=5.0),
         ) -> dict:
-            ...
+            return {}
 
     router = Router(
         path="/router",
