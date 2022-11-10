@@ -68,6 +68,13 @@ repos:
     hooks:
       - id: docformatter
         args: [--in-place, --close-quotes-on-newline]
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.1.1
+    hooks:
+      - id: pydocstyle
+        exclude: "test*|examples*"
+        additional_dependencies:
+          - pydocstyle[toml]
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
