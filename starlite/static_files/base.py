@@ -1,5 +1,5 @@
 from os.path import commonpath, join
-from typing import TYPE_CHECKING, List, Literal, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
     from starlite.types.file_types import FileInfo, FileSystemProtocol
+    from typing_extensions import Literal
 
 
 class StaticFiles:
