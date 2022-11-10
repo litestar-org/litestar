@@ -40,7 +40,9 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="BaseRouteHandler")
 
 
-class ParameterConfig(BaseConfig):  # noqa: D101
+class ParameterConfig(BaseConfig):
+    """Base config for `ModelField`"""
+
     extra = Extra.allow
 
 

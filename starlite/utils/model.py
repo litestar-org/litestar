@@ -9,7 +9,9 @@ if TYPE_CHECKING:
     from starlite.types.builtin_types import DataclassClassOrInstance, TypedDictClass
 
 
-class Config(BaseConfig):  # noqa: D101
+class Config(BaseConfig):
+    """Base config for models."""
+
     arbitrary_types_allowed = True
 
 

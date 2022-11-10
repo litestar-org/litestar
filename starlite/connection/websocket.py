@@ -256,11 +256,13 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         await self.send(event)
 
     @overload
-    async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:  # noqa: D102
+    async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:
+        """Overload."""
         ...
 
     @overload
-    async def send_text(self, data: str) -> None:  # noqa: D102
+    async def send_text(self, data: str) -> None:
+        """Overload."""
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
@@ -276,11 +278,13 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         await self.send_data(data=data, encoding=encoding)
 
     @overload
-    async def send_bytes(self, data: bytes) -> None:  # noqa: D102
+    async def send_bytes(self, data: bytes) -> None:
+        """Overload."""
         ...
 
     @overload
-    async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:  # noqa: D102
+    async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
+        """Overload."""
         ...
 
     async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:

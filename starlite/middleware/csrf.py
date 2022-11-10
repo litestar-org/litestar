@@ -33,16 +33,16 @@ CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
 class CSRFMiddleware(MiddlewareProtocol):
+    """CSRF Middleware class.
+
+    This Middleware protects against attacks by setting a CSRF cookie
+    with a token and verifying it in request headers.
+    """
+
     scopes: "Scopes" = {ScopeType.HTTP}
 
-    def __init__(
-        self,
-        app: "ASGIApp",
-        config: "CSRFConfig",
-    ) -> None:
-        """CSRF Middleware class.
-
-        This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
+    def __init__(self, app: "ASGIApp", config: "CSRFConfig") -> None:
+        """Initialize `CSRFMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.

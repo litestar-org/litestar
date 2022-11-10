@@ -15,12 +15,15 @@ if TYPE_CHECKING:
 
 
 class ExceptionHandlerMiddleware:
-    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
-        """This middleware is used to wrap an ASGIApp inside a try catch block
-        and handles any exceptions raised.
+    """This middleware is used to wrap an ASGIApp inside a try catch block and
+    handles any exceptions raised.
 
-        Notes:
-            * It's used in multiple layers of Starlite.
+    Notes:
+        * It's used in multiple layers of Starlite.
+    """
+
+    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
+        """Initialize `ExceptionHandlerMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -32,7 +35,8 @@ class ExceptionHandlerMiddleware:
         self.debug = debug
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI-callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.

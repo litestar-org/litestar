@@ -47,7 +47,7 @@ class CacheObject:
 
 
 class RateLimitMiddleware(AbstractMiddleware):
-    """Rate-limiting middleware"""
+    """Rate-limiting middleware."""
 
     __slots__ = (
         "app",

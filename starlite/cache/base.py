@@ -15,7 +15,8 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
     """Protocol for cache backends."""
 
     @overload  # type: ignore[misc]
-    def get(self, key: str) -> Any:  # pyright: ignore  # noqa: D102
+    def get(self, key: str) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def get(self, key: str) -> Any:
@@ -29,7 +30,8 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
 
     @overload  # type: ignore[misc]
-    def set(self, key: str, value: Any, expiration: int) -> Any:  # pyright: ignore  # noqa: D102
+    def set(self, key: str, value: Any, expiration: int) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def set(self, key: str, value: Any, expiration: int) -> Any:
@@ -50,7 +52,8 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """
 
     @overload  # type: ignore[misc]
-    def delete(self, key: str) -> Any:  # pyright: ignore  # noqa: D102
+    def delete(self, key: str) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def delete(self, key: str) -> Any:

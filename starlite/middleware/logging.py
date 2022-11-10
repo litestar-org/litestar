@@ -28,7 +28,7 @@ except ImportError:
 
 
 class LoggingMiddleware(AbstractMiddleware):
-    """Logging middleware"""
+    """Logging middleware."""
 
     __slots__ = ("config", "logger", "request_extractor", "response_extractor", "is_struct_logger")
 

@@ -6,10 +6,12 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
+    """Session backend to store data in redis."""
+
     __slots__ = ("redis",)
 
     def __init__(self, config: "RedisBackendConfig") -> None:
-        """Session backend to store data in redis.
+        """Initialize `RedisBackend`.
 
         Notes:
             - Requires `redis`. Install with `pip install starlite[redis]`
@@ -74,6 +76,8 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
 
 
 class RedisBackendConfig(ServerSideSessionConfig):
+    """Configuration for `RedisBackend`"""
+
     _backend_class: Type[RedisBackend] = RedisBackend
     redis: Redis
     """`redis.asyncio.Redis` instance"""

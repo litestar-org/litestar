@@ -226,7 +226,7 @@ class Header(BaseModel, ABC):
         extra = Extra.forbid
 
         @classmethod
-        def alias_generator(cls, field_name: str) -> str:  # pylint: disable=missing-function-docstring
+        def alias_generator(cls, field_name: str) -> str:
             """Generate field-aliases by replacing dashes with underscores in
             header-names.
             """
