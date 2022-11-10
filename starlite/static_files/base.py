@@ -75,7 +75,7 @@ class StaticFiles:
                 file_system=self.adapter.file_system,
                 filename=filename,
                 is_head_response=scope["method"] == "HEAD",
-                content_disposition_type="inline",
+                content_disposition_type="inline" if self.is_html_mode else "attachment",
             )(scope, receive, send)
             return
 

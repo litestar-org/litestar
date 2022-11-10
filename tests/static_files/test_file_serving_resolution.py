@@ -149,3 +149,16 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
         assert expected_mime_type
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(expected_mime_type)
+
+
+@pytest.mark.parametrize("html_mode,disposition", [(True, "inline"), (False, "attachment")])
+def test_static_files_response_content_disposition(tmpdir: "Path", html_mode: bool, disposition: str) -> None:
+    fn = "test.txt"
+    path = tmpdir / fn
+    path.write_text("content", "utf-8")
+    static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir], html_mode=html_mode)
+
+    with create_test_client([], static_files_config=static_files_config) as client:
+        response = client.get(f"/static/{fn}")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-disposition"].startswith(disposition)
