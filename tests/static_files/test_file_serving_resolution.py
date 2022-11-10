@@ -1,3 +1,4 @@
+import mimetypes
 from typing import TYPE_CHECKING
 
 import pytest
@@ -135,11 +136,8 @@ def test_static_substring_of_self(tmpdir: "Path") -> None:
         assert response.text == "content"
 
 
-@pytest.mark.parametrize(
-    ("extension", "exp"),
-    [("css", "text/css"), ("js", "application/javascript"), ("html", "text/html"), ("json", "application/json")],
-)
-def test_static_files_response_mimetype(tmpdir: "Path", extension: str, exp: str) -> None:
+@pytest.mark.parametrize("extension", ["css", "js", "html", "json"])
+def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
     fn = f"test.{extension}"
     path = tmpdir / fn
     path.write_text("content", "utf-8")
@@ -148,4 +146,4 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str, exp: str
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get(f"/static/{fn}")
         assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(exp)
+        assert response.headers["content-type"].startswith(mimetypes.guess_type(fn)[0])
