@@ -54,9 +54,9 @@ class CompressionConfig(BaseModel):
     """
     exclude: Optional[Union[str, List[str]]] = None
     """
-    An identifier to use on routes to disable authentication for a particular route.
+    A pattern or list of patterns to skip in the compression middleware.
     """
     exclude_opt_key: Optional[str] = None
     """
-    A pattern or list of patterns to skip in the authentication middleware.
+    An identifier to use on routes to disable compression for a particular route.
     """

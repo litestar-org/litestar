@@ -1,12 +1,15 @@
-import re
 import secrets
-from typing import TYPE_CHECKING, Any, Optional, Pattern
+from typing import TYPE_CHECKING, Any, Optional
 
 from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import RequestEncodingType, ScopeType
 from starlite.exceptions import PermissionDeniedException
 from starlite.middleware.base import MiddlewareProtocol
+from starlite.middleware.utils import (
+    build_exclude_path_pattern,
+    should_bypass_middleware,
+)
 from starlite.utils.csrf import (
     CSRF_SECRET_BYTES,
     generate_csrf_hash,
@@ -16,12 +19,22 @@ from starlite.utils.csrf import (
 if TYPE_CHECKING:
     from starlite.config import CSRFConfig
     from starlite.connection import Request
-    from starlite.types import ASGIApp, HTTPSendMessage, Message, Receive, Scope, Send
+    from starlite.types import (
+        ASGIApp,
+        HTTPSendMessage,
+        Message,
+        Receive,
+        Scope,
+        Scopes,
+        Send,
+    )
 
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
 class CSRFMiddleware(MiddlewareProtocol):
+    scopes: "Scopes" = {ScopeType.HTTP}
+
     def __init__(
         self,
         app: "ASGIApp",
@@ -37,12 +50,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         """
         self.app = app
         self.config = config
-        self.exclude: Optional[Pattern[str]] = None
-
-        if config.exclude:
-            self.exclude = (
-                re.compile("|".join(config.exclude)) if isinstance(config.exclude, list) else re.compile(config.exclude)
-            )
+        self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """
@@ -70,10 +78,12 @@ class CSRFMiddleware(MiddlewareProtocol):
             form = await request.form()
             existing_csrf_token = form.get("_csrf_token", None)
 
-        exclude_from_csrf_flag = scope["route_handler"].opt.get(self.config.exclude_from_csrf_key)
-        exclude_from_csrf = exclude_from_csrf_flag or (self.exclude and self.exclude.findall(scope["path"]))
-
-        if request.method in self.config.safe_methods or exclude_from_csrf:
+        if request.method in self.config.safe_methods or should_bypass_middleware(
+            scope=scope,
+            scopes=self.scopes,
+            exclude_opt_key=self.config.exclude_from_csrf_key,
+            exclude_path_pattern=self.exclude,
+        ):
             token = scope["_csrf_token"] = csrf_cookie or generate_csrf_token(secret=self.config.secret)  # type: ignore
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):

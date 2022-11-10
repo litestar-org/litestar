@@ -6,15 +6,22 @@ from starlite.types import Scopes
 
 
 class AllowedHostsConfig(BaseModel):
+    """Configuration for allowed hosts protection.
+
+    To enable allowed hosts protection, pass an instance of this class
+    to the [Starlite][starlite.app.Starlite] constructor using the
+    'allowed_hosts' key.
+    """
+
     allowed_hosts: List[str] = ["*"]
     """A list of trusted hosts. Use '*' to allow all hosts, or prefix domains with '*.' to allow all sub domains."""
     exclude: Optional[Union[str, List[str]]] = None
     """
-    An identifier to use on routes to disable authentication for a particular route.
+    A pattern or list of patterns to skip in the Allowed Hosts middleware.
     """
     exclude_opt_key: Optional[str] = None
     """
-    A pattern or list of patterns to skip in the authentication middleware.
+    An identifier to use on routes to disable hosts check for a particular route.
     """
     scopes: Optional[Scopes] = None
     """

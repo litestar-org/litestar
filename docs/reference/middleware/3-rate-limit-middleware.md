@@ -6,6 +6,7 @@
             - cache_key_builder
             - check_throttle_handler
             - exclude
+            - exclude_opt_key
             - middleware
             - middleware_class
             - rate_limit

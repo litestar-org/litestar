@@ -90,3 +90,47 @@ def test_logging_middleware_struct_logger() -> None:
             "event": "HTTP Response",
             "log_level": "info",
         }
+
+
+def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture") -> None:
+    @get("/exclude")
+    def handler2() -> None:
+        return None
+
+    config = LoggingMiddlewareConfig(exclude=["^/exclude"])
+    with create_test_client(
+        route_handlers=[handler, handler2], middleware=[config.middleware]
+    ) as client, caplog.at_level(INFO):
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
+        client.app.get_logger = get_logger
+
+        response = client.get("/exclude")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 0
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
+
+
+def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture") -> None:
+    @get("/exclude", skip_logging=True)
+    def handler2() -> None:
+        return None
+
+    config = LoggingMiddlewareConfig(exclude_opt_key="skip_logging")
+    with create_test_client(
+        route_handlers=[handler, handler2], middleware=[config.middleware]
+    ) as client, caplog.at_level(INFO):
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
+        client.app.get_logger = get_logger
+
+        response = client.get("/exclude")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 0
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
