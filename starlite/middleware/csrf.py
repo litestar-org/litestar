@@ -33,16 +33,16 @@ CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
 
 class CSRFMiddleware(MiddlewareProtocol):
+    """CSRF Middleware class.
+
+    This Middleware protects against attacks by setting a CSRF cookie
+    with a token and verifying it in request headers.
+    """
+
     scopes: "Scopes" = {ScopeType.HTTP}
 
-    def __init__(
-        self,
-        app: "ASGIApp",
-        config: "CSRFConfig",
-    ) -> None:
-        """CSRF Middleware class.
-
-        This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
+    def __init__(self, app: "ASGIApp", config: "CSRFConfig") -> None:
+        """Initialize `CSRFMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -53,7 +53,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
@@ -93,7 +94,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             raise PermissionDeniedException("CSRF token verification failed")
 
     def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
-        """Wraps 'send' to handle CSRF validation.
+        """Wrap 'send' to handle CSRF validation.
 
         Args:
             token: The CSRF token.
@@ -147,8 +148,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
-        """Takes the CSRF tokens from the request and the cookie and verifies
-        both are valid and identical.
+        """Take the CSRF tokens from the request and the cookie and verify both
+        are valid and identical.
         """
         if not (request_csrf_token and cookie_csrf_token):
             return False

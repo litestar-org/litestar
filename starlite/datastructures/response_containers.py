@@ -47,14 +47,15 @@ R = TypeVar("R")
 
 
 class ResponseContainer(ABC, GenericModel, Generic[R]):
+    """Generic response container."""
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
     background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
-    """
-        A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-        [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-        Defaults to None.
+    """A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+    [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+    Defaults to None.
     """
     headers: Dict[str, Any] = {}
     """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
@@ -331,6 +332,7 @@ class Template(ResponseContainer["TemplateResponse"]):
             request: A [Request][starlite.connection.request.Request] instance.
 
         Returns:
+            A dictionary holding the template context
         """
         csrf_token = request.scope.get("_csrf_token", "")
         return {

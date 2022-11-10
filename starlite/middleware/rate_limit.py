@@ -38,6 +38,8 @@ DURATION_VALUES: Dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3
 
 @dataclass
 class CacheObject:
+    """Representation of a cached object's metadata."""
+
     __slots__ = ("history", "reset")
 
     history: List[int]
@@ -45,6 +47,8 @@ class CacheObject:
 
 
 class RateLimitMiddleware(AbstractMiddleware):
+    """Rate-limiting middleware."""
+
     __slots__ = (
         "app",
         "cache",
@@ -58,7 +62,7 @@ class RateLimitMiddleware(AbstractMiddleware):
     cache: "Cache"
 
     def __init__(self, app: "ASGIApp", config: "RateLimitConfig") -> None:
-        """
+        """Initialize `RateLimitMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -75,7 +79,8 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.unit: DurationUnit = config.rate_limit[0]
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
@@ -116,7 +121,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
 
         async def send_wrapper(message: "Message") -> None:
-            """
+            """Wrapped ASGI `Send` callable.
 
             Args:
                 message: An ASGI 'Message'
@@ -134,7 +139,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         return send_wrapper
 
     def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
-        """
+        """Get a cache-key from a `Request`
 
         Args:
             request: A [Request][starlite.connection.Request] instance.
@@ -183,7 +188,8 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
-        """
+        """Return a boolean indicating if a request should be checked for rate
+        limiting.
 
         Args:
             request: A [Request][starlite.connection.Request] instance.
@@ -220,6 +226,8 @@ class RateLimitMiddleware(AbstractMiddleware):
 
 
 class RateLimitConfig(BaseModel):
+    """Configuration for `RateLimitMiddleware`"""
+
     rate_limit: Tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
     exclude: Optional[Union[str, List[str]]] = None
@@ -247,7 +255,7 @@ class RateLimitConfig(BaseModel):
 
     @validator("check_throttle_handler")
     def validate_check_throttle_handler(cls, value: Callable) -> Callable:  # pylint: disable=no-self-argument
-        """
+        """Wrap `check_throttle_handler` in an `AsyncCallable`
 
         Args:
             value: A callable.
@@ -263,7 +271,6 @@ class RateLimitConfig(BaseModel):
         of the application layers.
 
         Examples:
-
             ```python
             from starlite import Starlite, Request, get
             from starlite.middleware import RateLimitConfig

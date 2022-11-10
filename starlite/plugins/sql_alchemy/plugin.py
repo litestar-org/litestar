@@ -46,10 +46,12 @@ if TYPE_CHECKING:
 
 
 class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
+    """A Plugin for SQLAlchemy."""
+
     __slots__ = ("_model_namespace_map", "_config")
 
     def __init__(self, config: Optional["SQLAlchemyConfig"] = None) -> None:
-        """A Plugin for SQLAlchemy.
+        """Initialize `SQLAlchemyPlugin`.
 
         Support (de)serialization and OpenAPI generation for SQLAlchemy
         ORM types.

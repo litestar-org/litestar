@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 
 class Config(BaseConfig):
+    """Base config for models."""
+
     arbitrary_types_allowed = True
 
 
@@ -25,10 +27,9 @@ _type_model_map: Dict[Type[Any], Type[BaseModel]] = {}
 
 
 def convert_dataclass_to_model(dataclass_or_instance: "DataclassClassOrInstance") -> Type[BaseModel]:
-    """Converts a dataclass or dataclass instance to a pydantic model and
-    memoizes the result.
+    """Convert a dataclass or dataclass instance to a pydantic model and
+    memoize the result.
     """
-
     if not isinstance(dataclass_or_instance, type):
         dataclass = type(dataclass_or_instance)
     else:

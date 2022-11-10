@@ -24,6 +24,8 @@ ModelT = TypeVar("ModelT")
 
 @runtime_checkable
 class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
+    """Base plugin protocol to be inherited when implementing plugins."""
+
     __slots__ = ()
 
     def on_app_init(self, app: "Starlite") -> None:
@@ -165,6 +167,8 @@ def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[
 
 
 class PluginMapping(NamedTuple):
+    """Named tuple, mapping plugins > models."""
+
     plugin: PluginProtocol
     model_class: Any
 

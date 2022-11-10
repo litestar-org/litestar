@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 
 class TemplateResponse(Response[bytes]):
+    """Template-based response, rendering a given template into a bytes
+    string.
+    """
+
     def __init__(
         self,
         template_name: str,
@@ -23,7 +27,7 @@ class TemplateResponse(Response[bytes]):
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
     ) -> None:
-        """Handles the rendering of a given template into a bytes string.
+        """Handle the rendering of a given template into a bytes string.
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. "index.html".
@@ -35,6 +39,7 @@ class TemplateResponse(Response[bytes]):
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            encoding: Content encoding
         """
         template = template_engine.get_template(template_name)
         super().__init__(

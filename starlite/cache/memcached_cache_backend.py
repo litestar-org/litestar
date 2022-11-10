@@ -34,10 +34,12 @@ class MemcachedCacheBackendConfig(BaseModel):
 
 
 class MemcachedCacheBackend(CacheBackendProtocol):
+    """Memcached-based cache backend."""
+
     _client: Client
 
     def __init__(self, config: MemcachedCacheBackendConfig) -> None:
-        """This class offers a cache backend based on memcached.
+        """Initialize `MemcachedCacheBackend`.
 
         Args:
             config: required configuration to connect to memcached.

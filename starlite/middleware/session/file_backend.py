@@ -9,15 +9,23 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class FileStorageMetadataWrapper(NamedTuple):
+    """Metadata of a session file."""
+
     expires: str
     data: str
 
 
 class FileBackend(ServerSideBackend["FileBackendConfig"]):
+    """Session backend to store data in files."""
+
     __slots__ = ("path",)
 
     def __init__(self, config: "FileBackendConfig") -> None:
-        """Session backend to store data in files."""
+        """Initialize `FileBackend`
+
+        Args:
+            config: A `FileBackendConfig`
+        """
         super().__init__(config=config)
         self.path = Path(config.storage_path)
 
@@ -108,6 +116,8 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
 
 class FileBackendConfig(ServerSideSessionConfig):
+    """Backend configuration for `FileBackend`"""
+
     _backend_class: Type[FileBackend] = FileBackend
     storage_path: PathLike
     """Disk path under which to store session files."""

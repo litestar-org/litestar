@@ -64,7 +64,6 @@ class Partial(Generic[T]):
         Returns:
             A pydantic model, [`TypedDict`][typing.TypedDict], or dataclass.
         """
-
         if item not in cls._models:
             if is_class_and_subclass(item, BaseModel):
                 cls._create_partial_pydantic_model(item=item)

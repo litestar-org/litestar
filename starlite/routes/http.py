@@ -31,6 +31,8 @@ if TYPE_CHECKING:
 
 
 class HTTPRoute(BaseRoute):
+    """An HTTP route, capable of handling multiple `HTTPRouteHandler`s."""
+
     __slots__ = (
         "route_handler_map",
         "route_handlers",
@@ -42,7 +44,7 @@ class HTTPRoute(BaseRoute):
         path: str,
         route_handlers: List["HTTPRouteHandler"],
     ) -> None:
-        """This class handles a multiple HTTP Routes.
+        """Initialize `HTTPRoute`.
 
         Args:
             path: The path for the route.

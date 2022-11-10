@@ -41,12 +41,12 @@ BaseSessionBackendT = TypeVar("BaseSessionBackendT", bound="BaseSessionBackend")
 
 
 class BaseBackendConfig(BaseModel):
-    _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
-
-    """Configuration for Session middleware cookies."""
+    """Configuration for Session middleware backends."""
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
+
+    _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
 
     key: constr(min_length=1, max_length=256) = "session"  # type: ignore[valid-type]
     """
@@ -82,7 +82,6 @@ class BaseBackendConfig(BaseModel):
         of the application layers.
 
         Examples:
-
             ```python
             from os import urandom
 
@@ -107,6 +106,8 @@ class BaseBackendConfig(BaseModel):
 
 
 class ServerSideSessionConfig(BaseBackendConfig):
+    """Base configuration for server side backends."""
+
     session_id_bytes: int = 32
     """
     Number of bytes used to generate a random session-ID
@@ -114,15 +115,21 @@ class ServerSideSessionConfig(BaseBackendConfig):
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
+    """Abstract session backend defining the interface between a storage
+    mechanism and the.
+
+    [SessionMiddleware][starlite.middleware.session.SessionMiddleware].
+
+    This serves as the base class for all client- and server-side backends
+    """
+
     __slots__ = ("config",)
 
     def __init__(self, config: ConfigT) -> None:
-        """Abstract session backend defining the interface between a storage
-        mechanism and the [SessionMiddleware][
-        starlite.middleware.session.SessionMiddleware].
+        """Initialize `BaseSessionBackend`
 
-        This serves as the base class for all client- and server-side
-        backends
+        Args:
+            config: A instance of a subclass of `BaseBackendConfig`
         """
         self.config = config
 
@@ -189,13 +196,19 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
 
 
 class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT]):
+    """Base class for server-side backends.
+
+    Implements [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend] and defines and
+    interface which subclasses can implement to facilitate the storage of session data
+    """
+
     __slots__ = ()
 
     def __init__(self, config: ServerConfigT) -> None:
-        """Base class for server-side backends. Implements.
+        """Initialize `ServerSideBackend`
 
-        [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend] and defines and
-        interface which subclasses can implement to facilitate the storage of session data
+        Args:
+            config: A subclass of `ServerSideSessionConfig`
         """
         super().__init__(config=config)
 
@@ -327,10 +340,12 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
 
 class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
+    """Starlite session middleware for storing session data."""
+
     __slots__ = ("backend", "_exclude_pattern", "_exclude_opt_key")
 
     def __init__(self, app: "ASGIApp", backend: BaseSessionBackendT) -> None:
-        """Starlite session middleware for storing session data.
+        """Initialize `SessionMiddleware`
 
         Args:
             app: An ASGI application
@@ -344,8 +359,9 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         self._exclude_opt_key = backend.config.exclude_opt_key
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
-        """
-        Creates a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
+        """Create a wrapper for the ASGI send function, which handles setting
+        the cookies on the outgoing response.
+
         Args:
             connection: ASGIConnection
 
@@ -375,7 +391,8 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         return wrapped_send
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI-callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.

@@ -18,8 +18,10 @@ if TYPE_CHECKING:
 
 
 class BaseLocalFileSystem(FileSystemProtocol):
+    """Base class for a local file system."""
+
     async def info(self, path: "PathType", **kwargs: Any) -> "FileInfo":  # pylint: disable=W0236
-        """Retrieves information about a given file path.
+        """Retrieve information about a given file path.
 
         Args:
             path: A file path.
@@ -51,9 +53,10 @@ class BaseLocalFileSystem(FileSystemProtocol):
 
 
 class FileSystemAdapter:
+    """Wrapper around a `FileSystemProtocol`, normalising its interface."""
+
     def __init__(self, file_system: "FileSystemProtocol"):
-        """This class is a wrapper around a file_system, normalizing
-        interaction with it.
+        """Initialize an adapter from a given `file_system`
 
         Args:
             file_system: A filesystem class adhering to the [FileSystemProtocol][starlite.types.FileSystemProtocol]

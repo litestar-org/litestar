@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 
 class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
+    """An HTTP response that streams the response data as a series of ASGI
+    'http.response.body' events.
+    """
+
     __slots__ = ("iterator",)
 
     def __init__(
@@ -39,8 +43,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         encoding: str = "utf-8",
         is_head_response: bool = False,
     ):
-        """This class is an HTTP response that streams the response data as a
-        series of ASGI 'http.response.body' events.
+        """Initialize the response.
 
         Args:
             content: A sync or async iterator or iterable.
@@ -69,8 +72,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         )
 
     async def _listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:
-        """
-        Listens for a cancellation message, and if received - calls cancel on the cancel scope.
+        """Listens for a cancellation message, and if received - calls cancel on the cancel scope.
 
         Args:
             cancel_scope: A task group cancel scope instance.

@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 
 class ASGIRoute(BaseRoute):
+    """An ASGI route, handling a single `ASGIRouteHandler`"""
+
     __slots__ = ("route_handler",)
 
     def __init__(
@@ -20,7 +22,7 @@ class ASGIRoute(BaseRoute):
         path: str,
         route_handler: "ASGIRouteHandler",
     ) -> None:
-        """This class handles a single ASGI Route.
+        """Initialize the route.
 
         Args:
             path: The path for the route.

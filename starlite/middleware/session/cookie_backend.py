@@ -32,10 +32,12 @@ AAD = b"additional_authenticated_data="
 
 
 class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
+    """Cookie backend for SessionMiddleware."""
+
     __slots__ = ("aesgcm", "cookie_re")
 
     def __init__(self, config: "CookieBackendConfig") -> None:
-        """Starlite CookieSessionMiddleware.
+        """Initialize `CookieBackend`.
 
         Args:
             config: SessionCookieConfig instance.

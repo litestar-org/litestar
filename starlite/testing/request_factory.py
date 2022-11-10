@@ -38,6 +38,8 @@ default_app = Starlite(route_handlers=[_default_route_handler])
 
 
 class RequestFactory:
+    """Factory to create [Request][starlite.connection.Request] instances."""
+
     def __init__(
         self,
         app: Starlite = default_app,
@@ -46,8 +48,7 @@ class RequestFactory:
         root_path: str = "",
         scheme: str = "http",
     ) -> None:
-        """A factory object to create [Request][starlite.connection.Request]
-        instances.
+        """Initialize `RequestFactory`
 
         Args:
              app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
@@ -57,7 +58,6 @@ class RequestFactory:
              scheme: Scheme for the server.
 
         Examples:
-
         ```python
         from starlite import RequestEncodingType, Starlite
         from starlite.testing import RequestFactory
@@ -171,7 +171,6 @@ class RequestFactory:
             cookies: A string representing the cookie header or a list of "Cookie" instances.
                 This value can include multiple cookies.
         """
-
         if not cookies:
             return
 
@@ -197,7 +196,6 @@ class RequestFactory:
         Returns:
             A list of encoded headers that can be passed to the request scope.
         """
-
         headers = headers or {}
         self._create_cookie_header(headers, cookies)
         return [
@@ -247,7 +245,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         scope = self._create_scope(
             path=path,
             http_method=http_method,
@@ -313,7 +310,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         scope = self._create_scope(
             path=path,
             http_method=HttpMethod.GET,
@@ -368,7 +364,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         return self._create_request_with_data(
             auth=auth,
             cookies=cookies,
@@ -424,7 +419,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         return self._create_request_with_data(
             auth=auth,
             cookies=cookies,
@@ -480,7 +474,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         return self._create_request_with_data(
             auth=auth,
             cookies=cookies,
@@ -531,7 +524,6 @@ class RequestFactory:
         Returns:
             A [Request][starlite.connection.Request] instance
         """
-
         scope = self._create_scope(
             path=path,
             http_method=HttpMethod.DELETE,

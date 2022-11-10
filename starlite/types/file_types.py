@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 
 class FileInfo(TypedDict):
+    """File information gathered from a file system."""
+
     created: float
     """Created time stamp, equal to 'stat_result.st_ctime'."""
     destination: NotRequired[Optional[bytes]]
@@ -44,7 +46,7 @@ class FileSystemProtocol(Protocol):
     """
 
     def info(self, path: "PathType", **kwargs: Any) -> Union[FileInfo, Awaitable[FileInfo]]:
-        """Retrieves information about a given file path.
+        """Retrieve information about a given file path.
 
         Args:
             path: A file path.
@@ -62,7 +64,7 @@ class FileSystemProtocol(Protocol):
         mode: "OpenBinaryMode",
         buffering: int = -1,
     ) -> Union[IO[bytes], Awaitable["AsyncFile[bytes]"]]:
-        """Returns a file-like object from the filesystem.
+        """Return a file-like object from the filesystem.
 
         Notes:
             - The return value must function correctly in a context `with` block.
@@ -81,7 +83,7 @@ class FileSystemProtocol(Protocol):
         mode: "OpenTextMode",
         buffering: int = -1,
     ) -> Union[IO[str], Awaitable["AsyncFile[str]"]]:
-        """Returns a file-like object from the filesystem.
+        """Return a file-like object from the filesystem.
 
         Notes:
             - The return value must function correctly in a context `with` block.
@@ -99,7 +101,7 @@ class FileSystemProtocol(Protocol):
         mode: str,
         buffering: int = -1,
     ) -> Union[IO[AnyStr], Awaitable["AsyncFile[AnyStr]"]]:
-        """Returns a file-like object from the filesystem.
+        """Return a file-like object from the filesystem.
 
         Notes:
             - The return value must function correctly in a context `with` block.

@@ -38,6 +38,8 @@ def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
 
 
 class URL:
+    """Representation and modification utilities of a URL."""
+
     __slots__ = (
         "_query_params",
         "_url",
@@ -72,10 +74,13 @@ class URL:
     """Hostname if specified"""
 
     def __init__(self, url: Union[str, SplitResult]) -> None:
-        """Representation and modification utilities of a URL.
+        """Initialize `URL` from a string or a.
+
+        [SplitResult][urllib.parse.SplitResult].
 
         Args:
-            url: URL, either as a string or a [SplitResult][urllib.parse.SplitResult] as returned by [urlsplit][urllib.parse.urlsplit]
+            url: URL, either as a string or a [SplitResult][urllib.parse.SplitResult] as
+                returned by [urlsplit][urllib.parse.urlsplit]
         """
         if isinstance(url, str):
             result = urlsplit(url)

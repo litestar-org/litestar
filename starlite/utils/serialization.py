@@ -5,7 +5,8 @@ from pydantic import BaseModel, SecretStr
 
 
 def default_serializer(value: Any) -> Any:
-    """
+    """Return the default serializer for a given object based on its type.
+
     Args:
         value: A value to serialize
     Returns:

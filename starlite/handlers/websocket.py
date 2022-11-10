@@ -13,6 +13,11 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
+    """Websocket route handler decorator.
+
+    Use this decorator to decorate websocket handler functions.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -26,17 +31,17 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         opt: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
-        """WebSocket Route Handler decorator. Use this decorator to decorate
-        websocket handler functions.
+        """Initialize `WebsocketRouteHandler`
 
         Args:
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         super().__init__(

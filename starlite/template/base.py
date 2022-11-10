@@ -8,6 +8,8 @@ if TYPE_CHECKING:
 
 
 class TemplateContext(TypedDict):
+    """Dictionary representing a template context."""
+
     request: "Request[Any, Any]"
     csrf_input: str
 
@@ -89,9 +91,11 @@ T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 
 @runtime_checkable
 class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
+    """Protocol for template engines."""
+
     @validate_arguments
     def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
-        """Protocol for a templating engine.
+        """Initialize the template engine with a directory.
 
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
@@ -99,8 +103,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         ...
 
     def get_template(self, template_name: str) -> T_co:
-        """
-        Retrieves a template by matching its name (dotted path) with files in the directory or directories provided.
+        """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
             template_name: A dotted path
 
@@ -113,7 +116,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         ...
 
     def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
-        """Registers a callable on the template engine.
+        """Register a callable on the template engine.
 
         Args:
             key: The callable key, i.e. the value to use inside the template to call the callable.

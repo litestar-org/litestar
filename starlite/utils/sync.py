@@ -41,16 +41,16 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
 
 
 class AsyncCallable(Generic[P, T]):
+    """Wrap a callable into an asynchronous callable."""
+
     __slots__ = ("args", "kwargs", "wrapped_callable", "is_method", "num_expected_args")
 
     def __init__(self, fn: Callable[P, T]) -> None:
-        """Utility class that wraps a callable and ensures it can be called as
-        an async function.
+        """Initialize the wrapper from any callable.
 
         Args:
             fn: Callable to wrap - can be any sync or async callable.
         """
-
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
         self.wrapped_callable = Ref[Callable](fn if is_async_callable(fn) else async_partial(fn))  # pyright: ignore
@@ -69,8 +69,8 @@ class AsyncCallable(Generic[P, T]):
 
 
 def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:
-    """
-    Helper function to handle wrapping values in AsyncCallables
+    """Wrap callables in `AsyncCallable`s.
+
     Args:
         value: A callable or list of callables.
 
@@ -101,6 +101,8 @@ def async_partial(fn: Callable) -> Callable:
 
 
 class AsyncIteratorWrapper(Generic[T]):
+    """Asynchronous generator, wrapping an iterable or iterator."""
+
     __slots__ = ("iterator", "generator")
 
     def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:

@@ -136,13 +136,13 @@ class Controller:
     """
 
     def __init__(self, owner: "Router") -> None:
-        """The controller init method should only be called by routers as part
-        of controller registration.
+        """Initialize a controller.
+
+        Should only be called by routers as part of controller registration.
 
         Args:
             owner: An instance of 'Router'
         """
-
         # Since functions set on classes are bound, we need replace the bound instance with the class version and wrap
         # it to ensure it does not get bound.
         for key in ("after_request", "after_response", "before_request"):
@@ -158,7 +158,8 @@ class Controller:
         self.owner = owner
 
     def get_route_handlers(self) -> List["BaseRouteHandler"]:
-        """A getter for the controller's route handlers that sets their owner.
+        """Get a controller's route handlers and set the controller as the
+        handlers' owner.
 
         Returns:
             A list containing a copy of the route handlers defined on the controller

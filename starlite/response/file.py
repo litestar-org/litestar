@@ -37,8 +37,8 @@ ONE_MEGA_BYTE: int = 1024 * 1024
 async def async_file_iterator(
     file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
 ) -> AsyncGenerator[bytes, None]:
-    """
-    A generator function that asynchronously reads a file and yields its chunks.
+    """Return an async that asynchronously reads a file and yields its chunks.
+
     Args:
         file_path: A path to a file.
         chunk_size: The chunk file to use.
@@ -66,6 +66,8 @@ def create_etag_for_file(path: "PathType", modified_time: float, file_size: int)
 
 
 class FileResponse(StreamingResponse):
+    """A response, streaming a file as response body."""
+
     __slots__ = (
         "chunk_size",
         "content_disposition_type",
@@ -154,7 +156,7 @@ class FileResponse(StreamingResponse):
 
     @property
     def content_disposition(self) -> str:
-        """
+        """Content disposition.
 
         Returns:
             A value for the 'Content-Disposition' header.
@@ -167,7 +169,7 @@ class FileResponse(StreamingResponse):
 
     @property
     def content_length(self) -> Optional[int]:
-        """
+        """Content length of the response if applicable.
 
         Returns:
             Returns the value of 'self.stat_result.st_size' to populate the 'Content-Length' header.
@@ -177,6 +179,15 @@ class FileResponse(StreamingResponse):
         return 0
 
     async def start_response(self, send: "Send") -> None:
+        """Emit the start event of the response. This event includes the
+        headers and status codes.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
         try:
             fs_info = self.file_info = cast(
                 "FileInfo", (await self.file_info if iscoroutine(self.file_info) else self.file_info)

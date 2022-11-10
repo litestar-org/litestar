@@ -5,11 +5,16 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
+    """Session backend to store data in memory."""
+
     __slots__ = ()
     _cache = SimpleCacheBackend()
 
     def __init__(self, config: "MemoryBackendConfig") -> None:
-        """Session backend to store data in memory.
+        """Initialize `MemoryBackend`.
+
+        Args:
+            config: An instance of `MemoryBackendConfig`
 
         Warning:
             This should not be used in production and serves mainly as a dummy backend
@@ -66,4 +71,6 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
 
 
 class MemoryBackendConfig(ServerSideSessionConfig):
+    """Configuration for `MemoryBackend`"""
+
     _backend_class: Type[MemoryBackend] = MemoryBackend

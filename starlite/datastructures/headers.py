@@ -34,12 +34,15 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
 
 
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
-        """An immutable, case-insensitive for HTTP headers.
+    """An immutable, case-insensitive for HTTP headers.
 
-        Notes:
-            - This class inherits from [multidict](https://multidict.aio-
-                libs.org/en/stable/multidict.html#cimultidictproxy).
+    Notes:
+        - This class inherits from [multidict](https://multidict.aio-
+            libs.org/en/stable/multidict.html#cimultidictproxy).
+    """
+
+    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
+        """Initialize `Headers`.
 
         Args:
             headers: Initial value.
@@ -56,8 +59,8 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
     @classmethod
     def from_scope(cls, scope: "HeaderScope") -> "Headers":
-        """
-        Create headers from a send-message.
+        """Create headers from a send-message.
+
         Args:
             scope: The ASGI connection scope.
 
@@ -79,9 +82,12 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
+    """A case-insensitive, multidict-like structure that can be used to mutate
+    headers within a [Scope][starlite.types.Scope]
+    """
+
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
-        """A case-insensitive, multidict-like structure that can be used to
-        mutate headers within a [Scope][starlite.types.Scope].
+        """Initialize `MutableScopeHeaders` from a `HeaderScope`.
 
         Args:
             scope: The ASGI connection scope.
@@ -94,7 +100,7 @@ class MutableScopeHeaders(MutableMapping):
 
     @classmethod
     def from_message(cls, message: "Message") -> "MutableScopeHeaders":
-        """Constructs a header from a message object.
+        """Construct a header from a message object.
 
         Args:
             message: [Message][starlite.types.Message].
@@ -111,7 +117,7 @@ class MutableScopeHeaders(MutableMapping):
         return cls(cast("HeaderScope", message))
 
     def add(self, key: str, value: str) -> None:
-        """Adds a header to the scope.
+        """Add a header to the scope.
 
         Notes:
              - This method keeps duplicates.
@@ -151,7 +157,7 @@ class MutableScopeHeaders(MutableMapping):
         return values
 
     def extend_header_value(self, key: str, value: str) -> None:
-        """Extends a multivalued header.
+        """Extend a multivalued header.
 
         Notes:
             - A multivalues header is a header that can take a comma separated list.
@@ -200,10 +206,13 @@ class MutableScopeHeaders(MutableMapping):
             del self.headers[i]
 
     def __len__(self) -> int:
+        """Return the length of the internally stored headers, including
+        duplicates.
+        """
         return len(self.headers)
 
     def __iter__(self) -> Iterator[str]:
-        """iter over header names including duplicates."""
+        """Create an iterator of header names including duplicates."""
         return iter(h[0].decode("latin-1") for h in self.headers)
 
 
@@ -217,7 +226,10 @@ class Header(BaseModel, ABC):
         extra = Extra.forbid
 
         @classmethod
-        def alias_generator(cls, field_name: str) -> str:  # pylint: disable=missing-function-docstring
+        def alias_generator(cls, field_name: str) -> str:
+            """Generate field-aliases by replacing dashes with underscores in
+            header-names.
+            """
             return field_name.replace("_", "-")
 
     documentation_only: bool = False
@@ -226,7 +238,6 @@ class Header(BaseModel, ABC):
     @abstractmethod
     def _get_header_value(self) -> str:
         """Get the header value as string."""
-
         raise NotImplementedError
 
     @classmethod

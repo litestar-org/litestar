@@ -12,12 +12,15 @@ if TYPE_CHECKING:
 
 @runtime_checkable
 class CacheBackendProtocol(Protocol):  # pragma: no cover
+    """Protocol for cache backends."""
+
     @overload  # type: ignore[misc]
     def get(self, key: str) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def get(self, key: str) -> Any:
-        """Retrieves a value from cache corresponding to the given key.
+        """Retrieve a value from cache corresponding to the given key.
 
         Args:
             key: name of cached value.
@@ -28,10 +31,11 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
     @overload  # type: ignore[misc]
     def set(self, key: str, value: Any, expiration: int) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def set(self, key: str, value: Any, expiration: int) -> Any:
-        """Set sa value in cache for a given key for a duration determined by
+        """Set a value in cache for a given key for a duration determined by
         expiration.
 
         Args:
@@ -49,6 +53,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
     @overload  # type: ignore[misc]
     def delete(self, key: str) -> Any:  # pyright: ignore
+        """Overload."""
         ...
 
     async def delete(self, key: str) -> Any:
@@ -66,15 +71,19 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
 
 class Cache:
+    """Wrapper for a provided CacheBackend that ensures it is called in an
+    async and thread-safe fashion.
+
+    This enables the use of normal sync libraries (such as the standard
+    Redis python client) for caching responses.
+    """
+
     __slots__ = ("backend", "lock", "default_expiration", "key_builder")
 
     def __init__(
         self, backend: CacheBackendProtocol, default_expiration: int, cache_key_builder: "CacheKeyBuilder"
     ) -> None:
-        """This class wraps a provided CacheBackend and ensures it is called in
-        an async thread-safe fashion. This enables the use of normal sync
-        libraries (such as the standard Redis python client) for caching
-        responses.
+        """Initialize `Cache`.
 
         Args:
             backend: A class instance fulfilling the Starlite [CacheBackendProtocol][starlite.cache.base.CacheBackendProtocol].
@@ -87,7 +96,7 @@ class Cache:
         self.lock = Lock()
 
     async def get(self, key: str) -> Any:
-        """Proxies 'self.backend.get'.
+        """Proxy 'self.backend.get'.
 
         Args:
             key: name of cached value.
@@ -102,7 +111,7 @@ class Cache:
             return self.backend.get(key)
 
     async def set(self, key: str, value: Any, expiration: Optional[int] = None) -> Any:
-        """Proxies 'self.backend.set'.
+        """Proxy 'self.backend.set'.
 
         Args:
             key: key to cache `value` under.
@@ -123,7 +132,7 @@ class Cache:
             return self.backend.set(key, value, expiration or self.default_expiration)
 
     async def delete(self, key: str) -> Any:
-        """Proxies 'self.backend.delete'.
+        """Proxy 'self.backend.delete'.
 
         Args:
             key: key to be deleted from the cache.
@@ -141,8 +150,8 @@ class Cache:
             return self.backend.delete(key)
 
     def build_cache_key(self, request: "Request", cache_key_builder: Optional["CacheKeyBuilder"]) -> str:
-        """
-        Constructs a unique cache key from the request instance.
+        """Construct a unique cache key from the request instance.
+
         Args:
             request: A [Request][starlite.connection.Request] instance.
             cache_key_builder: An optional [CacheKeyBuilder][starlite.types.CacheKeyBuilder] function.

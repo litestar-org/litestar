@@ -6,8 +6,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 from uuid import UUID
 
-from typing_extensions import TypedDict
-
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
 from starlite.signature import get_signature_model
@@ -35,12 +33,12 @@ param_type_map = {
 }
 
 
-class RouteHandlerIndex(TypedDict):
-    name: str
-    handler: "BaseRouteHandler"
-
-
 class BaseRoute(ABC):
+    """Base Route class used by Starlite.
+
+    It's an abstract class meant to be extended.
+    """
+
     __slots__ = (
         "app",
         "handler_names",
@@ -60,14 +58,13 @@ class BaseRoute(ABC):
         scope_type: "ScopeType",
         methods: Optional[List["Method"]] = None,
     ) -> None:
-        """This is the base Route class used by Starlite. It's an abstract
-        class meant to be extended.
+        """Initialize the route.
 
         Args:
-            handler_names:
-            path:
-            scope_type:
-            methods:
+            handler_names: Names of the associated handlers
+            path: Base path of the route
+            scope_type: Type of the ASGI scope
+            methods: Supported methods
         """
         self.path, self.path_format, self.path_components = self._parse_path(path)
         self.path_parameters: List[PathParameterDefinition] = [

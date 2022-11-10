@@ -14,6 +14,8 @@ SQLAlchemyBinaryType = Union["BINARY", "VARBINARY", "LargeBinary"]
 
 @runtime_checkable
 class SessionMakerTypeProtocol(Protocol):
+    """Protocol for a sessionmaker."""
+
     def __init__(
         self,
         bind: "Optional[Union[AsyncEngine, Engine, Connection]]",
@@ -23,13 +25,18 @@ class SessionMakerTypeProtocol(Protocol):
         info: Dict[Any, Any],
         **kwargs: Any,
     ) -> None:
+        """Initialize the sessionmaker."""
         ...
 
     def __call__(self) -> "Union[Session, AsyncSession]":
+        """Return a session instance."""
         ...
 
 
 @runtime_checkable
 class SessionMakerInstanceProtocol(Protocol):
+    """Protocol for a sessionmaker instance."""
+
     def __call__(self) -> "Union[Session, AsyncSession]":
+        """Return a session instance."""
         ...

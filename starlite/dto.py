@@ -57,6 +57,8 @@ T = TypeVar("T")
 
 
 class DTO(GenericModel, Generic[T]):
+    """Data Transfer Object."""
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -140,14 +142,17 @@ class DTO(GenericModel, Generic[T]):
 
 
 class DTOFactory:
-    def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
-        """Create [`DTO`][starlite.dto.DTO] types.
+    """Create [`DTO`][starlite.dto.DTO] type.
 
-         Pydantic models, [`TypedDict`][typing.TypedDict] and dataclasses are natively supported. Other types supported
-         via plugins.
+    Pydantic models, [`TypedDict`][typing.TypedDict] and dataclasses are
+    natively supported. Other types supported  via plugins.
+    """
+
+    def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
+        """Initialize `DTOFactory`
 
         Args:
-            plugins (list[PluginProtocol] | None): Plugins used to support `DTO` construction from arbitrary types.
+            plugins: Plugins used to support `DTO` construction from arbitrary types.
         """
         self.plugins = plugins or []
 
@@ -159,8 +164,7 @@ class DTOFactory:
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
     ) -> Type[DTO[T]]:
-        """
-        Given a supported model class - either pydantic, [`TypedDict`][typing.TypedDict], dataclass or a class supported
+        """Given a supported model class - either pydantic, [`TypedDict`][typing.TypedDict], dataclass or a class supported
         via plugins, create a DTO pydantic model class.
 
         An instance of the factory must first be created, passing any plugins to it.
@@ -239,7 +243,7 @@ class DTOFactory:
     def _get_fields_from_source(
         self, source: Type[T]  # pyright: ignore
     ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
-        """Converts a `BaseModel` subclass, [`TypedDict`][typing.TypedDict],
+        """Convert a `BaseModel` subclass, [`TypedDict`][typing.TypedDict],
         `dataclass` or any other type that has a plugin registered into a
         mapping of `str` to `ModelField`.
         """
@@ -268,7 +272,7 @@ class DTOFactory:
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]],
         fields: Dict[str, ModelField],
     ) -> Dict[str, Tuple[Any, Any]]:
-        """Populates `field_definitions`, ignoring fields in `exclude`, and
+        """Populate `field_definitions`, ignoring fields in `exclude`, and
         remapping fields in `field_mapping`.
         """
         for field_name, model_field in fields.items():
@@ -311,7 +315,7 @@ class DTOFactory:
     def _remap_field(
         field_mapping: Dict[str, Union[str, Tuple[str, Any]]], field_name: str, field_type: Any
     ) -> Tuple[str, Any]:
-        """Returns tuple of field name and field type remapped according to
+        """Return tuple of field name and field type remapped according to
         entry in `field_mapping`.
         """
         mapping = field_mapping[field_name]

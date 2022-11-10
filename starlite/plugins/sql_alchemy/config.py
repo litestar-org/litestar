@@ -65,15 +65,15 @@ def serializer(value: Any) -> str:
 
 
 async def default_before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
-    """
-    Handles closing and cleaning up sessions before sending.
+    """Handle closing and cleaning up sessions before sending.
+
     Args:
-        message:
-        _:
-        scope:
+        message: ASGI-`Message`
+        _: A `State` (not used)
+        scope: An ASGI-`Scope`
 
     Returns:
-
+        None
     """
     session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
     if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
@@ -85,6 +85,8 @@ async def default_before_send_handler(message: "Message", _: "State", scope: "Sc
 
 
 class SQLAlchemySessionConfig(BaseModel):
+    """Configuration for a SQLAlchemy-Session."""
+
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
@@ -228,13 +230,13 @@ class SQLAlchemyConfig(BaseModel):
     def validate_before_send_handler(  # pylint: disable=no-self-argument
         cls, value: BeforeMessageSendHookHandler
     ) -> Any:
-        """
+        """Wrap `before_send_handler` in an `AsyncCallable`
 
         Args:
             value: A before send handler callable.
 
         Returns:
-            The handler wrapped in AsyncCallable.
+            An `AsyncCallable`
         """
         return AsyncCallable(value)  # type: ignore[arg-type]
 
@@ -264,7 +266,7 @@ class SQLAlchemyConfig(BaseModel):
 
     @property
     def engine_config_dict(self) -> Dict[str, Any]:
-        """
+        """Return the engine configuration as a dict.
 
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy 'create_engine' function.
@@ -278,7 +280,7 @@ class SQLAlchemyConfig(BaseModel):
 
     @property
     def engine(self) -> Union["Engine", "FutureEngine", "AsyncEngine"]:
-        """
+        """Return an engine. If none exists yet, create one.
 
         Returns:
             Getter that returns the engine instance used by the plugin.
@@ -294,7 +296,7 @@ class SQLAlchemyConfig(BaseModel):
 
     @property
     def session_maker(self) -> sessionmaker:
-        """
+        """Get a sessionmaker. If none exists yet, create one.
 
         Returns:
             Getter that returns the session_maker instance used by the plugin.
@@ -310,7 +312,7 @@ class SQLAlchemyConfig(BaseModel):
         return cast("sessionmaker", self.session_maker_instance)
 
     def create_db_session_dependency(self, state: "State", scope: "Scope") -> Union[Session, AsyncSession]:
-        """
+        """Create a session instance.
 
         Args:
             state: The 'application.state' instance.

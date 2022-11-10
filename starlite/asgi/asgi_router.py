@@ -31,6 +31,12 @@ if TYPE_CHECKING:
 
 
 class ASGIRouter:
+    """Starlite ASGI router.
+
+    Handling both the ASGI lifespan events and routing of connection
+    requests.
+    """
+
     __slots__ = (
         "_plain_routes",
         "_registered_routes",
@@ -40,12 +46,8 @@ class ASGIRouter:
         "route_mapping",
     )
 
-    def __init__(
-        self,
-        app: "Starlite",
-    ) -> None:
-        """This class is the Starlite ASGI router. It handles both the ASGI
-        lifespan event and routing connection requests.
+    def __init__(self, app: "Starlite") -> None:
+        """Initialize `ASGIRouter`.
 
         Args:
             app: The Starlite app instance

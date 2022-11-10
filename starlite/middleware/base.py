@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
 @runtime_checkable
 class MiddlewareProtocol(Protocol):  # pragma: no cover
+    """Abstract middleware protocol."""
+
     __slots__ = ("app",)
 
     app: "ASGIApp"
@@ -39,6 +41,10 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
+    """Container enabling passing *args and **kwargs to Middleware class
+    constructors and factory functions.
+    """
+
     __slots__ = (
         "middleware",
         "args",
@@ -46,8 +52,7 @@ class DefineMiddleware:
     )
 
     def __init__(self, middleware: Callable[..., "ASGIApp"], *args: Any, **kwargs: Any) -> None:
-        """This class is a container that allows passing *args and **kwargs to
-        Middleware class constructors and factory functions.
+        """Initialize `DefineMiddleware`.
 
         Args:
             middleware: A callable that returns an ASGIApp.
@@ -76,6 +81,14 @@ class DefineMiddleware:
 
 
 class AbstractMiddleware:
+    """Abstract middleware providing base functionality common to all
+    middlewares, for dynamically engaging/bypassing the middleware based on
+    paths, `opt`-keys and scope types.
+
+    When implementing new middleware, this class should be used as a
+    base.
+    """
+
     scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     exclude: Optional[Union[str, List[str]]] = None
     exclude_opt_key: Optional[str] = None
@@ -87,7 +100,7 @@ class AbstractMiddleware:
         exclude_opt_key: Optional[str] = None,
         scopes: Optional["Scopes"] = None,
     ) -> None:
-        """
+        """Initialize the middleware.
 
         Args:
             app: The 'next' ASGI app to call.

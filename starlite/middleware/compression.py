@@ -28,13 +28,16 @@ if TYPE_CHECKING:
 
 
 class CompressionFacade:
+    """A unified facade offering a uniform interface for different compression
+    libraries.
+    """
+
     __slots__ = ("compressor", "buffer", "compression_encoding")
 
     compressor: Union["GzipFile", "Compressor"]  # pyright: ignore
 
     def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: "CompressionConfig") -> None:
-        """A unified facade class that offers a uniform interface for different
-        compression libraries.
+        """Initialize `CompressionFacade`.
 
         Args:
             buffer: A bytes IO buffer to write the compressed data into.
@@ -92,10 +95,14 @@ class CompressionFacade:
 
 
 class CompressionMiddleware(AbstractMiddleware):
-    def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
-        """Compression Middleware Wrapper.
+    """Compression Middleware Wrapper.
 
-        This is a wrapper allowing for generic compression configuration / handler middleware
+    This is a wrapper allowing for generic compression configuration /
+    handler middleware
+    """
+
+    def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
+        """Initialize `CompressionMiddleware`
 
         Args:
             app: The 'next' ASGI app to call.
@@ -107,6 +114,16 @@ class CompressionMiddleware(AbstractMiddleware):
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """The middleware's ASGI callable.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
         accept_encoding = Headers.from_scope(scope).get("accept-encoding", "")
 
         if CompressionEncoding.BROTLI in accept_encoding and self.config.backend == "brotli":

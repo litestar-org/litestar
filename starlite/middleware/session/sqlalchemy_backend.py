@@ -87,15 +87,21 @@ def register_session_model(base: Union[registry, Any], model: Type[SessionModelT
 
 
 class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], ABC):
+    """Session backend to store data in a database with SQLAlchemy. Works with
+    both sync and async engines.
+
+    Notes:
+        - Requires `sqlalchemy` which needs to be installed separately, and a configured
+        [SQLAlchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
+    """
+
     __slots__ = ("_model", "_session_maker")
 
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
-        """Session backend to store data in a database with SQLAlchemy. Works
-        with both sync and async engines.
+        """Initialize `BaseSQLAlchemyBackend`.
 
-        Notes:
-            - Requires `sqlalchemy` which needs to be installed separately, and a configured
-            [SQLAlchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
+        Args:
+            config: An instance of `SQLAlchemyBackendConfig`
         """
         super().__init__(config=config)
         self._model = config.model
@@ -116,6 +122,8 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
 
 
 class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
+    """Asynchronous SQLAlchemy backend."""
+
     async def _get_session_obj(self, *, sa_session: AsyncSASession, session_id: str) -> Optional[SessionModelMixin]:
         result = await sa_session.scalars(self._select_session_obj(session_id))
         return result.one_or_none()
@@ -198,6 +206,8 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
 
 
 class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
+    """Synchronous SQLAlchemy backend."""
+
     def _get_session_obj(self, *, sa_session: SASession, session_id: str) -> Optional[SessionModelMixin]:
         return sa_session.scalars(self._select_session_obj(session_id)).one_or_none()
 
@@ -296,6 +306,8 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
 
 
 class SQLAlchemyBackendConfig(ServerSideSessionConfig):
+    """Configuration for `SQLAlchemyBackend` and `AsyncSQLAlchemyBackend`"""
+
     model: Type[SessionModelMixin]
     plugin: SQLAlchemyPlugin
 

@@ -3,20 +3,23 @@ from typing import Any, Dict, Iterator, MutableMapping, Optional
 
 
 class State(MutableMapping[str, Any]):
+    """An object meant to store arbitrary state.
+
+    It can be accessed using dot notation while exposing dict like
+    functionalities.
+    """
 
     __slots__ = ("_state",)
 
     _state: Dict[str, Any]
 
     def __init__(self, state: Optional[Dict[str, Any]] = None) -> None:
-        """An object meant to store arbitrary state. It can be accessed using
-        dot notation while exposing dict like functionalities.
+        """Initialize `State` with an optional value.
 
         Args:
              state: An optional string keyed dict for the initial state.
 
         Examples:
-
         ```python
         from starlite import State
 
@@ -55,15 +58,14 @@ class State(MutableMapping[str, Any]):
         super().__setattr__("_state", state if state is not None else {})
 
     def __bool__(self) -> bool:
-        """
-
-        Returns:
-            Boolean indicating whether the wrapped dict instance has values.
+        """Return a boolean indicating whether the wrapped dict instance has
+        values.
         """
         return bool(self._state)
 
     def __getitem__(self, key: str) -> Any:
-        """
+        """Get the value for the corresponding key from the wrapped state
+        object using subscription notation.
 
         Args:
             key: Key to access.
@@ -77,12 +79,14 @@ class State(MutableMapping[str, Any]):
         return self._state[key]
 
     def __delitem__(self, key: str) -> None:
-        """
+        """Delete the value from the key from the wrapped state object using
+        subscription notation.
+
         Args:
-            key: Key to access.
+            key: Key to delete
 
         Raises:
-            KeyError
+            KeyError: if the given attribute is not set.
 
         Returns:
             None
@@ -90,7 +94,7 @@ class State(MutableMapping[str, Any]):
         del self._state[key]
 
     def __setitem__(self, key: str, value: Any) -> None:
-        """
+        """Set an item in the state using subscription notation.
 
         Args:
             key: Key to set.
@@ -102,23 +106,23 @@ class State(MutableMapping[str, Any]):
         self._state[key] = value
 
     def __iter__(self) -> Iterator[str]:
-        """
+        """Return an iterator iterating the wrapped state dict.
 
         Returns:
-            An iterator iterating the wrapped state dict.
+            An iterator of strings
         """
         return iter(self._state)
 
     def __len__(self) -> int:
-        """
+        """Return length of the wrapped state dict.
 
         Returns:
-            The length of the wrapped state dict.
+            An integer
         """
         return len(self._state)
 
     def __setattr__(self, key: str, value: Any) -> None:
-        """
+        """Set an item in the state using attribute notation.
 
         Args:
             key: Key to set.
@@ -130,7 +134,8 @@ class State(MutableMapping[str, Any]):
         self._state[key] = value
 
     def __getattr__(self, key: str) -> Any:
-        """
+        """Get the value for the corresponding key from the wrapped state
+        object using attribute notation.
 
         Args:
             key: Key to retrieve
@@ -139,7 +144,7 @@ class State(MutableMapping[str, Any]):
             AttributeError: if the given attribute is not set.
 
         Returns:
-            Retrieves the value for the corresponding key from the wrapped state object.
+            The retrieved value
         """
         try:
             return self._state[key]
@@ -147,7 +152,8 @@ class State(MutableMapping[str, Any]):
             raise AttributeError(f"State instance has no attribute '{key}'") from e
 
     def __delattr__(self, key: str) -> None:
-        """
+        """Delete the value from the key from the wrapped state object using
+        attribute notation.
 
         Args:
             key: Key to delete
@@ -156,7 +162,7 @@ class State(MutableMapping[str, Any]):
             AttributeError: if the given attribute is not set.
 
         Returns:
-            Deletes the value from the key from the wrapped state object.
+            None
         """
         try:
             del self._state[key]
@@ -164,24 +170,24 @@ class State(MutableMapping[str, Any]):
             raise AttributeError(f"State instance has no attribute '{key}'") from e
 
     def __copy__(self) -> "State":
-        """Returns a shallow copy of the given state object.
+        """Return a shallow copy of the given state object.
 
         Customizes how the builtin "copy" function will work.
         """
         return self.__class__(copy(self._state))
 
     def copy(self) -> "State":
-        """
+        """Return a shallow copy of 'self'.
 
         Returns:
-            A shallow copy of 'self'.
+            A `State`
         """
         return copy(self)
 
     def dict(self) -> Dict[str, Any]:
-        """
+        """A shallow copy of the wrapped dict.
 
         Returns:
-            A shallow copy of the wrapped dict.
+            A dict
         """
         return copy(self._state)

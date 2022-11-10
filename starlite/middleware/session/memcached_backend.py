@@ -6,10 +6,15 @@ from starlite.middleware.session.base import ServerSideBackend, ServerSideSessio
 
 
 class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
+    """Session backend to store data in memcached."""
+
     __slots__ = ("memcached",)
 
     def __init__(self, config: "MemcachedBackendConfig") -> None:
-        """Session backend to store data in memcached.
+        """Initialize `MemcachedBackend`
+
+        Args:
+            config: A `MemcachedBackendConfig` instance
 
         Notes:
             - Requires `aiomcache`. Install with `pip install starlite[memcached]`
@@ -84,6 +89,8 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
 
 
 class MemcachedBackendConfig(ServerSideSessionConfig):
+    """Configuration for `MemcachedBackend`"""
+
     _backend_class: Type[MemcachedBackend] = MemcachedBackend
     memcached: MemcacheClient
     """An `aiomcache.Client` instance"""

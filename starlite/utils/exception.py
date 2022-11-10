@@ -45,6 +45,8 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
 
 
 class ExceptionResponseContent(BaseModel):
+    """Represent the contents of an exception-response."""
+
     status_code: int
     """Exception status code."""
     detail: str

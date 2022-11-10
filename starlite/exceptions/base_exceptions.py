@@ -2,10 +2,12 @@ from typing import Any
 
 
 class StarLiteException(Exception):
+    """Base exception class from which all Starlite exceptions inherit."""
+
     detail: str
 
     def __init__(self, *args: Any, detail: str = "") -> None:
-        """Base exception class from which all Starlite exceptions inherit.
+        """Initialize `StarLiteException`.
 
         Args:
             *args (Any): args are cast to `str` before passing to `Exception.__init__()`

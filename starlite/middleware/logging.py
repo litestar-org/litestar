@@ -28,12 +28,14 @@ except ImportError:
 
 
 class LoggingMiddleware(AbstractMiddleware):
+    """Logging middleware."""
+
     __slots__ = ("config", "logger", "request_extractor", "response_extractor", "is_struct_logger")
 
     logger: "Logger"
 
     def __init__(self, app: "ASGIApp", config: "LoggingMiddlewareConfig") -> None:
-        """LoggingMiddleware.
+        """Initialize `LoggingMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -70,7 +72,8 @@ class LoggingMiddleware(AbstractMiddleware):
         )
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
@@ -89,14 +92,13 @@ class LoggingMiddleware(AbstractMiddleware):
         await self.app(scope, receive, send)
 
     async def log_request(self, scope: "Scope") -> None:
-        """
-        Handles extracting the request data and logging the message.
+        """Extract request data and log the message.
+
         Args:
             scope: The ASGI connection scope.
 
         Returns:
             None
-
         """
         extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope))
         self.log_message(values=extracted_data)
@@ -114,14 +116,13 @@ class LoggingMiddleware(AbstractMiddleware):
         self.log_message(values=extracted_data)
 
     def log_message(self, values: Dict[str, Any]) -> None:
-        """
+        """Log a message.
 
         Args:
             values: Extract values to log.
 
         Returns:
             None
-
         """
         message = values.pop("message")
         if self.is_struct_logger:
@@ -131,12 +132,13 @@ class LoggingMiddleware(AbstractMiddleware):
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
     async def extract_request_data(self, request: "Request") -> Dict[str, Any]:
-        """Creates a dictionary of values for the message.
+        """Create a dictionary of values for the message.
 
         Args:
             request: A [Request][starlite.connection.Request] instance.
+
         Returns:
-            An OrderedDict.
+            An dict.
         """
 
         data: Dict[str, Any] = {"message": self.config.request_log_message}
@@ -154,13 +156,13 @@ class LoggingMiddleware(AbstractMiddleware):
         return data
 
     def extract_response_data(self, scope: "Scope") -> Dict[str, Any]:
-        """
-        Extracts data from the response.
+        """Extract data from the response.
+
         Args:
             scope: The ASGI connection scope.
 
         Returns:
-            An OrderedDict.
+            An dict.
         """
         data: Dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope) or default_serializer
@@ -203,6 +205,8 @@ class LoggingMiddleware(AbstractMiddleware):
 
 
 class LoggingMiddlewareConfig(BaseModel):
+    """Configuration for `LoggingMiddleware`"""
+
     exclude: Optional[Union[str, List[str]]] = None
     """
     List of paths to exclude from logging.
@@ -283,7 +287,6 @@ class LoggingMiddlewareConfig(BaseModel):
         of the application layers.
 
         Examples:
-
             ```python
             from starlite import Starlite, Request, LoggingConfig, get
             from starlite.middleware.logging import LoggingMiddlewareConfig

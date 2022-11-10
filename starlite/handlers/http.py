@@ -214,7 +214,7 @@ def _create_data_handler(
 
 
 def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]]) -> Set["Method"]:
-    """
+    """Normalize HTTP method(s) into a set of upper-case method names.
 
     Args:
         http_methods: A value for http method.
@@ -234,13 +234,13 @@ def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[Ht
 
 
 def _get_default_status_code(http_methods: Set["Method"]) -> int:
-    """
+    """Return the default status code for a given set of HTTP methods.
 
     Args:
-        http_methods: A set of Method strings.
+        http_methods: A set of method strings
 
     Returns:
-        A status code integer.
+        A status code
     """
     if HttpMethod.POST in http_methods:
         return HTTP_201_CREATED
@@ -250,6 +250,12 @@ def _get_default_status_code(http_methods: Set["Method"]) -> int:
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
+    """HTTP Route Decorator.
+
+    Use this decorator to decorate an HTTP handler with multiple
+    methods.
+    """
+
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
@@ -325,8 +331,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
-        with multiple methods.
+        """Initialize `HTTPRouteHandler`.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -587,7 +592,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """
+        """Return a [Response][starlite.Response] from the handler by resolving
+        and calling it.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] app instance
@@ -598,22 +604,22 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         Returns:
             A Response instance
-
         """
         response_handler = self.resolve_response_handler()
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
     @property
     def signature(self) -> Signature:
-        """
+        """Return the signature of `self.fn`.
+
         Returns:
-            The Signature of 'self.fn'.
+            A `Signature`
         """
         return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
-        """Validates the route handler function once it is set by inspecting
-        its return annotations.
+        """Validate the route handler function once it is set by inspecting its
+        return annotations.
         """
         super()._validate_handler_function()
 
@@ -660,6 +666,11 @@ route = HTTPRouteHandler
 
 
 class get(HTTPRouteHandler):
+    """GET Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for GET requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -700,8 +711,7 @@ class get(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """GET Route Decorator. Use this decorator to decorate an HTTP handler
-        for GET requests.
+        """Initialize `get`.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -724,6 +734,7 @@ class get(HTTPRouteHandler):
             cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
             media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
@@ -797,6 +808,11 @@ class get(HTTPRouteHandler):
 
 
 class head(HTTPRouteHandler):
+    """HEAD Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for HEAD requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -837,8 +853,7 @@ class head(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """HEAD Route Decorator. Use this decorator to decorate an HTTP handler
-        for HEAD requests.
+        """Initialize `head`.
 
         Notes:
             - A response to a head request cannot include a body.
@@ -871,7 +886,8 @@ class head(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -888,7 +904,9 @@ class head(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -954,6 +972,11 @@ class head(HTTPRouteHandler):
 
 
 class post(HTTPRouteHandler):
+    """POST Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for POST requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -994,8 +1017,7 @@ class post(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """POST Route Decorator. Use this decorator to decorate an HTTP handler
-        for POST requests.
+        """Initialize `post`
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -1025,7 +1047,8 @@ class post(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1042,7 +1065,9 @@ class post(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
+                documentation. This list should describe all exceptions raised within the route handler's function/method.
+                The Starlite ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -1091,6 +1116,11 @@ class post(HTTPRouteHandler):
 
 
 class put(HTTPRouteHandler):
+    """PUT Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for PUT requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -1131,8 +1161,7 @@ class put(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """PUT Route Decorator. Use this decorator to decorate an HTTP handler
-        for PUT requests.
+        """Initialize `put`
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -1162,7 +1191,8 @@ class put(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1230,6 +1260,11 @@ class put(HTTPRouteHandler):
 
 
 class patch(HTTPRouteHandler):
+    """PATCH Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for PATCH requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -1270,8 +1305,7 @@ class patch(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """PATCH Route Decorator. Use this decorator to decorate an HTTP
-        handler for PATCH requests.
+        """Initialize `patch`.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -1301,7 +1335,8 @@ class patch(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1318,7 +1353,9 @@ class patch(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -1367,6 +1404,11 @@ class patch(HTTPRouteHandler):
 
 
 class delete(HTTPRouteHandler):
+    """DELETE Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for DELETE requests.
+    """
+
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
@@ -1407,8 +1449,7 @@ class delete(HTTPRouteHandler):
         tags: Optional[List[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """DELETE Route Decorator. Use this decorator to decorate an HTTP
-        handler for DELETE requests.
+        """Initialize `delete`
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
@@ -1438,7 +1479,8 @@ class delete(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -1455,7 +1497,9 @@ class delete(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.

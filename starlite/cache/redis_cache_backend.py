@@ -32,8 +32,10 @@ class RedisCacheBackendConfig(BaseModel):
 
 
 class RedisCacheBackend(CacheBackendProtocol):
+    """Redis-based cache backend."""
+
     def __init__(self, config: RedisCacheBackendConfig):
-        """This class offers a cache backend based on Redis.
+        """Initialize `RedisCacheBackend`
 
         Args:
             config: required configuration to connect to Redis.
@@ -50,7 +52,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         return self._redis_int
 
     async def get(self, key: str) -> Any:  # pylint: disable=invalid-overridden-method
-        """Retrieves a value from cache corresponding to the given key.
+        """Retrieve a value from cache corresponding to the given key.
 
         Args:
             key: name of cached value.
@@ -62,7 +64,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         return await self._redis.get(key)
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
-        """Set sa value in cache for a given key for a duration determined by
+        """Set a value in cache for a given key for a duration determined by
         expiration.
 
         Args:
@@ -81,7 +83,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         await self._redis.set(key, value, ex=expiration)
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
-        """Deletes a value from the cache and removes the given key.
+        """Delete a value from the cache and removes the given key.
 
         Args:
             key: key to be deleted from the cache.
