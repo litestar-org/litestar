@@ -8,6 +8,7 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
+    from typing_extensions import Literal
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
@@ -61,12 +62,15 @@ class StaticFiles:
         filename = split_path[-1]
         joined_path = join(*split_path)  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
+        content_disposition_type: "Literal['inline', 'attachment']" = "attachment"
 
-        if fs_info and fs_info["type"] == "directory" and self.is_html_mode:
-            filename = "index.html"
-            resolved_path, fs_info = await self.get_fs_info(
-                directories=self.directories, file_path=join(resolved_path or joined_path, filename)
-            )
+        if self.is_html_mode:
+            content_disposition_type = "inline"
+            if fs_info and fs_info["type"] == "directory":
+                filename = "index.html"
+                resolved_path, fs_info = await self.get_fs_info(
+                    directories=self.directories, file_path=join(resolved_path or joined_path, filename)
+                )
 
         if fs_info and fs_info["type"] == "file":
             await FileResponse(
@@ -75,6 +79,7 @@ class StaticFiles:
                 file_system=self.adapter.file_system,
                 filename=filename,
                 is_head_response=scope["method"] == "HEAD",
+                content_disposition_type=content_disposition_type,
             )(scope, receive, send)
             return
 
@@ -89,6 +94,7 @@ class StaticFiles:
                     filename=filename,
                     is_head_response=scope["method"] == "HEAD",
                     status_code=HTTP_404_NOT_FOUND,
+                    content_disposition_type=content_disposition_type,
                 )(scope, receive, send)
                 return
 
