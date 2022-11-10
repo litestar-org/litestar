@@ -8,11 +8,11 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
+    from typing_extensions import Literal
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
     from starlite.types.file_types import FileInfo, FileSystemProtocol
-    from typing_extensions import Literal
 
 
 class StaticFiles:
@@ -62,7 +62,7 @@ class StaticFiles:
         filename = split_path[-1]
         joined_path = join(*split_path)  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
-        content_disposition_type: Literal["inline", "attachment"] = "attachment"
+        content_disposition_type: "Literal['inline', 'attachment']" = "attachment"
 
         if self.is_html_mode:
             content_disposition_type = "inline"
