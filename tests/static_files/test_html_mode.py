@@ -26,6 +26,7 @@ def test_staticfiles_is_html_mode(tmpdir: "Path", file_system: "FileSystemProtoc
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
         assert response.headers["content-type"] == "text/html; charset=utf-8"
+        assert response.headers["content-disposition"].startswith("inline")
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
