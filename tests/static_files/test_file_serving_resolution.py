@@ -142,8 +142,10 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
     path = tmpdir / fn
     path.write_text("content", "utf-8")
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
+    expected_mime_type = mimetypes.guess_type(fn)[0]
 
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get(f"/static/{fn}")
+        assert expected_mime_type
         assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(mimetypes.guess_type(fn)[0])
+        assert response.headers["content-type"].startswith(expected_mime_type)
