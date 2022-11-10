@@ -53,7 +53,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
@@ -93,7 +94,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             raise PermissionDeniedException("CSRF token verification failed")
 
     def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
-        """Wraps 'send' to handle CSRF validation.
+        """Wrap 'send' to handle CSRF validation.
 
         Args:
             token: The CSRF token.
@@ -147,7 +148,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
-        """Takes the CSRF tokens from the request and the cookie and verifies
+        """Take the CSRF tokens from the request and the cookie and verify
         both are valid and identical.
         """
         if not (request_csrf_token and cookie_csrf_token):

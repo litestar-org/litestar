@@ -12,9 +12,12 @@ if TYPE_CHECKING:
 
 
 class AllowedHostsMiddleware(AbstractMiddleware):
+    """Middleware ensuring the host of a request originated in a
+    trusted host.
+    """
+
     def __init__(self, app: "ASGIApp", config: "AllowedHostsConfig"):
-        """Middleware that ensures the host of a request originated in a
-        trusted host.
+        """Initialize `AllowedHostsMiddleware`.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -43,6 +46,16 @@ class AllowedHostsMiddleware(AbstractMiddleware):
                 self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        """The middleware's ASGI callable.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
         if self.allowed_hosts_regex is None:
             await self.app(scope, receive, send)
             return

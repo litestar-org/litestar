@@ -32,6 +32,11 @@ class AuthenticationResult(BaseModel):
 
 
 class AbstractAuthenticationMiddleware(ABC):
+    """Abstract AuthenticationMiddleware that allows users to
+    create their own AuthenticationMiddleware by extending it and
+    overriding the 'authenticate_request' method.
+    """
+
     scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """
     Scopes supported by the middleware.
@@ -43,9 +48,7 @@ class AbstractAuthenticationMiddleware(ABC):
         exclude: Optional[Union[str, List[str]]] = None,
         exclude_from_auth_key: str = "exclude_from_auth",
     ) -> None:
-        """This is an abstract AuthenticationMiddleware that allows users to
-        create their own AuthenticationMiddleware by extending it and
-        overriding the 'authenticate_request' method.
+        """Initialize `AbstractAuthenticationMiddleware`.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
@@ -57,7 +60,8 @@ class AbstractAuthenticationMiddleware(ABC):
         self.exclude = build_exclude_path_pattern(exclude=exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """
+        """The middleware's ASGI callable.
+
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
