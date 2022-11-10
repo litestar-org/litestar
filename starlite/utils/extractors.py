@@ -351,7 +351,7 @@ class ResponseDataExtractor:
 
     @staticmethod
     def extract_response_body(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> bytes:
-        """Extract the response ody from a `Message`
+        """Extract the response body from a `Message`
 
         Args:
             messages: A tuple containing

@@ -65,8 +65,9 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     """MultiDict, using [MultiDict][multidict.MultiDictProxy]."""
 
     def __init__(self, args: Optional[Union["MultiMapping", Mapping[str, T], Iterable[Tuple[str, T]]]] = None) -> None:
-        """Initialize `MultiDict` from a [MultiMapping][multidict.MultiMapping],
-        `Mapping` or an iterable of tuples.
+        """Initialize `MultiDict` from a
+        [MultiMapping][multidict.MultiMapping], `Mapping` or an iterable of
+        tuples.
 
         Args:
             args: Mapping-like structure to create the `MultiDict` from
@@ -85,13 +86,16 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
 
 
 class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
-    """Immutable MultiDict, using [MultiDictProxy][multidict.MultiDictProxy]."""
+    """Immutable MultiDict, using
+    [MultiDictProxy][multidict.MultiDictProxy].
+    """
 
     def __init__(
         self, args: Optional[Union["MultiMapping", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None
     ) -> None:
-        """Initialize `ImmutableMultiDict` from a [MultiMapping][multidict.MultiMapping],
-        `Mapping` or an iterable of tuples.
+        """Initialize `ImmutableMultiDict` from a
+        [MultiMapping][multidict.MultiMapping], `Mapping` or an iterable of
+        tuples.
 
         Args:
             args: Mapping-like structure to create the `ImmutableMultiDict` from
@@ -110,7 +114,7 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
 
 
 class FormMultiDict(ImmutableMultiDict[Any]):
-    """MultiDict for form data"""
+    """MultiDict for form data."""
 
     async def close(self) -> None:
         """Closes all files in the multi-dict.
@@ -124,7 +128,7 @@ class FormMultiDict(ImmutableMultiDict[Any]):
 
 
 class QueryMultiDict(MultiDict):
-    """MultiDict for URL query parameters"""
+    """MultiDict for URL query parameters."""
 
     @classmethod
     def from_query_string(cls, query_string: str) -> "QueryMultiDict":

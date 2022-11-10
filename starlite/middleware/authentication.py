@@ -32,9 +32,9 @@ class AuthenticationResult(BaseModel):
 
 
 class AbstractAuthenticationMiddleware(ABC):
-    """Abstract AuthenticationMiddleware that allows users to
-    create their own AuthenticationMiddleware by extending it and
-    overriding the 'authenticate_request' method.
+    """Abstract AuthenticationMiddleware that allows users to create their own
+    AuthenticationMiddleware by extending it and overriding the
+    'authenticate_request' method.
     """
 
     scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}

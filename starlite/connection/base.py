@@ -223,7 +223,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def session(self) -> Dict[str, Any]:
-        """Return the session for this connection if a session was previously set in the `Scope`
+        """Return the session for this connection if a session was previously
+        set in the `Scope`
 
         Returns:
             A dictionary representing the session value - if existing.
@@ -239,7 +240,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def logger(self) -> "Logger":
-        """Return the `Logger` instance for this connection
+        """Return the `Logger` instance for this connection.
 
         Returns:
             A 'Logger' instance.
@@ -251,7 +252,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def cache(self) -> "Cache":
-        """Return the `Cache` for this connection
+        """Return the `Cache` for this connection.
 
         Returns:
             A 'Cache' instance.

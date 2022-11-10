@@ -32,7 +32,7 @@ class RedisCacheBackendConfig(BaseModel):
 
 
 class RedisCacheBackend(CacheBackendProtocol):
-    """Redis-based cache backend"""
+    """Redis-based cache backend."""
 
     def __init__(self, config: RedisCacheBackendConfig):
         """Initialize `RedisCacheBackend`

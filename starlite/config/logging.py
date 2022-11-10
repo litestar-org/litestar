@@ -24,9 +24,10 @@ from starlite.exceptions import (
 )
 
 if TYPE_CHECKING:
+    from typing import NoReturn
+
     from starlite.types import Logger
     from starlite.types.callable_types import GetLogger
-    from typing_extensions import NoReturn
 
 try:
     from structlog.types import BindableLogger, Processor, WrappedLogger
@@ -64,7 +65,7 @@ default_picologging_handlers: Dict[str, Dict[str, Any]] = {
 
 
 def get_default_handlers() -> Dict[str, Dict[str, Any]]:
-    """Return the default logging handlers for the config
+    """Return the default logging handlers for the config.
 
     Returns:
         A dictionary of logging handlers
@@ -75,7 +76,7 @@ def get_default_handlers() -> Dict[str, Dict[str, Any]]:
 
 
 def get_logger_placeholder(_: str) -> "NoReturn":  # pragma: no cover
-    """Raise an `ImproperlyConfiguredException"""
+    """Raise an `ImproperlyConfiguredException."""
     raise ImproperlyConfiguredException(
         "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
     )
@@ -140,7 +141,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     def validate_handlers(  # pylint: disable=no-self-argument
         cls, value: Dict[str, Dict[str, Any]]
     ) -> Dict[str, Dict[str, Any]]:
-        """Ensure that 'queue_listener' is always set
+        """Ensure that 'queue_listener' is always set.
 
         Args:
             value: A dict of route handlers.

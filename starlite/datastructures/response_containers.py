@@ -47,7 +47,7 @@ R = TypeVar("R")
 
 
 class ResponseContainer(ABC, GenericModel, Generic[R]):
-    """Generic response container"""
+    """Generic response container."""
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True

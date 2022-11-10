@@ -234,7 +234,7 @@ def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[Ht
 
 
 def _get_default_status_code(http_methods: Set["Method"]) -> int:
-    """Return the default status code for a given set of HTTP methods
+    """Return the default status code for a given set of HTTP methods.
 
     Args:
         http_methods: A set of method strings
@@ -250,8 +250,10 @@ def _get_default_status_code(http_methods: Set["Method"]) -> int:
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
-    """HTTP Route Decorator. Use this decorator to decorate an HTTP handler
-    with multiple methods.
+    """HTTP Route Decorator.
+
+    Use this decorator to decorate an HTTP handler with multiple
+    methods.
     """
 
     __slots__ = (
@@ -590,8 +592,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a [Response][starlite.Response] from the handler by resolving and
-        calling it.
+        """Return a [Response][starlite.Response] from the handler by resolving
+        and calling it.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] app instance
@@ -616,8 +618,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it is set by inspecting
-        its return annotations.
+        """Validate the route handler function once it is set by inspecting its
+        return annotations.
         """
         super()._validate_handler_function()
 
@@ -664,8 +666,9 @@ route = HTTPRouteHandler
 
 
 class get(HTTPRouteHandler):
-    """GET Route Decorator. Use this decorator to decorate an HTTP handler
-    for GET requests.
+    """GET Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for GET requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -805,8 +808,9 @@ class get(HTTPRouteHandler):
 
 
 class head(HTTPRouteHandler):
-    """HEAD Route Decorator. Use this decorator to decorate an HTTP handler
-    for HEAD requests.
+    """HEAD Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for HEAD requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -968,8 +972,9 @@ class head(HTTPRouteHandler):
 
 
 class post(HTTPRouteHandler):
-    """POST Route Decorator. Use this decorator to decorate an HTTP handler
-    for POST requests.
+    """POST Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for POST requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -1111,8 +1116,9 @@ class post(HTTPRouteHandler):
 
 
 class put(HTTPRouteHandler):
-    """PUT Route Decorator. Use this decorator to decorate an HTTP handler
-    for PUT requests.
+    """PUT Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for PUT requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -1254,8 +1260,9 @@ class put(HTTPRouteHandler):
 
 
 class patch(HTTPRouteHandler):
-    """PATCH Route Decorator. Use this decorator to decorate an HTTP
-    handler for PATCH requests.
+    """PATCH Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for PATCH requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -1397,8 +1404,9 @@ class patch(HTTPRouteHandler):
 
 
 class delete(HTTPRouteHandler):
-    """DELETE Route Decorator. Use this decorator to decorate an HTTP
-    handler for DELETE requests.
+    """DELETE Route Decorator.
+
+    Use this decorator to decorate an HTTP handler for DELETE requests.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})

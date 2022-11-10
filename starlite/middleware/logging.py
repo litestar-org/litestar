@@ -99,7 +99,6 @@ class LoggingMiddleware(AbstractMiddleware):
 
         Returns:
             None
-
         """
         extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope))
         self.log_message(values=extracted_data)
@@ -124,7 +123,6 @@ class LoggingMiddleware(AbstractMiddleware):
 
         Returns:
             None
-
         """
         message = values.pop("message")
         if self.is_struct_logger:

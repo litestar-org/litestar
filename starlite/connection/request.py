@@ -70,7 +70,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     @property
     def method(self) -> "Method":
-        """Return the request method
+        """Return the request method.
 
         Returns:
             The request [Method][starlite.types.Method]
@@ -131,7 +131,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         yield b""
 
     async def body(self) -> bytes:
-        """Return the body of the request
+        """Return the body of the request.
 
         Returns:
             A byte-string representing the body of the request.
@@ -144,10 +144,10 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
-        """Retrieve form data from the request. If the request is
-        either a 'multipart/form-data' or an 'application/x-www-form-
-        urlencoded', return a FormMultiDict instance populated
-        with the values sent in the request, otherwise, an empty instance
+        """Retrieve form data from the request. If the request is either a
+        'multipart/form-data' or an 'application/x-www-form- urlencoded',
+        return a FormMultiDict instance populated with the values sent in the
+        request, otherwise, an empty instance.
 
         Returns:
             A FormMultiDict instance

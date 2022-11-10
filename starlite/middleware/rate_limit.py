@@ -38,7 +38,7 @@ DURATION_VALUES: Dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3
 
 @dataclass
 class CacheObject:
-    """Representation of a cached object's metadata"""
+    """Representation of a cached object's metadata."""
 
     __slots__ = ("history", "reset")
 
@@ -121,7 +121,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
 
         async def send_wrapper(message: "Message") -> None:
-            """Wrapped ASGI `Send` callable
+            """Wrapped ASGI `Send` callable.
 
             Args:
                 message: An ASGI 'Message'
@@ -188,7 +188,8 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
-        """Return a boolean indicating if a request should be checked for rate limiting
+        """Return a boolean indicating if a request should be checked for rate
+        limiting.
 
         Args:
             request: A [Request][starlite.connection.Request] instance.

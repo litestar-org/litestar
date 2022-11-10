@@ -45,7 +45,10 @@ class ParameterConfig(BaseConfig):  # noqa: D101
 
 
 class BaseRouteHandler(Generic[T]):
-    """Base route handler. Serves as a subclass for all route handlers"""
+    """Base route handler.
+
+    Serves as a subclass for all route handlers
+    """
 
     __slots__ = (
         "_resolved_dependencies",
@@ -247,7 +250,7 @@ class BaseRouteHandler(Generic[T]):
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
 
     def __str__(self) -> str:
-        """Return a unique identifier for the route handler
+        """Return a unique identifier for the route handler.
 
         Returns:
             A string

@@ -82,8 +82,8 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to
-    mutate headers within a [Scope][starlite.types.Scope]
+    """A case-insensitive, multidict-like structure that can be used to mutate
+    headers within a [Scope][starlite.types.Scope]
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
@@ -206,7 +206,9 @@ class MutableScopeHeaders(MutableMapping):
             del self.headers[i]
 
     def __len__(self) -> int:
-        """Return the length of the internally stored headers, including duplicates"""
+        """Return the length of the internally stored headers, including
+        duplicates.
+        """
         return len(self.headers)
 
     def __iter__(self) -> Iterator[str]:
@@ -225,7 +227,9 @@ class Header(BaseModel, ABC):
 
         @classmethod
         def alias_generator(cls, field_name: str) -> str:  # pylint: disable=missing-function-docstring
-            """Generate field-aliases by replacing dashes with underscores in header-names"""
+            """Generate field-aliases by replacing dashes with underscores in
+            header-names.
+            """
             return field_name.replace("_", "-")
 
     documentation_only: bool = False

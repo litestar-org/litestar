@@ -34,7 +34,7 @@ class MemcachedCacheBackendConfig(BaseModel):
 
 
 class MemcachedCacheBackend(CacheBackendProtocol):
-    """Memcached-based cache backend"""
+    """Memcached-based cache backend."""
 
     _client: Client
 

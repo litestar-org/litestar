@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class UploadFile(MultipartUploadFile):
-    """Representation of a file upload, modifying the pydantic schema"""
+    """Representation of a file upload, modifying the pydantic schema."""
 
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:

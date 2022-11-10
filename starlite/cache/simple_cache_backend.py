@@ -18,7 +18,7 @@ class CacheObject:
 
 
 class SimpleCacheBackend(CacheBackendProtocol):
-    """In-memory cache backend"""
+    """In-memory cache backend."""
 
     def __init__(self) -> None:
         """Initialize `SimpleCacheBackend`"""

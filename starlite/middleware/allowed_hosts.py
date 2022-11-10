@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 
 class AllowedHostsMiddleware(AbstractMiddleware):
-    """Middleware ensuring the host of a request originated in a
-    trusted host.
+    """Middleware ensuring the host of a request originated in a trusted
+    host.
     """
 
     def __init__(self, app: "ASGIApp", config: "AllowedHostsConfig"):

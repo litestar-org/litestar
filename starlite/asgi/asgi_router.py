@@ -33,7 +33,8 @@ if TYPE_CHECKING:
 class ASGIRouter:
     """Starlite ASGI router.
 
-    Handling both the ASGI lifespan events and routing of connection requests.
+    Handling both the ASGI lifespan events and routing of connection
+    requests.
     """
 
     __slots__ = (

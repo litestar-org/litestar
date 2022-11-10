@@ -9,8 +9,9 @@ P = ParamSpec("P")
 
 
 class BackgroundTask:
-    """A container for a 'background' task function. Background tasks are
-    called once a Response finishes.
+    """A container for a 'background' task function.
+
+    Background tasks are called once a Response finishes.
     """
 
     __slots__ = ("fn", "args", "kwargs")

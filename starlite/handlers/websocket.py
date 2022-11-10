@@ -13,8 +13,9 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
-    """Websocket route handler decorator. Use this decorator to decorate
-    websocket handler functions.
+    """Websocket route handler decorator.
+
+    Use this decorator to decorate websocket handler functions.
     """
 
     @validate_arguments(config={"arbitrary_types_allowed": True})

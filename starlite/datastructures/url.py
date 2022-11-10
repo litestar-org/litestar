@@ -74,7 +74,8 @@ class URL:
     """Hostname if specified"""
 
     def __init__(self, url: Union[str, SplitResult]) -> None:
-        """Initialize `URL` from a string or a [SplitResult][urllib.parse.SplitResult].
+        """Initialize `URL` from a string or a
+        [SplitResult][urllib.parse.SplitResult].
 
         Args:
             url: URL, either as a string or a [SplitResult][urllib.parse.SplitResult] as

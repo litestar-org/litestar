@@ -13,7 +13,10 @@ if TYPE_CHECKING:
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
-    """ASGI Route Handler decorator. Use this decorator to decorate ASGI applications."""
+    """ASGI Route Handler decorator.
+
+    Use this decorator to decorate ASGI applications.
+    """
 
     __slots__ = ("is_mount", "is_static")
 

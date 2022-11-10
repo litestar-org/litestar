@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @runtime_checkable
 class CacheBackendProtocol(Protocol):  # pragma: no cover
-    """Protocol for cache backends"""
+    """Protocol for cache backends."""
 
     @overload  # type: ignore[misc]
     def get(self, key: str) -> Any:  # pyright: ignore  # noqa: D102
@@ -68,11 +68,11 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
 
 class Cache:
-    """Wrapper for a provided CacheBackend that ensures it is called in
-    an async and thread-safe fashion.
+    """Wrapper for a provided CacheBackend that ensures it is called in an
+    async and thread-safe fashion.
 
-    This enables the use of normal sync libraries (such as the standard Redis python client)
-    for caching responses.
+    This enables the use of normal sync libraries (such as the standard
+    Redis python client) for caching responses.
     """
 
     __slots__ = ("backend", "lock", "default_expiration", "key_builder")

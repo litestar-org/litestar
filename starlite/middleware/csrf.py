@@ -148,8 +148,8 @@ class CSRFMiddleware(MiddlewareProtocol):
         return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
-        """Take the CSRF tokens from the request and the cookie and verify
-        both are valid and identical.
+        """Take the CSRF tokens from the request and the cookie and verify both
+        are valid and identical.
         """
         if not (request_csrf_token and cookie_csrf_token):
             return False
