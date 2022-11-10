@@ -78,19 +78,54 @@ async def test_reset() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_exclude() -> None:
+def test_exclude_patterns() -> None:
     @get("/excluded")
     def handler() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=("second", 1), exclude=["excluded"])
+    @get("/not-excluded")
+    def handler2() -> None:
+        return None
 
-    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+    config = RateLimitConfig(rate_limit=("second", 1), exclude=["/excluded"])
+
+    with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
         response = client.get("/excluded")
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/excluded")
         assert response.status_code == HTTP_200_OK
+
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
+def test_exclude_opt_key() -> None:
+    @get("/excluded", skip_rate_limiting=True)
+    def handler() -> None:
+        return None
+
+    @get("/not-excluded")
+    def handler2() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=("second", 1), exclude_opt_key="skip_rate_limiting")
+
+    with create_test_client(route_handlers=[handler, handler2], middleware=[config.middleware]) as client:
+        response = client.get("/excluded")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/excluded")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
 
 
 def test_check_throttle_handler() -> None:
