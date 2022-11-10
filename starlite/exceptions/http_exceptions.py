@@ -15,6 +15,11 @@ from starlite.status_codes import (
 
 
 class HTTPException(StarLiteException):
+    """Base exception for HTTP error responses.
+
+    These exceptions carry information to construct an HTTP response.
+    """
+
     status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
     """Exception status code."""
     detail: str
@@ -32,9 +37,9 @@ class HTTPException(StarLiteException):
         headers: Optional[Dict[str, str]] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ) -> None:
-        """Base exception for HTTP error responses.
+        """Initialize `HTTPException`.
 
-        These exceptions carry information to construct an HTTP response.
+        Set `detail` and `args` if not provided.
 
         Args:
             *args: if `detail` kwarg not provided, first arg should be error detail.
@@ -122,8 +127,10 @@ class NoRouteMatchFoundException(InternalServerException):
 
 
 class TemplateNotFoundException(InternalServerException):
+    """Referenced template could not be found."""
+
     def __init__(self, *args: Any, template_name: str) -> None:
-        """Referenced template could not be found.
+        """Initialize `TemplateNotFoundException`.
 
         Args:
             *args (Any): Passed through to `super().__init__()` - should not include `detail`.

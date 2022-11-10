@@ -31,7 +31,7 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
     """
 
     def dict(self) -> Dict[str, List[Any]]:
-        """
+        """Return the multi-dict as a dict of lists.
 
         Returns:
             A dict of lists
@@ -62,7 +62,15 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
 
 
 class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
+    """MultiDict, using [MultiDict][multidict.MultiDictProxy]."""
+
     def __init__(self, args: Optional[Union["MultiMapping", Mapping[str, T], Iterable[Tuple[str, T]]]] = None) -> None:
+        """Initialize `MultiDict` from a [MultiMapping][multidict.MultiMapping],
+        `Mapping` or an iterable of tuples.
+
+        Args:
+            args: Mapping-like structure to create the `MultiDict` from
+        """
         super().__init__(args or {})
 
     def immutable(self) -> "ImmutableMultiDict[T]":
@@ -77,9 +85,17 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
 
 
 class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
+    """Immutable MultiDict, using [MultiDictProxy][multidict.MultiDictProxy]."""
+
     def __init__(
         self, args: Optional[Union["MultiMapping", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None
     ) -> None:
+        """Initialize `ImmutableMultiDict` from a [MultiMapping][multidict.MultiMapping],
+        `Mapping` or an iterable of tuples.
+
+        Args:
+            args: Mapping-like structure to create the `ImmutableMultiDict` from
+        """
         super().__init__(BaseMultiDict(args or {}))
 
     def mutable_copy(self) -> MultiDict[T]:
@@ -94,6 +110,8 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
 
 
 class FormMultiDict(ImmutableMultiDict[Any]):
+    """MultiDict for form data"""
+
     async def close(self) -> None:
         """Closes all files in the multi-dict.
 
@@ -106,9 +124,11 @@ class FormMultiDict(ImmutableMultiDict[Any]):
 
 
 class QueryMultiDict(MultiDict):
+    """MultiDict for URL query parameters"""
+
     @classmethod
     def from_query_string(cls, query_string: str) -> "QueryMultiDict":
-        """Creates a QueryMultiDict from a query string.
+        """Create a `QueryMultiDict` from a query string.
 
         Args:
             query_string: A query string.

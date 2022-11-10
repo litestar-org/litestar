@@ -40,11 +40,13 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="BaseRouteHandler")
 
 
-class ParameterConfig(BaseConfig):
+class ParameterConfig(BaseConfig):  # noqa: D101
     extra = Extra.allow
 
 
 class BaseRouteHandler(Generic[T]):
+    """Base route handler. Serves as a subclass for all route handlers"""
+
     __slots__ = (
         "_resolved_dependencies",
         "_resolved_guards",
@@ -74,6 +76,19 @@ class BaseRouteHandler(Generic[T]):
         opt: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
+        """Initialize `HTTPRouteHandler`.
+
+        Args:
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
+            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of [Guard][starlite.types.Guard] callables.
+            middleware: A list of [Middleware][starlite.types.Middleware].
+            name: A string identifying the route handler.
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
+        """
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
         self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
@@ -232,9 +247,10 @@ class BaseRouteHandler(Generic[T]):
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
 
     def __str__(self) -> str:
-        """
+        """Return a unique identifier for the route handler
+
         Returns:
-            A unique identifier for the route handler
+            A string
         """
         target = cast("Any", self.fn)
         if not hasattr(target, "__qualname__"):
