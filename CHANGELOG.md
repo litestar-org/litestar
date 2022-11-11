@@ -1,5 +1,11 @@
 # Changelog
 
+[1.39.0]
+
+- remove `starlette` as a dependency.
+- add `CORSMiddleware`.
+- add handling of `OPTIONS` requests.
+
 [1.38.0]
 
 - add 'AllowedHostsMiddleware`.

@@ -32,11 +32,10 @@
 
 # Starlite
 
-Starlite is a powerful, flexible and highly performant ASGI API framework built on top
-of [Starlette](https://github.com/encode/starlette)
-and [pydantic](https://github.com/samuelcolvin/pydantic).
+Starlite is a powerful, flexible and highly performant ASGI API framework written in modern python and offering first
+class typing support.
 
-Check out the [Starlite documentation 📚](https://starlite-api.github.io/starlite/)
+Check out the [documentation 📚](https://starlite-api.github.io/starlite/).
 
 ## Installation
 
@@ -61,25 +60,24 @@ app = Starlite(route_handlers=[hello_world])
 
 ## Core Features
 
-- Both functional and OOP python support
 - Class based controllers
-- Extended testing support
-- Builtin Validation and Parsing using Pydantic
-- Dataclass Support
 - Dependency Injection
+- Extended testing support
 - Layered Middleware
 - Layered Parameter declaration
-- Route Guards based Authorization
 - Life Cycle Hooks
+- OpenAPI 3.1 schema generation
 - Plugin System
+- Route Guards based Authorization
 - SQLAlchemy Support (via plugin)
+- Support for [Redoc](https://github.com/Redocly/redoc)
+- Support for [Stoplight Elements](https://github.com/stoplightio/elements)
+- Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
+- Support for dataclasses and `TypedDict`
 - Tortoise-ORM Support (via plugin)
 - Trio support (built-in, via AnyIO)
-- Automatic OpenAPI 3.1 schema generation
-- Support for [Redoc](https://github.com/Redocly/redoc)
-- Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
-- Support for [Stoplight Elements](https://github.com/stoplightio/elements)
 - Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
+- Validation and Parsing using [Pydantic](https://github.com/samuelcolvin/pydantic)
 
 ## Example Applications
 
@@ -89,12 +87,12 @@ app = Starlite(route_handlers=[hello_world])
 - [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
 
-## Relation to Starlette and FastAPI
+## The name `Starlite` and relation to `Starlette`
 
-Although Starlite uses the Starlette ASGI toolkit, it does not simply extend Starlette, as FastAPI does. Starlite uses
-selective pieces of Starlette while implementing its own routing and parsing logic, the primary reason for this is to
-enforce a set of best practices and discourage misuse. This is done to promote simplicity and scalability - Starlite is
-simple to use, easy to learn, and unlike both Starlette and FastAPI - it keeps complexity low when scaling.
+Starlite was originally built using the [Starlette ASGI toolkit](https://www.starlette.io/). The name `Starlite` was
+meant to show this relation. But, over time Starlite grew in capabilities and complexity, and eventually we no longer needed
+to depend on Starlette. From version `1.39.0` onward `starlette` was removed as a dependency of Starlite, and the name now carries
+this piece of history with it.
 
 ### Performant
 
