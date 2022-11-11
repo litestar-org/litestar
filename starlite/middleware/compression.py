@@ -28,9 +28,7 @@ if TYPE_CHECKING:
 
 
 class CompressionFacade:
-    """A unified facade offering a uniform interface for different compression
-    libraries.
-    """
+    """A unified facade offering a uniform interface for different compression libraries."""
 
     __slots__ = ("compressor", "buffer", "compression_encoding")
 
@@ -97,8 +95,7 @@ class CompressionFacade:
 class CompressionMiddleware(AbstractMiddleware):
     """Compression Middleware Wrapper.
 
-    This is a wrapper allowing for generic compression configuration /
-    handler middleware
+    This is a wrapper allowing for generic compression configuration / handler middleware
     """
 
     def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:

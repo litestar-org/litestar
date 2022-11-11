@@ -33,8 +33,7 @@ if TYPE_CHECKING:
 class ASGIRouter:
     """Starlite ASGI router.
 
-    Handling both the ASGI lifespan events and routing of connection
-    requests.
+    Handling both the ASGI lifespan events and routing of connection requests.
     """
 
     __slots__ = (
@@ -71,8 +70,7 @@ class ASGIRouter:
         await asgi_app(scope, receive, send)
 
     def _store_handler_to_route_mapping(self, route: "BaseRoute") -> None:
-        """Store the mapping of route handlers to routes and to route handler
-        names.
+        """Store the mapping of route handlers to routes and to route handler names.
 
         Args:
             route: A Route instance.
@@ -91,9 +89,8 @@ class ASGIRouter:
             self.route_handler_index[identifier] = handler
 
     async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
-        """Determine whether the lifecycle handler expects an argument, and if
-        so pass the `app.state` to it. If the handler is an async function,
-        await the return.
+        """Determine whether the lifecycle handler expects an argument, and if so pass the `app.state` to it. If the
+        handler is an async function, await the return.
 
         Args:
             handler: sync or async callable that may or may not have an argument.
@@ -128,8 +125,7 @@ class ASGIRouter:
         validate_node(node=self.root_route_map_node)
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
-        """Handle the ASGI "lifespan" event on application startup and
-        shutdown.
+        """Handle the ASGI "lifespan" event on application startup and shutdown.
 
         Args:
             receive: The ASGI receive function.
@@ -169,12 +165,10 @@ class ASGIRouter:
             await send(shutdown_event)
 
     async def startup(self) -> None:
-        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined
-        in the application's `.on_startup` list.
+        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined in the application's `.on_startup` list.
 
-        Calls the `before_startup` hook and `after_startup` hook
-        handlers respectively before and after calling in the lifespan
-        handlers.
+        Calls the `before_startup` hook and `after_startup` hook handlers respectively before and after calling in the
+        lifespan handlers.
         """
         for hook in self.app.before_startup:
             await hook(self.app)
@@ -186,12 +180,10 @@ class ASGIRouter:
             await hook(self.app)
 
     async def shutdown(self) -> None:
-        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined
-        in the application's `.on_shutdown` list.
+        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined in the application's `.on_shutdown` list.
 
-        Calls the `before_shutdown` hook and `after_shutdown` hook
-        handlers respectively before and after calling in the lifespan
-        handlers.
+        Calls the `before_shutdown` hook and `after_shutdown` hook handlers respectively before and after calling in the
+        lifespan handlers.
         """
         for hook in self.app.before_shutdown:
             await hook(self.app)

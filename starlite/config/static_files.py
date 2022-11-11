@@ -16,9 +16,8 @@ if TYPE_CHECKING:
 class StaticFilesConfig(BaseModel):
     """Configuration for static file service.
 
-    To enable static files, pass an instance of this class to the
-    [Starlite][starlite.app.Starlite] constructor using the
-    'static_files_config' key.
+    To enable static files, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using
+    the 'static_files_config' key.
     """
 
     class Config(BaseConfig):

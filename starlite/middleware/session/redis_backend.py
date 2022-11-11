@@ -50,8 +50,7 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
         await self.redis.set(self._id_to_storage_key(session_id), data, ex=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id` from redis. Fail
-        silently if no such session-ID exists.
+        """Delete the data associated with `session_id` from redis. Fail silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID

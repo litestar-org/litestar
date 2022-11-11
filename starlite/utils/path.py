@@ -3,8 +3,7 @@ from typing import Iterable
 
 
 def normalize_path(path: str) -> str:
-    """Normalize a given path by ensuring it starts with a slash and does not
-    end with a slash.
+    """Normalize a given path by ensuring it starts with a slash and does not end with a slash.
 
     Args:
         path: Path string

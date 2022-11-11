@@ -156,8 +156,8 @@ def create_constrained_field_schema(
     sub_fields: Optional[List[ModelField]],
     plugins: List["PluginProtocol"],
 ) -> Schema:
-    """Create Schema for Pydantic Constrained fields (created using constr(),
-    conint() and so forth, or by subclassing Constrained*)
+    """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
+    Constrained*)
     """
     if issubclass(field_type, (ConstrainedFloat, ConstrainedInt, ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)
@@ -169,9 +169,7 @@ def create_constrained_field_schema(
 
 
 def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Schema:
-    """Copy values from the given instance of pydantic FieldInfo into the
-    schema.
-    """
+    """Copy values from the given instance of pydantic FieldInfo into the schema."""
     if field_info.const and field_info.default not in {None, ..., Undefined} and schema.const is None:
         schema.const = field_info.default
     for pydantic_key, schema_key in PYDANTIC_TO_OPENAPI_PROPERTY_MAP.items():
@@ -216,9 +214,7 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
 
 
 def create_examples_for_field(field: ModelField) -> List[Example]:
-    """Use the pydantic-factories package to create an example value for the
-    given schema.
-    """
+    """Use the pydantic-factories package to create an example value for the given schema."""
     try:
         value = normalize_example_value(ExampleFactory.get_field_value(field))
         return [Example(description=f"Example {field.name} value", value=value)]

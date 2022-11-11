@@ -16,8 +16,7 @@ settings = AppSettings()
 def get_db_connection(state: State) -> AsyncEngine:
     """Returns the db engine.
 
-    If it doesn't exist, creates it and saves it in on the application
-    state object
+    If it doesn't exist, creates it and saves it in on the application state object
     """
     if not getattr(state, "engine", None):
         state.engine = create_async_engine(settings.DATABASE_URI)

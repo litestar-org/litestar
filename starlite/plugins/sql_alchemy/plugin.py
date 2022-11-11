@@ -64,8 +64,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         self._config = config
 
     def on_app_init(self, app: "Starlite") -> None:
-        """If config has been passed to the plugin, it will initialize
-        SQLAlchemy and add the dependencies as expected.
+        """If config has been passed to the plugin, it will initialize SQLAlchemy and add the dependencies as expected.
 
         Executed on the application's init process.
 
@@ -84,8 +83,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
-        """`TypeGuard` testing whether values are subclasses of SQLAlchemy's
-        'DeclarativeMeta' class.
+        """`TypeGuard` testing whether values are subclasses of SQLAlchemy's 'DeclarativeMeta' class.
 
         Args:
             value: An arbitrary type to test.
@@ -332,8 +330,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def parse_model(model_class: Type[DeclarativeMeta]) -> Mapper:
-        """Validate that the passed in model_class is an SQLAlchemy declarative
-        model, and return a `Mapper` of it.
+        """Validate that the passed in model_class is an SQLAlchemy declarative model, and return a `Mapper` of it.
 
         Args:
             model_class: An SQLAlchemy declarative class.
@@ -353,8 +350,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         )
 
     def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
-        """Generate a pydantic model for a given SQLAlchemy declarative table
-        and any nested relations.
+        """Generate a pydantic model for a given SQLAlchemy declarative table and any nested relations.
 
         Args:
             model_class: An SQLAlchemy declarative class instance.
@@ -406,8 +402,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def from_pydantic_model_instance(
         self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
-        """Create an instance of a given model_class using the values stored in
-        the given pydantic_model_instance.
+        """Create an instance of a given model_class using the values stored in the given pydantic_model_instance.
 
         Args:
             model_class: A declarative table class.
@@ -419,8 +414,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: "DeclarativeMeta") -> Dict[str, Any]:
-        """Given a model instance, convert it to a dict of values that can be
-        serialized.
+        """Given a model instance, convert it to a dict of values that can be serialized.
 
         Args:
             model_instance: An SQLAlchemy declarative table instance.
@@ -435,8 +429,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return pydantic_model.from_orm(model_instance).dict()  # type:ignore[pydantic-unexpected]
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
-        """Given a dictionary of kwargs, return an instance of the given
-        model_class.
+        """Given a dictionary of kwargs, return an instance of the given model_class.
 
         Args:
             model_class: A declarative table class.

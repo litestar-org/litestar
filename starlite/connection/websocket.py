@@ -121,8 +121,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         subprotocols: Optional[str] = None,
         headers: Optional[Union[Headers, Dict[str, Any], List[Tuple[bytes, bytes]]]] = None,
     ) -> None:
-        """Accept the incoming connection. This method should be called before
-        receiving data.
+        """Accept the incoming connection. This method should be called before receiving data.
 
         Args:
             subprotocols: Websocket sub-protocol to use.
@@ -184,8 +183,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         """
 
     async def receive_data(self, mode: "Literal['binary', 'text']") -> Union[str, bytes]:
-        """Receive an 'websocket.receive' event and returns the data stored on
-        it.
+        """Receive an 'websocket.receive' event and returns the data stored on it.
 
         Args:
             mode: The respective event key to use.

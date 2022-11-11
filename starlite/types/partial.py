@@ -55,8 +55,8 @@ class Partial(Generic[T]):
     _models: Dict[SupportedTypes, SupportedTypes] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Take a pydantic model class, [`TypedDict`][typing.TypedDict] or a
-        dataclass and return an all optional version of that class.
+        """Take a pydantic model class, [`TypedDict`][typing.TypedDict] or a dataclass and return an all optional
+        version of that class.
 
         Args:
             item: A pydantic model, [`TypedDict`][typing.TypedDict] or dataclass class.
@@ -80,8 +80,7 @@ class Partial(Generic[T]):
 
     @classmethod
     def _create_partial_pydantic_model(cls, item: Type[BaseModel]) -> None:
-        """Receives a pydantic model class and creates an all optional subclass
-        of it.
+        """Receives a pydantic model class and creates an all optional subclass of it.
 
         Args:
             item: A pydantic model class.
@@ -99,8 +98,7 @@ class Partial(Generic[T]):
 
     @classmethod
     def _create_partial_dataclass(cls, item: "DataclassClass") -> None:
-        """Receives a dataclass class and creates an all optional subclass of
-        it.
+        """Receives a dataclass class and creates an all optional subclass of it.
 
         Args:
             item: A dataclass class.
@@ -121,8 +119,7 @@ class Partial(Generic[T]):
 
     @classmethod
     def _create_partial_typeddict(cls, item: "TypedDictClass") -> None:
-        """Receives a typeddict class and creates a new type with all
-        attributes `Optional`.
+        """Receives a typeddict class and creates a new type with all attributes `Optional`.
 
         Args:
             item: A [`TypedDict`][typing.TypeDict] class.
@@ -138,8 +135,7 @@ class Partial(Generic[T]):
 
     @staticmethod
     def _create_optional_field_map(item: "DataclassClass") -> Dict[str, DataclassField]:
-        """Create a map of field name to optional dataclass Fields for a given
-        dataclass.
+        """Create a map of field name to optional dataclass Fields for a given dataclass.
 
         Args:
             item: A dataclass class.

@@ -238,8 +238,7 @@ class Stream(ResponseContainer[StreamingResponse]):
         cls,
         value: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]],
     ) -> StreamType[Union[str, bytes]]:
-        """Set the iterator value by ensuring that the return value is
-        iterable.
+        """Set the iterator value by ensuring that the return value is iterable.
 
         Args:
             value: An iterable or callable returning an iterable.

@@ -1,5 +1,4 @@
-"""Some code in this module was adapted from
-https://github.com/encode/starlette/blob/master/starlette/testclient.py.
+"""Some code in this module was adapted from https://github.com/encode/starlette/blob/master/starlette/testclient.py.
 
 Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).
 All rights reserved.

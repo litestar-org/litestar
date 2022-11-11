@@ -61,9 +61,8 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` alongside metadata under the `session_id`, using the ID
-        as a filename. If a file already exists for `session_id`, replace it
-        with `data` and reset its expiry time.
+        """Store `data` alongside metadata under the `session_id`, using the ID as a filename. If a file already exists
+        for `session_id`, replace it with `data` and reset its expiry time.
 
         Args:
             session_id: The session-ID

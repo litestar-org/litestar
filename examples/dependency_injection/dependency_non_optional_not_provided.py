@@ -7,8 +7,7 @@ from starlite import Dependency, get
 def hello_world(non_optional_dependency: int = Dependency()) -> dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 
-    This is not great, however by explicitly marking dependencies,
-    Starlite won't let the app start.
+    This is not great, however by explicitly marking dependencies, Starlite won't let the app start.
     """
     return {"hello": non_optional_dependency}
 

@@ -25,9 +25,7 @@ if TYPE_CHECKING:
 
 
 class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
-    """An HTTP response that streams the response data as a series of ASGI
-    'http.response.body' events.
-    """
+    """An HTTP response that streams the response data as a series of ASGI 'http.response.body' events."""
 
     __slots__ = ("iterator",)
 
@@ -91,8 +89,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
                 await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
 
     async def _stream(self, send: "Send") -> None:
-        """Send the chunks from the iterator as a stream of ASGI
-        'http.response.body' events.
+        """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
 
         Args:
             send: The ASGI Send function.

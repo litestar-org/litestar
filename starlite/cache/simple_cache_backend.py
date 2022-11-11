@@ -45,8 +45,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
         return None
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
-        """Set a value in cache for a given key with a given expiration in
-        seconds.
+        """Set a value in cache for a given key with a given expiration in seconds.
 
         Args:
             key: key to cache `value` under.

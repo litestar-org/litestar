@@ -37,12 +37,10 @@ from .template import TemplateConfig
 
 
 class AppConfig(BaseModel):
-    """The parameters provided to the `Starlite` app are used to instantiate an
-    instance, and then the instance is passed to any callbacks registered to
-    `on_app_init` in the order they are provided.
+    """The parameters provided to the `Starlite` app are used to instantiate an instance, and then the instance is
+    passed to any callbacks registered to `on_app_init` in the order they are provided.
 
-    The final attribute values are used to instantiate the application
-    object.
+    The final attribute values are used to instantiate the application object.
     """
 
     class Config(BaseConfig):

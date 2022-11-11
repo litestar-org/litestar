@@ -43,9 +43,7 @@ T = TypeVar("T")
 
 
 class Response(Generic[T]):
-    """Base Starlite HTTP response class, used as the basis for all other
-    response classes.
-    """
+    """Base Starlite HTTP response class, used as the basis for all other response classes."""
 
     __slots__ = (
         "status_code",
@@ -278,8 +276,7 @@ class Response(Generic[T]):
             await self.background()
 
     async def start_response(self, send: "Send") -> None:
-        """Emit the start event of the response. This event includes the
-        headers and status codes.
+        """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:
             send: The ASGI send function.

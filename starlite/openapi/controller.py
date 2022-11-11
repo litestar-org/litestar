@@ -105,8 +105,7 @@ class OpenAPIController(Controller):
         return request.app.openapi_schema
 
     def should_serve_endpoint(self, request: Request) -> bool:
-        """Verify that the requested path is within the enabled endpoints in
-        the openapi_config.
+        """Verify that the requested path is within the enabled endpoints in the openapi_config.
 
         Args:
             request: To be tested if endpoint enabled.
@@ -160,8 +159,7 @@ class OpenAPIController(Controller):
         include_in_schema=False,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
-        """Return the OpenAPI schema as YAML with an
-        'application/vnd.oai.openapi' Content-Type header.
+        """Return the OpenAPI schema as YAML with an 'application/vnd.oai.openapi' Content-Type header.
 
         Args:
             request:
@@ -179,8 +177,7 @@ class OpenAPIController(Controller):
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
-        """Return the OpenAPI schema as JSON with an
-        'application/vnd.oai.openapi+json' Content-Type header.
+        """Return the OpenAPI schema as JSON with an 'application/vnd.oai.openapi+json' Content-Type header.
 
         Args:
             request:

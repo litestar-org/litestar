@@ -18,8 +18,7 @@ tpl_dir = Path(__file__).parent / "templates"
 
 
 def get_symbol_name(frame: "FrameInfo") -> str:
-    """Return full name of the function that is being executed by the given
-    frame.
+    """Return full name of the function that is being executed by the given frame.
 
     Args:
         frame: An instance of [FrameInfo](https://docs.python.org/3/library/inspect.html#inspect.FrameInfo).
@@ -48,8 +47,7 @@ def create_line_html(
     frame_index: int,
     idx: int,
 ) -> str:
-    """Produce HTML representation of a line including real line number in the
-    source code.
+    """Produce HTML representation of a line including real line number in the source code.
 
     Args:
         line: A string representing the current line.
@@ -72,8 +70,8 @@ def create_line_html(
 
 
 def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
-    """Produce HTML representation of the given frame object including filename
-    containing source code and name of the function being executed.
+    """Produce HTML representation of the given frame object including filename containing source code and name of the
+    function being executed.
 
     Args:
         frame: An instance of [FrameInfo](https://docs.python.org/3/library/inspect.html#inspect.FrameInfo).
@@ -164,8 +162,7 @@ def create_plain_text_response_content(exc: Exception) -> str:
 
 
 def create_debug_response(request: "Request", exc: Exception) -> Response:
-    """Create debug response either in plain text or HTML depending on client
-    capabilities.
+    """Create debug response either in plain text or HTML depending on client capabilities.
 
     Args:
         request: A [Request][starlite.connection.Request] instance.

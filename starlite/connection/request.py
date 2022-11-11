@@ -79,8 +79,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     @property
     def content_type(self) -> Tuple[str, Dict[str, str]]:
-        """Parse the request's 'Content-Type' header, returning the header
-        value and any options as a dictionary.
+        """Parse the request's 'Content-Type' header, returning the header value and any options as a dictionary.
 
         Returns:
             A tuple with the parsed value and a dictionary containing any options send in it.

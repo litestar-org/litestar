@@ -110,8 +110,7 @@ class BaseRoute(ABC):
 
     @staticmethod
     def _validate_path_parameter(param: str) -> None:
-        """Validate that a path parameter adheres to the required format and
-        datatypes.
+        """Validate that a path parameter adheres to the required format and datatypes.
 
         Raises:
             ImproperlyConfiguredException: If the parameter has an invalid format.

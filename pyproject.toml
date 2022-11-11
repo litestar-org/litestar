@@ -182,7 +182,7 @@ strict-imports = false
 
 
 [tool.pydocstyle]
-add-ignore = "D100,D104,D105,D106,D202,D205"
+add-ignore = "D100,D104,D105,D106,D202,D205,D415"
 add-select = "D401,D404,D417"
 convention = "google"
 match_dir = "starlite"

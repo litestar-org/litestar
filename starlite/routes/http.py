@@ -60,8 +60,8 @@ class HTTPRoute(BaseRoute):
         )
 
     async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
-        """ASGI app that creates a Request from the passed in args, determines
-        which handler function to call and then handles the call.
+        """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
+        handles the call.
 
         Args:
             scope: The ASGI connection scope.
@@ -141,8 +141,8 @@ class HTTPRoute(BaseRoute):
     async def _call_handler_function(
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
     ) -> "ASGIApp":
-        """Call the before request handlers, retrieve any data required for the
-        route handler, and call the route handler's `to_response` method.
+        """Call the before request handlers, retrieve any data required for the route handler, and call the route
+        handler's `to_response` method.
 
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
@@ -172,9 +172,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
-        """Determine what kwargs are required for the given route handler's
-        `fn` and calls it.
-        """
+        """Determine what kwargs are required for the given route handler's `fn` and calls it."""
         signature_model = get_signature_model(route_handler)
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)

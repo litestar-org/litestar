@@ -41,9 +41,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
-    """Container enabling passing *args and **kwargs to Middleware class
-    constructors and factory functions.
-    """
+    """Container enabling passing *args and **kwargs to Middleware class constructors and factory functions."""
 
     __slots__ = (
         "middleware",
@@ -81,12 +79,10 @@ class DefineMiddleware:
 
 
 class AbstractMiddleware:
-    """Abstract middleware providing base functionality common to all
-    middlewares, for dynamically engaging/bypassing the middleware based on
-    paths, `opt`-keys and scope types.
+    """Abstract middleware providing base functionality common to all middlewares, for dynamically engaging/bypassing
+    the middleware based on paths, `opt`-keys and scope types.
 
-    When implementing new middleware, this class should be used as a
-    base.
+    When implementing new middleware, this class should be used as a base.
     """
 
     scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}

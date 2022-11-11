@@ -1,5 +1,4 @@
-"""Includes code adapted from
-https://github.com/django/asgiref/blob/main/asgiref/typing.py.
+"""Includes code adapted from https://github.com/django/asgiref/blob/main/asgiref/typing.py.
 
 Copyright (c) Django Software Foundation and individual contributors.
 All rights reserved.

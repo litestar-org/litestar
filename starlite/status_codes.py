@@ -1,5 +1,4 @@
-"""Includes code adapted from
-https://github.com/encode/starlette/blob/master/starlette/status.py.
+"""Includes code adapted from https://github.com/encode/starlette/blob/master/starlette/status.py.
 
 Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).
 All rights reserved.

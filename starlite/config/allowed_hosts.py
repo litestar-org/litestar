@@ -8,9 +8,8 @@ from starlite.types import Scopes
 class AllowedHostsConfig(BaseModel):
     """Configuration for allowed hosts protection.
 
-    To enable allowed hosts protection, pass an instance of this class
-    to the [Starlite][starlite.app.Starlite] constructor using the
-    'allowed_hosts' key.
+    To enable allowed hosts protection, pass an instance of this class to the [Starlite][starlite.app.Starlite]
+    constructor using the 'allowed_hosts' key.
     """
 
     allowed_hosts: List[str] = ["*"]

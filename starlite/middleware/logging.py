@@ -283,8 +283,7 @@ class LoggingMiddlewareConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one
-        of the application layers.
+        """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
             ```python

@@ -197,9 +197,7 @@ def create_responses(
     generate_examples: bool,
     plugins: List["PluginProtocol"],
 ) -> Optional["Responses"]:
-    """Create a Response model embedded in a `Responses` dictionary for the
-    given RouteHandler or return None.
-    """
+    """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
     responses: "Responses" = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,

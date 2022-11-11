@@ -36,8 +36,7 @@ class ASGIRoute(BaseRoute):
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """ASGI app that authorizes the connection and then awaits the handler
-        function.
+        """ASGI app that authorizes the connection and then awaits the handler function.
 
         Args:
             scope: The ASGI connection scope.

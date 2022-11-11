@@ -25,8 +25,8 @@ T = TypeVar("T")
 
 
 def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extend `asyncio.iscoroutinefunction()` to additionally detect async
-    `partial` objects and class instances with `async def __call__()` defined.
+    """Extend `asyncio.iscoroutinefunction()` to additionally detect async `partial` objects and class instances with
+    `async def __call__()` defined.
 
     Args:
         value: Any
@@ -107,8 +107,7 @@ class AsyncIteratorWrapper(Generic[T]):
     __slots__ = ("iterator", "generator")
 
     def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:
-        """Take a sync iterator or iterable and yields values from it
-        asynchronously.
+        """Take a sync iterator or iterable and yields values from it asynchronously.
 
         Args:
             iterator: A sync iterator or iterable.

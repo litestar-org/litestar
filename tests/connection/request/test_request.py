@@ -290,9 +290,7 @@ def test_request_raw_path() -> None:
 
 
 def test_request_without_setting_receive() -> None:
-    """If Request is instantiated without the 'receive' channel, then .body()
-    is not available.
-    """
+    """If Request is instantiated without the 'receive' channel, then .body() is not available."""
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope)
@@ -309,9 +307,7 @@ def test_request_without_setting_receive() -> None:
 
 
 async def test_request_disconnect() -> None:
-    """If a client disconnect occurs while reading request body then
-    InternalServerException should be raised.
-    """
+    """If a client disconnect occurs while reading request body then InternalServerException should be raised."""
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         request = Request[Any, Any](scope, receive)

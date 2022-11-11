@@ -21,8 +21,7 @@ _false_values = {"False", "false"}
 
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:
-    """Transform the multidict into a regular dict, try to load json on all
-    non-file values.
+    """Transform the multidict into a regular dict, try to load json on all non-file values.
 
     Supports lists.
     """

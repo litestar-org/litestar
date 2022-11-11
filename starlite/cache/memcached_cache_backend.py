@@ -67,8 +67,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         return self._config.deserialize(value)
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
-        """Set sa value in cache for a given key for a duration determined by
-        expiration.
+        """Set sa value in cache for a given key for a duration determined by expiration.
 
         Args:
             key: key to cache `value` under.

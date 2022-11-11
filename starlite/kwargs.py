@@ -75,8 +75,8 @@ class Dependency:
 
 
 def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterDefinition]) -> Set[ParameterDefinition]:
-    """Given two sets of parameter definitions, coming from different
-    dependencies for example, merge them into a single set.
+    """Given two sets of parameter definitions, coming from different dependencies for example, merge them into a single
+    set.
     """
     result: Set[ParameterDefinition] = first.intersection(second)
     difference = first.symmetric_difference(second)
@@ -90,8 +90,7 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
 class KwargsModel:
     """Model required kwargs for a given RouteHandler and its dependencies.
 
-    This is done once and is memoized during application bootstrap,
-    ensuring minimal runtime overhead.
+    This is done once and is memoized during application bootstrap, ensuring minimal runtime overhead.
     """
 
     __slots__ = (
@@ -160,8 +159,7 @@ class KwargsModel:
         dependencies: Dict[str, Provide],
         signature_model_fields: Dict[str, ModelField],
     ) -> Tuple[Set[ParameterDefinition], set]:
-        """Get parameter_definitions for the construction of KwargsModel
-        instance.
+        """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
             path_parameters: Any expected path parameters.
@@ -251,9 +249,8 @@ class KwargsModel:
         path_parameters: Set[str],
         layered_parameters: Dict[str, ModelField],
     ) -> "KwargsModel":
-        """Pre-determine what parameters are required for a given combination
-        of route + route handler. It is executed during the application
-        bootstrap process.
+        """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
+        during the application bootstrap process.
 
         Args:
             signature_model: A [SignatureModel][starlite.signature.SignatureModel] subclass.
@@ -368,8 +365,8 @@ class KwargsModel:
         return reserved_kwargs
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
-        """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are
-        not resolved to ensure this function is sync.
+        """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
+        sync.
 
         Args:
             connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
@@ -424,8 +421,7 @@ class KwargsModel:
     async def resolve_dependency(
         self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any
     ) -> Any:
-        """Given an instance of [Dependency][starlite.kwargs.Dependency],
-        recursively resolves its dependency graph.
+        """Given an instance of [Dependency][starlite.kwargs.Dependency], recursively resolves its dependency graph.
 
         Args:
             dependency: An instance of [Dependency][starlite.kwargs.Dependency]
@@ -449,8 +445,8 @@ class KwargsModel:
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
-        """Create a graph like structure of dependencies, with each dependency
-        including its own dependencies as a list.
+        """Create a graph like structure of dependencies, with each dependency including its own dependencies as a
+        list.
         """
         provide = dependencies[key]
         sub_dependency_keys = [k for k in get_signature_model(provide).__fields__ if k in dependencies]
@@ -464,8 +460,8 @@ class KwargsModel:
     def _create_parameter_definition(
         allow_none: bool, field_info: FieldInfo, field_name: str, path_parameters: Set[str], is_sequence: bool
     ) -> ParameterDefinition:
-        """Create a ParameterDefinition for the given pydantic FieldInfo
-        instance and inserts it into the correct parameter set.
+        """Create a ParameterDefinition for the given pydantic FieldInfo instance and inserts it into the correct
+        parameter set.
         """
         extra = field_info.extra
         is_required = extra.get(EXTRA_KEY_REQUIRED, True)
@@ -522,8 +518,8 @@ class KwargsModel:
         model_fields: Dict[str, ModelField],
         layered_parameters: Dict[str, ModelField],
     ) -> None:
-        """Validate that there are no ambiguous kwargs, that is, kwargs
-        declared using the same key in different places.
+        """Validate that there are no ambiguous kwargs, that is, kwargs declared using the same key in different
+        places.
         """
         dependency_keys = set(dependencies.keys())
 
@@ -557,9 +553,8 @@ class KwargsModel:
             )
 
     def _sequence_or_scalar_param(self, key: str, value: List[str]) -> Union[str, List[str]]:
-        """Return the first element of 'value' if we expect it to be a scalar
-        value (appears in self.sequence_query_parameter_names) and it contains
-        only a single element.
+        """Return the first element of 'value' if we expect it to be a scalar value (appears in
+        self.sequence_query_parameter_names) and it contains only a single element.
         """
         return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 

@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class ExceptionHandlerMiddleware:
-    """Middleware used to wrap an ASGIApp inside a try catch block and handle
-    any exceptions raised.
+    """Middleware used to wrap an ASGIApp inside a try catch block and handle any exceptions raised.
 
     This used in multiple layers of Starlite.
     """

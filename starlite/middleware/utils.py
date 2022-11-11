@@ -9,8 +9,7 @@ if TYPE_CHECKING:
 
 
 def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = None) -> Optional[Pattern]:
-    """Build single path pattern from list of patterns to opt-out from
-    middleware processing.
+    """Build single path pattern from list of patterns to opt-out from middleware processing.
 
     Args:
         exclude: A pattern or a list of patterns.

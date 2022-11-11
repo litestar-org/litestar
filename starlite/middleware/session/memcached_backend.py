@@ -38,9 +38,8 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         return cast("Optional[bytes]", data)
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` in memcached under `<prefix>:<session_id>`. If there is
-        already data associated with `session_id`, replace it with `data` and
-        reset its expiry time.
+        """Store `data` in memcached under `<prefix>:<session_id>`. If there is already data associated with
+        `session_id`, replace it with `data` and reset its expiry time.
 
         Args:
             session_id: The session-ID
@@ -52,8 +51,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         await self.memcached.set(key=self._id_to_storage_key(session_id), value=data, exptime=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fail silently if no
-        such session-ID exists.
+        """Delete the data associated with `session_id`. Fail silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID

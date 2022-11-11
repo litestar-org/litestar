@@ -16,9 +16,7 @@ class Config(BaseConfig):
 
 
 def create_parsed_model_field(value: Type[Any]) -> "ModelField":
-    """Create a pydantic model with the passed in value as its sole field, and
-    return the parsed field.
-    """
+    """Create a pydantic model with the passed in value as its sole field, and return the parsed field."""
     model = create_model("temp", __config__=Config, **{"value": (value, ... if not repr(value).startswith("typing.Optional") else None)})  # type: ignore
     return cast("BaseModel", model).__fields__["value"]
 
@@ -27,9 +25,7 @@ _type_model_map: Dict[Type[Any], Type[BaseModel]] = {}
 
 
 def convert_dataclass_to_model(dataclass_or_instance: "DataclassClassOrInstance") -> Type[BaseModel]:
-    """Convert a dataclass or dataclass instance to a pydantic model and
-    memoize the result.
-    """
+    """Convert a dataclass or dataclass instance to a pydantic model and memoize the result."""
     if not isinstance(dataclass_or_instance, type):
         dataclass = type(dataclass_or_instance)
     else:
@@ -42,9 +38,7 @@ def convert_dataclass_to_model(dataclass_or_instance: "DataclassClassOrInstance"
 
 
 def convert_typeddict_to_model(typeddict: "TypedDictClass") -> Type[BaseModel]:
-    """Convert a [`TypedDict`][typing.TypedDict] to a pydantic model and
-    memoize the result.
-    """
+    """Convert a [`TypedDict`][typing.TypedDict] to a pydantic model and memoize the result."""
     existing = _type_model_map.get(typeddict)
     if not existing:
         _type_model_map[typeddict] = existing = create_model_from_typeddict(typeddict)

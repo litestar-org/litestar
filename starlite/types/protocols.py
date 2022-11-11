@@ -61,9 +61,8 @@ class Logger(Protocol):  # pragma: no cover
         """
 
     def exception(self, event: str, *args: Any, **kwargs: Any) -> Any:
-        """Log a message with level 'ERROR' on this logger. The arguments are
-        interpreted as for debug(). Exception info is added to the logging
-        message.
+        """Log a message with level 'ERROR' on this logger. The arguments are interpreted as for debug(). Exception info
+        is added to the logging message.
 
         Args:
              event: Log message.

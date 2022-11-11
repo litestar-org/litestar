@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 
 def default_cache_key_builder(request: "Request[Any, Any]") -> str:
-    """Given a request object, returns a cache key by combining the path with
-    the sorted query params.
+    """Given a request object, returns a cache key by combining the path with the sorted query params.
 
     Args:
         request (Request): request used to generate cache key.
@@ -29,9 +28,8 @@ def default_cache_key_builder(request: "Request[Any, Any]") -> str:
 class CacheConfig(BaseModel):
     """Configuration for response caching.
 
-    To enable response caching, pass an instance of this class to the
-    [Starlite][starlite.app.Starlite] constructor using the
-    'cache_config' key.
+    To enable response caching, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor
+    using the 'cache_config' key.
     """
 
     class Config(BaseConfig):

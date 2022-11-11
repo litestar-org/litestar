@@ -109,8 +109,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.app(scope, receive, send)
 
     def create_send_wrapper(self, send: "Send", cache_object: CacheObject) -> "Send":
-        """Create a `send` function that wraps the original send to inject
-        response headers.
+        """Create a `send` function that wraps the original send to inject response headers.
 
         Args:
             send: The ASGI send function.
@@ -188,8 +187,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
-        """Return a boolean indicating if a request should be checked for rate
-        limiting.
+        """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
             request: A [Request][starlite.connection.Request] instance.
@@ -267,8 +265,7 @@ class RateLimitConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one
-        of the application layers.
+        """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
             ```python

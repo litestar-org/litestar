@@ -59,8 +59,7 @@ def traverse_route_map(
     path_params: List[str],
     scope: "Scope",
 ) -> Tuple["RouteTrieNode", List[str]]:
-    """Traverses the application route mapping and retrieves the correct node
-    for the request url.
+    """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
         current_node: A trie node.
@@ -149,8 +148,7 @@ def parse_path_parameters(
 
 
 def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_routes: Set[str]) -> "ASGIHandlerTuple":
-    """Given a scope object, retrieve the asgi_handlers and is_mount boolean
-    values from correct trie node.
+    """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
         root_node: The root trie node.

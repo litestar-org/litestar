@@ -244,8 +244,7 @@ class SQLAlchemyConfig(BaseModel):
     def check_connection_string_or_engine_instance(  # pylint: disable=no-self-argument
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Either `connection_string` or `engine_instance` must be specified,
-        and not both.
+        """Either `connection_string` or `engine_instance` must be specified, and not both.
 
         Args:
             values: Field values, after validation.

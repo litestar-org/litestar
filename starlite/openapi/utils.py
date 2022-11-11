@@ -20,8 +20,7 @@ def pascal_case_to_text(string: str) -> str:
 def get_openapi_type_for_complex_type(field: "ModelField") -> "OpenAPIType":
     """We are dealing with complex types in this case.
 
-    The problem here is that the Python typing system is too crude to
-    define OpenAPI objects properly.
+    The problem here is that the Python typing system is too crude to define OpenAPI objects properly.
     """
     try:
         return PYDANTIC_FIELD_SHAPE_MAP[field.shape]

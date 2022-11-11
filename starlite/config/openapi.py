@@ -28,9 +28,8 @@ if TYPE_CHECKING:
 class OpenAPIConfig(BaseModel):
     """Configuration for OpenAPI.
 
-    To enable OpenAPI schema generation and serving, pass an instance of
-    this class to the [Starlite][starlite.app.Starlite] constructor
-    using the 'openapi_config' kwargs.
+    To enable OpenAPI schema generation and serving, pass an instance of this class to the
+    [Starlite][starlite.app.Starlite] constructor using the 'openapi_config' kwargs.
     """
 
     create_examples: bool = False

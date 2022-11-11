@@ -8,8 +8,7 @@ from starlite.template import TemplateEngineProtocol
 class TemplateConfig(BaseModel):
     """Configuration for Templating.
 
-    To enable templating, pass an instance of this class to the
-    [Starlite][starlite.app.Starlite] constructor using the
+    To enable templating, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using the
     'template_config' key.
     """
 

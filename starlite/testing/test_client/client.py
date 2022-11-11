@@ -104,8 +104,7 @@ class TestClient(Client, Generic[T]):
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ) -> None:
-        """A client implementation providing a context manager for testing
-        applications.
+        """A client implementation providing a context manager for testing applications.
 
         Args:
             app: The instance of [Starlite][starlite.app.Starlite] under test.
@@ -603,10 +602,9 @@ class TestClient(Client, Generic[T]):
 
     @deprecated("1.34.0", alternative="set_session_data", pending=True)
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
-        """Creates raw session cookies that are loaded into the session by the
-        Session Middleware. It creates cookies the same way as if they are
-        coming from the browser. Your tests must set up session middleware to
-        load raw session cookies into the session.
+        """Creates raw session cookies that are loaded into the session by the Session Middleware. It creates cookies
+        the same way as if they are coming from the browser. Your tests must set up session middleware to load raw
+        session cookies into the session.
 
         Args:
             session_data: Dictionary to create raw session cookies from.
@@ -647,10 +645,9 @@ class TestClient(Client, Generic[T]):
 
     @deprecated("1.34.0", alternative="get_session_data", pending=True)
     def get_session_from_cookies(self) -> Dict[str, Any]:
-        """Raw session cookies are a serialized image of session which are
-        created by session middleware and sent with the response. To assert
-        data in session, this method deserializes the raw session cookies and
-        creates session from them.
+        """Raw session cookies are a serialized image of session which are created by session middleware and sent with
+        the response. To assert data in session, this method deserializes the raw session cookies and creates session
+        from them.
 
         Returns:
             A dictionary containing session data.

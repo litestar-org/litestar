@@ -179,8 +179,7 @@ class FileResponse(StreamingResponse):
         return 0
 
     async def start_response(self, send: "Send") -> None:
-        """Emit the start event of the response. This event includes the
-        headers and status codes.
+        """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:
             send: The ASGI send function.

@@ -92,8 +92,7 @@ class WebSocketTestSession:
     def send(
         self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
     ) -> None:
-        """Sends a "receive" event. This is the inverse of the ASGI send
-        method.
+        """Sends a "receive" event. This is the inverse of the ASGI send method.
 
         Args:
             data: Either a string or a byte string.

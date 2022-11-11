@@ -72,8 +72,8 @@ MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define ht
 
 
 def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
-    """Given two lists of cookies, ensure the uniqueness of cookies by key and
-    return a normalized dict ready to be set on the response.
+    """Given two lists of cookies, ensure the uniqueness of cookies by key and return a normalized dict ready to be set
+    on the response.
     """
     filtered_cookies = [*local_cookies]
     for cookie in layered_cookies:
@@ -87,8 +87,7 @@ def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "Respo
 
 
 def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
-    """Given a dictionary of ResponseHeader, filter them and return a
-    dictionary of values.
+    """Given a dictionary of ResponseHeader, filter them and return a dictionary of values.
 
     Args:
         headers: A dictionary of [ResponseHeader][starlite.datastructures.ResponseHeader] values
@@ -100,8 +99,7 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
 
 
 async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -> Any:
-    """Normalize the response's data by awaiting any async values and resolving
-    plugins.
+    """Normalize the response's data by awaiting any async values and resolving plugins.
 
     Args:
         data: An arbitrary value
@@ -252,8 +250,7 @@ def _get_default_status_code(http_methods: Set["Method"]) -> int:
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     """HTTP Route Decorator.
 
-    Use this decorator to decorate an HTTP handler with multiple
-    methods.
+    Use this decorator to decorate an HTTP handler with multiple methods.
     """
 
     __slots__ = (
@@ -447,8 +444,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return self
 
     def resolve_response_class(self) -> Type["Response"]:
-        """Return the closest custom Response class in the owner graph or the
-        default Response class.
+        """Return the closest custom Response class in the owner graph or the default Response class.
 
         This method is memoized so the computation occurs only once.
 
@@ -483,8 +479,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
-        """Return a list of Cookie instances. Filters the list to ensure each
-        cookie key is unique.
+        """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
             A list of [Cookie][starlite.datastructures.Cookie] instances.
@@ -500,8 +495,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return filtered_cookies
 
     def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
-        """Resolve the before_handler handler by starting from the route
-        handler and moving up.
+        """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -520,8 +514,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
 
     def resolve_after_response(self) -> Optional["AfterResponseHookHandler"]:
-        """Resolve the after_response handler by starting from the route
-        handler and moving up.
+        """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -595,8 +588,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a [Response][starlite.Response] from the handler by resolving
-        and calling it.
+        """Return a [Response][starlite.Response] from the handler by resolving and calling it.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] app instance
@@ -621,9 +613,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it is set by inspecting its
-        return annotations.
-        """
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         if self.signature.return_annotation is Signature.empty:
@@ -961,9 +951,7 @@ class head(HTTPRouteHandler):
         )
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it is set by inspecting its
-        return annotations.
-        """
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         # we allow here File and FileResponse because these have special setting for head responses

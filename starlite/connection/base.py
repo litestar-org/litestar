@@ -229,8 +229,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def session(self) -> Dict[str, Any]:
-        """Return the session for this connection if a session was previously
-        set in the `Scope`
+        """Return the session for this connection if a session was previously set in the `Scope`
 
         Returns:
             A dictionary representing the session value - if existing.
@@ -310,8 +309,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return make_absolute_url(url_path, self.base_url)
 
     def url_for_static_asset(self, name: str, file_path: str) -> str:
-        """Receives a static files handler name, an asset file path and returns
-        resolved absolute url to the asset.
+        """Receives a static files handler name, an asset file path and returns resolved absolute url to the asset.
 
         Args:
             name: A static handler unique name.
