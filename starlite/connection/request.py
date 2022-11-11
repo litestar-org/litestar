@@ -144,9 +144,8 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
-        """Retrieve form data from the request. If the request is either a
-        'multipart/form-data' or an 'application/x-www-form- urlencoded',
-        return a FormMultiDict instance populated with the values sent in the
+        """Retrieve form data from the request. If the request is either a 'multipart/form-data' or an
+        'application/x-www-form- urlencoded', return a FormMultiDict instance populated with the values sent in the
         request, otherwise, an empty instance.
 
         Returns:

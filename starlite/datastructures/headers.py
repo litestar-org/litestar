@@ -83,7 +83,9 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 class MutableScopeHeaders(MutableMapping):
     """A case-insensitive, multidict-like structure that can be used to mutate
-    headers within a [Scope][starlite.types.Scope]
+    headers within a.
+
+    [Scope][starlite.types.Scope]
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:

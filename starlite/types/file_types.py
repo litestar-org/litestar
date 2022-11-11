@@ -64,16 +64,6 @@ class FileSystemProtocol(Protocol):
         mode: "OpenBinaryMode",
         buffering: int = -1,
     ) -> Union[IO[bytes], Awaitable["AsyncFile[bytes]"]]:
-        """Return a file-like object from the filesystem.
-
-        Notes:
-            - The return value must function correctly in a context `with` block.
-
-        Args:
-            file: Path to the target file.
-            mode: Mode, similar to the built `open`.
-            buffering: Buffer size.
-        """
         ...
 
     @overload
@@ -83,16 +73,6 @@ class FileSystemProtocol(Protocol):
         mode: "OpenTextMode",
         buffering: int = -1,
     ) -> Union[IO[str], Awaitable["AsyncFile[str]"]]:
-        """Return a file-like object from the filesystem.
-
-        Notes:
-            - The return value must function correctly in a context `with` block.
-
-        Args:
-            file: Path to the target file.
-            mode: Mode, similar to the built `open`.
-            buffering: Buffer size.
-        """
         ...
 
     def open(  # pyright: ignore
