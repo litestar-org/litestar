@@ -1,7 +1,6 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, Literal
 
 import pytest
-from typing_extensions import Literal
 
 from starlite import MediaType, WebSocket, get, websocket
 from starlite.config import CompressionConfig

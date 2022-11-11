@@ -8,7 +8,7 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType

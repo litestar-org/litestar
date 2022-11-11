@@ -13,6 +13,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Optional,
     TypeVar,
     Union,
@@ -21,7 +22,6 @@ from typing import (
 
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
-from typing_extensions import Literal
 
 from starlite.datastructures import ETag
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks

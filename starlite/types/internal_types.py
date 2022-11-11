@@ -1,6 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, NamedTuple, Type, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Any, Callable, Dict, Literal, NamedTuple, Type, Union
 
 from starlite.types import Method
 

@@ -8,7 +8,7 @@ from starlite.response.base import Response
 from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import ResponseCookies

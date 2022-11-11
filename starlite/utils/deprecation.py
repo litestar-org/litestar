@@ -1,9 +1,9 @@
 import inspect
 from functools import wraps
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Literal, Optional, TypeVar
 from warnings import warn
 
-from typing_extensions import Literal, ParamSpec
+from typing_extensions import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")

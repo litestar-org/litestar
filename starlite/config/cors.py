@@ -1,8 +1,7 @@
 import re
-from typing import Dict, List, Optional, Pattern, Union, cast
+from typing import Dict, List, Literal, Optional, Pattern, Union, cast
 
 from pydantic import BaseModel, PrivateAttr, validator
-from typing_extensions import Literal
 
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.types import Empty, EmptyType, Method

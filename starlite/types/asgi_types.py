@@ -36,12 +36,13 @@ from typing import (
     Callable,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
     Union,
 )
 
-from typing_extensions import Literal, TypedDict
+from typing_extensions import TypedDict
 
 from starlite.enums import ScopeType
 

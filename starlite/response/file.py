@@ -23,9 +23,9 @@ from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 if TYPE_CHECKING:
     from os import PathLike
     from os import stat_result as stat_result_type
+    from typing import Literal
 
     from anyio import Path
-    from typing_extensions import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import PathType, ResponseCookies, Send

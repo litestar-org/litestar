@@ -1,10 +1,9 @@
 from contextlib import ExitStack
 from queue import Queue
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, Union, cast
 
 from anyio import sleep
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
-from typing_extensions import Literal
 
 from starlite.exceptions import WebSocketDisconnect
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE

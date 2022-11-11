@@ -27,7 +27,7 @@ from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
 
-    from typing_extensions import Literal
+    from typing import Literal
 
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Message, Serializer, WebSocketScope

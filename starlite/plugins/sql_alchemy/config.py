@@ -4,6 +4,7 @@ from typing import (
     Callable,
     Dict,
     List,
+    Literal,
     Optional,
     Set,
     Type,
@@ -13,7 +14,6 @@ from typing import (
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, root_validator, validator
-from typing_extensions import Literal
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.exceptions import MissingDependencyException

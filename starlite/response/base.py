@@ -27,7 +27,7 @@ from starlite.utils.helpers import get_enum_string_value
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import (

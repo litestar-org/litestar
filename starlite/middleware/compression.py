@@ -1,8 +1,6 @@
 from gzip import GzipFile
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union
 
 from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import CompressionEncoding, ScopeType

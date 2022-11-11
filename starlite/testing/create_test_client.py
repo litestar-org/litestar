@@ -4,7 +4,7 @@ from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.testing.test_client import TestClient
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
     from starlite import (
         BaseLoggingConfig,
