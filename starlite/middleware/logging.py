@@ -72,7 +72,7 @@ class LoggingMiddleware(AbstractMiddleware):
         )
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -104,7 +104,7 @@ class LoggingMiddleware(AbstractMiddleware):
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: "Scope") -> None:
-        """Handles extracting the response data and logging the message.
+        """Extract the response data and log the message.
 
         Args:
             scope: The ASGI connection scope.
@@ -183,7 +183,7 @@ class LoggingMiddleware(AbstractMiddleware):
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
-        """Creates a 'send' wrapper, which handles logging response data.
+        """Create a `send` wrapper, which handles logging response data.
 
         Args:
             scope: The ASGI connection scope.
@@ -283,8 +283,7 @@ class LoggingMiddlewareConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one
-        of the application layers.
+        """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
             ```python

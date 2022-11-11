@@ -61,8 +61,7 @@ def deprecated(
     pending: bool = False,
     kind: Optional[Literal["function", "method", "property"]] = None,
 ) -> Callable[[Callable[P, T]], Callable[P, T]]:
-    """Create a decorator wrapping a function, method or property with a
-    warning call about a (pending) deprecation.
+    """Create a decorator wrapping a function, method or property with a warning call about a (pending) deprecation.
 
     Args:
         version: Starlite version where the deprecation will occur

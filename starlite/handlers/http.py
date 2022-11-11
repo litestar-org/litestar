@@ -72,8 +72,8 @@ MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define ht
 
 
 def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
-    """Given two lists of cookies, ensures the uniqueness of cookies by key and
-    returns a normalized dict ready to be set on the response.
+    """Given two lists of cookies, ensure the uniqueness of cookies by key and return a normalized dict ready to be set
+    on the response.
     """
     filtered_cookies = [*local_cookies]
     for cookie in layered_cookies:
@@ -87,8 +87,7 @@ def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "Respo
 
 
 def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
-    """Given a dictionary of ResponseHeader, filters them and returns a
-    dictionary of values.
+    """Given a dictionary of ResponseHeader, filter them and return a dictionary of values.
 
     Args:
         headers: A dictionary of [ResponseHeader][starlite.datastructures.ResponseHeader] values
@@ -100,8 +99,7 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
 
 
 async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -> Any:
-    """Normalizes the response's data by awaiting any async values and
-    resolving plugins.
+    """Normalize the response's data by awaiting any async values and resolving plugins.
 
     Args:
         data: An arbitrary value
@@ -134,7 +132,7 @@ def _create_response_container_handler(
     media_type: str,
     status_code: int,
 ) -> "AsyncAnyCallable":
-    """Creates a handler function for ResponseContainers."""
+    """Create a handler function for ResponseContainers."""
 
     async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> "ASGIApp":
         normalized_headers = {**_normalize_headers(headers), **data.headers}
@@ -156,7 +154,7 @@ def _create_response_container_handler(
 def _create_response_handler(
     after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
-    """Creates a handler function for Starlite Responses."""
+    """Create a handler function for Starlite Responses."""
 
     async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
         normalized_cookies = _normalize_cookies(data.cookies, cookies)
@@ -170,7 +168,7 @@ def _create_response_handler(
 def _create_generic_asgi_response_handler(
     after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
 ) -> "AsyncAnyCallable":
-    """Creates a handler function for Responses."""
+    """Create a handler function for Responses."""
 
     async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
         normalized_cookies = _normalize_cookies(cookies, [])
@@ -191,7 +189,7 @@ def _create_data_handler(
     response_class: "ResponseType",
     status_code: int,
 ) -> "AsyncAnyCallable":
-    """Creates a handler function for arbitrary data."""
+    """Create a handler function for arbitrary data."""
 
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
         data = await _normalize_response_data(data=data, plugins=plugins)
@@ -252,8 +250,7 @@ def _get_default_status_code(http_methods: Set["Method"]) -> int:
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     """HTTP Route Decorator.
 
-    Use this decorator to decorate an HTTP handler with multiple
-    methods.
+    Use this decorator to decorate an HTTP handler with multiple methods.
     """
 
     __slots__ = (
@@ -364,7 +361,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -382,7 +380,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -438,14 +438,13 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._resolved_response_handler: Union["Callable[[Any], Awaitable[ASGIApp]]", EmptyType] = Empty
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
-        """Replaces a function with itself."""
+        """Replace a function with itself."""
         self.fn = fn
         self._validate_handler_function()
         return self
 
     def resolve_response_class(self) -> Type["Response"]:
-        """Returns the closest custom Response class in the owner graph or the
-        default Response class.
+        """Return the closest custom Response class in the owner graph or the default Response class.
 
         This method is memoized so the computation occurs only once.
 
@@ -458,7 +457,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return Response
 
     def resolve_response_headers(self) -> "ResponseHeadersMap":
-        """Returns all header parameters in the scope of the handler function.
+        """Return all header parameters in the scope of the handler function.
 
         Returns:
             A dictionary mapping keys to [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
@@ -480,8 +479,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return resolved_response_headers
 
     def resolve_response_cookies(self) -> "ResponseCookies":
-        """Returns a list of Cookie instances. Filters the list to ensure each
-        cookie key is unique.
+        """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
             A list of [Cookie][starlite.datastructures.Cookie] instances.
@@ -497,8 +495,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return filtered_cookies
 
     def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
-        """Resolves the before_handler handler by starting from the route
-        handler and moving up.
+        """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -517,8 +514,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
 
     def resolve_after_response(self) -> Optional["AfterResponseHookHandler"]:
-        """Resolves the after_response handler by starting from the route
-        handler and moving up.
+        """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -540,7 +536,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     def resolve_response_handler(
         self,
     ) -> Callable[[Any], Awaitable["ASGIApp"]]:
-        """Resolves the response_handler function for the route handler.
+        """Resolve the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
 
@@ -592,8 +588,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a [Response][starlite.Response] from the handler by resolving
-        and calling it.
+        """Return a [Response][starlite.Response] from the handler by resolving and calling it.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] app instance
@@ -618,9 +613,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it is set by inspecting its
-        return annotations.
-        """
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         if self.signature.return_annotation is Signature.empty:
@@ -741,7 +734,8 @@ class get(HTTPRouteHandler):
                 valid IANA Media-Type.
             middleware: A list of [Middleware][starlite.types.Middleware].
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
+                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
             response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
                 default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
@@ -758,7 +752,9 @@ class get(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation. This list should describe all exceptions raised within the route handler's function/method. The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
@@ -955,9 +951,7 @@ class head(HTTPRouteHandler):
         )
 
     def _validate_handler_function(self) -> None:
-        """Validates the route handler function once it is set by inspecting
-        its return annotations.
-        """
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         # we allow here File and FileResponse because these have special setting for head responses

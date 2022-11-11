@@ -64,9 +64,9 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         self._config = config
 
     def on_app_init(self, app: "Starlite") -> None:
-        """Executed on the application's init process. If config has been
-        passed to the plugin, it will initialize SQLAlchemy and add the
-        dependencies as expected.
+        """If config has been passed to the plugin, it will initialize SQLAlchemy and add the dependencies as expected.
+
+        Executed on the application's init process.
 
         Args:
             app: The [Starlite][starlite.app.Starlite] application instance.
@@ -83,8 +83,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
-        """A typeguard that tests whether values are subclasses of SQLAlchemy's
-        'DeclarativeMeta' class.
+        """`TypeGuard` testing whether values are subclasses of SQLAlchemy's 'DeclarativeMeta' class.
 
         Args:
             value: An arbitrary type to test.
@@ -100,8 +99,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def handle_string_type(column_type: Union[sqlalchemy_type.String, SQLAlchemyBinaryType]) -> "Type":
-        """Handles the SQLAlchemy String types, including Blob and Binary
-        types.
+        """Handle the SQLAlchemy String types, including Blob and Binary types.
 
         Args:
             column_type: The type of the SQLColumn.
@@ -115,7 +113,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def handle_numeric_type(column_type: sqlalchemy_type.Numeric) -> "Type":
-        """Handles the SQLAlchemy non-int Numeric types.
+        """Handle the SQLAlchemy non-int Numeric types.
+
         Args:
             column_type: The type of the SQLColumn.
 
@@ -127,7 +126,8 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return float
 
     def handle_list_type(self, column_type: sqlalchemy_type.ARRAY) -> Any:
-        """Handles the SQLAlchemy Array type.
+        """Handle the SQLAlchemy Array type.
+
         Args:
             column_type: The type of the SQLColumn.
 
@@ -143,7 +143,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return list_type
 
     def handle_tuple_type(self, column_type: sqlalchemy_type.TupleType) -> Any:
-        """Handles the SQLAlchemy Tuple type.
+        """Handle the SQLAlchemy Tuple type.
 
         Args:
             column_type: The type of the SQLColumn.
@@ -156,7 +156,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def handle_enum(column_type: Union[sqlalchemy_type.Enum, mysql.ENUM, postgresql.ENUM]) -> Any:
-        """Handles the SQLAlchemy Enum types.
+        """Handle the SQLAlchemy Enum types.
 
         Args:
             column_type: The type of the SQLColumn.
@@ -168,7 +168,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @property
     def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
-        """A map of SQLAlchemy column types to provider functions.
+        """Map of SQLAlchemy column types to provider functions.
 
         This method is separated to allow for easy overriding in
         subclasses.
@@ -330,8 +330,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def parse_model(model_class: Type[DeclarativeMeta]) -> Mapper:
-        """Validates that the passed in model_class is an SQLAlchemy
-        declarative model, and returns a Mapper of it.
+        """Validate that the passed in model_class is an SQLAlchemy declarative model, and return a `Mapper` of it.
 
         Args:
             model_class: An SQLAlchemy declarative class.
@@ -351,8 +350,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         )
 
     def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
-        """Generates a pydantic model for a given SQLAlchemy declarative table
-        and any nested relations.
+        """Generate a pydantic model for a given SQLAlchemy declarative table and any nested relations.
 
         Args:
             model_class: An SQLAlchemy declarative class instance.
@@ -404,8 +402,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     def from_pydantic_model_instance(
         self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
-        """Create an instance of a given model_class using the values stored in
-        the given pydantic_model_instance.
+        """Create an instance of a given model_class using the values stored in the given pydantic_model_instance.
 
         Args:
             model_class: A declarative table class.
@@ -417,8 +414,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: "DeclarativeMeta") -> Dict[str, Any]:
-        """Given a model instance, convert it to a dict of values that can be
-        serialized.
+        """Given a model instance, convert it to a dict of values that can be serialized.
 
         Args:
             model_instance: An SQLAlchemy declarative table instance.
@@ -433,8 +429,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         return pydantic_model.from_orm(model_instance).dict()  # type:ignore[pydantic-unexpected]
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
-        """Given a dictionary of kwargs, return an instance of the given
-        model_class.
+        """Given a dictionary of kwargs, return an instance of the given model_class.
 
         Args:
             model_class: A declarative table class.

@@ -115,13 +115,12 @@ def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBack
 def test_load_session_cookies_and_expire_previous(
     mutate: bool, cookie_session_middleware: SessionMiddleware[CookieBackend]
 ) -> None:
-    """Should load session cookies into session from request and overwrite the
-    previously set cookies with the upcoming response.
+    """Should load session cookies into session from request and overwrite the previously set cookies with the upcoming
+    response.
 
-    Session cookies from the previous session should not persist because
-    session is mutable. Once the session is loaded from the cookies,
-    those cookies are redundant. The response sets new session cookies
-    overwriting or expiring the previous ones.
+    Session cookies from the previous session should not persist because session is mutable. Once the session is loaded
+    from the cookies, those cookies are redundant. The response sets new session cookies overwriting or expiring the
+    previous ones.
     """
     # Test for large session data. If it works for multiple cookies, it works for single also.
     _session = create_session(size=4096)
@@ -156,8 +155,8 @@ def test_load_session_cookies_and_expire_previous(
 
 
 def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend: CookieBackend) -> None:
-    """If AAD has been tampered with, the integrity of the data cannot be
-    verified and InavlidTag exception is raised.
+    """If AAD has been tampered with, the integrity of the data cannot be verified and InavlidTag exception is
+    raised.
     """
     encrypted_session = cookie_session_backend.dump_data(create_session())
     # The attacker will tamper with the AAD to increase the expiry time of the cookie.

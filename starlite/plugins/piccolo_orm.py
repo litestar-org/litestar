@@ -15,16 +15,13 @@ if TYPE_CHECKING:
 
 
 class PiccoloORMPlugin(PluginProtocol[Table]):
-    """Support (de)serialization and OpenAPI generation for Piccolo ORM
-    types.
-    """
+    """Support (de)serialization and OpenAPI generation for Piccolo ORM types."""
 
     _models_map: Dict[Type[Table], Type["BaseModel"]] = {}
     _data_models_map: Dict[Type[Table], Type["BaseModel"]] = {}
 
     def to_pydantic_model_class(self, model_class: Type[Table], **kwargs: Any) -> Type["BaseModel"]:
-        """Given a piccolo model_class instance, convert it to a subclass of
-        the piccolo "BaseModel".
+        """Given a piccolo model_class instance, convert it to a subclass of the piccolo "BaseModel".
 
         Since incoming request body's cannot and should not include values for
         related fields, pk fields and read only fields in piccolo-orm, we generate two different kinds of pydantic models here:
@@ -47,30 +44,23 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[Table]":
-        """Given a value of indeterminate type, determine if this value is
-        supported by the plugin.
-        """
+        """Given a value of indeterminate type, determine if this value is supported by the plugin."""
         return isinstance(value, (Table, TableMetaclass))
 
     def from_pydantic_model_instance(self, model_class: Type[Table], pydantic_model_instance: "BaseModel") -> Table:
-        """Given an instance of a pydantic model created using the plugin's
-        'to_pydantic_model_class', return an instance of the class from which
-        that pydantic model has been created.
+        """Given an instance of a pydantic model created using the plugin's 'to_pydantic_model_class', return an
+        instance of the class from which that pydantic model has been created.
 
         This class is passed in as the 'model_class' kwarg.
         """
         return self.from_dict(model_class=model_class, **pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: Table) -> Dict[str, Any]:
-        """Given an instance of a model supported by the plugin, return a
-        dictionary of serializable values.
-        """
+        """Given an instance of a model supported by the plugin, return a dictionary of serializable values."""
         return model_instance.to_dict()
 
     def from_dict(self, model_class: Type[Table], **kwargs: Any) -> Table:
-        """Given a class supported by this plugin and a dict of values, create
-        an instance of the class.
-        """
+        """Given a class supported by this plugin and a dict of values, create an instance of the class."""
         instance = model_class()
         for column in instance.all_columns():
             meta = column._meta  # pylint: disable=protected-access

@@ -43,9 +43,7 @@ T = TypeVar("T")
 
 
 class Response(Generic[T]):
-    """Base Starlite HTTP response class, used as the basis for all other
-    response classes.
-    """
+    """Base Starlite HTTP response class, used as the basis for all other response classes."""
 
     __slots__ = (
         "status_code",
@@ -109,7 +107,7 @@ class Response(Generic[T]):
         httponly: bool = False,
         samesite: 'Literal["lax", "strict", "none"]' = "lax",
     ) -> None:
-        """Sets a cookie on the response.
+        """Ses a cookie on the response.
 
         Args:
             key: Key for the cookie.
@@ -140,7 +138,7 @@ class Response(Generic[T]):
         )
 
     def set_header(self, key: str, value: str) -> None:
-        """Sets a header on the response.
+        """Set a header on the response.
 
         Args:
             key: Header key.
@@ -152,7 +150,7 @@ class Response(Generic[T]):
         self.headers[key] = value
 
     def set_etag(self, etag: Union[str, "ETag"]) -> None:
-        """Sets an etag header.
+        """Set an etag header.
 
         Args:
             etag: An etag value.
@@ -168,7 +166,7 @@ class Response(Generic[T]):
         path: str = "/",
         domain: Optional[str] = None,
     ) -> None:
-        """Deletes a cookie.
+        """Delete a cookie.
 
         Args:
             key: Key of the cookie.
@@ -184,7 +182,7 @@ class Response(Generic[T]):
 
     @staticmethod
     def serializer(value: Any) -> Any:
-        """Serializer hook for orjson to handle pydantic models.
+        """Return a serializer for orjson to handle pydantic models.
 
         Args:
             value: A value to serialize
@@ -244,7 +242,7 @@ class Response(Generic[T]):
 
     @property
     def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
-        """Encoded response headers as a list of tuples of bytes.
+        """Response headers as a list of tuples of bytes.
 
         Notes:
             - A 'Content-Length' header will be added if appropriate and not provided by the user.
@@ -269,7 +267,7 @@ class Response(Generic[T]):
         return encoded_headers
 
     async def after_response(self) -> None:
-        """Executed after the response is sent.
+        """Execute after the response is sent.
 
         Returns:
             None
@@ -278,8 +276,7 @@ class Response(Generic[T]):
             await self.background()
 
     async def start_response(self, send: "Send") -> None:
-        """Emit the start event of the response. This event includes the
-        headers and status codes.
+        """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:
             send: The ASGI send function.
@@ -312,7 +309,7 @@ class Response(Generic[T]):
         await send(event)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The call method of the response is an "ASGIApp".
+        """ASGI callable of the `Response`.
 
         Args:
             scope: The ASGI connection scope.

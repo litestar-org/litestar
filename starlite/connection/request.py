@@ -79,8 +79,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
     @property
     def content_type(self) -> Tuple[str, Dict[str, str]]:
-        """Parse the request's 'Content-Type' header, returning the header
-        value and any options as a dictionary.
+        """Parse the request's 'Content-Type' header, returning the header value and any options as a dictionary.
 
         Returns:
             A tuple with the parsed value and a dictionary containing any options send in it.
@@ -100,7 +99,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return self._json
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
-        """Returns an async generator that streams chunks of bytes.
+        """Return an async generator that streams chunks of bytes.
 
         Returns:
             An async generator.
@@ -144,9 +143,8 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
-        """Retrieve form data from the request. If the request is either a
-        'multipart/form-data' or an 'application/x-www-form- urlencoded',
-        return a FormMultiDict instance populated with the values sent in the
+        """Retrieve form data from the request. If the request is either a 'multipart/form-data' or an
+        'application/x-www-form- urlencoded', return a FormMultiDict instance populated with the values sent in the
         request, otherwise, an empty instance.
 
         Returns:
@@ -184,8 +182,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("FormMultiDict", self._form)
 
     async def send_push_promise(self, path: str) -> None:
-        """Sends a push promise. This method requires the 'http.response.push'
-        extension to be sent from the ASGI server.
+        """Send a push promise.
+
+        This method requires the `http.response.push` extension to be sent from the ASGI server.
 
         Args:
             path: Path to send the promise to.

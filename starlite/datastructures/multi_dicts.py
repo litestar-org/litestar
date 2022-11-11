@@ -120,7 +120,7 @@ class FormMultiDict(ImmutableMultiDict[Any]):
     """MultiDict for form data."""
 
     async def close(self) -> None:
-        """Closes all files in the multi-dict.
+        """Close all files in the multi-dict.
 
         Returns:
             None

@@ -49,7 +49,7 @@ SESSION_TERMINUS_ASGI_EVENTS = {
 
 
 def serializer(value: Any) -> str:
-    """Serializer for JSON field values.
+    """Serialize JSON field values.
 
     Args:
         value: Any json serializable value.
@@ -103,7 +103,7 @@ class SQLAlchemySessionConfig(BaseModel):
 
 
 class SQLAlchemyEngineConfig(BaseModel):
-    """This class represents the SQLAlchemy Engine configuration.
+    """Configuration for SQLAlchemy's `Engine`.
 
     For details see: https://docs.sqlalchemy.org/en/14/core/engines.html
     """
@@ -143,7 +143,7 @@ class SQLAlchemyEngineConfig(BaseModel):
 
 
 class SQLAlchemyConfig(BaseModel):
-    """This class represents the SQLAlchemy sessionmaker configuration.
+    """Configuration for SQLAlchemy's `sessionmaker`.
 
     For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
     """
@@ -244,8 +244,7 @@ class SQLAlchemyConfig(BaseModel):
     def check_connection_string_or_engine_instance(  # pylint: disable=no-self-argument
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Either `connection_string` or `engine_instance` must be specified,
-        and not both.
+        """Either `connection_string` or `engine_instance` must be specified, and not both.
 
         Args:
             values: Field values, after validation.
@@ -357,8 +356,10 @@ class SQLAlchemyConfig(BaseModel):
         del state[self.engine_app_state_key]
 
     def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
-        """Adds the SQLAlchemy loggers to the logging config. Currently working
-        only with [LoggingConfig][starlite.config.logging.LoggingConfig].
+        """Add the SQLAlchemy loggers to the logging config.
+
+        Notes:
+            - Currently only works with [LoggingConfig][starlite.config.logging.LoggingConfig].
 
         Args:
             logging_config: Logging config.

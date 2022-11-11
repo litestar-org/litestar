@@ -185,8 +185,7 @@ class RequestFactory:
         headers: Optional[Dict[str, str]] = None,
         cookies: Optional[Union[List["Cookie"], str]] = None,
     ) -> List[Tuple[bytes, bytes]]:
-        """Build a list of encoded headers that can be passed to the request
-        scope.
+        """Build a list of encoded headers that can be passed to the request scope.
 
         Args:
             headers: A dictionary of headers.
@@ -221,8 +220,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a [Request][starlite.connection.Request] instance that has
-        body (data)
+        """Create a [Request][starlite.connection.Request] instance that has body (data)
 
         Args:
             http_method: The request's HTTP method.

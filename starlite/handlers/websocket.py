@@ -56,15 +56,13 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         )
 
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
-        """Replaces a function with itself."""
+        """Replace a function with itself."""
         self.fn = fn
         self._validate_handler_function()
         return self
 
     def _validate_handler_function(self) -> None:
-        """Validates the route handler function once it's set by inspecting its
-        return annotations.
-        """
+        """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         fn = cast("AnyCallable", self.fn)

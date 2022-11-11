@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 
 def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Exception) -> Optional["ExceptionHandler"]:
-    """Given a dictionary that maps exceptions and status codes to handler
-    functions, and an exception, returns the appropriate handler if existing.
+    """Given a dictionary that maps exceptions and status codes to handler functions, and an exception, returns the
+    appropriate handler if existing.
 
     Status codes are given preference over exception type.
 
@@ -57,7 +57,7 @@ class ExceptionResponseContent(BaseModel):
     """An extra mapping to attach to the exception."""
 
     def to_response(self) -> "Response":
-        """Creates a response from the model attributes.
+        """Create a response from the model attributes.
 
         Returns:
             A response instance.
@@ -72,7 +72,7 @@ class ExceptionResponseContent(BaseModel):
 
 
 def create_exception_response(exc: Exception) -> "Response":
-    """Constructs a response from an exception.
+    """Construct a response from an exception.
 
     Notes:
     - For instances of [HTTPException][starlite.exceptions.HTTPException] or other exception classes that have a

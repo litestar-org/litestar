@@ -8,8 +8,7 @@ from starlite.template import TemplateEngineProtocol
 class TemplateConfig(BaseModel):
     """Configuration for Templating.
 
-    To enable templating, pass an instance of this class to the
-    [Starlite][starlite.app.Starlite] constructor using the
+    To enable templating, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using the
     'template_config' key.
     """
 
@@ -30,7 +29,7 @@ class TemplateConfig(BaseModel):
     """
 
     def to_engine(self) -> "TemplateEngineProtocol":
-        """Instantiates the template engine."""
+        """Instantiate the template engine."""
         template_engine = self.engine(self.directory)
         if callable(self.engine_callback):
             self.engine_callback(template_engine)  # pylint: disable=not-callable

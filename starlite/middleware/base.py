@@ -23,7 +23,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
     app: "ASGIApp"
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """Executes the ASGI middleware.
+        """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.
 
@@ -41,9 +41,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
-    """Container enabling passing *args and **kwargs to Middleware class
-    constructors and factory functions.
-    """
+    """Container enabling passing *args and **kwargs to Middleware class constructors and factory functions."""
 
     __slots__ = (
         "middleware",
@@ -68,7 +66,7 @@ class DefineMiddleware:
         self.kwargs = kwargs
 
     def __call__(self, app: "ASGIApp") -> "ASGIApp":
-        """Calls the middleware constructor or factory.
+        """Call the middleware constructor or factory.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
@@ -81,12 +79,10 @@ class DefineMiddleware:
 
 
 class AbstractMiddleware:
-    """Abstract middleware providing base functionality common to all
-    middlewares, for dynamically engaging/bypassing the middleware based on
-    paths, `opt`-keys and scope types.
+    """Abstract middleware providing base functionality common to all middlewares, for dynamically engaging/bypassing
+    the middleware based on paths, `opt`-keys and scope types.
 
-    When implementing new middleware, this class should be used as a
-    base.
+    When implementing new middleware, this class should be used as a base.
     """
 
     scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
@@ -138,7 +134,7 @@ class AbstractMiddleware:
 
     @abstractmethod
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """Executes the ASGI middleware.
+        """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.
 

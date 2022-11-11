@@ -89,7 +89,7 @@ class OpenAPIController(Controller):
 
     @staticmethod
     def get_schema_from_request(request: Request) -> "OpenAPI":
-        """Returns the OpenAPI pydantic model from the request instance.
+        """Return the OpenAPI pydantic model from the request instance.
 
         Args:
             request: A [Starlite][starlite.connection.Request] instance.
@@ -105,8 +105,7 @@ class OpenAPIController(Controller):
         return request.app.openapi_schema
 
     def should_serve_endpoint(self, request: Request) -> bool:
-        """This method verifies that the requested path is within the enabled
-        endpoints in the openapi_config.
+        """Verify that the requested path is within the enabled endpoints in the openapi_config.
 
         Args:
             request: To be tested if endpoint enabled.
@@ -134,7 +133,7 @@ class OpenAPIController(Controller):
 
     @property
     def favicon(self) -> str:
-        """A favicon `<link>` tag, if applicable.
+        """Return favicon `<link>` tag, if applicable.
 
         Returns:
             A `<link>` tag if self.favicon_url is not empty, otherwise returns a placeholder meta tag.
@@ -160,8 +159,7 @@ class OpenAPIController(Controller):
         include_in_schema=False,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
-        """Return the OpenAPI schema as YAML with an
-        'application/vnd.oai.openapi' Content-Type header.
+        """Return the OpenAPI schema as YAML with an 'application/vnd.oai.openapi' Content-Type header.
 
         Args:
             request:
@@ -179,8 +177,7 @@ class OpenAPIController(Controller):
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
-        """Return the OpenAPI schema as JSON with an
-        'application/vnd.oai.openapi+json' Content-Type header.
+        """Return the OpenAPI schema as JSON with an 'application/vnd.oai.openapi+json' Content-Type header.
 
         Args:
             request:
@@ -198,10 +195,11 @@ class OpenAPIController(Controller):
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
     def root(self, request: Request) -> Response:
-        """The root route handler. Renders a static site based on the
-        'root_schema_site' value set in the application's.
+        """Render a static documentation site.
 
-        [OpenAPIConfig][starlite.config.openapi.OpenAPIConfig]. Defaults to 'redoc'.
+         The site to be rendered is based on the `root_schema_site` value set in the
+         application's [OpenAPIConfig][starlite.config.openapi.OpenAPIConfig].
+         Defaults to `redoc`.
 
         Args:
             request:
@@ -285,7 +283,7 @@ class OpenAPIController(Controller):
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     def render_swagger_ui(self, request: Request) -> str:
-        """This method renders an HTML page for Swagger-UI.
+        """Render an HTML page for Swagger-UI.
 
         Notes:
             - override this method to customize the template.
@@ -344,7 +342,7 @@ class OpenAPIController(Controller):
         """
 
     def render_stoplight_elements(self, request: Request) -> str:
-        """This method renders an HTML page for StopLight Elements.
+        """Render an HTML page for StopLight Elements.
 
         Notes:
             - override this method to customize the template.
@@ -386,7 +384,7 @@ class OpenAPIController(Controller):
         """
 
     def render_redoc(self, request: Request) -> str:  # pragma: no cover
-        """This method renders an HTML page for Redoc.
+        """Render an HTML page for Redoc.
 
         Notes:
             - override this method to customize the template.
@@ -442,7 +440,7 @@ class OpenAPIController(Controller):
         """
 
     def render_404_page(self) -> str:
-        """This method renders an HTML 404 page.
+        """Render an HTML 404 page.
 
         Returns:
             A rendered html string.

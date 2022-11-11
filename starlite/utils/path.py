@@ -3,8 +3,7 @@ from typing import Iterable
 
 
 def normalize_path(path: str) -> str:
-    """Normalizes a given path by ensuring it starts with a slash and does not
-    end with a slash.
+    """Normalize a given path by ensuring it starts with a slash and does not end with a slash.
 
     Args:
         path: Path string
@@ -18,7 +17,7 @@ def normalize_path(path: str) -> str:
 
 
 def join_paths(paths: Iterable[str]) -> str:
-    """Normalizes and joins path fragments.
+    """Normalize and joins path fragments.
 
     Args:
         paths: An iterable of path fragments.

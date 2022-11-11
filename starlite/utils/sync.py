@@ -25,8 +25,8 @@ T = TypeVar("T")
 
 
 def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extends `asyncio.iscoroutinefunction()` to additionally detect async
-    `partial` objects and class instances with `async def __call__()` defined.
+    """Extend `asyncio.iscoroutinefunction()` to additionally detect async `partial` objects and class instances with
+    `async def __call__()` defined.
 
     Args:
         value: Any
@@ -56,7 +56,7 @@ class AsyncCallable(Generic[P, T]):
         self.wrapped_callable = Ref[Callable](fn if is_async_callable(fn) else async_partial(fn))  # pyright: ignore
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
-        """A proxy to the wrapped function's call method.
+        """Proxy the wrapped function's call method.
 
         Args:
             *args: Args of the wrapped function.
@@ -83,8 +83,9 @@ def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[Async
 
 
 def async_partial(fn: Callable) -> Callable:
-    """This function wraps a given sync function making it async. In difference
-    to the 'asyncio.run_sync' function, it allows for passing kwargs.
+    """Wrap a given sync function making it async.
+
+    In difference to the 'asyncio.run_sync' function, it allows for passing kwargs.
 
     Args:
         fn: A sync callable to wrap.
@@ -106,8 +107,7 @@ class AsyncIteratorWrapper(Generic[T]):
     __slots__ = ("iterator", "generator")
 
     def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:
-        """Take a sync iterator or iterable and yields values from it
-        asynchronously.
+        """Take a sync iterator or iterable and yields values from it asynchronously.
 
         Args:
             iterator: A sync iterator or iterable.

@@ -2,7 +2,7 @@ from typing import Any, List
 
 
 def resolve_handlers(handlers: List[Any]) -> List[Any]:
-    """Converts list of string of handlers to the object of respective handler.
+    """Convert list of string of handlers to the object of respective handler.
 
     Indexing the list performs the evaluation of the object.
 

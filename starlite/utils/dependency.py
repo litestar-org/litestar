@@ -13,8 +13,7 @@ if TYPE_CHECKING:
 
 
 def is_dependency_field(val: Any) -> "TypeGuard[FieldInfo]":
-    """Determine if a value is a `FieldInfo` instance created via the
-    `Dependency()` function.
+    """Determine if a value is a `FieldInfo` instance created via the `Dependency()` function.
 
     Args:
         val(Any): value to be tested
@@ -26,8 +25,8 @@ def is_dependency_field(val: Any) -> "TypeGuard[FieldInfo]":
 
 
 def should_skip_dependency_validation(val: Any) -> bool:
-    """Determine if a value is a `FieldInfo` instance created via the
-    `Dependency()` function set with ` skip_validation=True`.
+    """Determine if a value is a `FieldInfo` instance created via the `Dependency()` function set with
+    `skip_validation=True`.
 
     Args:
         val(Any): value to be tested
@@ -42,9 +41,7 @@ def should_skip_dependency_validation(val: Any) -> bool:
 async def _resolve_dependency_into_kwargs(
     model: "KwargsModel", dependency: "Dependency", connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]
 ) -> None:
-    """Helper function to store the result of resolve_dependency in the
-    kwargs.
-    """
+    """Store the result of resolve_dependency in the kwargs."""
     kwargs[dependency.key] = await model.resolve_dependency(dependency=dependency, connection=connection, **kwargs)
 
 
@@ -54,8 +51,7 @@ async def resolve_dependencies_concurrently(
     connection: Union["WebSocket", "Request"],
     kwargs: Dict[str, Any],
 ) -> None:
-    """Resolve the dependencies concurrently. The passed in kwargs will be
-    modified with the results.
+    """Resolve the dependencies concurrently. The passed in kwargs will be modified with the results.
 
     Args:
         model: An instance of [KwargsModel][starlite.KwargsModel].

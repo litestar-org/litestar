@@ -60,8 +60,8 @@ class HTTPRoute(BaseRoute):
         )
 
     async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
-        """ASGI app that creates a Request from the passed in args, determines
-        which handler function to call and then handles the call.
+        """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
+        handles the call.
 
         Args:
             scope: The ASGI connection scope.
@@ -87,8 +87,8 @@ class HTTPRoute(BaseRoute):
             await after_response_handler(request)  # type: ignore
 
     def create_handler_map(self) -> None:
-        """Parses the passed in route_handlers and returns a mapping of http-
-        methods and route handlers.
+        """Parse the `router_handlers` of this route and return a mapping of
+        http- methods and route handlers.
         """
         for route_handler in self.route_handlers:
             kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
@@ -106,7 +106,11 @@ class HTTPRoute(BaseRoute):
         route_handler: "HTTPRouteHandler",
         parameter_model: "KwargsModel",
     ) -> "ASGIApp":
-        """Handles creating a response instance and/or using cache.
+        """Return a response for the request.
+
+        If caching is enabled and a response exist in the cache, the cached response will be returned.
+        If caching is enabled and a response does not exist in the cache, the newly created
+        response will be cached.
 
         Args:
             scope: The Request's scope
@@ -137,8 +141,8 @@ class HTTPRoute(BaseRoute):
     async def _call_handler_function(
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
     ) -> "ASGIApp":
-        """Calls the before request handlers, retrieves any data required for
-        the route handler, and calls the route handler's to_response method.
+        """Call the before request handlers, retrieve any data required for the route handler, and call the route
+        handler's `to_response` method.
 
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
@@ -168,9 +172,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
-        """Determines what kwargs are required for the given route handler's
-        'fn' and calls it.
-        """
+        """Determine what kwargs are required for the given route handler's `fn` and calls it."""
         signature_model = get_signature_model(route_handler)
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
@@ -198,7 +200,7 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["ASGIApp"]:
-        """Retrieves and un-pickles the cached response, if existing.
+        """Retrieve and un-pickle the cached response, if existing.
 
         Args:
             request: The [Request][starlite.connection.Request] instance

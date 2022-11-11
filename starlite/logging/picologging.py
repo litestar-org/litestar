@@ -13,9 +13,7 @@ except ImportError as e:
 
 
 class QueueListenerHandler(QueueHandler):
-    """Configure queue listener and handler to support non-blocking logging
-    configuration.
-    """
+    """Configure queue listener and handler to support non-blocking logging configuration."""
 
     def __init__(self, handlers: Optional[List[Any]] = None) -> None:
         """Initialize `QueueListenerHandler`.

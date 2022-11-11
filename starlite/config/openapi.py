@@ -28,9 +28,8 @@ if TYPE_CHECKING:
 class OpenAPIConfig(BaseModel):
     """Configuration for OpenAPI.
 
-    To enable OpenAPI schema generation and serving, pass an instance of
-    this class to the [Starlite][starlite.app.Starlite] constructor
-    using the 'openapi_config' kwargs.
+    To enable OpenAPI schema generation and serving, pass an instance of this class to the
+    [Starlite][starlite.app.Starlite] constructor using the 'openapi_config' kwargs.
     """
 
     create_examples: bool = False
@@ -113,10 +112,7 @@ class OpenAPIConfig(BaseModel):
     """
 
     def to_openapi_schema(self) -> "OpenAPI":
-        """Generates an.
-
-        [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] from the
-        values stored on 'self'.
+        """Return an `OpenAPI` instance from the values stored in `self`.
 
         Returns:
             An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
@@ -152,10 +148,7 @@ class OpenAPIConfig(BaseModel):
         )
 
     def create_openapi_schema_model(self, app: "Starlite") -> "OpenAPI":
-        """Creates instance of.
-
-        [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance for
-        the given [Starlite][starlite.app.Starlite] application.
+        """Create and `OpenAPI` instance for the given application.
 
         Args:
             app (Starlite): [Starlite][starlite.app.Starlite] instance.

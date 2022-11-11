@@ -35,8 +35,8 @@ def Parameter(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for
-    both parameter parsing and OpenAPI schema generation.
+    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    generation.
 
     Args:
         value_type: `Undefined` by default.
@@ -129,8 +129,8 @@ def Body(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for
-    both parameter parsing and OpenAPI schema generation.
+    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    generation.
 
     Args:
         media_type: Defaults to RequestEncodingType.JSON.
@@ -194,8 +194,8 @@ def Body(
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Dependency(*, default: Any = Undefined, skip_validation: bool = False) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for
-    both parameter parsing and OpenAPI schema generation.
+    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    generation.
 
     Args:
         default: default value if dependency not provided.

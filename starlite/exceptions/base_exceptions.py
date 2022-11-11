@@ -28,6 +28,5 @@ class StarLiteException(Exception):
 class MissingDependencyException(StarLiteException):
     """Missing optional dependency.
 
-    This exception is raised only when a module depends on a dependency
-    that has not been installed.
+    This exception is raised only when a module depends on a dependency that has not been installed.
     """

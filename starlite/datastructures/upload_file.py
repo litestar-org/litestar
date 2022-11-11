@@ -13,7 +13,7 @@ class UploadFile(MultipartUploadFile):
 
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
-        """Creates a pydantic JSON schema.
+        """Create a pydantic JSON schema.
 
         Args:
             field_schema: The schema being generated for the field.

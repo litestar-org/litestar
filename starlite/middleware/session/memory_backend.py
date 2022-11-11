@@ -50,8 +50,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         await self._cache.set(session_id, data, expiration=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no
-        such session-ID exists.
+        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID

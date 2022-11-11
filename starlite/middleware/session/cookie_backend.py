@@ -47,9 +47,8 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
 
     def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
-        """Given orjson serializable data, including pydantic models and numpy
-        types, dump it into a bytes string, encrypt, encode and split it into
-        chunks of the desirable size.
+        """Given orjson serializable data, including pydantic models and numpy types, dump it into a bytes string,
+        encrypt, encode and split it into chunks of the desirable size.
 
         Args:
             data: Data to serialize, encrypt, encode and chunk.
@@ -89,8 +88,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         return {}
 
     def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
-        """Return a list of cookie-keys from the connection if they match the
-        session-cookie pattern.
+        """Return a list of cookie-keys from the connection if they match the session-cookie pattern.
 
         Args:
             connection: An ASGIConnection instance
@@ -114,11 +112,9 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
     ) -> None:
-        """Store data from `scope_session` in `Message` in the form of cookies.
-        If the contents of `scope_session` are too large to fit a single
-        cookie, it will be split across several cookies, following the naming
-        scheme of `<cookie key>-<n>`. If the session is empty or shrinks,
-        cookies will be cleared by setting their value to `null`
+        """Store data from `scope_session` in `Message` in the form of cookies. If the contents of `scope_session` are
+        too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
+        `<cookie key>-<n>`. If the session is empty or shrinks, cookies will be cleared by setting their value to `null`
 
         Args:
             scope_session: Current session to store
@@ -154,8 +150,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             )
 
     async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
-        """Load session data from a connection's session-cookies and return it
-        as a dictionary.
+        """Load session data from a connection's session-cookies and return it as a dictionary.
 
         Args:
             connection: Originating ASGIConnection
@@ -185,7 +180,7 @@ class CookieBackendConfig(BaseBackendConfig):
 
     @validator("secret", always=True)
     def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
-        """Ensures that the 'secret' value is 128, 192 or 256 bits.
+        """Ensure that the 'secret' value is 128, 192 or 256 bits.
 
         Args:
             value: A bytes string.

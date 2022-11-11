@@ -53,8 +53,7 @@ class SessionModel(SessionModelMixin):
 
 
 def create_session_model(base: Type[Any], table_name: str = "session") -> Type[SessionModelMixin]:
-    """Dynamically generate a session storage model and register it with the
-    declarative base.
+    """Dynamically generate a session storage model and register it with the declarative base.
 
     Args:
         base: SQLAlchemy declarative base
@@ -72,8 +71,7 @@ def create_session_model(base: Type[Any], table_name: str = "session") -> Type[S
 
 
 def register_session_model(base: Union[registry, Any], model: Type[SessionModelT]) -> Type[SessionModelT]:
-    """Map and register a pre-existing model subclassing `SessionModelMixin`
-    with a declarative base or registry.
+    """Map and register a pre-existing model subclassing `SessionModelMixin` with a declarative base or registry.
 
     Args:
         base: Either a `orm.registry` or `DeclarativeBase`
@@ -87,8 +85,7 @@ def register_session_model(base: Union[registry, Any], model: Type[SessionModelT
 
 
 class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchemyBackendConfig"], ABC):
-    """Session backend to store data in a database with SQLAlchemy. Works with
-    both sync and async engines.
+    """Session backend to store data in a database with SQLAlchemy. Works with both sync and async engines.
 
     Notes:
         - Requires `sqlalchemy` which needs to be installed separately, and a configured
@@ -172,8 +169,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
             await sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no
-        such session-ID exists.
+        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -267,8 +263,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no
-        such session-ID exists.
+        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -320,8 +315,8 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
 
     @property
     def _backend_class(self) -> Type[Union[SQLAlchemyBackend, AsyncSQLAlchemyBackend]]:  # type: ignore[override]
-        """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`,
-        depending on the engine type configured in the `SQLAlchemyPlugin`
+        """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`, depending on the engine type configured in the
+        `SQLAlchemyPlugin`
         """
         if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:  # pylint: disable=protected-access
             return AsyncSQLAlchemyBackend

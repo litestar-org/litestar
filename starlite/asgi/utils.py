@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 def wrap_in_exception_handler(debug: bool, app: "ASGIApp", exception_handlers: "ExceptionHandlersMap") -> "ASGIApp":
-    """Wraps the given ASGIApp in an instance of ExceptionHandlerMiddleware.
+    """Wrap the given ASGIApp in an instance of ExceptionHandlerMiddleware.
 
     Args:
         debug: Dictates whether exceptions are raised in debug mode.

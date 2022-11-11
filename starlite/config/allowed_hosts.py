@@ -8,9 +8,8 @@ from starlite.types import Scopes
 class AllowedHostsConfig(BaseModel):
     """Configuration for allowed hosts protection.
 
-    To enable allowed hosts protection, pass an instance of this class
-    to the [Starlite][starlite.app.Starlite] constructor using the
-    'allowed_hosts' key.
+    To enable allowed hosts protection, pass an instance of this class to the [Starlite][starlite.app.Starlite]
+    constructor using the 'allowed_hosts' key.
     """
 
     allowed_hosts: List[str] = ["*"]
@@ -34,7 +33,7 @@ class AllowedHostsConfig(BaseModel):
 
     @validator("allowed_hosts", always=True)
     def validate_allowed_hosts(cls, value: List[str]) -> List[str]:  # pylint: disable=no-self-argument
-        """Ensures that the trusted hosts have correct domain wildcards.
+        """Ensure that the trusted hosts have correct domain wildcards.
 
         Args:
             value: A list of trusted hosts.

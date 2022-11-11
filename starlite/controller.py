@@ -27,8 +27,7 @@ if TYPE_CHECKING:
 class Controller:
     """The Starlite Controller class.
 
-    Subclass this class to create 'view' like components and utilize
-    OOP.
+    Subclass this class to create 'view' like components and utilize OOP.
     """
 
     __slots__ = (
@@ -158,8 +157,7 @@ class Controller:
         self.owner = owner
 
     def get_route_handlers(self) -> List["BaseRouteHandler"]:
-        """Get a controller's route handlers and set the controller as the
-        handlers' owner.
+        """Get a controller's route handlers and set the controller as the handlers' owner.
 
         Returns:
             A list containing a copy of the route handlers defined on the controller

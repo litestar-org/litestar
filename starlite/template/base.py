@@ -15,8 +15,7 @@ class TemplateContext(TypedDict):
 
 
 def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -> str:
-    """Wrapper for [route_reverse][starlite.app.route_reverse] to be used in
-    templates.
+    """Wrap [route_reverse][starlite.app.route_reverse] to be used in templates.
 
     Args:
         context: The template context.
@@ -33,7 +32,7 @@ def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -
 
 
 def csrf_token(context: TemplateContext) -> str:
-    """Sets a CSRF token on the template.
+    """Set a CSRF token on the template.
 
     Notes:
         - to use this function make sure to pass an instance of [CSRFConfig][starlite.config.csrf_config.CSRFConfig] to
@@ -50,8 +49,7 @@ def csrf_token(context: TemplateContext) -> str:
 
 
 def url_for_static_asset(context: TemplateContext, name: str, file_path: str) -> str:
-    """Wrapper for [url_for_static_asset][starlite.app.url_for_static_asset] to
-    be used in templates.
+    """Wrap [url_for_static_asset][starlite.app.url_for_static_asset] to be used in templates.
 
     Args:
         context: The template context object.
@@ -70,12 +68,11 @@ def url_for_static_asset(context: TemplateContext, name: str, file_path: str) ->
 class TemplateProtocol(Protocol):  # pragma: no cover
     """Protocol Defining a 'Template'.
 
-    Template is a class that has a render method which renders the
-    template into a string.
+    Template is a class that has a render method which renders the template into a string.
     """
 
     def render(self, *args: Any, **kwargs: Any) -> str:
-        """Returns the rendered template as a string.
+        """Return the rendered template as a string.
 
         Args:
             **kwargs: A string keyed mapping of values passed to the TemplateEngine

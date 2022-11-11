@@ -79,7 +79,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.unit: DurationUnit = config.rate_limit[0]
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -109,8 +109,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.app(scope, receive, send)
 
     def create_send_wrapper(self, send: "Send", cache_object: CacheObject) -> "Send":
-        """Creates a send function that wraps the original send to inject
-        response headers.
+        """Create a `send` function that wraps the original send to inject response headers.
 
         Args:
             send: The ASGI send function.
@@ -121,7 +120,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
 
         async def send_wrapper(message: "Message") -> None:
-            """Wrapped ASGI `Send` callable.
+            """Wrap the ASGI `Send` callable.
 
             Args:
                 message: An ASGI 'Message'
@@ -152,7 +151,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         return f"{type(self).__name__}::{identifier}"
 
     async def retrieve_cached_history(self, key: str) -> CacheObject:
-        """Retrieves a list of time stamps for the given duration unit.
+        """Retrieve a list of time stamps for the given duration unit.
 
         Args:
             key: Cache key.
@@ -175,7 +174,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         return CacheObject(history=[], reset=now + duration)
 
     async def set_cached_history(self, key: str, cache_object: CacheObject) -> None:
-        """Stores history extended with the current timestamp in cache.
+        """Store history extended with the current timestamp in cache.
 
         Args:
             key: Cache key.
@@ -188,8 +187,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
-        """Return a boolean indicating if a request should be checked for rate
-        limiting.
+        """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
             request: A [Request][starlite.connection.Request] instance.
@@ -202,7 +200,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         return True
 
     def create_response_headers(self, cache_object: CacheObject) -> Dict[str, str]:
-        """Creates ratelimit response headers.
+        """Create ratelimit response headers.
 
         Notes:
             * see the [IETF RateLimit draft][https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/]
@@ -267,8 +265,7 @@ class RateLimitConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one
-        of the application layers.
+        """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
             ```python

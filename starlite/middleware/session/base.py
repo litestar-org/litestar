@@ -78,8 +78,7 @@ class BaseBackendConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Use this property to insert the config into a middleware list on one
-        of the application layers.
+        """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
             ```python
@@ -115,8 +114,7 @@ class ServerSideSessionConfig(BaseBackendConfig):
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
-    """Abstract session backend defining the interface between a storage
-    mechanism and the.
+    """Abstract session backend defining the interface between a storage mechanism and the.
 
     [SessionMiddleware][starlite.middleware.session.SessionMiddleware].
 
@@ -167,7 +165,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
     ) -> None:
-        """Stores the necessary information in the outgoing `Message`
+        """Store the necessary information in the outgoing `Message`
 
         Args:
             scope_session: Current session to store
@@ -180,8 +178,8 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
 
     @abstractmethod
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
-        """Load session data from a connection and return it as a dictionary to
-        be used in the current application scope.
+        """Load session data from a connection and return it as a dictionary to be used in the current application
+        scope.
 
         Args:
             connection: An ASGIConnection instance
@@ -240,8 +238,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
     @abstractmethod
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no
-        such session-ID exists.
+        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -260,8 +257,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with n=[session_id_bytes][starlite.middle
-        ware.session.base.ServerSideSessionConfig.session_id_bytes] random
-        bytes.
+        ware.session.base.ServerSideSessionConfig.session_id_bytes] random bytes.
 
         Returns:
             A session-ID
@@ -271,13 +267,12 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
     ) -> None:
-        """Stores the necessary information in the outgoing `Message` by
-        setting a cookie containing the session-ID. If the session is empty, a
-        null-cookie will be set. Otherwise, the serialised data will be stored
-        using [set][starlite.middleware.session.base.ServerSideBackend.set],
-        under the current session-id. If no session-ID exists, a new ID will be
-        generated using [generate_session_id][starlite.middleware.session.base.
-        ServerSideBackend.generate_session_id].
+        """Store the necessary information in the outgoing `Message` by setting a cookie containing the session-ID.
+
+        If the session is empty, a null-cookie will be set. Otherwise, the serialised
+        data will be stored using [set][starlite.middleware.session.base.ServerSideBackend.set],
+        under the current session-id. If no session-ID exists, a new ID will be generated using
+        [generate_session_id][starlite.middleware.session.base.ServerSideBackend.generate_session_id].
 
         Args:
             scope_session: Current session to store
@@ -313,8 +308,8 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
     async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
-        """Load session data from a connection and return it as a dictionary to
-        be used in the current application scope.
+        """Load session data from a connection and return it as a dictionary to be used in the current application
+        scope.
 
         The session-ID will be gathered from a cookie with the key set in the
         [configuration][starlite.middleware.session.base.BaseBackendConfig.key]. If
@@ -359,8 +354,7 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         self._exclude_opt_key = backend.config.exclude_opt_key
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
-        """Create a wrapper for the ASGI send function, which handles setting
-        the cookies on the outgoing response.
+        """Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
 
         Args:
             connection: ASGIConnection
@@ -370,8 +364,9 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         """
 
         async def wrapped_send(message: "Message") -> None:
-            """A wrapper around the send function, declared in local scope to
-            use closure values.
+            """Wrap the `send` function.
+
+            Declared in local scope to make use of closure values.
 
             Args:
                 message: An ASGI message.
@@ -391,7 +386,7 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         return wrapped_send
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI-callable.
+        """ASGI-callable.
 
         Args:
             scope: The ASGI connection scope.

@@ -82,8 +82,9 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to mutate
-    headers within a [Scope][starlite.types.Scope]
+    """A case-insensitive, multidict-like structure that can be used to mutate headers within a.
+
+    [Scope][starlite.types.Scope]
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
@@ -206,9 +207,7 @@ class MutableScopeHeaders(MutableMapping):
             del self.headers[i]
 
     def __len__(self) -> int:
-        """Return the length of the internally stored headers, including
-        duplicates.
-        """
+        """Return the length of the internally stored headers, including duplicates."""
         return len(self.headers)
 
     def __iter__(self) -> Iterator[str]:
@@ -227,9 +226,7 @@ class Header(BaseModel, ABC):
 
         @classmethod
         def alias_generator(cls, field_name: str) -> str:
-            """Generate field-aliases by replacing dashes with underscores in
-            header-names.
-            """
+            """Generate field-aliases by replacing dashes with underscores in header-names."""
             return field_name.replace("_", "-")
 
     documentation_only: bool = False
@@ -330,9 +327,8 @@ class CacheControlHeader(Header):
 
     @classmethod
     def prevent_storing(cls) -> "CacheControlHeader":
-        """Create a `cache-control` header with the `no-store` directive which
-        indicates that any caches of any kind (private or shared) should not
-        store this response.
+        """Create a `cache-control` header with the `no-store` directive which indicates that any caches of any kind
+        (private or shared) should not store this response.
         """
 
         return cls(no_store=True)
@@ -369,9 +365,7 @@ class ETag(Header):
 
     @validator("value", always=True)
     def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
-        """Ensures that either value is set or the instance is for
-        documentation_only.
-        """
+        """Ensure that either value is set or the instance is for documentation_only."""
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")

@@ -20,7 +20,7 @@ def get_name(value: Any) -> str:
 
 
 def get_enum_string_value(value: Union[Enum, str]) -> str:
-    """A helper function to return the string value of a string enum.
+    """Return the string value of a string enum.
 
     See: https://github.com/starlite-api/starlite/pull/633#issuecomment-1286519267
 

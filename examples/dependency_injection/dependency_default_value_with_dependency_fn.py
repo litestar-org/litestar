@@ -7,8 +7,7 @@ from starlite import Dependency, Starlite, get
 def hello_world(optional_dependency: int = Dependency(default=3)) -> dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 
-    This is OK, because of the default value, and now the parameter is
-    excluded from the docs.
+    This is OK, because of the default value, and now the parameter is excluded from the docs.
     """
     return {"hello": optional_dependency}
 

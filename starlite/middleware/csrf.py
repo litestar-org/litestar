@@ -35,8 +35,7 @@ CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 class CSRFMiddleware(MiddlewareProtocol):
     """CSRF Middleware class.
 
-    This Middleware protects against attacks by setting a CSRF cookie
-    with a token and verifying it in request headers.
+    This Middleware protects against attacks by setting a CSRF cookie with a token and verifying it in request headers.
     """
 
     scopes: "Scopes" = {ScopeType.HTTP}
@@ -53,7 +52,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -148,9 +147,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         return token_secret
 
     def _csrf_tokens_match(self, request_csrf_token: Optional[str], cookie_csrf_token: Optional[str]) -> bool:
-        """Take the CSRF tokens from the request and the cookie and verify both
-        are valid and identical.
-        """
+        """Take the CSRF tokens from the request and the cookie and verify both are valid and identical."""
         if not (request_csrf_token and cookie_csrf_token):
             return False
 

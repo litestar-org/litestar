@@ -35,8 +35,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         ...
 
     async def set(self, key: str, value: Any, expiration: int) -> Any:
-        """Set a value in cache for a given key for a duration determined by
-        expiration.
+        """Set a value in cache for a given key for a duration determined by expiration.
 
         Args:
             key: key to cache `value` under.
@@ -57,7 +56,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         ...
 
     async def delete(self, key: str) -> Any:
-        """Deletes a value from the cache and removes the given key.
+        """Delete a value from the cache and remove the given key.
 
         Args:
             key: key to be deleted from the cache.
@@ -71,11 +70,9 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
 
 
 class Cache:
-    """Wrapper for a provided CacheBackend that ensures it is called in an
-    async and thread-safe fashion.
+    """Wrapper for a provided CacheBackend that ensures it is called in an async and thread-safe fashion.
 
-    This enables the use of normal sync libraries (such as the standard
-    Redis python client) for caching responses.
+    This enables the use of normal sync libraries (such as the standard Redis python client) for caching responses.
     """
 
     __slots__ = ("backend", "lock", "default_expiration", "key_builder")

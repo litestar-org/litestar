@@ -121,8 +121,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         subprotocols: Optional[str] = None,
         headers: Optional[Union[Headers, Dict[str, Any], List[Tuple[bytes, bytes]]]] = None,
     ) -> None:
-        """Accept the incoming connection. This method should be called before
-        receiving data.
+        """Accept the incoming connection. This method should be called before receiving data.
 
         Args:
             subprotocols: Websocket sub-protocol to use.
@@ -184,8 +183,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         """
 
     async def receive_data(self, mode: "Literal['binary', 'text']") -> Union[str, bytes]:
-        """Receive an 'websocket.receive' event and returns the data stored on
-        it.
+        """Receive an 'websocket.receive' event and returns the data stored on it.
 
         Args:
             mode: The respective event key to use.
@@ -266,7 +264,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
-        """Sends data using the 'text' key of the send event.
+        """Send data using the 'text' key of the send event.
 
         Args:
             data: Data to send
@@ -306,7 +304,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         encoding: str = "utf-8",
         serializer: "Serializer" = default_serializer,
     ) -> None:
-        """Sends data as JSON.
+        """Send data as JSON.
 
         Args:
             data: A value to serialize.

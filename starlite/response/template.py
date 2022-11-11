@@ -11,9 +11,7 @@ if TYPE_CHECKING:
 
 
 class TemplateResponse(Response[bytes]):
-    """Template-based response, rendering a given template into a bytes
-    string.
-    """
+    """Template-based response, rendering a given template into a bytes string."""
 
     def __init__(
         self,

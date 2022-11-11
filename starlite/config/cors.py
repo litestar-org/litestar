@@ -6,8 +6,7 @@ from pydantic import BaseModel
 class CORSConfig(BaseModel):
     """Configuration for CORS (Cross-Origin Resource Sharing).
 
-    To enable CORS, pass an instance of this class to the
-    [Starlite][starlite.app.Starlite] constructor using the
+    To enable CORS, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using the
     'cors_config' key.
     """
 

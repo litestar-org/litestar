@@ -54,9 +54,7 @@ def app_config_object() -> AppConfig:
 
 
 def test_app_params_defined_on_app_config_object() -> None:
-    """Ensures that all parameters to the `Starlite` constructor are present on
-    the `AppConfig` object.
-    """
+    """Ensures that all parameters to the `Starlite` constructor are present on the `AppConfig` object."""
     starlite_signature = inspect.signature(Starlite)
     app_config_fields = AppConfig.__fields__
     for name in starlite_signature.parameters:
@@ -68,16 +66,12 @@ def test_app_params_defined_on_app_config_object() -> None:
 
 
 def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Ensure that the properties on the `AppConfig` object are accessed within
-    the `Starlite` constructor.
+    """Ensure that the properties on the `AppConfig` object are accessed within the `Starlite` constructor.
 
-    In the test we replace every field on the `AppConfig` type with a
-    property mock so that we can check that it has at least been
-    accessed. It doesn't actually check that we do the right thing with
-    it, but is a guard against the case of adding a parameter to the
-    `Starlite` signature and to the `AppConfig` object, and using the
-    value from the parameter downstream from construction of the
-    `AppConfig` object.
+    In the test we replace every field on the `AppConfig` type with a property mock so that we can check that it has at
+    least been accessed. It doesn't actually check that we do the right thing with it, but is a guard against the case
+    of adding a parameter to the `Starlite` signature and to the `AppConfig` object, and using the value from the
+    parameter downstream from construction of the `AppConfig` object.
     """
 
     # replace each field on the `AppConfig` object with a `PropertyMock`, this allows us to assert that the properties

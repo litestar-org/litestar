@@ -15,11 +15,9 @@ if TYPE_CHECKING:
 
 
 class ExceptionHandlerMiddleware:
-    """This middleware is used to wrap an ASGIApp inside a try catch block and
-    handles any exceptions raised.
+    """Middleware used to wrap an ASGIApp inside a try catch block and handle any exceptions raised.
 
-    Notes:
-        * It's used in multiple layers of Starlite.
+    This used in multiple layers of Starlite.
     """
 
     def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
@@ -35,7 +33,7 @@ class ExceptionHandlerMiddleware:
         self.debug = debug
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI-callable.
+        """ASGI-callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -70,7 +68,7 @@ class ExceptionHandlerMiddleware:
             await send(event)
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
-        """Default handler for exceptions subclassed from HTTPException."""
+        """Handle `HTTPException`s and its subclasses."""
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             return create_debug_response(request=request, exc=exc)

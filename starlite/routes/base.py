@@ -78,7 +78,7 @@ class BaseRoute(ABC):
 
     @abstractmethod
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
-        """The route's ASGI App.
+        """ASGI App of the route.
 
         Args:
             scope: The ASGI connection scope.
@@ -91,7 +91,7 @@ class BaseRoute(ABC):
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
 
     def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
-        """Method to create a KwargsModel for a given route handler."""
+        """Create a `KwargsModel` for a given route handler."""
         dependencies = route_handler.resolve_dependencies()
         signature_model = get_signature_model(route_handler)
 
@@ -110,8 +110,7 @@ class BaseRoute(ABC):
 
     @staticmethod
     def _validate_path_parameter(param: str) -> None:
-        """Validates that a path parameter adheres to the required format and
-        datatypes.
+        """Validate that a path parameter adheres to the required format and datatypes.
 
         Raises:
             ImproperlyConfiguredException: If the parameter has an invalid format.
@@ -130,7 +129,7 @@ class BaseRoute(ABC):
 
     @classmethod
     def _parse_path(cls, path: str) -> Tuple[str, str, List[Union[str, PathParameterDefinition]]]:
-        """Normalizes and parses a path.
+        """Normalize and parse a path.
 
         Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
         compatible path, which does not include the type of the path parameters.

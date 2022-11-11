@@ -75,9 +75,7 @@ class ValidationException(HTTPException, ValueError):
 
 
 class NotAuthorizedException(HTTPException):
-    """Request lacks valid authentication credentials for the requested
-    resource.
-    """
+    """Request lacks valid authentication credentials for the requested resource."""
 
     status_code = HTTP_401_UNAUTHORIZED
 
@@ -95,9 +93,7 @@ class NotFoundException(HTTPException, ValueError):
 
 
 class MethodNotAllowedException(HTTPException):
-    """Server knows the request method, but the target resource doesn't support
-    this method.
-    """
+    """Server knows the request method, but the target resource doesn't support this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
 
@@ -109,9 +105,7 @@ class TooManyRequestsException(HTTPException):
 
 
 class InternalServerException(HTTPException):
-    """Server encountered an unexpected condition that prevented it from
-    fulfilling the request.
-    """
+    """Server encountered an unexpected condition that prevented it from fulfilling the request."""
 
     status_code = HTTP_500_INTERNAL_SERVER_ERROR
 

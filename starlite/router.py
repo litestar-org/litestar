@@ -45,8 +45,7 @@ if TYPE_CHECKING:
 class Router:
     """The Starlite Router class.
 
-    A Router instance is used to group controller, routers and route
-    handler functions under a shared path fragment
+    A Router instance is used to group controller, routers and route handler functions under a shared path fragment
     """
 
     __slots__ = (
@@ -208,8 +207,7 @@ class Router:
 
     @property
     def route_handler_method_map(self) -> Dict[str, RouteHandlerMapItem]:
-        """Map route paths to [RouteHandlerMapItem][starlite.types.internal_typ
-        es.RouteHandlerMapItem]
+        """Map route paths to [RouteHandlerMapItem][starlite.types.internal_typ es.RouteHandlerMapItem]
 
         Returns:
              A dictionary mapping paths to route handlers
@@ -266,9 +264,7 @@ class Router:
     def _create_http_handler_item(
         handlers_map: Dict[str, RouteHandlerMapItem], route_handler: HTTPRouteHandler, path: str
     ) -> RouteHandlerMapItem:
-        """Create a dict of HTTP method to route handler for a single
-        controller path.
-        """
+        """Create a dict of HTTP method to route handler for a single controller path."""
         handler_item: Optional[RouteHandlerMapItem] = handlers_map.get(path)
         if not isinstance(handler_item, dict):
             handler_item = {}

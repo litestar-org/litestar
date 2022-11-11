@@ -427,9 +427,8 @@ class Starlite(Router):
         self.asgi_router.construct_routing_trie()
 
     def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
-        """Receives a route handler name and returns an optional dictionary
-        containing the route handler instance and list of paths sorted
-        lexically.
+        """Receives a route handler name and returns an optional dictionary containing the route handler instance and
+        list of paths sorted lexically.
 
         Examples:
             ```python
@@ -464,8 +463,8 @@ class Starlite(Router):
         return HandlerIndex(handler=handler, paths=paths, identifier=identifier)
 
     def route_reverse(self, name: str, **path_parameters: Any) -> str:
-        """Receives a route handler name, path parameter values and returns url
-        path to the handler with filled path parameters.
+        """Receives a route handler name, path parameter values and returns url path to the handler with filled path
+        parameters.
 
         Examples:
             ```python
@@ -529,8 +528,7 @@ class Starlite(Router):
         return join_paths(output)
 
     def url_for_static_asset(self, name: str, file_path: str) -> str:
-        """Receives a static files handler name, an asset file path and returns
-        resolved url path to the asset.
+        """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
         Examples:
             ```python
@@ -580,11 +578,9 @@ class Starlite(Router):
         return route_map
 
     def _create_asgi_handler(self) -> "ASGIApp":
-        """Create an ASGIApp that wraps the ASGI router inside an exception
-        handler.
+        """Create an ASGIApp that wraps the ASGI router inside an exception handler.
 
-        If CORS or TrustedHost configs are provided to the constructor,
-        they will wrap the router as well.
+        If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
         asgi_handler: "ASGIApp" = self.asgi_router
         if self.compression_config:
@@ -598,9 +594,7 @@ class Starlite(Router):
         )
 
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
-        """Create function signature models for all route handler functions and
-        provider dependencies.
-        """
+        """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
                 fn=cast("AnyCallable", route_handler.fn),

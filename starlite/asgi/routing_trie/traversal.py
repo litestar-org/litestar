@@ -59,8 +59,7 @@ def traverse_route_map(
     path_params: List[str],
     scope: "Scope",
 ) -> Tuple["RouteTrieNode", List[str]]:
-    """Traverses the application route mapping and retrieves the correct node
-    for the request url.
+    """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
         current_node: A trie node.
@@ -124,7 +123,7 @@ def traverse_route_map(
 def parse_path_parameters(
     path_parameter_definitions: List["PathParameterDefinition"], request_path_parameter_values: List[str]
 ) -> Dict[str, Any]:
-    """Parses path parameters into their expected types.
+    """Parse path parameters into their expected types.
 
     Args:
         path_parameter_definitions: A list of [PathParameterDefinition][starlite.route.base.PathParameterDefinition] instances
@@ -149,8 +148,7 @@ def parse_path_parameters(
 
 
 def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_routes: Set[str]) -> "ASGIHandlerTuple":
-    """Given a scope object, retrieve the asgi_handlers and is_mount boolean
-    values from correct trie node.
+    """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
         root_node: The root trie node.

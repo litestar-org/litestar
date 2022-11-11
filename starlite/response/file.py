@@ -53,7 +53,7 @@ async def async_file_iterator(
 
 
 def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
-    """Creates an etag.
+    """Create an etag.
 
     Notes:
         - Function is derived from flask.
@@ -97,7 +97,7 @@ class FileResponse(StreamingResponse):
         stat_result: Optional["stat_result_type"] = None,
         status_code: int = HTTP_200_OK,
     ) -> None:
-        """This class allows streaming a file as response body.
+        """Initialize `FileResponse`
 
         Notes:
             - This class extends the [StreamingResponse][starlite.response.StreamingResponse] class.
@@ -179,8 +179,7 @@ class FileResponse(StreamingResponse):
         return 0
 
     async def start_response(self, send: "Send") -> None:
-        """Emit the start event of the response. This event includes the
-        headers and status codes.
+        """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:
             send: The ASGI send function.

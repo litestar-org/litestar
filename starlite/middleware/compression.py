@@ -28,9 +28,7 @@ if TYPE_CHECKING:
 
 
 class CompressionFacade:
-    """A unified facade offering a uniform interface for different compression
-    libraries.
-    """
+    """A unified facade offering a uniform interface for different compression libraries."""
 
     __slots__ = ("compressor", "buffer", "compression_encoding")
 
@@ -68,7 +66,7 @@ class CompressionFacade:
             self.compressor = GzipFile(mode="wb", fileobj=buffer, compresslevel=config.gzip_compress_level)
 
     def write(self, body: bytes) -> None:
-        """Writes compressed bytes.
+        """Write compressed bytes.
 
         Args:
             body: Message body to process
@@ -83,7 +81,7 @@ class CompressionFacade:
             self.compressor.write(body)
 
     def close(self) -> None:
-        """Closes the compression stream.
+        """Close the compression stream.
 
         Returns:
             None
@@ -97,8 +95,7 @@ class CompressionFacade:
 class CompressionMiddleware(AbstractMiddleware):
     """Compression Middleware Wrapper.
 
-    This is a wrapper allowing for generic compression configuration /
-    handler middleware
+    This is a wrapper allowing for generic compression configuration / handler middleware
     """
 
     def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
@@ -114,7 +111,7 @@ class CompressionMiddleware(AbstractMiddleware):
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -151,7 +148,7 @@ class CompressionMiddleware(AbstractMiddleware):
         send: "Send",
         compression_encoding: "Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP]",
     ) -> "Send":
-        """Wraps 'send' to handle brotli compression.
+        """Wrap 'send' to handle brotli compression.
 
         Args:
             send: The ASGI send function.
@@ -168,7 +165,7 @@ class CompressionMiddleware(AbstractMiddleware):
         started = Ref[bool](False)
 
         async def send_wrapper(message: "Message") -> None:
-            """Handles and compresses the HTTP Message with brotli.
+            """Handle and compresses the HTTP Message with brotli.
 
             Args:
                 message (Message): An ASGI Message.

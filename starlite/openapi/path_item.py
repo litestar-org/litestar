@@ -20,7 +20,9 @@ if TYPE_CHECKING:
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
-    """Produces the operation description for a route handler, either by using the description value if provided, or the docstring - if config is enabled.
+    """Produce the operation description for a route handler, either by using the description value if provided,
+
+    or the docstring - if config is enabled.
 
     Args:
         route_handler: A route handler instance.
@@ -39,7 +41,7 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
 def extract_layered_values(
     route_handler: "HTTPRouteHandler",
 ) -> Tuple[Optional[List[str]], Optional[List[Dict[str, List[str]]]]]:
-    """Extracts the tags and security values from the route handler layers.
+    """Extract the tags and security values from the route handler layers.
 
     Args:
         route_handler: A Route Handler instance.
@@ -60,9 +62,7 @@ def extract_layered_values(
 def create_path_item(
     route: "HTTPRoute", create_examples: bool, plugins: List["PluginProtocol"], use_handler_docstrings: bool
 ) -> PathItem:
-    """Create a PathItem model for the given route parsing all http_methods
-    into Operation Models.
-    """
+    """Create a PathItem model for the given route parsing all http_methods into Operation Models."""
     path_item = PathItem()
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple

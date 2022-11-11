@@ -10,6 +10,8 @@ from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
 
+    from typing import NoReturn
+
     from pydantic import BaseModel
 
     from starlite.app import Starlite
@@ -23,8 +25,10 @@ Auth = TypeVar("Auth")
 Handler = TypeVar("Handler")
 
 
-async def empty_receive() -> Any:  # pragma: no cover
-    """Placeholder value.
+async def empty_receive() -> "NoReturn":  # pragma: no cover
+    """Raise a `RuntimeError`.
+
+    Serves as a placeholder `send` function.
 
     Raises:
         RuntimeError
@@ -32,8 +36,10 @@ async def empty_receive() -> Any:  # pragma: no cover
     raise RuntimeError()
 
 
-async def empty_send(_: "Message") -> None:  # pragma: no cover
-    """Placeholder value.
+async def empty_send(_: "Message") -> "NoReturn":  # pragma: no cover
+    """Raise a `RuntimeError`.
+
+    Serves as a placeholder `send` function.
 
     Args:
         _: An ASGI message
@@ -223,8 +229,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
 
     @property
     def session(self) -> Dict[str, Any]:
-        """Return the session for this connection if a session was previously
-        set in the `Scope`
+        """Return the session for this connection if a session was previously set in the `Scope`
 
         Returns:
             A dictionary representing the session value - if existing.
@@ -304,8 +309,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return make_absolute_url(url_path, self.base_url)
 
     def url_for_static_asset(self, name: str, file_path: str) -> str:
-        """Receives a static files handler name, an asset file path and returns
-        resolved absolute url to the asset.
+        """Receives a static files handler name, an asset file path and returns resolved absolute url to the asset.
 
         Args:
             name: A static handler unique name.

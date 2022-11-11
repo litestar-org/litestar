@@ -53,15 +53,14 @@ class Cookie(BaseModel):
         return simple_cookie.output(**kwargs).strip()
 
     def __eq__(self, other: Any) -> bool:
-        """Custom implementation to allow using equality operators on class
-        instances.
+        """Determine whether two cookie instances are equal according to the cookie spec, i.e. hey have a similar path,
+        domain and key.
 
         Args:
             other: An arbitrary value
 
         Returns:
-            Determines whether two cookie instances are equal according to the cookie spec, i.e.
-            they have a similar path, domain and key.
+            A boolean
         """
         if isinstance(other, type(self)):
             return other.key == self.key and other.path == self.path and other.domain == self.domain

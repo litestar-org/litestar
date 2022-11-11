@@ -14,7 +14,7 @@ class PathParameterSentinel:
 
 
 class ASGIHandlerTuple(NamedTuple):
-    """This class encapsulates a route handler node."""
+    """Encapsulation of a route handler node."""
 
     asgi_app: "ASGIApp"
     """An ASGI stack, composed of a handler function and layers of middleware that wrap it."""
@@ -23,7 +23,7 @@ class ASGIHandlerTuple(NamedTuple):
 
 
 class RouteTrieNode(TypedDict):
-    """This class represents a radix trie node."""
+    """A radix trie node."""
 
     asgi_handlers: Dict[Union["Method", "Literal['websocket', 'asgi']"], "ASGIHandlerTuple"]
     """
@@ -62,7 +62,7 @@ class RouteTrieNode(TypedDict):
 
 
 def create_node() -> "RouteTrieNode":
-    """Creates a RouteMapNode instance.
+    """Create a RouteMapNode instance.
 
     Returns:
         A route map node instance.

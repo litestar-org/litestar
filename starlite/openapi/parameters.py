@@ -36,11 +36,9 @@ def create_path_parameter_schema(
 class ParameterCollection:
     """Facilitates conditional deduplication of parameters.
 
-    If multiple parameters with the same name are produced for a
-    handler, the condition is ignored if the two `Parameter` instances
-    are the same (the first is retained and any duplicates are ignored).
-    If the `Parameter` instances are not the same, an exception is
-    raised.
+    If multiple parameters with the same name are produced for a handler, the condition is ignored if the two
+    `Parameter` instances are the same (the first is retained and any duplicates are ignored). If the `Parameter`
+    instances are not the same, an exception is raised.
     """
 
     def __init__(self, route_handler: "BaseRouteHandler") -> None:
@@ -83,7 +81,7 @@ def create_parameter(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> Parameter:
-    """Creates an OpenAPI Parameter instance."""
+    """Create an OpenAPI Parameter instance."""
     schema = None
     is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
     extra = model_field.field_info.extra
@@ -131,10 +129,8 @@ def get_recursive_handler_parameters(
 ) -> List[Parameter]:
     """Create and return parameters for a handler.
 
-    If the provided field is not a dependency, a normal parameter is
-    created and returned as a list, otherwise
-    `create_parameter_for_handler()` is called to generate parameters
-    for the dependency.
+    If the provided field is not a dependency, a normal parameter is created and returned as a list, otherwise
+    `create_parameter_for_handler()` is called to generate parameters for the dependency.
     """
 
     if field_name not in dependencies:
@@ -159,8 +155,7 @@ def get_layered_parameter(
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
 
-    Layer info is extracted from the provided `layered_parameters` dict
-    and set as the field's `field_info` attribute.
+    Layer info is extracted from the provided `layered_parameters` dict and set as the field's `field_info` attribute.
     """
     layer_field_info = layered_parameters[field_name].field_info
     signature_field_info = signature_model_field.field_info
@@ -198,9 +193,7 @@ def create_parameter_for_handler(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> List[Parameter]:
-    """Create a list of path/query/header Parameter models for the given
-    PathHandler.
-    """
+    """Create a list of path/query/header Parameter models for the given PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
     dependencies = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()

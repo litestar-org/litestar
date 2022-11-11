@@ -1,5 +1,4 @@
-"""Some code in this module was adapted from
-https://github.com/encode/starlette/blob/master/starlette/requests.py and
+"""Some code in this module was adapted from https://github.com/encode/starlette/blob/master/starlette/requests.py and
 https://github.com/encode/starlette/blob/master/starlette/websockets.py.
 
 Copyright © 2018, [Encode OSS Ltd](https://www.encode.io/).

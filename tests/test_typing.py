@@ -122,9 +122,7 @@ class Foo:
     ((Foo, True), (Person, False), (VanillaDataClassPerson, False), (PydanticDataClassPerson, False)),
 )
 def test_validation(cls: Any, should_raise: bool) -> None:
-    """Test that Partial returns no annotations for classes that don't inherit
-    from BaseModel.
-    """
+    """Test that Partial returns no annotations for classes that don't inherit from BaseModel."""
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
             Partial[cls]()  # type: ignore

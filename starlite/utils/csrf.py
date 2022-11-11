@@ -19,8 +19,7 @@ def generate_csrf_hash(token: str, secret: str) -> str:
 
 
 def generate_csrf_token(secret: str) -> str:
-    """Generates a CSRF token that includes a randomly generated string signed
-    by an HMAC.
+    """Generate a CSRF token that includes a randomly generated string signed by an HMAC.
 
     Args:
         secret: A secret string.
