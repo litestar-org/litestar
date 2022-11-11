@@ -89,7 +89,7 @@ class BaseLoggingConfig(ABC):  # pragma: no cover
 
     @abstractmethod
     def configure(self) -> "GetLogger":
-        """Configured logger with the given configuration.
+        """Return logger with the given configuration.
 
         Returns:
             A 'logging.getLogger' like function.
@@ -174,7 +174,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         return value
 
     def configure(self) -> "GetLogger":
-        """Configured logger with the given configuration.
+        """Return logger with the given configuration.
 
         Returns:
             A 'logging.getLogger' like function.
@@ -265,7 +265,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
     """Whether to cache the logger configuration and reuse. """
 
     def configure(self) -> "GetLogger":
-        """Configured logger with the given configuration.
+        """Return logger with the given configuration.
 
         Returns:
             A 'logging.getLogger' like function.

@@ -23,7 +23,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
     app: "ASGIApp"
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """Executes the ASGI middleware.
+        """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.
 
@@ -68,7 +68,7 @@ class DefineMiddleware:
         self.kwargs = kwargs
 
     def __call__(self, app: "ASGIApp") -> "ASGIApp":
-        """Calls the middleware constructor or factory.
+        """Call the middleware constructor or factory.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
@@ -138,7 +138,7 @@ class AbstractMiddleware:
 
     @abstractmethod
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """Executes the ASGI middleware.
+        """Execute the ASGI middleware.
 
         Called by the previous middleware in the stack if a response is not awaited prior.
 

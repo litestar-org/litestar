@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 
 
 def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
-    """Returns a serializer given a scope object.
+    """Return a serializer given a scope object.
 
     Args:
         scope: The ASGI connection scope.

@@ -167,7 +167,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
     ) -> None:
-        """Stores the necessary information in the outgoing `Message`
+        """Store the necessary information in the outgoing `Message`
 
         Args:
             scope_session: Current session to store
@@ -271,13 +271,13 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
     ) -> None:
-        """Stores the necessary information in the outgoing `Message` by
-        setting a cookie containing the session-ID. If the session is empty, a
-        null-cookie will be set. Otherwise, the serialised data will be stored
-        using [set][starlite.middleware.session.base.ServerSideBackend.set],
-        under the current session-id. If no session-ID exists, a new ID will be
-        generated using [generate_session_id][starlite.middleware.session.base.
-        ServerSideBackend.generate_session_id].
+        """Store the necessary information in the outgoing `Message` by setting
+        a cookie containing the session-ID.
+
+        If the session is empty, a null-cookie will be set. Otherwise, the serialised
+        data will be stored using [set][starlite.middleware.session.base.ServerSideBackend.set],
+        under the current session-id. If no session-ID exists, a new ID will be generated using
+        [generate_session_id][starlite.middleware.session.base.ServerSideBackend.generate_session_id].
 
         Args:
             scope_session: Current session to store
@@ -370,8 +370,9 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         """
 
         async def wrapped_send(message: "Message") -> None:
-            """A wrapper around the send function, declared in local scope to
-            use closure values.
+            """Wrap the `send` function.
+
+            Declared in local scope to make use of closure values.
 
             Args:
                 message: An ASGI message.
@@ -391,7 +392,7 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         return wrapped_send
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI-callable.
+        """ASGI-callable.
 
         Args:
             scope: The ASGI connection scope.

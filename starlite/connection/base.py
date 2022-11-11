@@ -10,6 +10,8 @@ from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
 
+    from typing import NoReturn
+
     from pydantic import BaseModel
 
     from starlite.app import Starlite
@@ -23,8 +25,10 @@ Auth = TypeVar("Auth")
 Handler = TypeVar("Handler")
 
 
-async def empty_receive() -> Any:  # pragma: no cover
-    """Placeholder value.
+async def empty_receive() -> "NoReturn":  # pragma: no cover
+    """Raise a `RuntimeError`.
+
+    Serves as a placeholder `send` function.
 
     Raises:
         RuntimeError
@@ -32,8 +36,10 @@ async def empty_receive() -> Any:  # pragma: no cover
     raise RuntimeError()
 
 
-async def empty_send(_: "Message") -> None:  # pragma: no cover
-    """Placeholder value.
+async def empty_send(_: "Message") -> "NoReturn":  # pragma: no cover
+    """Raise a `RuntimeError`.
+
+    Serves as a placeholder `send` function.
 
     Args:
         _: An ASGI message

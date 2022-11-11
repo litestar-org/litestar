@@ -115,7 +115,7 @@ class BaseRouteHandler(Generic[T]):
 
     @property
     def dependency_name_set(self) -> Set[str]:
-        """The set of all dependency names provided in the handler's ownership
+        """Set of all dependency names provided in the handler's ownership
         layers.
         """
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
@@ -123,7 +123,7 @@ class BaseRouteHandler(Generic[T]):
 
     @property
     def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
-        """Returns the handler layers from the app down to the route handler.
+        """Return the handler layers from the app down to the route handler.
 
         app -> ... -> route handler
         """
@@ -137,7 +137,7 @@ class BaseRouteHandler(Generic[T]):
         return list(reversed(layers))
 
     def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
-        """Returns all parameters declared above the handler, transforming them
+        """Return all parameters declared above the handler, transforming them
         into pydantic ModelField instances.
         """
         if self._resolved_layered_parameters is Empty:
@@ -164,7 +164,7 @@ class BaseRouteHandler(Generic[T]):
         return cast("Dict[str, ModelField]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
-        """Returns all guards in the handlers scope, starting from highest to
+        """Return all guards in the handlers scope, starting from highest to
         current layer.
         """
         if self._resolved_guards is Empty:
@@ -175,7 +175,7 @@ class BaseRouteHandler(Generic[T]):
         return cast("List[Guard]", self._resolved_guards)
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
-        """Returns all dependencies correlating to handler function's kwargs
+        """Return all dependencies correlating to handler function's kwargs
         that exist in the handler's scope.
         """
         if not self.signature_model:
@@ -191,7 +191,7 @@ class BaseRouteHandler(Generic[T]):
         return cast("Dict[str, Provide]", self._resolved_dependencies)
 
     def resolve_middleware(self) -> List["Middleware"]:
-        """Builds the middleware stack for the RouteHandler and returns it.
+        """Build the middleware stack for the RouteHandler and return it.
 
         The middlewares are added from top to bottom (app -> router ->
         controller -> route handler) and then reversed.
@@ -202,7 +202,7 @@ class BaseRouteHandler(Generic[T]):
         return list(reversed(resolved_middleware))
 
     def resolve_exception_handlers(self) -> ExceptionHandlersMap:
-        """Resolves the exception_handlers by starting from the route handler
+        """Resolve the exception_handlers by starting from the route handler
         and moving up.
 
         This method is memoized so the computation occurs only once.
@@ -213,7 +213,7 @@ class BaseRouteHandler(Generic[T]):
         return resolved_exception_handlers
 
     def resolve_opts(self) -> None:
-        """Builds the route handler opt dictionary by going from top to bottom.
+        """Build the route handler opt dictionary by going from top to bottom.
 
         If multiple layers define the same key, the value from the
         closest layer to the response handler will take precedence.
@@ -226,7 +226,7 @@ class BaseRouteHandler(Generic[T]):
         self.opt = opt
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
-        """Ensures the connection is authorized by running all the route guards
+        """Ensure the connection is authorized by running all the route guards
         in scope.
         """
         for guard in self.resolve_guards():
@@ -234,7 +234,7 @@ class BaseRouteHandler(Generic[T]):
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
-        """Validates that a given provider has not been already defined under a
+        """Validate that a given provider has not been already defined under a
         different key.
         """
         for dependency_key, value in dependencies.items():
@@ -245,7 +245,7 @@ class BaseRouteHandler(Generic[T]):
                 )
 
     def _validate_handler_function(self) -> None:
-        """Validates the route handler function once set by inspecting its
+        """Validate the route handler function once set by inspecting its
         return annotations.
         """
         if not self.fn:

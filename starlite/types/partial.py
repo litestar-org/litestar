@@ -55,8 +55,8 @@ class Partial(Generic[T]):
     _models: Dict[SupportedTypes, SupportedTypes] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Takes a pydantic model class, [`TypedDict`][typing.TypedDict] or a
-        dataclass and returns an all optional version of that class.
+        """Take a pydantic model class, [`TypedDict`][typing.TypedDict] or a
+        dataclass and return an all optional version of that class.
 
         Args:
             item: A pydantic model, [`TypedDict`][typing.TypedDict] or dataclass class.
@@ -138,7 +138,7 @@ class Partial(Generic[T]):
 
     @staticmethod
     def _create_optional_field_map(item: "DataclassClass") -> Dict[str, DataclassField]:
-        """Creates a map of field name to optional dataclass Fields for a given
+        """Create a map of field name to optional dataclass Fields for a given
         dataclass.
 
         Args:

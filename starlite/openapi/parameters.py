@@ -83,7 +83,7 @@ def create_parameter(
     path_parameters: List["PathParameterDefinition"],
     generate_examples: bool,
 ) -> Parameter:
-    """Creates an OpenAPI Parameter instance."""
+    """Create an OpenAPI Parameter instance."""
     schema = None
     is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
     extra = model_field.field_info.extra

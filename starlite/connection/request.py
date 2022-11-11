@@ -100,7 +100,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return self._json
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
-        """Returns an async generator that streams chunks of bytes.
+        """Return an async generator that streams chunks of bytes.
 
         Returns:
             An async generator.
@@ -184,8 +184,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         return cast("FormMultiDict", self._form)
 
     async def send_push_promise(self, path: str) -> None:
-        """Sends a push promise. This method requires the 'http.response.push'
-        extension to be sent from the ASGI server.
+        """Send a push promise.
+
+        This method requires the `http.response.push` extension to be sent from the ASGI server.
 
         Args:
             path: Path to send the promise to.

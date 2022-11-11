@@ -62,7 +62,7 @@ class RouteTrieNode(TypedDict):
 
 
 def create_node() -> "RouteTrieNode":
-    """Creates a RouteMapNode instance.
+    """Create a RouteMapNode instance.
 
     Returns:
         A route map node instance.

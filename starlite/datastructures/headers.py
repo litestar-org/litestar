@@ -369,7 +369,7 @@ class ETag(Header):
 
     @validator("value", always=True)
     def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
-        """Ensures that either value is set or the instance is for
+        """Ensure that either value is set or the instance is for
         documentation_only.
         """
         if values.get("documentation_only") or value is not None:

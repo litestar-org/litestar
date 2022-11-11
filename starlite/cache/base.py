@@ -57,7 +57,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         ...
 
     async def delete(self, key: str) -> Any:
-        """Deletes a value from the cache and removes the given key.
+        """Delete a value from the cache and remove the given key.
 
         Args:
             key: key to be deleted from the cache.

@@ -22,7 +22,7 @@ def add_map_route_to_trie(
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
     plain_routes: Set[str],
 ) -> "RouteTrieNode":
-    """Adds a new route path (e.g. '/foo/bar/{param:int}') into the route_map
+    """Add a new route path (e.g. '/foo/bar/{param:int}') into the route_map
     tree.
 
     Inserts non-parameter paths ('plain routes') off the tree's root
@@ -121,7 +121,7 @@ def build_route_middleware_stack(
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
     route_handler: "RouteHandlerType",
 ) -> "ASGIApp":
-    """Constructs a middleware stack that serves as the point of entry for each
+    """Construct a middleware stack that serves as the point of entry for each
     route.
 
     Args:

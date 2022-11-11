@@ -46,7 +46,7 @@ class AllowedHostsMiddleware(AbstractMiddleware):
                 self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
