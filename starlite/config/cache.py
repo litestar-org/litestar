@@ -53,7 +53,7 @@ class CacheConfig(BaseModel):
     """
 
     def to_cache(self) -> Cache:
-        """Creates a cache wrapper from the config.
+        """Create a cache wrapper from the config.
 
         Returns:
             An instance of [Cache][starlite.cache.base.Cache]

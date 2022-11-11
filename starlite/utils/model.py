@@ -42,8 +42,8 @@ def convert_dataclass_to_model(dataclass_or_instance: "DataclassClassOrInstance"
 
 
 def convert_typeddict_to_model(typeddict: "TypedDictClass") -> Type[BaseModel]:
-    """Converts a [`TypedDict`][typing.TypedDict] to a pydantic model and
-    memoizes the result.
+    """Convert a [`TypedDict`][typing.TypedDict] to a pydantic model and
+    memoize the result.
     """
     existing = _type_model_map.get(typeddict)
     if not existing:

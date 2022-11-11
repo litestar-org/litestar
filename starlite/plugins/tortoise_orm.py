@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 
 
 class TortoiseORMPlugin(PluginProtocol[Model]):
-    """Support (de)serialization and OpenAPI generation for Tortoise ORM
-    types.
+    """Support (de)serialization and OpenAPI generation for Tortoise
+    ORMtypes.
     """
 
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
@@ -31,10 +31,10 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
     @staticmethod
     def _create_pydantic_model(model_class: Type[Model], **kwargs: Any) -> "Type[PydanticModel]":
-        """Takes a tortoise model_class instance and convert it to a subclass
-        of the tortoise PydanticModel.
+        """Take a tortoise model_class instance and convert it to a subclass of
+        the tortoise PydanticModel.
 
-        It fixes some issues with the result of the tortoise model
+        This fixes some issues with the result of the tortoise model
         creator.
         """
         pydantic_model = cast("Type[PydanticModel]", pydantic_model_creator(model_class, **kwargs))

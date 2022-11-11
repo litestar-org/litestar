@@ -39,10 +39,10 @@ class BaseLocalFileSystem(FileSystemProtocol):
         mode: str,
         buffering: int = -1,
     ) -> AsyncFile[AnyStr]:
-        """Returns a file-like object from the filesystem.
+        """Return a file-like object from the filesystem.
 
         Notes:
-            - The return value must function correctly in a context `with` block.
+            - The return value must be a context-manager
 
         Args:
             file: Path to the target file.
@@ -93,7 +93,7 @@ class FileSystemAdapter:
         mode: "OpenBinaryMode" = "rb",
         buffering: int = -1,
     ) -> AsyncFile[bytes]:
-        """Returns a file-like object from the filesystem.
+        """Return a file-like object from the filesystem.
 
         Notes:
             - The return value must function correctly in a context `with` block.
@@ -121,9 +121,7 @@ class FileSystemAdapter:
 
     @staticmethod
     async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":
-        """Converts a [stat_result][os.stat_result] instance into an.
-
-        [FileInfo][starlite.types.file_types.FileInfo]
+        """Convert a `stat_result` instance into a `FileInfo`.
 
         Args:
             path: The file path for which the [stat_result][os.stat_result] is provided.

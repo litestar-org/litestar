@@ -54,7 +54,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         return self._client
 
     async def get(self, key: str) -> Any:  # pylint: disable=invalid-overridden-method
-        """Retrieves a value from cache corresponding to the given key.
+        """Retrieve a value from cache corresponding to the given key.
 
         Args:
             key: name of cached value.
@@ -90,7 +90,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         )
 
     async def delete(self, key: str) -> None:  # pylint: disable=invalid-overridden-method
-        """Deletes a value from the cache and removes the given key.
+        """Delete a value from the cache and remove the given key.
 
         Args:
             key: key to be deleted from the cache.

@@ -29,8 +29,8 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
     __slots__ = ()
 
     def on_app_init(self, app: "Starlite") -> None:
-        """Receives the Starlite application instance before `init` is
-        finalized and allows the plugin to update various attributes.
+        """Receive the Starlite application instance before `init` is finalized
+        and allow the plugin to update various attributes.
 
         Examples:
             ```python
@@ -145,8 +145,7 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
 
 
 def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[PluginProtocol]:
-    """Helper function to return a plugin for handling the given value, if any
-    plugin supports it.
+    """Return a plugin for handling the given value, if any plugin supports it.
 
     Args:
         value: An arbitrary value.

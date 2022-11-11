@@ -57,7 +57,7 @@ class ExceptionResponseContent(BaseModel):
     """An extra mapping to attach to the exception."""
 
     def to_response(self) -> "Response":
-        """Creates a response from the model attributes.
+        """Create a response from the model attributes.
 
         Returns:
             A response instance.
@@ -72,7 +72,7 @@ class ExceptionResponseContent(BaseModel):
 
 
 def create_exception_response(exc: Exception) -> "Response":
-    """Constructs a response from an exception.
+    """Construct a response from an exception.
 
     Notes:
     - For instances of [HTTPException][starlite.exceptions.HTTPException] or other exception classes that have a

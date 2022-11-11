@@ -60,7 +60,7 @@ class AbstractAuthenticationMiddleware(ABC):
         self.exclude = build_exclude_path_pattern(exclude=exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -83,8 +83,10 @@ class AbstractAuthenticationMiddleware(ABC):
 
     @abstractmethod
     async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:  # pragma: no cover
-        """This method must be overridden by subclasses. It receives the http
-        connection and returns an instance of.
+        """Receive the http connection and return an `AuthenticationResult`.
+
+        Notes:
+            - This method must be overridden by subclasses.
 
         Args:
             connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.

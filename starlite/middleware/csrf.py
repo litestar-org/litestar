@@ -53,7 +53,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.

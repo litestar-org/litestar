@@ -185,7 +185,7 @@ class State(MutableMapping[str, Any]):
         return copy(self)
 
     def dict(self) -> Dict[str, Any]:
-        """A shallow copy of the wrapped dict.
+        """Return a shallow copy of the wrapped dict.
 
         Returns:
             A dict

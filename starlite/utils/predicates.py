@@ -63,7 +63,8 @@ def is_optional_union(annotation: Any) -> bool:
 
 
 def is_dataclass_class_typeguard(value: Any) -> "TypeGuard[DataclassClass]":
-    """Wrapper for `is_dataclass()` that narrows to type only, not instance.
+    """Wrap `is_dataclass()` in a `TypeGuard`, narrowing to type only, not
+    instance.
 
     Args:
         value: tested to determine if type of `dataclass`.
@@ -75,7 +76,7 @@ def is_dataclass_class_typeguard(value: Any) -> "TypeGuard[DataclassClass]":
 
 
 def is_dataclass_class_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
-    """Wrapper for `is_dataclass()` that narrows type.
+    """Wrap `is_dataclass()` in a `TypeGuard`.
 
     Args:
         value: tested to determine if instance or type of `dataclass`.
@@ -87,7 +88,7 @@ def is_dataclass_class_or_instance_typeguard(value: Any) -> "TypeGuard[Dataclass
 
 
 def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictClass]":
-    """Wrapper for `is_typeddict()` that narrows type.
+    """Wrap `is_typeddict()` in a `TypeGuard`.
 
     Args:
         value: tested to determine if instance or type of `dataclass`.

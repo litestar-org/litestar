@@ -222,7 +222,7 @@ class AppConfig(BaseModel):
     def validate_allowed_hosts(  # pylint: disable=no-self-argument
         cls, value: Optional[Union[List[str], AllowedHostsConfig]]
     ) -> Optional[AllowedHostsConfig]:
-        """Normalizes the allowed hosts to be a config or None.
+        """Normalize the allowed hosts to be a config or None.
 
         Args:
             value: Optional a list of hosts or allowed hosts config

@@ -35,7 +35,7 @@ class ExceptionHandlerMiddleware:
         self.debug = debug
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The middleware's ASGI-callable.
+        """ASGI-callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -70,7 +70,7 @@ class ExceptionHandlerMiddleware:
             await send(event)
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
-        """Default handler for exceptions subclassed from HTTPException."""
+        """Handle `HTTPException`s and its subclasses."""
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             return create_debug_response(request=request, exc=exc)

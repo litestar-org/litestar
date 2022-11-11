@@ -141,7 +141,7 @@ class File(ResponseContainer[FileResponse]):
     def validate_file_system(  # pylint: disable=no-self-argument
         cls, value: "FileSystemProtocol"
     ) -> "FileSystemProtocol":
-        """Ensures the value is a file system spec.
+        """Ensure the value is a file system spec.
 
         Args:
             value: A file system spec.
@@ -161,7 +161,7 @@ class File(ResponseContainer[FileResponse]):
         app: "Starlite",
         request: "Request",
     ) -> FileResponse:
-        """Creates a FileResponse instance.
+        """Create a FileResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -206,7 +206,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
         app: "Starlite",
         request: "Request",
     ) -> RedirectResponse:
-        """Creates a RedirectResponse instance.
+        """Create a RedirectResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -257,7 +257,7 @@ class Stream(ResponseContainer[StreamingResponse]):
         app: "Starlite",
         request: "Request",
     ) -> StreamingResponse:
-        """Creates a StreamingResponse instance.
+        """Create a StreamingResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -296,7 +296,7 @@ class Template(ResponseContainer["TemplateResponse"]):
         app: "Starlite",
         request: "Request",
     ) -> "TemplateResponse":
-        """Creates a TemplateResponse instance.
+        """Create a TemplateResponse instance.
 
         Args:
             headers: A dictionary of headers.
@@ -326,7 +326,7 @@ class Template(ResponseContainer["TemplateResponse"]):
         )
 
     def create_template_context(self, request: "Request") -> Dict[str, Any]:
-        """Creates a context object for the template.
+        """Create a context object for the template.
 
         Args:
             request: A [Request][starlite.connection.request.Request] instance.

@@ -20,7 +20,10 @@ if TYPE_CHECKING:
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
-    """Produces the operation description for a route handler, either by using the description value if provided, or the docstring - if config is enabled.
+    """Produce the operation description for a route handler, either by using
+    the description value if provided,
+
+    or the docstring - if config is enabled.
 
     Args:
         route_handler: A route handler instance.
@@ -39,7 +42,7 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
 def extract_layered_values(
     route_handler: "HTTPRouteHandler",
 ) -> Tuple[Optional[List[str]], Optional[List[Dict[str, List[str]]]]]:
-    """Extracts the tags and security values from the route handler layers.
+    """Extract the tags and security values from the route handler layers.
 
     Args:
         route_handler: A Route Handler instance.

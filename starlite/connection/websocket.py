@@ -266,7 +266,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
-        """Sends data using the 'text' key of the send event.
+        """Send data using the 'text' key of the send event.
 
         Args:
             data: Data to send
@@ -306,7 +306,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         encoding: str = "utf-8",
         serializer: "Serializer" = default_serializer,
     ) -> None:
-        """Sends data as JSON.
+        """Send data as JSON.
 
         Args:
             data: A value to serialize.

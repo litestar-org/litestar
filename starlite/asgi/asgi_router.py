@@ -60,7 +60,10 @@ class ASGIRouter:
         self.route_mapping: Dict[str, List["BaseRoute"]] = defaultdict(list)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The main entry point to the Router class."""
+        """ASGI callable.
+
+        The main entry point to the Router class.
+        """
         asgi_app, handler = parse_scope_to_route(
             root_node=self.root_route_map_node, scope=scope, plain_routes=self._plain_routes
         )
@@ -68,7 +71,7 @@ class ASGIRouter:
         await asgi_app(scope, receive, send)
 
     def _store_handler_to_route_mapping(self, route: "BaseRoute") -> None:
-        """Stores the mapping of route handlers to routes and to route handler
+        """Store the mapping of route handlers to routes and to route handler
         names.
 
         Args:
@@ -88,12 +91,12 @@ class ASGIRouter:
             self.route_handler_index[identifier] = handler
 
     async def _call_lifespan_handler(self, handler: "LifeSpanHandler") -> None:
-        """Determines whether the lifecycle handler expects an argument, and if
-        so passes the `app.state` to it. If the handler is an async function,
-        it awaits the return.
+        """Determine whether the lifecycle handler expects an argument, and if
+        so pass the `app.state` to it. If the handler is an async function,
+        await the return.
 
         Args:
-            handler (LifeSpanHandler): sync or async callable that may or may not have an argument.
+            handler: sync or async callable that may or may not have an argument.
         """
         async_callable = AsyncCallable(handler)  # type: ignore
 
@@ -125,7 +128,7 @@ class ASGIRouter:
         validate_node(node=self.root_route_map_node)
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
-        """Handles the ASGI "lifespan" event on application startup and
+        """Handle the ASGI "lifespan" event on application startup and
         shutdown.
 
         Args:
@@ -190,7 +193,6 @@ class ASGIRouter:
         handlers respectively before and after calling in the lifespan
         handlers.
         """
-
         for hook in self.app.before_shutdown:
             await hook(self.app)
 

@@ -90,7 +90,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             raise TemplateNotFoundException(template_name=template_name) from exc
 
     def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
-        """Registers a callable on the template engine.
+        """Register a callable on the template engine.
 
         Args:
             key: The callable key, i.e. the value to use inside the template to call the callable.

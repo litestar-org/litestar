@@ -34,7 +34,7 @@ class AllowedHostsConfig(BaseModel):
 
     @validator("allowed_hosts", always=True)
     def validate_allowed_hosts(cls, value: List[str]) -> List[str]:  # pylint: disable=no-self-argument
-        """Ensures that the trusted hosts have correct domain wildcards.
+        """Ensure that the trusted hosts have correct domain wildcards.
 
         Args:
             value: A list of trusted hosts.

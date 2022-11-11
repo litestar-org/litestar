@@ -49,7 +49,7 @@ SESSION_TERMINUS_ASGI_EVENTS = {
 
 
 def serializer(value: Any) -> str:
-    """Serializer for JSON field values.
+    """Serialize JSON field values.
 
     Args:
         value: Any json serializable value.
@@ -357,8 +357,10 @@ class SQLAlchemyConfig(BaseModel):
         del state[self.engine_app_state_key]
 
     def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
-        """Adds the SQLAlchemy loggers to the logging config. Currently working
-        only with [LoggingConfig][starlite.config.logging.LoggingConfig].
+        """Add the SQLAlchemy loggers to the logging config.
+
+        Notes:
+            - Currently only works with [LoggingConfig][starlite.config.logging.LoggingConfig].
 
         Args:
             logging_config: Logging config.

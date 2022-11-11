@@ -185,7 +185,7 @@ class CookieBackendConfig(BaseBackendConfig):
 
     @validator("secret", always=True)
     def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
-        """Ensures that the 'secret' value is 128, 192 or 256 bits.
+        """Ensure that the 'secret' value is 128, 192 or 256 bits.
 
         Args:
             value: A bytes string.

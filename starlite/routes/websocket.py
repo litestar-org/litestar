@@ -74,7 +74,7 @@ class WebSocketRoute(BaseRoute):
             await fn(**kwargs)
 
     async def _resolve_kwargs(self, websocket: "WebSocket[Any, Any]") -> Dict[str, Any]:
-        """Resolves the required kwargs from the request data.
+        """Resolve the required kwargs from the request data.
 
         Args:
             websocket: WebSocket instance
