@@ -140,14 +140,8 @@ def test_setting_cors_middleware() -> None:
         assert len(unpacked_middleware) == 4
         cors_middleware = cast("Any", unpacked_middleware[1])
         assert isinstance(cors_middleware, CORSMiddleware)
-        assert cors_middleware.config.allow_headers == [
-            "*",
-            "accept",
-            "accept-language",
-            "content-language",
-            "content-type",
-        ]
-        assert cors_middleware.config.allow_methods == ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+        assert cors_middleware.config.allow_headers == ["*"]
+        assert cors_middleware.config.allow_methods == ["*"]
         assert cors_middleware.config.allow_origins == cors_config.allow_origins
         assert cors_middleware.config.allow_origin_regex == cors_config.allow_origin_regex
 

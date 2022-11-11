@@ -57,10 +57,11 @@ class CORSConfig(BaseModel):
     _is_allow_all_methods: Union[EmptyType, bool] = PrivateAttr(Empty)
     _is_allow_all_headers: Union[EmptyType, bool] = PrivateAttr(Empty)
     _preflight_headers: Union[EmptyType, Dict[str, str]] = PrivateAttr(Empty)
+    _simple_headers: Union[EmptyType, Dict[str, str]] = PrivateAttr(Empty)
 
     @validator("allow_headers", always=True)
     def validate_allow_headers(cls, value: List[str]) -> List[str]:  # pylint: disable=no-self-argument
-        """Ensures that the trusted hosts have correct domain wildcards.
+        """Ensure that the trusted hosts have correct domain wildcards.
         Args:
             value: A list of headers.
 
@@ -71,7 +72,7 @@ class CORSConfig(BaseModel):
 
     @property
     def allowed_origins_regex(self) -> Pattern:
-        """Cached compiled regex of allowed origins.
+        """Get or create a compiled regex for allowed origins.
 
         Returns:
             A compiled regex of the allowed path.
@@ -87,7 +88,7 @@ class CORSConfig(BaseModel):
 
     @property
     def is_allow_all_origins(self) -> bool:
-        """Cached boolean flag dictating whether all origins are allowed.
+        """Get a cached boolean flag dictating whether all origins are allowed.
 
         Returns:
             Boolean dictating whether all origins are allowed.
@@ -98,7 +99,7 @@ class CORSConfig(BaseModel):
 
     @property
     def is_allow_all_methods(self) -> bool:
-        """Cached boolean flag dictating whether all methods are allowed.
+        """Get a cached boolean flag dictating whether all methods are allowed.
 
         Returns:
             Boolean dictating whether all methods are allowed.
@@ -109,7 +110,7 @@ class CORSConfig(BaseModel):
 
     @property
     def is_allow_all_headers(self) -> bool:
-        """Cached boolean flag dictating whether all headers are allowed.
+        """Get a cached boolean flag dictating whether all headers are allowed.
 
         Returns:
             Boolean dictating whether all headers are allowed.
@@ -120,7 +121,7 @@ class CORSConfig(BaseModel):
 
     @property
     def preflight_headers(self) -> Dict[str, str]:
-        """Cached pre-flight headers.
+        """Get cached pre-flight headers.
 
         Returns:
             A dictionary of headers to set on the response object.
@@ -149,8 +150,25 @@ class CORSConfig(BaseModel):
 
         return cast("Dict[str, str]", self._preflight_headers)
 
+    @property
+    def simply_headers(self) -> Dict[str, str]:
+        """Get cached simple headers.
+
+        Returns:
+            A dictionary of headers to set on the response object.
+        """
+        if self._simple_headers is Empty:
+            self._simple_headers = {}
+            if self.is_allow_all_origins:
+                self._simple_headers["Access-Control-Allow-Origin"] = "*"
+            if self.allow_credentials:
+                self._simple_headers["Access-Control-Allow-Credentials"] = "true"
+            if self.expose_headers:
+                self._simple_headers["Access-Control-Expose-Headers"] = ", ".join(sorted(set(self.expose_headers)))
+        return cast("Dict[str, str]", self._simple_headers)
+
     def is_origin_allowed(self, origin: str) -> bool:
-        """Utility method to check whether a given origin is allowed.
+        """Check whether a given origin is allowed.
 
         Args:
             origin: An origin header value.

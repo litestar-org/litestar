@@ -1,19 +1,19 @@
 from typing import TYPE_CHECKING
 
-from starlite.datastructures import MutableScopeHeaders
+from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware
 
 if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send
 
 
 class CORSMiddleware(AbstractMiddleware):
     """CORS Middleware."""
 
     def __init__(self, app: "ASGIApp", config: "CORSConfig"):
-        """This middleware adds CORS validation to the application.
+        """Middleware that adds CORS validation to the application.
 
         Args:
             app: The 'next' ASGI app to call.
@@ -25,7 +25,7 @@ class CORSMiddleware(AbstractMiddleware):
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """The Middleware's ASGI callable.
+        """ASGI callable.
 
         Args:
             scope: The ASGI connection scope.
@@ -35,11 +35,38 @@ class CORSMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        headers = MutableScopeHeaders(scope=scope)
+        headers = Headers.from_scope(scope=scope)
 
         origin = headers.get("origin")
 
         if not origin:
             await self.app(scope, receive, send)
         else:
-            await self.app(scope, receive, send)
+            await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
+
+    def send_wrapper(self, send: "Send", origin: str, has_cookie: bool) -> "Send":
+        """Wrap 'send' to ensure that state is not disconnected.
+
+        Args:
+            send: The ASGI send function.
+
+        Returns:
+            An ASGI send function.
+        """
+
+        async def wrapped_send(message: "Message") -> None:
+            if message["type"] == "http.response.start":
+                message.setdefault("headers", [])
+                headers = MutableScopeHeaders.from_message(message=message)
+                headers.update(self.config.simply_headers)
+
+                if (self.config.is_allow_all_origins and has_cookie) or (
+                    not self.config.is_allow_all_origins and self.config.is_origin_allowed(origin=origin)
+                ):
+
+                    headers["Access-Control-Allow-Origin"] = origin
+                    headers["Vary"] = "Origin"
+
+            await send(message)
+
+        return wrapped_send
