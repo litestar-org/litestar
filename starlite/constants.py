@@ -1,3 +1,4 @@
+DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 REDIRECT_STATUS_CODES = {301, 302, 303, 307, 308}
 RESERVED_KWARGS = {"state", "headers", "cookies", "request", "socket", "data", "query", "scope"}
 EXTRA_KEY_REQUIRED = "required"

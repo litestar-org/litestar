@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Pattern, Union, cast
 from pydantic import BaseModel, PrivateAttr, validator
 from typing_extensions import Literal
 
+from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.types import Empty, EmptyType, Method
 
 
@@ -131,12 +132,12 @@ class CORSConfig(BaseModel):
             else:
                 headers["Vary"] = "Origin"
             if self.allow_credentials:
-                headers["Access-Control-Allow-Credentials"] = str(self.allow_credentials)
+                headers["Access-Control-Allow-Credentials"] = str(self.allow_credentials).lower()
             if not self.is_allow_all_headers:
                 headers["Access-Control-Allow-Headers"] = ", ".join(
-                    {*self.allow_headers, "Accept", "Accept-Language", "Content-Language", "Content-Type"}
+                    sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
                 )
-            if "*" in self.allow_methods:
+            if self.allow_methods:
                 headers["Access-Control-Allow-Methods"] = ", ".join(
                     sorted(
                         set(self.allow_methods)

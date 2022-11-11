@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from anyio.to_thread import run_sync
 
 from starlite.connection import Request
+from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.controller import Controller
 from starlite.datastructures import Headers
 from starlite.enums import HttpMethod, MediaType, ScopeType
@@ -266,31 +267,39 @@ class HTTPRoute(BaseRoute):
 
             if cors_config and origin:
                 pre_flight_method = request_headers.get("Access-Control-Request-Method")
-                response_headers = cors_config.preflight_headers.copy()
                 failures = []
+
+                if not cors_config.is_allow_all_methods and (
+                    pre_flight_method and pre_flight_method not in cors_config.allow_methods
+                ):
+                    failures.append("method")
+
+                response_headers = cors_config.preflight_headers.copy()
 
                 if not cors_config.is_origin_allowed(origin):
                     failures.append("Origin")
                 elif response_headers.get("Access-Control-Allow-Origin") != "*":
                     response_headers["Access-Control-Allow-Origin"] = origin
 
-                if not cors_config.is_allow_all_methods and pre_flight_method not in cors_config.allow_methods:
-                    failures.append("method")
-
-                pre_flight_requested_headers = request_headers.get("Access-Control-Request-Headers")
+                pre_flight_requested_headers = [
+                    header.strip()
+                    for header in request_headers.get("Access-Control-Request-Headers", "").split(",")
+                    if header.strip()
+                ]
 
                 if pre_flight_requested_headers:
                     if cors_config.is_allow_all_headers:
-                        response_headers["Access-Control-Allow-Headers"] = pre_flight_requested_headers
+                        response_headers["Access-Control-Allow-Headers"] = ", ".join(
+                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
+                        )
                     elif any(
-                        header.strip() not in cors_config.allow_headers
-                        for header in pre_flight_requested_headers.lower().split(",")
+                        header.lower() not in cors_config.allow_headers for header in pre_flight_requested_headers
                     ):
                         failures.append("headers")
 
                 return (
                     Response(
-                        content=f"CORS failures: {', '.join(failures)}",
+                        content=f"Disallowed CORS {', '.join(failures)}",
                         status_code=HTTP_400_BAD_REQUEST,
                         media_type=MediaType.TEXT,
                     )
