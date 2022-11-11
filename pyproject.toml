@@ -55,7 +55,6 @@ redis = { version = "*", optional = true, extras = ["hiredis"] }
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-bools = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
