@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class StaticFiles:
+    """This class is an ASGI App that handles file sending."""
+
     __slots__ = ("is_html_mode", "directories", "adapter", "send_as_attachment")
 
     def __init__(
@@ -25,12 +27,14 @@ class StaticFiles:
         file_system: "FileSystemProtocol",
         send_as_attachment: bool = False,
     ) -> None:
-        """This class is an ASGI App that handles file sending.
+        """Initialize the Application.
 
         Args:
             is_html_mode: Flag dictating whether serving html. If true, the default file will be 'index.html'.
             directories: A list of directories to serve files from.
             file_system: The file_system spec to use for serving files.
+            send_as_attachment: Whether to send the file with a `content-disposition` header of
+             `attachment` or `inline`
         """
         self.adapter = FileSystemAdapter(file_system)
         self.directories = directories
@@ -40,8 +44,7 @@ class StaticFiles:
     async def get_fs_info(
         self, directories: Sequence["PathType"], file_path: str
     ) -> Union[Tuple[str, "FileInfo"], Tuple[None, None]]:
-        """Resolves the file path and returns the resolved path and a.
-
+        """Resolves the file path and returns the resolved path and a
         [stat_result][os.stat_result].
 
         Args:
