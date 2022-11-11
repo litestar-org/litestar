@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: v2-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: poetry install --no-interaction --no-root
       - name: Set pythonpath
