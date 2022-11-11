@@ -15,11 +15,10 @@ if TYPE_CHECKING:
 
 
 class ExceptionHandlerMiddleware:
-    """This middleware is used to wrap an ASGIApp inside a try catch block and
-    handles any exceptions raised.
+    """Middleware used to wrap an ASGIApp inside a try catch block and handle
+    any exceptions raised.
 
-    Notes:
-        * It's used in multiple layers of Starlite.
+    This used in multiple layers of Starlite.
     """
 
     def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class StaticFiles:
-    """This class is an ASGI App that handles file sending."""
+    """ASGI App that handles file sending."""
 
     __slots__ = ("is_html_mode", "directories", "adapter", "send_as_attachment")
 

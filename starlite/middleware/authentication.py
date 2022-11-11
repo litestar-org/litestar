@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class AuthenticationResult(BaseModel):
-    """This pydantic model is a container for authentication data."""
+    """Pydantic model for authentication data."""
 
     user: Any
     """

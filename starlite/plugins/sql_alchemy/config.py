@@ -103,7 +103,7 @@ class SQLAlchemySessionConfig(BaseModel):
 
 
 class SQLAlchemyEngineConfig(BaseModel):
-    """This class represents the SQLAlchemy Engine configuration.
+    """Configuration for SQLAlchemy's `Engine`.
 
     For details see: https://docs.sqlalchemy.org/en/14/core/engines.html
     """
@@ -143,7 +143,7 @@ class SQLAlchemyEngineConfig(BaseModel):
 
 
 class SQLAlchemyConfig(BaseModel):
-    """This class represents the SQLAlchemy sessionmaker configuration.
+    """Configuration for SQLAlchemy's `sessionmaker`.
 
     For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
     """
