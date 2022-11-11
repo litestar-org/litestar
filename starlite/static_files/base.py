@@ -1,5 +1,5 @@
 from os.path import commonpath, join
-from typing import TYPE_CHECKING, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Literal, Sequence, Tuple, Union
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -8,7 +8,6 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
-    from typing import Literal
 
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
@@ -81,7 +80,7 @@ class StaticFiles:
         filename = split_path[-1]
         joined_path = join(*split_path)  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
-        content_disposition_type: "Literal['inline', 'attachment']" = (
+        content_disposition_type: Literal["inline", "attachment"] = (
             "attachment" if self.send_as_attachment else "inline"
         )
 

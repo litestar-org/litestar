@@ -4,6 +4,7 @@ from typing import (
     Dict,
     Generic,
     List,
+    Literal,
     Optional,
     Tuple,
     Union,
@@ -26,9 +27,6 @@ from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
-
-    from typing import Literal
-
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Message, Serializer, WebSocketScope
     from starlite.types.asgi_types import WebSocketDisconnectEvent  # nopycln: import
@@ -73,7 +71,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
             send: The ASGI send function.
         """
         super().__init__(scope, self.receive_wrapper(receive), self.send_wrapper(send))
-        self.connection_state: "Literal['init', 'connect', 'receive', 'disconnect']" = "init"
+        self.connection_state: Literal["init", "connect", "receive", "disconnect"] = "init"
 
     def receive_wrapper(self, receive: "Receive") -> "Receive":
         """Wrap 'receive' to set 'self.connection_state' and validate events.
@@ -161,7 +159,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         await self.send(event)
 
     @overload
-    async def receive_data(self, mode: "Literal['text']") -> str:
+    async def receive_data(self, mode: Literal["text"]) -> str:
         """Overload of receive_data.
 
         Args:
@@ -172,7 +170,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         """
 
     @overload
-    async def receive_data(self, mode: "Literal['binary']") -> bytes:
+    async def receive_data(self, mode: Literal["binary"]) -> bytes:
         """Overload of receive_data.
 
         Args:
@@ -182,7 +180,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
             A byte-string.
         """
 
-    async def receive_data(self, mode: "Literal['binary', 'text']") -> Union[str, bytes]:
+    async def receive_data(self, mode: Literal["binary", "text"]) -> Union[str, bytes]:
         """Receive an 'websocket.receive' event and returns the data stored on it.
 
         Args:
@@ -218,7 +216,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     async def receive_json(
         self,
-        mode: "Literal['text', 'binary']" = "text",
+        mode: Literal["text", "binary"] = "text",
     ) -> Any:
         """Receive data and loads it into JSON using orson.
 
@@ -232,7 +230,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         return loads(data)
 
     async def send_data(
-        self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
+        self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8"
     ) -> None:
         """Send a 'websocket.send' event.
 
@@ -300,7 +298,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
     async def send_json(
         self,
         data: Any,
-        mode: "Literal['text', 'binary']" = "text",
+        mode: Literal["text", "binary"] = "text",
         encoding: str = "utf-8",
         serializer: "Serializer" = default_serializer,
     ) -> None:

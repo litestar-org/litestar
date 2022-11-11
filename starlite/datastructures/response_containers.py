@@ -101,7 +101,7 @@ class File(ResponseContainer[FileResponse]):
     """An optional result of calling 'os.stat'. If not provided, this will be done by the response constructor."""
     chunk_size: int = ONE_MEGA_BYTE
     """The size of chunks to use when streaming the file"""
-    content_disposition_type: "Literal['attachment', 'inline']" = "attachment"
+    content_disposition_type: Literal["attachment", "inline"] = "attachment"
     """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
     etag: Optional[ETag] = None
     """
@@ -202,7 +202,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
         # TODO: update the redirect response to support HTML as well.
         #   This argument is currently ignored.
         media_type: Union["MediaType", str],
-        status_code: "Literal[301, 302, 303, 307, 308]",
+        status_code: Literal[301, 302, 303, 307, 308],
         app: "Starlite",
         request: "Request",
     ) -> RedirectResponse:

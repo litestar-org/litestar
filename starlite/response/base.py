@@ -4,6 +4,7 @@ from typing import (
     Dict,
     Generic,
     List,
+    Literal,
     Optional,
     Tuple,
     TypeVar,
@@ -27,7 +28,6 @@ from starlite.utils.helpers import get_enum_string_value
 from starlite.utils.serialization import default_serializer
 
 if TYPE_CHECKING:
-    from typing import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import (
@@ -105,7 +105,7 @@ class Response(Generic[T]):
         domain: Optional[str] = None,
         secure: bool = False,
         httponly: bool = False,
-        samesite: 'Literal["lax", "strict", "none"]' = "lax",
+        samesite: Literal["lax", "strict", "none"] = "lax",
     ) -> None:
         """Ses a cookie on the response.
 

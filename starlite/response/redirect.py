@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union
 from urllib.parse import quote
 
 from starlite.constants import REDIRECT_STATUS_CODES
@@ -8,7 +8,6 @@ from starlite.response.base import Response
 from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 
 if TYPE_CHECKING:
-    from typing import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import ResponseCookies
@@ -21,7 +20,7 @@ class RedirectResponse(Response[Any]):
         self,
         url: str,
         *,
-        status_code: "Literal[301, 302, 303, 307, 308]" = HTTP_307_TEMPORARY_REDIRECT,
+        status_code: Literal[301, 302, 303, 307, 308] = HTTP_307_TEMPORARY_REDIRECT,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,

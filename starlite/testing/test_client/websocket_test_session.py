@@ -88,9 +88,7 @@ class WebSocketTestSession:
             self.send_queue.put(exc)
             raise
 
-    def send(
-        self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
-    ) -> None:
+    def send(self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
         """Sends a "receive" event. This is the inverse of the ASGI send method.
 
         Args:
@@ -134,7 +132,7 @@ class WebSocketTestSession:
         """
         self.send(data=data, mode="binary", encoding=encoding)
 
-    def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:
+    def send_json(self, data: Any, mode: Literal["text", "binary"] = "text") -> None:
         """Sends the given data as JSON.
 
         Args:
@@ -195,7 +193,7 @@ class WebSocketTestSession:
         message = self.receive()
         return cast("bytes", message.get("bytes", b""))
 
-    def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:
+    def receive_json(self, mode: Literal["text", "binary"] = "text") -> Any:
         """Receives JSON.
 
         Args:
