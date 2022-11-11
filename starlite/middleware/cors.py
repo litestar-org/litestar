@@ -19,9 +19,7 @@ class CORSMiddleware(AbstractMiddleware):
             app: The 'next' ASGI app to call.
             config: An instance of [CORSConfig][starlite.config.cors.CORSConfig]
         """
-        super().__init__(
-            app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
-        )
+        super().__init__(app=app, scopes={ScopeType.HTTP})
         self.config = config
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:

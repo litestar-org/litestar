@@ -43,14 +43,6 @@ class CORSConfig(BaseModel):
     """
     Response aching TTL in seconds, defaults to 600. Sets the 'Access-Control-Max-Age' header.
     """
-    exclude: Optional[Union[str, List[str]]] = None
-    """
-    An identifier to use on routes to disable authentication for a particular route.
-    """
-    exclude_opt_key: Optional[str] = None
-    """
-    A pattern or list of patterns to skip in the authentication middleware.
-    """
 
     _compiled_regex: Union[EmptyType, Pattern] = PrivateAttr(Empty)
     _is_allow_all_origins: Union[EmptyType, bool] = PrivateAttr(Empty)
