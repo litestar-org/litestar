@@ -44,8 +44,7 @@ class StaticFiles:
     async def get_fs_info(
         self, directories: Sequence["PathType"], file_path: str
     ) -> Union[Tuple[str, "FileInfo"], Tuple[None, None]]:
-        """Resolves the file path and returns the resolved path and a
-        [stat_result][os.stat_result].
+        """Return the resolved path and a [stat_result][os.stat_result].
 
         Args:
             directories: A list of directory paths.
