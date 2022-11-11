@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Dict, List, NamedTuple, Set, Type, Union
+from typing import TYPE_CHECKING, Dict, List, Literal, NamedTuple, Set, Type, Union
 
 from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal_types import PathParameterDefinition
@@ -25,7 +24,7 @@ class ASGIHandlerTuple(NamedTuple):
 class RouteTrieNode(TypedDict):
     """A radix trie node."""
 
-    asgi_handlers: Dict[Union["Method", "Literal['websocket', 'asgi']"], "ASGIHandlerTuple"]
+    asgi_handlers: Dict[Union["Method", Literal["websocket", "asgi"]], "ASGIHandlerTuple"]
     """
     A mapping of ASGI handlers stored on the node.
     """

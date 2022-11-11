@@ -1,7 +1,6 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, Literal
 
 import pytest
-from typing_extensions import Literal
 
 from starlite import MediaType, WebSocket, get, websocket
 from starlite.config import CompressionConfig
@@ -41,7 +40,7 @@ def test_compression_disabled_for_unsupported_client() -> None:
     "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
 )
 def test_regular_compressed_response(
-    backend: "Literal['gzip', 'brotli']", compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
 ) -> None:
     with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
@@ -55,7 +54,7 @@ def test_regular_compressed_response(
     "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
 )
 def test_compression_works_for_streaming_response(
-    backend: "Literal['gzip', 'brotli']", compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
 ) -> None:
     @get("/streaming-response")
     def streaming_handler() -> Stream:
@@ -75,7 +74,7 @@ def test_compression_works_for_streaming_response(
     "backend, compression_encoding", (("brotli", CompressionEncoding.BROTLI), ("gzip", CompressionEncoding.GZIP))
 )
 def test_compression_skips_small_responses(
-    backend: "Literal['gzip', 'brotli']", compression_encoding: CompressionEncoding
+    backend: Literal["gzip", "brotli"], compression_encoding: CompressionEncoding
 ) -> None:
     with create_test_client(
         route_handlers=[no_compress_handler], compression_config=CompressionConfig(backend=backend)

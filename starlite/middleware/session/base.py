@@ -8,6 +8,7 @@ from typing import (
     Dict,
     Generic,
     List,
+    Literal,
     Optional,
     Type,
     TypeVar,
@@ -17,7 +18,6 @@ from typing import (
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
-from typing_extensions import Literal
 
 from starlite import ASGIConnection, Cookie, DefineMiddleware
 from starlite.datastructures import MutableScopeHeaders

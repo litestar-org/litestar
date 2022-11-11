@@ -1,7 +1,6 @@
-from typing import List, Optional, Type, Union
+from typing import List, Literal, Optional, Type, Union
 
 from pydantic import BaseModel, conint
-from typing_extensions import Literal
 
 from starlite.middleware.compression import CompressionMiddleware
 

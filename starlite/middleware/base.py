@@ -1,7 +1,14 @@
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union
-
-from typing_extensions import Protocol, runtime_checkable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    List,
+    Optional,
+    Protocol,
+    Union,
+    runtime_checkable,
+)
 
 from starlite.enums import ScopeType
 from starlite.middleware.utils import (

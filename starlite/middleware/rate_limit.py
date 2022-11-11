@@ -6,6 +6,7 @@ from typing import (
     Callable,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
     Type,
@@ -15,7 +16,6 @@ from typing import (
 
 from orjson import dumps, loads
 from pydantic import BaseModel, validator
-from typing_extensions import Literal
 
 from starlite.connection import Request
 from starlite.datastructures import MutableScopeHeaders

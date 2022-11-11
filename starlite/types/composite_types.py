@@ -10,14 +10,13 @@ from typing import (
     Iterable,
     Iterator,
     List,
+    Literal,
     Set,
     Tuple,
     Type,
     TypeVar,
     Union,
 )
-
-from typing_extensions import Literal
 
 from starlite.enums import ScopeType
 

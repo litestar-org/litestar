@@ -1,6 +1,4 @@
-from typing import Any
-
-from typing_extensions import Protocol
+from typing import Any, Protocol
 
 
 class Logger(Protocol):  # pragma: no cover

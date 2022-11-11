@@ -1,6 +1,13 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
-
-from typing_extensions import Protocol, runtime_checkable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Optional,
+    Protocol,
+    Type,
+    Union,
+    runtime_checkable,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Connection, Engine

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict, Literal
 
 from orjson import OPT_INDENT_2, dumps
 
@@ -11,8 +11,8 @@ from starlite.response import Response
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
 if TYPE_CHECKING:
+
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-    from typing_extensions import Literal
 
 MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
 
@@ -141,7 +141,7 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @property
-    def render_methods_map(self) -> Dict["Literal['redoc', 'swagger', 'elements']", Callable[[Request], str]]:
+    def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
         """Map render method names to render methods.
 
         Returns:
