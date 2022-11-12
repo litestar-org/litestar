@@ -600,6 +600,20 @@ instruments = ["asgiref (>=3.0,<4.0)"]
 test = ["opentelemetry-instrumentation-asgi[instruments]", "opentelemetry-test-utils (==0.35b0)"]
 
 [[package]]
+name = "opentelemetry-sdk"
+version = "1.14.0"
+description = "OpenTelemetry Python SDK"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+opentelemetry-api = "1.14.0"
+opentelemetry-semantic-conventions = "0.35b0"
+setuptools = ">=16.0"
+typing-extensions = ">=3.7.4"
+
+[[package]]
 name = "opentelemetry-semantic-conventions"
 version = "0.35b0"
 description = "OpenTelemetry Semantic Conventions"
@@ -1165,7 +1179,7 @@ structlog = ["structlog"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "c6f0b5a764675795ade7df340d1f0281798302795a7a15caf1fe9ac1c5bd8946"
+content-hash = "788000566c7acba063b330599e3cadc0872b8191f222877f8fd9d8235ba42f79"
 
 [metadata.files]
 aiomcache = [
@@ -1760,6 +1774,10 @@ opentelemetry-instrumentation = [
 opentelemetry-instrumentation-asgi = [
     {file = "opentelemetry_instrumentation_asgi-0.35b0-py3-none-any.whl", hash = "sha256:88fd0dfe701935e12a62fd4c6767420d4ce6ee2ec73ef8ed223590b90f79c4d6"},
     {file = "opentelemetry_instrumentation_asgi-0.35b0.tar.gz", hash = "sha256:fd3101fb9b23e311b7a0690594180e55a62f06b843e2da3113a764a3341c2ba9"},
+]
+opentelemetry-sdk = [
+    {file = "opentelemetry_sdk-1.14.0-py3-none-any.whl", hash = "sha256:81d76b23ed0eb0dc6b2b614ed7b27f7a84921df1395261b3732ef1deac95c414"},
+    {file = "opentelemetry_sdk-1.14.0.tar.gz", hash = "sha256:1b58bd9bb96b917c66cdd00bcfd719aca15695a0720fd0332d7db2a6a74c02c8"},
 ]
 opentelemetry-semantic-conventions = [
     {file = "opentelemetry_semantic_conventions-0.35b0-py3-none-any.whl", hash = "sha256:eb5320719d919db2ff8ac60a7577dfa2316cf02bccc6a3b1f50d051885dd96b7"},

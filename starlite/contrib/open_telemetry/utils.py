@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Dict, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Tuple
 
-from starlite.exceptions import MissingDependencyException, NoRouteMatchFoundException
+from starlite.exceptions import MissingDependencyException
+from starlite.utils import get_name
 
 try:
     from opentelemetry.semconv.trace import SpanAttributes
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope
 
 
-def get_route_details_from_scope(scope: "Scope") -> Tuple[str, Dict[str, str]]:
+def get_route_details_from_scope(scope: "Scope") -> Tuple[str, Dict[Any, str]]:
     """Retrieve the span name and attributes from the ASGI scope.
 
     Args:
@@ -20,11 +21,5 @@ def get_route_details_from_scope(scope: "Scope") -> Tuple[str, Dict[str, str]]:
     Returns:
         A tuple includes the span name and attributes dict.
     """
-    app, route_handler = scope["app"], scope["route_handler"]
-    try:
-        span_name = app.route_reverse(route_handler.name or str(route_handler))
-        attributes = {SpanAttributes.HTTP_ROUTE: span_name}
-    except NoRouteMatchFoundException:
-        span_name = f"{str(route_handler)}::{scope.get('method', '')}ֶֶֶ"
-        attributes = {}
-    return span_name, attributes
+    route_handler_fn_name = get_name(scope["route_handler"].fn)
+    return route_handler_fn_name, {SpanAttributes.HTTP_ROUTE: route_handler_fn_name}

@@ -46,6 +46,7 @@ cryptography = { version = "*", optional = true }
 httpx = ">=0.22"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
+opentelemetry-sdk = { version = "*", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
@@ -71,6 +72,7 @@ hypothesis = "*"
 jinja2 = "*"
 mako = "*"
 opentelemetry-instrumentation-asgi = "*"
+opentelemetry-sdk = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
@@ -91,7 +93,7 @@ brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["brotli", "cryptography", "picologging", "structlog"]
 memcached = ["aiomcache"]
-opentelemtry = ["opentelemetry-instrumentation-asgi"]
+opentelemtry = ["opentelemetry-instrumentation-asgi", "opentelemetry-sdk"]
 picologging = ["picologging"]
 redis = ["redis"]
 structlog = ["structlog"]
