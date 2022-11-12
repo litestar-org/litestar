@@ -43,7 +43,7 @@ class CORSMiddleware(AbstractMiddleware):
             await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
 
     def send_wrapper(self, send: "Send", origin: str, has_cookie: bool) -> "Send":
-        """Wrap 'send' to ensure that state is not disconnected.
+        """Wrap `send` to ensure that state is not disconnected.
 
         Args:
             send: The ASGI send function.
