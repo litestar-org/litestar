@@ -142,7 +142,7 @@ class CORSConfig(BaseModel):
         return cast("Dict[str, str]", self._preflight_headers)
 
     @property
-    def simply_headers(self) -> Dict[str, str]:
+    def simple_headers(self) -> Dict[str, str]:
         """Get cached simple headers.
 
         Returns:
