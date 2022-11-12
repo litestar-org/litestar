@@ -22,8 +22,8 @@ def _generate_test_code(module_name: str, name: str, counter: int | None = None,
 def test_{name}() -> None:
     with TestClient(app={app_name}) as client:
         pass
-        
-        
+
+
 """
 
     return code
