@@ -257,6 +257,8 @@ nav:
           - reference/utils/5-sequence-utils.md
           - reference/utils/6-path-utils.md
           - reference/utils/7-serialization-utils.md
+      - Contrib:
+          - reference/contrib/open_telemetry.md
   - migration.md
 extra:
   social:
