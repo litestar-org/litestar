@@ -8,6 +8,7 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Literal,
     Optional,
     Type,
     Union,
@@ -16,7 +17,6 @@ from typing import (
 
 from orjson import dumps
 from pydantic import BaseModel, Field, validator
-from typing_extensions import Literal
 
 from starlite.exceptions import (
     ImproperlyConfiguredException,

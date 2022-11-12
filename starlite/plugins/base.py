@@ -6,13 +6,15 @@ from typing import (
     List,
     NamedTuple,
     Optional,
+    Protocol,
     Tuple,
     Type,
     TypeVar,
     Union,
+    runtime_checkable,
 )
 
-from typing_extensions import Protocol, TypeGuard, get_args, runtime_checkable
+from typing_extensions import TypeGuard, get_args
 
 if TYPE_CHECKING:
     from pydantic import BaseModel

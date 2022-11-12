@@ -2,7 +2,6 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
-from starlette.middleware.cors import CORSMiddleware
 from typing_extensions import TypedDict
 
 from starlite.asgi import ASGIRouter
@@ -15,6 +14,7 @@ from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.middleware.compression import CompressionMiddleware
+from starlite.middleware.cors import CORSMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -588,7 +588,7 @@ class Starlite(Router):
         if self.allowed_hosts:
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=self.allowed_hosts)
         if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, **self.cors_config.dict())  # type: ignore
+            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
         return wrap_in_exception_handler(
             debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )

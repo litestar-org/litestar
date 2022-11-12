@@ -7,6 +7,7 @@ from typing import (
     AsyncGenerator,
     Coroutine,
     Dict,
+    Literal,
     Optional,
     Union,
     cast,
@@ -25,7 +26,6 @@ if TYPE_CHECKING:
     from os import stat_result as stat_result_type
 
     from anyio import Path
-    from typing_extensions import Literal
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import PathType, ResponseCookies, Send
@@ -84,7 +84,7 @@ class FileResponse(StreamingResponse):
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
         chunk_size: int = ONE_MEGA_BYTE,
-        content_disposition_type: "Literal['attachment', 'inline']" = "attachment",
+        content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
         etag: Optional["ETag"] = None,
@@ -93,7 +93,7 @@ class FileResponse(StreamingResponse):
         file_info: Optional["FileInfo"] = None,
         headers: Optional[Dict[str, Any]] = None,
         is_head_response: bool = False,
-        media_type: Optional[Union["Literal[MediaType.TEXT]", str]] = None,
+        media_type: Optional[Union[Literal[MediaType.TEXT], str]] = None,
         stat_result: Optional["stat_result_type"] = None,
         status_code: int = HTTP_200_OK,
     ) -> None:

@@ -297,8 +297,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             **path_parameters: Values for path parameters in the route
 
         Raises:
-            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in
-            **path_parameters or have wrong type.
+            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing or have a wrong type.
 
         Returns:
             A string representing the absolute url of the route handler.

@@ -1,5 +1,17 @@
 # Changelog
 
+[1.39.0]
+
+- add `CORSMiddleware`.
+- add `URL`, `URLPath` and `Address` datastructures.
+- add `send_as_attachment` flag for `StaticFiles`.
+- add handling of `OPTIONS` requests.
+- fix `content-disposition` in `html_mode` StaticFiles.
+- fix `filename` parameter in `FileResponse` set for `StaticFiles` response.
+- refactor builtin middlewares.
+- remove Python 3.7 support.
+- remove `starlette` as a dependency.
+
 [1.38.0]
 
 - add 'AllowedHostsMiddleware`.

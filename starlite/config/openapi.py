@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Set, Type, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Set, Type, Union, cast
 
 from pydantic import AnyUrl, BaseModel
 from pydantic_openapi_schema import construct_open_api_with_schema_class
@@ -15,7 +15,6 @@ from pydantic_openapi_schema.v3_1_0 import (
     Server,
     Tag,
 )
-from typing_extensions import Literal
 
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.path_item import create_path_item

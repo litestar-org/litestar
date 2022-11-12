@@ -1,7 +1,17 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Protocol,
+    TypeVar,
+    Union,
+    runtime_checkable,
+)
 
 from pydantic import DirectoryPath, validate_arguments
-from typing_extensions import Protocol, TypedDict, runtime_checkable
+from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
     from starlite.connection import Request

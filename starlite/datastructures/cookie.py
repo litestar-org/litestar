@@ -1,8 +1,7 @@
 from http.cookies import SimpleCookie
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel
-from typing_extensions import Literal
 
 
 class Cookie(BaseModel):

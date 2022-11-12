@@ -1,10 +1,9 @@
 from contextlib import ExitStack
 from queue import Queue
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, Union, cast
 
 from anyio import sleep
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
-from typing_extensions import Literal
 
 from starlite.exceptions import WebSocketDisconnect
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
@@ -89,9 +88,7 @@ class WebSocketTestSession:
             self.send_queue.put(exc)
             raise
 
-    def send(
-        self, data: Union[str, bytes], mode: "Literal['text', 'binary']" = "text", encoding: str = "utf-8"
-    ) -> None:
+    def send(self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
         """Sends a "receive" event. This is the inverse of the ASGI send method.
 
         Args:
@@ -135,7 +132,7 @@ class WebSocketTestSession:
         """
         self.send(data=data, mode="binary", encoding=encoding)
 
-    def send_json(self, data: Any, mode: "Literal['text', 'binary']" = "text") -> None:
+    def send_json(self, data: Any, mode: Literal["text", "binary"] = "text") -> None:
         """Sends the given data as JSON.
 
         Args:
@@ -196,7 +193,7 @@ class WebSocketTestSession:
         message = self.receive()
         return cast("bytes", message.get("bytes", b""))
 
-    def receive_json(self, mode: "Literal['text', 'binary']" = "text") -> Any:
+    def receive_json(self, mode: Literal["text", "binary"] = "text") -> Any:
         """Receives JSON.
 
         Args:

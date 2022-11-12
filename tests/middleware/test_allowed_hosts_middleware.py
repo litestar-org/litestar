@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from pydantic import ValidationError
@@ -16,6 +16,21 @@ if TYPE_CHECKING:
 class DummyApp(MiddlewareProtocol):  # pyright: ignore
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         return
+
+
+def test_allowed_hosts_middleware() -> None:
+    client = create_test_client(route_handlers=[], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
+    unpacked_middleware = []
+    cur = client.app.asgi_handler
+    while hasattr(cur, "app"):
+        unpacked_middleware.append(cur)
+        cur = cast("Any", cur.app)
+    else:
+        unpacked_middleware.append(cur)
+    assert len(unpacked_middleware) == 4
+    allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
+    assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
+    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore
 
 
 def test_allowed_hosts_middleware_hosts_regex() -> None:

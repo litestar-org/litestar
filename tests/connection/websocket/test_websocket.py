@@ -4,7 +4,7 @@ https://github.com/encode/starlette/blob/master/tests/test_websockets.py And are
 meant to ensure our compatibility with their API.
 """
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import anyio
 import pytest
@@ -17,13 +17,12 @@ from starlite.status_codes import WS_1001_GOING_AWAY
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
 
     from starlite.types import Receive, Scope, Send
 
 
 @pytest.mark.parametrize("mode", ["text", "binary"])
-def test_websocket_send_receive_json(mode: "Literal['text', 'binary']") -> None:
+def test_websocket_send_receive_json(mode: Literal["text", "binary"]) -> None:
     @websocket(path="/")
     async def websocket_handler(socket: WebSocket) -> None:
         await socket.accept()

@@ -23,7 +23,7 @@ To start using sessions in your application all you have to do is create an inst
 of a [configuration][starlite.middleware.session.base.BaseBackendConfig] object and
 add its middleware to your application's middleware stack:
 
-=== "Python > 3.7"
+=== "Python == 3.8"
 
     ```py title="Hello World"
     --8<-- "examples/middleware/session/cookies_full_example_py37.py"

@@ -6,19 +6,22 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from anyio.to_thread import run_sync
 
 from starlite.connection import Request
+from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.controller import Controller
-from starlite.enums import ScopeType
+from starlite.datastructures import Headers
+from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import RedirectResponse
+from starlite.handlers.http import HTTPRouteHandler
+from starlite.response import RedirectResponse, Response
 from starlite.routes.base import BaseRoute
 from starlite.signature import get_signature_model
+from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from starlite.utils import get_name, is_async_callable
 from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
-    from starlite.handlers.http import HTTPRouteHandler
+
     from starlite.kwargs import KwargsModel
-    from starlite.response import Response
     from starlite.types import (
         AnyCallable,
         ASGIApp,
@@ -50,13 +53,19 @@ class HTTPRoute(BaseRoute):
             path: The path for the route.
             route_handlers: A list of [HTTPRouteHandler][starlite.handlers.http.HTTPRouteHandler].
         """
+        methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
+        if "OPTIONS" not in methods:
+            methods.append("OPTIONS")
+            route_handlers.append(self.create_options_handler(path))
+
         self.route_handlers = route_handlers
         self.route_handler_map: Dict["Method", Tuple["HTTPRouteHandler", "KwargsModel"]] = {}
+
         super().__init__(
-            methods=list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers])),
+            methods=methods,
             path=path,
             scope_type=ScopeType.HTTP,
-            handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in route_handlers],
+            handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in self.route_handlers],
         )
 
     async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
@@ -232,3 +241,82 @@ class HTTPRoute(BaseRoute):
             value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL),
             expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
         )
+
+    def create_options_handler(self, path: str) -> "HTTPRouteHandler":
+        """
+
+        Args:
+            path: The route path
+
+        Returns:
+            An HTTP route handler for OPTIONS requests.
+        """
+
+        def options_handler(scope: "Scope") -> Response:
+            """
+            Handler function for OPTIONS requests.
+            Args:
+                scope: The ASGI Scope.
+
+            Returns:
+                Response
+            """
+            cors_config = scope["app"].cors_config
+            request_headers = Headers.from_scope(scope=scope)
+            origin = request_headers.get("origin")
+
+            if cors_config and origin:
+                pre_flight_method = request_headers.get("Access-Control-Request-Method")
+                failures = []
+
+                if not cors_config.is_allow_all_methods and (
+                    pre_flight_method and pre_flight_method not in cors_config.allow_methods
+                ):
+                    failures.append("method")
+
+                response_headers = cors_config.preflight_headers.copy()
+
+                if not cors_config.is_origin_allowed(origin):
+                    failures.append("Origin")
+                elif response_headers.get("Access-Control-Allow-Origin") != "*":
+                    response_headers["Access-Control-Allow-Origin"] = origin
+
+                pre_flight_requested_headers = [
+                    header.strip()
+                    for header in request_headers.get("Access-Control-Request-Headers", "").split(",")
+                    if header.strip()
+                ]
+
+                if pre_flight_requested_headers:
+                    if cors_config.is_allow_all_headers:
+                        response_headers["Access-Control-Allow-Headers"] = ", ".join(
+                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
+                        )
+                    elif any(
+                        header.lower() not in cors_config.allow_headers for header in pre_flight_requested_headers
+                    ):
+                        failures.append("headers")
+
+                return (
+                    Response(
+                        content=f"Disallowed CORS {', '.join(failures)}",
+                        status_code=HTTP_400_BAD_REQUEST,
+                        media_type=MediaType.TEXT,
+                    )
+                    if failures
+                    else Response(
+                        content=None,
+                        status_code=HTTP_204_NO_CONTENT,
+                        media_type=MediaType.TEXT,
+                        headers=response_headers,
+                    )
+                )
+
+            return Response(
+                content=None,
+                status_code=HTTP_204_NO_CONTENT,
+                headers={"Allow": ", ".join(sorted(self.methods))},
+                media_type=MediaType.TEXT,
+            )
+
+        return HTTPRouteHandler(path=path, http_method=[HttpMethod.OPTIONS])(options_handler)

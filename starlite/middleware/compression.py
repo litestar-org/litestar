@@ -1,8 +1,6 @@
 from gzip import GzipFile
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union
 
 from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import CompressionEncoding, ScopeType
@@ -51,7 +49,7 @@ class CompressionFacade:
             except ImportError as e:
                 raise MissingDependencyException("brotli is not installed") from e
             else:
-                modes: Dict["Literal['generic', 'text', 'font']", int] = {
+                modes: Dict[Literal["generic", "text", "font"], int] = {
                     "text": int(MODE_TEXT),
                     "font": int(MODE_FONT),
                     "generic": int(MODE_GENERIC),
@@ -146,7 +144,7 @@ class CompressionMiddleware(AbstractMiddleware):
     def create_compression_send_wrapper(
         self,
         send: "Send",
-        compression_encoding: "Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP]",
+        compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
     ) -> "Send":
         """Wrap 'send' to handle brotli compression.
 

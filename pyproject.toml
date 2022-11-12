@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.38.0"
+version = "1.39.0"
 description = "Light-weight and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -22,7 +22,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -39,7 +38,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0"
+python = ">=3.8,<4.0"
 aiomcache = { version = "*", optional = true }
 anyio = ">=3"
 brotli = { version = "*", optional = true }
@@ -53,7 +52,6 @@ pydantic-factories = "*"
 pydantic-openapi-schema = "*"
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
-starlette = ">=0.21"
 starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
@@ -79,6 +77,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 redis = "*"
 sqlalchemy = "*"
+starlette = "*"
 structlog = "*"
 tortoise-orm = "*"
 tox = "*"

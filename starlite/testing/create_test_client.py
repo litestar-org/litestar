@@ -1,11 +1,9 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, Union, cast
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.testing.test_client import TestClient
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
-
     from starlite import (
         BaseLoggingConfig,
         CacheConfig,
@@ -49,7 +47,7 @@ def create_test_client(
     after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
     after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
     allowed_hosts: Optional[Union[List[str], "AllowedHostsConfig"]] = None,
-    backend: "Literal['asyncio', 'trio']" = "asyncio",
+    backend: Literal["asyncio", "trio"] = "asyncio",
     backend_options: Optional[Dict[str, Any]] = None,
     base_url: str = "http://testserver.local",
     before_request: Optional["BeforeRequestHookHandler"] = None,

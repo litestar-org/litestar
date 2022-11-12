@@ -1,6 +1,17 @@
-from typing import IO, TYPE_CHECKING, Any, AnyStr, Awaitable, Optional, Union, overload
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Any,
+    AnyStr,
+    Awaitable,
+    Literal,
+    Optional,
+    Protocol,
+    Union,
+    overload,
+)
 
-from typing_extensions import Literal, NotRequired, Protocol, TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 if TYPE_CHECKING:
     from _typeshed import OpenBinaryMode, OpenTextMode

@@ -5,11 +5,9 @@ import pytest
 from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.middleware.cors import CORSMiddleware
 
 from starlite import (
     Controller,
-    CORSConfig,
     DefineMiddleware,
     MiddlewareProtocol,
     Request,
@@ -19,7 +17,6 @@ from starlite import (
     get,
     post,
 )
-from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -117,54 +114,6 @@ class JSONRequest(BaseModel):
 @post(path="/")
 def post_handler(data: JSONRequest) -> JSONRequest:
     return data
-
-
-def test_setting_cors_middleware() -> None:
-    cors_config = CORSConfig()  # pyright: ignore
-    assert cors_config.allow_credentials is False
-    assert cors_config.allow_headers == ["*"]
-    assert cors_config.allow_methods == ["*"]
-    assert cors_config.allow_origins == ["*"]
-    assert cors_config.allow_origin_regex is None
-    assert cors_config.max_age == 600
-    assert cors_config.expose_headers == []
-
-    with create_test_client(route_handlers=[handler], cors_config=cors_config) as client:
-        unpacked_middleware = []
-        cur = client.app.asgi_handler
-        while hasattr(cur, "app"):
-            unpacked_middleware.append(cur)
-            cur = cast("Any", cur.app)
-        else:
-            unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 4
-        cors_middleware = cast("Any", unpacked_middleware[1])
-        assert isinstance(cors_middleware, CORSMiddleware)
-        assert cors_middleware.allow_headers == [
-            "*",
-            "accept",
-            "accept-language",
-            "content-language",
-            "content-type",
-        ]
-        assert cors_middleware.allow_methods == ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
-        assert cors_middleware.allow_origins == cors_config.allow_origins
-        assert cors_middleware.allow_origin_regex == cors_config.allow_origin_regex
-
-
-def test_trusted_hosts_middleware() -> None:
-    client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
-    unpacked_middleware = []
-    cur = client.app.asgi_handler
-    while hasattr(cur, "app"):
-        unpacked_middleware.append(cur)
-        cur = cast("Any", cur.app)
-    else:
-        unpacked_middleware.append(cur)
-    assert len(unpacked_middleware) == 4
-    allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
-    assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
-    assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore
 
 
 def test_request_body_logging_middleware(caplog: "LogCaptureFixture") -> None:

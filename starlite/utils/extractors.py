@@ -4,6 +4,7 @@ from typing import (
     Callable,
     Coroutine,
     Dict,
+    Literal,
     Optional,
     Set,
     Tuple,
@@ -11,7 +12,7 @@ from typing import (
     cast,
 )
 
-from typing_extensions import Literal, TypedDict
+from typing_extensions import TypedDict
 
 from starlite.connection.request import Request
 from starlite.datastructures.upload_file import UploadFile

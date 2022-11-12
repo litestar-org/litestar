@@ -1,6 +1,4 @@
-from typing import Awaitable, List, TypeVar, Union
-
-from typing_extensions import Literal
+from typing import Awaitable, List, Literal, TypeVar, Union
 
 T = TypeVar("T")
 
