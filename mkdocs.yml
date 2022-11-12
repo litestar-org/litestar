@@ -149,6 +149,8 @@ nav:
           - usage/16-templating/1-template-context.md
           - usage/16-templating/2-template-functions.md
       - usage/17-exceptions.md
+      - Contrib:
+          - usage/18-contrib/0-open-telemetry.md
   - API Reference:
       - reference/0-api-reference-intro.md
       - reference/1-app.md

@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Type, Union
 
 from pydantic import BaseConfig, BaseModel
 
@@ -69,13 +69,21 @@ class OpenTelemetryConfig(BaseModel):
     """
     ASGI scopes processed by the middleware, if None both 'http' and 'websocket' will be processed.
     """
+    middleware_class: Type[OpenTelemetryInstrumentationMiddleware] = OpenTelemetryInstrumentationMiddleware
+    """
+    The middleware class to use. Should be a subclass of OpenTelemetry
+        InstrumentationMiddleware][starlite.contrib.open_telemetry.OpenTelemetryInstrumentationMiddleware].
+    """
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Create an instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware] that wraps [OpenTelemetry
-        InstrumentationMiddleware][starlite.contrib.open_telemtry.OpenTelemetryInstrumentationMiddleware].
+        """Create an instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware] that wraps with.
+
+        [OpenTelemetry
+        InstrumentationMiddleware][starlite.contrib.open_telemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
+        of this middleware.
 
         Returns:
             An instance of DefineMiddleware.
         """
-        return DefineMiddleware(OpenTelemetryInstrumentationMiddleware, config=self)
+        return DefineMiddleware(self.middleware_class, config=self)
