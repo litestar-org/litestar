@@ -56,7 +56,7 @@ class CORSMiddleware(AbstractMiddleware):
             if message["type"] == "http.response.start":
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders.from_message(message=message)
-                headers.update(self.config.simply_headers)
+                headers.update(self.config.simple_headers)
 
                 if (self.config.is_allow_all_origins and has_cookie) or (
                     not self.config.is_allow_all_origins and self.config.is_origin_allowed(origin=origin)
