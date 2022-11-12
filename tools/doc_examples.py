@@ -9,15 +9,24 @@ DISABLE_EXAMPLE_LINT = re.compile(r"<!-- ?disable-examplelint ?-->")
 FILENAME_RE = re.compile(r"[\d-]*(.*)")
 
 
-EXAMPLE_TEST_TEMPLATE = """
-from {module_name} import app
-from starlite import TestClient
+def _generate_test_code(module_name: str, name: str, counter: int | None = None, code: str = "") -> str:
+    app_name = "app"
+    if not counter:
+        code = "from starlite import TestClient\n\n\n"
+    else:
+        app_name = f"{app_name}_{counter}"
 
+    code = f"from {module_name} import app as {app_name}\n" + code
 
+    code += f"""\
 def test_{name}() -> None:
-    with TestClient(app=app) as client:
+    with TestClient(app={app_name}) as client:
         pass
+        
+        
 """
+
+    return code
 
 
 def _find_matching_lineno(source_lines: list[str], find: str) -> int:
@@ -77,10 +86,10 @@ def extract_examples(
     code_blocks = _find_code_blocks(content, max_line_length)
     for i, code_block in enumerate(code_blocks):
         target_path = examples_dir / name  # pyright: ignore
-        if len(code_blocks) > 1:
-            target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
         target_path = target_path.with_suffix(".py")
         test_file_path = tests_dir / f"test_{target_path.name}"
+        if len(code_blocks) > 1:
+            target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
 
         content = content.replace(code_block, f'```python\n--8<-- "{target_path}"\n```\n')
         if not (code_match := CODE_BLOCK_CODE.match(code_block)):
@@ -91,8 +100,11 @@ def extract_examples(
 
         if generate_tests:
             test_file_path.write_text(
-                EXAMPLE_TEST_TEMPLATE.format(
-                    module_name=str(target_path.with_suffix("")).replace("/", "."), name=target_path.stem
+                _generate_test_code(
+                    module_name=str(target_path.with_suffix("")).replace("/", "."),
+                    name=target_path.stem,
+                    code=test_file_path.read_text() if i else "",
+                    counter=i,
                 )
             )
             print(f"Created test stub in: {test_file_path}")  # noqa: T201
