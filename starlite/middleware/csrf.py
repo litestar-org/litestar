@@ -93,7 +93,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             raise PermissionDeniedException("CSRF token verification failed")
 
     def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
-        """Wrap 'send' to handle CSRF validation.
+        """Wrap `send` to handle CSRF validation.
 
         Args:
             token: The CSRF token.

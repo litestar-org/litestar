@@ -98,7 +98,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         return wrapped_receive
 
     def send_wrapper(self, send: "Send") -> "Send":
-        """Wrap 'send' to ensure that state is not disconnected.
+        """Wrap `send` to ensure that state is not disconnected.
 
         Args:
             send: The ASGI send function.

@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 class CORSMiddleware(AbstractMiddleware):
     """CORS Middleware."""
 
+    __slots__ = ("config",)
+
     def __init__(self, app: "ASGIApp", config: "CORSConfig"):
         """Middleware that adds CORS validation to the application.
 
