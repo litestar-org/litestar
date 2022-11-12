@@ -44,7 +44,7 @@ class CORSConfig(BaseModel):
     """
     max_age: int = 600
     """
-    Response aching TTL in seconds, defaults to 600. Sets the 'Access-Control-Max-Age' header.
+    Response caching TTL in seconds, defaults to 600. Sets the 'Access-Control-Max-Age' header.
     """
 
     @validator("allow_headers", always=True)
