@@ -19,7 +19,7 @@ def get_route_details_from_scope(scope: "Scope") -> Tuple[str, Dict[Any, str]]:
         scope: The ASGI scope instance.
 
     Returns:
-        A tuple includes the span name and attributes dict.
+        A tuple of the span name and an attributes dict.
     """
     route_handler_fn_name = get_name(scope["route_handler"].fn)
     return route_handler_fn_name, {SpanAttributes.HTTP_ROUTE: route_handler_fn_name}
