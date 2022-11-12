@@ -84,6 +84,6 @@ class OpenTelemetryConfig(BaseModel):
         of this middleware.
 
         Returns:
-            An instance of DefineMiddleware.
+            An instance of `DefineMiddleware`.
         """
         return DefineMiddleware(self.middleware_class, config=self)
