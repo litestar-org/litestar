@@ -123,7 +123,7 @@ async def test_sqlalchemy_backend_delete_expired(sqlalchemy_session_backend: "SQ
     session.execute(
         sa.update(model)
         .where(model.session_id == "foo")
-        .values(expires=datetime.datetime.utcnow().replace(tzinfo=None))
+        .values(expires=datetime.datetime.utcnow() - datetime.timedelta(days=60))
     )
     await sqlalchemy_session_backend.delete_expired()
 
