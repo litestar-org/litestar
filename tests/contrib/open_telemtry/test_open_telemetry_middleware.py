@@ -35,9 +35,8 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
     aggregation_last_value = {Counter: ExplicitBucketHistogramAggregation()}
     reader = InMemoryMetricReader(preferred_aggregation=aggregation_last_value)  # type: ignore
     meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
-    set_meter_provider(meter_provider)
 
-    meter = get_meter_provider().get_meter("starlite-test")
+    meter = meter_provider.get_meter("starlite-test")
 
     return (
         OpenTelemetryConfig(tracer_provider=tracer_provider, meter=meter, **kwargs),
