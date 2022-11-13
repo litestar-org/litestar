@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "starlite"
 version = "1.39.0"
-description = "Light-weight and flexible ASGI API Framework"
+description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
@@ -15,7 +15,7 @@ readme = "README.md"
 homepage = "https://github.com/starlite-api/starlite"
 repository = "https://github.com/starlite-api/starlite"
 documentation = "https://starlite-api.github.io/starlite"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlette", "fastapi", "framework", "websocket"]
+keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -45,6 +45,7 @@ brotli = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 httpx = ">=0.22"
 multidict = ">=6.0.2"
+opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
@@ -69,6 +70,8 @@ greenlet = "*"
 hypothesis = "*"
 jinja2 = "*"
 mako = "*"
+opentelemetry-instrumentation-asgi = "*"
+opentelemetry-sdk = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
@@ -88,10 +91,11 @@ trio = "*"
 brotli = ["brotli"]
 cryptography = ["cryptography"]
 full = ["brotli", "cryptography", "picologging", "structlog"]
-picologging = ["picologging"]
-structlog = ["structlog"]
-redis = ["redis"]
 memcached = ["aiomcache"]
+opentelemtry = ["opentelemetry-instrumentation-asgi"]
+picologging = ["picologging"]
+redis = ["redis"]
+structlog = ["structlog"]
 
 
 [build-system]
@@ -178,7 +182,6 @@ exclude = [
 
 [tool.slotscheck]
 strict-imports = false
-
 
 [tool.pydocstyle]
 add-ignore = "D100,D104,D105,D106,D202,D205,D415"

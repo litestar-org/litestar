@@ -146,7 +146,7 @@ class CompressionMiddleware(AbstractMiddleware):
         send: "Send",
         compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
     ) -> "Send":
-        """Wrap 'send' to handle brotli compression.
+        """Wrap `send` to handle brotli compression.
 
         Args:
             send: The ASGI send function.
