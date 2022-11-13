@@ -1,6 +1,6 @@
 # OpenTelemetry
 
-::: starlite.contrib.open_telemetry.OpenTelemetryConfig
+::: starlite.contrib.opentelemetry.OpenTelemetryConfig
     options:
         members:
             - client_request_hook_handler
@@ -15,9 +15,9 @@
             - tracer_provider
             - middleware
 
-::: starlite.contrib.open_telemetry.OpenTelemetryInstrumentationMiddleware
+::: starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware
     options:
         members:
             - __init__
 
-::: starlite.contrib.open_telemetry.get_route_details_from_scope
+::: starlite.contrib.opentelemetry.get_route_details_from_scope
