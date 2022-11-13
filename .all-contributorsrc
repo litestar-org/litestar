@@ -551,6 +551,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "srikanthccv",
+      "name": "Srikanth Chekuri",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22846633?v=4",
+      "profile": "https://www.linkedin.com/in/srikanthccv/",
+      "contributions": [
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
