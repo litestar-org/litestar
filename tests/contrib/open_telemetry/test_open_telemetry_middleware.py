@@ -1,4 +1,3 @@
-from time import sleep
 from typing import Any, Tuple, cast
 
 from opentelemetry.metrics import get_meter_provider, set_meter_provider
@@ -10,11 +9,11 @@ from opentelemetry.sdk.metrics._internal.export import InMemoryMetricReader
 from opentelemetry.sdk.metrics._internal.instrument import Counter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import Span, TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from starlite import WebSocket, create_test_client, get, websocket
-from starlite.contrib.open_telemetry import OpenTelemetryConfig
+from starlite.contrib.opentelemetry import OpenTelemetryConfig
 from starlite.status_codes import HTTP_200_OK
 
 
@@ -30,13 +29,15 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
     resource = Resource(attributes={SERVICE_NAME: "starlite-test"})
     tracer_provider = TracerProvider(resource=resource)
     exporter = InMemorySpanExporter()  # type: ignore
-    tracer_provider.add_span_processor(BatchSpanProcessor(exporter, schedule_delay_millis=1))
+    tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
 
     aggregation_last_value = {Counter: ExplicitBucketHistogramAggregation()}
     reader = InMemoryMetricReader(preferred_aggregation=aggregation_last_value)  # type: ignore
     meter_provider = MeterProvider(resource=resource, metric_readers=[reader])
 
-    meter = meter_provider.get_meter("starlite-test")
+    set_meter_provider(meter_provider)
+
+    meter = get_meter_provider().get_meter("starlite-test")
 
     return (
         OpenTelemetryConfig(tracer_provider=tracer_provider, meter=meter, **kwargs),
@@ -56,8 +57,6 @@ def test_open_telemetry_middleware_with_http_route() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert reader.get_metrics_data()
-
-        sleep(0.01)
 
         first_span, second_span, third_span = cast("Tuple[Span, Span, Span]", exporter.get_finished_spans())  # type: ignore
         assert dict(first_span.attributes) == {"http.status_code": 200, "type": "http.response.start"}  # type: ignore
@@ -103,8 +102,6 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
     with create_test_client(handler, middleware=[config.middleware]).websocket_connect("/") as client:
         data = client.receive_json()
         assert data == {"hello": "world"}
-
-        sleep(0.01)
 
         first_span, second_span, third_span, fourth_span, fifth_span = cast(
             "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans()  # type: ignore

@@ -7,13 +7,14 @@
             - client_response_hook_handler
             - exclude
             - exclude_opt_key
+            - exclude_urls_env_key
             - meter
             - meter_provider
+            - middleware
             - scope_span_details_extractor
             - scopes
             - server_request_hook_handler
             - tracer_provider
-            - middleware
 
 ::: starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware
     options:

@@ -5,11 +5,12 @@ from starlite.middleware.base import AbstractMiddleware
 
 try:
     from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+    from opentelemetry.util.http import get_excluded_urls
 except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
 
 if TYPE_CHECKING:
-    from starlite.contrib.open_telemetry import OpenTelemetryConfig
+    from starlite.contrib.opentelemetry import OpenTelemetryConfig
     from starlite.types import ASGIApp, Receive, Scope, Send
 
 
@@ -23,18 +24,19 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
 
         Args:
             app: The 'next' ASGI app to call.
-            config: An instance of [OpenTelemetryConfig][starlite.contrib.open_telemetry.OpenTelemetryConfig]
+            config: An instance of [OpenTelemetryConfig][starlite.contrib.opentelemetry.OpenTelemetryConfig]
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self.open_telemetry_middleware = OpenTelemetryMiddleware(
             app=app,
-            default_span_details=config.scope_span_details_extractor,
-            server_request_hook=config.server_request_hook_handler,
             client_request_hook=config.client_request_hook_handler,
             client_response_hook=config.client_response_hook_handler,
-            tracer_provider=config.tracer_provider,
-            meter_provider=config.meter_provider,
+            default_span_details=config.scope_span_details_extractor,
+            excluded_urls=get_excluded_urls(config.exclude_urls_env_key),
             meter=config.meter_provider,
+            meter_provider=config.meter_provider,
+            server_request_hook=config.server_request_hook_handler,
+            tracer_provider=config.tracer_provider,
         )
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:

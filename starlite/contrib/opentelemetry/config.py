@@ -2,10 +2,10 @@ from typing import Callable, List, Optional, Tuple, Type, Union
 
 from pydantic import BaseConfig, BaseModel
 
-from starlite.contrib.open_telemetry.middleware import (
+from starlite.contrib.opentelemetry.middleware import (
     OpenTelemetryInstrumentationMiddleware,
 )
-from starlite.contrib.open_telemetry.utils import get_route_details_from_scope
+from starlite.contrib.opentelemetry.utils import get_route_details_from_scope
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware
 from starlite.types import Scope, Scopes
@@ -65,6 +65,12 @@ class OpenTelemetryConfig(BaseModel):
     """
     An identifier to use on routes to disable hosts check for a particular route.
     """
+    exclude_urls_env_key: str = "STARLITE"
+    """
+    Key to use when checking whether a list of excluded urls is passed via ENV. OpenTelemetry supports excluding urls
+    by passing an env in the format '{exclude_urls_env_key}_EXCLUDED_URLS'.
+    With the default being 'STARLITE_EXCLUDED_URLS'.
+    """
     scopes: Optional[Scopes] = None
     """
     ASGI scopes processed by the middleware, if None both 'http' and 'websocket' will be processed.
@@ -72,7 +78,7 @@ class OpenTelemetryConfig(BaseModel):
     middleware_class: Type[OpenTelemetryInstrumentationMiddleware] = OpenTelemetryInstrumentationMiddleware
     """
     The middleware class to use. Should be a subclass of OpenTelemetry
-        InstrumentationMiddleware][starlite.contrib.open_telemetry.OpenTelemetryInstrumentationMiddleware].
+        InstrumentationMiddleware][starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
     """
 
     @property
@@ -80,7 +86,7 @@ class OpenTelemetryConfig(BaseModel):
         """Create an instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware] that wraps with.
 
         [OpenTelemetry
-        InstrumentationMiddleware][starlite.contrib.open_telemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
+        InstrumentationMiddleware][starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
         of this middleware.
 
         Returns:

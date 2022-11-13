@@ -121,6 +121,7 @@ repos:
             aiomcache,
             fsspec,
             multidict,
+            opentelemetry-instrumentation-asgi,
             orjson,
             piccolo,
             picologging,
