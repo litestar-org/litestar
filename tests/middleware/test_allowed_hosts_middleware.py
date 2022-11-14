@@ -19,14 +19,19 @@ class DummyApp(MiddlewareProtocol):  # pyright: ignore
 
 
 def test_allowed_hosts_middleware() -> None:
-    client = create_test_client(route_handlers=[], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
+    @get(path="/")
+    def handler() -> None:
+        ...
+
+    client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     unpacked_middleware = []
-    cur = client.app.asgi_handler
+    cur = client.app.asgi_router.root_route_map_node["children"]["/"]["asgi_handlers"]["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cast("Any", cur.app)
     else:
         unpacked_middleware.append(cur)
+
     assert len(unpacked_middleware) == 4
     allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
     assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
