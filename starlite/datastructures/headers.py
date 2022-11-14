@@ -70,7 +70,12 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a `headers` key
         """
-        return cls(scope["headers"])
+        scope_headers = scope.get("_headers")
+        if scope_headers:
+            return cast("Headers", scope_headers)
+        headers = cls(scope["headers"])
+        scope["_headers"] = headers  # type: ignore[typeddict-item]
+        return headers
 
     def to_header_list(self) -> "RawHeadersList":
         """Raw header value.
