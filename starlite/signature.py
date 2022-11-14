@@ -1,4 +1,4 @@
-from inspect import Parameter, Signature
+from inspect import Parameter, Signature, getmodule
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 SKIP_NAMES = {"self", "cls"}
-SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope"}
+SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope", "receive", "send"}
 
 
 class SignatureModel(BaseModel):
@@ -178,6 +178,7 @@ class SignatureModelFactory:
         "dependency_name_set",
         "field_definitions",
         "field_plugin_mappings",
+        "fn_module",
         "fn_name",
         "plugins",
         "signature",
@@ -193,6 +194,7 @@ class SignatureModelFactory:
         """
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
+        self.fn_module = getmodule(fn)
         self.signature = Signature.from_callable(fn)
         self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
         self.plugins = plugins
@@ -329,6 +331,7 @@ class SignatureModelFactory:
             model.return_annotation = self.signature.return_annotation
             model.field_plugin_mappings = self.field_plugin_mappings
             model.dependency_name_set = self.dependency_name_set
+            model.update_forward_refs(**vars(self.fn_module))
             return model
         except TypeError as e:
             raise ImproperlyConfiguredException(f"Error creating signature model for '{self.fn_name}': '{e}'") from e
