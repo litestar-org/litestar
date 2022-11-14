@@ -11,7 +11,7 @@ The handler function will receive all requests with an url that begins with `/so
 `/some/sub-path/abc` and `/some/sub-path/123/another/sub-path` etc.
 
 !!! info Technical Details
-    If we were to send a request to the above with the url `/some/sub-path`, the handler will be invoked and
+    If we are sending a request to the above with the url `/some/sub-path`, the handler will be invoked and
     the value of `scope["path"]` will equal `/`. If we send a request to `/some/sub-path/abc`, it will also be invoked,
     and `scope["path"]` will equal `/abc`.
 
