@@ -28,9 +28,13 @@ from starlite.types import (
     Middleware,
     ParametersMap,
 )
-from starlite.utils import AsyncCallable, normalize_path
+from starlite.types.composite_types import MaybePartial
+from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
+    from inspect import Signature
+
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
     from starlite.router import Router
@@ -52,6 +56,9 @@ class BaseRouteHandler(Generic[T]):
     Serves as a subclass for all route handlers
     """
 
+    fn: "Ref[MaybePartial[AnyCallable]]"
+    signature: "Signature"
+
     __slots__ = (
         "_resolved_dependencies",
         "_resolved_guards",
@@ -65,6 +72,7 @@ class BaseRouteHandler(Generic[T]):
         "opt",
         "owner",
         "paths",
+        "signature",
         "signature_model",
     )
 
@@ -99,7 +107,6 @@ class BaseRouteHandler(Generic[T]):
         self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
-        self.fn: Optional["AnyCallable"] = None
         self.guards = guards
         self.middleware = middleware
         self.name = name
@@ -112,6 +119,21 @@ class BaseRouteHandler(Generic[T]):
             else {normalize_path(path or "/")}  # type: ignore
         )
         self.opt.update(**kwargs)
+
+    @property
+    def handler_name(self) -> str:
+        """Get the name of the handler function.
+
+        Raises:
+            ImproperlyConfiguredException: if handler fn is not set.
+
+        Returns:
+            Name of the handler function
+        """
+        fn = getattr(self, "fn", None)
+        if not fn:
+            raise ImproperlyConfiguredException("cannot access handler name before setting the handler function")
+        return get_name(unwrap_partial(self.fn.value))
 
     @property
     def dependency_name_set(self) -> Set[str]:
@@ -232,7 +254,7 @@ class BaseRouteHandler(Generic[T]):
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
-        if not self.fn:
+        if not getattr(self, "fn", None):
             raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
 
     def __str__(self) -> str:
@@ -241,7 +263,7 @@ class BaseRouteHandler(Generic[T]):
         Returns:
             A string
         """
-        target = cast("Any", self.fn)
+        target = unwrap_partial(self.fn.value)
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"

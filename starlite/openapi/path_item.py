@@ -7,7 +7,7 @@ from pydantic_openapi_schema.v3_1_0.path_item import PathItem
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
-from starlite.utils import get_name
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
-    from starlite.types import AnyCallable
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
@@ -34,7 +33,8 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
     """
     handler_description = route_handler.description
     if handler_description is None and use_handler_docstrings:
-        return cleandoc(route_handler.fn.__doc__) if route_handler.fn.__doc__ else None
+        fn = unwrap_partial(route_handler.fn.value)
+        return cleandoc(fn.__doc__) if fn.__doc__ else None
     return handler_description
 
 
@@ -78,7 +78,7 @@ def create_path_item(
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = get_name(cast("AnyCallable", route_handler.fn)).replace("_", " ").title()
+            handler_name = unwrap_partial(route_handler.handler_name).replace("_", " ").title()
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(

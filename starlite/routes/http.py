@@ -1,36 +1,22 @@
 import pickle
-from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
-from anyio.to_thread import run_sync
-
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
-from starlite.controller import Controller
 from starlite.datastructures import Headers
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import RedirectResponse, Response
 from starlite.routes.base import BaseRoute
-from starlite.signature import get_signature_model
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from starlite.utils import get_name, is_async_callable
 from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
 
     from starlite.kwargs import KwargsModel
-    from starlite.types import (
-        AnyCallable,
-        ASGIApp,
-        HTTPScope,
-        Method,
-        Receive,
-        Scope,
-        Send,
-    )
+    from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
 class HTTPRoute(BaseRoute):
@@ -65,7 +51,7 @@ class HTTPRoute(BaseRoute):
             methods=methods,
             path=path,
             scope_type=ScopeType.HTTP,
-            handler_names=[get_name(cast("AnyCallable", route_handler.fn)) for route_handler in self.route_handlers],
+            handler_names=[route_handler.handler_name for route_handler in self.route_handlers],
         )
 
     async def handle(self, scope: "HTTPScope", receive: "Receive", send: "Send") -> None:  # type: ignore[override]
@@ -182,30 +168,26 @@ class HTTPRoute(BaseRoute):
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Any:
         """Determine what kwargs are required for the given route handler's `fn` and calls it."""
-        signature_model = get_signature_model(route_handler)
+        parsed_kwargs: Dict[str, Any] = {}
+
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
+
             request_data = kwargs.get("data")
             if request_data:
                 kwargs["data"] = await request_data
+
             await resolve_dependencies_concurrently(
                 parameter_model,
                 parameter_model.expected_dependencies,
                 request,
                 kwargs,
             )
-            parsed_kwargs = signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
-        else:
-            parsed_kwargs = {}
-        if isinstance(route_handler.owner, Controller):
-            fn = partial(cast("AnyCallable", route_handler.fn), route_handler.owner, **parsed_kwargs)
-        else:
-            fn = partial(cast("AnyCallable", route_handler.fn), **parsed_kwargs)
-        if is_async_callable(fn):
-            return await fn()
-        if route_handler.sync_to_thread:
-            return await run_sync(fn)
-        return fn()
+            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
+
+        if route_handler.has_sync_callable:
+            return route_handler.fn.value(**parsed_kwargs)
+        return await route_handler.fn.value(**parsed_kwargs)
 
     @staticmethod
     async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["ASGIApp"]:

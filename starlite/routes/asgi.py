@@ -1,14 +1,13 @@
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from starlite.connection import ASGIConnection
-from starlite.controller import Controller
 from starlite.enums import ScopeType
 from starlite.routes.base import BaseRoute
-from starlite.utils import get_name
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from starlite.handlers.asgi import ASGIRouteHandler
-    from starlite.types import AnyCallable, Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 class ASGIRoute(BaseRoute):
@@ -32,7 +31,7 @@ class ASGIRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.ASGI,
-            handler_names=[get_name(cast("AnyCallable", route_handler.fn))],
+            handler_names=[unwrap_partial(route_handler.handler_name)],
         )
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -51,8 +50,4 @@ class ASGIRoute(BaseRoute):
             connection = ASGIConnection["ASGIRouteHandler", Any, Any](scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
 
-        fn = cast("AnyCallable", self.route_handler.fn)
-        if isinstance(self.route_handler.owner, Controller):
-            await fn(self.route_handler.owner, scope=scope, receive=receive, send=send)
-        else:
-            await fn(scope=scope, receive=receive, send=send)
+        await self.route_handler.fn.value(scope=scope, receive=receive, send=send)

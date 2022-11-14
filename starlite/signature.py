@@ -31,6 +31,7 @@ from starlite.utils import (
     is_optional_union,
     should_skip_dependency_validation,
 )
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
@@ -193,6 +194,8 @@ class SignatureModelFactory:
         """
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
+
+        fn = unwrap_partial(fn)
         self.signature = Signature.from_callable(fn)
         self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
         self.plugins = plugins

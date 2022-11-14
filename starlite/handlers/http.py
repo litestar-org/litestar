@@ -57,7 +57,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import is_async_callable, unique
+from starlite.utils import Ref, is_async_callable, unique
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.datastructures.headers import Header
     from starlite.plugins import PluginProtocol
+    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
     from starlite.types import AnyCallable, AsyncAnyCallable
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
@@ -285,7 +286,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "sync_to_thread",
         "tags",
         "template_name",
+        "has_sync_callable",
     )
+
+    has_sync_callable: bool
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
@@ -439,7 +443,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
         """Replace a function with itself."""
-        self.fn = fn
+        self.fn = Ref["MaybePartial[AnyCallable]"](fn)
+        self.signature = Signature.from_callable(fn)
         self._validate_handler_function()
         return self
 
@@ -602,15 +607,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         response_handler = self.resolve_response_handler()
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
-
-    @property
-    def signature(self) -> Signature:
-        """Return the signature of `self.fn`.
-
-        Returns:
-            A `Signature`
-        """
-        return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
