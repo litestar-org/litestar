@@ -59,6 +59,8 @@ async def resolve_dependencies_concurrently(
         connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
         kwargs: Kwargs to pass to dependencies
     """
+    if not dependencies:
+        return
     async with create_task_group() as task_group:
         for dependency in dependencies:
             task_group.start_soon(_resolve_dependency_into_kwargs, model, dependency, connection, kwargs)
