@@ -104,7 +104,7 @@ def parse_path_parameters(
             param_definition.name: param_definition.parser(param)
             for param_definition, param in zip(path_parameter_definitions, request_path_parameter_values)
         }
-    except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
+    except ValueError as e:  # pragma: no cover
         raise ValidationException(f"unable to parse path parameters {','.join(request_path_parameter_values)}") from e
 
 

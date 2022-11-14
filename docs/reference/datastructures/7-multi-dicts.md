@@ -24,4 +24,4 @@
 ::: starlite.datastructures.QueryMultiDict
     options:
         members:
-            - from_query_string
+            - parse_query_string

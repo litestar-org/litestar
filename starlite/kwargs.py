@@ -1,3 +1,4 @@
+from itertools import groupby
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -36,8 +37,9 @@ from starlite.datastructures import URL
 from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.parsers import parse_form_data
+from starlite.parsers import parse_form_data, parse_query_string
 from starlite.signature import SignatureModel, get_signature_model
+from starlite.types import Empty
 from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
@@ -334,7 +336,7 @@ class KwargsModel:
         )
 
     def _collect_reserved_kwargs(
-        self, connection: Union["WebSocket", "Request"], connection_query_params: Dict[str, Union[str, List[str]]]
+        self, connection: Union["WebSocket", "Request"], connection_query_params: Optional[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Create and populate dictionary of "reserved" keyword arguments.
 
@@ -353,7 +355,11 @@ class KwargsModel:
         if "cookies" in self.expected_reserved_kwargs:
             reserved_kwargs["cookies"] = connection.cookies
         if "query" in self.expected_reserved_kwargs:
-            reserved_kwargs["query"] = connection_query_params
+            reserved_kwargs["query"] = (
+                connection_query_params
+                if connection_query_params is not None
+                else self._parse_connection_query_params(connection=connection)
+            )
         if "request" in self.expected_reserved_kwargs:
             reserved_kwargs["request"] = connection
         if "socket" in self.expected_reserved_kwargs:
@@ -363,6 +369,20 @@ class KwargsModel:
         if "scope" in self.expected_reserved_kwargs:
             reserved_kwargs["scope"] = connection.scope
         return reserved_kwargs
+
+    def _parse_connection_query_params(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
+        if connection._parsed_query is not Empty:
+            parsed_query = connection._parsed_query
+        else:
+            parsed_query = connection._parsed_query = connection.scope["_parsed_query"] = parse_query_string(
+                connection.scope.get("query_string", b"").decode("utf-8")
+            )
+
+        output: Dict[str, Any] = {}
+        for key, group in groupby(parsed_query, lambda x: x[0]):
+            values = [v[1] for v in group]
+            output[key] = values[0] if key not in self.sequence_query_parameter_names and len(values) == 1 else values
+        return output
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
@@ -374,27 +394,36 @@ class KwargsModel:
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
         """
-        connection_query_params = {
-            k: self._sequence_or_scalar_param(k, v) for k, v in connection.query_params.dict().items()
-        }
+        query_params = path_params = header_params = cookie_params = {}
 
-        path_params = self._collect_params(
-            params=connection.path_params, expected=self.expected_path_params, url=connection.url
-        )
-        query_params = self._collect_params(
-            params=connection_query_params, expected=self.expected_query_params, url=connection.url
-        )
-        header_params = self._collect_params(
-            params=connection.headers, expected=self.expected_header_params, url=connection.url
-        )
-        cookie_params = self._collect_params(
-            params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
-        )
+        connection_query_params: Optional[Dict[str, Any]] = None
+        if self.expected_query_params:
+            connection_query_params = self._parse_connection_query_params(connection=connection)
+            query_params = self._collect_params(
+                params=connection_query_params, expected=self.expected_query_params, url=connection.url
+            )
 
-        if not self.expected_reserved_kwargs:
-            return {**path_params, **query_params, **header_params, **cookie_params}
+        if self.expected_path_params:
+            path_params = self._collect_params(
+                params=connection.path_params, expected=self.expected_path_params, url=connection.url
+            )
+
+        if self.expected_header_params:
+            header_params = self._collect_params(
+                params=connection.headers, expected=self.expected_header_params, url=connection.url
+            )
+
+        if self.expected_cookie_params:
+            cookie_params = self._collect_params(
+                params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
+            )
+
         return {
-            **self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params),
+            **(
+                self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params)
+                if self.expected_reserved_kwargs
+                else {}
+            ),
             **path_params,
             **query_params,
             **header_params,
@@ -551,12 +580,6 @@ class KwargsModel:
                 f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
                 f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )
-
-    def _sequence_or_scalar_param(self, key: str, value: List[str]) -> Union[str, List[str]]:
-        """Return the first element of 'value' if we expect it to be a scalar value (appears in
-        self.sequence_query_parameter_names) and it contains only a single element.
-        """
-        return value[0] if key not in self.sequence_query_parameter_names and len(value) == 1 else value
 
     async def _get_request_data(self, request: "Request") -> Any:
         """Retrieve the data - either json data or form data - from the request"""
