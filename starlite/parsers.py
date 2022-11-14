@@ -1,7 +1,7 @@
 from contextlib import suppress
 from http.cookies import _unquote as unquote_cookie
-from typing import TYPE_CHECKING, Any, Dict
-from urllib.parse import unquote
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from urllib.parse import parse_qsl, unquote
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
@@ -59,3 +59,17 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     for k, v in filter(lambda x: x[0] or x[1], ((k.strip(), v.strip()) for k, v in cookies)):
         output[k] = unquote(unquote_cookie(v))
     return output
+
+
+def parse_query_string(query_string: str) -> List[Tuple[str, Any]]:
+    """Create a `QueryMultiDict` from a query string.
+
+    Args:
+        query_string: A query string.
+
+    Returns:
+        A QueryMultiDict instance
+    """
+    _bools = {"true": True, "false": False, "True": True, "False": False}
+
+    return [(k, v) if v not in _bools else (k, _bools[v]) for k, v in parse_qsl(query_string, keep_blank_values=True)]

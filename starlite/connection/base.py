@@ -162,7 +162,9 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
         if self._parsed_query is Empty:
-            self._parsed_query = self.scope["_parsed_query"] = QueryMultiDict.from_query_string(self.scope.get("query_string", b"").decode("utf-8"))  # type: ignore[typeddict-item]
+            self._parsed_query = self.scope["_parsed_query"] = QueryMultiDict.from_query_string(  # type: ignore
+                self.scope.get("query_string", b"").decode("utf-8")
+            )
         return cast("QueryMultiDict", self._parsed_query)
 
     @property

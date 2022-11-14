@@ -39,6 +39,8 @@ class ASGIRouter:
     __slots__ = (
         "_plain_routes",
         "_registered_routes",
+        "_mount_routes",
+        "_static_routes",
         "app",
         "root_route_map_node",
         "route_handler_index",
@@ -52,6 +54,7 @@ class ASGIRouter:
             app: The Starlite app instance
         """
         self._plain_routes: Set[str] = set()
+        self._mount_routes: Dict[str, "RouteTrieNode"] = {}
         self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
         self.app = app
         self.root_route_map_node: "RouteTrieNode" = create_node()
@@ -64,7 +67,10 @@ class ASGIRouter:
         The main entry point to the Router class.
         """
         asgi_app, handler = parse_scope_to_route(
-            root_node=self.root_route_map_node, scope=scope, plain_routes=self._plain_routes
+            root_node=self.root_route_map_node,
+            scope=scope,
+            plain_routes=self._plain_routes,
+            mount_routes=self._mount_routes,
         )
         scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
@@ -110,13 +116,14 @@ class ASGIRouter:
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:
             node = add_map_route_to_trie(
+                app=self.app,
+                mount_routes=self._mount_routes,
+                plain_routes=self._plain_routes,
                 root_node=self.root_route_map_node,
                 route=route,
-                app=self.app,
-                plain_routes=self._plain_routes,
             )
 
-            if node["path_parameters"] != route.path_parameters:
+            if node.path_parameters != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
 
             self._store_handler_to_route_mapping(route)

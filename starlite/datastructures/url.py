@@ -1,7 +1,7 @@
+from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
-from starlite.datastructures import Headers
 from starlite.datastructures.multi_dicts import QueryMultiDict
 
 if TYPE_CHECKING:
@@ -30,11 +30,10 @@ def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
     Returns:
         A string representing the new, absolute URL
     """
-    if isinstance(base, str):
-        base = URL(base)
-    netloc = base.netloc
-    path = base.path.rstrip("/") + str(path)
-    return str(URL.from_components(scheme=base.scheme, netloc=netloc, path=path))
+    url = base if isinstance(base, URL) else URL(base)
+    netloc = url.netloc
+    path = url.path.rstrip("/") + str(path)
+    return str(URL.from_components(scheme=url.scheme, netloc=netloc, path=path))
 
 
 class URL:
@@ -42,7 +41,7 @@ class URL:
 
     __slots__ = (
         "_query_params",
-        "_url",
+        "_parsed_url",
         "fragment",
         "hostname",
         "netloc",
@@ -53,6 +52,9 @@ class URL:
         "scheme",
         "username",
     )
+
+    _query_params: Optional["QueryMultiDict"]
+    _parsed_url: Optional[str]
 
     scheme: str
     """URL scheme"""
@@ -73,34 +75,51 @@ class URL:
     hostname: Optional[str]
     """Hostname if specified"""
 
-    def __init__(self, url: Union[str, SplitResult]) -> None:
-        """Initialize `URL` from a string or a.
-
-        [SplitResult][urllib.parse.SplitResult].
+    @lru_cache  # type: ignore[misc]  # noqa: B019
+    def __new__(cls, url: Union[str, SplitResult]) -> "URL":
+        """Create a new instance.
 
         Args:
-            url: URL, either as a string or a [SplitResult][urllib.parse.SplitResult] as
-                returned by [urlsplit][urllib.parse.urlsplit]
+            url: url string or split result to represent.
         """
+        instance = super().__new__(cls)
+        instance._parsed_url = None
+
         if isinstance(url, str):
             result = urlsplit(url)
-            self._url = url
+            instance._parsed_url = url
         else:
             result = url
-            self._url = urlunsplit(url)
 
-        self.scheme = result.scheme
-        self.netloc = result.netloc
-        self.path = result.path
-        self.fragment = result.fragment
-        self.query = result.query
-        self.username = result.username
-        self.password = result.password
-        self.port = result.port
-        self.hostname = result.hostname
-        self._query_params: Optional[QueryMultiDict] = None
+        instance.scheme = result.scheme
+        instance.netloc = result.netloc
+        instance.path = result.path
+        instance.fragment = result.fragment
+        instance.query = result.query
+        instance.username = result.username
+        instance.password = result.password
+        instance.port = result.port
+        instance.hostname = result.hostname
+        instance._query_params = None
+
+        return instance
+
+    @property
+    def _url(self) -> str:
+        if not self._parsed_url:
+            self._parsed_url = urlunsplit(
+                SplitResult(
+                    scheme=self.scheme,
+                    netloc=self.netloc,
+                    path=self.path,
+                    fragment=self.fragment,
+                    query=self.query,
+                )
+            )
+        return self._parsed_url
 
     @classmethod
+    @lru_cache
     def from_components(
         cls,
         scheme: str = "",
@@ -121,7 +140,7 @@ class URL:
         Returns:
             A new URL with the given components
         """
-        return cls(
+        return cls(  # type: ignore[no-any-return]
             SplitResult(
                 scheme=scheme,
                 netloc=netloc,
@@ -146,7 +165,13 @@ class URL:
         path = scope.get("root_path", "") + scope["path"]
         query_string = scope.get("query_string", b"")
 
-        host = Headers.from_scope(scope).get("host", "")
+        # # we use iteration here because it's faster, and headers might not yet be cached
+        # # in the scope
+        host = ""
+        for header_name, header_value in scope.get("headers", []):
+            if header_name == b"host":
+                host = header_value.decode("latin-1")
+                break
         if server and not host:
             host, port = server
             default_port = _DEFAULT_SCHEME_PORTS[scheme]
@@ -183,7 +208,7 @@ class URL:
         if isinstance(query, QueryMultiDict):
             query = urlencode(query=query)
 
-        return URL.from_components(
+        return URL.from_components(  # type: ignore[no-any-return]
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
             path=path or self.path,
@@ -215,7 +240,7 @@ class URL:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (str, URL)):
             return str(self) == str(other)
-        return NotImplemented
+        return NotImplemented  # type: ignore[unreachable]  # pragma: no cover
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self._url!r})"

@@ -1,4 +1,5 @@
 from abc import ABC
+from functools import lru_cache
 from typing import (
     Any,
     Dict,
@@ -134,6 +135,7 @@ class QueryMultiDict(MultiDict):
     """MultiDict for URL query parameters."""
 
     @classmethod
+    @lru_cache(1000)
     def from_query_string(cls, query_string: str) -> "QueryMultiDict":
         """Create a `QueryMultiDict` from a query string.
 

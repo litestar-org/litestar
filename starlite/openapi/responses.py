@@ -1,6 +1,5 @@
 from http import HTTPStatus
-from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type
 
 from pydantic_openapi_schema.v3_1_0 import Response
 from pydantic_openapi_schema.v3_1_0.header import Header
@@ -30,7 +29,6 @@ if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.types import AnyCallable
 
 
 def create_cookie_schema(cookie: "Cookie") -> Schema:
@@ -51,8 +49,7 @@ def create_success_response(
     route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["PluginProtocol"]
 ) -> Response:
     """Create the schema for a success response."""
-
-    signature = Signature.from_callable(cast("AnyCallable", route_handler.fn))
+    signature = route_handler.signature
     default_descriptions: Dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",

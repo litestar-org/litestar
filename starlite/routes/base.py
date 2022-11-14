@@ -3,8 +3,15 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 from uuid import UUID
+
+from pydantic.datetime_parse import (
+    parse_date,
+    parse_datetime,
+    parse_duration,
+    parse_time,
+)
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.kwargs import KwargsModel
@@ -30,6 +37,20 @@ param_type_map = {
     "time": time,
     "timedelta": timedelta,
     "path": Path,
+}
+
+
+parsers_map: Dict[Any, Callable[[Any], Any]] = {
+    str: str,
+    float: float,
+    int: int,
+    Decimal: Decimal,
+    UUID: UUID,
+    Path: lambda x: Path(re.sub("//+", "", (x.lstrip("/")))),
+    date: parse_date,
+    datetime: parse_datetime,
+    time: parse_time,
+    timedelta: parse_duration,
 }
 
 
@@ -147,8 +168,10 @@ class BaseRoute(ABC):
                 param = param_match.group(1)
                 cls._validate_path_parameter(param)
                 param_name, param_type = (p.strip() for p in param.split(":"))
+                type_class = param_type_map[param_type]
+                parser = parsers_map[type_class]
                 parsed_components.append(
-                    PathParameterDefinition(name=param_name, type=param_type_map[param_type], full=param)
+                    PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser)
                 )
                 path_format_components.append("{" + param_name + "}")
             else:

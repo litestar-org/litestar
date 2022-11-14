@@ -1,15 +1,16 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
-from starlite.utils import is_async_callable
+from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
-    from starlite.types import AnyCallable, AsyncAnyCallable
+    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import AsyncAnyCallable
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -57,7 +58,8 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
 
     def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
         """Replace a function with itself."""
-        self.fn = fn
+        self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
+        self.signature = Signature.from_callable(fn)
         self._validate_handler_function()
         return self
 
@@ -65,18 +67,15 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        fn = cast("AnyCallable", self.fn)
-        signature = Signature.from_callable(fn)
-
-        if signature.return_annotation not in {None, "None"}:
+        if self.signature.return_annotation not in {None, "None"}:
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
-        if "socket" not in signature.parameters:
+        if "socket" not in self.signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
-        if "request" in signature.parameters:
+        if "request" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
-        if "data" in signature.parameters:
+        if "data" in self.signature.parameters:
             raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
-        if not is_async_callable(fn):
+        if not is_async_callable(self.fn.value):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
 

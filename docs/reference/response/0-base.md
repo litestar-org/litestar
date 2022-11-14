@@ -8,7 +8,7 @@
         - after_response
         - content_length
         - delete_cookie
-        - encoded_headers
+        - encode_headers
         - render
         - send_body
         - serializer

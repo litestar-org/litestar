@@ -9,12 +9,9 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
-    cast,
 )
 
-from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic_openapi_schema.v3_1_0 import OpenAPI
-from yaml import dump as dump_yaml
+from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
@@ -93,7 +90,13 @@ class Response(Generic[T]):
         self.status_allows_body = not (
             self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < HTTP_200_OK
         )
-        self.body = self.render(content) if not self.is_head_response else b""
+        self.body = b""
+        if self.status_allows_body and not is_head_response:
+            self.body = content if isinstance(content, bytes) else self.render(content)
+        elif content and not self.status_allows_body:
+            raise ImproperlyConfiguredException(
+                f"unable to render response body for the given {content} with media_type {self.media_type}"
+            )
 
     def set_cookie(
         self,
@@ -202,47 +205,21 @@ class Response(Generic[T]):
         Returns:
             An encoded bytes string
         """
-        if self.status_allows_body:
-            if isinstance(content, bytes):
-                return content
-            if isinstance(content, str):
-                return content.encode(self.encoding)
-            if self.media_type == MediaType.JSON:
-                try:
-                    return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-                except (AttributeError, ValueError, TypeError) as e:
-                    raise ImproperlyConfiguredException("Unable to serialize response content") from e
-            if isinstance(content, OpenAPI):
-                content_dict = content.dict(by_alias=True, exclude_none=True)
-                if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                    return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
-                return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
-            if content is None:
-                return b""
-            raise ImproperlyConfiguredException(
-                f"unable to render response body for the given {content} with media_type {self.media_type}"
-            )
-        if content is not None:
-            raise ImproperlyConfiguredException(
-                f"status_code {self.status_code} does not support a response body value"
-            )
-        return b""
+        try:
+            if self.media_type.startswith("text/"):
+                return content.encode(self.encoding) if content else b""  # type: ignore
+            return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
 
-    @property
-    def content_length(self) -> Optional[int]:
-        """Content length of the response if applicable.
+        # if isinstance(content, OpenAPI):
+        #     content_dict = content.dict(by_alias=True, exclude_none=True)
+        #     if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+        #         return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
+        #     return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
+        except (AttributeError, ValueError, TypeError) as e:
+            raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
-        Returns:
-            The content length of the body (e.g. for use in a "Content-Length" header).
-            If the response does not have a body, this value is `None`
-        """
-        if self.status_allows_body:
-            return len(self.body)
-        return None
-
-    @property
-    def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
-        """Response headers as a list of tuples of bytes.
+    def encode_headers(self) -> List[Tuple[bytes, bytes]]:
+        """Encode the response headers as a list of tuples of bytes.
 
         Notes:
             - A 'Content-Length' header will be added if appropriate and not provided by the user.
@@ -262,8 +239,10 @@ class Response(Generic[T]):
             (b"content-type", content_type.encode("latin-1")),
         ]
 
-        if self.content_length and not any(key == b"content-length" for key, _ in encoded_headers):
-            encoded_headers.append((b"content-length", str(self.content_length).encode("latin-1")))
+        content_length = len(self.body) if self.status_allows_body else None
+
+        if content_length and not any(key == b"content-length" for key, _ in encoded_headers):
+            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
         return encoded_headers
 
     async def after_response(self) -> None:
@@ -287,7 +266,7 @@ class Response(Generic[T]):
         event: "HTTPResponseStartEvent" = {
             "type": "http.response.start",
             "status": self.status_code,
-            "headers": self.encoded_headers,
+            "headers": self.encode_headers(),
         }
 
         await send(event)

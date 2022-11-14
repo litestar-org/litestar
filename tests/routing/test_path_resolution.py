@@ -70,13 +70,13 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 @pytest.mark.parametrize(
     "decorator, test_path, decorator_path, delete_handler",
     [
-        (get, "", "/something", None),
-        (get, "/", "/something", None),
-        (get, "", "/", None),
-        (get, "/", "/", None),
-        (get, "", "", None),
-        (get, "/", "", None),
-        (get, "", "/something", root_delete_handler),
+        # (get, "", "/something", None),
+        # (get, "/", "/something", None),
+        # (get, "", "/", None),
+        # (get, "/", "/", None),
+        # (get, "", "", None),
+        # (get, "/", "", None),
+        # (get, "", "/something", root_delete_handler),
         (get, "/", "/something", root_delete_handler),
         (get, "", "/", root_delete_handler),
         (get, "/", "/", root_delete_handler),
@@ -98,7 +98,7 @@ def test_root_route_handler(
 
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:
         response = client.get(decorator_path or test_path)
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
         assert response.json() == person_instance.dict()
         if delete_handler:
             delete_response = client.delete("/")

@@ -23,7 +23,7 @@ def test_default_static_files_config(tmpdir: "Path") -> None:
 
     with create_test_client([], static_files_config=static_files_config) as client:
         response = client.get("/static/test.txt")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "content"
 
 

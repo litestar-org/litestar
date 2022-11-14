@@ -31,9 +31,6 @@ See the [API Reference][starlite.datastructures.Provide] for full details on the
     then will be used. There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful
     when you choose to use this option.
 
-If a dependency should be cached only within a single request, the `cache_per_request` flag can be used.
-This also ensures the dependency is called only once per request.
-
 
 ```python
 from starlite import Provide, get
@@ -53,7 +50,6 @@ def dependent(first: int) -> int:
     dependencies={
         "first": Provide(
             cached_dependency,
-            cache_per_request=True,
         ),
         "second": Provide(dependent),
     },

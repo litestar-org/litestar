@@ -132,7 +132,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = SignatureModelFactory(my_fn.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
+    model = SignatureModelFactory(my_fn.fn.value, [], set()).create_signature_model()
     fields = model.__fields__
     assert fields["a"].type_ == int
     assert fields["a"].required
@@ -154,7 +154,7 @@ def test_create_signature_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        SignatureModelFactory(my_fn.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
+        SignatureModelFactory(my_fn.fn.value, [], set()).create_signature_model()
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -162,9 +162,7 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
     async def health_check() -> None:
         return None
 
-    signature_model_type = SignatureModelFactory(
-        health_check.fn, [], set()  # type:ignore[arg-type]
-    ).create_signature_model()
+    signature_model_type = SignatureModelFactory(health_check.fn.value, [], set()).create_signature_model()
     assert signature_model_type().dict() == {}
 
 
@@ -234,7 +232,7 @@ def test_create_signature_model_error_message(monkeypatch: Any) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException) as e:
-        SignatureModelFactory(get_handler.fn, [], set()).create_signature_model()  # type: ignore[arg-type]
+        SignatureModelFactory(get_handler.fn.value, [], set()).create_signature_model()
 
     assert (
         str(e)
