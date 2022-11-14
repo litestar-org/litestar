@@ -388,11 +388,12 @@ class KwargsModel:
 
         output: DefaultDict[str, List[str]] = defaultdict(list)
         for key, value in parsed_query:
-            output[key].append(value)
+            if key in self.sequence_query_parameter_names:
+                output[key].append(value)
+            else:
+                output[key] = value
 
-        return {
-            k: v[0] if k not in self.sequence_query_parameter_names and len(v) == 1 else v for k, v in output.items()
-        }
+        return output
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
