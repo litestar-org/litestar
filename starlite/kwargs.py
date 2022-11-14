@@ -1,7 +1,8 @@
-from itertools import groupby
+from collections import defaultdict
 from typing import (
     TYPE_CHECKING,
     Any,
+    DefaultDict,
     Dict,
     List,
     Mapping,
@@ -371,18 +372,27 @@ class KwargsModel:
         return reserved_kwargs
 
     def _parse_connection_query_params(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
-        if connection._parsed_query is not Empty:
-            parsed_query = connection._parsed_query
-        else:
-            parsed_query = connection._parsed_query = connection.scope["_parsed_query"] = parse_query_string(
-                connection.scope.get("query_string", b"").decode("utf-8")
-            )
+        """Handle parsing of query params. Cache the result in scope.
 
-        output: Dict[str, Any] = {}
-        for key, group in groupby(parsed_query, lambda x: x[0]):
-            values = [v[1] for v in group]
-            output[key] = values[0] if key not in self.sequence_query_parameter_names and len(values) == 1 else values
-        return output
+        Args:
+            connection: The ASGI connection instance.
+
+        Returns:
+            A dictionary of parsed values.
+        """
+        parsed_query = connection.scope["_parsed_query"] = (  # type: ignore
+            connection._parsed_query  # pylint: disable=protected-access
+            if connection._parsed_query is not Empty  # pylint: disable=protected-access
+            else parse_query_string(connection.scope.get("query_string", b"").decode("utf-8"))
+        )
+
+        output: DefaultDict[str, List[str]] = defaultdict(list)
+        for key, value in parsed_query:
+            output[key].append(value)
+
+        return {
+            k: v[0] if k not in self.sequence_query_parameter_names and len(v) == 1 else v for k, v in output.items()
+        }
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
@@ -394,41 +404,44 @@ class KwargsModel:
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
         """
-        query_params = path_params = header_params = cookie_params = {}
+        output: Dict[str, Any] = {}
 
         connection_query_params: Optional[Dict[str, Any]] = None
         if self.expected_query_params:
             connection_query_params = self._parse_connection_query_params(connection=connection)
-            query_params = self._collect_params(
-                params=connection_query_params, expected=self.expected_query_params, url=connection.url
+            output.update(
+                self._collect_params(
+                    params=connection_query_params, expected=self.expected_query_params, url=connection.url
+                )
             )
 
         if self.expected_path_params:
-            path_params = self._collect_params(
-                params=connection.path_params, expected=self.expected_path_params, url=connection.url
+            output.update(
+                self._collect_params(
+                    params=connection.path_params, expected=self.expected_path_params, url=connection.url
+                )
             )
 
         if self.expected_header_params:
-            header_params = self._collect_params(
-                params=connection.headers, expected=self.expected_header_params, url=connection.url
+            output.update(
+                self._collect_params(
+                    params=connection.headers, expected=self.expected_header_params, url=connection.url
+                )
             )
 
         if self.expected_cookie_params:
-            cookie_params = self._collect_params(
-                params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
+            output.update(
+                self._collect_params(
+                    params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
+                )
             )
 
-        return {
-            **(
+        if self.expected_reserved_kwargs:
+            output.update(
                 self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params)
-                if self.expected_reserved_kwargs
-                else {}
-            ),
-            **path_params,
-            **query_params,
-            **header_params,
-            **cookie_params,
-        }
+            )
+
+        return output
 
     @staticmethod
     def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:
