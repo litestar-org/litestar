@@ -262,7 +262,7 @@ idna = ">=2.0.0"
 
 [[package]]
 name = "exceptiongroup"
-version = "1.0.1"
+version = "1.0.2"
 description = "Backport of PEP 654 (exception groups)"
 category = "dev"
 optional = false
@@ -420,7 +420,7 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "hypothesis"
-version = "6.56.4"
+version = "6.57.1"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -432,7 +432,7 @@ exceptiongroup = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
-all = ["backports.zoneinfo (>=0.2.1)", "black (>=19.10b0)", "click (>=7.0)", "django (>=3.2)", "dpcontracts (>=0.4)", "importlib-metadata (>=3.6)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2022.5)"]
+all = ["backports.zoneinfo (>=0.2.1)", "black (>=19.10b0)", "click (>=7.0)", "django (>=3.2)", "dpcontracts (>=0.4)", "importlib-metadata (>=3.6)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2022.6)"]
 cli = ["black (>=19.10b0)", "click (>=7.0)", "rich (>=9.0.0)"]
 codemods = ["libcst (>=0.3.16)"]
 dateutil = ["python-dateutil (>=1.4)"]
@@ -445,7 +445,7 @@ pandas = ["pandas (>=1.0)"]
 pytest = ["pytest (>=4.6)"]
 pytz = ["pytz (>=2014.1)"]
 redis = ["redis (>=3.0.0)"]
-zoneinfo = ["backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.5)"]
+zoneinfo = ["backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.6)"]
 
 [[package]]
 name = "identify"
@@ -1095,7 +1095,7 @@ psycopg = ["psycopg[binary,pool]"]
 
 [[package]]
 name = "tox"
-version = "3.27.0"
+version = "3.27.1"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
@@ -1483,8 +1483,8 @@ email-validator = [
     {file = "email_validator-1.3.0.tar.gz", hash = "sha256:553a66f8be2ec2dea641ae1d3f29017ab89e9d603d4a25cdaac39eefa283d769"},
 ]
 exceptiongroup = [
-    {file = "exceptiongroup-1.0.1-py3-none-any.whl", hash = "sha256:4d6c0aa6dd825810941c792f53d7b8d71da26f5e5f84f20f9508e8f2d33b140a"},
-    {file = "exceptiongroup-1.0.1.tar.gz", hash = "sha256:73866f7f842ede6cb1daa42c4af078e2035e5f7607f0e2c762cc51bb31bbe7b2"},
+    {file = "exceptiongroup-1.0.2-py3-none-any.whl", hash = "sha256:c22f11ec6a10d2b453871c5c5fe887436c4d1961324ce9090f2ca6ddc4180c27"},
+    {file = "exceptiongroup-1.0.2.tar.gz", hash = "sha256:a31cd183c3dea02e617aab5153588d5f7258a77b51f0ef41b3815ae8a0d0f695"},
 ]
 faker = [
     {file = "Faker-15.3.1-py3-none-any.whl", hash = "sha256:4a3465624515a6807e8aa7e8eeb85bdd86a2fa53de4e258892dd6be95362462e"},
@@ -1621,8 +1621,8 @@ httpx = [
     {file = "httpx-0.23.0.tar.gz", hash = "sha256:f28eac771ec9eb4866d3fb4ab65abd42d38c424739e80c08d8d20570de60b0ef"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.56.4-py3-none-any.whl", hash = "sha256:67950103ee930c66673494b3671474a083ea71f1ebe8f0ff849ba8ad5317772d"},
-    {file = "hypothesis-6.56.4.tar.gz", hash = "sha256:313bc1c0f377ec6c98815d3237a69add7558eadee4effe4ed613d0ba36513a52"},
+    {file = "hypothesis-6.57.1-py3-none-any.whl", hash = "sha256:91c22db726ffd68f2658e273af111a6fcae2e53fa430580862e8522686b5c071"},
+    {file = "hypothesis-6.57.1.tar.gz", hash = "sha256:1d8ed5136f368e343f39172b06f68aa7fd1312cf643c332ab18a75d56789fa90"},
 ]
 identify = [
     {file = "identify-2.5.8-py2.py3-none-any.whl", hash = "sha256:48b7925fe122720088aeb7a6c34f17b27e706b72c61070f27fe3789094233440"},
@@ -2094,8 +2094,8 @@ tortoise-orm = [
     {file = "tortoise_orm-0.19.2-py3-none-any.whl", hash = "sha256:a99b8c9f42d5cd49493c70471b5c9a5df8ecf49cc624f2f41b9dc75bba993ac5"},
 ]
 tox = [
-    {file = "tox-3.27.0-py2.py3-none-any.whl", hash = "sha256:89e4bc6df3854e9fc5582462e328dd3660d7d865ba625ae5881bbc63836a6324"},
-    {file = "tox-3.27.0.tar.gz", hash = "sha256:d2c945f02a03d4501374a3d5430877380deb69b218b1df9b7f1d2f2a10befaf9"},
+    {file = "tox-3.27.1-py2.py3-none-any.whl", hash = "sha256:f52ca66eae115fcfef0e77ef81fd107133d295c97c52df337adedb8dfac6ab84"},
+    {file = "tox-3.27.1.tar.gz", hash = "sha256:b2a920e35a668cc06942ffd1cf3a4fb221a4d909ca72191fb6d84b0b18a7be04"},
 ]
 trio = [
     {file = "trio-0.22.0-py3-none-any.whl", hash = "sha256:f1dd0780a89bfc880c7c7994519cb53f62aacb2c25ff487001c0052bd721cdf0"},

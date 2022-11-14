@@ -1,28 +1,5 @@
 from collections import deque
-from datetime import date, datetime, time, timedelta
-from decimal import Decimal
-from pathlib import Path
-from re import sub
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Deque,
-    Dict,
-    List,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
-from uuid import UUID
-
-from pydantic.datetime_parse import (
-    parse_date,
-    parse_datetime,
-    parse_duration,
-    parse_time,
-)
+from typing import TYPE_CHECKING, Any, Deque, Dict, List, Set, Tuple, Type, Union
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.enums import ScopeType
@@ -37,19 +14,6 @@ if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
     from starlite.types import Scope
     from starlite.types.internal_types import PathParameterDefinition
-
-parsers_map: Dict[Any, Callable[[Any], Any]] = {
-    str: str,
-    float: float,
-    int: int,
-    Decimal: Decimal,
-    UUID: UUID,
-    Path: lambda x: Path(sub("//+", "", (x.lstrip("/")))),
-    date: parse_date,
-    datetime: parse_datetime,
-    time: parse_time,
-    timedelta: parse_duration,
-}
 
 
 def traverse_route_map(
@@ -135,14 +99,11 @@ def parse_path_parameters(
     Returns:
         A dictionary mapping path parameter names to parsed values
     """
-    result: Dict[str, Any] = {}
-
     try:
-        for idx, parameter_definition in enumerate(path_parameter_definitions):
-            raw_param_value = request_path_parameter_values[idx]
-            parser = parsers_map[parameter_definition.type]
-            result[parameter_definition.name] = parser(raw_param_value)
-        return result
+        return {
+            param_definition.name: param_definition.parser(param)
+            for param_definition, param in zip(path_parameter_definitions, request_path_parameter_values)
+        }
     except (ValueError, TypeError, KeyError) as e:  # pragma: no cover
         raise ValidationException(f"unable to parse path parameters {','.join(request_path_parameter_values)}") from e
 
