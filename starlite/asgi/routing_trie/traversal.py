@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from starlite.types.internal_types import PathParameterDefinition
 
 
-@lru_cache(typed=True)
+@lru_cache(maxsize=256)
 def traverse_route_map(
     root_node: "RouteTrieNode",
     path: str,
@@ -75,8 +75,9 @@ def traverse_route_map(
         raise NotFoundException()
 
 
+@lru_cache(maxsize=256)
 def parse_path_parameters(
-    path_parameter_definitions: List["PathParameterDefinition"], request_path_parameter_values: List[str]
+    path_parameter_definitions: Tuple["PathParameterDefinition"], request_path_parameter_values: Tuple[str]
 ) -> Dict[str, Any]:
     """Parse path parameters into their expected types.
 
@@ -116,21 +117,21 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
 
     path = scope["path"].strip().rstrip("/") or "/"
     scope["path_params"] = {}
-
-    if path in plain_routes:
-        current_node: "RouteTrieNode" = root_node.children[path]
-    else:
-        current_node, path_params, path = traverse_route_map(
-            root_node=root_node,
-            path=path,
-        )
-        scope["path"] = path
-        if path_params:
-            scope["path_params"] = parse_path_parameters(
-                path_parameter_definitions=current_node.path_parameters,
-                request_path_parameter_values=path_params,
-            )
     try:
+        if path in plain_routes:
+            current_node: "RouteTrieNode" = root_node.children[path]
+        else:
+            current_node, path_params, path = traverse_route_map(
+                root_node=root_node,
+                path=path,
+            )
+            scope["path"] = path
+            if path_params:
+                scope["path_params"] = parse_path_parameters(
+                    path_parameter_definitions=tuple(current_node.path_parameters),
+                    request_path_parameter_values=tuple(path_params),
+                )
+
         if current_node.is_asgi:
             return current_node.asgi_handlers["asgi"]
         if scope["type"] == ScopeType.HTTP:
