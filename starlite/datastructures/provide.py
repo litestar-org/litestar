@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from anyio import Lock
-
 from starlite.types import Empty
 from starlite.utils.helpers import Ref
 from starlite.utils.sync import is_async_callable
@@ -52,7 +50,6 @@ class Provide:
         self.use_cache = use_cache
         self.cache_per_request = cache_per_request
         self.cache_key = cache_key if cache_key else getattr(dependency, "__name__", "anonymous")
-        self.lock = Lock()
         self.value: Any = Empty
         self.has_sync_callable = not is_async_callable(self.dependency.value)
 

@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     DefaultDict,
     Dict,
     List,
@@ -13,7 +14,6 @@ from typing import (
     Type,
     Union,
     cast,
-    Callable,
 )
 
 from pydantic.fields import (
@@ -500,14 +500,13 @@ class KwargsModel:
             The resolved dependency value
         """
         if dependency.provide.cache_per_request:
-            async with dependency.provide.lock:
-                cache = connection.state.setdefault("_dependency_cache", {})
-                if dependency.provide.cache_key in cache:
-                    return cache[dependency.provide.cache_key]
+            cache = connection.state.setdefault("_dependency_cache", {})
+            if dependency.provide.cache_key in cache:
+                return cache[dependency.provide.cache_key]
 
-                value = await self._resolve_dependency(dependency, connection, **kwargs)
-                cache[dependency.provide.cache_key] = value
-                return value
+            value = await self._resolve_dependency(dependency, connection, **kwargs)
+            cache[dependency.provide.cache_key] = value
+            return value
         else:
             return await self._resolve_dependency(dependency, connection, **kwargs)
 
