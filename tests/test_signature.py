@@ -242,12 +242,12 @@ def test_create_signature_model_error_message(monkeypatch: Any) -> None:
     )
 
 
-def test_create_signature_model_with_forward_ref_annotations(create_module: "Callable[[str], ModuleType]") -> None:
+def test_signature_model_resolves_forward_ref_annotations(create_module: "Callable[[str], ModuleType]") -> None:
     module = create_module(
         """
 from __future__ import annotations
 from pydantic import BaseModel
-from starlite import Starlite, get, Provide
+from starlite import Provide, Starlite, get
 
 class Test(BaseModel):
     hello: str
