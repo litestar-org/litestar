@@ -173,16 +173,17 @@ class HTTPRoute(BaseRoute):
         if parameter_model.has_kwargs:
             kwargs = parameter_model.to_kwargs(connection=request)
 
-            request_data = kwargs.get("data")
-            if request_data:
-                kwargs["data"] = await request_data
+            if "data" in kwargs:
+                kwargs["data"] = await kwargs["data"]
 
-            await resolve_dependencies_concurrently(
-                parameter_model,
-                parameter_model.expected_dependencies,
-                request,
-                kwargs,
-            )
+            if parameter_model.expected_dependencies:
+                await resolve_dependencies_concurrently(
+                    parameter_model,
+                    parameter_model.expected_dependencies,
+                    request,
+                    kwargs,
+                )
+
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
 
         if route_handler.has_sync_callable:

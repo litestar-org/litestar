@@ -13,6 +13,7 @@ from typing import (
     Type,
     Union,
     cast,
+    Callable,
 )
 
 from pydantic.fields import (
@@ -90,6 +91,33 @@ def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterD
     return result
 
 
+def create_connection_value_extractor(
+    connection_key: str,
+    expected_params: Set[ParameterDefinition],
+    parser: Optional[Callable[[Union["WebSocket", "Request"]], Dict[str, Any]]] = None,
+) -> [[Dict[str, Any], Union["WebSocket", "Request"]], None]:
+    param_aliases = {p.field_alias for p in expected_params}
+    alias_key_map = {p.field_alias: p.field_name for p in expected_params}
+    alias_defaults = {p.field_alias: p.default_value for p in expected_params}
+    required_params = {p.field_name for p in expected_params if p.is_required}
+
+    def extractor(values: Dict[str, Any], connection: Union["WebSocket", "Request"]) -> None:
+        items = parser(connection).items() if parser else getattr(connection, connection_key).items()
+
+        connection_mapping: Dict[str, Any] = {
+            alias_key_map[k]: v if v is not None else alias_defaults[k] for k, v in items if k in param_aliases
+        }
+        if len(required_params.symmetric_difference(set(connection_mapping))) != len(connection_mapping) - len(
+            required_params
+        ):
+            raise ValidationException(
+                f"Missing required parameter(s) {', '.join(p for p in required_params if p not in connection_mapping)} for url {connection.url}"
+            )
+        values.update(connection_mapping)
+
+    return extractor
+
+
 class KwargsModel:
     """Model required kwargs for a given RouteHandler and its dependencies.
 
@@ -104,6 +132,7 @@ class KwargsModel:
         "expected_path_params",
         "expected_query_params",
         "expected_reserved_kwargs",
+        "extractors",
         "has_kwargs",
         "is_data_optional",
         "sequence_query_parameter_names",
@@ -153,6 +182,37 @@ class KwargsModel:
             or expected_reserved_kwargs
         )
         self.is_data_optional = is_data_optional
+        self.extractors = self._create_extractors()
+
+    def _create_extractors(self) -> List[Callable[[Dict[str, Any], Union["WebSocket", "Request"]], None]]:
+        extractors: List[Callable[[Dict[str, Any], Union["WebSocket", "Request"]], None]] = []
+        if self.expected_header_params:
+            extractors.append(
+                create_connection_value_extractor(
+                    connection_key="headers", expected_params=self.expected_header_params
+                ),
+            )
+        if self.expected_path_params:
+            extractors.append(
+                create_connection_value_extractor(
+                    connection_key="path_params", expected_params=self.expected_path_params
+                ),
+            )
+        if self.expected_cookie_params:
+            extractors.append(
+                create_connection_value_extractor(
+                    connection_key="cookies", expected_params=self.expected_cookie_params
+                ),
+            )
+        if self.expected_query_params:
+            extractors.append(
+                create_connection_value_extractor(
+                    connection_key="query_params",
+                    expected_params=self.expected_query_params,
+                    parser=self._parse_connection_query_params,
+                ),
+            )
+        return extractors
 
     @classmethod
     def _get_param_definitions(
@@ -336,9 +396,7 @@ class KwargsModel:
             else False,
         )
 
-    def _collect_reserved_kwargs(
-        self, connection: Union["WebSocket", "Request"], connection_query_params: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+    def _collect_reserved_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Create and populate dictionary of "reserved" keyword arguments.
 
         Args:
@@ -356,11 +414,7 @@ class KwargsModel:
         if "cookies" in self.expected_reserved_kwargs:
             reserved_kwargs["cookies"] = connection.cookies
         if "query" in self.expected_reserved_kwargs:
-            reserved_kwargs["query"] = (
-                connection_query_params
-                if connection_query_params is not None
-                else self._parse_connection_query_params(connection=connection)
-            )
+            reserved_kwargs["query"] = connection.query_params
         if "request" in self.expected_reserved_kwargs:
             reserved_kwargs["request"] = connection
         if "socket" in self.expected_reserved_kwargs:
@@ -407,40 +461,11 @@ class KwargsModel:
         """
         output: Dict[str, Any] = {}
 
-        connection_query_params: Optional[Dict[str, Any]] = None
-        if self.expected_query_params:
-            connection_query_params = self._parse_connection_query_params(connection=connection)
-            output.update(
-                self._collect_params(
-                    params=connection_query_params, expected=self.expected_query_params, url=connection.url
-                )
-            )
-
-        if self.expected_path_params:
-            output.update(
-                self._collect_params(
-                    params=connection.path_params, expected=self.expected_path_params, url=connection.url
-                )
-            )
-
-        if self.expected_header_params:
-            output.update(
-                self._collect_params(
-                    params=connection.headers, expected=self.expected_header_params, url=connection.url
-                )
-            )
-
-        if self.expected_cookie_params:
-            output.update(
-                self._collect_params(
-                    params=connection.cookies, expected=self.expected_cookie_params, url=connection.url
-                )
-            )
+        for extractor in self.extractors:
+            extractor(output, connection)
 
         if self.expected_reserved_kwargs:
-            output.update(
-                self._collect_reserved_kwargs(connection=connection, connection_query_params=connection_query_params)
-            )
+            output.update(self._collect_reserved_kwargs(connection=connection))
 
         return output
 
