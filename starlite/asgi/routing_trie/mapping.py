@@ -146,9 +146,10 @@ def build_route_middleware_stack(
         else:
             asgi_handler = middleware(app=asgi_handler)  # type: ignore
 
-    # we wrap the entire stack again in ExceptionHandlerMiddleware
-    return wrap_in_exception_handler(
-        debug=app.debug,
-        app=cast("ASGIApp", asgi_handler),
-        exception_handlers=route_handler.resolve_exception_handlers(),
-    )  # pyright: ignore
+    return asgi_handler
+    # # we wrap the entire stack again in ExceptionHandlerMiddleware
+    # return wrap_in_exception_handler(
+    #     debug=app.debug,
+    #     app=cast("ASGIApp", asgi_handler),
+    #     exception_handlers=route_handler.resolve_exception_handlers(),
+    # )  # pyright: ignore
