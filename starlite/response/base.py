@@ -93,7 +93,15 @@ class Response(Generic[T]):
         self.status_allows_body = not (
             self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < HTTP_200_OK
         )
-        self.body = self.render(content) if not self.is_head_response else b""
+        self.body = b""
+        if self.status_allows_body and not is_head_response:
+            self.body = content if isinstance(content, bytes) else self.render(content)
+        elif content and not self.status_allows_body:
+            raise ImproperlyConfiguredException(
+                f"unable to render response body for the given {content} with media_type {self.media_type}"
+            )
+
+
 
     def set_cookie(
         self,
@@ -202,31 +210,18 @@ class Response(Generic[T]):
         Returns:
             An encoded bytes string
         """
-        if self.status_allows_body:
-            if isinstance(content, bytes):
-                return content
-            if isinstance(content, str):
-                return content.encode(self.encoding)
-            if self.media_type == MediaType.JSON:
-                try:
-                    return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-                except (AttributeError, ValueError, TypeError) as e:
-                    raise ImproperlyConfiguredException("Unable to serialize response content") from e
-            if isinstance(content, OpenAPI):
-                content_dict = content.dict(by_alias=True, exclude_none=True)
-                if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-                    return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
-                return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
-            if content is None:
-                return b""
-            raise ImproperlyConfiguredException(
-                f"unable to render response body for the given {content} with media_type {self.media_type}"
-            )
-        if content is not None:
-            raise ImproperlyConfiguredException(
-                f"status_code {self.status_code} does not support a response body value"
-            )
-        return b""
+        try:
+            if self.media_type.startswith("text/"):
+                return content.encode(self.encoding) if content else b""
+            return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+
+        # if isinstance(content, OpenAPI):
+        #     content_dict = content.dict(by_alias=True, exclude_none=True)
+        #     if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+        #         return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
+        #     return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
+        except (AttributeError, ValueError, TypeError) as e:
+            raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
     @property
     def content_length(self) -> Optional[int]:
