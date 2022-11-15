@@ -101,8 +101,6 @@ class Response(Generic[T]):
                 f"unable to render response body for the given {content} with media_type {self.media_type}"
             )
 
-
-
     def set_cookie(
         self,
         key: str,
@@ -235,9 +233,8 @@ class Response(Generic[T]):
             return len(self.body)
         return None
 
-    @property
-    def encoded_headers(self) -> List[Tuple[bytes, bytes]]:
-        """Response headers as a list of tuples of bytes.
+    def encode_headers(self) -> List[Tuple[bytes, bytes]]:
+        """Encode the response headers as a list of tuples of bytes.
 
         Notes:
             - A 'Content-Length' header will be added if appropriate and not provided by the user.
@@ -282,7 +279,7 @@ class Response(Generic[T]):
         event: "HTTPResponseStartEvent" = {
             "type": "http.response.start",
             "status": self.status_code,
-            "headers": self.encoded_headers,
+            "headers": self.encode_headers(),
         }
 
         await send(event)
