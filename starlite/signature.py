@@ -1,4 +1,4 @@
-from inspect import Parameter, Signature, getmodule
+from inspect import Parameter, Signature
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -178,7 +178,7 @@ class SignatureModelFactory:
         "dependency_name_set",
         "field_definitions",
         "field_plugin_mappings",
-        "fn_module",
+        "fn_module_name",
         "fn_name",
         "plugins",
         "signature",
@@ -194,9 +194,9 @@ class SignatureModelFactory:
         """
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
-        self.fn_module = getmodule(fn)
         self.signature = Signature.from_callable(fn)
-        self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
+        self.fn_name = getattr(fn, "__name__", "anonymous")
+        self.fn_module_name = getattr(fn, "__module__", "pydantic.main")
         self.plugins = plugins
         self.field_plugin_mappings: Dict[str, PluginMapping] = {}
         self.field_definitions: Dict[str, Any] = {}
@@ -326,12 +326,14 @@ class SignatureModelFactory:
                     parameter.annotation = self.get_type_annotation_from_plugin(parameter, plugin)
                 self.field_definitions[parameter.name] = self.create_field_definition_from_parameter(parameter)
             model: Type[SignatureModel] = create_model(
-                self.fn_name + "_signature_model", __base__=SignatureModel, **self.field_definitions
+                self.fn_name + "_signature_model",
+                __base__=SignatureModel,
+                __module__=self.fn_module_name,
+                **self.field_definitions,
             )
             model.return_annotation = self.signature.return_annotation
             model.field_plugin_mappings = self.field_plugin_mappings
             model.dependency_name_set = self.dependency_name_set
-            model.update_forward_refs(**vars(self.fn_module))
             return model
         except TypeError as e:
             raise ImproperlyConfiguredException(f"Error creating signature model for '{self.fn_name}': '{e}'") from e
