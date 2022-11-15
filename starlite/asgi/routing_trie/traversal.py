@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 def traverse_route_map(
-    current_node: "RouteTrieNode",
+    root_node: "RouteTrieNode",
     path: str,
     path_components: Deque[Union[str, Type[PathParameterSentinel]]],
     path_params: List[str],
@@ -26,7 +26,7 @@ def traverse_route_map(
     """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
-        current_node: A trie node.
+        root_node: The root trie node.
         path: The request's path.
         path_components: A list of ordered path components.
         path_params: A list of extracted path parameters.
@@ -38,50 +38,41 @@ def traverse_route_map(
     Returns:
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
+    current_node = root_node
+    
+    while True:
+        if current_node["is_mount"]:
+            if current_node["is_static"] and not (path_components and path_components[0] in current_node["child_keys"]):
+                # static paths require an ending slash.
+                scope["path"] = normalize_path("/".join(path_components) + "/")  # type: ignore[arg-type]
+                return current_node, path_params
+            if not current_node["is_static"]:
+                scope["path"] = normalize_path("/".join(path_components))  # type: ignore[arg-type]
+                return current_node, path_params
 
-    if current_node["is_mount"]:
-        if current_node["is_static"] and not (path_components and path_components[0] in current_node["child_keys"]):
-            # static paths require an ending slash.
-            scope["path"] = normalize_path("/".join(path_components) + "/")  # type: ignore[arg-type]
+        if current_node["is_path_type"]:
+            path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
             return current_node, path_params
-        if not current_node["is_static"]:
-            scope["path"] = normalize_path("/".join(path_components))  # type: ignore[arg-type]
+
+        has_path_param = PathParameterSentinel in current_node["child_keys"]
+
+        if not path_components:
+            if has_path_param or not current_node["asgi_handlers"]:
+                raise NotFoundException()
             return current_node, path_params
 
-    if current_node["is_path_type"]:
-        path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
-        return current_node, path_params
+        component = path_components.popleft()
 
-    has_path_param = PathParameterSentinel in current_node["child_keys"]
+        if component in current_node["child_keys"]:
+            current_node = current_node["children"][component]
+            continue
 
-    if not path_components:
-        if has_path_param or not current_node["asgi_handlers"]:
-            raise NotFoundException()
-        return current_node, path_params
+        if has_path_param:
+            path_params.append(component)  # type: ignore[arg-type]
+            current_node = current_node["children"][PathParameterSentinel]
+            continue
 
-    component = path_components.popleft()
-
-    if component in current_node["child_keys"]:
-        return traverse_route_map(
-            current_node=current_node["children"][component],
-            path=path,
-            path_components=path_components,
-            path_params=path_params,
-            scope=scope,
-        )
-
-    if has_path_param:
-        path_params.append(component)  # type: ignore[arg-type]
-
-        return traverse_route_map(
-            current_node=current_node["children"][PathParameterSentinel],
-            path=path,
-            path_components=path_components,
-            path_params=path_params,
-            scope=scope,
-        )
-
-    raise NotFoundException()
+        raise NotFoundException()
 
 
 def parse_path_parameters(
@@ -130,7 +121,7 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
         current_node: "RouteTrieNode" = root_node["children"][path]
     else:
         current_node, path_params = traverse_route_map(
-            current_node=root_node,
+            root_node=root_node,
             path=path,
             path_components=deque([component for component in path.split("/") if component]),
             path_params=[],
