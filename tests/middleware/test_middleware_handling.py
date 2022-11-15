@@ -81,7 +81,7 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         assert app.middleware == [middleware]
 
         unpacked_middleware = []
-        cur = client.app.asgi_router.root_route_map_node["children"]["/"]["asgi_handlers"]["GET"][0]
+        cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
         while hasattr(cur, "app"):
             unpacked_middleware.append(cur)
             cur = cast("ASGIApp", cur.app)
@@ -101,8 +101,10 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         )
         if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
             assert middleware_instance.kwarg == "123Jeronimo"
-        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):  # type: ignore
-            assert middleware_instance.arg == 1  # type: ignore[unreachable]
+        if isinstance(middleware, DefineMiddleware) and isinstance(  # type:ignore
+            middleware_instance, MiddlewareWithArgsAndKwargs
+        ):
+            assert middleware_instance.arg == 1  # type: ignore
 
 
 class JSONRequest(BaseModel):

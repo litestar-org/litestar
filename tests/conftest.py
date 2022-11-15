@@ -22,6 +22,7 @@ from pydantic import SecretBytes
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
+from starlite.asgi.routing_trie.traversal import traverse_route_map
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import (
     BaseSessionBackend,
@@ -344,3 +345,10 @@ def create_scope() -> Callable[..., "Scope"]:
 @pytest.fixture
 def scope(create_scope: Callable[..., "Scope"]) -> "Scope":
     return create_scope()
+
+
+@pytest.fixture(autouse=True)
+def cache_clear():
+    traverse_route_map.cache_clear()
+    yield
+    traverse_route_map.cache_clear()

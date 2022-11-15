@@ -5,7 +5,7 @@ from starlite.datastructures.multi_dicts import QueryMultiDict
 from starlite.datastructures.state import State
 from starlite.datastructures.url import URL, Address, make_absolute_url
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.parsers import parse_cookie_string, parse_query_string
+from starlite.parsers import parse_cookie_string
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:

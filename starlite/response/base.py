@@ -9,12 +9,9 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
-    cast,
 )
 
-from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-from pydantic_openapi_schema.v3_1_0 import OpenAPI
-from yaml import dump as dump_yaml
+from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
@@ -210,7 +207,7 @@ class Response(Generic[T]):
         """
         try:
             if self.media_type.startswith("text/"):
-                return content.encode(self.encoding) if content else b""
+                return content.encode(self.encoding) if content else b""  # type: ignore
             return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
 
         # if isinstance(content, OpenAPI):

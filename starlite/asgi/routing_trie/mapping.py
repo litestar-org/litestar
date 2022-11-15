@@ -45,14 +45,14 @@ def add_map_route_to_trie(
 
     if not (route.path_parameters or is_mount):
         plain_routes.add(path)
-        if path not in root_node["children"]:
-            current_node["children"][path] = create_node()
-        current_node = root_node["children"][path]
+        if path not in root_node.children:
+            current_node.children[path] = create_node()
+        current_node = root_node.children[path]
     else:
         for component in route.path_components:
             if isinstance(component, PathParameterDefinition):
                 if component.type is Path:
-                    current_node["is_path_type"] = True
+                    current_node.is_path_type = True
                     break
 
                 next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
@@ -60,12 +60,12 @@ def add_map_route_to_trie(
             else:
                 next_node_key = component
 
-            if next_node_key not in current_node["children"]:
-                current_node["children"][next_node_key] = create_node()
+            if next_node_key not in current_node.children:
+                current_node.children[next_node_key] = create_node()
 
-            current_node["child_keys"] = set(current_node["children"].keys())
+            current_node.child_keys = set(current_node.children.keys())
 
-            current_node = current_node["children"][next_node_key]
+            current_node = current_node.children[next_node_key]
 
     configure_node(route=route, app=app, node=current_node)
     return current_node
@@ -88,30 +88,30 @@ def configure_node(
     """
     from starlite.routes import HTTPRoute, WebSocketRoute
 
-    if not node["path_parameters"]:
-        node["path_parameters"] = route.path_parameters
+    if not node.path_parameters:
+        node.path_parameters = route.path_parameters
 
     if isinstance(route, HTTPRoute):
         for method, handler_mapping in route.route_handler_map.items():
             handler, _ = handler_mapping
-            node["asgi_handlers"][method] = ASGIHandlerTuple(
+            node.asgi_handlers[method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
             )
     elif isinstance(route, WebSocketRoute):
-        node["asgi_handlers"]["websocket"] = ASGIHandlerTuple(
+        node.asgi_handlers["websocket"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
 
     else:
-        node["asgi_handlers"]["asgi"] = ASGIHandlerTuple(
+        node.asgi_handlers["asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
-        node["is_asgi"] = True
-        node["is_mount"] = route.route_handler.is_mount
-        node["is_static"] = route.route_handler.is_static
+        node.is_asgi = True
+        node.is_mount = route.route_handler.is_mount
+        node.is_static = route.route_handler.is_static
 
 
 def build_route_middleware_stack(

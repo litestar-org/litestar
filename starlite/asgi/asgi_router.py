@@ -116,7 +116,7 @@ class ASGIRouter:
                 plain_routes=self._plain_routes,
             )
 
-            if node["path_parameters"] != route.path_parameters:
+            if node.path_parameters != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
 
             self._store_handler_to_route_mapping(route)

@@ -1,4 +1,5 @@
 from collections import deque
+from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Deque, Dict, List, Set, Tuple, Type, Union
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
@@ -16,21 +17,18 @@ if TYPE_CHECKING:
     from starlite.types.internal_types import PathParameterDefinition
 
 
+@lru_cache(typed=True)
 def traverse_route_map(
     root_node: "RouteTrieNode",
     path: str,
-    path_components: Deque[Union[str, Type[PathParameterSentinel]]],
-    path_params: List[str],
-    scope: "Scope",
-) -> Tuple["RouteTrieNode", List[str]]:
+) -> Tuple["RouteTrieNode", List[str], str]:
     """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
         root_node: The root trie node.
         path: The request's path.
         path_components: A list of ordered path components.
-        path_params: A list of extracted path parameters.
-        scope: The ASGI connection scope.
+        path: request path
 
     Raises:
          NotFoundException: if no correlating node is found.
@@ -39,37 +37,39 @@ def traverse_route_map(
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
     current_node = root_node
-    
+    path_params: List[str] = []
+    path_components: Deque[Union[str, Type[PathParameterSentinel]]] = deque(
+        [component for component in path.split("/") if component]
+    )
+
     while True:
-        if current_node["is_mount"]:
-            if current_node["is_static"] and not (path_components and path_components[0] in current_node["child_keys"]):
+        if current_node.is_mount:
+            if current_node.is_static and not (path_components and path_components[0] in current_node.child_keys):
                 # static paths require an ending slash.
-                scope["path"] = normalize_path("/".join(path_components) + "/")  # type: ignore[arg-type]
-                return current_node, path_params
-            if not current_node["is_static"]:
-                scope["path"] = normalize_path("/".join(path_components))  # type: ignore[arg-type]
-                return current_node, path_params
+                return current_node, path_params, normalize_path("/".join(path_components) + "/")  # type: ignore[arg-type]
+            if not current_node.is_static:
+                return current_node, path_params, normalize_path("/".join(path_components))  # type: ignore[arg-type]
 
-        if current_node["is_path_type"]:
+        if current_node.is_path_type:
             path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
-            return current_node, path_params
+            return current_node, path_params, path
 
-        has_path_param = PathParameterSentinel in current_node["child_keys"]
+        has_path_param = PathParameterSentinel in current_node.child_keys
 
         if not path_components:
-            if has_path_param or not current_node["asgi_handlers"]:
+            if has_path_param or not current_node.asgi_handlers:
                 raise NotFoundException()
-            return current_node, path_params
+            return current_node, path_params, path
 
         component = path_components.popleft()
 
-        if component in current_node["child_keys"]:
-            current_node = current_node["children"][component]
+        if component in current_node.child_keys:
+            current_node = current_node.children[component]
             continue
 
         if has_path_param:
             path_params.append(component)  # type: ignore[arg-type]
-            current_node = current_node["children"][PathParameterSentinel]
+            current_node = current_node.children[PathParameterSentinel]
             continue
 
         raise NotFoundException()
@@ -118,25 +118,23 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
     scope["path_params"] = {}
 
     if path in plain_routes:
-        current_node: "RouteTrieNode" = root_node["children"][path]
+        current_node: "RouteTrieNode" = root_node.children[path]
     else:
-        current_node, path_params = traverse_route_map(
+        current_node, path_params, path = traverse_route_map(
             root_node=root_node,
             path=path,
-            path_components=deque([component for component in path.split("/") if component]),
-            path_params=[],
-            scope=scope,
         )
+        scope["path"] = path
         if path_params:
             scope["path_params"] = parse_path_parameters(
-                path_parameter_definitions=current_node["path_parameters"],
+                path_parameter_definitions=current_node.path_parameters,
                 request_path_parameter_values=path_params,
             )
     try:
-        if current_node["is_asgi"]:
-            return current_node["asgi_handlers"]["asgi"]
+        if current_node.is_asgi:
+            return current_node.asgi_handlers["asgi"]
         if scope["type"] == ScopeType.HTTP:
-            return current_node["asgi_handlers"][scope["method"]]
-        return current_node["asgi_handlers"]["websocket"]
+            return current_node.asgi_handlers[scope["method"]]
+        return current_node.asgi_handlers["websocket"]
     except KeyError as e:
         raise MethodNotAllowedException() from e

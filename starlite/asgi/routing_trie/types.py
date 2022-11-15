@@ -1,6 +1,5 @@
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Literal, NamedTuple, Set, Type, Union
-
-from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
 
@@ -21,8 +20,20 @@ class ASGIHandlerTuple(NamedTuple):
     """The route handler instance."""
 
 
-class RouteTrieNode(TypedDict):
+@dataclass(unsafe_hash=True)
+class RouteTrieNode:
     """A radix trie node."""
+
+    __slots__ = (
+        "asgi_handlers",
+        "child_keys",
+        "children",
+        "is_asgi",
+        "is_mount",
+        "is_path_type",
+        "is_static",
+        "path_parameters",
+    )
 
     asgi_handlers: Dict[Union["Method", Literal["websocket", "asgi"]], "ASGIHandlerTuple"]
     """
@@ -60,20 +71,20 @@ class RouteTrieNode(TypedDict):
     """
 
 
-def create_node() -> "RouteTrieNode":
+def create_node() -> RouteTrieNode:
     """Create a RouteMapNode instance.
 
     Returns:
         A route map node instance.
     """
 
-    return {
-        "asgi_handlers": {},
-        "child_keys": set(),
-        "children": {},
-        "is_asgi": False,
-        "is_mount": False,
-        "is_static": False,
-        "is_path_type": False,
-        "path_parameters": [],
-    }
+    return RouteTrieNode(
+        asgi_handlers={},
+        child_keys=set(),
+        children={},
+        is_asgi=False,
+        is_mount=False,
+        is_static=False,
+        is_path_type=False,
+        path_parameters=[],
+    )

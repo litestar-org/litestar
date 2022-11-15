@@ -95,7 +95,17 @@ def create_connection_value_extractor(
     connection_key: str,
     expected_params: Set[ParameterDefinition],
     parser: Optional[Callable[[Union["WebSocket", "Request"]], Dict[str, Any]]] = None,
-) -> [[Dict[str, Any], Union["WebSocket", "Request"]], None]:
+) -> Callable[[Dict[str, Any], Union["WebSocket", "Request"]], None]:
+    """Create a kwargs extractor function.
+
+    Args:
+        connection_key: The attribute key to use.
+        expected_params: The set of expected params.
+        parser: An optional parser function.
+
+    Returns:
+        An extractor function.
+    """
     param_aliases = {p.field_alias for p in expected_params}
     alias_key_map = {p.field_alias: p.field_name for p in expected_params}
     alias_defaults = {p.field_alias: p.default_value for p in expected_params}
@@ -507,8 +517,7 @@ class KwargsModel:
             value = await self._resolve_dependency(dependency, connection, **kwargs)
             cache[dependency.provide.cache_key] = value
             return value
-        else:
-            return await self._resolve_dependency(dependency, connection, **kwargs)
+        return await self._resolve_dependency(dependency, connection, **kwargs)
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
