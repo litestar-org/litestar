@@ -19,7 +19,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-60-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-61-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -313,6 +313,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="http://www.kylesmith.me"><img src="https://avatars.githubusercontent.com/u/1161424?v=4?s=100" width="100px;" alt="Kyle Smith"/><br /><sub><b>Kyle Smith</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=smithk86" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/scott2b"><img src="https://avatars.githubusercontent.com/u/307713?v=4?s=100" width="100px;" alt="Scott Bradley"/><br /><sub><b>Scott Bradley</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3Ascott2b" title="Bug reports">🐛</a></td>
       <td align="center"><a href="https://www.linkedin.com/in/srikanthccv/"><img src="https://avatars.githubusercontent.com/u/22846633?v=4?s=100" width="100px;" alt="Srikanth Chekuri"/><br /><sub><b>Srikanth Chekuri</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=srikanthccv" title="Tests">⚠️</a> <a href="https://github.com/starlite-api/starlite/commits?author=srikanthccv" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://lonelyviking.com"><img src="https://avatars.githubusercontent.com/u/78952809?v=4?s=100" width="100px;" alt="Michael Bosch"/><br /><sub><b>Michael Bosch</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=LonelyVikingMichael" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
