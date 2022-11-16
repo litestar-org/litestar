@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from starlite.types.internal_types import PathParameterDefinition
 
 
-@lru_cache(maxsize=256)
 def traverse_route_map(
     root_node: "RouteTrieNode",
     path: str,
@@ -39,7 +38,7 @@ def traverse_route_map(
     current_node = root_node
     path_params: List[str] = []
     path_components: Deque[Union[str, Type[PathParameterSentinel]]] = deque(
-        [component for component in path.split("/") if component]
+        component for component in path.split("/") if component
     )
 
     while True:
@@ -82,8 +81,8 @@ def parse_path_parameters(
     """Parse path parameters into their expected types.
 
     Args:
-        path_parameter_definitions: A list of [PathParameterDefinition][starlite.route.base.PathParameterDefinition] instances
-        request_path_parameter_values: A list of raw strings sent as path parameters as part of the request
+        path_parameter_definitions: A tuple of [PathParameterDefinition][starlite.route.base.PathParameterDefinition] instances
+        request_path_parameter_values: A tuple of raw strings sent as path parameters as part of the request
 
     Raises:
         ValidationException: if path parameter parsing fails

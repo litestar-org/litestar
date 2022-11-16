@@ -188,7 +188,7 @@ class BaseRouteHandler(Generic[T]):
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
             self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])  # type: ignore[arg-type]
-        return cast("List[Guard]", self._resolved_guards)
+        return self._resolved_guards  # type:ignore[return-type]
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""

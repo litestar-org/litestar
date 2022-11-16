@@ -33,7 +33,7 @@ def get_enum_string_value(value: Union[Enum, str]) -> str:
     Returns:
         A string.
     """
-    return cast("str", value.value) if isinstance(value, Enum) else value
+    return value.value if isinstance(value, Enum) else value  # type:ignore[return-type]
 
 
 @dataclass

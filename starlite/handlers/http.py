@@ -112,6 +112,9 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     if isawaitable(data):
         data = await data
 
+    if not plugins:
+        return data
+
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
         return data
@@ -516,7 +519,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 "Optional[BeforeRequestHookHandler]",
                 before_request_handlers[-1] if before_request_handlers else None,
             )
-        return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
+        return self._resolved_before_request  # type:ignore[return-type]
 
     def resolve_after_response(self) -> Optional["AfterResponseHookHandler"]:
         """Resolve the after_response handler by starting from the route handler and moving up.
@@ -588,7 +591,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 )
 
             self._resolved_response_handler = handler
-        return cast("Callable[[Any], Awaitable[ASGIApp]]", self._resolved_response_handler)
+        return self._resolved_response_handler  # type:ignore[return-type]
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"

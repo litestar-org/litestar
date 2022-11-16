@@ -218,18 +218,6 @@ class Response(Generic[T]):
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
-    @property
-    def content_length(self) -> Optional[int]:
-        """Content length of the response if applicable.
-
-        Returns:
-            The content length of the body (e.g. for use in a "Content-Length" header).
-            If the response does not have a body, this value is `None`
-        """
-        if self.status_allows_body:
-            return len(self.body)
-        return None
-
     def encode_headers(self) -> List[Tuple[bytes, bytes]]:
         """Encode the response headers as a list of tuples of bytes.
 
@@ -251,8 +239,10 @@ class Response(Generic[T]):
             (b"content-type", content_type.encode("latin-1")),
         ]
 
-        if self.content_length and not any(key == b"content-length" for key, _ in encoded_headers):
-            encoded_headers.append((b"content-length", str(self.content_length).encode("latin-1")))
+        content_length = len(self.body) if self.status_allows_body else None
+
+        if content_length and not any(key == b"content-length" for key, _ in encoded_headers):
+            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
         return encoded_headers
 
     async def after_response(self) -> None:
