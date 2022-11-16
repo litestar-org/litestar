@@ -345,3 +345,10 @@ def create_scope() -> Callable[..., "Scope"]:
 @pytest.fixture
 def scope(create_scope: Callable[..., "Scope"]) -> "Scope":
     return create_scope()
+
+
+@pytest.fixture(autouse=True)
+def cache_clear():
+    traverse_route_map.cache_clear()
+    yield
+    traverse_route_map.cache_clear()

@@ -42,7 +42,6 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.parsers import parse_form_data, parse_query_string
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import Empty
-from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
@@ -492,7 +491,10 @@ class KwargsModel:
     ) -> Any:
         """Recursively resolve the dependency graph."""
         signature_model = get_signature_model(dependency.provide)
-        await resolve_dependencies_concurrently(self, dependency.dependencies, connection, kwargs)
+        for sub_dependency in dependency.dependencies:
+            kwargs[sub_dependency.key] = await self._resolve_dependency(
+                dependency=sub_dependency, connection=connection, **kwargs
+            )
         dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
         return await dependency.provide(**dependency_kwargs)
 

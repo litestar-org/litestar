@@ -1,3 +1,4 @@
+import sys
 from collections import deque
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Deque, Dict, List, Set, Tuple, Type, Union
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
     from starlite.types.internal_types import PathParameterDefinition
 
 
+@lru_cache(maxsize=0 if "pytest" in sys.modules else 256)
 def traverse_route_map(
     root_node: "RouteTrieNode",
     path: str,
@@ -74,7 +76,7 @@ def traverse_route_map(
         raise NotFoundException()
 
 
-@lru_cache(maxsize=256)
+@lru_cache(maxsize=0 if "pytest" in sys.modules else 256)
 def parse_path_parameters(
     path_parameter_definitions: Tuple["PathParameterDefinition"], request_path_parameter_values: Tuple[str]
 ) -> Dict[str, Any]:

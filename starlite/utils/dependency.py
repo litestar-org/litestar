@@ -43,24 +43,3 @@ async def _resolve_dependency_into_kwargs(
 ) -> None:
     """Store the result of resolve_dependency in the kwargs."""
     kwargs[dependency.key] = await model.resolve_dependency(dependency=dependency, connection=connection, **kwargs)
-
-
-async def resolve_dependencies_concurrently(
-    model: "KwargsModel",
-    dependencies: Iterable["Dependency"],
-    connection: Union["WebSocket", "Request"],
-    kwargs: Dict[str, Any],
-) -> None:
-    """Resolve the dependencies concurrently. The passed in kwargs will be modified with the results.
-
-    Args:
-        model: An instance of [KwargsModel][starlite.KwargsModel].
-        dependencies: An iterable for instances of [Dependency][starlite.kwargs.Dependency].
-        connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
-        kwargs: Kwargs to pass to dependencies
-    """
-    if not dependencies:
-        return
-    async with create_task_group() as task_group:
-        for dependency in dependencies:
-            task_group.start_soon(_resolve_dependency_into_kwargs, model, dependency, connection, kwargs)

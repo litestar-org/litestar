@@ -11,7 +11,6 @@ from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import RedirectResponse, Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
 
@@ -176,12 +175,9 @@ class HTTPRoute(BaseRoute):
             if "data" in kwargs:
                 kwargs["data"] = await kwargs["data"]
 
-            if parameter_model.expected_dependencies:
-                await resolve_dependencies_concurrently(
-                    parameter_model,
-                    parameter_model.expected_dependencies,
-                    request,
-                    kwargs,
+            for dependency in parameter_model.expected_dependencies:
+                kwargs[dependency.key] = await parameter_model.resolve_dependency(
+                    dependency=dependency, connection=request, **kwargs
                 )
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
