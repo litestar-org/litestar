@@ -67,6 +67,7 @@ app = Starlite(route_handlers=[hello_world])
 - Layered Parameter declaration
 - Life Cycle Hooks
 - OpenAPI 3.1 schema generation
+- Piccolo ORM Support (via plugin)
 - Plugin System
 - Route Guards based Authorization
 - SQLAlchemy Support (via plugin)
@@ -74,7 +75,7 @@ app = Starlite(route_handlers=[hello_world])
 - Support for [Stoplight Elements](https://github.com/stoplightio/elements)
 - Support for [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - Support for dataclasses and `TypedDict`
-- Tortoise-ORM Support (via plugin)
+- Tortoise ORM Support (via plugin)
 - Trio support (built-in, via AnyIO)
 - Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
 - Validation and Parsing using [Pydantic](https://github.com/samuelcolvin/pydantic)
