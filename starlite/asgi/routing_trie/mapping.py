@@ -129,6 +129,8 @@ def build_route_middleware_stack(
     Returns:
         An ASGIApp that is composed of a "stack" of middlewares.
     """
+    from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
+    from starlite.middleware.compression import CompressionMiddleware
     from starlite.middleware.csrf import CSRFMiddleware
 
     # we wrap the route.handle method in the ExceptionHandlerMiddleware
@@ -138,6 +140,11 @@ def build_route_middleware_stack(
 
     if app.csrf_config:
         asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
+
+    if app.compression_config:
+        asgi_handler = CompressionMiddleware(app=asgi_handler, config=app.compression_config)
+    if app.allowed_hosts:
+        asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
     for middleware in route_handler.resolve_middleware():
         if hasattr(middleware, "__iter__"):
