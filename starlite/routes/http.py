@@ -13,7 +13,6 @@ from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
-
     from starlite.kwargs import KwargsModel
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
@@ -175,10 +174,7 @@ class HTTPRoute(BaseRoute):
             if "data" in kwargs:
                 kwargs["data"] = await kwargs["data"]
 
-            for dependency in parameter_model.expected_dependencies:
-                kwargs[dependency.key] = await parameter_model.resolve_dependency(
-                    dependency=dependency, connection=request, **kwargs
-                )
+            await parameter_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
 
