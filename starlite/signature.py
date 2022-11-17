@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 SKIP_NAMES = {"self", "cls"}
-SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope"}
+SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope", "receive", "send"}
 
 
 class SignatureModel(BaseModel):
@@ -178,6 +178,7 @@ class SignatureModelFactory:
         "dependency_name_set",
         "field_definitions",
         "field_plugin_mappings",
+        "fn_module_name",
         "fn_name",
         "plugins",
         "signature",
@@ -194,7 +195,8 @@ class SignatureModelFactory:
         if fn is None:
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
         self.signature = Signature.from_callable(fn)
-        self.fn_name = fn.__name__ if hasattr(fn, "__name__") else "anonymous"
+        self.fn_name = getattr(fn, "__name__", "anonymous")
+        self.fn_module_name = getattr(fn, "__module__", "pydantic.main")
         self.plugins = plugins
         self.field_plugin_mappings: Dict[str, PluginMapping] = {}
         self.field_definitions: Dict[str, Any] = {}
@@ -324,7 +326,10 @@ class SignatureModelFactory:
                     parameter.annotation = self.get_type_annotation_from_plugin(parameter, plugin)
                 self.field_definitions[parameter.name] = self.create_field_definition_from_parameter(parameter)
             model: Type[SignatureModel] = create_model(
-                self.fn_name + "_signature_model", __base__=SignatureModel, **self.field_definitions
+                self.fn_name + "_signature_model",
+                __base__=SignatureModel,
+                __module__=self.fn_module_name,
+                **self.field_definitions,
             )
             model.return_annotation = self.signature.return_annotation
             model.field_plugin_mappings = self.field_plugin_mappings

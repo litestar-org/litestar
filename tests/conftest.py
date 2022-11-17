@@ -1,3 +1,5 @@
+import importlib.util
+import sys
 from os import environ, urandom
 from pathlib import Path
 from sys import version_info
@@ -10,9 +12,11 @@ from typing import (
     Generator,
     Optional,
     Tuple,
+    TypeVar,
     Union,
     cast,
 )
+from uuid import uuid4
 
 import fakeredis.aioredis  # pyright: ignore
 import pytest
@@ -56,6 +60,10 @@ from starlite.plugins.sql_alchemy import (
 from tests.mocks import FakeAsyncMemcached
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
+    from pytest import MonkeyPatch
+
     from starlite import Starlite
     from starlite.types import (
         AnyIOBackend,
@@ -312,7 +320,7 @@ def create_scope() -> Callable[..., "Scope"]:
         session: "ScopeSession" = None,
         state: Optional[Dict[str, Any]] = None,
         user: Any = None,
-        **kwargs: Dict[str, Any]
+        **kwargs: Dict[str, Any],
     ) -> "Scope":
         scope = {
             "app": app,
@@ -344,3 +352,35 @@ def create_scope() -> Callable[..., "Scope"]:
 @pytest.fixture
 def scope(create_scope: Callable[..., "Scope"]) -> "Scope":
     return create_scope()
+
+
+@pytest.fixture
+def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str], ModuleType]":
+    """Utility fixture for dynamic module creation."""
+
+    def wrapped(source: str) -> "ModuleType":
+        """
+
+        Args:
+            source: Source code as a string.
+
+        Returns:
+            An imported module.
+        """
+        T = TypeVar("T")
+
+        def not_none(val: Union[T, Optional[T]]) -> T:
+            assert val is not None
+            return val
+
+        module_name = uuid4().hex
+        path = tmp_path / f"{module_name}.py"
+        path.write_text(source)
+        # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+        spec = not_none(importlib.util.spec_from_file_location(module_name, path))
+        module = not_none(importlib.util.module_from_spec(spec))
+        monkeypatch.setitem(sys.modules, module_name, module)
+        not_none(spec.loader).exec_module(module)
+        return module
+
+    return wrapped

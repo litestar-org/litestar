@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 
-from starlite import HTTPException, Provide, get
+from starlite import Provide, get
 from starlite.connection import WebSocket
 from starlite.datastructures import URL
 from starlite.exceptions import (
@@ -17,12 +17,16 @@ from starlite.exceptions import (
 from starlite.params import Dependency
 from starlite.signature import SignatureModel, SignatureModelFactory
 from starlite.status_codes import HTTP_204_NO_CONTENT
-from starlite.testing import RequestFactory, create_test_client
+from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests.plugins.test_base import AModel, APlugin
 
 if TYPE_CHECKING:
+    from types import ModuleType
+    from typing import Callable
+
     from pydantic.error_wrappers import ErrorDict
 
+    from starlite import HTTPException
     from starlite.plugins.base import PluginProtocol
     from starlite.types import AnyCallable
 
@@ -236,3 +240,29 @@ def test_create_signature_model_error_message(monkeypatch: Any) -> None:
         str(e)
         == "<ExceptionInfo 500 - ImproperlyConfiguredException - Error creating signature model for 'get_handler': 'a type error' tblen=2>"
     )
+
+
+def test_signature_model_resolves_forward_ref_annotations(create_module: "Callable[[str], ModuleType]") -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+from pydantic import BaseModel
+from starlite import Provide, Starlite, get
+
+class Test(BaseModel):
+    hello: str
+
+async def get_dep() -> Test:
+    return Test(hello="world")
+
+@get("/", dependencies={"test": Provide(get_dep)})
+def hello_world(test: Test) -> Test:
+    return test
+
+app = Starlite(route_handlers=[hello_world], openapi_config=None)
+"""
+    )
+    with TestClient(app=module.app) as client:
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert resp.json() == {"hello": "world"}
