@@ -22,7 +22,7 @@ app = Starlite(
 )
 ```
 
-The logging middleware use the logger configuration defined on the application level, which allows for using both stdlib
+The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or [structlog](https://www.structlog.org/en/stable/index.html), depending on the configuration used (
 see [logging](../../0-the-starlite-app/4-logging.md) for more details).
 
@@ -44,3 +44,13 @@ logging_middleware_config = LoggingMiddlewareConfig(
 The middleware will obfuscate the headers `Authorization` and `X-API-KEY`, and the cookie `session` by default.
 
 You can read more about the configuration options in the [api reference][starlite.middleware.logging.LoggingMiddlewareConfig]
+
+## Compression and Logging of Response Body
+
+If both [`CompressionConfig`][starlite.config.compression.CompressionConfig] and
+[`LoggingMiddleware`][starlite.middleware.logging.LoggingMiddleware] have been defined for the application, the response
+body will be omitted from response logging if it has been compressed, even if `"body"` has been included in
+[`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields]. To force the body of
+compressed responses to be logged, set
+[`exclude_compressed_body`][starlite.middleware.logging.LoggingMiddlewareConfig.exclude_compressed_body] to `False`, in
+addition to including `"body"` in `response_log_fields`.
