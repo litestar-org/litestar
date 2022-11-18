@@ -1,17 +1,4 @@
-from collections import deque
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Deque,
-    Dict,
-    List,
-    Optional,
-    Pattern,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.enums import ScopeType
@@ -37,8 +24,6 @@ def traverse_route_map(
     Args:
         root_node: The root trie node.
         path: The request's path.
-        path_components: A list of ordered path components.
-        path: request path
 
     Raises:
          NotFoundException: if no correlating node is found.
@@ -48,34 +33,27 @@ def traverse_route_map(
     """
     current_node = root_node
     path_params: List[str] = []
-    path_components: Deque[Union[str, Type[PathParameterSentinel]]] = deque(
-        component for component in path.split("/") if component
-    )
+    path_components = [p for p in path.split("/") if p]
 
-    while True:
-        if path_components:
-            component = path_components.popleft()
-
-            if component in current_node.child_keys:
-                current_node = current_node.children[component]
-                continue
-
-            if PathParameterSentinel in current_node.child_keys:
-                if current_node.is_path_type:
-                    path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
-                    return current_node, path_params, path
-
-                path_params.append(component)  # type: ignore[arg-type]
-                current_node = current_node.children[PathParameterSentinel]
-
+    for i, component in enumerate(path_components):
+        if component in current_node.child_keys:
+            current_node = current_node.children[component]
             continue
 
-        if not current_node.asgi_handlers:
-            raise NotFoundException()
+        if PathParameterSentinel in current_node.child_keys:
+            if current_node.is_path_type:
+                path_params.append(normalize_path("/".join(path_components[i:])))
+                return current_node, path_params, path
 
-        return current_node, path_params, path
+            path_params.append(component)
+            current_node = current_node.children[PathParameterSentinel]
 
-        # raise NotFoundException()
+        continue
+
+    if not current_node.asgi_handlers:
+        raise NotFoundException()
+
+    return current_node, path_params, path
 
 
 def parse_path_parameters(
