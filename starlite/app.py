@@ -36,8 +36,10 @@ if TYPE_CHECKING:
     from starlite.plugins.base import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
+        AfterMessageReceiveHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
+        AnyReceive,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -46,7 +48,7 @@ if TYPE_CHECKING:
         Guard,
         LifeSpanHandler,
         LifeSpanHookHandler,
-        LifeSpanReceive,
+        LifeSpanReceiveMessage,
         LifeSpanScope,
         LifeSpanSend,
         Logger,
@@ -54,7 +56,7 @@ if TYPE_CHECKING:
         Middleware,
         OnAppInitHandler,
         ParametersMap,
-        Receive,
+        ReceiveMessage,
         ResponseCookies,
         ResponseHeadersMap,
         ResponseType,
@@ -102,6 +104,7 @@ class Starlite(Router):
 
     __slots__ = (
         "after_exception",
+        "after_receive",
         "after_shutdown",
         "after_startup",
         "allowed_hosts",
@@ -136,6 +139,7 @@ class Starlite(Router):
         route_handlers: List["ControllerRouterHandler"],
         *,
         after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
+        after_receive: Optional["SingleOrList[AfterMessageReceiveHookHandler]"] = None,
         after_request: Optional["AfterRequestHookHandler"] = None,
         after_response: Optional["AfterResponseHookHandler"] = None,
         after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
@@ -180,6 +184,8 @@ class Starlite(Router):
             after_exception: An application level [exception hook handler][starlite.types.AfterExceptionHookHandler]
                 or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
                 it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
+            after_receive: An application level [after receive hook handler][starlite.types.AfterMessageReceiveHookHandler]
+                or list thereof. This hook is called after the ASGI receive function is called.
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object.
             after_response: A sync or async function called after the response has been awaited. It receives the
@@ -259,6 +265,7 @@ class Starlite(Router):
         # creates app config object from parameters
         config = AppConfig(
             after_exception=after_exception or [],
+            after_receive=after_receive or [],
             after_request=after_request,
             after_response=after_response,
             after_shutdown=after_shutdown or [],
@@ -302,6 +309,7 @@ class Starlite(Router):
 
         self.allowed_hosts = cast("Optional[AllowedHostsConfig]", config.allowed_hosts)
         self.after_exception = as_async_callable_list(config.after_exception)
+        self.after_receive = as_async_callable_list(config.after_receive)
         self.after_shutdown = as_async_callable_list(config.after_shutdown)
         self.after_startup = as_async_callable_list(config.after_startup)
         self.before_send = as_async_callable_list(config.before_send)
@@ -367,7 +375,7 @@ class Starlite(Router):
     async def __call__(
         self,
         scope: Union["Scope", "LifeSpanScope"],
-        receive: Union["Receive", "LifeSpanReceive"],
+        receive: "AnyReceive",
         send: Union["Send", "LifeSpanSend"],
     ) -> None:
         """Application entry point.
@@ -383,6 +391,7 @@ class Starlite(Router):
             None
         """
         scope["app"] = self
+        receive = self._wrap_receive(receive=receive, scope=scope)
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
@@ -603,11 +612,33 @@ class Starlite(Router):
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()
 
+    def _wrap_receive(self, receive: "AnyReceive", scope: Union["Scope", "LifeSpanScope"]) -> "AnyReceive":
+        """Wrap the ASGI receive and call any 'after receive' hooks.
+
+        Args:
+            receive: The ASGI send function.
+            scope: The ASGI connection scope.
+
+        Returns:
+            An ASGI receive function.
+        """
+        if self.after_receive:
+
+            async def wrapped_receive() -> Union["ReceiveMessage", "LifeSpanReceiveMessage"]:
+                message = await receive()
+                for hook in self.after_receive:
+                    await hook(message, scope)
+                return message
+
+            return wrapped_receive
+        return receive
+
     def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
-        """Wrap the ASGI send and handles any 'before send' hooks.
+        """Wrap the ASGI send and handle any 'before send' hooks.
 
         Args:
             send: The ASGI send function.
+            scope: The ASGI connection scope.
 
         Returns:
             An ASGI send function.

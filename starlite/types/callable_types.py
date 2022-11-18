@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, Union
 
-from .asgi_types import ASGIApp, Message, Scope
+from .asgi_types import ASGIApp, Message, ReceiveMessage, Scope
 from .helper_types import SyncOrAsyncUnion
 from .internal_types import StarliteType
 
@@ -24,6 +24,7 @@ else:
 _ExceptionT = TypeVar("_ExceptionT", bound=Exception)
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
+AfterMessageReceiveHookHandler = Callable[[ReceiveMessage, Scope], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
     Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]
 ]

@@ -1,4 +1,5 @@
 from .asgi_types import (
+    AnyReceive,
     ASGIApp,
     ASGIVersion,
     BaseScope,
@@ -42,6 +43,7 @@ from .asgi_types import (
 )
 from .callable_types import (
     AfterExceptionHookHandler,
+    AfterMessageReceiveHookHandler,
     AfterRequestHookHandler,
     AfterResponseHookHandler,
     AnyCallable,
@@ -84,9 +86,11 @@ __all__ = (
     "ASGIApp",
     "ASGIVersion",
     "AfterExceptionHookHandler",
+    "AfterMessageReceiveHookHandler",
     "AfterRequestHookHandler",
     "AfterResponseHookHandler",
     "AnyCallable",
+    "AnyReceive",
     "AnyIOBackend",
     "AsyncAnyCallable",
     "BaseScope",

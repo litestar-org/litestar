@@ -13,6 +13,7 @@ from starlite.router import Router
 def app_config_object() -> AppConfig:
     return AppConfig(
         after_exception=[],
+        after_receive=[],
         after_request=None,
         after_response=None,
         after_shutdown=[],

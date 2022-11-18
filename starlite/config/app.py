@@ -8,6 +8,7 @@ from starlite.datastructures import CacheControlHeader, ETag, Provide
 from starlite.plugins.base import PluginProtocol
 from starlite.types import (
     AfterExceptionHookHandler,
+    AfterMessageReceiveHookHandler,
     AfterRequestHookHandler,
     AfterResponseHookHandler,
     BeforeMessageSendHookHandler,
@@ -51,6 +52,11 @@ class AppConfig(BaseModel):
     An application level [exception hook handler][starlite.types.AfterExceptionHookHandler] or list thereof. This hook
     is called after an exception occurs. In difference to exception handlers, it is not meant to return a response -
     only to process the exception (e.g. log it, send it to Sentry etc.).
+    """
+    after_receive: SingleOrList[AfterMessageReceiveHookHandler]
+    """
+    An application level [after receive hook handler][starlite.types.AfterMessageReceiveHookHandler] or list thereof.
+    This hook is called after the ASGI receive function is called.
     """
     after_request: Optional[AfterRequestHookHandler]
     """
