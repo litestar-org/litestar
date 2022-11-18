@@ -15,6 +15,7 @@ from starlite.utils import default_serializer
 
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
+    from starlite.handlers import HTTPRouteHandler
 
 try:
     from httpx._content import (
@@ -29,12 +30,16 @@ except ImportError as e:
     ) from e
 
 
-@get("/")
-def _default_route_handler() -> None:
-    ...
+def _create_default_route_handler() -> "HTTPRouteHandler":
+    @get("/")
+    def _default_route_handler() -> None:
+        ...
+
+    return _default_route_handler
 
 
-default_app = Starlite(route_handlers=[_default_route_handler])
+def _create_default_app() -> Starlite:
+    return Starlite(route_handlers=[_create_default_route_handler()])
 
 
 class RequestFactory:
@@ -42,7 +47,7 @@ class RequestFactory:
 
     def __init__(
         self,
-        app: Starlite = default_app,
+        app: Optional[Starlite] = None,
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
@@ -92,7 +97,7 @@ class RequestFactory:
         ```
         """
 
-        self.app = app
+        self.app = app if app is not None else _create_default_app()
         self.server = server
         self.port = port
         self.root_path = root_path
@@ -156,7 +161,7 @@ class RequestFactory:
             asgi=ASGIVersion(spec_version="3.0", version="3.0"),
             http_version=http_version or "1.1",
             raw_path=path.encode("ascii"),
-            route_handler=route_handler or _default_route_handler,
+            route_handler=route_handler or _create_default_route_handler(),
             extensions={},
         )
 
