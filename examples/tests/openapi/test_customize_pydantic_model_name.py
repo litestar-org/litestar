@@ -25,17 +25,6 @@ def test_schema_generation() -> None:
                         },
                         "deprecated": False,
                     },
-                    "options": {
-                        "operationId": "Options Handler",
-                        "responses": {
-                            "200": {
-                                "description": "Request fulfilled, document follows",
-                                "headers": {},
-                                "content": {"application/json": {"media_type_schema": {}}},
-                            }
-                        },
-                        "deprecated": False,
-                    },
                 }
             },
             "components": {
