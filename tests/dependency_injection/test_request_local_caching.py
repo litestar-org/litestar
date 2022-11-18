@@ -1,5 +1,7 @@
 from starlite import Provide, Request, create_test_client, get
+from starlite.constants import SCOPE_STATE_DEPENDENCY_CACHE
 from starlite.status_codes import HTTP_200_OK
+from starlite.utils import get_starlite_scope_state
 
 
 def test_caching_per_request() -> None:
@@ -37,7 +39,9 @@ def test_caching_per_request() -> None:
 def test_explicit_key() -> None:
     @get()
     def route(first: int, request: Request) -> bool:
-        return request.state["_dependency_cache"]["override"] == first  # type: ignore[no-any-return]
+        return (  # type:ignore[no-any-return]
+            get_starlite_scope_state(request.scope, SCOPE_STATE_DEPENDENCY_CACHE)["override"] == first
+        )
 
     with create_test_client(
         route,

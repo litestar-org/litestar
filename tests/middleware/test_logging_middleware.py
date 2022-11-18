@@ -1,9 +1,11 @@
 from logging import INFO
 from typing import TYPE_CHECKING
 
+import pytest
 from structlog.testing import capture_logs
 
 from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get
+from starlite.config.compression import CompressionConfig
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK
@@ -134,3 +136,22 @@ def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture") -> None
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
+
+
+@pytest.mark.parametrize("exclude", [True, False])
+def test_logging_middleware_compressed_response_body(exclude: bool, caplog: "LogCaptureFixture") -> None:
+    with create_test_client(
+        route_handlers=[handler],
+        compression_config=CompressionConfig(backend="gzip", minimum_size=1),
+        middleware=[LoggingMiddlewareConfig(exclude_compressed_body=exclude).middleware],
+    ) as client, caplog.at_level(INFO):
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
+        client.app.get_logger = get_logger
+        response = client.get("/", headers={"request-header": "1"})
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
+        if exclude:
+            assert "body=" not in caplog.messages[1]
+        else:
+            assert "body=" in caplog.messages[1]
