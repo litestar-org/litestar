@@ -13,7 +13,6 @@ from starlite import (
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
@@ -133,9 +132,9 @@ def test_handler_multi_paths() -> None:
         ("/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
         ("/sub/path", "/sub", HTTP_404_NOT_FOUND),
         ("/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
-        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_404_NOT_FOUND),
     ],
 )
 def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:

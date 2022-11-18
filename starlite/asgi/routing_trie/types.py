@@ -1,5 +1,15 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, List, Literal, NamedTuple, Set, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    NamedTuple,
+    Optional,
+    Set,
+    Type,
+    Union,
+)
 
 if TYPE_CHECKING:
 
@@ -31,6 +41,7 @@ class RouteTrieNode:
         "is_asgi",
         "is_mount",
         "is_path_type",
+        "path_param_definition",
         "path_parameters",
     )
 
@@ -46,6 +57,10 @@ class RouteTrieNode:
     """
     A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
     """
+    path_param_definition: Optional["PathParameterDefinition"]
+    """
+    A path parameter definition, if the route node expects a parameter.
+    """
     is_asgi: bool
     """
     Designate the node as having an `@asgi` type handler.
@@ -53,11 +68,6 @@ class RouteTrieNode:
     is_mount: bool
     """
     Designate the node as being a mount route.
-    """
-    is_path_type: bool
-    """
-    Designates the node as expecting a path parameter of type 'Path',
-    which means that any sub path under the node is considered to be a path parameter value rather than a url.
     """
     path_parameters: List["PathParameterDefinition"]
     """
@@ -78,6 +88,6 @@ def create_node() -> RouteTrieNode:
         children={},
         is_asgi=False,
         is_mount=False,
-        is_path_type=False,
+        path_param_definition=None,
         path_parameters=[],
     )
