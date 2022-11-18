@@ -41,28 +41,29 @@ def traverse_route_map(
     )
 
     while True:
-        has_path_param = PathParameterSentinel in current_node.child_keys
+        if path_components:
+            component = path_components.popleft()
 
-        if not path_components:
-            if not current_node.asgi_handlers:
-                raise NotFoundException()
-            return current_node, path_params, path
+            if component in current_node.child_keys:
+                current_node = current_node.children[component]
+                continue
 
-        component = path_components.popleft()
+            if PathParameterSentinel in current_node.child_keys:
+                if current_node.is_path_type:
+                    path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
+                    return current_node, path_params, path
 
-        if component in current_node.child_keys:
-            current_node = current_node.children[component]
+                path_params.append(component)  # type: ignore[arg-type]
+                current_node = current_node.children[PathParameterSentinel]
+
             continue
 
-        if has_path_param:
-            if current_node.is_path_type:
-                path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
-                return current_node, path_params, path
-            path_params.append(component)  # type: ignore[arg-type]
-            current_node = current_node.children[PathParameterSentinel]
-            continue
+        if not current_node.asgi_handlers:
+            raise NotFoundException()
 
-        raise NotFoundException()
+        return current_node, path_params, path
+
+        # raise NotFoundException()
 
 
 def parse_path_parameters(
