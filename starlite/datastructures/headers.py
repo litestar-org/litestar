@@ -183,7 +183,7 @@ class MutableScopeHeaders(MutableMapping):
         """
         existing = self.get(key)
         if existing is not None:
-            value = ", ".join([*existing.split(","), value])
+            value = ",".join([*existing.split(","), value])
         self[key] = value
 
     def __getitem__(self, key: str) -> str:

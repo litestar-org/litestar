@@ -143,14 +143,14 @@ def test_mutable_scope_headers_extend_header_value(
     raw_headers: "RawHeadersList", mutable_headers: MutableScopeHeaders
 ) -> None:
     mutable_headers.extend_header_value("foo", "baz")
-    assert raw_headers == [(b"foo", b"bar, baz")]
+    assert raw_headers == [(b"foo", b"bar,baz")]
 
 
 def test_mutable_scope_headers_from_tuple_extend_header_value(
     raw_headers_tuple: "RawHeaders", mutable_headers_from_tuple: MutableScopeHeaders
 ) -> None:
     mutable_headers_from_tuple.extend_header_value("foo", "baz")
-    assert list(raw_headers_tuple) == [(b"foo", b"bar, baz")]
+    assert list(raw_headers_tuple) == [(b"foo", b"bar,baz")]
 
 
 def test_mutable_scope_headers_extend_header_value_new_header(
