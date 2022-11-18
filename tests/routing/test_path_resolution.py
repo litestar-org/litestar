@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
@@ -206,3 +206,21 @@ def test_special_chars(
 
         if response.status_code == HTTP_200_OK:
             assert response.text == expected_param
+
+
+def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -> None:
+    # https://github.com/starlite-api/starlite/issues/816
+
+    # the error condition requires the path to not be a plain route, hence the prefixed path parameters
+    @get("/{a:str}/b")
+    def get_list() -> List[str]:
+        return ["ok"]
+
+    @get("/{a:str}/b/{c:int}")
+    def get_member() -> str:
+        return "ok"
+
+    with create_test_client(route_handlers=[get_list, get_member]) as client:
+        resp = client.get("/scope/b")
+        assert resp.status_code == 200
+        assert resp.json() == ["ok"]
