@@ -1,5 +1,17 @@
 from collections import deque
-from typing import TYPE_CHECKING, Any, Deque, Dict, List, Set, Tuple, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Deque,
+    Dict,
+    List,
+    Optional,
+    Pattern,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.enums import ScopeType
@@ -115,6 +127,7 @@ def parse_scope_to_route(
     scope: "Scope",
     plain_routes: Set[str],
     mount_routes: Dict[str, "RouteTrieNode"],
+    mount_paths_regex: Optional[Pattern],
 ) -> "ASGIHandlerTuple":
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
@@ -123,6 +136,7 @@ def parse_scope_to_route(
         scope: The ASGI scope instance.
         plain_routes: The set of plain routes.
         mount_routes: Mapping of mount routes to trie nodes.
+        mount_paths_regex: A compiled regex to match the mount routes.
 
     Raises:
         MethodNotAllowedException: if no matching method is found.
@@ -137,8 +151,8 @@ def parse_scope_to_route(
     if normalized_path in plain_routes:
         return parse_node_handlers(node=root_node.children[normalized_path], scope=scope)
 
-    if any(route in normalized_path for route in mount_routes):
-        mount_path = [route for route in mount_routes if route in scope["path"]][0]
+    if mount_paths_regex and mount_paths_regex.search(normalized_path):
+        mount_path = mount_paths_regex.findall(normalized_path)[0]
         mount_node = mount_routes[mount_path]
         remaining_path = normalized_path.replace(mount_path, "", 1)
         # since we allow regular handlers under static paths, we must validate that the request does not match

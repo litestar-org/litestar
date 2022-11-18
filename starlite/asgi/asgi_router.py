@@ -1,6 +1,7 @@
+import re
 from collections import defaultdict
 from traceback import format_exc
-from typing import TYPE_CHECKING, Dict, List, Set, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Union
 
 from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import add_map_route_to_trie
@@ -37,9 +38,10 @@ class ASGIRouter:
     """
 
     __slots__ = (
+        "_mount_paths_regex",
+        "_mount_routes",
         "_plain_routes",
         "_registered_routes",
-        "_mount_routes",
         "_static_routes",
         "app",
         "root_route_map_node",
@@ -53,8 +55,9 @@ class ASGIRouter:
         Args:
             app: The Starlite app instance
         """
-        self._plain_routes: Set[str] = set()
+        self._mount_paths_regex: Optional[Pattern] = None
         self._mount_routes: Dict[str, "RouteTrieNode"] = {}
+        self._plain_routes: Set[str] = set()
         self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
         self.app = app
         self.root_route_map_node: "RouteTrieNode" = create_node()
@@ -71,6 +74,7 @@ class ASGIRouter:
             scope=scope,
             plain_routes=self._plain_routes,
             mount_routes=self._mount_routes,
+            mount_paths_regex=self._mount_paths_regex,
         )
         scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
@@ -130,6 +134,8 @@ class ASGIRouter:
             self._registered_routes.add(route)
 
         validate_node(node=self.root_route_map_node)
+        if self._mount_routes:
+            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.
