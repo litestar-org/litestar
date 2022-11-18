@@ -29,6 +29,7 @@ class RouteTrieNode:
         "child_keys",
         "children",
         "is_asgi",
+        "is_mount",
         "is_path_type",
         "path_parameters",
     )
@@ -48,6 +49,10 @@ class RouteTrieNode:
     is_asgi: bool
     """
     Designate the node as having an `@asgi` type handler.
+    """
+    is_mount: bool
+    """
+    Designate the node as being a mount route.
     """
     is_path_type: bool
     """
@@ -72,6 +77,7 @@ def create_node() -> RouteTrieNode:
         child_keys=set(),
         children={},
         is_asgi=False,
+        is_mount=False,
         is_path_type=False,
         path_parameters=[],
     )

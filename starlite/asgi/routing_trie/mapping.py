@@ -17,12 +17,51 @@ if TYPE_CHECKING:
     from starlite.types import ASGIApp, RouteHandlerType
 
 
-def add_map_route_to_trie(
-    app: "Starlite",
+def add_mount_route(
+    current_node: "RouteTrieNode",
+    mount_routes: Dict[str, "RouteTrieNode"],
     root_node: "RouteTrieNode",
     route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    plain_routes: Set[str],
+) -> "RouteTrieNode":
+    """Add a node for a mount route.
+
+    Args:
+        current_node: The current trie node that is being mapped.
+        mount_routes: A dictionary mapping static routes to trie nodes.
+        root_node: The root trie node.
+        route: The route that is being added.
+
+    Returns:
+        A trie node.
+    """
+    if route.path_parameters:
+        raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
+
+        # we need to ensure that we can traverse the map both view the full path key, e.g. "/my-route/sub-path" and
+        # via the components keys ["my-route, "sub-path"]
+    if route.path not in current_node.children:
+        root_node = current_node
+        for component in route.path_components:
+            if component not in current_node.children:
+                current_node.children[component] = create_node()  # type: ignore[index]
+            current_node = current_node.children[component]  # type: ignore[index]
+
+    current_node.is_mount = True
+
+    if route.path != "/":
+        mount_routes[route.path] = root_node.children[route.path] = current_node
+    else:
+        mount_routes[route.path] = current_node
+
+    return current_node
+
+
+def add_map_route_to_trie(
+    app: "Starlite",
     mount_routes: Dict[str, "RouteTrieNode"],
+    plain_routes: Set[str],
+    root_node: "RouteTrieNode",
+    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
 ) -> "RouteTrieNode":
     """Add a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
 
@@ -33,30 +72,31 @@ def add_map_route_to_trie(
 
     Args:
         app: The Starlite app instance.
+        mount_routes: A dictionary mapping static routes to trie nodes.
+        plain_routes: A set of routes that do not have path parameters.
         root_node: The root trie node.
         route: The route that is being added.
-        plain_routes: The set of plain routes.
 
     Returns:
         A RouteTrieNode instance.
     """
     current_node = root_node
-    path = route.path
 
     is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # pyright: ignore
     has_path_parameters = bool(route.path_parameters)
 
     if is_mount:  # pyright: ignore
-        if path not in root_node.children:
-            current_node.children[path] = create_node()
-        mount_routes[path] = current_node = root_node.children[path]
-        if route.path_parameters:
-            raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
+        current_node = add_mount_route(
+            current_node=current_node,
+            mount_routes=mount_routes,
+            root_node=root_node,
+            route=route,
+        )
     elif not has_path_parameters:
-        plain_routes.add(path)
-        if path not in root_node.children:
-            current_node.children[path] = create_node()
-        current_node = root_node.children[path]
+        plain_routes.add(route.path)
+        if route.path not in root_node.children:
+            current_node.children[route.path] = create_node()
+        current_node = root_node.children[route.path]
     else:
         for component in route.path_components:
             if isinstance(component, PathParameterDefinition):
@@ -73,7 +113,6 @@ def add_map_route_to_trie(
                 current_node.children[next_node_key] = create_node()
 
             current_node.child_keys = set(current_node.children.keys())
-
             current_node = current_node.children[next_node_key]
 
     configure_node(route=route, app=app, node=current_node)

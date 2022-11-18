@@ -44,7 +44,7 @@ def traverse_route_map(
         has_path_param = PathParameterSentinel in current_node.child_keys
 
         if not path_components:
-            if has_path_param or not current_node.asgi_handlers:
+            if not current_node.asgi_handlers:
                 raise NotFoundException()
             return current_node, path_params, path
 
@@ -89,6 +89,26 @@ def parse_path_parameters(
         raise ValidationException(f"unable to parse path parameters {','.join(request_path_parameter_values)}") from e
 
 
+def parse_node_handlers(node: "RouteTrieNode", scope: "Scope") -> "ASGIHandlerTuple":
+    """Retrieve the handler tuple from the node.
+
+    Args:
+        node: The trie node to parse.
+        scope: The ASGI scope instance.
+
+    Returns:
+        An ASGI Handler tuple.
+    """
+    try:
+        if node.is_asgi:
+            return node.asgi_handlers["asgi"]
+        if scope["type"] == ScopeType.HTTP:
+            return node.asgi_handlers[scope["method"]]
+        return node.asgi_handlers["websocket"]
+    except KeyError as e:
+        raise MethodNotAllowedException() from e
+
+
 def parse_scope_to_route(
     root_node: "RouteTrieNode",
     scope: "Scope",
@@ -101,6 +121,7 @@ def parse_scope_to_route(
         root_node: The root trie node.
         scope: The ASGI scope instance.
         plain_routes: The set of plain routes.
+        mount_routes: Mapping of mount routes to trie nodes.
 
     Raises:
         MethodNotAllowedException: if no matching method is found.
@@ -110,29 +131,29 @@ def parse_scope_to_route(
     """
 
     scope["path_params"] = {}
+    normalized_path = normalize_path(scope["path"])
 
-    if scope["path"] in plain_routes:
-        current_node: "RouteTrieNode" = root_node.children[scope["path"]]
-    elif any(route in scope["path"] for route in mount_routes):
-        path = [route for route in mount_routes if route in scope["path"]][0]
-        current_node = mount_routes[path]
-        scope["path"] = normalize_path(scope["path"].replace(path, ""))
-    else:
-        current_node, path_params, path = traverse_route_map(
-            root_node=root_node,
-            path=scope["path"],
+    if normalized_path in plain_routes:
+        return parse_node_handlers(node=root_node.children[normalized_path], scope=scope)
+
+    if any(route in normalized_path for route in mount_routes):
+        mount_path = [route for route in mount_routes if route in scope["path"]][0]
+        mount_node = mount_routes[mount_path]
+        remaining_path = normalized_path.replace(mount_path, "", 1)
+        # since we allow regular handlers under static paths, we must validate that the request does not match
+        # any such handler.
+        if not mount_node.children or not any(sub_route in normalized_path for sub_route in mount_node.children):  # type: ignore
+            scope["path"] = remaining_path or "/"
+            return parse_node_handlers(node=mount_node, scope=scope)
+
+    node, path_params, processed_path = traverse_route_map(
+        root_node=root_node,
+        path=normalized_path,
+    )
+    scope["path"] = processed_path
+    if path_params:
+        scope["path_params"] = parse_path_parameters(
+            path_parameter_definitions=node.path_parameters,
+            request_path_parameter_values=path_params,
         )
-        scope["path"] = path
-        if path_params:
-            scope["path_params"] = parse_path_parameters(
-                path_parameter_definitions=current_node.path_parameters,
-                request_path_parameter_values=path_params,
-            )
-    try:
-        if current_node.is_asgi:
-            return current_node.asgi_handlers["asgi"]
-        if scope["type"] == ScopeType.HTTP:
-            return current_node.asgi_handlers[scope["method"]]
-        return current_node.asgi_handlers["websocket"]
-    except KeyError as e:
-        raise MethodNotAllowedException() from e
+    return parse_node_handlers(node=node, scope=scope)
