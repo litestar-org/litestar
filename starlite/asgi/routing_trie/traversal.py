@@ -91,7 +91,7 @@ def traverse_route_map(
     has_path_param = PathParameterSentinel in current_node["child_keys"]
 
     if not path_components:
-        if has_path_param or not current_node["asgi_handlers"]:
+        if not current_node["asgi_handlers"]:
             raise NotFoundException()
         return current_node, path_params
 
@@ -171,7 +171,7 @@ def parse_scope_to_route(root_node: "RouteTrieNode", scope: "Scope", plain_route
         current_node, path_params = traverse_route_map(
             current_node=root_node,
             path=path,
-            path_components=deque([component for component in path.split("/") if component]),
+            path_components=deque(component for component in path.split("/") if component),
             path_params=[],
             scope=scope,
         )
