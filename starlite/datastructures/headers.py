@@ -24,7 +24,12 @@ from starlite.datastructures.multi_dicts import MultiMixin
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-    from starlite.types.asgi_types import HeaderScope, Message, RawHeadersList
+    from starlite.types.asgi_types import (
+        HeaderScope,
+        Message,
+        RawHeaders,
+        RawHeadersList,
+    )
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
 
@@ -41,7 +46,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             libs.org/en/stable/multidict.html#cimultidictproxy).
     """
 
-    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeadersList", MultiMapping]] = None) -> None:
+    def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
         """Initialize `Headers`.
 
         Args:
@@ -49,10 +54,12 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         """
         if not isinstance(headers, MultiMapping):
             headers_: Union[Mapping[str, str], List[Tuple[str, str]]] = {}
-            if isinstance(headers, list):
-                headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
-            elif headers:
-                headers_ = headers
+            if headers:
+                if isinstance(headers, Mapping):
+                    headers_ = headers  # pyright: ignore
+                else:
+                    headers_ = [(key.decode("latin-1"), value.decode("latin-1")) for key, value in headers]
+
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
@@ -95,7 +102,10 @@ class MutableScopeHeaders(MutableMapping):
         """
         self.headers: "RawHeadersList"
         if scope is not None:
-            self.headers = scope["headers"]
+            if not isinstance(scope["headers"], list):
+                scope["headers"] = list(scope["headers"])
+
+            self.headers = cast("RawHeadersList", scope["headers"])
         else:
             self.headers = []
 

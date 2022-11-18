@@ -76,7 +76,9 @@ class WebSocketTestSession:
             if message["type"] == "websocket.accept":
                 headers = message.get("headers", [])
                 if headers:
-                    self.scope["headers"].extend(headers)
+                    headers_list = list(self.scope["headers"])
+                    headers_list.extend(headers)
+                    self.scope["headers"] = headers_list
                 subprotocols = cast("Optional[str]", message.get("subprotocols"))
                 if subprotocols:
                     self.scope["subprotocols"].append(subprotocols)
