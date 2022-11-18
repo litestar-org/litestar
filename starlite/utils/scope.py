@@ -28,11 +28,11 @@ def get_starlite_scope_state(scope: "Scope", key: str, default: Any = None) -> A
 
     Args:
         scope: The connection scope.
-        key: Key to set under internal namespace in scope state.
+        key: Key to get from internal namespace in scope state.
         default: Value set in internal namespace and returned if `key` doesn't exist.
 
     Returns:
-        Value mapped to `key` in internal connection scope namespace. Returns `None` if `key` not in internal namespace.
+        Value mapped to `key` in internal connection scope namespace. Returns `default` if `key` not in internal namespace.
     """
     return scope["state"].setdefault(STARLITE, {}).setdefault(key, default)
 
