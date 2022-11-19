@@ -37,7 +37,7 @@ def add_mount_route(
     if route.path_parameters:
         raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
 
-    # we need to ensure that we can traverse the map both view the full path key, e.g. "/my-route/sub-path" and
+    # we need to ensure that we can traverse the map both through the full path key, e.g. "/my-route/sub-path" and
     # via the components keys ["my-route, "sub-path"]
     if route.path not in current_node.children:
         root_node = current_node

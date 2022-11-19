@@ -65,13 +65,13 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
 
 @lru_cache
 def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
-    """Parse a query string into a list of tuples.
+    """Parse a query string into a tuple of key value pairs.
 
     Args:
         query_string: A query string.
 
     Returns:
-        A MultiDict instance
+        A tuple of key value pairs. 
     """
     _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
     return tuple(

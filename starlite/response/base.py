@@ -236,7 +236,7 @@ class Response(Generic[T]):
         return None
 
     def encode_headers(self) -> List[Tuple[bytes, bytes]]:
-        """Encode the response headers as a list of tuples of bytes.
+        """Encode the response headers as a list of byte tuples.
 
         Notes:
             - A 'Content-Length' header will be added if appropriate and not provided by the user.
