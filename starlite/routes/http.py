@@ -319,4 +319,8 @@ class HTTPRoute(BaseRoute):
                 media_type=MediaType.TEXT,
             )
 
-        return HTTPRouteHandler(path=path, http_method=[HttpMethod.OPTIONS])(options_handler)
+        return HTTPRouteHandler(
+            path=path,
+            http_method=[HttpMethod.OPTIONS],
+            include_in_schema=False,
+        )(options_handler)
