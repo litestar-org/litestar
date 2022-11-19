@@ -596,7 +596,8 @@ class Starlite(Router):
             debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )
 
-    def _set_runtime_callables(self, route_handler: "BaseRouteHandler") -> None:
+    @staticmethod
+    def _set_runtime_callables(route_handler: "BaseRouteHandler") -> None:
         """Optimize the route_handler.fn and any provider.dependency callables for runtime by doing the following:
 
         1. ensure that the `self` argument is preserved by binding it using partial.

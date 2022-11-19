@@ -99,7 +99,7 @@ def async_partial(fn: Callable) -> Callable:
         applied_kwarg = partial(fn, **kwargs)
         return await run_sync(applied_kwarg, *args)
 
-    # this allows us to unwrap the partial later, so its an important "hack".
+    # this allows us to unwrap the partial later, so it's an important "hack".
     wrapper.func = fn  # type: ignore
     return wrapper
 

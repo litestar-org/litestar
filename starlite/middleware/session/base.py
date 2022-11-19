@@ -114,7 +114,7 @@ class ServerSideSessionConfig(BaseBackendConfig):
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):
-    """Abstract session backend defining the interface between a storage mechanism and the.
+    """Abstract session backend defining the interface between a storage mechanism and the application.
 
     [SessionMiddleware][starlite.middleware.session.SessionMiddleware].
 

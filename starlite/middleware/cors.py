@@ -48,6 +48,8 @@ class CORSMiddleware(AbstractMiddleware):
         """Wrap `send` to ensure that state is not disconnected.
 
         Args:
+            has_cookie: Boolean flag dictating if the connection has a cookie set.
+            origin: The value of the 'Origin' header.
             send: The ASGI send function.
 
         Returns:

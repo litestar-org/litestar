@@ -104,7 +104,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
         line_limit: Number of lines of code context to return, which are centered around the executed line.
 
     Returns:
-        A string containing HTML repsentation of the execution frames related to the exception.
+        A string containing HTML representation of the execution frames related to the exception.
     """
     frames = getinnerframes(exc.__traceback__, line_limit) if exc.__traceback__ else []
     result = []
