@@ -71,7 +71,7 @@ def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
         query_string: A query string.
 
     Returns:
-        A tuple of key value pairs. 
+        A tuple of key value pairs.
     """
     _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
     return tuple(
