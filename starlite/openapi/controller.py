@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
 
 from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, dumps
@@ -51,11 +52,11 @@ class OpenAPIController(Controller):
     """
     Redoc version to download from the CDN.
     """
-    swagger_ui_version: str = "4.14.0"
+    swagger_ui_version: str = "4.15.5"
     """
     SwaggerUI version to download from the CDN.
     """
-    stoplight_elements_version: str = "7.6.5"
+    stoplight_elements_version: str = "7.7.5"
     """
     StopLight Elements version to download from the CDN.
     """
@@ -159,7 +160,7 @@ class OpenAPIController(Controller):
         """
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
-    @property
+    @cached_property
     def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
         """Map render method names to render methods.
 
@@ -237,10 +238,12 @@ class OpenAPIController(Controller):
         config = request.app.openapi_config
         if not config:  # pragma: no cover
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
+
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
             return Response(content=render_method(request), media_type=MediaType.HTML)
+
         return Response(
             content=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
@@ -320,9 +323,10 @@ class OpenAPIController(Controller):
         """
         schema = self.get_schema_from_request(request)
         # Note: Fix for Swagger rejection OpenAPI >=3.1
-        if self._dumped_modified_schema == "":
+        if not self._dumped_schema:
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
+
             self._dumped_modified_schema = dumps(
                 schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2
             ).decode("utf-8")
@@ -425,7 +429,8 @@ class OpenAPIController(Controller):
             A rendered html string.
         """
         schema = self.get_schema_from_request(request)
-        if self._dumped_schema == "":
+
+        if not self._dumped_schema:
             self._dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
