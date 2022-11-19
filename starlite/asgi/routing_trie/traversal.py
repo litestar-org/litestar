@@ -42,7 +42,7 @@ def traverse_route_map(
                 path_params.append((param_definition.name, normalize_path("/".join(path_components[i:]))))
                 return current_node, path_params, path
 
-            path_params.append((param_definition.name, param_definition.type(component)))
+            path_params.append((param_definition.name, param_definition.parser(component)))
             current_node = current_node.children[PathParameterSentinel]
 
         continue

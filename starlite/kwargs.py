@@ -6,7 +6,6 @@ from typing import (
     DefaultDict,
     Dict,
     List,
-    Mapping,
     NamedTuple,
     Optional,
     Set,
@@ -35,7 +34,6 @@ from starlite.constants import (
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
-from starlite.datastructures import URL
 from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
@@ -457,7 +455,7 @@ class KwargsModel:
         parsed_query = connection.scope["_parsed_query"] = (  # type: ignore
             connection._parsed_query  # pylint: disable=protected-access
             if connection._parsed_query is not Empty  # pylint: disable=protected-access
-            else parse_query_string(connection.scope.get("query_string", b"").decode("utf-8"))
+            else parse_query_string(connection.scope.get("query_string", b""))
         )
 
         output: DefaultDict[str, List[str]] = defaultdict(list)
@@ -488,14 +486,6 @@ class KwargsModel:
             output.update(self._collect_reserved_kwargs(connection=connection))
 
         return output
-
-    @staticmethod
-    def _collect_params(params: Mapping[str, Any], expected: Set[ParameterDefinition], url: URL) -> Dict[str, Any]:
-        """Collect request params, checking for missing required values."""
-        missing_params = [p.field_alias for p in expected if p.is_required and p.field_alias not in params]
-        if missing_params:
-            raise ValidationException(f"Missing required parameter(s) {', '.join(missing_params)} for url {url}")
-        return {p.field_name: params.get(p.field_alias, p.default_value) for p in expected}
 
     async def resolve_dependency(
         self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any

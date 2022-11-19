@@ -1,4 +1,5 @@
 from contextlib import suppress
+from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 from urllib.parse import parse_qsl, unquote
@@ -45,6 +46,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     return values_dict
 
 
+@lru_cache
 def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     """Parse a cookie string into a dictionary of values.
 
@@ -61,15 +63,18 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     return output
 
 
-def parse_query_string(query_string: str) -> List[Tuple[str, Any]]:
-    """Create a `QueryMultiDict` from a query string.
+@lru_cache
+def parse_query_string(query_string: bytes) -> List[Tuple[str, Any]]:
+    """Parse a query string into a list of tuples.
 
     Args:
         query_string: A query string.
 
     Returns:
-        A QueryMultiDict instance
+        A MultiDict instance
     """
-    _bools = {"true": True, "false": False, "True": True, "False": False}
-
-    return [(k, v) if v not in _bools else (k, _bools[v]) for k, v in parse_qsl(query_string, keep_blank_values=True)]
+    _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
+    return [
+        (k.decode(), v.decode() if v not in _bools else _bools[v])
+        for k, v in parse_qsl(query_string, keep_blank_values=True)
+    ]

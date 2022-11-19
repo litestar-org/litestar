@@ -1,12 +1,13 @@
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union
+from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union, cast
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
-from starlite.datastructures.multi_dicts import QueryMultiDict
+from starlite.datastructures import MultiDict
+from starlite.parsers import parse_query_string
+from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from starlite.types import Scope
-
+    from starlite.types import EmptyType, Scope
 
 _DEFAULT_SCHEME_PORTS = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}
 
@@ -53,7 +54,7 @@ class URL:
         "username",
     )
 
-    _query_params: Optional["QueryMultiDict"]
+    _query_params: Union["EmptyType", "MultiDict"]
     _parsed_url: Optional[str]
 
     scheme: str
@@ -100,7 +101,7 @@ class URL:
         instance.password = result.password
         instance.port = result.port
         instance.hostname = result.hostname
-        instance._query_params = None
+        instance._query_params = Empty
 
         return instance
 
@@ -190,7 +191,7 @@ class URL:
         scheme: str = "",
         netloc: str = "",
         path: str = "",
-        query: Optional[Union[str, QueryMultiDict]] = None,
+        query: Optional[Union[str, "MultiDict"]] = None,
         fragment: str = "",
     ) -> "URL":
         """Create a new URL, replacing the given components.
@@ -205,7 +206,7 @@ class URL:
         Returns:
             A new URL with the given components replaced
         """
-        if isinstance(query, QueryMultiDict):
+        if isinstance(query, MultiDict):
             query = urlencode(query=query)
 
         return URL.from_components(  # type: ignore[no-any-return]
@@ -217,7 +218,7 @@ class URL:
         )
 
     @property
-    def query_params(self) -> QueryMultiDict:
+    def query_params(self) -> "MultiDict":
         """Query parameters of a URL as a [MultiDict][multidict.MultiDict]
 
         Returns:
@@ -230,9 +231,9 @@ class URL:
                 modifications in the multidict and pass them back to
                 [with_replacements][starlite.datastructures.URL.with_replacements]
         """
-        if self._query_params is None:
-            self._query_params = QueryMultiDict.from_query_string(self.query)
-        return self._query_params
+        if self._query_params is Empty:
+            self._query_params = MultiDict(parse_query_string(query_string=self.query.encode()))
+        return cast("MultiDict", self._query_params)
 
     def __str__(self) -> str:
         return self._url

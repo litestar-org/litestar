@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 import pytest
 
 from starlite import Parameter, get
-from starlite.datastructures import QueryMultiDict
+from starlite.datastructures import MultiDict
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
@@ -23,53 +23,53 @@ from starlite.testing import create_test_client
 @pytest.mark.parametrize(
     "params_dict,should_raise",
     [
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 1,
-        #         "brands": ["Nike", "Adidas"],
-        #     },
-        #     False,
-        # ),
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 1,
-        #         "brands": ["Nike", "Adidas", "Rebok"],
-        #     },
-        #     False,
-        # ),
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 1,
-        #     },
-        #     True,
-        # ),
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 1,
-        #         "brands": ["Nike", "Adidas", "Rebok", "Polgat"],
-        #     },
-        #     True,
-        # ),
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 101,
-        #         "brands": ["Nike", "Adidas", "Rebok"],
-        #     },
-        #     True,
-        # ),
-        # (
-        #     {
-        #         "page": 1,
-        #         "pageSize": 1,
-        #         "brands": [],
-        #     },
-        #     True,
-        # ),
+        (
+            {
+                "page": 1,
+                "pageSize": 1,
+                "brands": ["Nike", "Adidas"],
+            },
+            False,
+        ),
+        (
+            {
+                "page": 1,
+                "pageSize": 1,
+                "brands": ["Nike", "Adidas", "Rebok"],
+            },
+            False,
+        ),
+        (
+            {
+                "page": 1,
+                "pageSize": 1,
+            },
+            True,
+        ),
+        (
+            {
+                "page": 1,
+                "pageSize": 1,
+                "brands": ["Nike", "Adidas", "Rebok", "Polgat"],
+            },
+            True,
+        ),
+        (
+            {
+                "page": 1,
+                "pageSize": 101,
+                "brands": ["Nike", "Adidas", "Rebok"],
+            },
+            True,
+        ),
+        (
+            {
+                "page": 1,
+                "pageSize": 1,
+                "brands": [],
+            },
+            True,
+        ),
         (
             {
                 "page": 1,
@@ -179,8 +179,8 @@ def test_query_kwarg() -> None:
     )
 
     @get(test_path)
-    def test_method(a: List[str], b: List[str], query: QueryMultiDict) -> None:
-        assert isinstance(query, QueryMultiDict)
+    def test_method(a: List[str], b: List[str], query: MultiDict) -> None:
+        assert isinstance(query, MultiDict)
         assert {k: query.getall(k) for k in query} == {"a": ["foo", "bar"], "b": ["qux"]}
         assert isinstance(a, list)
         assert isinstance(b, list)
