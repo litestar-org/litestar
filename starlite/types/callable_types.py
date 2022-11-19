@@ -24,7 +24,7 @@ else:
 _ExceptionT = TypeVar("_ExceptionT", bound=Exception)
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
-AfterMessageReceiveHookHandler = Callable[[ReceiveMessage, Scope], SyncOrAsyncUnion[None]]
+AfterMessageReceiveHookHandler = Callable[[ReceiveMessage, State, Scope], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
     Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]
 ]

@@ -18,6 +18,7 @@ from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import as_async_callable_list, join_paths, unique
+from starlite.utils.deprecation import deprecate_two_arg_before_send_hook_handlers
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -312,7 +313,7 @@ class Starlite(Router):
         self.after_receive = as_async_callable_list(config.after_receive)
         self.after_shutdown = as_async_callable_list(config.after_shutdown)
         self.after_startup = as_async_callable_list(config.after_startup)
-        self.before_send = as_async_callable_list(config.before_send)
+        self.before_send = deprecate_two_arg_before_send_hook_handlers(as_async_callable_list(config.before_send))
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
         self.cache = config.cache_config.to_cache()

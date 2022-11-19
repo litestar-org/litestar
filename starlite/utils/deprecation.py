@@ -1,9 +1,12 @@
 import inspect
 from functools import wraps
-from typing import Callable, Literal, Optional, TypeVar
+from typing import TYPE_CHECKING, Callable, List, Literal, Optional, TypeVar
 from warnings import warn
 
 from typing_extensions import ParamSpec
+
+if TYPE_CHECKING:
+    from starlite.utils.sync import AsyncCallable
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -93,3 +96,25 @@ def deprecated(
         return wrapped
 
     return decorator
+
+
+def deprecate_two_arg_before_send_hook_handlers(handlers: List["AsyncCallable"]) -> List["AsyncCallable"]:
+    """Emit a deprecation warning if any of `handlers` have two argument signature.
+
+    Args:
+        handlers: Before send hook handlers registered on the application.
+
+    Returns:
+        The handlers, unmodified.
+    """
+    if any(handler.num_expected_args == 2 for handler in handlers):
+        warn_deprecation(
+            version="1.40",
+            deprecated_name="Before send hook handlers with two args.",
+            removal_in="1.50",
+            alternative="Before send hook handlers with three args.",
+            info="See 3 argument signature documented at "
+            "https://starlite-api.github.io/starlite/reference/types/1-callable-types/#starlite.types.BeforeMessageSendHookHandler",
+            kind="parameter",
+        )
+    return handlers
