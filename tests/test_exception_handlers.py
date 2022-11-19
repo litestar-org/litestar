@@ -14,7 +14,6 @@ from starlite import (
     ValidationException,
     get,
 )
-from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -38,7 +37,7 @@ def test_exception_handling(exc_to_raise: HTTPException, expected_layer: str) ->
             assert isinstance(exc, expected_exception)
             assert isinstance(req, Request)
             caller["name"] = caller_name
-            return Response(content={}, status_code=HTTP_400_BAD_REQUEST)
+            return Response(content={}, status_code=exc_to_raise.status_code)
 
         return handler
 
