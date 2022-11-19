@@ -4,7 +4,7 @@ from traceback import format_exc
 from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Union
 
 from starlite.asgi.routing_trie import validate_node
-from starlite.asgi.routing_trie.mapping import add_map_route_to_trie
+from starlite.asgi.routing_trie.mapping import add_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
 from starlite.asgi.routing_trie.types import create_node
 from starlite.asgi.utils import get_route_handlers
@@ -119,7 +119,7 @@ class ASGIRouter:
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:
-            node = add_map_route_to_trie(
+            node = add_route_to_trie(
                 app=self.app,
                 mount_routes=self._mount_routes,
                 plain_routes=self._plain_routes,
