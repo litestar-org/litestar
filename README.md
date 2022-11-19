@@ -14,9 +14,6 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/context:python)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/starlite-api/starlite.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/starlite-api/starlite/alerts/)
-
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-62-orange.svg?style=flat-square)](#contributors-)
