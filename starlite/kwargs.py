@@ -105,36 +105,26 @@ def create_connection_value_extractor(
         An extractor function.
     """
 
-    param_aliases = {
-        p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias for p in expected_params
-    }
-    alias_key_map = {
-        p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias: p.field_name
+    alias_and_key_tuple = tuple(
+        (p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias, p.field_name)
         for p in expected_params
-    }
+    )
     alias_defaults = {
         p.field_alias.lower() if p.param_type == ParamType.HEADER else p.field_alias: p.default_value
         for p in expected_params
+        if not (p.is_required or p.default_value is Ellipsis)
     }
-    required_params = {p.field_name for p in expected_params if p.is_required}
 
     def extractor(values: Dict[str, Any], connection: Union["WebSocket", "Request"]) -> None:
-        items = parser(connection).items() if parser else getattr(connection, connection_key).items()
+        data = parser(connection) if parser else getattr(connection, connection_key, {})
 
-        connection_mapping: Dict[str, Any] = {
-            alias_key_map[k]: v if v is not None else alias_defaults[k]
-            for k, v in items
-            if k in param_aliases and (v is not None or alias_key_map[k] not in required_params)
-        }
-
-        missing_required_params = required_params.difference(set(connection_mapping))
-
-        if missing_required_params:
-            raise ValidationException(
-                f"Missing required parameter(s) {', '.join(p.field_alias for p in expected_params if p.field_name in missing_required_params)} for url {connection.url}"
-            )
-
-        values.update(connection_mapping)
+        try:
+            connection_mapping: Dict[str, Any] = {
+                key: data[alias] if alias in data else alias_defaults[alias] for alias, key in alias_and_key_tuple
+            }
+            values.update(connection_mapping)
+        except KeyError as e:
+            raise ValidationException(f"Missing required parameter {e.args[0]} for url {connection.url}") from e
 
     return extractor
 
