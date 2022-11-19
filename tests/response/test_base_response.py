@@ -3,7 +3,7 @@ from typing import Any, Optional
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
-from starlite import MediaType, OpenAPIMediaType, get
+from starlite import ImproperlyConfiguredException, MediaType, OpenAPIMediaType, get
 from starlite.response import Response
 from starlite.status_codes import (
     HTTP_100_CONTINUE,
@@ -166,11 +166,6 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
             assert response.status_code == HTTP_200_OK
 
 
-def test_is_head_response_returns_no_body() -> None:
-    @get("/")
-    def handler() -> Response:
-        return Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True)
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.text == ""
+def test_head_response_doesnt_support_content() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True)

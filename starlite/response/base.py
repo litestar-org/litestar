@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -43,15 +44,16 @@ class Response(Generic[T]):
     """Base Starlite HTTP response class, used as the basis for all other response classes."""
 
     __slots__ = (
-        "status_code",
-        "media_type",
         "background",
-        "headers",
+        "body",
         "cookies",
         "encoding",
-        "body",
-        "status_allows_body",
+        "headers",
         "is_head_response",
+        "is_text_response",
+        "media_type",
+        "status_allows_body",
+        "status_code",
     )
 
     def __init__(
@@ -76,27 +78,36 @@ class Response(Generic[T]):
                 [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under
+                the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """
-        self.status_code = status_code
-        self.media_type = get_enum_string_value(media_type)
         self.background = background
-        self.headers = headers or {}
         self.cookies = cookies or []
         self.encoding = encoding
+        self.headers = headers or {}
         self.is_head_response = is_head_response
+        self.media_type = get_enum_string_value(media_type)
         self.status_allows_body = not (
-            self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or self.status_code < HTTP_200_OK
+            status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
-        self.body = b""
-        if self.status_allows_body and not is_head_response:
+        self.status_code = status_code
+
+        if not self.status_allows_body or is_head_response:
+            if content:
+                raise ImproperlyConfiguredException(
+                    "response content is not supported for HEAD responses and responses with a status code "
+                    "that does not allow content (304, 204, < 200)"
+                )
+            self.body = b""
+        else:
             self.body = content if isinstance(content, bytes) else self.render(content)
-        elif content and not self.status_allows_body:
-            raise ImproperlyConfiguredException(
-                f"unable to render response body for the given {content} with media_type {self.media_type}"
-            )
+
+        self.headers.setdefault(
+            "content-type",
+            f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
+        )
 
     def set_cookie(
         self,
@@ -209,14 +220,20 @@ class Response(Generic[T]):
             if self.media_type.startswith("text/"):
                 return content.encode(self.encoding) if content else b""  # type: ignore
             return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-
-        # if isinstance(content, OpenAPI):
-        #     content_dict = content.dict(by_alias=True, exclude_none=True)
-        #     if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
-        #         return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
-        #     return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+
+    @property
+    def content_length(self) -> Optional[int]:
+        """Content length of the response if applicable.
+
+        Returns:
+            The content length of the body (e.g. for use in a "Content-Length" header).
+            If the response does not have a body, this value is `None`
+        """
+        if self.status_allows_body:
+            return len(self.body)
+        return None
 
     def encode_headers(self) -> List[Tuple[bytes, bytes]]:
         """Encode the response headers as a list of tuples of bytes.
@@ -228,21 +245,17 @@ class Response(Generic[T]):
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
         """
 
-        if self.media_type.startswith("text/"):
-            content_type = f"{self.media_type}; charset={self.encoding}"
-        else:
-            content_type = self.media_type
+        encoded_headers = list(
+            chain(
+                ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
+                ((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
+            )
+        )
 
-        encoded_headers = [
-            *((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
-            *((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
-            (b"content-type", content_type.encode("latin-1")),
-        ]
-
-        content_length = len(self.body) if self.status_allows_body else None
-
-        if content_length and not any(key == b"content-length" for key, _ in encoded_headers):
+        content_length = self.content_length
+        if "content-length" not in self.headers and content_length:
             encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+
         return encoded_headers
 
     async def after_response(self) -> None:
