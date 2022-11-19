@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import lru_cache
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -121,17 +122,45 @@ def create_connection_value_extractor(
         items = parser(connection).items() if parser else getattr(connection, connection_key).items()
 
         connection_mapping: Dict[str, Any] = {
-            alias_key_map[k]: v if v is not None else alias_defaults[k] for k, v in items if k in param_aliases
+            alias_key_map[k]: v if v is not None else alias_defaults[k]
+            for k, v in items
+            if k in param_aliases and (v is not None or alias_key_map[k] not in required_params)
         }
-        if len(required_params.symmetric_difference(set(connection_mapping))) != len(connection_mapping) - len(
-            required_params
-        ):
+
+        missing_required_params = required_params.difference(set(connection_mapping))
+
+        if missing_required_params:
             raise ValidationException(
-                f"Missing required parameter(s) {', '.join(p for p in required_params if p not in connection_mapping)} for url {connection.url}"
+                f"Missing required parameter(s) {', '.join(p.field_alias for p in expected_params if p.field_name in missing_required_params)} for url {connection.url}"
             )
+
         values.update(connection_mapping)
 
     return extractor
+
+
+@lru_cache
+def create_query_default_dict(
+    parsed_query: Tuple[Tuple[str, str], ...], sequence_query_parameter_names: Tuple[str, ...]
+) -> DefaultDict[str, Union[List[str], str]]:
+    """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
+
+    Args:
+        parsed_query: The parsed query list of tuples.
+        sequence_query_parameter_names: A set of query parameters that should be wrapped in list.
+
+    Returns:
+        A default dict
+    """
+    output: DefaultDict[str, Union[List[str], str]] = defaultdict(list)
+
+    for k, v in parsed_query:
+        if k in sequence_query_parameter_names:
+            output[k].append(v)  # type: ignore
+        else:
+            output[k] = v
+
+    return output
 
 
 class KwargsModel:
@@ -187,7 +216,7 @@ class KwargsModel:
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
         self.expected_reserved_kwargs = expected_reserved_kwargs
-        self.sequence_query_parameter_names = sequence_query_parameter_names
+        self.sequence_query_parameter_names = tuple(sequence_query_parameter_names)
 
         self.has_kwargs = (
             expected_cookie_params
@@ -419,7 +448,6 @@ class KwargsModel:
 
         Args:
             connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
-            connection_query_params: The query params dct.
 
         Returns:
             A dictionary of values correlating to reserved kwargs.
@@ -444,7 +472,7 @@ class KwargsModel:
         return reserved_kwargs
 
     def _parse_connection_query_params(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
-        """Handle parsing of query params. Cache the result in scope.
+        """Parse query params and cache the result in scope.
 
         Args:
             connection: The ASGI connection instance.
@@ -457,15 +485,9 @@ class KwargsModel:
             if connection._parsed_query is not Empty  # pylint: disable=protected-access
             else parse_query_string(connection.scope.get("query_string", b""))
         )
-
-        output: DefaultDict[str, List[str]] = defaultdict(list)
-        for key, value in parsed_query:
-            if key in self.sequence_query_parameter_names:
-                output[key].append(value)
-            else:
-                output[key] = value
-
-        return output
+        return create_query_default_dict(
+            parsed_query=parsed_query, sequence_query_parameter_names=self.sequence_query_parameter_names
+        )
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is

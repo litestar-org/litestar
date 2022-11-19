@@ -1,7 +1,7 @@
 from contextlib import suppress
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Tuple
 from urllib.parse import parse_qsl, unquote
 
 from orjson import JSONDecodeError, loads
@@ -64,7 +64,7 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
 
 
 @lru_cache
-def parse_query_string(query_string: bytes) -> List[Tuple[str, Any]]:
+def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
     """Parse a query string into a list of tuples.
 
     Args:
@@ -74,7 +74,7 @@ def parse_query_string(query_string: bytes) -> List[Tuple[str, Any]]:
         A MultiDict instance
     """
     _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
-    return [
+    return tuple(
         (k.decode(), v.decode() if v not in _bools else _bools[v])
         for k, v in parse_qsl(query_string, keep_blank_values=True)
-    ]
+    )
