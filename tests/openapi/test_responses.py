@@ -149,7 +149,7 @@ def test_create_success_response_with_cookies() -> None:
         return []
 
     response = create_success_response(handler, True, plugins=[])
-    assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True) == {  # type: ignore
+    assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True)["allOf"] == {  # type: ignore
         "allOf": [
             {
                 "description": "the second cookie",

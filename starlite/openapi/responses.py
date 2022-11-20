@@ -1,5 +1,6 @@
 from copy import copy
 from http import HTTPStatus
+from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type
 
 from pydantic_openapi_schema.v3_1_0 import Response
@@ -133,7 +134,9 @@ def create_success_response(
     cookies = route_handler.resolve_response_cookies()
     if cookies:
         response.headers["Set-Cookie"] = Header(
-            param_schema=Schema(allOf=[create_cookie_schema(cookie=cookie) for cookie in cookies])
+            param_schema=Schema(
+                allOf=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
+            )
         )
     return response
 

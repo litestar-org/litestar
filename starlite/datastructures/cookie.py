@@ -43,14 +43,16 @@ class Cookie:
         """
         simple_cookie: SimpleCookie = SimpleCookie()
         simple_cookie[self.key] = self.value or ""
-        if self.max_age:
-            simple_cookie[self.key]["max-age"] = self.max_age
 
-        cookie_dict = self.dict
-        for key in ("expires", "path", "domain", "secure", "httponly", "samesite"):
-            value = cookie_dict[key]
+        namespace = simple_cookie[self.key]
+        for key, value in self.dict.items():
+            if key in {"key", "value"}:
+                continue
             if value is not None:
-                simple_cookie[self.key][key] = value
+                if key == "max_age":
+                    key = "max-age"
+                namespace[key] = value
+
         return simple_cookie
 
     def to_header(self, **kwargs: Any) -> str:
@@ -82,6 +84,9 @@ class Cookie:
             if k not in {"documentation_only", "description", "__pydantic_initialised__"}
         }
 
+    def __hash__(self) -> int:
+        return hash((self.key, self.path, self.domain or ""))
+
     def __eq__(self, other: Any) -> bool:
         """Determine whether two cookie instances are equal according to the cookie spec, i.e. hey have a similar path,
         domain and key.
@@ -92,6 +97,6 @@ class Cookie:
         Returns:
             A boolean
         """
-        if isinstance(other, type(self)):
+        if isinstance(other, Cookie):
             return other.key == self.key and other.path == self.path and other.domain == self.domain
         return False
