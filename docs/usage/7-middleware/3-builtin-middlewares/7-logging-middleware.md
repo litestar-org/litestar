@@ -52,5 +52,5 @@ If both [`CompressionConfig`][starlite.config.compression.CompressionConfig] and
 body will be omitted from response logging if it has been compressed, even if `"body"` has been included in
 [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields]. To force the body of
 compressed responses to be logged, set
-[`exclude_compressed_body`][starlite.middleware.logging.LoggingMiddlewareConfig.exclude_compressed_body] to `False`, in
+[`include_compressed_body`][starlite.middleware.logging.LoggingMiddlewareConfig.include_compressed_body] to `True`, in
 addition to including `"body"` in `response_log_fields`.

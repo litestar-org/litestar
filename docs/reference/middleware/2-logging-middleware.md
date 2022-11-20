@@ -5,7 +5,7 @@
         members:
             - exclude
             - exclude_opt_key
-            - exclude_compressed_body
+            - include_compressed_body
             - logger_name
             - middleware
             - middleware_class

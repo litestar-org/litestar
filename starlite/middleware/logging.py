@@ -193,12 +193,12 @@ class LoggingMiddleware(AbstractMiddleware):
                 get_starlite_scope_state(scope, HTTP_RESPONSE_BODY),
             ),
         )
-        response_body_compressed = bool(get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED))
+        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)
             if key == "body" and response_body_compressed:
-                if not self.config.exclude_compressed_body:
+                if self.config.include_compressed_body:
                     data[key] = value
                 continue
             data[key] = self._serialize_value(serializer, value)
@@ -237,7 +237,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     An identifier to use on routes to disable logging for a particular route.
     """
-    exclude_compressed_body: bool = True
+    include_compressed_body: bool = False
     """
     Exclude body from log if it has been compressed by a compression middleware. If `"body"` not set in
     [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields] this config value
