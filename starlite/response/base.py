@@ -52,6 +52,7 @@ class Response(Generic[T]):
         "background",
         "body",
         "cookies",
+        "encoded_headers",
         "encoding",
         "headers",
         "is_head_response",
@@ -118,6 +119,7 @@ class Response(Generic[T]):
             "content-type",
             f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
         )
+        self.encoded_headers: Optional[List[Tuple[bytes, bytes]]] = None
 
     def set_cookie(
         self,
@@ -255,16 +257,12 @@ class Response(Generic[T]):
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
         """
 
-        encoded_headers = list(
+        self.encoded_headers = encoded_headers = list(
             chain(
                 ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
-                ((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
+                (cookie.to_encoded_header() for cookie in self.cookies),
             )
         )
-
-        content_length = self.content_length
-        if "content-length" not in self.headers and content_length:
-            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
 
         return encoded_headers
 
@@ -286,10 +284,17 @@ class Response(Generic[T]):
         Returns:
             None
         """
+
+        encoded_headers = self.encoded_headers or self.encode_headers()
+
+        content_length = self.content_length
+        if "content-length" not in self.headers and content_length:
+            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+
         event: "HTTPResponseStartEvent" = {
             "type": "http.response.start",
             "status": self.status_code,
-            "headers": self.encode_headers(),
+            "headers": encoded_headers,
         }
 
         await send(event)

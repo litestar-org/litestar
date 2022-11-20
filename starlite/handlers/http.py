@@ -1,11 +1,16 @@
+from copy import copy
 from enum import Enum
+from functools import lru_cache
 from inspect import Signature, isawaitable
+from itertools import chain
+from operator import attrgetter
 from typing import (
     TYPE_CHECKING,
     Any,
     Awaitable,
     Callable,
     Dict,
+    FrozenSet,
     List,
     Optional,
     Set,
@@ -18,7 +23,13 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import CacheControlHeader, ETag, Provide, ResponseHeader
+from starlite.datastructures import (
+    CacheControlHeader,
+    Cookie,
+    ETag,
+    Provide,
+    ResponseHeader,
+)
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.response_containers import (
     File,
@@ -57,7 +68,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import Ref, is_async_callable, unique
+from starlite.utils import Ref, is_async_callable
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -72,17 +83,14 @@ if TYPE_CHECKING:
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
 
-def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "ResponseCookies") -> List[Dict[str, Any]]:
+@lru_cache(1024)
+def _normalize_cookies(local_cookies: FrozenSet["Cookie"], layered_cookies: FrozenSet["Cookie"]) -> List[Cookie]:
     """Given two lists of cookies, ensure the uniqueness of cookies by key and return a normalized dict ready to be set
     on the response.
     """
-    filtered_cookies = [*local_cookies]
-    for cookie in layered_cookies:
-        if not any(c == cookie for c in filtered_cookies):
-            filtered_cookies.append(cookie)
     return [
-        cookie.dict(exclude_none=True, exclude={"documentation_only", "description"})
-        for cookie in unique(filtered_cookies)
+        cookie
+        for cookie in sorted(frozenset.union(local_cookies, layered_cookies), key=attrgetter("key"))
         if not cookie.documentation_only
     ]
 
@@ -109,12 +117,6 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     Returns:
         Value for the response body
     """
-    if isawaitable(data):
-        data = await data
-
-    if not plugins:
-        return data
-
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
         return data
@@ -131,54 +133,52 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
 
 def _create_response_container_handler(
     after_request: Optional["AfterRequestHookHandler"],
-    cookies: "ResponseCookies",
+    cookies: FrozenSet["Cookie"],
     headers: Dict[str, Any],
     media_type: str,
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Create a handler function for ResponseContainers."""
+    normalized_headers = _normalize_headers(headers)
 
     async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> "ASGIApp":
-        normalized_headers = {**_normalize_headers(headers), **data.headers}
-        normalized_cookies = _normalize_cookies(data.cookies, cookies)
+        data.headers.update(normalized_headers)
         response = data.to_response(
             app=app,
-            headers=normalized_headers,
+            headers={**normalized_headers, **data.headers},
             status_code=status_code,
             media_type=data.media_type or media_type,
             request=request,
         )
-        for cookie in normalized_cookies:
-            response.set_cookie(**cookie)
+        response.cookies = _normalize_cookies(frozenset(data.cookies), cookies)
         return await after_request(response) if after_request else response  # type: ignore
 
     return handler
 
 
 def _create_response_handler(
-    after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
+    after_request: Optional["AfterRequestHookHandler"],
+    cookies: FrozenSet["Cookie"],
 ) -> "AsyncAnyCallable":
     """Create a handler function for Starlite Responses."""
 
     async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
-        normalized_cookies = _normalize_cookies(data.cookies, cookies)
-        for cookie in normalized_cookies:
-            data.set_cookie(**cookie)
+        data.cookies = _normalize_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
 
 
 def _create_generic_asgi_response_handler(
-    after_request: Optional["AfterRequestHookHandler"], cookies: "ResponseCookies"
+    after_request: Optional["AfterRequestHookHandler"],
+    cookies: FrozenSet["Cookie"],
 ) -> "AsyncAnyCallable":
     """Create a handler function for Responses."""
 
     async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
-        normalized_cookies = _normalize_cookies(cookies, [])
         if hasattr(data, "set_cookie"):
-            for cookie in normalized_cookies:
-                data.set_cookie(**cookie)
+            for cookie in cookies:
+                data.set_cookie(**cookie.dict)
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
@@ -187,30 +187,41 @@ def _create_generic_asgi_response_handler(
 def _create_data_handler(
     after_request: Optional["AfterRequestHookHandler"],
     background: Optional[Union["BackgroundTask", "BackgroundTasks"]],
-    cookies: "ResponseCookies",
-    headers: Dict[str, Any],
+    cookies: FrozenSet["Cookie"],
+    headers: "ResponseHeadersMap",
     media_type: str,
     response_class: "ResponseType",
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
+    response = response_class(
+        background=background,
+        content=None,
+        headers=_normalize_headers(headers),
+        media_type=media_type,
+        status_code=status_code,
+        cookies=list(cookies),
+    )
+    response.encode_headers()
 
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
-        data = await _normalize_response_data(data=data, plugins=plugins)
-        normalized_cookies = _normalize_cookies(cookies, [])
-        normalized_headers = _normalize_headers(headers)
-        response = response_class(
-            background=background,
-            content=data,
-            headers=normalized_headers,
-            media_type=media_type,
-            status_code=status_code,
-        )
+        if isawaitable(data):
+            data = await data
+        if plugins:
+            data = await _normalize_response_data(data=data, plugins=plugins)
 
-        for cookie in normalized_cookies:
-            response.set_cookie(**cookie)
+        if data and not response.status_allows_body or response.is_head_response:
+            raise ImproperlyConfiguredException(
+                "response content is not supported for HEAD responses and responses with a status code "
+                "that does not allow content (304, 204, < 200)"
+            )
 
-        return await after_request(response) if after_request else response  # type: ignore
+        copied_response = copy(response)
+        copied_response.body = data if isinstance(data, bytes) else response.render(data)
+
+        if after_request:
+            return await after_request(copied_response)  # type: ignore
+        return copied_response
 
     return handler
 
@@ -486,21 +497,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         return resolved_response_headers
 
-    def resolve_response_cookies(self) -> "ResponseCookies":
+    def resolve_response_cookies(self) -> FrozenSet["Cookie"]:
         """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
             A list of [Cookie][starlite.datastructures.Cookie] instances.
         """
 
-        cookies: "ResponseCookies" = []
-        for layer in self.ownership_layers:
-            cookies.extend(layer.response_cookies or [])
-        filtered_cookies: "ResponseCookies" = []
-        for cookie in reversed(cookies):
-            if not any(cookie.key == c.key for c in filtered_cookies):
-                filtered_cookies.append(cookie)
-        return filtered_cookies
+        return frozenset(chain.from_iterable(layer.response_cookies or [] for layer in reversed(self.ownership_layers)))
 
     def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
         """Resolve the before_handler handler by starting from the route handler and moving up.
