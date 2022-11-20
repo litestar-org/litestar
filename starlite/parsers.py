@@ -46,7 +46,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     return values_dict
 
 
-@lru_cache
+@lru_cache(1024)
 def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     """Parse a cookie string into a dictionary of values.
 
@@ -63,7 +63,7 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     return output
 
 
-@lru_cache
+@lru_cache(1024)
 def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
     """Parse a query string into a tuple of key value pairs.
 
@@ -78,3 +78,16 @@ def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
         (k.decode(), v.decode() if v not in _bools else _bools[v])
         for k, v in parse_qsl(query_string, keep_blank_values=True)
     )
+
+
+@lru_cache(1024)
+def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
+    """Parse ASGI headers into a dict of string keys and values.
+
+    Args:
+        headers: A tuple of bytes two tuples.
+
+    Returns:
+        A string / string dict.
+    """
+    return {k.decode(): v.decode() for k, v in headers}

@@ -152,12 +152,12 @@ def test_create_success_response_with_cookies() -> None:
     assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True) == {  # type: ignore
         "allOf": [
             {
-                "description": "the second cookie",
-                "example": 'second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax',
-            },
-            {
                 "description": "the first cookie",
                 "example": 'first-cookie="<string>"; HttpOnly; Path=/; SameSite=strict; Secure',
+            },
+            {
+                "description": "the second cookie",
+                "example": 'second-cookie="<string>"; Max-Age=500; Path=/; SameSite=lax',
             },
         ]
     }

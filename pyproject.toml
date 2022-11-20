@@ -132,6 +132,7 @@ disable = [
     "ungrouped-imports",
     "unnecessary-ellipsis",
     "unused-import",
+    "protected-access",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic", "orjson", "picologging"]

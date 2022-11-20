@@ -1,3 +1,4 @@
+DEFAULT_CHUNK_SIZE = 2**16  # 64 bytes
 DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 EXTRA_KEY_IS_DEPENDENCY = "is_dependency"
 EXTRA_KEY_IS_PARAMETER = "is_parameter"
