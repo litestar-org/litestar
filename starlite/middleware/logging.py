@@ -239,7 +239,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """
     include_compressed_body: bool = False
     """
-    Exclude body from log if it has been compressed by a compression middleware. If `"body"` not set in
+    Include body of compressed response in middleware. If `"body"` not set in
     [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields] this config value
     is ignored.
     """
