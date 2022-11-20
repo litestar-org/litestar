@@ -1,15 +1,16 @@
 import re
 from collections import defaultdict
+from functools import lru_cache
 from traceback import format_exc
-from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple, Union
 
 from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import add_route_to_trie
-from starlite.asgi.routing_trie.traversal import parse_scope_to_route
+from starlite.asgi.routing_trie.traversal import parse_path_to_route
 from starlite.asgi.routing_trie.types import create_node
 from starlite.asgi.utils import get_route_handlers
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import AsyncCallable
+from starlite.utils import AsyncCallable, normalize_path
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
     from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from starlite.routes.base import BaseRoute
     from starlite.types import (
+        ASGIApp,
         LifeSpanHandler,
         LifeSpanReceive,
         LifeSpanSend,
@@ -24,6 +26,7 @@ if TYPE_CHECKING:
         LifeSpanShutdownFailedEvent,
         LifeSpanStartupCompleteEvent,
         LifeSpanStartupFailedEvent,
+        Method,
         Receive,
         RouteHandlerType,
         Scope,
@@ -69,15 +72,32 @@ class ASGIRouter:
 
         The main entry point to the Router class.
         """
-        asgi_app, handler = parse_scope_to_route(
-            root_node=self.root_route_map_node,
-            scope=scope,
-            plain_routes=self._plain_routes,
-            mount_routes=self._mount_routes,
-            mount_paths_regex=self._mount_paths_regex,
+        scope.setdefault("path_params", {})
+        normalized_path = normalize_path(scope["path"])
+        asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
+            path=normalized_path, method=scope.get("method")
         )
-        scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
+
+    @lru_cache(1024)  # noqa: B019
+    def handle_routing(self, path: str, method: Optional["Method"]) -> Tuple["ASGIApp", "RouteHandlerType", str, dict]:
+        """Handle routing for a given path / method combo. This method is meant to allow easy caching.
+
+        Args:
+            path: The path of the request.
+            method: The scope's method, if any.
+
+        Returns:
+            A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
+        """
+        return parse_path_to_route(
+            mount_paths_regex=self._mount_paths_regex,
+            mount_routes=self._mount_routes,
+            path=path,
+            plain_routes=self._plain_routes,
+            root_node=self.root_route_map_node,
+            method=method,
+        )
 
     def _store_handler_to_route_mapping(self, route: "BaseRoute") -> None:
         """Store the mapping of route handlers to routes and to route handler names.
