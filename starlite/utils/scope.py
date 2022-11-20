@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Optional
 
-from starlite.constants import STARLITE
+from starlite.constants import SCOPE_STATE_NAMESPACE
 from starlite.types import Empty
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ def get_starlite_scope_state(scope: "Scope", key: str, default: Any = Empty) -> 
     Returns:
         Value mapped to `key` in internal connection scope namespace.
     """
-    namespace = scope["state"].setdefault(STARLITE, {})
+    namespace = scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})
     if default is Empty:
         return namespace.get(key)
     return namespace.setdefault(key, default)
@@ -56,4 +56,4 @@ def set_starlite_scope_state(scope: "Scope", key: str, value: Any) -> None:
         key: Key to set under internal namespace in scope state.
         value: Value for key.
     """
-    scope["state"].setdefault(STARLITE, {})[key] = value
+    scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})[key] = value

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from starlite import BaseRouteHandler, HttpMethod, HTTPRouteHandler, Response, Starlite
-from starlite.constants import STARLITE
+from starlite.constants import SCOPE_STATE_NAMESPACE
 from starlite.utils import (
     get_serializer_from_scope,
     get_starlite_scope_state,
@@ -45,16 +45,16 @@ def test_get_serializer_from_scope() -> None:
 
 def test_get_starlite_scope_state_without_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:
     get_starlite_scope_state(scope, "key")
-    assert STARLITE in scope["state"]
-    assert "key" not in scope["state"][STARLITE]
+    assert SCOPE_STATE_NAMESPACE in scope["state"]
+    assert "key" not in scope["state"][SCOPE_STATE_NAMESPACE]
 
 
 def test_get_starlite_scope_state_with_default_sets_key_in_scope_state(scope: "HTTPScope") -> None:
     value = get_starlite_scope_state(scope, "key", "value")
-    assert STARLITE in scope["state"]
-    assert scope["state"][STARLITE]["key"] == "value" == value
+    assert SCOPE_STATE_NAMESPACE in scope["state"]
+    assert scope["state"][SCOPE_STATE_NAMESPACE]["key"] == "value" == value
 
 
 def test_set_starlite_scope_state(scope: "HTTPScope") -> None:
     set_starlite_scope_state(scope, "key", "value")
-    assert scope["state"][STARLITE]["key"] == "value"
+    assert scope["state"][SCOPE_STATE_NAMESPACE]["key"] == "value"

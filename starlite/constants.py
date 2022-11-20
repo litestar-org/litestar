@@ -9,5 +9,5 @@ HTTP_RESPONSE_BODY = "http.response.body"
 REDIRECT_STATUS_CODES = {301, 302, 303, 307, 308}
 RESERVED_KWARGS = {"state", "headers", "cookies", "request", "socket", "data", "query", "scope"}
 SCOPE_STATE_DEPENDENCY_CACHE = "dependency_cache"
+SCOPE_STATE_NAMESPACE = "__starlite__"
 SCOPE_STATE_RESPONSE_COMPRESSED = "response_compressed"
-STARLITE = "__starlite__"
