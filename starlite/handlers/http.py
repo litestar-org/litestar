@@ -1,6 +1,8 @@
+from copy import copy
 from enum import Enum
 from functools import lru_cache
 from inspect import Signature, isawaitable
+from itertools import chain
 from operator import attrgetter
 from typing import (
     TYPE_CHECKING,
@@ -115,12 +117,6 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     Returns:
         Value for the response body
     """
-    if isawaitable(data):
-        data = await data
-
-    if not plugins:
-        return data
-
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
         return data
@@ -198,21 +194,34 @@ def _create_data_handler(
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
-    normalized_headers = _normalize_headers(headers)
+    response = response_class(
+        background=background,
+        content=None,
+        headers=_normalize_headers(headers),
+        media_type=media_type,
+        status_code=status_code,
+        cookies=list(cookies),
+    )
+    response.encode_headers()
 
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
-        data = await _normalize_response_data(data=data, plugins=plugins)
+        if isawaitable(data):
+            data = await data
+        if plugins:
+            data = await _normalize_response_data(data=data, plugins=plugins)
 
-        response = response_class(
-            background=background,
-            content=data,
-            headers=normalized_headers,
-            media_type=media_type,
-            status_code=status_code,
-            cookies=list(cookies),
-        )
+        if data and not response.status_allows_body or response.is_head_response:
+            raise ImproperlyConfiguredException(
+                "response content is not supported for HEAD responses and responses with a status code "
+                "that does not allow content (304, 204, < 200)"
+            )
 
-        return await after_request(response) if after_request else response  # type: ignore
+        copied_response = copy(response)
+        copied_response.body = data if isinstance(data, bytes) else response.render(data)
+
+        if after_request:
+            return await after_request(copied_response)  # type: ignore
+        return copied_response
 
     return handler
 
@@ -495,14 +504,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             A list of [Cookie][starlite.datastructures.Cookie] instances.
         """
 
-        cookies: "ResponseCookies" = []
-        for layer in self.ownership_layers:
-            cookies.extend(layer.response_cookies or [])
-        filtered_cookies: "ResponseCookies" = []
-        for cookie in reversed(cookies):
-            if not any(cookie.key == c.key for c in filtered_cookies):
-                filtered_cookies.append(cookie)
-        return frozenset(filtered_cookies)
+        return frozenset(chain.from_iterable(layer.response_cookies or [] for layer in reversed(self.ownership_layers)))
 
     def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
         """Resolve the before_handler handler by starting from the route handler and moving up.
