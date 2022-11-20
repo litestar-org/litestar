@@ -27,8 +27,7 @@ def test_cookie_as_header() -> None:
     now = datetime.utcnow()
     expected_expired = (now + timedelta(seconds=expires_sec)).strftime("%a, %d %b %Y %H:%M:%S GMT")
     assert cookie.to_header() == (
-        "Set-Cookie: key=value; Domain=domain.com; "
-        f"expires={expected_expired}; HttpOnly; Path=/path; SameSite=strict; Secure"
+        f"Set-Cookie: key=value; Domain=domain.com; expires={expected_expired}; HttpOnly; Path=/path; SameSite=strict; Secure"
     )
 
 

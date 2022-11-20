@@ -93,7 +93,7 @@ async def test_response_data_extractor() -> None:
     cookies = [Cookie(key="regular"), Cookie(key="auth")]
     response = Response(content={"hello": "world"}, headers=headers)
     for cookie in cookies:
-        response.set_cookie(**cookie.dict(exclude={"documentation_only", "description"}))
+        response.set_cookie(**cookie.dict)
     extractor = ResponseDataExtractor()
     messages: List["Any"] = []
 

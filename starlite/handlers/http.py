@@ -80,11 +80,7 @@ def _normalize_cookies(local_cookies: "ResponseCookies", layered_cookies: "Respo
     for cookie in layered_cookies:
         if not any(c == cookie for c in filtered_cookies):
             filtered_cookies.append(cookie)
-    return [
-        cookie.dict(exclude_none=True, exclude={"documentation_only", "description"})
-        for cookie in unique(filtered_cookies)
-        if not cookie.documentation_only
-    ]
+    return [cookie.dict for cookie in unique(filtered_cookies) if not cookie.documentation_only]
 
 
 def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:

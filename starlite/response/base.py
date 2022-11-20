@@ -258,7 +258,7 @@ class Response(Generic[T]):
         encoded_headers = list(
             chain(
                 ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
-                ((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
+                (cookie.to_encoded_header() for cookie in self.cookies),
             )
         )
 

@@ -1,3 +1,4 @@
+from copy import copy
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type
 
@@ -40,7 +41,8 @@ def create_cookie_schema(cookie: "Cookie") -> Schema:
     Returns:
         Schema
     """
-    cookie_copy = cookie.copy(update={"value": "<string>"})
+    cookie_copy = copy(cookie)
+    cookie_copy.value = "<string>"
     value = cookie_copy.to_header(header="")
     return Schema(description=cookie.description or "", example=value)
 
