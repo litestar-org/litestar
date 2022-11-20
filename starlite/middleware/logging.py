@@ -4,9 +4,19 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
+from starlite.constants import (
+    HTTP_RESPONSE_BODY,
+    HTTP_RESPONSE_START,
+    SCOPE_STATE_RESPONSE_COMPRESSED,
+)
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
-from starlite.utils import default_serializer, get_serializer_from_scope
+from starlite.utils import (
+    default_serializer,
+    get_serializer_from_scope,
+    get_starlite_scope_state,
+    set_starlite_scope_state,
+)
 from starlite.utils.extractors import (
     ConnectionDataExtractor,
     RequestExtractorField,
@@ -16,7 +26,15 @@ from starlite.utils.extractors import (
 
 if TYPE_CHECKING:
     from starlite.connection import Request
-    from starlite.types import ASGIApp, Logger, Message, Receive, Scope, Send
+    from starlite.types import (
+        ASGIApp,
+        Logger,
+        Message,
+        Receive,
+        Scope,
+        Send,
+        Serializer,
+    )
 
 try:
     from structlog.types import BindableLogger
@@ -131,6 +149,13 @@ class LoggingMiddleware(AbstractMiddleware):
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
+    def _serialize_value(self, serializer: "Serializer", value: Any) -> Any:
+        if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
+            value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+        if isinstance(value, bytes):
+            return value.decode("utf-8")
+        return value
+
     async def extract_request_data(self, request: "Request") -> Dict[str, Any]:
         """Create a dictionary of values for the message.
 
@@ -148,11 +173,7 @@ class LoggingMiddleware(AbstractMiddleware):
             value = extracted_data.get(key)
             if isawaitable(value):
                 value = await value
-            if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
-                value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-            if isinstance(value, bytes):
-                value = value.decode("utf-8")
-            data[key] = value
+            data[key] = self._serialize_value(serializer, value)
         return data
 
     def extract_response_data(self, scope: "Scope") -> Dict[str, Any]:
@@ -168,18 +189,19 @@ class LoggingMiddleware(AbstractMiddleware):
         serializer = get_serializer_from_scope(scope) or default_serializer
         extracted_data = self.response_extractor(
             messages=(
-                scope["state"]["http.response.start"],
-                scope["state"]["http.response.body"],
-            )
+                get_starlite_scope_state(scope, HTTP_RESPONSE_START),
+                get_starlite_scope_state(scope, HTTP_RESPONSE_BODY),
+            ),
         )
+        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)
-            if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
-                value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
-            if isinstance(value, bytes):
-                value = value.decode("utf-8")
-            data[key] = value
+            if key == "body" and response_body_compressed:
+                if self.config.include_compressed_body:
+                    data[key] = value
+                continue
+            data[key] = self._serialize_value(serializer, value)
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
@@ -194,10 +216,10 @@ class LoggingMiddleware(AbstractMiddleware):
         """
 
         async def send_wrapper(message: "Message") -> None:
-            if message["type"] == "http.response.start":
-                scope["state"]["http.response.start"] = message
-            elif message["type"] == "http.response.body":
-                scope["state"]["http.response.body"] = message
+            if message["type"] == HTTP_RESPONSE_START:
+                set_starlite_scope_state(scope, HTTP_RESPONSE_START, message)
+            elif message["type"] == HTTP_RESPONSE_BODY:
+                set_starlite_scope_state(scope, HTTP_RESPONSE_BODY, message)
                 self.log_response(scope=scope)
             await send(message)
 
@@ -214,6 +236,12 @@ class LoggingMiddlewareConfig(BaseModel):
     exclude_opt_key: Optional[str] = None
     """
     An identifier to use on routes to disable logging for a particular route.
+    """
+    include_compressed_body: bool = False
+    """
+    Include body of compressed response in middleware. If `"body"` not set in
+    [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields] this config value
+    is ignored.
     """
     logger_name: str = "starlite"
     """

@@ -31,6 +31,7 @@ from starlite.constants import (
     EXTRA_KEY_IS_PARAMETER,
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
+    SCOPE_STATE_DEPENDENCY_CACHE,
 )
 from starlite.datastructures import URL
 from starlite.datastructures.provide import Provide
@@ -38,6 +39,7 @@ from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data
 from starlite.signature import SignatureModel, get_signature_model
+from starlite.utils import get_starlite_scope_state
 from starlite.utils.dependency import resolve_dependencies_concurrently
 
 if TYPE_CHECKING:
@@ -433,7 +435,7 @@ class KwargsModel:
         """
         if dependency.provide.cache_per_request:
             async with dependency.provide.lock:
-                cache = connection.state.setdefault("_dependency_cache", {})
+                cache = get_starlite_scope_state(connection.scope, SCOPE_STATE_DEPENDENCY_CACHE, {})
                 if dependency.provide.cache_key in cache:
                     return cache[dependency.provide.cache_key]
 
