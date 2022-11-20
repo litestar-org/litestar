@@ -22,6 +22,7 @@ from typing_extensions import Annotated
 
 from starlite.datastructures.multi_dicts import MultiMixin
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.parsers import parse_headers
 
 if TYPE_CHECKING:
     from starlite.types.asgi_types import HeaderScope, Message, RawHeadersList
@@ -70,12 +71,9 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a `headers` key
         """
-        scope_headers = scope.get("_headers")
-        if scope_headers:
-            return cast("Headers", scope_headers)
-        headers = cls(scope["headers"])
-        scope["_headers"] = headers  # type: ignore[typeddict-item]
-        return headers
+        if "_headers" not in scope:
+            scope["_headers"] = parse_headers(tuple(scope["headers"]))  # type: ignore
+        return cls(scope["_headers"])  # type: ignore
 
     def to_header_list(self) -> "RawHeadersList":
         """Raw header value.

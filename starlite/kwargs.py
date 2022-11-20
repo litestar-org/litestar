@@ -38,7 +38,7 @@ from starlite.constants import (
 from starlite.datastructures.provide import Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.parsers import parse_form_data, parse_query_string
+from starlite.parsers import parse_form_data, parse_headers, parse_query_string
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import Empty
 
@@ -226,7 +226,9 @@ class KwargsModel:
         if self.expected_header_params:
             extractors.append(
                 create_connection_value_extractor(
-                    connection_key="headers", expected_params=self.expected_header_params
+                    connection_key="headers",
+                    expected_params=self.expected_header_params,
+                    parser=self._parse_connection_headers,
                 ),
             )
         if self.expected_path_params:
@@ -471,13 +473,21 @@ class KwargsModel:
             A dictionary of parsed values.
         """
         parsed_query = connection.scope["_parsed_query"] = (  # type: ignore
-            connection._parsed_query  # pylint: disable=protected-access
-            if connection._parsed_query is not Empty  # pylint: disable=protected-access
+            connection._parsed_query
+            if connection._parsed_query is not Empty
             else parse_query_string(connection.scope.get("query_string", b""))
         )
         return create_query_default_dict(
             parsed_query=parsed_query, sequence_query_parameter_names=self.sequence_query_parameter_names
         )
+
+    def _parse_connection_headers(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
+        parsed_headers = connection.scope["_headers"] = (  # type: ignore
+            connection._headers
+            if connection._headers is not Empty
+            else parse_headers(tuple(connection.scope["headers"]))
+        )
+        return cast("Dict[str, Any]", parsed_headers)
 
     def to_kwargs(self, connection: Union["WebSocket", "Request"]) -> Dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is

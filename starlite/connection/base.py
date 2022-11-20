@@ -5,7 +5,7 @@ from starlite.datastructures.multi_dicts import MultiDict
 from starlite.datastructures.state import State
 from starlite.datastructures.url import URL, Address, make_absolute_url
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.parsers import parse_cookie_string, parse_query_string
+from starlite.parsers import parse_cookie_string, parse_headers, parse_query_string
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -151,8 +151,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._headers is Empty:
             self.scope.setdefault("headers", [])
-            self._headers = self.scope["_headers"] = Headers.from_scope(self.scope)  # type: ignore[typeddict-item]
-        return cast("Headers", self._headers)
+            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-item]
+        return Headers(self._headers)
 
     @property
     def query_params(self) -> MultiDict:

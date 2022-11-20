@@ -15,6 +15,7 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
+from starlite.constants import DEFAULT_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
@@ -30,8 +31,6 @@ if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
     from starlite.types import PathType, ResponseCookies, Send
     from starlite.types.file_types import FileInfo, FileSystemProtocol
-
-ONE_MEGA_BYTE: int = 1024 * 1024
 
 
 async def async_file_iterator(
@@ -83,7 +82,7 @@ class FileResponse(StreamingResponse):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = ONE_MEGA_BYTE,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",

@@ -309,7 +309,7 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
     @validator("plugin", always=True)
     def validate_plugin_config(cls, value: SQLAlchemyPlugin) -> SQLAlchemyPlugin:  # pylint: disable=no-self-argument)
         """Check if the SQLAlchemyPlugin is configured."""
-        if not (value._config and value._config.session_maker):  # pylint: disable=protected-access
+        if not (value._config and value._config.session_maker):
             raise ValueError("Plugin needs to be configured")
         return value
 
@@ -318,6 +318,6 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
         """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`, depending on the engine type configured in the
         `SQLAlchemyPlugin`
         """
-        if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:  # pylint: disable=protected-access
+        if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:
             return AsyncSQLAlchemyBackend
         return SQLAlchemyBackend
