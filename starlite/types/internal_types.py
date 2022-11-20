@@ -5,6 +5,7 @@ from starlite.types import Method
 if TYPE_CHECKING:
     from starlite.app import Starlite  # noqa: TC004
     from starlite.controller import Controller  # noqa: TC004
+    from starlite.datastructures import State  # noqa: TC004
     from starlite.handlers.asgi import ASGIRouteHandler  # noqa: TC004
     from starlite.handlers.http import HTTPRouteHandler  # noqa: TC004
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: TC004
@@ -18,6 +19,7 @@ else:
     Response = Any
     Controller = Any
     Router = Any
+    State = Any
 
 ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 StarliteType = Starlite
@@ -25,6 +27,7 @@ RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandl
 ResponseType = Type[Response]
 ControllerRouterHandler = Union[Type[Controller], RouteHandlerType, Router, Callable[..., Any]]
 RouteHandlerMapItem = Union[WebsocketRouteHandler, ASGIRouteHandler, Dict[Method, HTTPRouteHandler]]
+StateType = Type[State]
 
 
 class PathParameterDefinition(NamedTuple):

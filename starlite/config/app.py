@@ -23,6 +23,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
     SingleOrList,
+    StateType,
 )
 
 from . import AllowedHostsConfig
@@ -198,6 +199,10 @@ class AppConfig(BaseModel):
     """
     A list of dictionaries that will be added to the schema of all route handlers in the application. See
     [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
+    """
+    state_class: Optional[StateType]
+    """
+    A custom subclass of [starlite.datastructures.State] to be used as the app's default state.
     """
     static_files_config: SingleOrList[StaticFilesConfig]
     """

@@ -9,7 +9,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def set_state_on_startup(state: State) -> None:
+class AppState(State):
+    value: str
+
+
+def set_state_on_startup(state: AppState) -> None:
     """Startup and shutdown hooks can receive `State` as a keyword arg."""
     state.value = "abc123"
 
@@ -25,7 +29,7 @@ def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
     return my_middleware
 
 
-def my_dependency(state: State) -> Any:
+def my_dependency(state: AppState) -> Any:
     """Dependencies can receive state via injection."""
     logger.info("state value in dependency: %s", state.value)
 
@@ -37,4 +41,4 @@ def get_handler(state: State, request: Request, dep: Any) -> None:  # pylint: di
     logger.info("state value in handler from `Request`: %s", request.app.state.value)
 
 
-starlite = Starlite(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)
+starlite = Starlite(route_handlers=[get_handler], on_startup=[set_state_on_startup], state_class=AppState, debug=True)

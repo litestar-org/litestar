@@ -44,6 +44,7 @@ def app_config_object() -> AppConfig:
         response_headers={},
         route_handlers=[],
         security=[],
+        state_class=None,
         static_files_config=[],
         tags=[],
         template_config=None,

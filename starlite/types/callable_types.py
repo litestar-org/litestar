@@ -22,8 +22,9 @@ else:
     Logger = Any
 
 _ExceptionT = TypeVar("_ExceptionT", bound=Exception)
+_StateT = TypeVar("_StateT", bound=State)
 
-AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
+AfterExceptionHookHandler = Callable[[Exception, Scope, _StateT], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
     Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]], Callable[[Response], SyncOrAsyncUnion[Response]]
 ]
@@ -31,7 +32,7 @@ AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 AnyCallable = Callable[..., Any]
 BeforeMessageSendHookHandler = Union[
-    Callable[[Message, State, Scope], SyncOrAsyncUnion[None]], Callable[[Message, State], SyncOrAsyncUnion[None]]
+    Callable[[Message, _StateT, Scope], SyncOrAsyncUnion[None]], Callable[[Message, _StateT], SyncOrAsyncUnion[None]]
 ]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
@@ -40,7 +41,7 @@ Guard = Union[
     Callable[[Request, HTTPRouteHandler], SyncOrAsyncUnion[None]],
     Callable[[WebSocket, WebsocketRouteHandler], SyncOrAsyncUnion[None]],
 ]
-LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
+LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[_StateT], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
 OnAppInitHandler = Callable[[AppConfig], AppConfig]
 Serializer = Callable[[Any], Any]

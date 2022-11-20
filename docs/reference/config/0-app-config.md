@@ -37,6 +37,7 @@
             - response_headers
             - route_handlers
             - security
+            - state_class
             - static_files_config
             - tags
             - template_config

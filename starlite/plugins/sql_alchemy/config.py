@@ -8,6 +8,7 @@ from typing import (
     Optional,
     Set,
     Type,
+    TypeVar,
     Union,
     cast,
 )
@@ -16,6 +17,7 @@ from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, root_validator, validator
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
+from starlite.datastructures import State
 from starlite.exceptions import MissingDependencyException
 from starlite.types import BeforeMessageSendHookHandler
 from starlite.utils import AsyncCallable, default_serializer
@@ -34,8 +36,10 @@ except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 if TYPE_CHECKING:
-    from starlite.datastructures.state import State
     from starlite.types import Message, Scope
+
+
+_StateT = TypeVar("_StateT", bound=State)
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
@@ -64,7 +68,7 @@ def serializer(value: Any) -> str:
     ).decode("utf-8")
 
 
-async def default_before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
+async def default_before_send_handler(message: "Message", _: "_StateT", scope: "Scope") -> None:
     """Handle closing and cleaning up sessions before sending.
 
     Args:
@@ -310,7 +314,7 @@ class SQLAlchemyConfig(BaseModel):
             )
         return cast("sessionmaker", self.session_maker_instance)
 
-    def create_db_session_dependency(self, state: "State", scope: "Scope") -> Union[Session, AsyncSession]:
+    def create_db_session_dependency(self, state: "_StateT", scope: "Scope") -> Union[Session, AsyncSession]:
         """Create a session instance.
 
         Args:
@@ -326,7 +330,7 @@ class SQLAlchemyConfig(BaseModel):
             session = scope[SESSION_SCOPE_KEY] = session_maker()  # type: ignore
         return cast("Union[Session, AsyncSession]", session)
 
-    def update_app_state(self, state: "State") -> None:
+    def update_app_state(self, state: "_StateT") -> None:
         """Create a DB engine and stores it in the application state.
 
         Args:
@@ -339,7 +343,7 @@ class SQLAlchemyConfig(BaseModel):
         state[self.engine_app_state_key] = self.engine
         state[self.session_maker_app_state_key] = self.session_maker
 
-    async def on_shutdown(self, state: "State") -> None:
+    async def on_shutdown(self, state: "_StateT") -> None:
         """Disposes of the SQLAlchemy engine.
 
         Args:

@@ -17,7 +17,7 @@ from starlite.middleware.cors import CORSMiddleware
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
-from starlite.types.internal_types import PathParameterDefinition
+from starlite.types.internal_types import PathParameterDefinition, StateType
 from starlite.utils import (
     as_async_callable_list,
     async_partial,
@@ -178,6 +178,7 @@ class Starlite(Router):
         response_headers: Optional["ResponseHeadersMap"] = None,
         security: Optional[List["SecurityRequirement"]] = None,
         static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
+        state_class: Optional["StateType"] = None,
         tags: Optional[List[str]] = None,
         template_config: Optional["TemplateConfig"] = None,
         websocket_class: Optional[Type["WebSocket"]] = None,
@@ -252,6 +253,7 @@ class Starlite(Router):
             security: A list of dictionaries that will be added to the schema of all route handlers in the application.
                 See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
+            state_class: A custom subclass of [starlite.datastructures.State] to be used as the app's default state.
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
             websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
@@ -261,7 +263,6 @@ class Starlite(Router):
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
-        self.state = State()
         self.asgi_router = ASGIRouter(app=self)
 
         # creates app config object from parameters
@@ -300,6 +301,7 @@ class Starlite(Router):
             response_headers=response_headers or {},
             route_handlers=route_handlers,
             security=security or [],
+            state_class=state_class,
             static_files_config=static_files_config or [],
             tags=tags or [],
             template_config=template_config,
@@ -326,6 +328,7 @@ class Starlite(Router):
         self.openapi_config = config.openapi_config
         self.plugins = config.plugins
         self.request_class = config.request_class or Request
+        self.state = config.state_class() if config.state_class else State()
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.to_engine() if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket

@@ -1,5 +1,6 @@
 import pytest
 
+from starlite.app import Starlite
 from starlite.datastructures import State
 
 
@@ -43,3 +44,19 @@ def test_state_copy() -> None:
     copy = state.copy()
     del state.key
     assert copy.key
+
+
+def test_state_subclass() -> None:
+    class CustomState(State):
+        called: bool
+        msg: str
+
+    def startup(state: CustomState) -> None:
+        assert type(state) is not State
+        assert isinstance(state, State)
+
+    Starlite(
+        on_startup=[startup],
+        route_handlers=[],
+        state_class=CustomState,
+    )

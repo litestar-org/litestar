@@ -76,6 +76,7 @@ from .internal_types import (
     ResponseType,
     RouteHandlerMapItem,
     RouteHandlerType,
+    StateType,
 )
 from .partial import Partial
 from .protocols import Logger
@@ -156,6 +157,7 @@ __all__ = (
     "Send",
     "Serializer",
     "SingleOrList",
+    "StateType",
     "SyncOrAsyncUnion",
     "WebSocketAcceptEvent",
     "WebSocketCloseEvent",
