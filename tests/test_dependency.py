@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import pytest
 
@@ -106,3 +106,31 @@ def test_dependency_skip_validation_with_default_value() -> None:
         skipped_resp = client.get("/skipped")
         assert skipped_resp.status_code == HTTP_200_OK
         assert skipped_resp.json() == {"value": 1}
+
+
+def test_nested_sequence_dependency() -> None:
+    class Obj:
+        def __init__(self, seq: List[str]) -> None:
+            self.seq = seq
+
+    def provides_obj(seq: List[str]) -> Obj:
+        return Obj(seq)
+
+    @get("/obj")
+    def get_obj(obj: Obj) -> List[str]:
+        return obj.seq
+
+    @get("/seq")
+    def get_seq(seq: List[str]) -> List[str]:
+        return seq
+
+    with create_test_client(
+        route_handlers=[get_obj, get_seq],
+        dependencies={"obj": Provide(provides_obj)},
+        openapi_config=None,
+    ) as client:
+        seq = ["a", "b", "c"]
+        resp = client.get("/seq", params={"seq": seq})
+        assert resp.json() == ["a", "b", "c"]
+        resp = client.get("/obj", params={"seq": seq})
+        assert resp.json() == ["a", "b", "c"]
