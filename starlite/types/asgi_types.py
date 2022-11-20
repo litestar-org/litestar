@@ -35,6 +35,7 @@ from typing import (
     Awaitable,
     Callable,
     Dict,
+    Iterable,
     List,
     Literal,
     Optional,
@@ -68,7 +69,7 @@ class ASGIVersion(TypedDict):
 class HeaderScope(TypedDict):
     """Base class for ASGI-scopes that supports headers."""
 
-    headers: "RawHeadersList"
+    headers: "RawHeaders"
 
 
 class BaseScope(HeaderScope):
@@ -288,4 +289,5 @@ Scope = Union[HTTPScope, WebSocketScope]
 Receive = Callable[..., Awaitable[Union[HTTPReceiveMessage, WebSocketReceiveMessage]]]
 Send = Callable[[Message], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
+RawHeaders = Iterable[Tuple[bytes, bytes]]
 RawHeadersList = List[Tuple[bytes, bytes]]
