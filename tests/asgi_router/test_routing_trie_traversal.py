@@ -20,6 +20,7 @@ def test_parse_scope_to_route_adds_path_params_to_scope_on_404() -> None:
         "is_path_type": False,
         "is_static": False,
         "path_parameters": [],
+        "child_path_parameter_types": [],
     }
     fake_scope = {"path": "/not-found"}
     with pytest.raises(NotFoundException):

@@ -1,15 +1,15 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Set, Tuple, Type, Union, cast
+from typing import TYPE_CHECKING, Set, Type, Union, cast
 
-from starlite.asgi.routing_trie.types import (
-    ASGIHandlerTuple,
-    PathParameterSentinel,
-    create_node,
-)
+from starlite.asgi.routing_trie.types import ASGIHandlerTuple, create_node
 from starlite.asgi.utils import wrap_in_exception_handler
+
+# from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal_types import PathParameterDefinition
 
 if TYPE_CHECKING:
+    from typing import Any, Dict, Tuple
+
     from starlite.app import Starlite
     from starlite.asgi.routing_trie.types import RouteTrieNode
     from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -54,8 +54,10 @@ def add_map_route_to_trie(
                 if component.type is Path:
                     current_node["is_path_type"] = True
                     break
-
-                next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
+                # if component.type in current_node["children"]:
+                #     raise ImproperlyConfiguredException("Cannot have adjacent path parameter nodes of the same type.")
+                current_node["child_path_parameter_types"].append(component.type)
+                next_node_key: Union[str, Type] = component.type
 
             else:
                 next_node_key = component

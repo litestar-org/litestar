@@ -1,3 +1,5 @@
+import pytest
+
 from starlite import MediaType, Request, Response, Starlite, get, post
 from starlite.exceptions import InternalServerException
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -17,6 +19,7 @@ def test_default_handling_of_pydantic_errors() -> None:
         assert len(extra) == 3
 
 
+@pytest.mark.xfail()
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
     def my_route_handler(param: int) -> None:

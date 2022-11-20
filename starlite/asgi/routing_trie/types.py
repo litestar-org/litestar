@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Literal, NamedTuple, Set, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, NamedTuple, Set, Type, Union
 
 from typing_extensions import TypedDict
 
@@ -6,10 +6,6 @@ if TYPE_CHECKING:
 
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal_types import PathParameterDefinition
-
-
-class PathParameterSentinel:
-    """Sentinel class designating a path parameter."""
 
 
 class ASGIHandlerTuple(NamedTuple):
@@ -28,11 +24,11 @@ class RouteTrieNode(TypedDict):
     """
     A mapping of ASGI handlers stored on the node.
     """
-    child_keys: Set[Union[str, Type[PathParameterSentinel]]]
+    child_keys: Set[Union[str, Type]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
-    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]
+    children: Dict[Union[str, Type], "RouteTrieNode"]
     """
     A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
     """
@@ -58,6 +54,10 @@ class RouteTrieNode(TypedDict):
     """
     A list of tuples containing path parameter definitions. This is used for parsing extracted path parameter values.
     """
+    child_path_parameter_types: List[Any]
+    """
+    The type of path parameters for child nodes.
+    """
 
 
 def create_node() -> "RouteTrieNode":
@@ -76,4 +76,5 @@ def create_node() -> "RouteTrieNode":
         "is_static": False,
         "is_path_type": False,
         "path_parameters": [],
+        "child_path_parameter_types": [],
     }

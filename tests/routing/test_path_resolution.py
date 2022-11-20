@@ -13,7 +13,6 @@ from starlite import (
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
@@ -127,25 +126,25 @@ def test_handler_multi_paths() -> None:
 
 
 @pytest.mark.parametrize(
-    "handler_path, request_path, expected_status_code",
+    "handler_path, request_path",
     [
-        ("/sub-path", "/", HTTP_404_NOT_FOUND),
-        ("/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
-        ("/sub/path", "/sub", HTTP_404_NOT_FOUND),
-        ("/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
-        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        ("/sub-path", "/"),
+        ("/sub/path", "/sub-path"),
+        ("/sub/path", "/sub"),
+        ("/sub/path/{path_param:int}", "/sub/path"),
+        ("/sub/path/{path_param:int}", "/sub/path/abcd"),
+        ("/sub/path/{path_param:uuid}", "/sub/path/100"),
+        ("/sub/path/{path_param:float}", "/sub/path/abcd"),
     ],
 )
-def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
+def test_path_validation(handler_path: str, request_path: str) -> None:
     @get(handler_path)
     def handler_fn(**kwargs: Any) -> None:
         ...
 
     with create_test_client(handler_fn) as client:
         response = client.get(request_path)
-        assert response.status_code == expected_status_code
+        assert response.status_code == HTTP_404_NOT_FOUND
 
 
 async def test_http_route_raises_for_unsupported_method(anyio_backend: str) -> None:

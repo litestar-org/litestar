@@ -24,7 +24,6 @@ from pydantic.datetime_parse import (
     parse_time,
 )
 
-from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.enums import ScopeType
 from starlite.exceptions import (
     MethodNotAllowedException,
@@ -55,7 +54,7 @@ parsers_map: Dict[Any, Callable[[Any], Any]] = {
 def traverse_route_map(
     current_node: "RouteTrieNode",
     path: str,
-    path_components: Deque[Union[str, Type[PathParameterSentinel]]],
+    path_components: Deque[Union[str, Type]],
     path_params: List[str],
     scope: "Scope",
 ) -> Tuple["RouteTrieNode", List[str]]:
@@ -88,8 +87,6 @@ def traverse_route_map(
         path_params.append(normalize_path("/".join(path_components)))  # type: ignore[arg-type]
         return current_node, path_params
 
-    has_path_param = PathParameterSentinel in current_node["child_keys"]
-
     if not path_components:
         if not current_node["asgi_handlers"]:
             raise NotFoundException()
@@ -106,16 +103,21 @@ def traverse_route_map(
             scope=scope,
         )
 
-    if has_path_param:
-        path_params.append(component)  # type: ignore[arg-type]
+    for type_ in current_node["child_path_parameter_types"]:
+        try:
+            type_(component)
+        except ValueError:
+            continue
+        else:
+            path_params.append(component)  # type: ignore[arg-type]
 
-        return traverse_route_map(
-            current_node=current_node["children"][PathParameterSentinel],
-            path=path,
-            path_components=path_components,
-            path_params=path_params,
-            scope=scope,
-        )
+            return traverse_route_map(
+                current_node=current_node["children"][type_],
+                path=path,
+                path_components=path_components,
+                path_params=path_params,
+                scope=scope,
+            )
 
     raise NotFoundException()
 
