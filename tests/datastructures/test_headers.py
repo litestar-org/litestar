@@ -82,6 +82,12 @@ def test_headers_tuple_to_header_list() -> None:
     assert headers.to_header_list() == list(raw)
 
 
+def test_mutable_scope_headers_from_iterable() -> None:
+    raw = [(b"foo", b"bar"), (b"foo", b"baz")]
+    headers = MutableScopeHeaders({"headers": iter(raw)})
+    assert headers.headers == raw
+
+
 def test_mutable_scope_headers_from_message(raw_headers: "RawHeadersList", raw_headers_tuple: "RawHeaders") -> None:
     headers = MutableScopeHeaders.from_message(
         HTTPResponseStartEvent(type="http.response.start", status=200, headers=raw_headers)
