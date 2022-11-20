@@ -21,6 +21,7 @@ for (const expander of expanders) {
 const nonCollapsedSnippets = document.querySelectorAll(
   ".frame:not(.collapsed) .code-snippet-wrapper",
 );
+
 for (const snippet of nonCollapsedSnippets) {
   snippet.style.height = `${snippet.scrollHeight}px`;
 }

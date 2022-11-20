@@ -2,11 +2,12 @@ from gzip import GzipFile
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union
 
+from starlite.constants import SCOPE_STATE_RESPONSE_COMPRESSED
 from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import CompressionEncoding, ScopeType
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import AbstractMiddleware
-from starlite.utils import Ref
+from starlite.utils import Ref, set_starlite_scope_state
 
 if TYPE_CHECKING:
     from starlite.config import CompressionConfig
@@ -125,7 +126,9 @@ class CompressionMiddleware(AbstractMiddleware):
             await self.app(
                 scope,
                 receive,
-                self.create_compression_send_wrapper(send=send, compression_encoding=CompressionEncoding.BROTLI),
+                self.create_compression_send_wrapper(
+                    send=send, compression_encoding=CompressionEncoding.BROTLI, scope=scope
+                ),
             )
             return
 
@@ -135,7 +138,9 @@ class CompressionMiddleware(AbstractMiddleware):
             await self.app(
                 scope,
                 receive,
-                self.create_compression_send_wrapper(send=send, compression_encoding=CompressionEncoding.GZIP),
+                self.create_compression_send_wrapper(
+                    send=send, compression_encoding=CompressionEncoding.GZIP, scope=scope
+                ),
             )
             return
 
@@ -145,12 +150,14 @@ class CompressionMiddleware(AbstractMiddleware):
         self,
         send: "Send",
         compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
+        scope: "Scope",
     ) -> "Send":
         """Wrap `send` to handle brotli compression.
 
         Args:
             send: The ASGI send function.
             compression_encoding: The compression encoding used.
+            scope: The ASGI connection scope
 
         Returns:
             An ASGI send function.
@@ -184,13 +191,13 @@ class CompressionMiddleware(AbstractMiddleware):
                         headers["Content-Encoding"] = compression_encoding
                         headers.extend_header_value("vary", "Accept-Encoding")
                         del headers["Content-Length"]
+                        set_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, True)
 
                         facade.write(body)
 
                         message["body"] = buffer.getvalue()
                         buffer.seek(0)
                         buffer.truncate()
-
                         await send(initial_message.value)
                         await send(message)
 
@@ -204,6 +211,7 @@ class CompressionMiddleware(AbstractMiddleware):
                         headers["Content-Length"] = str(len(body))
                         headers.extend_header_value("vary", "Accept-Encoding")
                         message["body"] = body
+                        set_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, True)
 
                         await send(initial_message.value)
                         await send(message)

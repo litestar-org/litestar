@@ -59,6 +59,7 @@ from .callable_types import (
 from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
+    MaybePartial,
     Middleware,
     ParametersMap,
     PathType,
@@ -129,6 +130,7 @@ __all__ = (
     "LifeSpanStartupEvent",
     "LifeSpanStartupFailedEvent",
     "Logger",
+    "MaybePartial",
     "Message",
     "Message",
     "Method",

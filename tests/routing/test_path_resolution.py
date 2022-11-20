@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Type
+from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
@@ -13,7 +13,6 @@ from starlite import (
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
@@ -98,7 +97,7 @@ def test_root_route_handler(
 
     with create_test_client([MyController, delete_handler] if delete_handler else MyController) as client:
         response = client.get(decorator_path or test_path)
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
         assert response.json() == person_instance.dict()
         if delete_handler:
             delete_response = client.delete("/")
@@ -133,9 +132,9 @@ def test_handler_multi_paths() -> None:
         ("/sub/path", "/sub-path", HTTP_404_NOT_FOUND),
         ("/sub/path", "/sub", HTTP_404_NOT_FOUND),
         ("/sub/path/{path_param:int}", "/sub/path", HTTP_404_NOT_FOUND),
-        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_400_BAD_REQUEST),
-        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_400_BAD_REQUEST),
+        ("/sub/path/{path_param:int}", "/sub/path/abcd", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:uuid}", "/sub/path/100", HTTP_404_NOT_FOUND),
+        ("/sub/path/{path_param:float}", "/sub/path/abcd", HTTP_404_NOT_FOUND),
     ],
 )
 def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
@@ -206,3 +205,21 @@ def test_special_chars(
 
         if response.status_code == HTTP_200_OK:
             assert response.text == expected_param
+
+
+def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -> None:
+    # https://github.com/starlite-api/starlite/issues/816
+
+    # the error condition requires the path to not be a plain route, hence the prefixed path parameters
+    @get("/{a:str}/b")
+    def get_list() -> List[str]:
+        return ["ok"]
+
+    @get("/{a:str}/b/{c:int}")
+    def get_member() -> str:
+        return "ok"
+
+    with create_test_client(route_handlers=[get_list, get_member]) as client:
+        resp = client.get("/scope/b")
+        assert resp.status_code == 200
+        assert resp.json() == ["ok"]

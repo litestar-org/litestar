@@ -1,9 +1,10 @@
+import re
 from collections import defaultdict
 from traceback import format_exc
-from typing import TYPE_CHECKING, Dict, List, Set, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Union
 
 from starlite.asgi.routing_trie import validate_node
-from starlite.asgi.routing_trie.mapping import add_map_route_to_trie
+from starlite.asgi.routing_trie.mapping import add_route_to_trie
 from starlite.asgi.routing_trie.traversal import parse_scope_to_route
 from starlite.asgi.routing_trie.types import create_node
 from starlite.asgi.utils import get_route_handlers
@@ -37,8 +38,11 @@ class ASGIRouter:
     """
 
     __slots__ = (
+        "_mount_paths_regex",
+        "_mount_routes",
         "_plain_routes",
         "_registered_routes",
+        "_static_routes",
         "app",
         "root_route_map_node",
         "route_handler_index",
@@ -51,6 +55,8 @@ class ASGIRouter:
         Args:
             app: The Starlite app instance
         """
+        self._mount_paths_regex: Optional[Pattern] = None
+        self._mount_routes: Dict[str, "RouteTrieNode"] = {}
         self._plain_routes: Set[str] = set()
         self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
         self.app = app
@@ -64,7 +70,11 @@ class ASGIRouter:
         The main entry point to the Router class.
         """
         asgi_app, handler = parse_scope_to_route(
-            root_node=self.root_route_map_node, scope=scope, plain_routes=self._plain_routes
+            root_node=self.root_route_map_node,
+            scope=scope,
+            plain_routes=self._plain_routes,
+            mount_routes=self._mount_routes,
+            mount_paths_regex=self._mount_paths_regex,
         )
         scope["route_handler"] = handler
         await asgi_app(scope, receive, send)
@@ -109,20 +119,23 @@ class ASGIRouter:
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:
-            node = add_map_route_to_trie(
+            node = add_route_to_trie(
+                app=self.app,
+                mount_routes=self._mount_routes,
+                plain_routes=self._plain_routes,
                 root_node=self.root_route_map_node,
                 route=route,
-                app=self.app,
-                plain_routes=self._plain_routes,
             )
 
-            if node["path_parameters"] != route.path_parameters:
+            if node.path_parameters != route.path_parameters:
                 raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
 
             self._store_handler_to_route_mapping(route)
             self._registered_routes.add(route)
 
         validate_node(node=self.root_route_map_node)
+        if self._mount_routes:
+            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.

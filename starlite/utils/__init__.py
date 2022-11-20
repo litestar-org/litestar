@@ -22,7 +22,11 @@ from .predicates import (
     is_optional_union,
     is_typeddict_typeguard,
 )
-from .scope import get_serializer_from_scope
+from .scope import (
+    get_serializer_from_scope,
+    get_starlite_scope_state,
+    set_starlite_scope_state,
+)
 from .sequence import find_index, unique
 from .serialization import default_serializer
 from .sync import (
@@ -55,6 +59,7 @@ __all__ = (
     "get_exception_handler",
     "get_name",
     "get_serializer_from_scope",
+    "get_starlite_scope_state",
     "is_async_callable",
     "is_class_and_subclass",
     "is_dataclass_class_or_instance_typeguard",
@@ -65,6 +70,7 @@ __all__ = (
     "join_paths",
     "normalize_path",
     "obfuscate",
+    "set_starlite_scope_state",
     "should_skip_dependency_validation",
     "unique",
     "warn_deprecation",

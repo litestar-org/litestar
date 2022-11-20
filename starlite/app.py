@@ -1,4 +1,5 @@
 from datetime import date, datetime, time, timedelta
+from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
@@ -17,7 +18,14 @@ from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types.internal_types import PathParameterDefinition
-from starlite.utils import as_async_callable_list, join_paths, unique
+from starlite.utils import (
+    as_async_callable_list,
+    async_partial,
+    is_async_callable,
+    join_paths,
+    unique,
+)
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -408,6 +416,7 @@ class Starlite(Router):
 
             for route_handler in route_handlers:
                 self._create_handler_signature_model(route_handler=route_handler)
+                self._set_runtime_callables(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
                 route_handler.resolve_opts()
@@ -556,7 +565,7 @@ class Starlite(Router):
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
 
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
+        handler_fn = cast("AnyCallable", handler_index["handler"].fn.value)
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 
@@ -587,18 +596,53 @@ class Starlite(Router):
             debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )
 
+    @staticmethod
+    def _set_runtime_callables(route_handler: "BaseRouteHandler") -> None:
+        """Optimize the route_handler.fn and any provider.dependency callables for runtime by doing the following:
+
+        1. ensure that the `self` argument is preserved by binding it using partial.
+        2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
+
+        Args:
+            route_handler: A route handler to process.
+
+        Returns:
+            None
+        """
+        from starlite.controller import Controller
+
+        if isinstance(route_handler.owner, Controller) and not hasattr(route_handler.fn.value, "func"):
+            route_handler.fn.value = partial(route_handler.fn.value, route_handler.owner)
+
+        if isinstance(route_handler, HTTPRouteHandler):
+            route_handler.has_sync_callable = False
+            if not is_async_callable(route_handler.fn.value):
+                if route_handler.sync_to_thread:
+                    route_handler.fn.value = async_partial(route_handler.fn.value)
+                else:
+                    route_handler.has_sync_callable = True
+
+        for provider in route_handler.resolve_dependencies().values():
+            if not is_async_callable(provider.dependency.value):
+                provider.has_sync_callable = False
+                if provider.sync_to_thread:
+                    provider.dependency.value = async_partial(provider.dependency.value)
+                else:
+                    provider.has_sync_callable = True
+
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
         """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = SignatureModelFactory(
-                fn=cast("AnyCallable", route_handler.fn),
+                fn=cast("AnyCallable", unwrap_partial(route_handler.fn.value)),
                 plugins=self.plugins,
                 dependency_names=route_handler.dependency_name_set,
             ).create_signature_model()
+
         for provider in list(route_handler.resolve_dependencies().values()):
-            if not provider.signature_model:
+            if not getattr(provider, "signature_model", None):
                 provider.signature_model = SignatureModelFactory(
-                    fn=provider.dependency,
+                    fn=provider.dependency.value,
                     plugins=self.plugins,
                     dependency_names=route_handler.dependency_name_set,
                 ).create_signature_model()

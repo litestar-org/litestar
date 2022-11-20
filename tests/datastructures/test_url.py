@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from starlite.datastructures import QueryMultiDict
+from starlite.datastructures import MultiDict
 from starlite.datastructures.url import URL, make_absolute_url
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ def test_url_from_components(component: str, value: str) -> None:
         ("netloc", "example.com", "example.com"),
         ("path", "/foo", "/foo"),
         ("query", "foo=baz", "foo=baz"),
-        ("query", QueryMultiDict({"foo": "baz"}), "foo=baz"),
+        ("query", MultiDict({"foo": "baz"}), "foo=baz"),
         ("fragment", "anchor2", "anchor2"),
     ],
 )

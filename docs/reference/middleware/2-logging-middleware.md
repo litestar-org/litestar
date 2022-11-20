@@ -4,6 +4,8 @@
     options:
         members:
             - exclude
+            - exclude_opt_key
+            - include_compressed_body
             - logger_name
             - middleware
             - middleware_class

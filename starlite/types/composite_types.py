@@ -1,3 +1,4 @@
+from functools import partial
 from os import PathLike
 from pathlib import Path
 from typing import (
@@ -58,3 +59,4 @@ Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
 ]
+MaybePartial = Union[T, partial]

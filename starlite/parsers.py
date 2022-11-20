@@ -1,7 +1,8 @@
 from contextlib import suppress
+from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
-from typing import TYPE_CHECKING, Any, Dict
-from urllib.parse import unquote
+from typing import TYPE_CHECKING, Any, Dict, Tuple
+from urllib.parse import parse_qsl, unquote
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
@@ -45,6 +46,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     return values_dict
 
 
+@lru_cache
 def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     """Parse a cookie string into a dictionary of values.
 
@@ -59,3 +61,20 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     for k, v in filter(lambda x: x[0] or x[1], ((k.strip(), v.strip()) for k, v in cookies)):
         output[k] = unquote(unquote_cookie(v))
     return output
+
+
+@lru_cache
+def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
+    """Parse a query string into a tuple of key value pairs.
+
+    Args:
+        query_string: A query string.
+
+    Returns:
+        A tuple of key value pairs.
+    """
+    _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
+    return tuple(
+        (k.decode(), v.decode() if v not in _bools else _bools[v])
+        for k, v in parse_qsl(query_string, keep_blank_values=True)
+    )

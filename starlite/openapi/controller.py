@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Callable, Dict, Literal
+from functools import cached_property
+from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
 
-from orjson import OPT_INDENT_2, dumps
+from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, dumps
+from yaml import dump as dump_yaml
 
 from starlite.connection import Request
 from starlite.controller import Controller
@@ -15,6 +17,24 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
 MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
+
+
+class OpenAPISchemaResponse(Response):
+    """Response class for OpenAPI Schemas."""
+
+    def render(self, content: "OpenAPI") -> bytes:
+        """Handle rendering of schema into the correct format - either YAML or JSON.
+
+        Args:
+            content: The [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance to render.
+
+        Returns:
+            Rendered bytes.
+        """
+        content_dict = content.dict(by_alias=True, exclude_none=True)
+        if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
+            return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
+        return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
 
 
 class OpenAPIController(Controller):
@@ -32,11 +52,11 @@ class OpenAPIController(Controller):
     """
     Redoc version to download from the CDN.
     """
-    swagger_ui_version: str = "4.14.0"
+    swagger_ui_version: str = "4.15.5"
     """
     SwaggerUI version to download from the CDN.
     """
-    stoplight_elements_version: str = "7.6.5"
+    stoplight_elements_version: str = "7.7.5"
     """
     StopLight Elements version to download from the CDN.
     """
@@ -104,7 +124,7 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
         return request.app.openapi_schema
 
-    def should_serve_endpoint(self, request: Request) -> bool:
+    def should_serve_endpoint(self, request: "Request") -> bool:
         """Verify that the requested path is within the enabled endpoints in the openapi_config.
 
         Args:
@@ -140,7 +160,7 @@ class OpenAPIController(Controller):
         """
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
-    @property
+    @cached_property
     def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
         """Map render method names to render methods.
 
@@ -172,7 +192,9 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_YAML)
+            return OpenAPISchemaResponse(
+                content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_YAML
+            )
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
@@ -190,7 +212,9 @@ class OpenAPIController(Controller):
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
 
         if self.should_serve_endpoint(request):
-            return Response(content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_JSON)
+            return OpenAPISchemaResponse(
+                content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_JSON
+            )
         return Response(content={}, status_code=HTTP_404_NOT_FOUND)
 
     @get(path="/", media_type=MediaType.HTML, include_in_schema=False)
@@ -214,10 +238,12 @@ class OpenAPIController(Controller):
         config = request.app.openapi_config
         if not config:  # pragma: no cover
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
+
         render_method = self.render_methods_map[config.root_schema_site]
 
         if self.should_serve_endpoint(request):
             return Response(content=render_method(request), media_type=MediaType.HTML)
+
         return Response(
             content=self.render_404_page(),
             status_code=HTTP_404_NOT_FOUND,
@@ -297,12 +323,14 @@ class OpenAPIController(Controller):
         """
         schema = self.get_schema_from_request(request)
         # Note: Fix for Swagger rejection OpenAPI >=3.1
-        if self._dumped_modified_schema == "":
+        if not self._dumped_schema:
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
+
             self._dumped_modified_schema = dumps(
                 schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2
             ).decode("utf-8")
+
         head = f"""
           <head>
             <title>{schema.info.title}</title>
@@ -315,6 +343,7 @@ class OpenAPIController(Controller):
             <style>{self.style}</style>
           </head>
         """
+
         body = f"""
           <body>
             <div id='swagger-container'/>
@@ -333,6 +362,7 @@ class OpenAPIController(Controller):
             </script>
           </body>
         """
+
         return f"""
         <!DOCTYPE html>
             <html>
@@ -366,6 +396,7 @@ class OpenAPIController(Controller):
             <style>{self.style}</style>
           </head>
         """
+
         body = f"""
           <body>
             <elements-api
@@ -375,6 +406,7 @@ class OpenAPIController(Controller):
             />
           </body>
         """
+
         return f"""
         <!DOCTYPE html>
             <html>
@@ -397,10 +429,12 @@ class OpenAPIController(Controller):
             A rendered html string.
         """
         schema = self.get_schema_from_request(request)
-        if self._dumped_schema == "":
+
+        if not self._dumped_schema:
             self._dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
                 "utf-8"
             )
+
         head = f"""
           <head>
             <title>{schema.info.title}</title>
@@ -408,10 +442,12 @@ class OpenAPIController(Controller):
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             """
+
         if self.redoc_google_fonts:
             head += """
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
             """
+
         head += f"""
             <script src="{self.redoc_js_url}" crossorigin></script>
             <style>
@@ -419,6 +455,7 @@ class OpenAPIController(Controller):
             </style>
           </head>
         """
+
         body = f"""
           <body>
             <div id='redoc-container'/>
@@ -431,6 +468,7 @@ class OpenAPIController(Controller):
             </script>
           </body>
         """
+
         return f"""
         <!DOCTYPE html>
             <html>

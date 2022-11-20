@@ -1,15 +1,15 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import ExceptionHandlersMap, Guard
-from starlite.utils import is_async_callable
+from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
+from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
-    from starlite.types import AnyCallable
+    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
@@ -53,9 +53,10 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         self.is_static = is_static
         super().__init__(path, exception_handlers=exception_handlers, guards=guards, name=name, opt=opt, **kwargs)
 
-    def __call__(self, fn: "AnyCallable") -> "ASGIRouteHandler":
+    def __call__(self, fn: "AsyncAnyCallable") -> "ASGIRouteHandler":
         """Replace a function with itself."""
-        self.fn = fn
+        self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
+        self.signature = Signature.from_callable(fn)
         self._validate_handler_function()
         return self
 
@@ -63,18 +64,14 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        fn = cast("AnyCallable", self.fn)
-        signature = Signature.from_callable(fn)
-
-        if signature.return_annotation not in {None, "None"}:
+        if self.signature.return_annotation not in {None, "None"}:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
 
-        if any(key not in signature.parameters for key in ("scope", "send", "receive")):
+        if any(key not in self.signature.parameters for key in ("scope", "send", "receive")):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
-
-        if not is_async_callable(fn):
+        if not is_async_callable(self.fn.value):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
 

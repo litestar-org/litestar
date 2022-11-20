@@ -20,8 +20,3 @@
     options:
         members:
             - close
-
-::: starlite.datastructures.QueryMultiDict
-    options:
-        members:
-            - from_query_string

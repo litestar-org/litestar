@@ -12,7 +12,6 @@ from typing import (
     TypeVar,
     Union,
 )
-from urllib.parse import parse_qsl
 
 from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
@@ -128,22 +127,3 @@ class FormMultiDict(ImmutableMultiDict[Any]):
         for _, value in self.multi_items():
             if isinstance(value, UploadFile):
                 await value.close()
-
-
-class QueryMultiDict(MultiDict):
-    """MultiDict for URL query parameters."""
-
-    @classmethod
-    def from_query_string(cls, query_string: str) -> "QueryMultiDict":
-        """Create a `QueryMultiDict` from a query string.
-
-        Args:
-            query_string: A query string.
-
-        Returns:
-            A QueryMultiDict instance
-        """
-        _bools = {"true": True, "false": False, "True": True, "False": False}
-        return cls(
-            (k, v) if v not in _bools else (k, _bools[v]) for k, v in parse_qsl(query_string, keep_blank_values=True)
-        )

@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Any, Optional, cast
-
-from anyio import Lock
+from typing import TYPE_CHECKING, Any
 
 from starlite.types import Empty
-from starlite.utils.sync import AsyncCallable, is_async_callable
+from starlite.utils.helpers import Ref
+from starlite.utils.sync import is_async_callable
 
 if TYPE_CHECKING:
     from typing import Type
@@ -15,14 +14,22 @@ if TYPE_CHECKING:
 class Provide:
     """A wrapper class for dependency injection."""
 
-    __slots__ = ("dependency", "use_cache", "cache_per_request", "cache_key", "lock", "value", "signature_model")
+    __slots__ = (
+        "dependency",
+        "use_cache",
+        "lock",
+        "value",
+        "signature_model",
+        "sync_to_thread",
+        "has_sync_callable",
+    )
+
+    signature_model: "Type[SignatureModel]"
 
     def __init__(
         self,
         dependency: "AnyCallable",
         use_cache: bool = False,
-        cache_per_request: bool = False,
-        cache_key: Optional[str] = None,
         sync_to_thread: bool = False,
     ) -> None:
         """Initialize `Provide`
@@ -30,17 +37,13 @@ class Provide:
         Args:
             dependency: Callable to inject, can be a function, method or class.
             use_cache: Cache the dependency return value. Defaults to False.
-            cache_per_request: Cache the dependency return value per request. Defaults to False.
-            cache_key: Override the key for per request caching. Defaults to the function name.
             sync_to_thread: Run sync code in an async thread. Defaults to False.
         """
-        self.dependency = cast("AnyCallable", AsyncCallable(dependency) if sync_to_thread else dependency)
+        self.sync_to_thread = sync_to_thread
+        self.dependency = Ref["AnyCallable"](dependency)
         self.use_cache = use_cache
-        self.cache_per_request = cache_per_request
-        self.cache_key = cache_key if cache_key else getattr(dependency, "__name__", "anonymous")
-        self.lock = Lock()
         self.value: Any = Empty
-        self.signature_model: Optional["Type[SignatureModel]"] = None
+        self.has_sync_callable = not is_async_callable(self.dependency.value)
 
     async def __call__(self, **kwargs: Any) -> Any:
         """Proxy a call to 'self.proxy'."""
@@ -48,10 +51,10 @@ class Provide:
         if self.use_cache and self.value is not Empty:
             return self.value
 
-        if is_async_callable(self.dependency):
-            value = await self.dependency(**kwargs)
+        if self.has_sync_callable:
+            value = self.dependency.value(**kwargs)
         else:
-            value = self.dependency(**kwargs)
+            value = await self.dependency.value(**kwargs)
 
         if self.use_cache:
             self.value = value

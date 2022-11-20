@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
 
 from starlite.datastructures.headers import Headers
-from starlite.datastructures.multi_dicts import QueryMultiDict
+from starlite.datastructures.multi_dicts import MultiDict
 from starlite.datastructures.state import State
 from starlite.datastructures.url import URL, Address, make_absolute_url
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.parsers import parse_cookie_string
+from starlite.parsers import parse_cookie_string, parse_query_string
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -155,15 +155,15 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return cast("Headers", self._headers)
 
     @property
-    def query_params(self) -> QueryMultiDict:
+    def query_params(self) -> MultiDict:
         """Return the query parameters of this connection's `Scope`.
 
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
         if self._parsed_query is Empty:
-            self._parsed_query = self.scope["_parsed_query"] = QueryMultiDict.from_query_string(self.scope.get("query_string", b"").decode("utf-8"))  # type: ignore[typeddict-item]
-        return cast("QueryMultiDict", self._parsed_query)
+            self._parsed_query = self.scope["_parsed_query"] = parse_query_string(self.scope.get("query_string", b""))  # type: ignore
+        return MultiDict(self._parsed_query)
 
     @property
     def path_params(self) -> Dict[str, Any]:

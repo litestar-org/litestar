@@ -88,8 +88,7 @@ def test_opt_resolution(
     router = Router("/router", route_handlers=[MyController], opt=router_opt)
     app = Starlite(route_handlers=[router], opt=app_opt)
     assert (
-        app.asgi_router.root_route_map_node["children"]["/router/controller"]["asgi_handlers"]["GET"][1].opt
-        == expected_opt
+        app.asgi_router.root_route_map_node.children["/router/controller"].asgi_handlers["GET"][1].opt == expected_opt
     )
 
 
@@ -110,23 +109,19 @@ def test_opt_not_affected_by_route_handler_copying() -> None:
 
     app = Starlite(route_handlers=[router, another_router])
 
-    assert app.asgi_router.root_route_map_node["children"]["/router/controller"]["asgi_handlers"]["GET"][1].opt == {
+    assert app.asgi_router.root_route_map_node.children["/router/controller"].asgi_handlers["GET"][1].opt == {
         "router": "router",
         "route": "route",
     }
-    assert app.asgi_router.root_route_map_node["children"]["/router/fn_handler"]["asgi_handlers"]["GET"][1].opt == {
+    assert app.asgi_router.root_route_map_node.children["/router/fn_handler"].asgi_handlers["GET"][1].opt == {
         "router": "router",
         "fn_route": "fn_route",
     }
 
-    assert app.asgi_router.root_route_map_node["children"]["/another_router/controller"]["asgi_handlers"]["GET"][
-        1
-    ].opt == {
+    assert app.asgi_router.root_route_map_node.children["/another_router/controller"].asgi_handlers["GET"][1].opt == {
         "route": "route",
     }
 
-    assert app.asgi_router.root_route_map_node["children"]["/another_router/fn_handler"]["asgi_handlers"]["GET"][
-        1
-    ].opt == {
+    assert app.asgi_router.root_route_map_node.children["/another_router/fn_handler"].asgi_handlers["GET"][1].opt == {
         "fn_route": "fn_route",
     }

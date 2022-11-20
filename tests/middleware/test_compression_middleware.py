@@ -90,7 +90,7 @@ def test_brotli_with_gzip_fallback_enabled() -> None:
     with create_test_client(
         route_handlers=[handler], compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=True)
     ) as client:
-        response = client.get("/", headers={"accept-encoding": CompressionEncoding.GZIP})  # type: ignore
+        response = client.get("/", headers={"accept-encoding": CompressionEncoding.GZIP})
         assert response.status_code == HTTP_200_OK
         assert response.text == "_starlite_" * 4000
         assert response.headers["Content-Encoding"] == CompressionEncoding.GZIP

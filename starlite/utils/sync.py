@@ -12,7 +12,6 @@ from typing import (
     List,
     TypeVar,
     Union,
-    cast,
 )
 
 from anyio.to_thread import run_sync
@@ -43,7 +42,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
 class AsyncCallable(Generic[P, T]):
     """Wrap a callable into an asynchronous callable."""
 
-    __slots__ = ("args", "kwargs", "wrapped_callable", "is_method", "num_expected_args")
+    __slots__ = ("args", "kwargs", "ref", "is_method", "num_expected_args")
 
     def __init__(self, fn: Callable[P, T]) -> None:
         """Initialize the wrapper from any callable.
@@ -53,7 +52,9 @@ class AsyncCallable(Generic[P, T]):
         """
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
-        self.wrapped_callable = Ref[Callable](fn if is_async_callable(fn) else async_partial(fn))  # pyright: ignore
+        self.ref = Ref[Callable[..., Awaitable[T]]](
+            fn if is_async_callable(fn) else async_partial(fn)  # pyright: ignore
+        )
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         """Proxy the wrapped function's call method.
@@ -65,7 +66,7 @@ class AsyncCallable(Generic[P, T]):
         Returns:
             The return value of the wrapped function.
         """
-        return cast("T", await self.wrapped_callable.value(*args, **kwargs))  # type: ignore
+        return await self.ref.value(*args, **kwargs)
 
 
 def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:
@@ -98,6 +99,8 @@ def async_partial(fn: Callable) -> Callable:
         applied_kwarg = partial(fn, **kwargs)
         return await run_sync(applied_kwarg, *args)
 
+    # this allows us to unwrap the partial later, so it's an important "hack".
+    wrapper.func = fn  # type: ignore
     return wrapper
 
 

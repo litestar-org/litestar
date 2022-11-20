@@ -42,8 +42,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
     """An immutable, case-insensitive for HTTP headers.
 
     Notes:
-        - This class inherits from [multidict](https://multidict.aio-
-            libs.org/en/stable/multidict.html#cimultidictproxy).
+        - This class inherits from [multidict](https://multidict.aio-libs.org/en/stable/multidict.html#cimultidictproxy).
     """
 
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
@@ -63,6 +62,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             super().__init__(CIMultiDict(headers_))
         else:
             super().__init__(headers)
+        self._header_list: Optional["RawHeadersList"] = None
 
     @classmethod
     def from_scope(cls, scope: "HeaderScope") -> "Headers":
@@ -77,7 +77,12 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a `headers` key
         """
-        return cls(scope["headers"])
+        scope_headers = scope.get("_headers")
+        if scope_headers:
+            return cast("Headers", scope_headers)
+        headers = cls(scope["headers"])
+        scope["_headers"] = headers  # type: ignore[typeddict-item]
+        return headers
 
     def to_header_list(self) -> "RawHeadersList":
         """Raw header value.
@@ -85,7 +90,13 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Returns:
             A list of tuples contain the header and header-value as bytes
         """
-        return _encode_headers((key, value) for key in set(self) for value in self.getall(key))
+        # Since `Headers` are immutable, this can be cached
+        header_list = self._header_list
+        if not header_list:
+            header_list = self._header_list = _encode_headers(
+                (key, value) for key in set(self) for value in self.getall(key)
+            )
+        return header_list  # noqa: R504
 
 
 class MutableScopeHeaders(MutableMapping):

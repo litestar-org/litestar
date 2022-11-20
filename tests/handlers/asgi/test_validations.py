@@ -43,4 +43,4 @@ def test_asgi_handler_validation() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(sync_fn)
+        asgi(path="/")(sync_fn)  # type: ignore

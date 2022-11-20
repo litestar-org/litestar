@@ -1,4 +1,12 @@
-from starlite import MediaType, Request, Response, Starlite, get, post
+from starlite import (
+    MediaType,
+    NotFoundException,
+    Request,
+    Response,
+    Starlite,
+    get,
+    post,
+)
 from starlite.exceptions import InternalServerException
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import TestClient, create_test_client
@@ -25,7 +33,7 @@ def test_using_custom_http_exception_handler() -> None:
     def my_custom_handler(_: Request, __: Exception) -> Response:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
 
-    with create_test_client(my_route_handler, exception_handlers={HTTP_400_BAD_REQUEST: my_custom_handler}) as client:
+    with create_test_client(my_route_handler, exception_handlers={NotFoundException: my_custom_handler}) as client:
         response = client.get("/abc")
         assert response.text == "custom message"
         assert response.status_code == HTTP_400_BAD_REQUEST
