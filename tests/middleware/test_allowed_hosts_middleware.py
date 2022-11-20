@@ -25,7 +25,7 @@ def test_allowed_hosts_middleware() -> None:
 
     client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     unpacked_middleware = []
-    cur = client.app.asgi_router.root_route_map_node["children"]["/"]["asgi_handlers"]["GET"][0]
+    cur = client.app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0]
     while hasattr(cur, "app"):
         unpacked_middleware.append(cur)
         cur = cast("Any", cur.app)

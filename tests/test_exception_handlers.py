@@ -4,6 +4,7 @@ import pytest
 
 from starlite import (
     Controller,
+    HTTPException,
     InternalServerException,
     NotFoundException,
     Request,
@@ -13,7 +14,6 @@ from starlite import (
     ValidationException,
     get,
 )
-from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
         (NotFoundException, "handler"),
     ],
 )
-def test_exception_handling(exc_to_raise: Exception, expected_layer: str) -> None:
+def test_exception_handling(exc_to_raise: HTTPException, expected_layer: str) -> None:
     caller = {"name": ""}
 
     def create_named_handler(caller_name: str, expected_exception: Type[Exception]) -> "ExceptionHandler":
@@ -37,7 +37,7 @@ def test_exception_handling(exc_to_raise: Exception, expected_layer: str) -> Non
             assert isinstance(exc, expected_exception)
             assert isinstance(req, Request)
             caller["name"] = caller_name
-            return Response(content={}, status_code=HTTP_400_BAD_REQUEST)
+            return Response(content={}, status_code=exc_to_raise.status_code)
 
         return handler
 
@@ -68,5 +68,6 @@ def test_exception_handling(exc_to_raise: Exception, expected_layer: str) -> Non
     )
 
     with create_test_client(route_handlers=[my_router]) as client:
-        client.get("/base/test/")
+        response = client.get("/base/test/")
+        assert response.status_code == exc_to_raise.status_code, response.json()
         assert caller["name"] == expected_layer

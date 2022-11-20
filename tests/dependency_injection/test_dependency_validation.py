@@ -18,7 +18,7 @@ def test_dependency_validation() -> None:
         path="/{path_param:int}",
         dependencies={
             "first": Provide(first_method),
-            "second": Provide(second_method),
+            "second": Provide(second_method, sync_to_thread=True),
         },
     )
     def test_function(first: int, second: str, third: int) -> None:

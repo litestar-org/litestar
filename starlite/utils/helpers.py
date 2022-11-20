@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast
 
 T = TypeVar("T")
+
+if TYPE_CHECKING:
+    from starlite.types import MaybePartial
 
 
 def get_name(value: Any) -> str:
@@ -30,7 +33,7 @@ def get_enum_string_value(value: Union[Enum, str]) -> str:
     Returns:
         A string.
     """
-    return cast("str", value.value) if isinstance(value, Enum) else value
+    return value.value if isinstance(value, Enum) else value  # type:ignore
 
 
 @dataclass
@@ -39,5 +42,20 @@ class Ref(Generic[T]):
 
     __slots__ = ("value",)
 
-    value: Optional[T]
+    value: T
     """The value wrapped by the ref."""
+
+
+def unwrap_partial(value: "MaybePartial[T]") -> T:
+    """Unwraps a partial, returning the underlying callable.
+
+    Args:
+        value: A partial function.
+
+    Returns:
+        Callable
+    """
+    output: Any = value.func if hasattr(value, "func") else value  # pyright: ignore
+    while hasattr(output, "func"):
+        output = output.func
+    return cast("T", output)

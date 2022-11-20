@@ -268,7 +268,7 @@ class RequestFactory:
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(data, files=files or [])  # type: ignore[assignment]
+                encoding_headers, stream = encode_multipart_data(data, files=files or [], boundary=None)  # type: ignore[assignment]
             else:
                 encoding_headers, stream = encode_urlencoded_data(loads(dumps(data, default=default_serializer)))
             headers.update(encoding_headers)

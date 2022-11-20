@@ -14,8 +14,7 @@ from starlite import (
     get,
     post,
 )
-from starlite.datastructures import Cookie
-from starlite.datastructures.multi_dicts import QueryMultiDict
+from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType
 from starlite.middleware.session import SessionCookieConfig
 from starlite.testing import RequestFactory, TestClient
@@ -179,7 +178,7 @@ def test_request_factory_create_with_params() -> None:
     assert request.base_url == f"{scheme}://{server}:{port}{root_path}/"
     assert request.url == f"{scheme}://{server}:{port}{root_path}{path}"
     assert request.method == HttpMethod.GET
-    assert request.query_params == QueryMultiDict()
+    assert request.query_params == MultiDict()
     assert request.user == user
     assert request.auth == auth
     assert request.session == session

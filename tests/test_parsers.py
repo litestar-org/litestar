@@ -1,12 +1,13 @@
-from typing import Dict
+from typing import Any, Dict
 
 import pytest
 from pydantic import BaseConfig
 from pydantic.fields import ModelField
 
 from starlite import Cookie, RequestEncodingType
-from starlite.datastructures import FormMultiDict
-from starlite.parsers import parse_cookie_string, parse_form_data
+from starlite.datastructures import FormMultiDict, MultiDict
+from starlite.parsers import parse_cookie_string, parse_form_data, parse_query_string
+from starlite.testing import RequestFactory
 
 
 def test_parse_form_data() -> None:
@@ -56,3 +57,23 @@ def test_parse_form_data() -> None:
 )
 def test_parse_cookie_string(cookie_string: str, expected: Dict[str, str]) -> None:
     assert parse_cookie_string(cookie_string) == expected
+
+
+def test_parse_query_string() -> None:
+    query: Dict[str, Any] = {
+        "value": "10",
+        "veggies": ["tomato", "potato", "aubergine"],
+        "calories": "122.53",
+        "healthy": True,
+        "polluting": False,
+    }
+    request = RequestFactory().get(query_params=query)
+    result = MultiDict(parse_query_string(request.scope.get("query_string", b"")))
+
+    assert result.dict() == {
+        "value": ["10"],
+        "veggies": ["tomato", "potato", "aubergine"],
+        "calories": ["122.53"],
+        "healthy": [True],
+        "polluting": [False],
+    }

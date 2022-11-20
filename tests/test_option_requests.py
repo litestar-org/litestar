@@ -184,7 +184,7 @@ def test_cors_options_request_fails_if_request_method_not_allowed() -> None:
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 
-def test_cors_options_request_succeds_if_request_method_not_specified() -> None:
+def test_cors_options_request_succeeds_if_request_method_not_specified() -> None:
     @get("/")
     def handler() -> None:
         return None

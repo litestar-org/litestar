@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import (
     Any,
     Deque,
-    Dict,
     FrozenSet,
     List,
     MutableSequence,
@@ -16,6 +15,7 @@ from urllib.parse import urlencode
 import pytest
 
 from starlite import Parameter, get
+from starlite.datastructures import MultiDict
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
@@ -121,9 +121,9 @@ def test_query_params(params_dict: dict, should_raise: bool) -> None:
     with create_test_client(test_method) as client:
         response = client.get(f"{test_path}?{urlencode(params_dict, doseq=True)}")
         if should_raise:
-            assert response.status_code == HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 @pytest.mark.parametrize(
@@ -159,7 +159,7 @@ def test_query_param_arrays(expected_type: Any, provided_value: Any, default: An
 
     test_method = test_method_without_default if default is ... else test_method_with_default
     # Set the type annotation of 'param' in a way mypy can deal with
-    test_method.fn.__annotations__["param"] = expected_type
+    test_method.fn.value.__annotations__["param"] = expected_type
 
     with create_test_client(test_method) as client:
         params = urlencode({"param": provided_value}, doseq=True)
@@ -179,8 +179,13 @@ def test_query_kwarg() -> None:
     )
 
     @get(test_path)
-    def test_method(a: List[str], b: List[str], query: Dict[str, Union[str, List[str]]]) -> None:
-        assert query == {"a": ["foo", "bar"], "b": ["qux"]}
+    def test_method(a: List[str], b: List[str], query: MultiDict) -> None:
+        assert isinstance(query, MultiDict)
+        assert {k: query.getall(k) for k in query} == {"a": ["foo", "bar"], "b": ["qux"]}
+        assert isinstance(a, list)
+        assert isinstance(b, list)
+        assert a == ["foo", "bar"]
+        assert b == ["qux"]
 
     with create_test_client(test_method) as client:
         response = client.get(f"{test_path}?{params}")

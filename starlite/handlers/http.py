@@ -57,7 +57,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import is_async_callable, unique
+from starlite.utils import Ref, is_async_callable, unique
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -66,6 +66,7 @@ if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.datastructures.headers import Header
     from starlite.plugins import PluginProtocol
+    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
     from starlite.types import AnyCallable, AsyncAnyCallable
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
@@ -110,6 +111,9 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     """
     if isawaitable(data):
         data = await data
+
+    if not plugins:
+        return data
 
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
@@ -285,7 +289,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "sync_to_thread",
         "tags",
         "template_name",
+        "has_sync_callable",
     )
+
+    has_sync_callable: bool
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
@@ -439,7 +446,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: "AnyCallable") -> "HTTPRouteHandler":
         """Replace a function with itself."""
-        self.fn = fn
+        self.fn = Ref["MaybePartial[AnyCallable]"](fn)
+        self.signature = Signature.from_callable(fn)
         self._validate_handler_function()
         return self
 
@@ -511,7 +519,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 "Optional[BeforeRequestHookHandler]",
                 before_request_handlers[-1] if before_request_handlers else None,
             )
-        return cast("Optional[BeforeRequestHookHandler]", self._resolved_before_request)
+        return self._resolved_before_request
 
     def resolve_after_response(self) -> Optional["AfterResponseHookHandler"]:
         """Resolve the after_response handler by starting from the route handler and moving up.
@@ -583,7 +591,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 )
 
             self._resolved_response_handler = handler
-        return cast("Callable[[Any], Awaitable[ASGIApp]]", self._resolved_response_handler)
+        return self._resolved_response_handler  # type:ignore[return-value]
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
@@ -602,15 +610,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         response_handler = self.resolve_response_handler()
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
-
-    @property
-    def signature(self) -> Signature:
-        """Return the signature of `self.fn`.
-
-        Returns:
-            A `Signature`
-        """
-        return Signature.from_callable(cast("AnyCallable", self.fn))
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from starlite.handlers import BaseRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
+from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -168,9 +169,15 @@ class Controller:
             for f_name in dir(self)
             if f_name not in dir(Controller) and isinstance(getattr(self, f_name), BaseRouteHandler)
         ]
+
         for f_name in route_handler_fields:
             source_route_handler = cast("BaseRouteHandler", getattr(self, f_name))
+
             route_handler = copy(source_route_handler)
+            if hasattr(route_handler.fn.value, "func"):
+                route_handler.fn.value = unwrap_partial(route_handler.fn.value)
+
             route_handler.owner = self
             route_handlers.append(route_handler)
+
         return route_handlers
