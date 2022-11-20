@@ -1,5 +1,18 @@
 # Changelog
 
+[1.40.0]
+
+- add `OpenTelemetry` instrumentation contrib package.
+- add forward ref resolution to signature models, allowing for usage with future annotations.
+- add handling of compressed "body" in logging middleware.
+- breaking: removed per request dependency caching.
+- fix 404 where current node has handlers and child route has path params.
+- fix flaky SQLA-session-backend tests.
+- update OpenAPI generation to hide automatically created OPTIONS routes in schema.
+- update `AllowedHosts` and `CompressionMiddleware` application to handler level.
+- update `request_factory.{_default_route_handler,default_app}` to have deferred bootstrap.
+- update the routing layer and param parsing to improve performance.
+
 [1.39.0]
 
 - add `CORSMiddleware`.
