@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Optional
 
 from starlite.constants import STARLITE
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from starlite.types import Scope, Serializer
@@ -23,8 +24,15 @@ def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
     return app.response_class.serializer if app.response_class else None
 
 
-def get_starlite_scope_state(scope: "Scope", key: str, default: Any = None) -> Any:
+def get_starlite_scope_state(scope: "Scope", key: str, default: Any = Empty) -> Any:
     """Get an internal value from connection scope state.
+
+    Note:
+        If called with a default value, this method behaves like to `dict.set_default()`, both setting the key in the
+        namespace to the default value, and returning it.
+
+        If called without a default value, the method behaves like `dict.get()`, returning `None` if the key does not
+        exist.
 
     Args:
         scope: The connection scope.
@@ -32,9 +40,12 @@ def get_starlite_scope_state(scope: "Scope", key: str, default: Any = None) -> A
         default: Value set in internal namespace and returned if `key` doesn't exist.
 
     Returns:
-        Value mapped to `key` in internal connection scope namespace. Returns `default` if `key` not in internal namespace.
+        Value mapped to `key` in internal connection scope namespace.
     """
-    return scope["state"].setdefault(STARLITE, {}).setdefault(key, default)
+    namespace = scope["state"].setdefault(STARLITE, {})
+    if default is Empty:
+        return namespace.get(key)
+    return namespace.setdefault(key, default)
 
 
 def set_starlite_scope_state(scope: "Scope", key: str, value: Any) -> None:

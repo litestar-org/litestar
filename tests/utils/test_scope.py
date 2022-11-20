@@ -43,14 +43,15 @@ def test_get_serializer_from_scope() -> None:
     )
 
 
-def test_get_starlite_scope_state_sets_starlite_key_in_scope_state(scope: "HTTPScope") -> None:
+def test_get_starlite_scope_state_without_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:
     get_starlite_scope_state(scope, "key")
     assert STARLITE in scope["state"]
-    assert scope["state"][STARLITE]["key"] is None
+    assert "key" not in scope["state"][STARLITE]
 
 
-def test_get_starlite_scope_state_set_default(scope: "HTTPScope") -> None:
+def test_get_starlite_scope_state_with_default_sets_key_in_scope_state(scope: "HTTPScope") -> None:
     value = get_starlite_scope_state(scope, "key", "value")
+    assert STARLITE in scope["state"]
     assert scope["state"][STARLITE]["key"] == "value" == value
 
 
