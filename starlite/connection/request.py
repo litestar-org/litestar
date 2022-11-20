@@ -107,27 +107,25 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         Raises:
             RuntimeError: if the stream is already consumed
         """
-        if isinstance(self._body, bytes):
+        if self._body is Empty:
+            if self.is_connected:
+                while event := await self.receive():
+                    if event["type"] == "http.request":
+                        if event["body"]:
+                            yield event["body"]
+                        if not event.get("more_body", False):
+                            break
+                    if event["type"] == "http.disconnect":
+                        raise InternalServerException("client disconnected prematurely")
+
+                self.is_connected = False
+                yield b""
+            else:
+                raise InternalServerException("stream consumed")
+        else:
             yield self._body
             yield b""
             return
-
-        if not self.is_connected:
-            raise InternalServerException("stream consumed")
-
-        while self.is_connected:
-            event = await self.receive()
-            if event["type"] == "http.request":
-                body = event.get("body", b"")
-                if body:
-                    yield body
-                if not event.get("more_body", False):
-                    break
-            if event["type"] == "http.disconnect":
-                raise InternalServerException("client disconnected prematurely")
-
-        self.is_connected = False
-        yield b""
 
     async def body(self) -> bytes:
         """Return the body of the request.
@@ -136,10 +134,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             A byte-string representing the body of the request.
         """
         if self._body is Empty:
-            chunks = []
-            async for chunk in self.stream():
-                chunks.append(chunk)
-            self._body = self.scope["_body"] = b"".join(chunks)  # type: ignore[typeddict-item]
+            self._body = self.scope["_body"] = b"".join([c async for c in self.stream()])  # type: ignore[typeddict-item]
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
@@ -173,9 +168,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
 
             elif content_type == RequestEncodingType.URL_ENCODED:
                 self._form = self.scope["_form"] = FormMultiDict(  # type: ignore[typeddict-item]
-                    parse_qsl(
-                        b"".join([chunk async for chunk in self.stream()]).decode(options.get("charset", "latin-1"))
-                    )
+                    parse_qsl((await self.body()).decode(options.get("charset", "latin-1")))
                 )
             else:
                 self._form = self.scope["_form"] = FormMultiDict()  # type: ignore[typeddict-item]
