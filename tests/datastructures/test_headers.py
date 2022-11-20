@@ -65,11 +65,6 @@ def test_headers_from_scope() -> None:
     assert headers["foo"] == "bar"
     assert headers["buzz"] == "bup"
 
-    headers = Headers.from_scope(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=((b"foo", b"bar"), (b"foo", b"baz")))
-    )
-    assert headers.getall("foo") == ["bar", "baz"]
-
 
 def test_headers_to_header_list() -> None:
     raw = [(b"foo", b"bar"), (b"foo", b"baz")]
