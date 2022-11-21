@@ -198,18 +198,19 @@ class FileResponse(Response):
         Returns:
             A stream function
         """
-        iterator = async_file_iterator(file_path=self.file_path, chunk_size=self.chunk_size, adapter=self.adapter)
 
         async def stream() -> None:
-            async for chunk in iterator:
-                stream_event: "HTTPResponseBodyEvent" = {
-                    "type": "http.response.body",
-                    "body": chunk,
-                    "more_body": True,
-                }
-                await send(stream_event)
-            terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
-            await send(terminus_event)
+            async with await self.adapter.open(self.file_path) as file:
+                more_body = True
+                while more_body:
+                    chunk = await file.read(self.chunk_size)
+                    more_body = len(chunk) == self.chunk_size
+                    stream_event: "HTTPResponseBodyEvent" = {
+                        "type": "http.response.body",
+                        "body": chunk,
+                        "more_body": more_body,
+                    }
+                    await send(stream_event)
 
         return stream
 
