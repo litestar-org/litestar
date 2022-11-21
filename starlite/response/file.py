@@ -4,7 +4,6 @@ from mimetypes import guess_type
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
     Callable,
     Coroutine,
     Dict,
@@ -18,7 +17,7 @@ from zlib import adler32
 
 from anyio import create_task_group
 
-from starlite.constants import DEFAULT_FILE_CHUNK_SIZE
+from starlite.constants import DEFAULT_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.base import Response
@@ -40,27 +39,6 @@ if TYPE_CHECKING:
         Send,
     )
     from starlite.types.file_types import FileInfo, FileSystemProtocol
-
-
-async def async_file_iterator(
-    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
-) -> AsyncGenerator[bytes, None]:
-    """Return an async that asynchronously reads a file and yields its chunks.
-
-    Args:
-        file_path: A path to a file.
-        chunk_size: The chunk file to use.
-        adapter: File system adapter class.
-        adapter: File system adapter class.
-
-    Returns:
-        An async generator.
-    """
-
-    async with await adapter.open(file_path) as file:
-        while chunk := await file.read(chunk_size):
-            yield chunk
-        return
 
 
 def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
@@ -93,7 +71,7 @@ class FileResponse(Response):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = DEFAULT_FILE_CHUNK_SIZE,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
@@ -227,15 +205,9 @@ class FileResponse(Response):
         Returns:
             None
         """
-        if self.content_length and self.content_length > self.chunk_size:
-            async with create_task_group() as task_group:
-                task_group.start_soon(self.create_stream(send=send))
-                await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
-        else:
-            async with await self.adapter.open(self.file_path) as file:
-                data = await file.read()
-                event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": data, "more_body": False}
-                await send(event)
+        async with create_task_group() as task_group:
+            task_group.start_soon(self.create_stream(send=send))
+            await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
 
     async def start_response(self, send: "Send") -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
