@@ -15,7 +15,7 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
-from starlite.constants import DEFAULT_CHUNK_SIZE
+from starlite.constants import DEFAULT_FILE_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
@@ -82,7 +82,7 @@ class FileResponse(StreamingResponse):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_size: int = DEFAULT_FILE_CHUNK_SIZE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
