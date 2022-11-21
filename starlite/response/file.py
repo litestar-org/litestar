@@ -208,8 +208,8 @@ class FileResponse(Response):
                     "more_body": True,
                 }
                 await send(stream_event)
-            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
-            await send(event)
+            terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+            await send(terminus_event)
 
         return stream
 
