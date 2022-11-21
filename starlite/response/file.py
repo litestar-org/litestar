@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from starlite.types import PathType, ResponseCookies, Send
     from starlite.types.file_types import FileInfo, FileSystemProtocol
 
-SIXTY_FOUR_KILO_BYTE: int = 2**16
+ONE_MEGA_BYTE: int = 1024 * 1024
 
 
 async def async_file_iterator(
@@ -85,7 +85,7 @@ class FileResponse(StreamingResponse):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = SIXTY_FOUR_KILO_BYTE,
+        chunk_size: int = ONE_MEGA_BYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
