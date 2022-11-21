@@ -4,7 +4,7 @@ from mimetypes import guess_type
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
+    AsyncGenerator,
     Coroutine,
     Dict,
     Literal,
@@ -15,10 +15,9 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
-from starlite.constants import DEFAULT_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response.base import Response
+from starlite.response.streaming import StreamingResponse
 from starlite.status_codes import HTTP_200_OK
 from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
@@ -29,8 +28,30 @@ if TYPE_CHECKING:
     from anyio import Path
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
-    from starlite.types import HTTPResponseBodyEvent, PathType, ResponseCookies, Send
+    from starlite.types import PathType, ResponseCookies, Send
     from starlite.types.file_types import FileInfo, FileSystemProtocol
+
+SIXTY_FOUR_KILO_BYTE: int = 2**16
+
+
+async def async_file_iterator(
+    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
+) -> AsyncGenerator[bytes, None]:
+    """Return an async that asynchronously reads a file and yields its chunks.
+
+    Args:
+        file_path: A path to a file.
+        chunk_size: The chunk file to use.
+        adapter: File system adapter class.
+        adapter: File system adapter class.
+
+    Returns:
+        An async generator.
+    """
+    async with await adapter.open(file_path) as file:
+        while chunk := await file.read(chunk_size):
+            if chunk:
+                yield chunk
 
 
 def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
@@ -46,16 +67,17 @@ def create_etag_for_file(path: "PathType", modified_time: float, file_size: int)
     return f'"{modified_time}-{file_size}-{check}"'
 
 
-class FileResponse(Response):
+class FileResponse(StreamingResponse):
     """A response, streaming a file as response body."""
 
     __slots__ = (
-        "adapter",
+        "chunk_size",
         "content_disposition_type",
         "etag",
-        "file_info",
         "file_path",
         "filename",
+        "adapter",
+        "file_info",
     )
 
     def __init__(
@@ -63,7 +85,7 @@ class FileResponse(Response):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_size: int = SIXTY_FOUR_KILO_BYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
@@ -117,7 +139,7 @@ class FileResponse(Response):
         self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
 
         super().__init__(
-            content=b"",
+            content=async_file_iterator(file_path=path, chunk_size=chunk_size, adapter=self.adapter),
             status_code=status_code,
             media_type=media_type,
             background=background,
@@ -125,7 +147,6 @@ class FileResponse(Response):
             cookies=cookies,
             encoding=encoding,
             is_head_response=is_head_response,
-            chunk_size=chunk_size,
         )
 
         if file_info:
@@ -158,45 +179,6 @@ class FileResponse(Response):
         if isinstance(self.file_info, dict):
             return self.file_info["size"]
         return 0
-
-    def create_stream(self, send: "Send") -> Callable[[], Coroutine[None, None, None]]:
-        """Create a function that streams the response body.
-
-        Args:
-            send: The ASGI Send function.
-
-        Returns:
-            A stream function
-        """
-
-        async def stream() -> None:
-            async with await self.adapter.open(self.file_path) as file:
-                more_body = True
-                while more_body:
-                    chunk = await file.read(self.chunk_size)
-                    more_body = len(chunk) == self.chunk_size
-                    stream_event: "HTTPResponseBodyEvent" = {
-                        "type": "http.response.body",
-                        "body": chunk,
-                        "more_body": more_body,
-                    }
-                    await send(stream_event)
-
-        return stream
-
-    async def send_without_stream(self, send: "Send") -> None:
-        """Send the response body without chunking it into a stream of messages.
-
-        Args:
-            send: The ASGI Send function.
-
-        Returns:
-            None
-        """
-        async with await self.adapter.open(self.file_path) as file:
-            data = await file.read()
-            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": data, "more_body": False}
-            await send(event)
 
     async def start_response(self, send: "Send") -> None:
         """Emit the start event of the response. This event includes the headers and status codes.

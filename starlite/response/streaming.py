@@ -1,17 +1,16 @@
+from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
     AsyncIterable,
     AsyncIterator,
-    Callable,
-    Coroutine,
     Dict,
     Optional,
     Union,
 )
 
-from anyio import create_task_group
+from anyio import CancelScope, create_task_group
 
 from starlite.enums import MediaType
 from starlite.response.base import Response
@@ -66,48 +65,59 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             status_code=status_code,
             is_head_response=is_head_response,
         )
-
         self.iterator: Union[AsyncIterable[Union[str, bytes]], AsyncGenerator[Union[str, bytes], None]] = (
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(content)
         )
 
-    def create_stream(self, send: "Send") -> Callable[[], Coroutine[None, None, None]]:
-        """Create a function that streams the response body.
+    async def _listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:
+        """Listen for a cancellation message, and if received - call cancel on the cancel scope.
+
+        Args:
+            cancel_scope: A task group cancel scope instance.
+            receive: The ASGI receive function.
+
+        Returns:
+            None
+        """
+        if not cancel_scope.cancel_called:
+            message = await receive()
+            if message["type"] == "http.disconnect":
+                # despite the IDE warning, this is not a coroutine because anyio 3+ changed this.
+                # therefore make sure not to await this.
+                cancel_scope.cancel()
+            else:
+                await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
+
+    async def _stream(self, send: "Send") -> None:
+        """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
 
         Args:
             send: The ASGI Send function.
 
         Returns:
-            A stream function
+            None
         """
-
-        async def stream() -> None:
-            async for chunk in self.iterator:
-                stream_event: "HTTPResponseBodyEvent" = {
-                    "type": "http.response.body",
-                    "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
-                    "more_body": True,
-                }
-                await send(stream_event)
-
-            terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
-            await send(terminus_event)
-
-        return stream
+        async for chunk in self.iterator:
+            stream_event: "HTTPResponseBodyEvent" = {
+                "type": "http.response.body",
+                "body": chunk if isinstance(chunk, bytes) else chunk.encode(self.encoding),
+                "more_body": True,
+            }
+            await send(stream_event)
+        terminus_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+        await send(terminus_event)
 
     async def send_body(self, send: "Send", receive: "Receive") -> None:
-        """Emit the response body.
+        """Emit a stream of events correlating with the response body.
 
         Args:
             send: The ASGI send function.
             receive: The ASGI receive function.
 
-        Notes:
-            - Response subclasses should customize this method if there is a need to customize sending data.
-
         Returns:
             None
         """
+
         async with create_task_group() as task_group:
-            task_group.start_soon(self.create_stream(send=send))
+            task_group.start_soon(partial(self._stream, send))
             await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
