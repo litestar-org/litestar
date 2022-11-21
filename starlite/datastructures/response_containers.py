@@ -23,7 +23,7 @@ from typing import (
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
 
-from starlite.constants import DEFAULT_FILE_CHUNK_SIZE
+from starlite.constants import DEFAULT_CHUNK_SIZE
 from starlite.datastructures import ETag
 from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
@@ -99,7 +99,7 @@ class File(ResponseContainer[FileResponse]):
     """An optional filename to set in the header."""
     stat_result: Optional[os.stat_result] = None
     """An optional result of calling 'os.stat'. If not provided, this will be done by the response constructor."""
-    chunk_size: int = DEFAULT_FILE_CHUNK_SIZE
+    chunk_size: int = DEFAULT_CHUNK_SIZE
     """The size of chunks to use when streaming the file"""
     content_disposition_type: Literal["attachment", "inline"] = "attachment"
     """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""

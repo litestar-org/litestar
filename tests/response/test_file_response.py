@@ -8,9 +8,7 @@ import pytest
 from starlite import ImproperlyConfiguredException, create_test_client, get
 from starlite.connection import empty_send
 from starlite.response import FileResponse
-from starlite.response.file import async_file_iterator
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))
@@ -101,22 +99,6 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
     path = tmpdir / "404.txt"
     with pytest.raises(ImproperlyConfiguredException):
         await FileResponse(path=path, filename="404.txt").start_response(empty_send)
-
-
-@pytest.mark.parametrize("chunk_size", [4, 8, 16, 256, 512, 1024, 2048])
-async def test_file_iterator(tmpdir: Path, chunk_size: int) -> None:
-    content = urandom(1024)
-    path = Path(tmpdir / "file.txt")
-    path.write_bytes(content)
-    result = b"".join(
-        [
-            chunk
-            async for chunk in async_file_iterator(
-                file_path=path, chunk_size=chunk_size, adapter=FileSystemAdapter(BaseLocalFileSystem())
-            )
-        ]
-    )
-    assert result == content
 
 
 @pytest.mark.parametrize("size", (1024, 2048, 4096, 1024 * 10, 2048 * 10, 4096 * 10))
