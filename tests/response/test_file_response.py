@@ -103,7 +103,7 @@ async def test_file_response_with_missing_file_raises_error(tmpdir: Path) -> Non
         await FileResponse(path=path, filename="404.txt").start_response(empty_send)
 
 
-@pytest.mark.parametrize("chunk_size", [4, 8, 16, 256, 512])
+@pytest.mark.parametrize("chunk_size", [4, 8, 16, 256, 512, 1024, 2048])
 async def test_file_iterator(tmpdir: Path, chunk_size: int) -> None:
     content = urandom(1024)
     path = Path(tmpdir / "file.txt")
