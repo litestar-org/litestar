@@ -73,7 +73,7 @@ class Response(Generic[T]):
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
         is_head_response: bool = False,
-        stream_chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_size: int = DEFAULT_CHUNK_SIZE,
     ) -> None:
         """Initialize the response.
 
@@ -89,7 +89,7 @@ class Response(Generic[T]):
                 the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
-            stream_chunk_size: The size of chunks to stream. If the response body is smaller than this size, it will
+            chunk_size: The size of chunks to stream. If the response body is smaller than this size, it will
                 not be streamed, otherwise it will be split into chunks and streamed.
         """
         self.background = background
@@ -98,7 +98,7 @@ class Response(Generic[T]):
         self.headers = headers or {}
         self.is_head_response = is_head_response
         self.media_type = get_enum_string_value(media_type)
-        self.stream_chunk_size = stream_chunk_size
+        self.stream_chunk_size = chunk_size
         self.status_allows_body = not (
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )

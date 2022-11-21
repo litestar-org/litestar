@@ -1,13 +1,13 @@
-DEFAULT_FILE_CHUNK_SIZE = 1024 * 64  # 64KB
-DEFAULT_CHUNK_SIZE = 1024 * 8  # 8KB
 DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
+DEFAULT_CHUNK_SIZE = 1024 * 8  # 8KB
+DEFAULT_FILE_CHUNK_SIZE = 1024 * 256  # 256KB
 EXTRA_KEY_IS_DEPENDENCY = "is_dependency"
 EXTRA_KEY_IS_PARAMETER = "is_parameter"
 EXTRA_KEY_REQUIRED = "required"
 EXTRA_KEY_SKIP_VALIDATION = "skip_validation"
 EXTRA_KEY_VALUE_TYPE = "value_type"
-HTTP_RESPONSE_START = "http.response.start"
 HTTP_RESPONSE_BODY = "http.response.body"
+HTTP_RESPONSE_START = "http.response.start"
 REDIRECT_STATUS_CODES = {301, 302, 303, 307, 308}
 RESERVED_KWARGS = {"state", "headers", "cookies", "request", "socket", "data", "query", "scope"}
 SCOPE_STATE_DEPENDENCY_CACHE = "dependency_cache"
