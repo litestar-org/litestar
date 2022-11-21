@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import cached_property
 from http.cookies import SimpleCookie
 from typing import Any, Dict, Literal, Optional, Tuple
 
@@ -34,7 +33,7 @@ class Cookie:
     documentation_only: bool = False
     """Defines the Cookie instance as for OpenAPI documentation purpose only"""
 
-    @cached_property
+    @property
     def simple_cookie(self) -> SimpleCookie:
         """Get a simple cookie object from the values.
 
@@ -71,7 +70,7 @@ class Cookie:
         """
         return b"set-cookie", self.to_header(header="").strip().encode("latin-1")
 
-    @cached_property
+    @property
     def dict(self) -> Dict[str, Any]:
         """Get the cookie as a dict.
 
