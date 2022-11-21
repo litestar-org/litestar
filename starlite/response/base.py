@@ -235,7 +235,7 @@ class Response(Generic[T]):
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
     @property
-    def content_length(self) -> Optional[int]:
+    def content_length(self) -> int:
         """Content length of the response if applicable.
 
         Returns:
@@ -244,7 +244,7 @@ class Response(Generic[T]):
         """
         if self.status_allows_body:
             return len(self.body)
-        return None
+        return 0
 
     def encode_headers(self) -> List[Tuple[bytes, bytes]]:
         """Encode the response headers as a list of byte tuples.
@@ -340,6 +340,18 @@ class Response(Generic[T]):
 
         return stream
 
+    async def send_without_stream(self, send: "Send") -> None:
+        """Send the response body without chunking it into a stream of messages.
+
+        Args:
+            send: The ASGI Send function.
+
+        Returns:
+            None
+        """
+        event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
+        await send(event)
+
     async def send_body(self, send: "Send", receive: "Receive") -> None:
         """Emit the response body.
 
@@ -353,13 +365,12 @@ class Response(Generic[T]):
         Returns:
             None
         """
-        if self.content_length and self.content_length >= self.chunk_size:
+        if self.content_length > self.chunk_size:
             async with create_task_group() as task_group:
                 task_group.start_soon(self.create_stream(send=send))
                 await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
         else:
-            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
-            await send(event)
+            await self.send_without_stream(send=send)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """ASGI callable of the `Response`.
