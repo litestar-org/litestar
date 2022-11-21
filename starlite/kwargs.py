@@ -379,9 +379,7 @@ class KwargsModel:
         expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
         expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
-        sequence_query_parameter_names = {
-            p.field_alias for p in param_definitions if p.param_type == ParamType.QUERY and p.is_sequence
-        }
+        sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
         expected_form_data = None
         data_model_field = signature_model.__fields__.get("data")
@@ -418,6 +416,7 @@ class KwargsModel:
                     dependency_kwargs_model=dependency_kwargs_model,
                 )
             expected_reserved_kwargs.update(dependency_kwargs_model.expected_reserved_kwargs)
+            sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
 
         return KwargsModel(
             expected_form_data=expected_form_data,  # pyright: ignore
