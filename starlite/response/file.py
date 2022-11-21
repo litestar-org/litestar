@@ -15,8 +15,6 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
-from anyio import create_task_group
-
 from starlite.constants import DEFAULT_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -31,13 +29,7 @@ if TYPE_CHECKING:
     from anyio import Path
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
-    from starlite.types import (
-        HTTPResponseBodyEvent,
-        PathType,
-        Receive,
-        ResponseCookies,
-        Send,
-    )
+    from starlite.types import HTTPResponseBodyEvent, PathType, ResponseCookies, Send
     from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 
@@ -157,7 +149,7 @@ class FileResponse(Response):
         return f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
 
     @property
-    def content_length(self) -> Optional[int]:
+    def content_length(self) -> int:
         """Content length of the response if applicable.
 
         Returns:
@@ -192,22 +184,19 @@ class FileResponse(Response):
 
         return stream
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:
-        """Emit the response body.
+    async def send_without_stream(self, send: "Send") -> None:
+        """Send the response body without chunking it into a stream of messages.
 
         Args:
-            send: The ASGI send function.
-            receive: The ASGI receive function.
-
-        Notes:
-            - Response subclasses should customize this method if there is a need to customize sending data.
+            send: The ASGI Send function.
 
         Returns:
             None
         """
-        async with create_task_group() as task_group:
-            task_group.start_soon(self.create_stream(send=send))
-            await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
+        async with await self.adapter.open(self.file_path) as file:
+            data = await file.read()
+            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": data, "more_body": False}
+            await send(event)
 
     async def start_response(self, send: "Send") -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
