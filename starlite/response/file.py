@@ -5,6 +5,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
+    Callable,
     Coroutine,
     Dict,
     Literal,
@@ -15,10 +16,12 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
+from anyio import create_task_group
+
 from starlite.constants import DEFAULT_FILE_CHUNK_SIZE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response.streaming import StreamingResponse
+from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
 from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
@@ -29,7 +32,13 @@ if TYPE_CHECKING:
     from anyio import Path
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
-    from starlite.types import PathType, ResponseCookies, Send
+    from starlite.types import (
+        HTTPResponseBodyEvent,
+        PathType,
+        Receive,
+        ResponseCookies,
+        Send,
+    )
     from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 
@@ -67,17 +76,16 @@ def create_etag_for_file(path: "PathType", modified_time: float, file_size: int)
     return f'"{modified_time}-{file_size}-{check}"'
 
 
-class FileResponse(StreamingResponse):
+class FileResponse(Response):
     """A response, streaming a file as response body."""
 
     __slots__ = (
-        "chunk_size",
+        "adapter",
         "content_disposition_type",
         "etag",
+        "file_info",
         "file_path",
         "filename",
-        "adapter",
-        "file_info",
     )
 
     def __init__(
@@ -139,7 +147,7 @@ class FileResponse(StreamingResponse):
         self.adapter = FileSystemAdapter(file_system or BaseLocalFileSystem())
 
         super().__init__(
-            content=async_file_iterator(file_path=path, chunk_size=chunk_size, adapter=self.adapter),
+            content=b"",
             status_code=status_code,
             media_type=media_type,
             background=background,
@@ -147,6 +155,7 @@ class FileResponse(StreamingResponse):
             cookies=cookies,
             encoding=encoding,
             is_head_response=is_head_response,
+            chunk_size=chunk_size,
         )
 
         if file_info:
@@ -179,6 +188,53 @@ class FileResponse(StreamingResponse):
         if isinstance(self.file_info, dict):
             return self.file_info["size"]
         return 0
+
+    def create_stream(self, send: "Send") -> Callable[[], Coroutine[None, None, None]]:
+        """Create a function that streams the response body.
+
+        Args:
+            send: The ASGI Send function.
+
+        Returns:
+            A stream function
+        """
+        iterator = async_file_iterator(file_path=self.file_path, chunk_size=self.chunk_size, adapter=self.adapter)
+
+        async def stream() -> None:
+            async for chunk in iterator:
+                stream_event: "HTTPResponseBodyEvent" = {
+                    "type": "http.response.body",
+                    "body": chunk,
+                    "more_body": True,
+                }
+                await send(stream_event)
+            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+            await send(event)
+
+        return stream
+
+    async def send_body(self, send: "Send", receive: "Receive") -> None:
+        """Emit the response body.
+
+        Args:
+            send: The ASGI send function.
+            receive: The ASGI receive function.
+
+        Notes:
+            - Response subclasses should customize this method if there is a need to customize sending data.
+
+        Returns:
+            None
+        """
+        if self.content_length and self.content_length > self.chunk_size:
+            async with create_task_group() as task_group:
+                task_group.start_soon(self.create_stream(send=send))
+                await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
+        else:
+            async with await self.adapter.open(self.file_path) as file:
+                data = await file.read()
+                event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": data, "more_body": False}
+                await send(event)
 
     async def start_response(self, send: "Send") -> None:
         """Emit the start event of the response. This event includes the headers and status codes.

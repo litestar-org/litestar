@@ -58,7 +58,7 @@ class Response(Generic[T]):
         "media_type",
         "status_allows_body",
         "status_code",
-        "stream_chunk_size",
+        "chunk_size",
         "raw_headers",
     )
 
@@ -98,7 +98,7 @@ class Response(Generic[T]):
         self.headers = headers or {}
         self.is_head_response = is_head_response
         self.media_type = get_enum_string_value(media_type)
-        self.stream_chunk_size = chunk_size
+        self.chunk_size = chunk_size
         self.status_allows_body = not (
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
@@ -327,9 +327,7 @@ class Response(Generic[T]):
         """
 
         async def stream() -> None:
-            for chunk in iter(
-                self.body[i : i + self.stream_chunk_size] for i in range(0, len(self.body), self.stream_chunk_size)
-            ):
+            for chunk in iter(self.body[i : i + self.chunk_size] for i in range(0, len(self.body), self.chunk_size)):
                 stream_event: "HTTPResponseBodyEvent" = {
                     "type": "http.response.body",
                     "body": chunk,
@@ -355,7 +353,7 @@ class Response(Generic[T]):
         Returns:
             None
         """
-        if self.content_length and self.content_length >= self.stream_chunk_size:
+        if self.content_length and self.content_length >= self.chunk_size:
             async with create_task_group() as task_group:
                 task_group.start_soon(self.create_stream(send=send))
                 await self._listen_for_disconnect(cancel_scope=task_group.cancel_scope, receive=receive)
