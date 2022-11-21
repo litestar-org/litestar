@@ -1,5 +1,10 @@
 # Changelog
 
+[1.40.1]
+
+- fix for improper parsing of sequence query params declared in nested dependencies.
+- fix for header parsing from iterables.
+
 [1.40.0]
 
 - add `OpenTelemetry` instrumentation contrib package.
