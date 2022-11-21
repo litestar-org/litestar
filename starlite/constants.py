@@ -1,6 +1,6 @@
 DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE = 1024 * 8  # 8KB
-DEFAULT_FILE_CHUNK_SIZE = 1024 * 256  # 256KB
+DEFAULT_FILE_CHUNK_SIZE = 1024 * 1024  # 1MB
 EXTRA_KEY_IS_DEPENDENCY = "is_dependency"
 EXTRA_KEY_IS_PARAMETER = "is_parameter"
 EXTRA_KEY_REQUIRED = "required"
