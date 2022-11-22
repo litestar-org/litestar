@@ -224,7 +224,8 @@ class State(MutableMapping[str, Any]):
         Returns:
             None.
         """
-        self._frozen = True
+        with self._lock:
+            self._frozen = True
 
     def unfreeze(self) -> None:
         """Set the state object to be unfrozen, allowing settings and deleting values.
@@ -232,4 +233,5 @@ class State(MutableMapping[str, Any]):
         Returns:
             None
         """
-        self._frozen = False
+        with self._lock:
+            self._frozen = False
