@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cast
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Generic, Tuple, cast
 from urllib.parse import parse_qsl
 
 from orjson import loads
@@ -98,7 +98,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             self._json = self.scope["_json"] = loads((await self.body()) or b"null")  # type: ignore[typeddict-item]
         return self._json
 
-    async def stream(self) -> AsyncGenerator[bytes, None]:
+    async def stream(self) -> AsyncIterator[bytes]:
         """Return an async generator that streams chunks of bytes.
 
         Returns:
@@ -108,24 +108,23 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             RuntimeError: if the stream is already consumed
         """
         if self._body is Empty:
-            if self.is_connected:
-                while event := await self.receive():
-                    if event["type"] == "http.request":
-                        if event["body"]:
-                            yield event["body"]
-                        if not event.get("more_body", False):
-                            break
-                    if event["type"] == "http.disconnect":
-                        raise InternalServerException("client disconnected prematurely")
-
-                self.is_connected = False
-                yield b""
-            else:
+            if not self.is_connected:
                 raise InternalServerException("stream consumed")
-        else:
-            yield self._body
+
+            while event := await self.receive():
+                if event["type"] == "http.request":
+                    if event["body"]:
+                        yield event["body"]
+                    if not event.get("more_body", False):
+                        break
+                if event["type"] == "http.disconnect":
+                    raise InternalServerException("client disconnected prematurely")
+
+            self.is_connected = False
             yield b""
             return
+        yield self._body
+        yield b""
 
     async def body(self) -> bytes:
         """Return the body of the request.
@@ -148,7 +147,11 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if self._form is Empty:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
-                parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
+                parser = MultipartFormDataParser(
+                    headers=self.headers,
+                    stream=self.stream(),  # type:ignore[arg-type]
+                    max_file_size=None,
+                )
                 form_values = await parser()
                 form_values = [
                     (
