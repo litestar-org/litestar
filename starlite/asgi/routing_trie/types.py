@@ -34,15 +34,14 @@ class RouteTrieNode:
     __slots__ = (
         "asgi_handlers",
         "child_keys",
-        "child_path_parameters",
         "child_path_parameter_type_map",
         "children",
         "is_asgi",
         "is_mount",
         "is_path_type",
         "path",
-        "path_type_path_param_definition",
         "path_parameters",
+        "path_type_path_param_definition",
     )
 
     asgi_handlers: Dict[Union["Method", Literal["websocket", "asgi"]], "ASGIHandlerTuple"]
@@ -52,10 +51,6 @@ class RouteTrieNode:
     child_keys: KeysView[Union[str, "PathParameterDefinition"]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
-    """
-    child_path_parameters: List["PathParameterDefinition"]
-    """
-    Path parameter definition of immediate child nodes.
     """
     child_path_parameter_type_map: Dict[Type, "PathParameterDefinition"]
     """
@@ -112,7 +107,6 @@ def create_node(
     node = RouteTrieNode(
         asgi_handlers={},
         child_keys=children.keys(),
-        child_path_parameters=[],
         child_path_parameter_type_map={},
         children=children,
         is_asgi=False,
