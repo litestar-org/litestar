@@ -1,6 +1,8 @@
 import re
 from typing import Iterable
 
+multi_slash_pattern = re.compile("//+")
+
 
 def normalize_path(path: str) -> str:
     """Normalize a given path by ensuring it starts with a slash and does not end with a slash.
@@ -13,7 +15,7 @@ def normalize_path(path: str) -> str:
     """
     path = path.strip("/")
     path = "/" + path
-    return re.sub("//+", "/", path)
+    return multi_slash_pattern.sub("/", path)
 
 
 def join_paths(paths: Iterable[str]) -> str:
