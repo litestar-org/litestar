@@ -15,7 +15,7 @@ from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.cors import CORSMiddleware
 from starlite.router import Router
-from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
@@ -67,6 +67,7 @@ if TYPE_CHECKING:
         ResponseHeadersMap,
         ResponseType,
         RouteHandlerType,
+        RouteType,
         Scope,
         Send,
         SingleOrList,
@@ -260,7 +261,7 @@ class Starlite(Router):
         self.openapi_schema: Optional["OpenAPI"] = None
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
-        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
+        self.routes: List["RouteType"] = []
         self.state = State()
         self.asgi_router = ASGIRouter(app=self)
 
