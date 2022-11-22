@@ -39,7 +39,7 @@ def add_mount_route(
         root_node = current_node
         for component in route.path_components:
             if component not in current_node.children:
-                current_node.children[component] = create_node()
+                create_node(current_node, component)
             current_node = current_node.children[component]
 
     current_node.is_mount = True
@@ -50,6 +50,35 @@ def add_mount_route(
         mount_routes[route.path] = current_node
 
     return current_node
+
+
+def validate_path_parameter(
+    current_node: "RouteTrieNode", param_def: PathParameterDefinition, route: "RouteType"
+) -> PathParameterDefinition:
+    """Validate that path parameter can be added to the current node.
+
+    Args:
+        current_node: parent node of path parameter component.
+        param_def: the path parameter definition.
+        route: route that is being parsed to the routing trie.
+
+    Raises:
+        ImproperlyConfiguredException: if a path parameter of same type exists as a child of `current_node` that is not
+            identical to `param_def`.
+    """
+    child_param_with_same_type = current_node.child_path_parameter_type_map.get(param_def.type)
+    if child_param_with_same_type:
+        if param_def != child_param_with_same_type:
+            existing_node = current_node.children[child_param_with_same_type]
+            raise ImproperlyConfiguredException(
+                f"Path parameter '{{{param_def.full}}}' for path '{route.path}' conflicts with parameter "
+                f"path '{existing_node.path}'."
+            )
+        # return the instance that we know exists in `current_node.children`
+        return child_param_with_same_type
+    current_node.child_path_parameter_type_map[param_def.type] = param_def
+    current_node.child_path_parameters.append(param_def)
+    return param_def
 
 
 def add_route_to_trie(
@@ -89,27 +118,24 @@ def add_route_to_trie(
     elif not route.path_parameters:
         plain_routes.add(route.path)
         if route.path not in root_node.children:
-            current_node.children[route.path] = create_node()
+            create_node(root_node, route.path)
         current_node = root_node.children[route.path]
     else:
         for component in route.path_components:
             if isinstance(component, PathParameterDefinition):
-                # if component.type in current_node.child_path_parameter_types:
-                #     raise ImproperlyConfiguredException("Conflicting path parameter type registered for route")
-                current_node.child_path_parameter_types.add(component.type)
-                current_node.child_path_parameters.append(component)
+
+                component = validate_path_parameter(current_node, component, route)
 
                 if component.type is Path:
                     current_node.path_type_path_param_definition = component
                     break
 
                 next_node_key: Union[PathParameterDefinition, str] = component
-
             else:
                 next_node_key = component
 
             if next_node_key not in current_node.children:
-                current_node.children[next_node_key] = create_node()
+                create_node(current_node, next_node_key)
 
             current_node = current_node.children[next_node_key]
 
