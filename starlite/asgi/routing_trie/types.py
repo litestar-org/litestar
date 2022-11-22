@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Dict,
+    KeysView,
     List,
     Literal,
     NamedTuple,
     Optional,
-    Set,
     Type,
     Union,
 )
@@ -49,7 +49,7 @@ class RouteTrieNode:
     """
     A mapping of ASGI handlers stored on the node.
     """
-    child_keys: Set[Union[str, Type[PathParameterSentinel]]]
+    child_keys: KeysView[Union[str, Type[PathParameterSentinel]]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
@@ -82,10 +82,11 @@ def create_node() -> RouteTrieNode:
         A route map node instance.
     """
 
+    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"] = {}
     return RouteTrieNode(
         asgi_handlers={},
-        child_keys=set(),
-        children={},
+        child_keys=children.keys(),
+        children=children,
         is_asgi=False,
         is_mount=False,
         path_param_definition=None,

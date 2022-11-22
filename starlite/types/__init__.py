@@ -76,6 +76,7 @@ from .internal_types import (
     ResponseType,
     RouteHandlerMapItem,
     RouteHandlerType,
+    RouteType,
 )
 from .partial import Partial
 from .protocols import Logger
@@ -148,6 +149,7 @@ __all__ = (
     "ResponseType",
     "RouteHandlerMapItem",
     "RouteHandlerType",
+    "RouteType",
     "Scope",
     "Scope",
     "ScopeSession",

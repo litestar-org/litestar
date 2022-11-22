@@ -13,15 +13,15 @@ from starlite.types.internal_types import PathParameterDefinition
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.asgi.routing_trie.types import RouteTrieNode
-    from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-    from starlite.types import ASGIApp, RouteHandlerType
+    from starlite.routes import ASGIRoute
+    from starlite.types import ASGIApp, RouteHandlerType, RouteType
 
 
 def add_mount_route(
     current_node: "RouteTrieNode",
     mount_routes: Dict[str, "RouteTrieNode"],
     root_node: "RouteTrieNode",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
+    route: "ASGIRoute",
 ) -> "RouteTrieNode":
     """Add a node for a mount route.
 
@@ -61,7 +61,7 @@ def add_route_to_trie(
     mount_routes: Dict[str, "RouteTrieNode"],
     plain_routes: Set[str],
     root_node: "RouteTrieNode",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
+    route: "RouteType",
 ) -> "RouteTrieNode":
     """Add a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
 
@@ -82,17 +82,15 @@ def add_route_to_trie(
     """
     current_node = root_node
 
-    is_mount = hasattr(route, "route_handler") and getattr(route.route_handler, "is_mount", False)  # pyright: ignore
-    has_path_parameters = bool(route.path_parameters)
-
-    if is_mount:  # pyright: ignore
+    if route.is_mount:
         current_node = add_mount_route(
             current_node=current_node,
             mount_routes=mount_routes,
             root_node=root_node,
-            route=route,
+            # only ASGIRoute can be `is_mount = True`
+            route=route,  # type:ignore[arg-type]
         )
-    elif not has_path_parameters:
+    elif not route.path_parameters:
         plain_routes.add(route.path)
         if route.path not in root_node.children:
             current_node.children[route.path] = create_node()
@@ -113,18 +111,13 @@ def add_route_to_trie(
             if next_node_key not in current_node.children:
                 current_node.children[next_node_key] = create_node()
 
-            current_node.child_keys = set(current_node.children.keys())
             current_node = current_node.children[next_node_key]
 
     configure_node(route=route, app=app, node=current_node)
     return current_node
 
 
-def configure_node(
-    app: "Starlite",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    node: "RouteTrieNode",
-) -> None:
+def configure_node(app: "Starlite", route: "RouteType", node: "RouteTrieNode") -> None:
     """Set required attributes and route handlers on route_map tree node.
 
     Args:
@@ -161,11 +154,7 @@ def configure_node(
         node.is_asgi = True
 
 
-def build_route_middleware_stack(
-    app: "Starlite",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    route_handler: "RouteHandlerType",
-) -> "ASGIApp":
+def build_route_middleware_stack(app: "Starlite", route: "RouteType", route_handler: "RouteHandlerType") -> "ASGIApp":
     """Construct a middleware stack that serves as the point of entry for each route.
 
     Args:
