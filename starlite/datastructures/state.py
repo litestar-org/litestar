@@ -202,13 +202,30 @@ class State(MutableMapping[str, Any]):
         """
         return self.__class__(copy(self._state), frozen=self._frozen)
 
+    @property
+    def is_frozen(self) -> bool:
+        """Get the frozen status of the state instance.
+
+        Returns:
+            Whether the state object is frozen.
+        """
+        return self._frozen
+
     def copy(self) -> "State":
-        """Return a shallow copy of 'self'.
+        """Return a shallow copy of the state object.
 
         Returns:
             A `State`
         """
         return copy(self)
+
+    def frozen_copy(self) -> "State":
+        """Return a shallow copy of the state object, setting it to be frozen.
+
+        Returns:
+            A `State`
+        """
+        return self.__class__(copy(self._state), frozen=True)
 
     def dict(self) -> Dict[str, Any]:
         """Return a shallow copy of the wrapped dict.

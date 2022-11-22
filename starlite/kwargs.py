@@ -529,7 +529,7 @@ class KwargsModel:
         """
         reserved_kwargs: Dict[str, Any] = {}
         if "state" in self.expected_reserved_kwargs:
-            reserved_kwargs["state"] = connection.app.state.copy()
+            reserved_kwargs["state"] = connection.app.state.frozen_copy()
         if "headers" in self.expected_reserved_kwargs:
             reserved_kwargs["headers"] = connection.headers
         if "cookies" in self.expected_reserved_kwargs:
