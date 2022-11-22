@@ -35,7 +35,10 @@ def traverse_route_map(
 
         if current_node.path_type_path_param_definition:
             path_params.append(
-                (current_node.path_type_path_param_definition.name, normalize_path(path.lstrip(current_node.path)))
+                (
+                    current_node.path_type_path_param_definition.name,
+                    normalize_path(path.removeprefix(current_node.path)),
+                )
             )
             return current_node, path_params, path
 
