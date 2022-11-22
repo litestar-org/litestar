@@ -1,7 +1,5 @@
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
-from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.utils import normalize_path
 
@@ -35,16 +33,22 @@ def traverse_route_map(
             current_node = current_node.children[component]
             continue
 
-        if current_node.path_param_definition:
-            param_definition = current_node.path_param_definition
-            if param_definition.type is Path:
-                path_params.append((param_definition.name, normalize_path("/".join(path_components[i:]))))
-                return current_node, path_params, path
+        if current_node.path_type_path_param_definition:
+            path_params.append(
+                (current_node.path_type_path_param_definition.name, normalize_path("/".join(path_components[i:])))
+            )
+            return current_node, path_params, path
 
-            path_params.append((param_definition.name, param_definition.parser(component)))
-            current_node = current_node.children[PathParameterSentinel]
-
-        continue
+        for param_definition in current_node.child_path_parameters:
+            try:
+                value = param_definition.parser(component)
+            except ValueError:
+                continue
+            path_params.append((param_definition.name, value))
+            current_node = current_node.children[param_definition]
+            break
+        else:
+            raise NotFoundException()
 
     if not current_node.asgi_handlers:
         raise NotFoundException()
