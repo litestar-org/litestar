@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from functools import lru_cache
 from traceback import format_exc
-from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import add_route_to_trie
@@ -15,7 +15,6 @@ from starlite.utils import AsyncCallable, normalize_path
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.asgi.routing_trie.types import RouteTrieNode
-    from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from starlite.routes.base import BaseRoute
     from starlite.types import (
         ASGIApp,
@@ -61,7 +60,7 @@ class ASGIRouter:
         self._mount_paths_regex: Optional[Pattern] = None
         self._mount_routes: Dict[str, "RouteTrieNode"] = {}
         self._plain_routes: Set[str] = set()
-        self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
+        self._registered_routes: Set["BaseRoute"] = set()
         self.app = app
         self.root_route_map_node: "RouteTrieNode" = create_node()
         self.route_handler_index: Dict[str, "RouteHandlerType"] = {}
@@ -135,9 +134,12 @@ class ASGIRouter:
     def construct_routing_trie(self) -> None:
         """Create a map of the app's routes.
 
+        Invoked once per call to `Starlite.register()` to map the URL path of new routes to a linked path of nodes on
+        the routing trie structure.
+
         This map is used in the asgi router to route requests.
         """
-        new_routes = [route for route in self.app.routes if route not in self._registered_routes]
+        new_routes = (route for route in self.app.routes if route not in self._registered_routes)
         for route in new_routes:
             node = add_route_to_trie(
                 app=self.app,

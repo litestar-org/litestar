@@ -27,12 +27,13 @@ class ASGIRoute(BaseRoute):
             path: The path for the route.
             route_handler: An instance of [ASGIRouteHandler][starlite.handlers.asgi.ASGIRouteHandler].
         """
-        self.route_handler = route_handler
         super().__init__(
             path=path,
             scope_type=ScopeType.ASGI,
             handler_names=[unwrap_partial(route_handler.handler_name)],
         )
+        self.route_handler = route_handler
+        self.is_mount = route_handler.is_mount
 
     async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """ASGI app that authorizes the connection and then awaits the handler function.
