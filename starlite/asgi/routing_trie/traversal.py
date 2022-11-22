@@ -103,10 +103,10 @@ def parse_path_to_route(
             asgi_app, handler = parse_node_handlers(node=root_node.children[path], method=method)
             return asgi_app, handler, path, {}
 
-        if mount_paths_regex and mount_paths_regex.search(path):
-            mount_path = mount_paths_regex.findall(path)[0]
+        if mount_paths_regex and (match := mount_paths_regex.search(path)):
+            mount_path = path[match.start() : match.end()]
             mount_node = mount_routes[mount_path]
-            remaining_path = path.replace(mount_path, "", 1)
+            remaining_path = path[match.end() :]
             # since we allow regular handlers under static paths, we must validate that the request does not match
             # any such handler.
             if not mount_node.children or not any(sub_route in path for sub_route in mount_node.children):  # type: ignore

@@ -50,8 +50,7 @@ async def async_file_iterator(
     """
     async with await adapter.open(file_path) as file:
         while chunk := await file.read(chunk_size):
-            if chunk:
-                yield chunk
+            yield chunk
 
 
 def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
