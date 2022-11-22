@@ -40,6 +40,7 @@ from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.routes import BaseRoute
+    from starlite.types.internal_types import RouteType
 
 
 class Router:
@@ -146,7 +147,7 @@ class Router:
         self.response_class = response_class
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
-        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
+        self.routes: List["RouteType"] = []
         self.security = security or []
         self.tags = tags or []
 

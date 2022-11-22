@@ -54,7 +54,7 @@ class RouteTrieNode:
     """
     child_path_parameter_type_map: Dict[Type, "PathParameterDefinition"]
     """
-    Types of path parameters of existing child path parameters.
+    Parameter definitions of child nodes mapped to their type.
     """
     children: Dict[Union[str, "PathParameterDefinition"], "RouteTrieNode"]
     """
