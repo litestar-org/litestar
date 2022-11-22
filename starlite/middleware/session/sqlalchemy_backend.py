@@ -31,7 +31,7 @@ class SessionModelMixin:
     """Mixin for session storage."""
 
     session_id: Mapped[str] = sa.Column(sa.String, nullable=False, unique=True, index=True)  # pyright: ignore
-    data: Mapped[bytes] = sa.Column(sa.BLOB, nullable=False)  # pyright: ignore
+    data: Mapped[bytes] = sa.Column(sa.LargeBinary, nullable=False)  # pyright: ignore
     expires: Mapped[datetime] = sa.Column(sa.DateTime, nullable=False)  # pyright: ignore
 
     @hybrid_property
