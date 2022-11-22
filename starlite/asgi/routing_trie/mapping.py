@@ -1,11 +1,7 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Set, Tuple, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Set, Tuple, Union, cast
 
-from starlite.asgi.routing_trie.types import (
-    ASGIHandlerTuple,
-    PathParameterSentinel,
-    create_node,
-)
+from starlite.asgi.routing_trie.types import ASGIHandlerTuple, create_node
 from starlite.asgi.utils import wrap_in_exception_handler
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal_types import PathParameterDefinition
@@ -43,8 +39,8 @@ def add_mount_route(
         root_node = current_node
         for component in route.path_components:
             if component not in current_node.children:
-                current_node.children[component] = create_node()  # type: ignore[index]
-            current_node = current_node.children[component]  # type: ignore[index]
+                current_node.children[component] = create_node()
+            current_node = current_node.children[component]
 
     current_node.is_mount = True
 
@@ -98,12 +94,16 @@ def add_route_to_trie(
     else:
         for component in route.path_components:
             if isinstance(component, PathParameterDefinition):
-                current_node.path_param_definition = component
+                # if component.type in current_node.child_path_parameter_types:
+                #     raise ImproperlyConfiguredException("Conflicting path parameter type registered for route")
+                current_node.child_path_parameter_types.add(component.type)
+                current_node.child_path_parameters.append(component)
 
                 if component.type is Path:
+                    current_node.path_type_path_param_definition = component
                     break
 
-                next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
+                next_node_key: Union[PathParameterDefinition, str] = component
 
             else:
                 next_node_key = component

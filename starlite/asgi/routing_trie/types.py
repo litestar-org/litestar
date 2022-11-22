@@ -7,6 +7,7 @@ from typing import (
     Literal,
     NamedTuple,
     Optional,
+    Set,
     Type,
     Union,
 )
@@ -15,10 +16,6 @@ if TYPE_CHECKING:
 
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal_types import PathParameterDefinition
-
-
-class PathParameterSentinel:
-    """Sentinel class designating a path parameter."""
 
 
 class ASGIHandlerTuple(NamedTuple):
@@ -37,11 +34,13 @@ class RouteTrieNode:
     __slots__ = (
         "asgi_handlers",
         "child_keys",
+        "child_path_parameters",
+        "child_path_parameter_types",
         "children",
         "is_asgi",
         "is_mount",
         "is_path_type",
-        "path_param_definition",
+        "path_type_path_param_definition",
         "path_parameters",
     )
 
@@ -49,17 +48,25 @@ class RouteTrieNode:
     """
     A mapping of ASGI handlers stored on the node.
     """
-    child_keys: KeysView[Union[str, Type[PathParameterSentinel]]]
+    child_keys: KeysView[Union[str, "PathParameterDefinition"]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
-    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]
+    child_path_parameters: List["PathParameterDefinition"]
+    """
+    Path parameter definition of immediate child nodes.
+    """
+    child_path_parameter_types: Set[Type]
+    """
+    Types of path parameters of existing child path parameters.
+    """
+    children: Dict[Union[str, "PathParameterDefinition"], "RouteTrieNode"]
     """
     A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
     """
-    path_param_definition: Optional["PathParameterDefinition"]
+    path_type_path_param_definition: Optional["PathParameterDefinition"]
     """
-    A path parameter definition, if the route node expects a parameter.
+    A path parameter definition of type "path" if one has been registered on the node.
     """
     is_asgi: bool
     """
@@ -82,13 +89,15 @@ def create_node() -> RouteTrieNode:
         A route map node instance.
     """
 
-    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"] = {}
+    children: Dict[Union[str, "PathParameterDefinition"], "RouteTrieNode"] = {}
     return RouteTrieNode(
         asgi_handlers={},
         child_keys=children.keys(),
+        child_path_parameters=[],
+        child_path_parameter_types=set(),
         children=children,
         is_asgi=False,
         is_mount=False,
-        path_param_definition=None,
+        path_type_path_param_definition=None,
         path_parameters=[],
     )
