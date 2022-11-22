@@ -1,3 +1,4 @@
+import sys
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -6,6 +7,28 @@ from starlite.utils import normalize_path
 if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
     from starlite.types import ASGIApp, Method, RouteHandlerType
+
+
+if sys.version_info < (3, 9):
+
+    def removeprefix(text: str, prefix: str):
+        """Remove prefix from string.
+
+        Compatibility for python 3.8.
+
+        Args:
+            text: string to have prefix removed
+            prefix: prefix to be removed from `text`.
+
+        Returns:
+            The string with the prefix removed.
+        """
+        if text.startswith(prefix):
+            return text[len(prefix) :]
+        return text
+
+else:
+    removeprefix = str.removeprefix
 
 
 def traverse_route_map(
@@ -37,7 +60,7 @@ def traverse_route_map(
             path_params.append(
                 (
                     current_node.path_type_path_param_definition.name,
-                    normalize_path(path.removeprefix(current_node.path)),
+                    normalize_path(removeprefix(path, current_node.path)),
                 )
             )
             return current_node, path_params, path
