@@ -60,14 +60,10 @@ def test_headers_from_raw_tuple() -> None:
 
 def test_headers_from_scope() -> None:
     headers = Headers.from_scope(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"foo", b"baz")])
+        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"buzz", b"bup")])
     )
-    assert headers.getall("foo") == ["bar", "baz"]
-
-    headers = Headers.from_scope(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=((b"foo", b"bar"), (b"foo", b"baz")))
-    )
-    assert headers.getall("foo") == ["bar", "baz"]
+    assert headers["foo"] == "bar"
+    assert headers["buzz"] == "bup"
 
 
 def test_headers_to_header_list() -> None:

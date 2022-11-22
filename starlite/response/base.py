@@ -54,6 +54,7 @@ class Response(Generic[T]):
         "media_type",
         "status_allows_body",
         "status_code",
+        "raw_headers",
     )
 
     def __init__(
@@ -108,6 +109,7 @@ class Response(Generic[T]):
             "content-type",
             f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
         )
+        self.raw_headers: List[Tuple[bytes, bytes]] = []
 
     def set_cookie(
         self,
@@ -224,7 +226,7 @@ class Response(Generic[T]):
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
     @property
-    def content_length(self) -> Optional[int]:
+    def content_length(self) -> int:
         """Content length of the response if applicable.
 
         Returns:
@@ -233,7 +235,7 @@ class Response(Generic[T]):
         """
         if self.status_allows_body:
             return len(self.body)
-        return None
+        return 0
 
     def encode_headers(self) -> List[Tuple[bytes, bytes]]:
         """Encode the response headers as a list of byte tuples.
@@ -245,18 +247,13 @@ class Response(Generic[T]):
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
         """
 
-        encoded_headers = list(
+        return list(
             chain(
                 ((k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in self.headers.items()),
-                ((b"set-cookie", cookie.to_header(header="").encode("latin-1")) for cookie in self.cookies),
+                (cookie.to_encoded_header() for cookie in self.cookies),
+                self.raw_headers,
             )
         )
-
-        content_length = self.content_length
-        if "content-length" not in self.headers and content_length:
-            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
-
-        return encoded_headers
 
     async def after_response(self) -> None:
         """Execute after the response is sent.
@@ -276,10 +273,17 @@ class Response(Generic[T]):
         Returns:
             None
         """
+
+        encoded_headers = self.encode_headers()
+
+        content_length = self.content_length
+        if "content-length" not in self.headers and content_length:
+            encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
+
         event: "HTTPResponseStartEvent" = {
             "type": "http.response.start",
             "status": self.status_code,
-            "headers": self.encode_headers(),
+            "headers": encoded_headers,
         }
 
         await send(event)

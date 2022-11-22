@@ -63,7 +63,7 @@ class PiccoloORMPlugin(PluginProtocol[Table]):
         """Given a class supported by this plugin and a dict of values, create an instance of the class."""
         instance = model_class()
         for column in instance.all_columns():
-            meta = column._meta  # pylint: disable=protected-access
+            meta = column._meta
             if meta.name in kwargs:
                 setattr(instance, meta.name, kwargs[meta.name])
         return instance

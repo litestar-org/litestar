@@ -106,7 +106,7 @@ repos:
     hooks:
       - id: flake8-markdown
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16
+    rev: v0.16.1
     hooks:
       - id: slotscheck
         exclude: "test_*"

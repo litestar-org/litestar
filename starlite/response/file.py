@@ -28,7 +28,13 @@ if TYPE_CHECKING:
     from anyio import Path
 
     from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
-    from starlite.types import PathType, ResponseCookies, Send
+    from starlite.types import (
+        HTTPResponseBodyEvent,
+        PathType,
+        Receive,
+        ResponseCookies,
+        Send,
+    )
     from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 ONE_MEGA_BYTE: int = 1024 * 1024
@@ -49,7 +55,8 @@ async def async_file_iterator(
         An async generator.
     """
     async with await adapter.open(file_path) as file:
-        yield await file.read(chunk_size)
+        while chunk := await file.read(chunk_size):
+            yield chunk
 
 
 def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
@@ -130,6 +137,7 @@ class FileResponse(StreamingResponse):
             mimetype, _ = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
 
+        self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type
         self.etag = etag
         self.file_path = path
@@ -168,7 +176,7 @@ class FileResponse(StreamingResponse):
         return f"{self.content_disposition_type}; filename*=utf-8''{quoted_filename}"
 
     @property
-    def content_length(self) -> Optional[int]:
+    def content_length(self) -> int:
         """Content length of the response if applicable.
 
         Returns:
@@ -177,6 +185,28 @@ class FileResponse(StreamingResponse):
         if isinstance(self.file_info, dict):
             return self.file_info["size"]
         return 0
+
+    async def send_body(self, send: "Send", receive: "Receive") -> None:
+        """Emit a stream of events correlating with the response body.
+
+        Args:
+            send: The ASGI send function.
+            receive: The ASGI receive function.
+
+        Returns:
+            None
+        """
+        if self.chunk_size < self.content_length:
+            await super().send_body(send=send, receive=receive)
+            return
+
+        async with await self.adapter.open(self.file_path) as file:
+            body_event: "HTTPResponseBodyEvent" = {
+                "type": "http.response.body",
+                "body": await file.read(),
+                "more_body": False,
+            }
+            await send(body_event)
 
     async def start_response(self, send: "Send") -> None:
         """Emit the start event of the response. This event includes the headers and status codes.

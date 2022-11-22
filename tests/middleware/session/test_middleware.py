@@ -36,6 +36,7 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
     def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
             return {"has_session": request.session != {}}
+
         if request.method == HttpMethod.DELETE:
             request.clear_session()
         else:
