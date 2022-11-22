@@ -28,14 +28,14 @@ def traverse_route_map(
     path_params: List[Tuple[str, Any]] = []
     path_components = [p for p in path.split("/") if p]
 
-    for i, component in enumerate(path_components):
+    for component in path_components:
         if component in current_node.child_keys:
             current_node = current_node.children[component]
             continue
 
         if current_node.path_type_path_param_definition:
             path_params.append(
-                (current_node.path_type_path_param_definition.name, normalize_path("/".join(path_components[i:])))
+                (current_node.path_type_path_param_definition.name, normalize_path(path.lstrip(current_node.path)))
             )
             return current_node, path_params, path
 
