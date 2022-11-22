@@ -39,7 +39,7 @@ def traverse_route_map(
             )
             return current_node, path_params, path
 
-        for param_definition in current_node.child_path_parameters:
+        for param_definition in current_node.child_path_parameter_type_map.values():
             try:
                 value = param_definition.parser(component)
             except ValueError:
@@ -56,15 +56,12 @@ def traverse_route_map(
     return current_node, path_params, path
 
 
-def parse_node_handlers(
-    node: "RouteTrieNode",
-    method: Optional["Method"],
-) -> "ASGIHandlerTuple":
+def parse_node_handlers(node: "RouteTrieNode", method: Optional["Method"]) -> "ASGIHandlerTuple":
     """Retrieve the handler tuple from the node.
 
     Args:
         node: The trie node to parse.
-        scope: The ASGI scope instance.
+        method: HTTP route method.
 
     Returns:
         An ASGI Handler tuple.

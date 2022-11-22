@@ -77,7 +77,6 @@ def validate_path_parameter(
         # return the instance that we know exists in `current_node.children`
         return child_param_with_same_type
     current_node.child_path_parameter_type_map[param_def.type] = param_def
-    current_node.child_path_parameters.append(param_def)
     return param_def
 
 
