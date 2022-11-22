@@ -1,5 +1,6 @@
 from copy import copy
-from typing import Any, Dict, Iterator, MutableMapping, Optional
+from threading import RLock
+from typing import Any, Dict, Iterable, Iterator, MutableMapping, Optional, Tuple, Union
 
 
 class State(MutableMapping[str, Any]):
@@ -8,15 +9,20 @@ class State(MutableMapping[str, Any]):
     It can be accessed using dot notation while exposing dict like functionalities.
     """
 
-    __slots__ = ("_state",)
+    __slots__ = ("_state", "_lock", "_frozen")
 
     _state: Dict[str, Any]
+    _frozen: bool
+    _lock: RLock
 
-    def __init__(self, state: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self, state: Optional[Union["State", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None, frozen: bool = False
+    ) -> None:
         """Initialize `State` with an optional value.
 
         Args:
              state: An optional string keyed dict for the initial state.
+             frozen: Flag dictating whether the state object is frozen. No values can be deleted or set on a frozen state.
 
         Examples:
         ```python
@@ -54,7 +60,15 @@ class State(MutableMapping[str, Any]):
         assert inner_dict == state_dict
         ```
         """
+
+        if isinstance(state, State):
+            state = state._state
+        if not isinstance(state, dict) and isinstance(state, Iterable):
+            state = dict(state)
+
         super().__setattr__("_state", state if state is not None else {})
+        super().__setattr__("_frozen", frozen)
+        super().__setattr__("_lock", RLock())
 
     def __bool__(self) -> bool:
         """Return a boolean indicating whether the wrapped dict instance has values."""
@@ -72,6 +86,9 @@ class State(MutableMapping[str, Any]):
         Returns:
             A value from the wrapped state instance.
         """
+        if self._frozen:
+            return self._state[key]
+
         return self._state[key]
 
     def __delitem__(self, key: str) -> None:
@@ -86,7 +103,11 @@ class State(MutableMapping[str, Any]):
         Returns:
             None
         """
-        del self._state[key]
+        if self._frozen:
+            raise TypeError("State object is frozen. If you want to delete a value, you must unfreeze it first.")
+
+        with self._lock:
+            del self._state[key]
 
     def __setitem__(self, key: str, value: Any) -> None:
         """Set an item in the state using subscription notation.
@@ -98,7 +119,11 @@ class State(MutableMapping[str, Any]):
         Returns:
             None
         """
-        self._state[key] = value
+        if self._frozen:
+            raise TypeError("State object is frozen. If you want to set a value, you must unfreeze it first.")
+
+        with self._lock:
+            self._state[key] = value
 
     def __iter__(self) -> Iterator[str]:
         """Return an iterator iterating the wrapped state dict.
@@ -126,7 +151,11 @@ class State(MutableMapping[str, Any]):
         Returns:
             None
         """
-        self._state[key] = value
+        if self._frozen:
+            raise TypeError("State object is frozen. If you want to set a value, you must unfreeze it first.")
+
+        with self._lock:
+            self._state[key] = value
 
     def __getattr__(self, key: str) -> Any:
         """Get the value for the corresponding key from the wrapped state object using attribute notation.
@@ -157,8 +186,12 @@ class State(MutableMapping[str, Any]):
         Returns:
             None
         """
+        if self._frozen:
+            raise TypeError("State object is frozen. If you want to delete a value, you must unfreeze it first.")
+
         try:
-            del self._state[key]
+            with self._lock:
+                del self._state[key]
         except KeyError as e:
             raise AttributeError(f"State instance has no attribute '{key}'") from e
 
@@ -167,7 +200,7 @@ class State(MutableMapping[str, Any]):
 
         Customizes how the builtin "copy" function will work.
         """
-        return self.__class__(copy(self._state))
+        return self.__class__(copy(self._state), frozen=self._frozen)
 
     def copy(self) -> "State":
         """Return a shallow copy of 'self'.
@@ -184,3 +217,19 @@ class State(MutableMapping[str, Any]):
             A dict
         """
         return copy(self._state)
+
+    def freeze(self) -> None:
+        """Set the state object to be frozen, preventing setting and deleting values.
+
+        Returns:
+            None.
+        """
+        self._frozen = True
+
+    def unfreeze(self) -> None:
+        """Set the state object to be unfrozen, allowing settings and deleting values.
+
+        Returns:
+            None
+        """
+        self._frozen = False
