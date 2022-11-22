@@ -199,6 +199,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         """
         async with self._create_sa_session() as sa_session:
             await sa_session.execute(sa.delete(self._model).where(self._model.expired))
+            await sa_session.commit()
 
 
 class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
@@ -290,6 +291,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
     def _delete_expired_sync(self) -> None:
         sa_session = self._create_sa_session()
         sa_session.execute(sa.delete(self._model).where(self._model.expired))
+        sa_session.commit()
 
     async def delete_expired(self) -> None:
         """Delete all expired session from the database.
