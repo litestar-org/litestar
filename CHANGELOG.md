@@ -1,5 +1,10 @@
 # Changelog
 
+[1.41.0]
+
+- general performance optimization.
+- fix #841: change `middleware.session.sqlalchemy_backend.SessionModelMixin.data` to `LargeBinary`.
+
 [1.40.1]
 
 - fix for improper parsing of sequence query params declared in nested dependencies.
