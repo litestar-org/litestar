@@ -16,6 +16,7 @@ from typing import (
     cast,
 )
 
+from anyio import create_task_group
 from pydantic.fields import (
     SHAPE_DEQUE,
     SHAPE_FROZENSET,
@@ -74,6 +75,13 @@ class Dependency:
         self.key = key
         self.provide = provide
         self.dependencies = dependencies
+
+    def __eq__(self, other: Any) -> bool:
+        # check if memory address is identical, otherwise compare attributes
+        return other is self or (isinstance(other, self.__class__) and other.key == self.key)
+
+    def __hash__(self) -> int:
+        return hash(self.key)
 
 
 def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterDefinition]) -> Set[ParameterDefinition]:
@@ -153,6 +161,67 @@ def create_query_default_dict(
     return output
 
 
+async def resolve_dependency(
+    dependency: "Dependency", connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]
+) -> None:
+    """Resolve a given instance of [Dependency][starlite.kwargs.Dependency]. All required sub dependencies must already
+    be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
+
+    Args:
+        dependency: An instance of [Dependency][starlite.kwargs.Dependency]
+        connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+        kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
+    """
+    signature_model = get_signature_model(dependency.provide)
+    dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+    kwargs[dependency.key] = await dependency.provide(**dependency_kwargs)
+
+
+def create_dependency_batches(expected_dependencies: Set[Dependency]) -> List[Set[Dependency]]:
+    """Calculate batches for all dependencies, recursively.
+
+    Args:
+        expected_dependencies: A set of all direct [Dependencies][starlite.kwargs.Dependency].
+
+    Returns:
+        A list of batches.
+    """
+    dependencies_to: Dict[Dependency, Set[Dependency]] = {}
+    for dependency in expected_dependencies:
+        if dependency not in dependencies_to:
+            map_dependencies_recursively(dependency, dependencies_to)
+
+    batches = []
+    while dependencies_to:
+        current_batch = {
+            dependency
+            for dependency, remaining_sub_dependencies in dependencies_to.items()
+            if not remaining_sub_dependencies
+        }
+
+        for dependency in current_batch:
+            del dependencies_to[dependency]
+            for others_dependencies in dependencies_to.values():
+                others_dependencies.discard(dependency)
+
+        batches.append(current_batch)
+
+    return batches
+
+
+def map_dependencies_recursively(dependency: Dependency, dependencies_to: Dict[Dependency, Set[Dependency]]) -> None:
+    """Recursively map dependencies to their sub dependencies.
+
+    Args:
+        dependency: The current dependency to map.
+        dependencies_to: A map of dependency to its sub dependencies.
+    """
+    dependencies_to[dependency] = set(dependency.dependencies)
+    for sub in dependency.dependencies:
+        if sub not in dependencies_to:
+            map_dependencies_recursively(sub, dependencies_to)
+
+
 class KwargsModel:
     """Model required kwargs for a given RouteHandler and its dependencies.
 
@@ -160,8 +229,8 @@ class KwargsModel:
     """
 
     __slots__ = (
+        "dependency_batches",
         "expected_cookie_params",
-        "expected_dependencies",
         "expected_form_data",
         "expected_header_params",
         "expected_path_params",
@@ -190,17 +259,16 @@ class KwargsModel:
 
         Args:
             expected_cookie_params: Any expected cookie parameter kwargs
-            expected_dependencies:  Any expected dependency kwargs
+            expected_dependencies: Any expected dependency kwargs
             expected_form_data: Any expected form data kwargs
             expected_header_params: Any expected header parameter kwargs
             expected_path_params: Any expected path parameter kwargs
-            expected_query_params:  Any expected query parameter kwargs
+            expected_query_params: Any expected query parameter kwargs
             expected_reserved_kwargs: Any expected reserved kwargs, e.g. 'state'
             sequence_query_parameter_names: Any query parameters that are sequences
             is_data_optional: Treat data as optional
         """
         self.expected_cookie_params = expected_cookie_params
-        self.expected_dependencies = expected_dependencies
         self.expected_form_data = expected_form_data
         self.expected_header_params = expected_header_params
         self.expected_path_params = expected_path_params
@@ -220,6 +288,7 @@ class KwargsModel:
 
         self.is_data_optional = is_data_optional
         self.extractors = self._create_extractors()
+        self.dependency_batches = create_dependency_batches(expected_dependencies)
 
     def _create_extractors(self) -> List[Callable[[Dict[str, Any], Union["WebSocket", "Request"]], None]]:
         extractors: List[Callable[[Dict[str, Any], Union["WebSocket", "Request"]], None]] = []
@@ -260,7 +329,7 @@ class KwargsModel:
         layered_parameters: Dict[str, ModelField],
         dependencies: Dict[str, Provide],
         signature_model_fields: Dict[str, ModelField],
-    ) -> Tuple[Set[ParameterDefinition], set]:
+    ) -> Tuple[Set[ParameterDefinition], Set[Dependency]]:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
@@ -508,26 +577,20 @@ class KwargsModel:
 
         return output
 
-    async def resolve_dependency(
-        self, dependency: "Dependency", connection: Union["WebSocket", "Request"], **kwargs: Any
-    ) -> Any:
-        """Given an instance of [Dependency][starlite.kwargs.Dependency], recursively resolves its dependency graph.
+    async def resolve_dependencies(self, connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]) -> None:
+        """Resolve all dependencies into the kwargs, recursively.
 
         Args:
-            dependency: An instance of [Dependency][starlite.kwargs.Dependency]
             connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
-            **kwargs: Any kwargs to pass recursively.
-
-        Returns:
-            The resolved dependency value
+            kwargs: Kwargs to pass to dependencies.
         """
-        signature_model = get_signature_model(dependency.provide)
-        for sub_dependency in dependency.dependencies:
-            kwargs[sub_dependency.key] = await self.resolve_dependency(
-                dependency=sub_dependency, connection=connection, **kwargs
-            )
-        dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        return await dependency.provide(**dependency_kwargs)
+        for batch in self.dependency_batches:
+            if len(batch) == 1:
+                await resolve_dependency(next(iter(batch)), connection, kwargs)
+            else:
+                async with create_task_group() as task_group:
+                    for dependency in batch:
+                        task_group.start_soon(resolve_dependency, dependency, connection, kwargs)
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:
