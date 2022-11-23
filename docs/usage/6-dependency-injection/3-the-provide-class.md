@@ -30,31 +30,4 @@ See the [API Reference][starlite.datastructures.Provide] for full details on the
     If `Provide.use_cache` is true, the return value of the function will be memoized the first time it is called and
     then will be used. There is no sophisticated comparison of kwargs, LRU implementation etc. so you should be careful
     when you choose to use this option.
-
-
-```python
-from starlite import Provide, get
-from random import randint
-
-
-def cached_dependency() -> int:
-    return randint(1, 10)
-
-
-def dependent(first: int) -> int:
-    return first
-
-
-@get(
-    "/some-path",
-    dependencies={
-        "first": Provide(
-            cached_dependency,
-        ),
-        "second": Provide(dependent),
-    },
-)
-def my_handler(first: int, second: int) -> None:
-    assert first == second
-    ...
-```
+    Note that dependencies will only be called once per request, even with `Provide.use_cache` set to false.

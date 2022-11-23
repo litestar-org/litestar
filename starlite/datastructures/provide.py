@@ -17,7 +17,6 @@ class Provide:
     __slots__ = (
         "dependency",
         "use_cache",
-        "lock",
         "value",
         "signature_model",
         "sync_to_thread",
