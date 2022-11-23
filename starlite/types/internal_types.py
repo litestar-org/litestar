@@ -33,4 +33,3 @@ class PathParameterDefinition(NamedTuple):
     name: str
     full: str
     type: Type
-    parser: Callable[[str], Any]

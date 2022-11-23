@@ -12,7 +12,7 @@ from starlite.types import Scope, Scopes
 
 try:
     from opentelemetry.metrics import Meter, MeterProvider
-    from opentelemetry.trace import Span, TracerProvider
+    from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
 except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
 
