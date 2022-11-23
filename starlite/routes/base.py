@@ -88,9 +88,9 @@ class BaseRoute(ABC):
             methods: Supported methods
         """
         self.path, self.path_format, self.path_components = self._parse_path(path)
-        self.path_parameters: List[PathParameterDefinition] = [
+        self.path_parameters: Tuple[PathParameterDefinition, ...] = tuple(
             component for component in self.path_components if isinstance(component, PathParameterDefinition)
-        ]
+        )
         self.handler_names = handler_names
         self.scope_type = scope_type
         self.methods = set(methods or [])

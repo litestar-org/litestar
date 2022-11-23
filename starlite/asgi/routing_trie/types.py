@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, List, Literal, NamedTuple, Set, Type, Union
+from typing import TYPE_CHECKING, Dict, Literal, NamedTuple, Set, Tuple, Type, Union
 
 if TYPE_CHECKING:
 
@@ -63,7 +63,7 @@ class RouteTrieNode:
     """
     Designate the node as being a mount route.
     """
-    path_parameters: List["PathParameterDefinition"]
+    path_parameters: Tuple["PathParameterDefinition", ...]
     """
     A list of tuples containing path parameter definitions. This is used for parsing extracted path parameter values.
     """
@@ -84,5 +84,5 @@ def create_node() -> RouteTrieNode:
         is_asgi=False,
         is_mount=False,
         is_path_type=False,
-        path_parameters=[],
+        path_parameters=(),
     )

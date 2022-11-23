@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple
+from functools import lru_cache
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -7,6 +9,7 @@ from starlite.utils import normalize_path
 if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
     from starlite.types import ASGIApp, Method, RouteHandlerType
+    from starlite.types.internal_types import PathParameterDefinition
 
 
 def traverse_route_map(
@@ -71,6 +74,25 @@ def parse_node_handlers(
     return node.asgi_handlers["websocket"]
 
 
+@lru_cache(1024)
+def parse_path_params(
+    parameter_definitions: Tuple["PathParameterDefinition", ...], path_param_values: Tuple[str, ...]
+) -> Dict[str, Any]:
+    """Parse path parameters into a dictionary of values.
+
+    Args:
+        parameter_definitions: The parameter definitions tuple from the route.
+        path_param_values: The string values extracted from the url
+
+    Returns:
+        A dictionary of parsed path parameters.
+    """
+    return {
+        param_definition.name: param_definition.parser(value) if param_definition.type is not Path else value
+        for param_definition, value in zip(parameter_definitions, path_param_values)
+    }
+
+
 def parse_path_to_route(
     method: Optional["Method"],
     mount_paths_regex: Optional[Pattern],
@@ -116,12 +138,13 @@ def parse_path_to_route(
             path=path,
         )
         asgi_app, handler = parse_node_handlers(node=node, method=method)
+        parsed_path_parameters = parse_path_params(node.path_parameters, tuple(path_parameters))
 
         return (
             asgi_app,
             handler,
             path,
-            {param_definition.name: value for param_definition, value in zip(node.path_parameters, path_parameters)},
+            parsed_path_parameters,
         )
     except KeyError as e:
         raise MethodNotAllowedException() from e

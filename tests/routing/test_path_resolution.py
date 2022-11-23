@@ -2,14 +2,7 @@ from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
-from starlite import (
-    Controller,
-    ImproperlyConfiguredException,
-    MediaType,
-    delete,
-    get,
-    post,
-)
+from starlite import Controller, MediaType, delete, get, post
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -173,15 +166,6 @@ def test_path_order() -> None:
         second_response = client.get("/")
         assert second_response.status_code == HTTP_200_OK
         assert second_response.text == "1"
-
-
-def test_conflicting_paths() -> None:
-    @get(path=["/path/{a:int}/{b:int}", "/path/{c:int}/{d:int}"], media_type=MediaType.TEXT)
-    def handler_fn(a: int = 0, b: int = 0, c: int = 0, d: int = 0) -> None:
-        ...
-
-    with pytest.raises(ImproperlyConfiguredException):
-        create_test_client(handler_fn)
 
 
 @pytest.mark.parametrize(
