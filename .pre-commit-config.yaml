@@ -143,6 +143,7 @@ repos:
         additional_dependencies:
           [
             aiomcache,
+            beanie,
             fsspec,
             httpx,
             multidict,
@@ -167,12 +168,13 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.280
+    rev: v1.1.281
     hooks:
       - id: pyright
         additional_dependencies:
           [
             aiomcache,
+            beanie,
             beautifulsoup4,
             brotli,
             cryptography,
@@ -182,6 +184,7 @@ repos:
             hypothesis,
             jinja2,
             mako,
+            mongomock_motor,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
