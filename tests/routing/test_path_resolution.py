@@ -207,3 +207,20 @@ def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -
         resp = client.get("/scope/b")
         assert resp.status_code == 200
         assert resp.json() == ["ok"]
+
+
+def test_support_of_different_branches() -> None:
+    @get("/{foo:int}/foo")
+    def foo_handler(foo: int) -> int:
+        return foo
+
+    @get("/{bar:str}/bar")
+    def bar_handler(bar: str) -> str:
+        return bar
+
+    with create_test_client([foo_handler, bar_handler]) as client:
+        response = client.get("1/foo")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("a/bar")
+        assert response.status_code == HTTP_200_OK
