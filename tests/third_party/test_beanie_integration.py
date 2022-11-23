@@ -31,7 +31,7 @@ async def create_widget_handler(data: Widget) -> Widget:
     return data
 
 
-@pytest.mark.xfail("beanie does not support serialization via '.dict'")
+@pytest.mark.xfail(reason="beanie does not support serialization via '.dict'")
 def test_beanie_serialization() -> None:
     with create_test_client(create_widget_handler, on_startup=[initialize_beanie]) as client:
         response = client.post("widget", json={"name": "moishe zuchmir"})

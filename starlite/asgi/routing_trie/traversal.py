@@ -1,5 +1,4 @@
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
 def traverse_route_map(
     root_node: "RouteTrieNode",
     path: str,
-) -> Tuple["RouteTrieNode", List[Tuple[str, Any]], str]:
+) -> Tuple["RouteTrieNode", List[str], str]:
     """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
@@ -27,7 +26,7 @@ def traverse_route_map(
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
     current_node = root_node
-    path_params: List[Tuple[str, Any]] = []
+    path_params: List[str] = []
     path_components = [p for p in path.split("/") if p]
 
     for i, component in enumerate(path_components):
@@ -35,13 +34,12 @@ def traverse_route_map(
             current_node = current_node.children[component]
             continue
 
-        if current_node.path_param_definition:
-            param_definition = current_node.path_param_definition
-            if param_definition.type is Path:
-                path_params.append((param_definition.name, normalize_path("/".join(path_components[i:]))))
+        if current_node.is_path_param_node:
+            if current_node.is_path_type:
+                path_params.append(normalize_path("/".join(path_components[i:])))
                 return current_node, path_params, path
 
-            path_params.append((param_definition.name, param_definition.parser(component)))
+            path_params.append(component)
             current_node = current_node.children[PathParameterSentinel]
 
         continue
@@ -60,7 +58,7 @@ def parse_node_handlers(
 
     Args:
         node: The trie node to parse.
-        scope: The ASGI scope instance.
+        method: The scope's method.
 
     Returns:
         An ASGI Handler tuple.
@@ -118,7 +116,13 @@ def parse_path_to_route(
             path=path,
         )
         asgi_app, handler = parse_node_handlers(node=node, method=method)
-        return asgi_app, handler, path, dict(path_parameters)
+
+        return (
+            asgi_app,
+            handler,
+            path,
+            {param_definition.name: value for param_definition, value in zip(node.path_parameters, path_parameters)},
+        )
     except KeyError as e:
         raise MethodNotAllowedException() from e
     except ValueError as e:
