@@ -22,6 +22,10 @@ repos:
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.137
+    hooks:
+      - id: ruff
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:

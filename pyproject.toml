@@ -191,3 +191,85 @@ add-ignore = "D100,D104,D105,D106,D202,D205,D415"
 add-select = "D401,D404,D417"
 convention = "google"
 match_dir = "starlite"
+
+[tool.ruff]
+exclude = [
+  ".git",
+  ".mypy_cache",
+  ".nox",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+  '__pycache__',
+]
+ignore = [
+  'B008',
+  'B009',
+  'B010',
+  'C408',
+  'C417',
+  'D100',
+  'D104',
+  'D105',
+  'D106',
+  'D202',
+  "D203",
+  "D204",
+  "D205",
+  "D213",
+  "D215",
+  "D400",
+  "D404",
+  "D406",
+  "D407",
+  "D408",
+  "D409",
+  "D413",
+  "D415",
+  'E501',
+]
+line-length = 120
+select = [
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'N',
+  'W',
+  'I',
+  'U',
+  'S',
+  'FBT',
+]
+src = ["starlite", "tests/"]
+target-version = "py38"
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+fix = true
+
+[tool.ruff.pep8-naming]
+classmethod-decorators = [
+  'classmethod',
+  'validator',
+  'root_validator',
+  'declared_attr',
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ['F401']
+"starlite/types/builtin_types.py" = ['F401']
+
+[tool.ruff.isort]
+known-first-party = ["starlite", 'tests']
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 12
