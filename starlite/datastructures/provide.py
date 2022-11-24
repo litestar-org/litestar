@@ -106,7 +106,7 @@ class DependencyCleanupGroup:
             if len(self._generators) == 1:
                 await self._wrap_next(self._generators[0])()
             elif self._generators:
-                async with anyio.create_task_group() as tg:
+                async with create_task_group() as task_group:
                     for gen in self._generators:
                         tg.start_soon(self._wrap_next(gen))
             await app(scope, receive, send)
