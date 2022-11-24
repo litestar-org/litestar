@@ -164,22 +164,7 @@ class HTTPRoute(BaseRoute):
                 request=request,
             )
         if cleanup_group:
-            if not isinstance(response, Response):
-                raise ImproperlyConfiguredException(
-                    f"Dependencies with yield are only supported for starlite responses not {type(response)!r}"
-                )
-            current_background = response.background
-            tasks: List[BackgroundTask] = cleanup_group.to_background_tasks()
-
-            if current_background:
-                if isinstance(current_background, BackgroundTask):
-                    tasks.append(current_background)
-                else:
-                    tasks.extend(current_background.tasks)
-            if len(tasks) == 1:
-                response.background = tasks[0]
-            else:
-                response.background = BackgroundTasks(tasks)
+            response = cleanup_group.wrap_asgi(response)
 
         return response
 
@@ -200,6 +185,7 @@ class HTTPRoute(BaseRoute):
             cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
+
         try:
             if route_handler.has_sync_callable:
                 data = route_handler.fn.value(**parsed_kwargs)

@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Callable, Generator, Dict
+from typing import AsyncGenerator, Callable, Dict, Generator
 from unittest.mock import MagicMock
 
 import pytest
@@ -99,16 +99,3 @@ def test_generator_dependency_handle_exception(
         cleanup_mock.assert_not_called()
         exception_mock.assert_called_once()
         finally_mock.assert_called_once()
-
-
-def test_generator_dependency_raises_for_invalid_response_class(
-    generator_dependency: Callable[[], Generator[str, None, None]], cleanup_mock: MagicMock
-) -> None:
-    @get("/", dependencies={"dep": Provide(generator_dependency)})
-    def handler(dep: str) -> JSONResponse:
-        return JSONResponse({"value": dep})
-
-    with create_test_client(route_handlers=[handler]) as client:
-        res = client.get("/")
-        assert res.status_code == 500
-        cleanup_mock.assert_not_called()

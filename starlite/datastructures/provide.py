@@ -1,25 +1,18 @@
 from inspect import isasyncgen
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncGenerator,
-    Callable,
-    Generator,
-    List,
-    Optional,
-    Union,
-)
+from typing import Any, AsyncGenerator, Callable, Coroutine, Generator, List, Optional, TYPE_CHECKING, Union
 
-from starlite.datastructures.background_tasks import BackgroundTask
+import anyio
+
 from starlite.types import Empty
+from starlite.utils.compat import async_next
 from starlite.utils.helpers import Ref
-from starlite.utils.sync import is_async_callable
+from starlite.utils.sync import AsyncCallable, is_async_callable
 
 if TYPE_CHECKING:
     from typing import Type
 
     from starlite.signature import SignatureModel
-    from starlite.types import AnyCallable, AnyGenerator
+    from starlite.types import AnyCallable, AnyGenerator, Scope, Receive, Send, ASGIApp
 
 
 class Provide:
@@ -95,21 +88,30 @@ class DependencyCleanupGroup:
         self._generators.append(generator)
 
     @staticmethod
-    def _wrap_next(generator: "AnyGenerator") -> Callable[[], Any]:
+    def _wrap_next(generator: "AnyGenerator") -> Callable[[], Coroutine[None, None, None]]:
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:
-                await anext(generator, None)  # type: ignore[arg-type]
+                await async_next(generator, None)  # type: ignore[arg-type]
 
             return wrapped_async
 
         def wrapped() -> None:
             next(generator, None)  # type: ignore[arg-type]
 
-        return wrapped
+        return AsyncCallable(wrapped)
 
-    def to_background_tasks(self) -> List[BackgroundTask]:
-        return [BackgroundTask(self._wrap_next(gen)) for gen in self._generators]
+    def wrap_asgi(self, app: "ASGIApp") -> "ASGIApp":
+        async def wrapped(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            if len(self._generators) == 1:
+                await self._wrap_next(self._generators[0])()
+            elif self._generators:
+                async with anyio.create_task_group() as tg:
+                    for gen in self._generators:
+                        tg.start_soon(self._wrap_next(gen))
+            await app(scope, receive, send)
+
+        return wrapped
 
     async def throw(self, exc: Any) -> None:
         for gen in self._generators:

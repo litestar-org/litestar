@@ -43,6 +43,7 @@ from starlite.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from starlite.parsers import parse_form_data, parse_headers, parse_query_string
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import Empty
+from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
@@ -184,7 +185,7 @@ async def resolve_dependency(
         value = next(value)
     elif isasyncgen(value):
         cleanup_group.add(value)
-        value = await anext(value)
+        value = await async_next(value)
     kwargs[dependency.key] = value
 
 
