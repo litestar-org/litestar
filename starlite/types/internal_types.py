@@ -1,4 +1,14 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, Literal, NamedTuple, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Literal,
+    NamedTuple,
+    Optional,
+    Type,
+    Union,
+)
 
 from starlite.types import Method
 
@@ -33,4 +43,4 @@ class PathParameterDefinition(NamedTuple):
     name: str
     full: str
     type: Type
-    parser: Callable[[str], Any]
+    parser: Optional[Callable[[str], Any]]

@@ -1,5 +1,4 @@
 from functools import lru_cache
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
@@ -87,7 +86,7 @@ def parse_path_params(
         A dictionary of parsed path parameters.
     """
     return {
-        param_definition.name: param_definition.parser(value) if param_definition.type not in {Path, str} else value
+        param_definition.name: param_definition.parser(value) if param_definition.parser else value
         for param_definition, value in zip(parameter_definitions, path_param_values)
     }
 
