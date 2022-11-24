@@ -1,5 +1,16 @@
-from typing import TYPE_CHECKING, Any
+from inspect import isasyncgen
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Callable,
+    Generator,
+    List,
+    Optional,
+    Union,
+)
 
+from starlite.datastructures.background_tasks import BackgroundTask
 from starlite.types import Empty
 from starlite.utils.helpers import Ref
 from starlite.utils.sync import is_async_callable
@@ -8,7 +19,7 @@ if TYPE_CHECKING:
     from typing import Type
 
     from starlite.signature import SignatureModel
-    from starlite.types import AnyCallable
+    from starlite.types import AnyCallable, AnyGenerator
 
 
 class Provide:
@@ -68,3 +79,44 @@ class Provide:
             and other.use_cache == self.use_cache
             and other.value == self.value
         )
+
+
+class DependencyCleanupGroup:
+    """Wrapper for generator based dependencies.
+
+    Simplify cleanup by wrapping `next`/`anext` calls in `BackgroundTasks` and providing facilities to `throw` /
+    `athrow` into all generators consecutively.
+    """
+
+    def __init__(self, generators: Optional[List["AnyGenerator"]] = None) -> None:
+        self._generators = generators or []
+
+    def add(self, generator: Union[Generator[Any, None, None], AsyncGenerator[Any, None]]) -> None:
+        self._generators.append(generator)
+
+    @staticmethod
+    def _wrap_next(generator: "AnyGenerator") -> Callable[[], Any]:
+        if isasyncgen(generator):
+
+            async def wrapped_async() -> None:
+                await anext(generator, None)  # type: ignore[arg-type]
+
+            return wrapped_async
+
+        def wrapped() -> None:
+            next(generator, None)  # type: ignore[arg-type]
+
+        return wrapped
+
+    def to_background_tasks(self) -> List[BackgroundTask]:
+        return [BackgroundTask(self._wrap_next(gen)) for gen in self._generators]
+
+    async def throw(self, exc: Any) -> None:
+        for gen in self._generators:
+            try:
+                if isasyncgen(gen):
+                    await gen.athrow(exc)
+                else:
+                    gen.throw(exc)  # type: ignore[union-attr]
+            except (StopIteration, StopAsyncIteration):
+                continue

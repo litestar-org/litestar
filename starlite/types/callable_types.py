@@ -1,4 +1,13 @@
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncGenerator,
+    Awaitable,
+    Callable,
+    Generator,
+    TypeVar,
+    Union,
+)
 
 from .asgi_types import ASGIApp, Message, Scope
 from .helper_types import SyncOrAsyncUnion
@@ -30,6 +39,7 @@ AfterRequestHookHandler = Union[
 AfterResponseHookHandler = Callable[[Request], SyncOrAsyncUnion[None]]
 AsyncAnyCallable = Callable[..., Awaitable[Any]]
 AnyCallable = Callable[..., Any]
+AnyGenerator = Union[Generator[Any, Any, Any], AsyncGenerator[Any, Any]]
 BeforeMessageSendHookHandler = Union[
     Callable[[Message, State, Scope], SyncOrAsyncUnion[None]], Callable[[Message, State], SyncOrAsyncUnion[None]]
 ]
