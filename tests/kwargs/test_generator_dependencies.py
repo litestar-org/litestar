@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Callable, Generator
+from typing import AsyncGenerator, Callable, Generator, Dict
 from unittest.mock import MagicMock
 
 import pytest
@@ -66,7 +66,7 @@ def test_generator_dependency(
     dependency = request.getfixturevalue(dependency_fixture)
 
     @get("/", dependencies={"dep": Provide(dependency)})
-    def handler(dep: str) -> dict[str, str]:
+    def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -89,7 +89,7 @@ def test_generator_dependency_handle_exception(
     dependency = request.getfixturevalue(dependency_fixture)
 
     @get("/", dependencies={"dep": Provide(dependency)})
-    def handler(dep: str) -> dict[str, str]:
+    def handler(dep: str) -> Dict[str, str]:
         raise ValueError("foo")
 
     with create_test_client(route_handlers=[handler]) as client:
