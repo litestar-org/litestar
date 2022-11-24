@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Callable, List, Optional, Type
 
 import pytest
@@ -223,4 +224,21 @@ def test_support_of_different_branches() -> None:
         assert response.status_code == HTTP_200_OK
 
         response = client.get("a/bar")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_support_for_path_type_parameters() -> None:
+    @get(path="/{string_param:str}")
+    def lower_handler(string_param: str) -> str:
+        return string_param
+
+    @get(path="/{string_param:str}/{parth_param:path}")
+    def upper_handler(string_param: str, parth_param: Path) -> str:
+        return string_param + str(parth_param)
+
+    with create_test_client([lower_handler, upper_handler]) as client:
+        response = client.get("/abc")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/abc/a/b/c")
         assert response.status_code == HTTP_200_OK
