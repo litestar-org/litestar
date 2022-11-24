@@ -41,12 +41,10 @@ param_type_map = {
 
 
 parsers_map: Dict[Any, Callable[[Any], Any]] = {
-    str: str,
     float: float,
     int: int,
     Decimal: Decimal,
     UUID: UUID,
-    Path: lambda x: Path(re.sub("//+", "", (x.lstrip("/")))),
     date: parse_date,
     datetime: parse_datetime,
     time: parse_time,
@@ -169,7 +167,7 @@ class BaseRoute(ABC):
                 cls._validate_path_parameter(param)
                 param_name, param_type = (p.strip() for p in param.split(":"))
                 type_class = param_type_map[param_type]
-                parser = parsers_map[type_class]
+                parser = parsers_map[type_class] if type_class not in {str, Path} else None
                 parsed_components.append(
                     PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser)
                 )

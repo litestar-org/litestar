@@ -1,5 +1,4 @@
 from functools import lru_cache
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
@@ -38,12 +37,11 @@ def traverse_route_map(
             continue
 
         if current_node.is_path_param_node:
+            current_node = current_node.children[PathParameterSentinel]
             if current_node.is_path_type:
                 path_params.append(normalize_path("/".join(path_components[i:])))
-                return current_node, path_params, path
-
-            path_params.append(component)
-            current_node = current_node.children[PathParameterSentinel]
+            else:
+                path_params.append(component)
 
         continue
 
@@ -88,7 +86,7 @@ def parse_path_params(
         A dictionary of parsed path parameters.
     """
     return {
-        param_definition.name: param_definition.parser(value) if param_definition.type is not Path else value
+        param_definition.name: param_definition.parser(value) if param_definition.parser else value
         for param_definition, value in zip(parameter_definitions, path_param_values)
     }
 
