@@ -1,5 +1,5 @@
 from copy import copy
-from typing import TYPE_CHECKING, Dict, List, cast
+from typing import TYPE_CHECKING, Dict, List, Tuple, cast
 
 from pydantic.fields import Undefined
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
@@ -78,7 +78,7 @@ class ParameterCollection:
 def create_parameter(
     model_field: "ModelField",
     parameter_name: str,
-    path_parameters: List["PathParameterDefinition"],
+    path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
@@ -124,7 +124,7 @@ def get_recursive_handler_parameters(
     model_field: "ModelField",
     dependencies: "Dependencies",
     route_handler: "BaseRouteHandler",
-    path_parameters: List["PathParameterDefinition"],
+    path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> List[Parameter]:
     """Create and return parameters for a handler.
@@ -150,7 +150,7 @@ def get_layered_parameter(
     field_name: str,
     signature_model_field: "ModelField",
     layered_parameters: Dict[str, "ModelField"],
-    path_parameters: List["PathParameterDefinition"],
+    path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
@@ -190,7 +190,7 @@ def get_layered_parameter(
 def create_parameter_for_handler(
     route_handler: "BaseRouteHandler",
     handler_fields: Dict[str, "ModelField"],
-    path_parameters: List["PathParameterDefinition"],
+    path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> List[Parameter]:
     """Create a list of path/query/header Parameter models for the given PathHandler."""

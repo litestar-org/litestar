@@ -2,14 +2,7 @@ from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
-from starlite import (
-    Controller,
-    ImproperlyConfiguredException,
-    MediaType,
-    delete,
-    get,
-    post,
-)
+from starlite import Controller, MediaType, delete, get, post
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
@@ -175,15 +168,6 @@ def test_path_order() -> None:
         assert second_response.text == "1"
 
 
-def test_conflicting_paths() -> None:
-    @get(path=["/path/{a:int}/{b:int}", "/path/{c:int}/{d:int}"], media_type=MediaType.TEXT)
-    def handler_fn(a: int = 0, b: int = 0, c: int = 0, d: int = 0) -> None:
-        ...
-
-    with pytest.raises(ImproperlyConfiguredException):
-        create_test_client(handler_fn)
-
-
 @pytest.mark.parametrize(
     "handler_path, request_path, expected_status_code, expected_param",
     [
@@ -223,3 +207,20 @@ def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -
         resp = client.get("/scope/b")
         assert resp.status_code == 200
         assert resp.json() == ["ok"]
+
+
+def test_support_of_different_branches() -> None:
+    @get("/{foo:int}/foo")
+    def foo_handler(foo: int) -> int:
+        return foo
+
+    @get("/{bar:str}/bar")
+    def bar_handler(bar: str) -> str:
+        return bar
+
+    with create_test_client([foo_handler, bar_handler]) as client:
+        response = client.get("1/foo")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("a/bar")
+        assert response.status_code == HTTP_200_OK
