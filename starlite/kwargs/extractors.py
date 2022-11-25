@@ -137,7 +137,7 @@ def state_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> Non
     Returns:
         None
     """
-    values["state"] = connection.app.state.copy()
+    values["state"] = connection.app.state._state
 
 
 def headers_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:

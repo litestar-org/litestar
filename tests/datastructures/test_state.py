@@ -1,21 +1,44 @@
+from typing import Any, Type
+
 import pytest
 
 from starlite.datastructures import State
+from starlite.datastructures.state import ImmutableState
 
 
-def test_state_mapping() -> None:
+@pytest.mark.parametrize("state_class", (ImmutableState, State))
+def test_state_immutable_mapping(state_class: Type[ImmutableState]) -> None:
     state_dict = {"first": 1, "second": 2, "third": 3}
-    state = State(state_dict)
-
+    state = state_class(state_dict)
     assert len(state) == 3
     assert "first" in state
-    state["fourth"] = 4
     assert state["first"] == 1
-    assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3), ("fourth", 4)]
+    assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
     assert state
-    assert not State()
-    del state["fourth"]
-    assert "fourth" not in state
+    assert isinstance(state.mutable_copy(), State)
+
+
+@pytest.mark.parametrize(
+    "zero_object", (ImmutableState({"first": 1}), State({"first": 1}), {"first": 1}, [("first", 1)])
+)
+def test_state_init(zero_object: Any) -> None:
+    state = ImmutableState(zero_object)
+    assert state.first
+
+
+@pytest.mark.parametrize("zero_object", (ImmutableState({}), State(), {}, [], None))
+def test_state_mapping(zero_object: Any) -> None:
+    state = State(zero_object)
+    assert not state
+    state["first"] = "first"
+    state["second"] = "second"
+    assert state.first == "first"
+    assert state["second"] == "second"
+    del state["first"]
+    del state.second
+    assert "first" not in state
+    assert "second" not in state
+    assert isinstance(state.frozen_copy(), ImmutableState)
 
 
 def test_state_attributes() -> None:

@@ -2,7 +2,9 @@ from copy import copy
 from threading import RLock
 from typing import (
     Any,
+    Callable,
     Dict,
+    Generator,
     Iterable,
     Iterator,
     Mapping,
@@ -111,6 +113,28 @@ class ImmutableState(Mapping[str, Any]):
             A dict
         """
         return copy(self._state)
+
+    @classmethod
+    def __get_validators__(
+        cls,
+    ) -> Generator[
+        Callable[[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]], "ImmutableState"], None, None
+    ]:
+        """Pydantic compatible method to allow custom parsing of state instances in a SignatureModel."""
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]) -> "ImmutableState":
+        """Parse a value and instantiate state inside a SignatureModel. This allows us to use custom subclasses of
+        state, as well as allows users to decide whether state is mutable or immutable.
+
+        Args:
+            value: The value from which to initialize the state instance.
+
+        Returns:
+            An ImmutableState instance
+        """
+        return cls(value)
 
 
 class State(ImmutableState, MutableMapping[str, Any]):
@@ -247,11 +271,3 @@ class State(ImmutableState, MutableMapping[str, Any]):
             A `State`
         """
         return ImmutableState(self)
-
-    def dict(self) -> Dict[str, Any]:
-        """Return a shallow copy of the wrapped dict.
-
-        Returns:
-            A dict
-        """
-        return copy(self._state)

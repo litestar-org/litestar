@@ -16,10 +16,16 @@ from starlite import (
     post,
     put,
 )
+from starlite.datastructures.state import ImmutableState
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import create_test_client
 from starlite.types import Scope
 from tests import Person, PersonFactory
+
+
+class CustomImmutableState(ImmutableState):
+    called: bool
+    msg: str
 
 
 class CustomState(State):
@@ -27,7 +33,7 @@ class CustomState(State):
     msg: str
 
 
-@pytest.mark.parametrize("state_typing", [State, CustomState])
+@pytest.mark.parametrize("state_typing", (State, ImmutableState, CustomState, CustomImmutableState))
 def test_application_state_injection(state_typing: Union[Type[State], CustomState]) -> None:
     @get("/", media_type=MediaType.TEXT)
     def route_handler(state: state_typing) -> str:  # type: ignore
