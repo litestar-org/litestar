@@ -188,7 +188,7 @@ async def resolve_dependency(
     elif isasyncgen(value):
         cleanup_group.add(value)
         value = await async_next(value)
-        
+
     kwargs[dependency.key] = value
 
 
