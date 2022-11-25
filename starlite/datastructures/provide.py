@@ -88,10 +88,10 @@ class Provide:
 class DependencyCleanupGroup:
     """Wrapper for generator based dependencies.
 
-    Simplify cleanup by wrapping `next`/`anext` calls in `BackgroundTasks` and providing facilities to `throw` /
-    `athrow` into all generators consecutively. An instance of this class can be used as a contextmanager, which will
-    automatically throw any exceptions into its generators. All exceptions caught in this manner will be re-raised after
-    they have been thrown in the generators.
+    Simplify cleanup by wrapping `next`/`anext` calls and providing facilities to `throw` / `athrow` into all generators
+    consecutively. An instance of this class can be used as a contextmanager, which will automatically throw any
+    exceptions into its generators. All exceptions caught in this manner will be re-raised after they have been thrown
+    in the generators.
     """
 
     __slots__ = ("_generators", "_closed")
@@ -141,13 +141,19 @@ class DependencyCleanupGroup:
         """
         if self._closed:
             raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
+
         self._closed = True
+
+        if not self._generators:
+            return
+
         if len(self._generators) == 1:
             await self._wrap_next(self._generators[0])()
-        elif self._generators:
-            async with create_task_group() as task_group:
-                for generator in self._generators:
-                    task_group.start_soon(self._wrap_next(generator))
+            return
+
+        async with create_task_group() as task_group:
+            for generator in self._generators:
+                task_group.start_soon(self._wrap_next(generator))
 
     def wrap_asgi(self, app: "ASGIApp") -> "ASGIApp":
         """Wrap an ASGI callable such that all generators will be called before it.
