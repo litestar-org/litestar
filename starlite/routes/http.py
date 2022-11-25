@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
-from starlite.datastructures import BackgroundTask, BackgroundTasks, Headers
+from starlite.datastructures import Headers
+from starlite.datastructures.provide import DependencyCleanupGroup
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
@@ -13,7 +14,6 @@ from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
-    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.kwargs import KwargsModel
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
@@ -164,7 +164,7 @@ class HTTPRoute(BaseRoute):
                 request=request,
             )
         if cleanup_group:
-            response = cleanup_group.wrap_asgi(response)
+            return cleanup_group.wrap_asgi(response)
 
         return response
 
@@ -176,7 +176,7 @@ class HTTPRoute(BaseRoute):
         parsed_kwargs: Dict[str, Any] = {}
         cleanup_group: Optional["DependencyCleanupGroup"] = None
 
-        if parameter_model.has_kwargs:
+        if parameter_model.has_kwargs and route_handler.signature_model:
             kwargs = parameter_model.to_kwargs(connection=request)
 
             if "data" in kwargs:
@@ -184,19 +184,15 @@ class HTTPRoute(BaseRoute):
 
             cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
-            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
+            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
+                connection=request, **kwargs
+            )
 
-        try:
+        async with (cleanup_group or DependencyCleanupGroup()):
             if route_handler.has_sync_callable:
                 data = route_handler.fn.value(**parsed_kwargs)
             else:
                 data = await route_handler.fn.value(**parsed_kwargs)
-        except Exception as exc:
-            # catch and re-raise exceptions from the handler function here, so the can
-            # be `throw`n in generator dependencies
-            if cleanup_group:
-                await cleanup_group.throw(exc)
-            raise exc
         return data, cleanup_group
 
     @staticmethod

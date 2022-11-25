@@ -176,6 +176,7 @@ async def resolve_dependency(
         dependency: An instance of [Dependency][starlite.kwargs.Dependency]
         connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
         kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
+        cleanup_group: DependencyCleanupGroup to which generators returned by `dependency` will be added
     """
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)

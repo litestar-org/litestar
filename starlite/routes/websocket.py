@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -7,6 +7,7 @@ from starlite.signature import get_signature_model
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket
+    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.types import Receive, Send, WebSocketScope
@@ -56,10 +57,15 @@ class WebSocketRoute(BaseRoute):
         if self.route_handler.resolve_guards():
             await self.route_handler.authorize_connection(connection=websocket)
 
-        kwargs = await self._resolve_kwargs(websocket=websocket)
-        await self.route_handler.fn.value(**kwargs)
+        kwargs, cleanup_group = await self._resolve_kwargs(websocket=websocket)
 
-    async def _resolve_kwargs(self, websocket: "WebSocket[Any, Any]") -> Dict[str, Any]:
+        async with cleanup_group:
+            await self.route_handler.fn.value(**kwargs)
+        await cleanup_group.cleanup()
+
+    async def _resolve_kwargs(
+        self, websocket: "WebSocket[Any, Any]"
+    ) -> Tuple[Dict[str, Any], "DependencyCleanupGroup"]:
         """Resolve the required kwargs from the request data.
 
         Args:
@@ -73,5 +79,5 @@ class WebSocketRoute(BaseRoute):
 
         signature_model = get_signature_model(self.route_handler)
         kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
-        await self.handler_parameter_model.resolve_dependencies(websocket, kwargs)
-        return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs)
+        cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, kwargs)
+        return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs), cleanup_group
