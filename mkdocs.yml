@@ -302,3 +302,4 @@ plugins:
             line_length: 100
 watch:
   - starlite
+  - examples
