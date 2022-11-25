@@ -12,7 +12,7 @@ from orjson import JSONDecodeError
 
 from starlite import InternalServerException, MediaType, StaticFilesConfig, get
 from starlite.connection import Request, empty_send
-from starlite.datastructures import Address, State
+from starlite.datastructures import Address
 from starlite.response import Response
 from starlite.testing import TestClient, create_test_client
 
@@ -316,31 +316,16 @@ async def test_request_disconnect() -> None:
         await app({"type": "http", "method": "POST", "path": "/"}, receiver, empty_send)  # type: ignore
 
 
-def test_request_state_object() -> None:
-    scope = {"state": {"old": "foo"}}
-
-    s = State(scope["state"])
-
-    s.new = "value"
-    assert s.new == "value"
-
-    del s.new
-
-    with pytest.raises(AttributeError):
-        s.new
-
-
 def test_request_state() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        scope["state"] = {}
-        request = Request[Any, Any](scope, receive)
-        request.state.example = 123
-        response = Response(content={"state.example": request.state.example})
-        await response(scope, receive, send)
+    @get("/")
+    def handler(request: Request[Any, Any]) -> dict:
+        request.state.test = 1
+        assert request.state.test == 1
+        return request.state.dict()
 
-    client = TestClient(app)
-    response = client.get("/123?a=abc")
-    assert response.json() == {"state.example": 123}
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.json() == {"test": 1}
 
 
 def test_request_cookies() -> None:

@@ -1,4 +1,16 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.testing.test_client import TestClient
@@ -18,6 +30,7 @@ if TYPE_CHECKING:
         WebSocket,
     )
     from starlite.config import AllowedHostsConfig
+    from starlite.datastructures.state import ImmutableState
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -61,6 +74,7 @@ def create_test_client(
     dependencies: Optional["Dependencies"] = None,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
+    initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
@@ -140,6 +154,7 @@ def create_test_client(
         dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
         exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
         guards: A list of [Guard][starlite.types.Guard] callables.
+        initial_state: An object from which to initialize the app state.
         logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
         middleware: A list of [Middleware][starlite.types.Middleware].
         on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
@@ -185,6 +200,7 @@ def create_test_client(
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
+            initial_state=initial_state,
             logging_config=logging_config,
             middleware=middleware,
             on_shutdown=on_shutdown,

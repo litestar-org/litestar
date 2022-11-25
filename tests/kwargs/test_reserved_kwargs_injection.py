@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Type, Union, cast
+from typing import Any, List, Optional, Type, cast
 
 import pytest
 from pydantic import BaseModel, Field
@@ -23,30 +23,39 @@ from starlite.types import Scope
 from tests import Person, PersonFactory
 
 
-class CustomImmutableState(ImmutableState):
-    called: bool
-    msg: str
-
-
 class CustomState(State):
     called: bool
     msg: str
 
 
-@pytest.mark.parametrize("state_typing", (State, ImmutableState, CustomState, CustomImmutableState))
-def test_application_state_injection(state_typing: Union[Type[State], CustomState]) -> None:
+def test_application_immutable_state_injection() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def route_handler(state: ImmutableState) -> str:
+        assert state
+        return cast("str", state.msg)
+
+    with create_test_client(route_handler, initial_state={"called": False}) as client:
+        client.app.state.msg = "hello"
+        assert not client.app.state.called
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize("state_typing", (State, CustomState))
+def test_application_state_injection(state_typing: Type[State]) -> None:
     @get("/", media_type=MediaType.TEXT)
     def route_handler(state: state_typing) -> str:  # type: ignore
         assert state
         state.called = True  # type: ignore
         return cast("str", state.msg)  # type: ignore
 
-    with create_test_client(route_handler) as client:
+    with create_test_client(route_handler, initial_state={"called": False}) as client:
         client.app.state.msg = "hello"
-        client.app.state.called = False
-        response = client.get("/")
-        assert response.text == "hello"
         assert not client.app.state.called
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "hello"
+        assert client.app.state.called
 
 
 class QueryParams(BaseModel):

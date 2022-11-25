@@ -89,7 +89,7 @@ class ImmutableState(Mapping[str, Any]):
         try:
             return self._state[key]
         except KeyError as e:
-            raise AttributeError(f"State instance has no attribute '{key}'") from e
+            raise AttributeError from e
 
     def __copy__(self) -> "ImmutableState":
         """Return a shallow copy of the given state object.
@@ -147,7 +147,9 @@ class State(ImmutableState, MutableMapping[str, Any]):
 
     _lock: RLock
 
-    def __init__(self, state: Optional[Union["State", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None) -> None:
+    def __init__(
+        self, state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None
+    ) -> None:
         """Initialize a `State` instance with an optional value.
 
         Args:
@@ -190,7 +192,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         ```
         """
 
-        super().__init__(state or {})
+        super().__init__(state if state is not None else {})
         super().__setattr__("_lock", RLock())
 
     def __delitem__(self, key: str) -> None:
@@ -254,7 +256,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
             with self._lock:
                 del self._state[key]
         except KeyError as e:
-            raise AttributeError(f"State instance has no attribute '{key}'") from e
+            raise AttributeError from e
 
     def copy(self) -> "State":
         """Return a shallow copy of the state object.
