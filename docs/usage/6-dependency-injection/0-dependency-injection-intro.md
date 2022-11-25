@@ -74,3 +74,77 @@ above example, the `local_dependency` can only be accessed within the specific r
 The `controller_dependency` is available only for route handlers on that specific controller; And the router
 dependencies are available only to the route handlers registered on that particular router. Only the `app_dependencies`
 are available to all route handlers.
+
+
+## Dependencies with yield (cleanup step)
+
+In addition to simple callables, dependencies can also be (async) generator functions, which allows
+to execute an additional cleanup step, such as closing a connection, after the handler function
+has returned.
+
+!!! info "Technical details"
+    The cleanup stage is executed **after** the handler function returns, but **before** the
+    response is sent (in case of HTTP requests)
+
+
+### A basic example
+
+```py title="dependencies.py"
+--8<-- "examples/dependency_injection/dependency_yield_simple.py"
+```
+
+If you run the code you'll see that `CONNECTION` has been reset after the handler function
+returned:
+
+```python
+from starlite import TestClient
+from dependencies import app, CONNECTION
+
+with TestClient(app=app) as client:
+    print(client.get("/").json())  # {"open": True}
+    print(CONNECTION)  # {"open": False}
+```
+
+### Handling exceptions
+
+If an exception occurs within the handler function, it will be raised **within** the
+generator, at the point where it first `yield`ed. This makes it possible to adapt behaviour
+of the dependency based on exceptions, for example rolling back a database session on error
+and committing otherwise.
+
+
+```py title="dependencies.py"
+--8<-- "examples/dependency_injection/dependency_yield_exceptions.py"
+```
+
+```python
+from starlite import TestClient
+from dependencies import STATE, app
+
+with TestClient(app=app) as client:
+    response = client.get("/John")
+    print(response.json())  # {"John": "hello"}
+    print(STATE)  # {"result": "OK", "connection": "closed"}
+
+    response = client.get("/Peter")
+    print(response.status_code)  # 500
+    print(STATE)  # {"result": "error", "connection": "closed"}
+```
+
+!!! info "Best Practice"
+    You should always wrap `yield` in a `try`/`finally` block, regardless of whether you
+    want to handle exceptions, to ensure that the cleanup code is run even when exceptions
+    occurred:
+
+    ```python
+    def generator_dependency():
+        try:
+            yield
+        finally:
+            ...  # cleanup code
+    ```
+
+!!! important
+    Do not re-raise exceptions within the dependency. Exceptions caught within these
+    dependencies will still be handled by the regular mechanisms without an explicit
+    re-raise

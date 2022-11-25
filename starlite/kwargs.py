@@ -1,5 +1,6 @@
 from collections import defaultdict
 from functools import lru_cache
+from inspect import isasyncgen, isgenerator
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -36,12 +37,13 @@ from starlite.constants import (
     EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
-from starlite.datastructures.provide import Provide
+from starlite.datastructures.provide import DependencyCleanupGroup, Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.parsers import parse_form_data, parse_headers, parse_query_string
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.types import Empty
+from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
@@ -162,7 +164,10 @@ def create_query_default_dict(
 
 
 async def resolve_dependency(
-    dependency: "Dependency", connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]
+    dependency: "Dependency",
+    connection: Union["WebSocket", "Request"],
+    kwargs: Dict[str, Any],
+    cleanup_group: DependencyCleanupGroup,
 ) -> None:
     """Resolve a given instance of [Dependency][starlite.kwargs.Dependency]. All required sub dependencies must already
     be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
@@ -171,10 +176,20 @@ async def resolve_dependency(
         dependency: An instance of [Dependency][starlite.kwargs.Dependency]
         connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
         kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
+        cleanup_group: DependencyCleanupGroup to which generators returned by `dependency` will be added
     """
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-    kwargs[dependency.key] = await dependency.provide(**dependency_kwargs)
+    value = await dependency.provide(**dependency_kwargs)
+
+    if isgenerator(value):
+        cleanup_group.add(value)
+        value = next(value)
+    elif isasyncgen(value):
+        cleanup_group.add(value)
+        value = await async_next(value)
+
+    kwargs[dependency.key] = value
 
 
 def create_dependency_batches(expected_dependencies: Set[Dependency]) -> List[Set[Dependency]]:
@@ -577,20 +592,24 @@ class KwargsModel:
 
         return output
 
-    async def resolve_dependencies(self, connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]) -> None:
+    async def resolve_dependencies(
+        self, connection: Union["WebSocket", "Request"], kwargs: Dict[str, Any]
+    ) -> DependencyCleanupGroup:
         """Resolve all dependencies into the kwargs, recursively.
 
         Args:
             connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
             kwargs: Kwargs to pass to dependencies.
         """
+        cleanup_group = DependencyCleanupGroup()
         for batch in self.dependency_batches:
             if len(batch) == 1:
-                await resolve_dependency(next(iter(batch)), connection, kwargs)
+                await resolve_dependency(next(iter(batch)), connection, kwargs, cleanup_group)
             else:
                 async with create_task_group() as task_group:
                     for dependency in batch:
-                        task_group.start_soon(resolve_dependency, dependency, connection, kwargs)
+                        task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+        return cleanup_group
 
     @classmethod
     def _create_dependency_graph(cls, key: str, dependencies: Dict[str, Provide]) -> Dependency:

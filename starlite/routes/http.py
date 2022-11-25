@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures import Headers
+from starlite.datastructures.provide import DependencyCleanupGroup
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
@@ -142,45 +143,57 @@ class HTTPRoute(BaseRoute):
         """
         response_data = None
         before_request_handler = route_handler.resolve_before_request()
+        cleanup_group: Optional["DependencyCleanupGroup"] = None
 
         if before_request_handler:
             response_data = await before_request_handler(request)
 
         if not response_data:
-            response_data = await self._get_response_data(
+            response_data, cleanup_group = await self._get_response_data(
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
+        response: "ASGIApp"
         if isinstance(response_data, RedirectResponse):
-            return response_data
+            response = response_data
+        else:
+            response = await route_handler.to_response(
+                app=scope["app"],
+                data=response_data,
+                plugins=request.app.plugins,
+                request=request,
+            )
+        if cleanup_group:
+            return cleanup_group.wrap_asgi(response)
 
-        return await route_handler.to_response(
-            app=scope["app"],
-            data=response_data,
-            plugins=request.app.plugins,
-            request=request,
-        )
+        return response
 
     @staticmethod
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
-    ) -> Any:
+    ) -> Tuple[Any, Optional["DependencyCleanupGroup"]]:
         """Determine what kwargs are required for the given route handler's `fn` and calls it."""
         parsed_kwargs: Dict[str, Any] = {}
+        cleanup_group: Optional["DependencyCleanupGroup"] = None
 
-        if parameter_model.has_kwargs:
+        if parameter_model.has_kwargs and route_handler.signature_model:
             kwargs = parameter_model.to_kwargs(connection=request)
 
             if "data" in kwargs:
                 kwargs["data"] = await kwargs["data"]
 
-            await parameter_model.resolve_dependencies(request, kwargs)
+            cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
-            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)  # type: ignore
+            parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
+                connection=request, **kwargs
+            )
 
-        if route_handler.has_sync_callable:
-            return route_handler.fn.value(**parsed_kwargs)
-        return await route_handler.fn.value(**parsed_kwargs)
+        async with (cleanup_group or DependencyCleanupGroup()):
+            if route_handler.has_sync_callable:
+                data = route_handler.fn.value(**parsed_kwargs)
+            else:
+                data = await route_handler.fn.value(**parsed_kwargs)
+        return data, cleanup_group
 
     @staticmethod
     async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["ASGIApp"]:
