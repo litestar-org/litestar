@@ -181,12 +181,14 @@ async def resolve_dependency(
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
     value = await dependency.provide(**dependency_kwargs)
+
     if isgenerator(value):
         cleanup_group.add(value)
         value = next(value)
     elif isasyncgen(value):
         cleanup_group.add(value)
         value = await async_next(value)
+        
     kwargs[dependency.key] = value
 
 
