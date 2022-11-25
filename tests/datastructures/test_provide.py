@@ -77,3 +77,15 @@ async def test_cleanup_group_cleanup_on_closed_raises(generator: Generator[str, 
     await group.cleanup()
     with pytest.raises(RuntimeError):
         await group.cleanup()
+
+
+async def test_cleanup_group_add_on_closed_raises(
+    generator: Generator[str, None, None], async_generator: AsyncGenerator[str, None]
+) -> None:
+    next(generator)
+    group = DependencyCleanupGroup([generator])
+
+    await group.cleanup()
+
+    with pytest.raises(RuntimeError):
+        group.add(async_generator)

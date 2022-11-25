@@ -7,7 +7,7 @@ D = TypeVar("D")
 
 try:
     async_next = anext  # pyright: ignore
-except NameError:
+except NameError:  # pragma: no cover
 
     async def async_next(gen: AsyncGenerator[T, Any], default: Union[D, EmptyType] = Empty) -> Union[T, D]:  # type: ignore[misc]
         """Backwards compatibility shim for Python<3.10."""
