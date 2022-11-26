@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy, deepcopy
 from threading import RLock
 from typing import (
     Any,
@@ -25,11 +25,42 @@ class ImmutableState(Mapping[str, Any]):
 
     _state: Dict[str, Any]
 
-    def __init__(self, state: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]) -> None:
+    def __init__(
+        self, state: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]], deep_copy: bool = True
+    ) -> None:
         """Initialize an `ImmutableState` instance.
 
         Args:
              state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
+             deep_copy: Whether to 'deepcopy' the passed in state.
+
+        Examples:
+            ```python
+            from starlite import ImmutableState
+
+            state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+            state = ImmutableState(state_dict)
+
+            # state implements the Mapping type:
+            assert len(state) == 3
+            assert "first" in state
+            assert not "fourth" in state
+            assert state["first"] == 1
+            assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+
+            # state implements __bool__
+            assert state  # state is true when it has values.
+            assert not State()  # state is empty when it has no values.
+
+            # it has a 'dict' method to retrieve a shallow copy of the underlying dict
+            inner_dict = state.dict()
+            assert inner_dict == state_dict
+
+            # you can also retrieve a mutable State by calling 'mutable_copy'
+            mutable_state = state.mutable_copy()
+            del state["first"]
+            assert "first" not in state
+            ```
         """
 
         if isinstance(state, ImmutableState):
@@ -38,7 +69,7 @@ class ImmutableState(Mapping[str, Any]):
         if not isinstance(state, dict) and isinstance(state, Iterable):
             state = dict(state)
 
-        super().__setattr__("_state", state if state is not None else {})
+        super().__setattr__("_state", deepcopy(state) if deep_copy else state)
 
     def __bool__(self) -> bool:
         """Return a boolean indicating whether the wrapped dict instance has values."""
@@ -96,7 +127,7 @@ class ImmutableState(Mapping[str, Any]):
 
         Customizes how the builtin "copy" function will work.
         """
-        return self.__class__(copy(self._state))
+        return self.__class__(deepcopy(self._state))
 
     def mutable_copy(self) -> "State":
         """Return a mutable copy of the state object.
@@ -148,12 +179,15 @@ class State(ImmutableState, MutableMapping[str, Any]):
     _lock: RLock
 
     def __init__(
-        self, state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None
+        self,
+        state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
+        deep_copy: bool = False,
     ) -> None:
         """Initialize a `State` instance with an optional value.
 
         Args:
              state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
+             deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
         ```python
@@ -189,10 +223,14 @@ class State(ImmutableState, MutableMapping[str, Any]):
         # it has a 'dict' method to retrieve a shallow copy of the underlying dict
         inner_dict = state.dict()
         assert inner_dict == state_dict
+
+        # you can get an immutable copy of the state by calling 'immutable_immutable_copy'
+        immutable_copy = state.immutable_copy()
+        del immutable_copy.first  #  raises AttributeError
         ```
         """
 
-        super().__init__(state if state is not None else {})
+        super().__init__(state if state is not None else {}, deep_copy=deep_copy)
         super().__setattr__("_lock", RLock())
 
     def __delitem__(self, key: str) -> None:
@@ -266,7 +304,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         """
         return self.__class__(self.dict())
 
-    def frozen_copy(self) -> "ImmutableState":
+    def immutable_copy(self) -> "ImmutableState":
         """Return a shallow copy of the state object, setting it to be frozen.
 
         Returns:

@@ -274,7 +274,7 @@ class Starlite(Router):
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
-        self.state = State(initial_state) if initial_state else State()
+        self.state = State(initial_state, deep_copy=True) if initial_state else State()
         self.asgi_router = ASGIRouter(app=self)
 
         # creates app config object from parameters

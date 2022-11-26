@@ -37,4 +37,4 @@ def get_handler(state: State, request: Request, dep: Any) -> None:  # pylint: di
     logger.info("state value in handler from `Request`: %s", request.app.state.value)
 
 
-starlite = Starlite(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)
+app = Starlite(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)

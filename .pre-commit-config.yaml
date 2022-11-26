@@ -114,7 +114,7 @@ repos:
     rev: "v2.15.6"
     hooks:
       - id: pylint
-        exclude: "test_*"
+        exclude: "tests|examples"
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [

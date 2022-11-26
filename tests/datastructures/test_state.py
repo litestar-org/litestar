@@ -9,13 +9,15 @@ from starlite.datastructures.state import ImmutableState
 @pytest.mark.parametrize("state_class", (ImmutableState, State))
 def test_state_immutable_mapping(state_class: Type[ImmutableState]) -> None:
     state_dict = {"first": 1, "second": 2, "third": 3}
-    state = state_class(state_dict)
+    state = state_class(state_dict, deep_copy=True)
     assert len(state) == 3
     assert "first" in state
     assert state["first"] == 1
     assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
     assert state
     assert isinstance(state.mutable_copy(), State)
+    del state_dict["first"]
+    assert "first" in state
 
 
 @pytest.mark.parametrize(
@@ -38,7 +40,7 @@ def test_state_mapping(zero_object: Any) -> None:
     del state.second
     assert "first" not in state
     assert "second" not in state
-    assert isinstance(state.frozen_copy(), ImmutableState)
+    assert isinstance(state.immutable_copy(), ImmutableState)
 
 
 def test_state_attributes() -> None:
