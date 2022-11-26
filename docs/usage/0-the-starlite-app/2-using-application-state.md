@@ -59,7 +59,7 @@ def handler(state: MyState) -> dict:
 ```
 
 While this is very powerful, it might encourage users to follow anti-patterns: its important to emphasize that using
-state can lead to hard to reason about code as well difficult to understand bugs due to changes in different ASGI
+state can lead to code that's hard to reason about and bugs that are difficult to understand, due to changes in different ASGI
 contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion. To discourage
 its use, Starlite also offers a builtin `ImmutableState` class. You can use this class to type state and ensure that no
 mutation of state is allowed:
