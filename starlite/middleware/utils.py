@@ -15,7 +15,7 @@ def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = Non
         exclude: A pattern or a list of patterns.
 
     Returns:
-        An optional pattern to match against scope["path"] to opt-out from middleware processing.
+        An optional pattern to match against scope["raw_path"] to opt-out from middleware processing.
     """
     if exclude is None:
         return None
@@ -41,7 +41,7 @@ def should_bypass_middleware(
         scope: The ASGI scope.
         scopes: A set with the ASGI scope types that are supported by the middleware.
         exclude_opt_key: Key in `opt` with which a route handler can "opt-out" of a middleware.
-        exclude_path_pattern: If this pattern matches scope["path"], the middleware should
+        exclude_path_pattern: If this pattern matches scope["raw_path"], the middleware should
             be bypassed.
 
     Returns:
@@ -51,6 +51,6 @@ def should_bypass_middleware(
         return True
     if exclude_opt_key and scope["route_handler"].opt.get(exclude_opt_key):
         return True
-    if exclude_path_pattern and exclude_path_pattern.findall(scope["path"]):
+    if exclude_path_pattern and exclude_path_pattern.findall(scope["raw_path"].decode()):
         return True
     return False
