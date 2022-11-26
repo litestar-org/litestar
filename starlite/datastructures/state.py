@@ -107,7 +107,7 @@ class ImmutableState(Mapping[str, Any]):
         return State(self._state)
 
     def dict(self) -> Dict[str, Any]:
-        """Create a shallow copy of the wrapped dict.
+        """Return a shallow copy of the wrapped dict.
 
         Returns:
             A dict
