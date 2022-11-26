@@ -1,10 +1,12 @@
+from inspect import isasyncgen, isgenerator
 from typing import TYPE_CHECKING, Any, Dict, List, Set
 
 from starlite.signature import get_signature_model
+from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
-    from starlite.datastructures.provide import Provide
+    from starlite.datastructures.provide import DependencyCleanupGroup, Provide
 
 
 class Dependency:
@@ -32,18 +34,35 @@ class Dependency:
         return hash(self.key)
 
 
-async def resolve_dependency(dependency: "Dependency", connection: "ASGIConnection", kwargs: Dict[str, Any]) -> None:
-    """Resolve a given instance of [Dependency][starlite.kwargs.Dependency]. All required sub dependencies must already
+async def resolve_dependency(
+    dependency: "Dependency",
+    connection: "ASGIConnection",
+    kwargs: Dict[str, Any],
+    cleanup_group: "DependencyCleanupGroup",
+) -> None:
+    """Resolve a given instance of [Dependency][starlite.kwargs.Dependency].
+
+    All required sub dependencies must already
     be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
 
     Args:
         dependency: An instance of [Dependency][starlite.kwargs.Dependency]
         connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
         kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
+        cleanup_group: DependencyCleanupGroup to which generators returned by `dependency` will be added
     """
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-    kwargs[dependency.key] = await dependency.provide(**dependency_kwargs)
+    value = await dependency.provide(**dependency_kwargs)
+
+    if isgenerator(value):
+        cleanup_group.add(value)
+        value = next(value)
+    elif isasyncgen(value):
+        cleanup_group.add(value)
+        value = await async_next(value)
+
+    kwargs[dependency.key] = value
 
 
 def create_dependency_batches(expected_dependencies: Set["Dependency"]) -> List[Set["Dependency"]]:

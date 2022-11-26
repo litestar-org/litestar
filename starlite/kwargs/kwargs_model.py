@@ -25,11 +25,7 @@ from pydantic.fields import (
 )
 from pydantic_factories.utils import is_optional
 
-from starlite.constants import (
-    EXTRA_KEY_IS_PARAMETER,
-    EXTRA_KEY_REQUIRED,
-    RESERVED_KWARGS,
-)
+from starlite.constants import EXTRA_KEY_IS_PARAMETER, RESERVED_KWARGS
 from starlite.datastructures.provide import DependencyCleanupGroup, Provide
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -57,7 +53,6 @@ from starlite.kwargs.parameter_definition import (
     merge_parameter_sets,
 )
 from starlite.signature import SignatureModel, get_signature_model
-from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
