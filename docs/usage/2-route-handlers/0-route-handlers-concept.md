@@ -95,7 +95,7 @@ Additionally, you can specify the following special kwargs, what's called "reser
 - `socket`: injects the [`WebSocket`][starlite.connection.WebSocket] instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
 - `state`: injects a copy of the application `state`.
 
-- For example:
+For example:
 
 ```python
 from typing import Any, Dict

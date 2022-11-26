@@ -20,7 +20,7 @@ from starlite.datastructures.response_containers import (
     Template,
 )
 from starlite.datastructures.response_header import ResponseHeader
-from starlite.datastructures.state import State
+from starlite.datastructures.state import ImmutableState, State
 from starlite.datastructures.upload_file import UploadFile
 from starlite.datastructures.url import URL, Address, make_absolute_url
 
@@ -35,7 +35,7 @@ __all__ = (
     "FormMultiDict",
     "Headers",
     "ImmutableMultiDict",
-    "make_absolute_url",
+    "ImmutableState",
     "MultiDict",
     "MutableScopeHeaders",
     "Provide",
@@ -45,6 +45,7 @@ __all__ = (
     "State",
     "Stream",
     "Template",
-    "UploadFile",
     "URL",
+    "UploadFile",
+    "make_absolute_url",
 )
