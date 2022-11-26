@@ -162,7 +162,7 @@ class TestClientTransport(BaseTransport):
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),
                 )
-        except BaseException as exc:  # pragma: no cover
+        except BaseException as exc:  # pragma: no cover # pylint: disable=W0703
             if self.raise_server_exceptions:
                 raise exc
             return Response(
