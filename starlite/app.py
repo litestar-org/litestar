@@ -1,7 +1,18 @@
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from typing_extensions import TypedDict
 
@@ -10,7 +21,7 @@ from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
-from starlite.datastructures.state import State
+from starlite.datastructures.state import ImmutableState, State
 from starlite.exceptions import NoRouteMatchFoundException
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.cors import CORSMiddleware
@@ -163,6 +174,7 @@ class Starlite(Router):
         etag: Optional["ETag"] = None,
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
+        initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
         logging_config: Optional["BaseLoggingConfig"] = None,
         middleware: Optional[List["Middleware"]] = None,
         on_app_init: Optional[List["OnAppInitHandler"]] = None,
@@ -224,6 +236,7 @@ class Starlite(Router):
                 Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of [Guard][starlite.types.Guard] callables.
+            initial_state: An object from which to initialize the app state.
             logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
             middleware: A list of [Middleware][starlite.types.Middleware].
             on_app_init: A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
@@ -261,7 +274,7 @@ class Starlite(Router):
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
-        self.state = State()
+        self.state = State(initial_state, deep_copy=True) if initial_state else State()
         self.asgi_router = ASGIRouter(app=self)
 
         # creates app config object from parameters

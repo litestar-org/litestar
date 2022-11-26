@@ -58,7 +58,7 @@ def test_app_params_defined_on_app_config_object() -> None:
     starlite_signature = inspect.signature(Starlite)
     app_config_fields = AppConfig.__fields__
     for name in starlite_signature.parameters:
-        if name == "on_app_init":
+        if name in ("on_app_init", "initial_state"):
             continue
         assert name in app_config_fields
     # ensure there are not fields defined on AppConfig that aren't in the Starlite signature

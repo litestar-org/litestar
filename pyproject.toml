@@ -121,7 +121,9 @@ disable = [
     "invalid-name",
     "line-too-long",
     "missing-class-docstring",
+    "missing-function-docstring",
     "missing-module-docstring",
+    "protected-access",
     "super-init-not-called",
     "too-few-public-methods",
     "too-many-ancestors",
@@ -134,7 +136,6 @@ disable = [
     "ungrouped-imports",
     "unnecessary-ellipsis",
     "unused-import",
-    "protected-access",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic", "orjson", "picologging"]

@@ -86,7 +86,7 @@ def get_orders(
     page: int,
     page_size: int = Parameter(query="pageSize", gt=0, le=100),
     brands: list[str] = Parameter(min_items=2, max_items=5),
-    from_Date: Optional[datetime] = Parameter(query="fromDate"),
+    from_date: Optional[datetime] = Parameter(query="fromDate"),
     to_date: Optional[datetime] = Parameter(query="fromDate"),
 ) -> list[Order]:
     ...
