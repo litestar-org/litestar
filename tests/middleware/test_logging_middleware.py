@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 from structlog.testing import capture_logs
 
-from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get
+from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get, post
 from starlite.config.compression import CompressionConfig
 from starlite.config.logging import default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
@@ -143,7 +143,7 @@ def test_logging_middleware_compressed_response_body(include: bool, caplog: "Log
     with create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-        middleware=[LoggingMiddlewareConfig(include_compressed_body=include).middleware],
+        middleware=[LoggingMiddlewareConfig(include_compressed_body=include, request_log_fields=[]).middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}  # type: ignore
@@ -155,3 +155,16 @@ def test_logging_middleware_compressed_response_body(include: bool, caplog: "Log
             assert "body=" in caplog.messages[1]
         else:
             assert "body=" not in caplog.messages[1]
+
+
+def test_logging_middleware_post_body() -> None:
+    @post("/")
+    def post_handler(data: dict[str, str]) -> dict:
+        return data
+
+    with create_test_client(
+        route_handlers=[post_handler], middleware=[LoggingMiddlewareConfig().middleware], logging_config=LoggingConfig()
+    ) as client:
+        res = client.post("/", json={"foo": "bar"})
+        assert res.status_code == 201
+        assert res.json() == {"foo": "bar"}
