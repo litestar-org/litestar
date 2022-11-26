@@ -1,5 +1,5 @@
 from logging import INFO
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 import pytest
 from structlog.testing import capture_logs
@@ -159,7 +159,7 @@ def test_logging_middleware_compressed_response_body(include: bool, caplog: "Log
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: dict[str, str]) -> dict:
+    def post_handler(data: Dict[str, str]) -> Dict[str, str]:
         return data
 
     with create_test_client(
