@@ -94,25 +94,20 @@ this piece of history with it.
 
 ### Performant
 
-Additionally, Starlite is very fast in comparison to other ASGI
-frameworks. In fact, the only framework that is faster
-in [our benchmarks](https://github.com/starlite-api/api-performance-tests) is _BlackSheep_, which is almost completely
-written in cython and does not work with pydantic out of the box as such:
+Starlite is fast. It is on par with, or significantly faster than comparable ASGI frameworks. 
+
+You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests),
+or read more about it [here](https://starlite-api.github.io/starlite/benchmarks) in our documentation.
 
 #### JSON Benchmarks
 
-<img alt="API JSON Benchmarks" src="https://github.com/starlite-api/api-performance-tests/raw/main/result-json.png">
+![JSON benchmarks](./docs/images/benchmarks/rps_json.svg)
 
-#### PlainText Benchmarks
+#### Plaintext Benchmarks
 
-<img alt="API Plaintext Benchmarks" src="https://github.com/starlite-api/api-performance-tests/raw/main/result-plaintext.png">
+![Plaintext benchmarks](./docs/images/benchmarks/rps_plaintext.svg)
 
-Legend:
 
-- a-: async, s-: sync
-- np: no params, pp: path param, qp: query param, mp: mixed params
-
-You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests).
 
 ### Class Based Controllers
 

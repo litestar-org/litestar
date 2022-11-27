@@ -8,16 +8,6 @@
 - Each application is run using [uvicorn](https://www.uvicorn.org/) with **one worker** and [uvloop](https://uvloop.readthedocs.io/)
 - Test data has been randomly generated and is being imported from a shared module
 
-### Test modes
-Two different test modes are executed:
-
-#### Requests per second
-This is a full load tests, in which requests are sent to the server as fast as it can handle them.
-This is done over a period for 60 seconds, after a warmup period of 5 seconds.
-
-#### Latency under normal load
-Latency is measured across 1000 requests, with a rate limit of 20 requests per second.
-
 
 ## Results
 
@@ -32,24 +22,9 @@ Serializing a dictionary into JSON
 
 ![RPS JSON](./images/benchmarks/rps_json.svg)
 
-??? info "Full series"
-    ![RPS JSON](./images/benchmarks/results_all_p/rps_json.svg)
-
-
-### Serialization
-_(only supported by `Starlite` and `FastAPI`)_
-
-![RPS serialization](./images/benchmarks/rps_serialization.svg)
-
-??? info "Full series"
-    ![RPS serialization](./images/benchmarks/results_all_p/rps_serialization.svg)
-
-
 ### Files
 ![RPS files](./images/benchmarks/rps_files.svg)
 
-??? info "Full series"
-    ![RPS files](./images/benchmarks/results_all_p/rps_files.svg)
 
 
 ### Path and query parameter handling
@@ -62,9 +37,6 @@ _All responses return "No Content"_
 
 ![RPS path and query parameters](./images/benchmarks/rps_params.svg)
 
-??? info "Full series"
-    ![RPS files](./images/benchmarks/results_all_p/rps_files.svg)
-
 
 ### Dependency injection
 <small>_(not supported by `Starlette`)_</small>
@@ -75,24 +47,14 @@ _All responses return "No Content"_
 
 ![RPS Dependency injection](./images/benchmarks/rps_dependency-injection.svg)
 
-??? info "Full series"
-    ![RPS Dependency injection](./images/benchmarks/results_all_p/rps_dependency-injection.svg)
-
 
 ### Modifying responses
 _All responses return "No Content"_
 
 ![RPS dynamic responses](./images/benchmarks/rps_dynamic-response.svg)
 
-??? info "Full series"
-    ![RPS dynamic responses](./images/benchmarks/results_all_p/rps_dynamic-response.svg)
-
-
 ### Plaintext
 ![RPS Plaintext](./images/benchmarks/rps_plaintext.svg)
-
-??? info "Full series"
-    ![RPS dynamic responses](./images/benchmarks/results_all_p/rps_plaintext.svg)
 
 
 ## Interpreting the results
@@ -107,8 +69,3 @@ they can never give an exact representation of how a real world application, whe
 aside from the workload, many other factors come into play. These tests were mainly written 
 to be used internally for starlite development, to help us locate the source of some 
 performance regression we were experiencing.
-
-If you're interested in a good read about the general value and inherent weaknesses
-of framework benchmark, I suggest [this article](https://blog.miguelgrinberg.com/post/ignore-all-web-performance-benchmarks-including-this-one)
-by Miguel Grinberg.
-
