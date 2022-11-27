@@ -101,11 +101,11 @@ or read more about it [here](https://starlite-api.github.io/starlite/benchmarks)
 
 #### JSON Benchmarks
 
-![JSON benchmarks](./docs/images/benchmarks/rps_json.svg)
+![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
 
 #### Plaintext Benchmarks
 
-![Plaintext benchmarks](./docs/images/benchmarks/rps_plaintext.svg)
+![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ### Class Based Controllers
 
