@@ -2,16 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import (
-    BaseRouteHandler,
-    Request,
-    Response,
-    Router,
-    Starlite,
-    asgi,
-    get,
-    websocket,
-)
+from starlite import BaseRouteHandler, Response, Router, Starlite, asgi, get, websocket
 from starlite.connection import WebSocket
 from starlite.exceptions import PermissionDeniedException, WebSocketDisconnect
 from starlite.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
@@ -27,13 +18,13 @@ async def local_guard(_: "ASGIConnection", route_handler: BaseRouteHandler) -> N
         raise PermissionDeniedException("local")
 
 
-def router_guard(request: Request, _: BaseRouteHandler) -> None:
-    if not request.headers.get("Authorization-Router"):
+def router_guard(connection: "ASGIConnection", _: BaseRouteHandler) -> None:
+    if not connection.headers.get("Authorization-Router"):
         raise PermissionDeniedException("router")
 
 
-def app_guard(request: Request, _: BaseRouteHandler) -> None:
-    if not request.headers.get("Authorization"):
+def app_guard(connection: "ASGIConnection", _: BaseRouteHandler) -> None:
+    if not connection.headers.get("Authorization"):
         raise PermissionDeniedException("app")
 
 
