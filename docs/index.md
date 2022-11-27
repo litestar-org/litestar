@@ -37,31 +37,55 @@ as **[middleware](usage/7-middleware/0-middleware-intro.md)** and **[guards](usa
 pip install starlite
 ```
 
-### Extras
+??? "Extras"
 
-To install the extras required for the built-in [Testing](./usage/14-testing.md) helpers:
-
-```shell
-pip install starlite[testing]
-```
-
-To install the extras required for using the [Brotli Compression Middleware](usage/7-middleware/0-middleware-intro.md#brotli):
-
-```shell
-pip install starlite[brotli]
-```
-
-To install the extras required for using the [Session Middleware](usage/7-middleware/3-builtin-middlewares/5-session-middleware.md):
-
-```shell
-pip install starlite[cryptography]
-```
-
-And to install all of the above:
-
-```shell
-pip install starlite[full]
-```
+    [Brotli Compression Middleware](usage/7-middleware/0-middleware-intro.md#brotli)
+    : 
+        ```shell
+        pip install starlite[brotli]
+        ```
+    
+    [Client-side sessions](usage/7-middleware/3-builtin-middlewares/5-session-middleware.md#Client-side-sessions)
+    : 
+        ```shell
+        pip install starlite[cryptography]
+        ```
+    
+    [Server-side sessions with redis / Redis caching](usage/7-middleware/3-builtin-middlewares/5-session-middleware/#redis-storage)
+    : 
+        ```shell
+        pip install starlite[redis]
+        ```
+    
+    [Server-side sessions with memcached / memcached caching](usage/7-middleware/3-builtin-middlewares/5-session-middleware/#memcached-storage)
+    : 
+        ```shell
+        pip install starlite[memcached]
+        ```
+    
+    [Picologging](usage/0-the-starlite-app/4-logging/#using-picologging)
+    : 
+        ```shell
+        pip install starlite[picologging]
+        ```
+    
+    [StructLog](usage/0-the-starlite-app/4-logging/#using-structlog)
+    : 
+        ```shell
+        pip install starlite[structlog]
+        ```
+    
+    [OpenTelemetry](usage/18-contrib/0-open-telemetry/)
+    : 
+        ```shell
+        pip install starlite[openetelemetry]
+        ```
+    
+    All extras
+    : 
+        ```shell
+        pip install starlite[full]
+        ```
 
 ## Minimal Example
 
@@ -150,23 +174,22 @@ uvicorn my_app.main:app --reload
 
 ## About the Starlite Project
 
-This project builds on top the **Starlette ASGI toolkit** and **pydantic modelling** to create a higher-order
-opinionated
-framework. The idea to use these two libraries as a basis is of course not new - it was first done in FastAPI, which in
-this regard (and some others) was a source of inspiration for this framework. Nonetheless, **Starlite is not FastAPI** -
-it
-has a different design, different project goals and a completely different codebase.
+Starlite is a high-level, opinionated framework, built with validation (on top of [pydantic](https://pydantic-docs.helpmanual.io/)) in mind.
+The idea to build an ASGI framework that's deeply integrated with pydantic is of course not new - it was first done in FastAPI, 
+which in this regard (and some others) was a source of inspiration for this framework. Nonetheless, Starlite is not FastAPI -
+it has a different design, different project goals and a completely different codebase.
 
-1. The **goal** of this project is to become a **community-driven** project. That is, not to have a single "owner" but
-   rather a
-   core team of maintainers that leads the project, as well as community contributors.
+1. The goal of this project is to be community-driven. That is, not to have a single author, 
+   but rather a core team of maintainers leading the project, as well as community contributors.
+   Starlite currently has 5 maintainers and is being very actively developed.
 2. Starlite draws **inspiration from NestJS** - a contemporary TypeScript framework - which places opinions and patterns
-   at
-   its core. As such, the design of the API **breaks from the Starlette design** and instead offers an opinionated
-   alternative.
-3. Finally, **Python OOP** is extremely powerful and versatile. While still allowing for **function-based endpoints**,
-   Starlite
-   seeks to build on this by placing **class-based controllers** at its core.
+   at its core.
+3. While still allowing for **function-based endpoints**, Starlite seeks to build on Python's powerful and versatile OOP, 
+   by placing **class-based controllers** at its core.
+4. Starlite is **not** a microframework. Unlike frameworks such as FastAPI, Starlette or Flask, Starlite includes a lot of
+   functionalities out of the box needed for a typical modern web application, such as ORM integration,
+   client- and server-side sessions, caching, OpenTelemetry integration and many more. It's not aiming to be "the next Django"
+   (for example, it will never feature its own ORM), but its scope is not micro either. 
 
 ## Example Applications
 
