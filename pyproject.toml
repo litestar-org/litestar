@@ -80,6 +80,7 @@ pre-commit = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+python-jose = "*"
 redis = "*"
 sqlalchemy = "*"
 starlette = "*"
@@ -97,12 +98,14 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 structlog = ["structlog"]
+jwt = ["python-jose", "cryptography"]
 full = [
     "brotli",
     "cryptography",
     "memcached",
     "opentelemetry",
     "picologging",
+    "python-jose",
     "redis",
     "structlog",
 ]
