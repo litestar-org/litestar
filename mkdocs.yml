@@ -222,6 +222,8 @@ nav:
           - reference/middleware/5-csrf-middleware.md
           - reference/middleware/6-exceptions-middleware.md
           - reference/middleware/7-cors-middleware.md
+      - Security:
+          - reference/security/0-base.md
       - OpenAPI:
           - reference/openapi/0-openapi-controller.md
           - reference/openapi/1-openapi-response-spec.md
@@ -261,6 +263,7 @@ nav:
           - reference/utils/7-serialization-utils.md
       - Contrib:
           - reference/contrib/opentelemetry.md
+          - reference/contrib/jwt.md
   - migration.md
 extra:
   social:

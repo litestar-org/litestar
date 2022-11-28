@@ -36,16 +36,12 @@ class AbstractAuthenticationMiddleware(ABC):
     and overriding the 'authenticate_request' method.
     """
 
-    scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
-    """
-    Scopes supported by the middleware.
-    """
-
     def __init__(
         self,
         app: "ASGIApp",
         exclude: Optional[Union[str, List[str]]] = None,
         exclude_from_auth_key: str = "exclude_from_auth",
+        scopes: Optional["Scopes"] = None,
     ) -> None:
         """Initialize `AbstractAuthenticationMiddleware`.
 
@@ -53,9 +49,11 @@ class AbstractAuthenticationMiddleware(ABC):
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             exclude: A pattern or list of patterns to skip in the authentication middleware.
             exclude_from_auth_key: An identifier to use on routes to disable authentication for a particular route.
+            scopes: ASGI scopes processed by the authentication middleware.
         """
         self.app = app
-        self.exclude_from_auth_key = exclude_from_auth_key
+        self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}
+        self.exclude_opt_key = exclude_from_auth_key
         self.exclude = build_exclude_path_pattern(exclude=exclude)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -73,7 +71,7 @@ class AbstractAuthenticationMiddleware(ABC):
             scope=scope,
             scopes=self.scopes,
             exclude_path_pattern=self.exclude,
-            exclude_opt_key=self.exclude_from_auth_key,
+            exclude_opt_key=self.exclude_opt_key,
         ):
             auth_result = await self.authenticate_request(ASGIConnection(scope))
             scope["user"] = auth_result.user

@@ -11,7 +11,7 @@ from starlite.contrib.jwt.jwt_token import Token
 if TYPE_CHECKING:
     from typing import Any
 
-    from starlite.types import ASGIApp
+    from starlite.types import ASGIApp, Scopes
     from starlite.utils import AsyncCallable
 
 
@@ -24,25 +24,30 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     def __init__(
         self,
         app: "ASGIApp",
-        exclude: Optional[Union[str, List[str]]],
         algorithm: str,
         auth_header: str,
+        exclude: Optional[Union[str, List[str]]],
+        exclude_opt_key: str,
         retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+        scopes: "Scopes",
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieves the user
         from persistence using the provided function.
 
         Args:
+            algorithm: JWT hashing algorithm to use.
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
+            exclude: A pattern or list of patterns to skip.
+            exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             retrieve_user_handler: A function that receives an instance of 'Token' and returns a user, which can be
                 any arbitrary value.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to encode it.
-            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
-            algorithm: JWT hashing algorithm to use.
-            exclude: A pattern or list of patterns to skip.
+            scopes: ASGI scopes processed by the authentication middleware.
+            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+                encode it.
         """
-        super().__init__(app=app, exclude=exclude)
+        super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
         self.algorithm = algorithm
         self.auth_header = auth_header
         self.retrieve_user_handler = retrieve_user_handler
@@ -101,36 +106,42 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
 
     def __init__(
         self,
-        app: "ASGIApp",
-        exclude: Optional[Union[str, List[str]]],
         algorithm: str,
-        auth_header: str,
+        app: "ASGIApp",
         auth_cookie_key: str,
+        auth_header: str,
+        exclude: Optional[Union[str, List[str]]],
+        exclude_opt_key: str,
         retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+        scopes: "Scopes",
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
 
         Args:
+            algorithm: JWT hashing algorithm to use.
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
+            auth_cookie_key: Cookie name from which to retrieve the token. E.g. 'token' or 'accessToken'.
+            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
+            exclude: A pattern or list of patterns to skip.
+            exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             retrieve_user_handler: A function that receives an instance of 'Token' and returns a user, which can be
                 any arbitrary value.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to encode it.
-            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
-            auth_cookie_key: Cookie name from which to retrieve the token. E.g. 'token' or 'accessToken'.
-            algorithm: JWT hashing algorithm to use.
-            exclude: A pattern or list of patterns to skip.
+            scopes: ASGI scopes processed by the authentication middleware.
+            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+                encode it.
         """
         super().__init__(
             algorithm=algorithm,
             app=app,
             auth_header=auth_header,
-            retrieve_user_handler=retrieve_user_handler,
-            token_secret=token_secret,
             exclude=exclude,
+            exclude_opt_key=exclude_opt_key,
+            retrieve_user_handler=retrieve_user_handler,
+            scopes=scopes,
+            token_secret=token_secret,
         )
-
         self.auth_cookie_key = auth_cookie_key
 
     async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any]") -> AuthenticationResult:

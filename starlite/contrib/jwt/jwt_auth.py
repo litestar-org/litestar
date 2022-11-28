@@ -16,7 +16,7 @@ from starlite.contrib.jwt.middleware import (
     JWTCookieAuthenticationMiddleware,
 )
 from starlite.enums import MediaType
-from starlite.security.config import AbstractSecurityConfig, UserType
+from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
 
 
@@ -62,7 +62,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An [Components][pydantic_schema_pydantic.v3_1_0.components.Components] instance.
+            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
         """
         return Components(
             securitySchemes={
@@ -80,10 +80,10 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        [SecurityRequirement][pydantic_schema_pydantic.v3_1_0.security_requirement.SecurityRequirement]
+        [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement]
 
         Returns:
-            An OpenAPI 3.1 [SecurityRequirement][pydantic_schema_pydantic.v3_1_0.security_requirement.SecurityRequirement] dictionary.
+            An OpenAPI 3.1 [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] dictionary.
         """
         return {self.openapi_security_scheme_name: []}
 
@@ -98,9 +98,11 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             self.authentication_middleware_class,
             algorithm=self.algorithm,
             auth_header=self.auth_header,
-            retrieve_user_handler=self.retrieve_user_handler,
-            token_secret=self.token_secret,
             exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
+            retrieve_user_handler=self.retrieve_user_handler,
+            scopes=self.scopes,
+            token_secret=self.token_secret,
         )
 
     def login(
@@ -218,7 +220,7 @@ class JWTCookieAuth(JWTAuth):
         """Create OpenAPI documentation for the JWT Cookie auth scheme.
 
         Returns:
-            An [Components][pydantic_schema_pydantic.v3_1_0.components.Components] instance.
+            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
         """
         return Components(
             securitySchemes={
@@ -246,7 +248,9 @@ class JWTCookieAuth(JWTAuth):
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
             retrieve_user_handler=self.retrieve_user_handler,
+            scopes=self.scopes,
             token_secret=self.token_secret,
         )
 
@@ -326,7 +330,7 @@ class OAuth2PasswordBearerAuth(JWTCookieAuth):
         """Create an OpenAPI OAuth2 flow for the password bearer authentication scheme.
 
         Returns:
-            An [OAuthFlow][pydantic_schema_pydantic.v3_1_0.oauth_flow.OAuthFlow] instance.
+            An [OAuthFlow][pydantic_openapi_schema.v3_1_0.oauth_flow.OAuthFlow] instance.
         """
         return OAuthFlow(
             tokenUrl=self.token_url,
@@ -338,7 +342,7 @@ class OAuth2PasswordBearerAuth(JWTCookieAuth):
         """Create OpenAPI documentation for the OAUTH2 Password bearer auth scheme.
 
         Returns:
-            An [Components][pydantic_schema_pydantic.v3_1_0.components.Components] instance.
+            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
         """
         return Components(
             securitySchemes={

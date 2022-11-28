@@ -214,7 +214,7 @@ from my_app.security.authentication_middleware import JWTAuthenticationMiddlewar
 # you can optionally exclude certain paths from authentication.
 # the following excludes all routes mounted at or under `/schema*`
 # additionally,
-# you can modify the default exclude key of "exclude_from_auth", by overriding the `exclude_from_auth_key` parameter on the Authentication Middleware
+# you can modify the default exclude key of "exclude_from_auth", by overriding the `exclude_opt_key` parameter on the Authentication Middleware
 auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
 

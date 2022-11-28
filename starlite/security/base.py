@@ -52,7 +52,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     """
     A pattern or list of patterns to skip in the authentication middleware.
     """
-    exclude_opt_key: Optional[str] = None
+    exclude_opt_key: Optional[str] = "exclude_from_auth"
     """
     An identifier to use on routes to disable authentication and authorization checks for a particular route.
     """
@@ -136,7 +136,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An [Components][pydantic_schema_pydantic.v3_1_0.components.Components] instance.
+            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
         """
         raise NotImplementedError
 
@@ -145,11 +145,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     def security_requirement(self) -> "SecurityRequirement":  # pragma: no cover
         """Return OpenAPI 3.1.
 
-        [SecurityRequirement][pydantic_schema_pydantic.v3_1_0.security_requirement.SecurityRequirement] for the auth
+        [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 [SecurityRequirement][pydantic_schema_pydantic.v3_1_0.security_requirement.SecurityRequirement] dictionary.
+            An OpenAPI 3.1 [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] dictionary.
         """
         raise NotImplementedError
 

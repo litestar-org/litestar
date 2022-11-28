@@ -92,8 +92,7 @@ class Token(BaseModel):
 
         Args:
             encoded_token: A base64 string containing an encoded JWT.
-            secret: The secret with which the JWT is encoded. It may optionally
-            be an individual JWK or JWS set dict
+            secret: The secret with which the JWT is encoded. It may optionally be an individual JWK or JWS set dict
             algorithm: The algorithm used to encode the JWT.
 
         Returns:

@@ -82,6 +82,7 @@ from starlite.plugins import PluginProtocol
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
+from starlite.security import AbstractSecurityConfig
 from starlite.testing.create_test_client import create_test_client
 from starlite.testing.test_client import TestClient
 from starlite.types.partial import Partial
@@ -92,6 +93,7 @@ __all__ = (
     "ASGIRouteHandler",
     "AbstractAuthenticationMiddleware",
     "AbstractMiddleware",
+    "AbstractSecurityConfig",
     "AllowedHostsConfig",
     "AuthenticationResult",
     "BackgroundTask",
