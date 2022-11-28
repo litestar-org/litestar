@@ -39,8 +39,8 @@ extra_css:
   - css/typo.css
   - css/color.css
 nav:
+  - index.md
   - Starlite:
-    - Intro: index.md
     - benchmarks.md
     - governance.md
     - contributing.md
