@@ -88,6 +88,21 @@ Please follow the next guidelines when adding a new example:
 ```
 ````
 
+#### Cleaning up examples
+
+If you want to contribute to the ongoing effort of #343, you can use the `tools/doc_examples.py`
+script to help you find and extract examples from the markdown files.
+
+To find examples that need to be extracted invoke it:
+
+`python tools/doc_examples.py check`
+
+And then extract examples with `python tools/doc_examples.py extract /docs/path/to/file.md <destination folder>`
+
+This will extract the inline examples from `/docs/path/to/file.md` into separate `.py`
+files within `examples/<destination folder>`. Additionally, it will generate a test
+scaffold, located in `examples/tests/<destination folder>`.
+
 ## Testing multiple python versions
 
 Since the library needs to be compatible with older versions of python as well, it can be useful to run tests locally
