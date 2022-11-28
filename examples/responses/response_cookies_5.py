@@ -32,11 +32,7 @@ def retrieve_resource() -> Response[Resource]:
 
 
 def after_request_handler(response: Response) -> Response:
-    response.set_cookie(
-        **Cookie(key="Random-Cookie", value=str(randint(1, 100))).dict(
-            exclude_none=True, exclude={"documentation_only", "description"}
-        )
-    )
+    response.set_cookie(**Cookie(key="Random-Cookie", value=str(randint(1, 100))).dict)
     return response
 
 
