@@ -6,7 +6,7 @@ from uuid import uuid4
 from hypothesis import given
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 
-from starlite import ASGIConnection, OpenAPIConfig, Request, Response, Starlite, get
+from starlite import ASGIConnection, Request, Response, Starlite, get
 from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from starlite.status_codes import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 from starlite.testing import create_test_client
@@ -262,7 +262,7 @@ async def test_path_exclusion() -> None:
         return None
 
     with create_test_client(
-        route_handlers=[north_handler, south_handler, west_handler], middleware=[jwt_auth.middleware]
+        route_handlers=[north_handler, south_handler, west_handler], on_app_init=[jwt_auth.on_app_init]
     ) as client:
         response = client.get("/north/1")
         assert response.status_code == HTTP_200_OK
@@ -274,7 +274,7 @@ async def test_path_exclusion() -> None:
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
 
-def test_openapi() -> None:
+def test_jwt_auth_openapi() -> None:
     jwt_auth = JWTAuth[Any](token_secret="abc123", retrieve_user_handler=lambda _: None)  # type: ignore
     assert jwt_auth.openapi_components.dict(exclude_none=True) == {
         "securitySchemes": {
@@ -288,17 +288,10 @@ def test_openapi() -> None:
         }
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
-
-    openapi_config = OpenAPIConfig(
-        title="my api",
-        version="1.0.0",
-        components=[jwt_auth.openapi_components],
-        security=[jwt_auth.security_requirement],
-    )
-    app = Starlite(route_handlers=[], openapi_config=openapi_config)
+    app = Starlite(route_handlers=[], on_app_init=[jwt_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
         "openapi": "3.1.0",
-        "info": {"title": "my api", "version": "1.0.0"},
+        "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
@@ -316,12 +309,9 @@ def test_openapi() -> None:
     }
 
 
-def test_oauth2_password_bearer() -> None:
-    def retrieve_user_handler(_: Token, __: ASGIConnection) -> Any:
-        return None
-
-    jwt_auth = OAuth2PasswordBearerAuth(  # nosec
-        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
+def test_oauth2_password_bearer_auth_openapi() -> None:
+    jwt_auth = OAuth2PasswordBearerAuth(
+        token_url="/login", token_secret="abc123", retrieve_user_handler=lambda _: None  # type: ignore
     )
     assert jwt_auth.openapi_components.dict(exclude_none=True) == {
         "securitySchemes": {
@@ -338,16 +328,10 @@ def test_oauth2_password_bearer() -> None:
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
-    openapi_config = OpenAPIConfig(
-        title="my api",
-        version="1.0.0",
-        components=[jwt_auth.openapi_components],
-        security=[jwt_auth.security_requirement],
-    )
-    app = Starlite(route_handlers=[], openapi_config=openapi_config)
+    app = Starlite(route_handlers=[], on_app_init=[jwt_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
         "openapi": "3.1.0",
-        "info": {"title": "my api", "version": "1.0.0"},
+        "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {

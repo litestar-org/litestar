@@ -18,9 +18,8 @@ from pydantic.generics import GenericModel
 
 from starlite.connection import ASGIConnection
 from starlite.datastructures import Provide
-from starlite.handlers import BaseRouteHandler
 from starlite.middleware.authentication import AbstractAuthenticationMiddleware
-from starlite.types import BeforeMessageSendHookHandler, Guard, Scopes, SyncOrAsyncUnion
+from starlite.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion
 from starlite.utils.sync import AsyncCallable
 
 UserType = TypeVar("UserType")
@@ -29,6 +28,7 @@ AuthType = TypeVar("AuthType")
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 
+    from starlite.config import AppConfig
     from starlite.middleware.base import DefineMiddleware
 
 
@@ -60,21 +60,13 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     """
     ASGI scopes processed by the authentication middleware, if None both 'http' and 'websocket' will be processed.
     """
-    route_handlers: Optional[Iterable[BaseRouteHandler]] = None
+    route_handlers: Optional[Iterable[ControllerRouterHandler]] = None
     """
     An optional iterable of route handlers to register.
     """
     dependencies: Optional[Dict[str, Provide]] = None
     """
     An optional dictionary of dependency providers.
-    """
-    after_send_handler: Optional[BeforeMessageSendHookHandler] = None
-    """
-    Optional handler to call before sending the ASGI message.
-
-    Notes:
-    - This handler allows modifying headers on the out going data , as well as perform side-effects such
-        as executing DB calls etc.
     """
     retrieve_user_handler: Callable[[AuthType, ASGIConnection], SyncOrAsyncUnion[UserType]]
     """
@@ -86,6 +78,43 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         Once provided, they can access via the `connection.user` and `connection.auth` properties.
     - The callable can be sync or async. If it is sync, it will be wrapped to support async.
     """
+
+    def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
+        """Handle app init by injecting middleware, guards etc. into the app. This method can be used only on the app
+        level.
+
+        Args:
+            app_config: An instance of [AppConfig][starlite.config.AppConfig]
+
+        Returns:
+            The [AppConfig][starlite.config.AppConfig].
+        """
+        app_config.middleware = [self.middleware, *app_config.middleware]
+
+        if app_config.openapi_config:
+            app_config.openapi_config = app_config.openapi_config.copy()
+            if isinstance(app_config.openapi_config.components, list):
+                app_config.openapi_config.components.append(self.openapi_components)
+            elif app_config.openapi_config.components:
+                app_config.openapi_config.components = [self.openapi_components, app_config.openapi_config.components]
+            else:
+                app_config.openapi_config.components = [self.openapi_components]
+
+            if isinstance(app_config.openapi_config.security, list):
+                app_config.openapi_config.security.append(self.security_requirement)
+            else:
+                app_config.openapi_config.security = [self.security_requirement]
+
+        if self.guards:
+            app_config.guards.extend(self.guards)
+
+        if self.dependencies:
+            app_config.dependencies.update(self.dependencies)
+
+        if self.route_handlers:
+            app_config.route_handlers.extend(self.route_handlers)
+
+        return app_config
 
     @validator("retrieve_user_handler")
     def validate_retrieve_user_handler(  # pylint: disable=no-self-argument
