@@ -1,96 +1,125 @@
 # Query Parameters
 
-To define query parameters simply define them as kwargs in your function declaration:
+Query parameters are defined as keyword arguments to handler functions. Every keyword argument
+that is not otherwise specified (for example as a [path parameter](usage/3-parameters/0-path-parameters/))
+will be interpreted as a query parameter.
 
 ```python
-from datetime import datetime
-from typing import Optional
-
-from starlite import get
-from pydantic import BaseModel
-
-
-class Order(BaseModel):
-    ...
-
-
-@get(path="/orders")
-def get_orders(
-    page: int,
-    brands: list[str],
-    page_size: int = 10,
-    from_date: Optional[datetime] = None,
-    to_date: Optional[datetime] = None,
-) -> list[Order]:
-    ...
+--8 < --"examples/parameters/query_params.py"
 ```
 
-The above is a rather classic example of a paginated "GET" request:
+If you run the app, then visit http://localhost:8000/?param=hello in your browser,
+you'll see the following result:
 
-1. _page_ is a required query parameter of type `int`. It has no default value and as such has to be provided or a
-   ValidationException will be raised.
-2. _page_size_ is a required query parameter of type `int` as well, but it has a default value - so it can be omitted in
-   the request.
-3. _brands_ is an optional list of strings with a default `None` value.
-4. _from_date_ and _to_date_ are optional date-time values that have a default `None` value.
+```json
+{"param": "hello"}
+```
 
-These parameters will be parsed from the function signature and used to generate a pydantic model. This model in turn
-will be used to validate the parameters and generate the OpenAPI schema.
+!!! info "Technical details"
+      These parameters will be parsed from the function signature and used to generate a pydantic model.
+      This model in turn will be used to validate the parameters and generate the OpenAPI schema.
 
-This means that you can also use any pydantic type in the signature, and it will follow the same kind of validation and
-parsing as you would get from pydantic.
+      This means that you can also use any pydantic type in the signature, and it will
+      follow the same kind of validation and parsing as you would get from pydantic.
 
-This works great, but what happens when the request is sent with a non-python naming scheme, such as _camelCase_? You
-could of course simply rename your variables accordingly:
+Query parameters come in three basic types:
+
+1. Required
+2. Required with a default value
+3. Optional with a default value
+
+Query parameters are **required** by default. If one such a parameter has no value,
+a `ValidationException` will be raised.
+
+## Settings defaults
 
 ```python
-from datetime import datetime
-from typing import Optional
-
-from starlite import get
-from pydantic import BaseModel
-
-
-class Order(BaseModel):
-    ...
-
-
-@get(path="/orders")
-def get_orders(
-    page: int,
-    brands: list[str],
-    pageSize: int = 10,
-    fromDate: Optional[datetime] = None,
-    toDate: Optional[datetime] = None,
-) -> list[Order]:
-    ...
+--8 < --"examples/parameters/query_params_default.py"
 ```
 
-This doesn't look so good, and tools such as PyLint will complain. The solution here is to
-use [the Parameter function](./3-the-parameter-function.md):
+In this example, `param` will have the value `"hello"` if it's not specified in the request.
+
+Now, visiting http://localhost:8000 in your browser, results in
+
+```json
+{"param": "hello"}
+```
+
+without having specified the parameter. If you instead go to http://localhost:8000?param=world,
+you'll see that the default has been overwritten:
+
+```json
+{"param": "world"}
+```
+
+
+## Optional parameters
+
+Instead of only setting a default value, it's also possible to make a query parameter
+entirely optional.
 
 ```python
-from datetime import datetime
-from typing import Optional
-
-from starlite import get, Parameter
-from pydantic import BaseModel
-
-
-class Order(BaseModel):
-    ...
-
-
-@get(path="/orders")
-def get_orders(
-    page: int,
-    page_size: int = Parameter(query="pageSize", gt=0, le=100),
-    brands: list[str] = Parameter(min_items=2, max_items=5),
-    from_date: Optional[datetime] = Parameter(query="fromDate"),
-    to_date: Optional[datetime] = Parameter(query="fromDate"),
-) -> list[Order]:
-    ...
+--8 < --"examples/parameters/query_params_optional.py"
 ```
 
-As you can see, specifying the "query" kwarg allows us to remap from one key to another. Furthermore, we can use
-Parameter for extended validation and documentation, as is done for `page_size`.
+Here, we give a default value of `None`, but still declare the type of the query parameter
+to be a string. This means "This parameter is not required. If it is given, it has to be a string.
+If it is not given, it will have a default value of `None`"
+
+To see this behaviour in action run the app and navigate your browser to: http://localhost:8000
+
+You'll see that the result is now:
+
+```json
+{"param": null}
+```
+
+If the query parameter is specified (http://localhost:8000?param=goodbye) it will be:
+
+```json
+{"param": "goodbye"}
+```
+
+## Type coercion
+
+It is possible to coerce query parameters into different types. A query starts out as a string,
+but its values can be parsed into all kinds of types. Since this is done by pydantic,
+everything that works there will work for query parameters as well.
+
+
+```python
+--8 < --"examples/parameters/query_params_types.py"
+```
+
+Check it out by visiting: http://localhost:8000?date=2022-11-28T13:22:06.916540&floating_number=0.1&number=42&strings=1&strings=2
+
+```json
+{
+      "datetime": "2022-11-29T13:22:06",
+      "int":42,
+      "float":0.1,
+      "list":["1","2"]
+}
+```
+
+
+## Specifying alternative names and constraints
+
+Sometimes you might want to "remap" query parameters to allow a different name in the URL
+than what's being used in the handler function. This can be done by making use of [Parameter](reference/params/0-parameter/).
+
+```python
+--8 < --"examples/parameters/query_params_remap.py"
+```
+
+Here, we remap from `snake_case` in the handler function to `camelCase` in the URL.
+This means that for the URL `http://127.0.0.1:8000?camelCase=foo`, the value of `camelCase`
+will be used for the value of the `snake_case` parameter.
+
+`Parameter` also allows us to define additional constraints:
+
+```python
+--8 < --"examples/parameters/query_params_constraints.py"
+```
+
+In this case, `param` is validated to be an _integer larger than 5_.
