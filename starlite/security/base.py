@@ -22,14 +22,15 @@ from starlite.middleware.authentication import AbstractAuthenticationMiddleware
 from starlite.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion
 from starlite.utils.sync import AsyncCallable
 
-UserType = TypeVar("UserType")
-AuthType = TypeVar("AuthType")
-
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 
     from starlite.config import AppConfig
     from starlite.middleware.base import DefineMiddleware
+
+
+UserType = TypeVar("UserType")
+AuthType = TypeVar("AuthType")
 
 
 class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
@@ -68,9 +69,9 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     """
     An optional dictionary of dependency providers.
     """
-    retrieve_user_handler: Callable[[AuthType, ASGIConnection], SyncOrAsyncUnion[UserType]]
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Optional[Any]]]
     """
-    Callable that receives the 'auth' value form the authentication middleware and returns a 'user' value.
+    Callable that receives the 'auth' value from the authentication middleware and returns a 'user' value.
 
     Notes:
     - User and Auth can be any arbitrary values specified by the security backend.

@@ -58,7 +58,7 @@ async def test_jwt_auth(
         auth_header=auth_header,
         default_token_expiration=default_token_expiration,
         token_secret=token_secret,
-        retrieve_user_handler=retrieve_user_handler,  # type: ignore
+        retrieve_user_handler=retrieve_user_handler,
     )
 
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
@@ -245,7 +245,7 @@ async def test_path_exclusion() -> None:
 
     jwt_auth = JWTAuth[Any](
         token_secret="abc123",
-        retrieve_user_handler=retrieve_user_handler,  # type: ignore
+        retrieve_user_handler=retrieve_user_handler,
         exclude=["north", "south"],
     )
 

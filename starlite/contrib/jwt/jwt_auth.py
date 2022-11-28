@@ -191,7 +191,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         return encoded_token
 
 
-class JWTCookieAuth(JWTAuth):
+class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
     """JWT Cookie Authentication Configuration.
 
     This class is an alternate entry point to the library, and it includes all the functionality of the `JWTAuth` class
@@ -306,7 +306,7 @@ class JWTCookieAuth(JWTAuth):
         )
 
 
-class OAuth2PasswordBearerAuth(JWTCookieAuth):
+class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
     """OAUTH2 Schema for Password Bearer Authentication.
 
     This class implements an OAUTH2 authentication flow entry point to the library, and it
