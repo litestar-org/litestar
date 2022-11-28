@@ -63,6 +63,7 @@ repos:
             --disable=MD052,
             --disable=MD012,
             --disable=MD036,
+            --disable=MD034,
           ]
   - repo: https://github.com/PyCQA/docformatter
     rev: v1.5.0

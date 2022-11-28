@@ -279,6 +279,7 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.magiclink
   - pymdownx.tabbed:
         alternate_style: true
 plugins:
