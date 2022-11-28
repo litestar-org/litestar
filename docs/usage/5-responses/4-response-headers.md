@@ -4,8 +4,8 @@ Starlite allows you to define response headers by using the `response_headers` k
 available on all layers of the app - individual route handlers, controllers, routers and the app
 itself:
 
-```python
---8 < --"examples/responses/response_headers.py"
+```py
+--8<-- "examples/responses/response_headers.py"
 ```
 
 In the above example the response returned from `my_route_handler` will have headers set from each layer of the
@@ -33,8 +33,8 @@ primary patterns.
 We can simply return a response instance directly from the route handler and set the headers dictionary manually
 as you see fit, e.g.:
 
-```python
---8 < --"examples/responses/response_headers_2.py"
+```py
+--8<-- "examples/responses/response_headers_2.py"
 ```
 
 In the above we use the `response_headers` kwarg to pass the `name` and `description` parameters for the `Random-Header`
@@ -48,8 +48,8 @@ An alternative pattern would be to use an [after request handler](../13-lifecycl
 the handler on different layers of the application as explained in the pertinent docs. We should take care to document
 the headers on the corresponding layer:
 
-```python
---8 < --"examples/response_headers_3.py"
+```py
+--8<-- "examples/response_headers_3.py"
 ```
 
 In the above we set the response header using an `after_request_handler` function on the router level. Because the
@@ -59,8 +59,8 @@ We can use this pattern to fine-tune the OpenAPI documentation more granularly b
 required. For example, lets say we have a router level header being set and a local header with the same key but a
 different value range:
 
-```python
---8 < --"examples/responses/response_headers_4.py"
+```py
+--8<-- "examples/responses/response_headers_4.py"
 ```
 
 ## Specific Headers Implementation

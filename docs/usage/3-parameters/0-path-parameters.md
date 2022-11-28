@@ -3,8 +3,8 @@
 Path parameters are parameters declared as part of the `path` component of the URL. They are declared using a simple
 syntax `{param_name:param_type}`:
 
-```python
---8 < --"examples/parameters/path_parameters_1.py"
+```py
+--8<-- "examples/parameters/path_parameters_1.py"
 ```
 
 
@@ -36,8 +36,8 @@ The types declared in the path parameter and the function do not need to match 1
 function declaration is typed with a "higher" type to which the lower type can be coerced, this is fine. For example,
 consider this:
 
-```python
---8 < --"examples/parameters/path_parameters_2.py"
+```py
+--8<-- "examples/parameters/path_parameters_2.py"
 ```
 
 
@@ -57,8 +57,8 @@ datetime typed parameter.
 If you want to add validation or enhance the OpenAPI documentation generated for a given path parameter, you can do
 so using the [Parameter function](./3-the-parameter-function.md):
 
-```python
---8 < --"examples/parameters/path_parameters_3.py"
+```py
+--8<-- "examples/parameters/path_parameters_3.py"
 ```
 
 

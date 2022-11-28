@@ -3,8 +3,8 @@
 As part of Starlite's "layered" architecture, you can declare parameters not only as part of individual route handler
 functions, but also on other layers of the application:
 
-```python
---8 < --"examples/parameters/layered_parameters.py"
+```py
+--8<-- "examples/parameters/layered_parameters.py"
 ```
 
 

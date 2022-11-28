@@ -4,8 +4,8 @@ Query parameters are defined as keyword arguments to handler functions. Every ke
 that is not otherwise specified (for example as a [path parameter](usage/3-parameters/0-path-parameters/))
 will be interpreted as a query parameter.
 
-```python
---8 < --"examples/parameters/query_params.py"
+```py
+--8<-- "examples/parameters/query_params.py"
 ```
 
 If you run the app, then visit http://localhost:8000/?param=hello in your browser,
@@ -33,8 +33,8 @@ a `ValidationException` will be raised.
 
 ## Settings defaults
 
-```python
---8 < --"examples/parameters/query_params_default.py"
+```py
+--8<-- "examples/parameters/query_params_default.py"
 ```
 
 In this example, `param` will have the value `"hello"` if it's not specified in the request.
@@ -58,8 +58,8 @@ you'll see that the default has been overwritten:
 Instead of only setting a default value, it's also possible to make a query parameter
 entirely optional.
 
-```python
---8 < --"examples/parameters/query_params_optional.py"
+```py
+--8<--"examples/parameters/query_params_optional.py"
 ```
 
 Here, we give a default value of `None`, but still declare the type of the query parameter
@@ -87,8 +87,8 @@ but its values can be parsed into all kinds of types. Since this is done by pyda
 everything that works there will work for query parameters as well.
 
 
-```python
---8 < --"examples/parameters/query_params_types.py"
+```py
+--8<-- "examples/parameters/query_params_types.py"
 ```
 
 Check it out by visiting: http://localhost:8000?date=2022-11-28T13:22:06.916540&floating_number=0.1&number=42&strings=1&strings=2
@@ -108,8 +108,8 @@ Check it out by visiting: http://localhost:8000?date=2022-11-28T13:22:06.916540&
 Sometimes you might want to "remap" query parameters to allow a different name in the URL
 than what's being used in the handler function. This can be done by making use of [Parameter](reference/params/0-parameter/).
 
-```python
---8 < --"examples/parameters/query_params_remap.py"
+```py
+--8<--"examples/parameters/query_params_remap.py"
 ```
 
 Here, we remap from `snake_case` in the handler function to `camelCase` in the URL.
@@ -118,8 +118,8 @@ will be used for the value of the `snake_case` parameter.
 
 `Parameter` also allows us to define additional constraints:
 
-```python
---8 < --"examples/parameters/query_params_constraints.py"
+```py
+--8<-- "examples/parameters/query_params_constraints.py"
 ```
 
 In this case, `param` is validated to be an _integer larger than 5_.
