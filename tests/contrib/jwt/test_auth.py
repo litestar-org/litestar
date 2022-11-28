@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 
 from starlite import ASGIConnection, Request, Response, Starlite, get
@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     token_audience=one_of(none(), text(max_size=256, alphabet=string.ascii_letters)),
     token_unique_jwt_id=one_of(none(), text(max_size=256)),
 )
+@settings(deadline=None)
 async def test_jwt_auth(
     mock_db: "SimpleCacheBackend",
     algorithm: str,
@@ -132,6 +133,7 @@ async def test_jwt_auth(
     token_audience=one_of(none(), text(max_size=256, alphabet=string.ascii_letters)),
     token_unique_jwt_id=one_of(none(), text(max_size=256)),
 )
+@settings(deadline=None)
 async def test_jwt_cookie_auth(
     mock_db: "SimpleCacheBackend",
     algorithm: str,
