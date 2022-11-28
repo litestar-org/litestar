@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Generic, Type
+from functools import cached_property
+from typing import TYPE_CHECKING, Any, Awaitable, Dict, Generic, List, Optional, Union
 
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
@@ -13,19 +14,24 @@ from starlite.middleware.authentication import (
     AuthenticationResult,
 )
 from starlite.middleware.base import DefineMiddleware
-from starlite.middleware.session.base import BaseBackendConfig, SessionMiddleware
-from starlite.security.base import AbstractSecurityConfig, AuthType, UserType
-from starlite.types import Empty
+from starlite.middleware.session.base import (
+    BaseBackendConfig,
+    BaseSessionBackend,
+    SessionMiddleware,
+)
+from starlite.security.base import AbstractSecurityConfig, UserType
+from starlite.types import Empty, Scopes
+from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.types import ASGIApp, Receive, Scope, Send
 
 
-class SessionAuth(Generic[AuthType, UserType], AbstractSecurityConfig[AuthType, UserType]):
+class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, Any]]):
     """Session Based Security Backend."""
 
-    session_backend_config: Type[BaseBackendConfig]
+    session_backend_config: BaseBackendConfig
     """A session backend config."""
 
     @property
@@ -63,6 +69,15 @@ class SessionAuth(Generic[AuthType, UserType], AbstractSecurityConfig[AuthType, 
             An instance of DefineMiddleware including 'self' as the config kwarg value.
         """
         return DefineMiddleware(MiddlewareWrapper, config=self)
+
+    @cached_property
+    def session_backend(self) -> BaseSessionBackend:
+        """Create and cache a session backend.
+
+        Returns:
+            A subclass of [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend]
+        """
+        return self.session_backend_config._backend_class(config=self.session_backend_config)
 
     @property
     def openapi_components(self) -> Components:
@@ -124,7 +139,13 @@ class MiddlewareWrapper:
         """
         if not self.has_wrapped_middleware:
             starlite_app = scope["app"]
-            auth_middleware = SessionAuthMiddleware(app=self.app, config=self.config)
+            auth_middleware = SessionAuthMiddleware(
+                app=self.app,
+                exclude=self.config.exclude,
+                exclude_opt_key=self.config.exclude_opt_key,
+                scopes=self.config.scopes,
+                retrieve_user_handler=self.config.retrieve_user_handler,  # type: ignore
+            )
             exception_middleware = ExceptionHandlerMiddleware(
                 app=auth_middleware,
                 exception_handlers=starlite_app.exception_handlers or {},
@@ -132,7 +153,7 @@ class MiddlewareWrapper:
             )
             self.app = SessionMiddleware(
                 app=exception_middleware,
-                backend=self.config.session_backend_config._backend_class(config=self.config.session_backend_config),
+                backend=self.config.session_backend,
             )
             self.has_wrapped_middleware = True
         await self.app(scope, receive, send)
@@ -141,17 +162,25 @@ class MiddlewareWrapper:
 class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
     """Session Authentication Middleware."""
 
-    def __init__(self, app: "ASGIApp", config: SessionAuth):
+    def __init__(
+        self,
+        app: "ASGIApp",
+        exclude: Optional[Union[str, List[str]]],
+        exclude_opt_key: str,
+        scopes: Optional[Scopes],
+        retrieve_user_handler: "AsyncCallable[[Dict[str, Any], ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+    ):
         """Session based authentication middleware.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
-            config: An instance of SessionAuth.
+            exclude: A pattern or list of patterns to skip in the authentication middleware.
+            exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.
+            scopes: ASGI scopes processed by the authentication middleware.
+            retrieve_user_handler: Callable that receives the 'session' value from the authentication middleware and returns a 'user' value.
         """
-        super().__init__(
-            app=app, exclude=config.exclude, exclude_from_auth_key=config.exclude_opt_key, scopes=config.scopes
-        )
-        self.config = config
+        super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
+        self.retrieve_user_handler = retrieve_user_handler
 
     async def authenticate_request(self, connection: "ASGIConnection[Any, Any, Any]") -> AuthenticationResult:
         """Authenticate an incoming connection.
@@ -171,7 +200,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
             connection.scope["session"] = Empty
             raise NotAuthorizedException("no session data found")
 
-        user = await self.config.retrieve_user_handler(connection.session)  # type: ignore
+        user = await self.retrieve_user_handler(connection.session, connection)
 
         if not user:
             connection.scope["session"] = Empty
