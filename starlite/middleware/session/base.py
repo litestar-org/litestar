@@ -19,9 +19,10 @@ from typing import (
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, constr
 
-from starlite import ASGIConnection, Cookie, DefineMiddleware, ScopeType
-from starlite.datastructures import MutableScopeHeaders
-from starlite.middleware.base import AbstractMiddleware
+from starlite.connection import ASGIConnection
+from starlite.datastructures import Cookie, MutableScopeHeaders
+from starlite.enums import ScopeType
+from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.types import Empty, Scopes
 from starlite.utils import default_serializer, get_serializer_from_scope
 
