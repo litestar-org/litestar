@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Generic, Optional, Union
+from typing import Any, Dict, Generic, Literal, Optional, Type, Union
 
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
@@ -50,6 +50,12 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     """
     The value to use for the OpenAPI security scheme and security requirements
     """
+    description: str = "JWT api-key authentication and authorization."
+    """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: Type[JWTAuthenticationMiddleware] = JWTAuthenticationMiddleware
+    """
+    The authentication middleware class to use. Must inherit from [JWTAuthenticationMiddleware][starlite.contrib.jwt.JWTAuthenticationMiddleware]
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -65,7 +71,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
                     scheme="Bearer",
                     name=self.auth_header,
                     bearerFormat="JWT",
-                    description="JWT api-key authentication and authorization.",
+                    description=self.description,
                 )
             }
         )
@@ -89,7 +95,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             An instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware].
         """
         return DefineMiddleware(
-            JWTAuthenticationMiddleware,
+            self.authentication_middleware_class,
             algorithm=self.algorithm,
             auth_header=self.auth_header,
             retrieve_user_handler=self.retrieve_user_handler,
@@ -190,13 +196,21 @@ class JWTCookieAuth(JWTAuth):
     and adds support for passing JWT tokens `HttpOnly` cookies.
     """
 
-    auth_cookie_key: str = "token"
+    key: str = "token"
+    """Key for the cookie."""
+    path: str = "/"
+    """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    domain: Optional[str] = None
+    """Domain for which the cookie is valid."""
+    secure: Optional[bool] = None
+    """Https is required for the cookie."""
+    samesite: Literal["lax", "strict", "none"] = "lax"
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    description: str = "JWT cookie-based authentication and authorization."
+    """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: Type[JWTCookieAuthenticationMiddleware] = JWTCookieAuthenticationMiddleware
     """
-    Cookie name from which to retrieve the token. E.g. 'access-token' or 'refresh-token'.
-    """
-    auth_cookie: Optional[Cookie] = None
-    """
-    Cookie configuration options to use when creating cookies for requests
+    The authentication middleware class to use. Must inherit from [JWTCookieAuthenticationMiddleware][starlite.contrib.jwt.JWTCookieAuthenticationMiddleware]
     """
 
     @property
@@ -211,10 +225,10 @@ class JWTCookieAuth(JWTAuth):
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
-                    name=self.auth_cookie_key,
+                    name=self.key,
                     security_scheme_in="cookie",
                     bearerFormat="JWT",
-                    description="JWT cookie-based authentication and authorization.",
+                    description=self.description,
                 )
             }
         )
@@ -227,13 +241,13 @@ class JWTCookieAuth(JWTAuth):
             An instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware].
         """
         return DefineMiddleware(
-            JWTCookieAuthenticationMiddleware,
+            self.authentication_middleware_class,
             algorithm=self.algorithm,
+            auth_cookie_key=self.key,
             auth_header=self.auth_header,
+            exclude=self.exclude,
             retrieve_user_handler=self.retrieve_user_handler,
             token_secret=self.token_secret,
-            exclude=self.exclude,
-            auth_cookie=self.auth_cookie or Cookie(key=self.auth_cookie_key),
         )
 
     def login(
@@ -270,13 +284,14 @@ class JWTCookieAuth(JWTAuth):
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
         )
-        cookie = self.auth_cookie or Cookie(
-            key=self.auth_cookie_key,
-        )
-        cookie.value = self.format_auth_header(encoded_token)
-        cookie.httponly = True
-        cookie.expires = int(
-            (datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp()
+        cookie = Cookie(
+            key=self.key,
+            path=self.path,
+            httponly=True,
+            value=self.format_auth_header(encoded_token),
+            expires=int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp()),
+            secure=self.secure,
+            samesite=self.samesite,
         )
         return Response(
             content=response_body,
@@ -303,6 +318,8 @@ class OAuth2PasswordBearerAuth(JWTCookieAuth):
     """
     oauth_scopes: Optional[Dict[str, str]] = None
     """Oauth Scopes available for the token."""
+    description: str = "OAUTH2 password bearer authentication and authorization."
+    """Description for the OpenAPI security scheme."""
 
     @property
     def oauth_flow(self) -> OAuthFlow:
@@ -332,7 +349,7 @@ class OAuth2PasswordBearerAuth(JWTCookieAuth):
                     security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),  # pyright: reportGeneralTypeIssues=false
                     bearerFormat="JWT",
-                    description="OAUTH2 password bearer authentication and authorization.",
+                    description=self.description,
                 )
             }
         )

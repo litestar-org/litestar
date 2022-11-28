@@ -16,6 +16,7 @@ from typing import (
 from pydantic import BaseConfig, validator
 from pydantic.generics import GenericModel
 
+from starlite.connection import ASGIConnection
 from starlite.datastructures import Provide
 from starlite.handlers import BaseRouteHandler
 from starlite.middleware.authentication import AbstractAuthenticationMiddleware
@@ -75,7 +76,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     - This handler allows modifying headers on the out going data , as well as perform side-effects such
         as executing DB calls etc.
     """
-    retrieve_user_handler: Callable[[AuthType], SyncOrAsyncUnion[UserType]]
+    retrieve_user_handler: Callable[[AuthType, ASGIConnection], SyncOrAsyncUnion[UserType]]
     """
     Callable that receives the 'auth' value form the authentication middleware and returns a 'user' value.
 

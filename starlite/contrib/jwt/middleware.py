@@ -27,10 +27,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         exclude: Optional[Union[str, List[str]]],
         algorithm: str,
         auth_header: str,
-        retrieve_user_handler: Union[
-            "AsyncCallable[[Any, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
-            "AsyncCallable[[Any], Awaitable[Any]]",
-        ],
+        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieves the user
@@ -90,10 +87,8 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             secret=self.token_secret,
             algorithm=self.algorithm,
         )
-        if self.retrieve_user_handler.num_expected_args == 2:
-            user = await self.retrieve_user_handler(token.sub, connection)  # type: ignore[call-arg]
-        else:
-            user = await self.retrieve_user_handler(token.sub)  # type: ignore[call-arg]
+
+        user = await self.retrieve_user_handler(token, connection)
 
         if not user:
             raise NotAuthorizedException()
@@ -111,10 +106,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         algorithm: str,
         auth_header: str,
         auth_cookie_key: str,
-        retrieve_user_handler: Union[
-            "AsyncCallable[[Any, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
-            "AsyncCallable[[Any], Awaitable[Any]]",
-        ],
+        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
