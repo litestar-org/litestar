@@ -17,16 +17,12 @@ from typing import (
 )
 
 from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
-from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, conlist, constr
+from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, constr
 
-from starlite import ASGIConnection, Cookie, DefineMiddleware
+from starlite import ASGIConnection, Cookie, DefineMiddleware, ScopeType
 from starlite.datastructures import MutableScopeHeaders
-from starlite.middleware.base import MiddlewareProtocol
-from starlite.middleware.utils import (
-    build_exclude_path_pattern,
-    should_bypass_middleware,
-)
-from starlite.types import Empty
+from starlite.middleware.base import AbstractMiddleware
+from starlite.types import Empty, Scopes
 from starlite.utils import default_serializer, get_serializer_from_scope
 
 if TYPE_CHECKING:
@@ -59,7 +55,7 @@ class BaseBackendConfig(BaseModel):
     """
     max_age: conint(ge=1) = ONE_DAY_IN_SECONDS * 14  # type: ignore[valid-type]
     """Maximal age of the cookie before its invalidated."""
-    scopes: conlist(Literal["http", "websocket"], min_items=1, max_items=2) = ["http", "websocket"]  # type: ignore[valid-type]
+    scopes: Scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """Scopes for the middleware - options are 'http' and 'websocket' with the default being both"""
     path: str = "/"
     """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
@@ -334,10 +330,8 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
         return {}
 
 
-class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
+class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
     """Starlite session middleware for storing session data."""
-
-    __slots__ = ("backend", "_exclude_pattern", "_exclude_opt_key")
 
     def __init__(self, app: "ASGIApp", backend: BaseSessionBackendT) -> None:
         """Initialize `SessionMiddleware`
@@ -348,10 +342,13 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
                 instance used to store and retrieve session data
         """
 
-        self.app = app
+        super().__init__(
+            app=app,
+            exclude=backend.config.exclude,
+            exclude_opt_key=backend.config.exclude_opt_key,
+            scopes=backend.config.scopes,
+        )
         self.backend = backend
-        self._exclude_pattern = build_exclude_path_pattern(exclude=backend.config.exclude)
-        self._exclude_opt_key = backend.config.exclude_opt_key
 
     def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
         """Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
@@ -396,15 +393,8 @@ class SessionMiddleware(MiddlewareProtocol, Generic[BaseSessionBackendT]):
         Returns:
             None
         """
-        if not should_bypass_middleware(
-            scope=scope,
-            scopes=self.backend.config.scopes,
-            exclude_opt_key=self._exclude_opt_key,
-            exclude_path_pattern=self._exclude_pattern,
-        ):
-            connection = ASGIConnection[Any, Any, Any](scope, receive=receive, send=send)
-            scope["session"] = await self.backend.load_from_connection(connection)
 
-            await self.app(scope, receive, self.create_send_wrapper(connection))
-        else:
-            await self.app(scope, receive, send)
+        connection = ASGIConnection[Any, Any, Any](scope, receive=receive, send=send)
+        scope["session"] = await self.backend.load_from_connection(connection)
+
+        await self.app(scope, receive, self.create_send_wrapper(connection))

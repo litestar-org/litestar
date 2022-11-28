@@ -53,7 +53,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     """
     A pattern or list of patterns to skip in the authentication middleware.
     """
-    exclude_opt_key: Optional[str] = "exclude_from_auth"
+    exclude_opt_key: str = "exclude_from_auth"
     """
     An identifier to use on routes to disable authentication and authorization checks for a particular route.
     """
