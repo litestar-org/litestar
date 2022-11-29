@@ -39,12 +39,6 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, An
     return None
 
 
-# The minimal configuration required for the JWT cookie configuration is the callable for the 'retrieve_user_handler' key, and a string
-# value for the token secret.
-#
-# Important: secrets should never be hardcoded. Its best practice to pass the secret using ENV.
-#
-# Tip: It's also a good idea to use the pydantic settings management functionality
 oauth2_auth = OAuth2PasswordBearerAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=environ.get("JWT_SECRET", "abcd123"),
@@ -56,7 +50,7 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 )
 
 
-# Given an instance of 'JWTAuth' we can create a login handler function:
+# Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
 async def login_handler(request: "Request[Any, Any]", data: User) -> Response[User]:
     await request.cache.set(str(data.id), data.dict())

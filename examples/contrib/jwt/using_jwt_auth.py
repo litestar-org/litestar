@@ -39,12 +39,6 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, An
     return None
 
 
-# The minimal configuration required for the library is the callable for the 'retrieve_user_handler' key, and a string
-# value for the token secret.
-#
-# Important: secrets should never be hardcoded. Its best practice to pass the secret using ENV.
-#
-# Tip: It's also a good idea to use the pydantic settings management functionality
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=environ.get("JWT_SECRET", "abcd123"),
