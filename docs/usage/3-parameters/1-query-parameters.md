@@ -59,7 +59,7 @@ Instead of only setting a default value, it's also possible to make a query para
 entirely optional.
 
 ```py
---8<--"examples/parameters/query_params_optional.py"
+--8<-- "examples/parameters/query_params_optional.py"
 ```
 
 Here, we give a default value of `None`, but still declare the type of the query parameter
@@ -109,7 +109,7 @@ Sometimes you might want to "remap" query parameters to allow a different name i
 than what's being used in the handler function. This can be done by making use of [Parameter](reference/params/0-parameter/).
 
 ```py
---8<--"examples/parameters/query_params_remap.py"
+--8<-- "examples/parameters/query_params_remap.py"
 ```
 
 Here, we remap from `snake_case` in the handler function to `camelCase` in the URL.

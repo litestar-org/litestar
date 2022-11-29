@@ -38,7 +38,7 @@ extra_css:
   - css/typo.css
   - css/color.css
 nav:
-  - Starlite: index.md
+  - Intro: index.md
   - Usage:
       - The Starlite App:
           - usage/0-the-starlite-app/0-the-starlite-app.md
