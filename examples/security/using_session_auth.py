@@ -50,7 +50,7 @@ class UserLoginPayload(BaseModel):
 # that holds a user id, for example: { "id": "abcd123" }
 #
 # Note: The callable can be either sync or async - both will work.
-async def retrieve_user_handler(session: dict[str, Any], connection: ASGIConnection) -> Optional[User]:
+async def retrieve_user_handler(session: Dict[str, Any], connection: ASGIConnection) -> Optional[User]:
     # we retrieve the user instance based on session data
     value = await connection.cache.get(session.get("user_id", ""))
     if value:
