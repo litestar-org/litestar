@@ -8,12 +8,12 @@ from starlite import (
     NotAuthorizedException,
     OpenAPIConfig,
     Request,
-    SessionAuth,
     Starlite,
     get,
     post,
 )
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.security import SessionAuth
 
 
 # Let's assume we have a User model that is a pydantic model.
