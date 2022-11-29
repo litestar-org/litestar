@@ -23,7 +23,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
 
     authentication_middleware_class: Type[SessionAuthMiddleware] = SessionAuthMiddleware
     """
-    The authentication middleware class to use. Must inherit from [SessionAuthMiddleware][starlite.security.session_auth.SessionAuthMiddleware]
+    The authentication middleware class to use. Must inherit from [SessionAuthMiddleware][starlite.security.session_auth.middleware.SessionAuthMiddleware]
     """
 
     @property
@@ -76,7 +76,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
         """Create OpenAPI documentation for the Session Authentication schema used.
 
         Returns:
-            An [Components][pydantic_schema_pydantic.v3_1_0.components.Components] instance.
+            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
         """
         return Components(
             securitySchemes={
@@ -97,6 +97,6 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
         backend.
 
         Returns:
-            An OpenAPI 3.1 [SecurityRequirement][pydantic_schema_pydantic.v3_1_0.security_requirement.SecurityRequirement] dictionary.
+            An OpenAPI 3.1 [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] dictionary.
         """
         return {"sessionCookie": []}

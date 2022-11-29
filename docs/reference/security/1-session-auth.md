@@ -1,6 +1,6 @@
-# Security Config
+# Session Auth
 
-::: starlite.security.AbstractSecurityConfig
+::: starlite.security.SessionAuth
     options:
         members:
             - authentication_middleware_class
@@ -15,4 +15,8 @@
             - route_handlers
             - scopes
             - security_requirement
-            - session_backend_config
+
+::: starlite.security.session_auth.middleware.SessionAuthMiddleware
+    options:
+        members:
+            - __init__

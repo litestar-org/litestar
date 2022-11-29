@@ -224,6 +224,7 @@ nav:
           - reference/middleware/7-cors-middleware.md
       - Security:
           - reference/security/0-base.md
+          - reference/security/1-session-auth.md
       - OpenAPI:
           - reference/openapi/0-openapi-controller.md
           - reference/openapi/1-openapi-response-spec.md
