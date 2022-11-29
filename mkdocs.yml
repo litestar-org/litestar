@@ -22,8 +22,7 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.tabs
-    - navigation.tabs.sticky
+    - content.tabs.link
     - search.suggest
     - search.highlight
     - search.share
@@ -39,12 +38,7 @@ extra_css:
   - css/typo.css
   - css/color.css
 nav:
-  - Starlite:
-    - Intro: index.md
-    - benchmarks.md
-    - governance.md
-    - contributing.md
-    - license.md
+  - Starlite: index.md
   - Usage:
       - The Starlite App:
           - usage/0-the-starlite-app/0-the-starlite-app.md
@@ -262,6 +256,8 @@ nav:
       - Contrib:
           - reference/contrib/opentelemetry.md
   - migration.md
+  - benchmarks.md
+
 extra:
   social:
     - icon: fontawesome/brands/discord
