@@ -6,7 +6,6 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     List,
     Literal,
     Optional,
@@ -197,7 +196,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
         return cast("Callable[[str], Logger]", getLogger)
 
 
-def default_structlog_processors() -> Optional[Iterable[Processor]]:  # pyright: ignore
+def default_structlog_processors() -> Optional[List[Processor]]:  # pyright: ignore
     """Set the default processors for structlog.
 
     Returns:
@@ -253,7 +252,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
         - requires 'structlog' to be installed.
     """
 
-    processors: Optional[Iterable[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
+    processors: Optional[List[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
     """Iterable of structlog logging processors."""
     wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
     """Structlog bindable logger."""
