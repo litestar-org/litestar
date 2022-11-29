@@ -17,7 +17,7 @@ from starlite.exceptions import NotAuthorizedException
 
 
 def _normalize_datetime(value: datetime) -> datetime:
-    """Convert the given value into UTC and strips microseconds.
+    """Convert the given value into UTC and strip microseconds.
 
     Args:
         value: A datetime instance
