@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Optional, Type, Union
 
 from redis.asyncio import Redis
 
@@ -67,7 +67,7 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
             None
         """
         pattern = f"{self.config.key_prefix}:*"
-        cursor: int | None = None
+        cursor: Optional[int] = None
         while (cursor is None) or cursor > 0:
             cursor, keys = await self.redis.scan(cursor=cursor or 0, match=pattern, count=3000)
             if keys:
@@ -78,6 +78,7 @@ class RedisBackendConfig(ServerSideSessionConfig):
     """Configuration for `RedisBackend`"""
 
     _backend_class: Type[RedisBackend] = RedisBackend
+
     redis: Redis
     """`redis.asyncio.Redis` instance"""
     key_prefix: str = "STARLITE_SESSION"

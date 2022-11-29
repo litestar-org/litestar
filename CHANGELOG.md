@@ -1,5 +1,18 @@
 # Changelog
 
+[1.43.0]
+
+- add security module and JWT auth contrib
+- deprecate `middleware.session.memcached_backend.MemcachedBackend.delete_all`
+
+[1.42.0]
+
+- support different types of path parameters for different leaf nodes
+- add dependencies with `yield`
+- update custom state injection and add `ImmutableState`
+- fix #854 - Incorrect path resolution of 'path' type parameters
+- fix #849 - Make LoggingMiddleware handle request bodies correctly
+
 [1.41.0]
 
 - general performance optimization.

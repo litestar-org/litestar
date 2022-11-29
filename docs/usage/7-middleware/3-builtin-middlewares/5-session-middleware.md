@@ -7,7 +7,7 @@ storing data in:
 
 - [Cookies](#client-side-sessions)
 - [Files](#file-storage)
-- [Redis](#redis-storage) (through `aioredis`)
+- [Redis](#redis-storage)
 - [Memcached](#memcached-storage) (through `aiomcache`)
 - [Databases](#database-storage) (through `sqlalchemy`)
 - [Memory](#in-memory-storage)

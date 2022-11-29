@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.41.0"
+version = "1.43.0"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -51,6 +51,7 @@ picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
+python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 starlite-multipart = ">=1.2.0"
@@ -80,6 +81,7 @@ pre-commit = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+python-jose = "*"
 redis = "*"
 sqlalchemy = "*"
 starlette = "*"
@@ -92,12 +94,22 @@ trio = "*"
 [tool.poetry.extras]
 brotli = ["brotli"]
 cryptography = ["cryptography"]
-full = ["brotli", "cryptography", "picologging", "structlog"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 structlog = ["structlog"]
+jwt = ["python-jose", "cryptography"]
+full = [
+    "brotli",
+    "cryptography",
+    "memcached",
+    "opentelemetry",
+    "picologging",
+    "python-jose",
+    "redis",
+    "structlog",
+]
 
 
 [build-system]
@@ -121,7 +133,9 @@ disable = [
     "invalid-name",
     "line-too-long",
     "missing-class-docstring",
+    "missing-function-docstring",
     "missing-module-docstring",
+    "protected-access",
     "super-init-not-called",
     "too-few-public-methods",
     "too-many-ancestors",
@@ -134,7 +148,6 @@ disable = [
     "ungrouped-imports",
     "unnecessary-ellipsis",
     "unused-import",
-    "protected-access",
 ]
 enable = "useless-suppression"
 extension-pkg-allow-list = ["pydantic", "orjson", "picologging"]

@@ -1,4 +1,16 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.testing.test_client import TestClient
@@ -18,6 +30,7 @@ if TYPE_CHECKING:
         WebSocket,
     )
     from starlite.config import AllowedHostsConfig
+    from starlite.datastructures.state import ImmutableState
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -32,6 +45,7 @@ if TYPE_CHECKING:
         LifeSpanHandler,
         LifeSpanHookHandler,
         Middleware,
+        OnAppInitHandler,
         ParametersMap,
         ResponseType,
         SingleOrList,
@@ -61,8 +75,10 @@ def create_test_client(
     dependencies: Optional["Dependencies"] = None,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
+    initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
+    on_app_init: Optional[List["OnAppInitHandler"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
     on_startup: Optional[List["LifeSpanHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
@@ -140,8 +156,13 @@ def create_test_client(
         dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
         exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
         guards: A list of [Guard][starlite.types.Guard] callables.
+        initial_state: An object from which to initialize the app state.
         logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
         middleware: A list of [Middleware][starlite.types.Middleware].
+        on_app_init:  A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
+                an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
+                the parameters passed to [Starlite][starlite.app.Starlite], and must return an instance of same. If more
+                than one handler is registered they are called in the order they are provided.
         on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
             application shutdown.
         on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
@@ -185,8 +206,10 @@ def create_test_client(
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
+            initial_state=initial_state,
             logging_config=logging_config,
             middleware=middleware,
+            on_app_init=on_app_init,
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             openapi_config=openapi_config,

@@ -187,7 +187,7 @@ class BaseRouteHandler(Generic[T]):
             self._resolved_guards = []
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
-            self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])  # type: ignore[arg-type]
+            self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
         return self._resolved_guards  # type:ignore
 
     def resolve_dependencies(self) -> Dict[str, Provide]:

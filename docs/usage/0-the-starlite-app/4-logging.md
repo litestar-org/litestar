@@ -46,7 +46,7 @@ from starlite import Starlite, StructLoggingConfig, Request, get
 
 @get("/")
 def my_router_handler(request: Request) -> None:
-    request.logger.log("inside a request")
+    request.logger.info("inside a request")
     return None
 
 

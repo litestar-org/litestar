@@ -2,23 +2,8 @@
 
 To return a streaming response use the [`Stream`][starlite.datastructures.Stream] class. The Stream class receives a single required kwarg - `iterator`:
 
-```python
-from typing import AsyncGenerator
-from asyncio import sleep
-from starlite import Stream, get
-from datetime import datetime
-from orjson import dumps
-
-
-async def my_generator() -> AsyncGenerator[bytes, None]:
-    while True:
-        await sleep(0.01)
-        yield dumps({"current_time": datetime.now()})
-
-
-@get(path="/time")
-def stream_time() -> Stream:
-    return Stream(iterator=my_generator())
+```py
+--8<-- "examples/responses/streaming_responses.py"
 ```
 
 !!! note

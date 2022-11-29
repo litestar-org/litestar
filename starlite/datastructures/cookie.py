@@ -58,7 +58,7 @@ class Cookie:
         """Return a string representation suitable to be sent as HTTP headers.
 
         Args:
-            +*kwargs: Any kwargs to pass to the simple cookie output method.
+            **kwargs: Any kwargs to pass to the simple cookie output method.
         """
         return self.simple_cookie.output(**kwargs).strip()
 

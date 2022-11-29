@@ -26,6 +26,7 @@ from pydantic import SecretBytes
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
+from starlite.cache import SimpleCacheBackend
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import (
     BaseSessionBackend,
@@ -77,7 +78,7 @@ if TYPE_CHECKING:
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
-    """Sets ENV variables for testing."""
+    """Sets ENV variables for 9-testing."""
     environ.update(PICCOLO_CONF="tests.piccolo_conf")
 
 
@@ -384,3 +385,8 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
         return module
 
     return wrapped
+
+
+@pytest.fixture(scope="module")
+def mock_db() -> SimpleCacheBackend:
+    return SimpleCacheBackend()

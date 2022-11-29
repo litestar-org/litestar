@@ -18,7 +18,7 @@ from pydantic.fields import FieldInfo, Undefined
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
-from starlite.connection import Request, WebSocket
+from starlite.connection import Request
 from starlite.enums import ScopeType
 from starlite.exceptions import (
     ImproperlyConfiguredException,
@@ -36,13 +36,14 @@ from starlite.utils.helpers import unwrap_partial
 if TYPE_CHECKING:
     from pydantic.error_wrappers import ErrorDict
 
+    from starlite import ASGIConnection
     from starlite.datastructures import URL
     from starlite.types import AnyCallable
 
 
 UNDEFINED_SENTINELS = {Undefined, Signature.empty}
 SKIP_NAMES = {"self", "cls"}
-SKIP_VALIDATION_NAMES = {"request", "socket", "state", "scope", "receive", "send"}
+SKIP_VALIDATION_NAMES = {"request", "socket", "scope", "receive", "send"}
 
 
 class SignatureModel(BaseModel):
@@ -56,9 +57,7 @@ class SignatureModel(BaseModel):
     return_annotation: ClassVar[Any]
 
     @classmethod
-    def parse_values_from_connection_kwargs(
-        cls, connection: Union[Request, WebSocket], **kwargs: Any
-    ) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: "ASGIConnection", **kwargs: Any) -> Dict[str, Any]:
         """Given a dictionary of values extracted from the connection, create an instance of the given SignatureModel
         subclass and return the parsed values.
 
@@ -79,7 +78,7 @@ class SignatureModel(BaseModel):
 
     @classmethod
     def construct_exception(
-        cls, connection: Union[Request, WebSocket], exc: ValidationError
+        cls, connection: "ASGIConnection", exc: ValidationError
     ) -> Union[InternalServerException, ValidationException]:
         """Distinguish between validation errors that arise from parameters and dependencies.
 
@@ -114,9 +113,9 @@ class SignatureModel(BaseModel):
         return error["loc"][-1] in cls.dependency_name_set
 
     @staticmethod
-    def get_connection_method_and_url(connection: Union[Request, WebSocket]) -> Tuple[str, "URL"]:
+    def get_connection_method_and_url(connection: "ASGIConnection") -> Tuple[str, "URL"]:
         """Extract method and URL from Request or WebSocket."""
-        method = ScopeType.WEBSOCKET if isinstance(connection, WebSocket) else connection.method
+        method = connection.method if isinstance(connection, Request) else ScopeType.WEBSOCKET
         return method, connection.url
 
 

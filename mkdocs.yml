@@ -22,9 +22,7 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - toc.integrate
+    - content.tabs.link
     - search.suggest
     - search.highlight
     - search.share
@@ -40,11 +38,7 @@ extra_css:
   - css/typo.css
   - css/color.css
 nav:
-  - index.md
-  - Overview:
-      - Project Governance: governance.md
-      - Contribution Guide: contributing.md
-      - License: license.md
+  - Intro: index.md
   - Usage:
       - The Starlite App:
           - usage/0-the-starlite-app/0-the-starlite-app.md
@@ -120,17 +114,25 @@ nav:
               - usage/7-middleware/3-builtin-middlewares/5-session-middleware.md
               - usage/7-middleware/3-builtin-middlewares/6-rate-limit-middleware.md
               - usage/7-middleware/3-builtin-middlewares/7-logging-middleware.md
-      - Authentication:
-          - usage/8-authentication/0-intro.md
-          - usage/8-authentication/1-abstract-authentication-middleware.md
-          - usage/8-authentication/2-official-authentication-libraries.md
-      - usage/9-guards.md
+      - Security:
+          - usage/8-security/0-intro.md
+          - usage/8-security/1-abstract-authentication-middleware.md
+          - usage/8-security/2-security-backends.md
+          - usage/8-security/3-guards.md
+      - Testing:
+          - usage/9-testing/0-intro.md
+          - usage/9-testing/1-test-client.md
+          - usage/9-testing/2-create-test-app.md
+          - usage/9-testing/3-request-factory.md
+          - usage/9-testing/4-pydantic-factories.md
       - Plugins:
           - usage/10-plugins/0-plugins-intro.md
           - usage/10-plugins/1-sql-alchemy-plugin.md
           - usage/10-plugins/2-tortoise-orm-plugin.md
           - usage/10-plugins/3-piccolo-orm-plugin.md
-      - usage/11-data-transfer-objects.md
+      - Data Transfer Objects:
+          - usage/11-data-transfer-objects/0-dto.md
+          - usage/11-data-transfer-objects/1-partial.md
       - OpenAPI:
           - usage/12-openapi/0-openapi-intro.md
           - usage/12-openapi/1-schema-generation.md
@@ -139,7 +141,6 @@ nav:
           - usage/12-openapi/4-viewing-and-accessing-schema.md
           - usage/12-openapi/5-customizing-pydantic-model-schemas.md
       - usage/13-lifecycle-hooks.md
-      - usage/14-testing.md
       - Caching:
           - usage/15-caching/0-cache-backends.md
           - usage/15-caching/1-response-caching.md
@@ -151,6 +152,7 @@ nav:
       - usage/17-exceptions.md
       - Contrib:
           - usage/18-contrib/0-open-telemetry.md
+          - usage/18-contrib/1-jwt.md
   - API Reference:
       - reference/0-api-reference-intro.md
       - reference/1-app.md
@@ -222,6 +224,9 @@ nav:
           - reference/middleware/5-csrf-middleware.md
           - reference/middleware/6-exceptions-middleware.md
           - reference/middleware/7-cors-middleware.md
+      - Security:
+          - reference/security/0-base.md
+          - reference/security/1-session-auth.md
       - OpenAPI:
           - reference/openapi/0-openapi-controller.md
           - reference/openapi/1-openapi-response-spec.md
@@ -261,7 +266,10 @@ nav:
           - reference/utils/7-serialization-utils.md
       - Contrib:
           - reference/contrib/opentelemetry.md
+          - reference/contrib/jwt.md
   - migration.md
+  - benchmarks.md
+
 extra:
   social:
     - icon: fontawesome/brands/discord
@@ -279,6 +287,7 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.magiclink
   - pymdownx.tabbed:
         alternate_style: true
 plugins:
@@ -302,3 +311,4 @@ plugins:
             line_length: 100
 watch:
   - starlite
+  - examples

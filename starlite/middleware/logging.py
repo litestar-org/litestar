@@ -103,22 +103,26 @@ class LoggingMiddleware(AbstractMiddleware):
         if not hasattr(self, "logger"):
             self.logger = scope["app"].get_logger(self.config.logger_name)
             self.is_struct_logger = structlog_installed and isinstance(self.logger, BindableLogger)
-        if self.config.request_log_fields:
-            await self.log_request(scope=scope)
+
         if self.config.response_log_fields:
             send = self.create_send_wrapper(scope=scope, send=send)
+
+        if self.config.request_log_fields:
+            await self.log_request(scope=scope, receive=receive)
+
         await self.app(scope, receive, send)
 
-    async def log_request(self, scope: "Scope") -> None:
+    async def log_request(self, scope: "Scope", receive: "Receive") -> None:
         """Extract request data and log the message.
 
         Args:
             scope: The ASGI connection scope.
+            receive: ASGI receive callable
 
         Returns:
             None
         """
-        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope))
+        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive=receive))
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: "Scope") -> None:

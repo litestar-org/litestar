@@ -3,7 +3,7 @@ from typing import List, Set
 import pytest
 
 from starlite import Provide
-from starlite.kwargs import Dependency, create_dependency_batches
+from starlite.kwargs.dependencies import Dependency, create_dependency_batches
 
 
 def dummy() -> None:

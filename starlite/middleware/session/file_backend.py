@@ -118,6 +118,7 @@ class FileBackendConfig(ServerSideSessionConfig):
     """Backend configuration for `FileBackend`"""
 
     _backend_class: Type[FileBackend] = FileBackend
+
     storage_path: PathLike
     """Disk path under which to store session files."""
     make_filename: Optional[Callable[[str], str]] = None

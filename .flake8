@@ -10,6 +10,7 @@ classmethod-decorators =
     root_validator
 per-file-ignores =
     examples/*:SCS108
+    examples/contrib/jwt/*:R504, SCS108
     starlite/types/builtin_types.py:F401
     tests/*:SCS108
     starlite/testing/test_client/*:SCS108
