@@ -3,6 +3,7 @@ from typing import Dict, Optional, Type, cast
 from aiomcache import Client as MemcacheClient
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
+from starlite.utils.deprecation import deprecated
 
 
 class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
@@ -61,7 +62,10 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         """
         await self.memcached.delete(self._id_to_storage_key(session_id))
 
-    async def delete_all(self) -> None:
+    @deprecated(
+        "1.43.0", info="This functionality is not natively supported by memcached. Use the redis backend instead."
+    )
+    async def delete_all(self) -> None:  # pragma: no cover
         """Delete all data stored within this backend.
 
         Returns:
@@ -70,6 +74,10 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         Notes:
             This has poor performance since memcached does not offer utilities to
             properly scan or match keys by prefix.
+
+        !!! important "Deprecated since 1.43.0"
+            This method is deprecated since 1.43.0. If you need this functionality,
+            consider using the redis backend instead.
         """
         stats: Dict[bytes, Optional[bytes]] = await self.memcached.stats("items")
         for key, raw_val in stats.items():
