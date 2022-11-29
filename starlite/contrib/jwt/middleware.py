@@ -32,7 +32,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         scopes: "Scopes",
         token_secret: str,
     ):
-        """Check incoming requests for an encoded token in the auth header specified, and if present retrieves the user
+        """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
 
         Args:
