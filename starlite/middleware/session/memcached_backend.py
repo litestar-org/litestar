@@ -63,7 +63,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         await self.memcached.delete(self._id_to_storage_key(session_id))
 
     @deprecated(
-        "1.43.0", info="This functionality is not natively supported by memcached. Use the redis backend instead."
+        "1.43.0", info="This functionality is not natively supported by memcached. Use the redis backend instead if you require it."
     )
     async def delete_all(self) -> None:  # pragma: no cover
         """Delete all data stored within this backend.
