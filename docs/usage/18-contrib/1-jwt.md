@@ -26,7 +26,7 @@ the [API Reference][starlite.contrib.jwt.JWTCookieAuth].
 ## OAuth2 Bearer Password Flow
 
 This backend inherits from the [`JWTCookieAuth`][starlite.contrib.jwt.JWTCookieAuth] backend. It works similarly to
-the `JWTCookieAuth` backend, but its meant to be used for OAUTH2 Bearer password flows.
+the `JWTCookieAuth` backend, but is meant to be used for OAUTH2 Bearer password flows.
 
 ```py title="Using OAUTH2 Bearer Password"
 --8<-- "examples/contrib/jwt/using_oauth2_password_bearer.py"
