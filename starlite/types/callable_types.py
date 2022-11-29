@@ -15,19 +15,18 @@ from .internal_types import StarliteType
 
 if TYPE_CHECKING:
     from starlite.config import AppConfig  # noqa: TC004
-    from starlite.connection import Request, WebSocket  # noqa: TC004
+    from starlite.connection import ASGIConnection, Request  # noqa: TC004
     from starlite.datastructures.state import State  # noqa: TC004
-    from starlite.handlers import HTTPRouteHandler, WebsocketRouteHandler  # noqa: TC004
+    from starlite.handlers import BaseRouteHandler  # noqa: TC004
     from starlite.response import Response  # noqa: TC004
     from starlite.types.protocols import Logger  # noqa: TC004
 else:
     AppConfig = Any
-    HTTPRouteHandler = Any
+    BaseRouteHandler = Any
     Request = Any
     Response = Any
     State = Any
-    WebSocket = Any
-    WebsocketRouteHandler = Any
+    ASGIConnection = Any
     Logger = Any
 
 _ExceptionT = TypeVar("_ExceptionT", bound=Exception)
@@ -46,10 +45,7 @@ BeforeMessageSendHookHandler = Union[
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
 ExceptionHandler = Callable[[Request, _ExceptionT], Response]
-Guard = Union[
-    Callable[[Request, HTTPRouteHandler], SyncOrAsyncUnion[None]],
-    Callable[[WebSocket, WebsocketRouteHandler], SyncOrAsyncUnion[None]],
-]
+Guard = Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
 OnAppInitHandler = Callable[[AppConfig], AppConfig]

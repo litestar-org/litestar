@@ -1,6 +1,7 @@
 from dataclasses import dataclass as vanilla_dataclass
 from enum import Enum
 from typing import Dict, List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -81,3 +82,12 @@ class Car(Base):  # pyright: ignore
     model = Column(TEXT)
     horsepower = Column(INTEGER)
     color_codes = Column(JSONB)
+
+
+class User(BaseModel):
+    name: str
+    id: UUID
+
+
+class UserFactory(ModelFactory[User]):
+    __model__ = User

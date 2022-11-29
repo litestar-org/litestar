@@ -45,6 +45,7 @@ if TYPE_CHECKING:
         LifeSpanHandler,
         LifeSpanHookHandler,
         Middleware,
+        OnAppInitHandler,
         ParametersMap,
         ResponseType,
         SingleOrList,
@@ -77,6 +78,7 @@ def create_test_client(
     initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
+    on_app_init: Optional[List["OnAppInitHandler"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
     on_startup: Optional[List["LifeSpanHandler"]] = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
@@ -157,6 +159,10 @@ def create_test_client(
         initial_state: An object from which to initialize the app state.
         logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
         middleware: A list of [Middleware][starlite.types.Middleware].
+        on_app_init:  A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
+                an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
+                the parameters passed to [Starlite][starlite.app.Starlite], and must return an instance of same. If more
+                than one handler is registered they are called in the order they are provided.
         on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
             application shutdown.
         on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
@@ -203,6 +209,7 @@ def create_test_client(
             initial_state=initial_state,
             logging_config=logging_config,
             middleware=middleware,
+            on_app_init=on_app_init,
             on_shutdown=on_shutdown,
             on_startup=on_startup,
             openapi_config=openapi_config,

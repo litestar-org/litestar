@@ -90,6 +90,7 @@ class MemcachedBackendConfig(ServerSideSessionConfig):
     """Configuration for `MemcachedBackend`"""
 
     _backend_class: Type[MemcachedBackend] = MemcachedBackend
+
     memcached: MemcacheClient
     """An `aiomcache.Client` instance"""
     key_prefix: str = "STARLITE_SESSION"

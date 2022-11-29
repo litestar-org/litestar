@@ -64,8 +64,8 @@ extend support for serialization, deserialization and DTO creation for SQLAlchem
 
 !!! important
     Currently only to-one relationships are supported because of the way the SQLAlchemy plugin handles relationships.
-      Since it recursively traverses relationships, a cyclic reference will result in an endless loop. To prevent this,
-      these relationships will be type as `Any` in the pydantic model
+    Since it recursively traverses relationships, a cyclic reference will result in an endless loop. To prevent this,
+    these relationships will be type as `Any` in the pydantic model
 
 !!! important
     Relationships are typed as `Optional` in the pydantic model by default so sending incomplete models won't cause any issues

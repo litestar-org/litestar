@@ -277,7 +277,6 @@ class Starlite(Router):
         self.state = State(initial_state, deep_copy=True) if initial_state else State()
         self.asgi_router = ASGIRouter(app=self)
 
-        # creates app config object from parameters
         config = AppConfig(
             after_exception=after_exception or [],
             after_request=after_request,

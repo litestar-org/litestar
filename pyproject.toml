@@ -51,6 +51,7 @@ picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
+python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 starlite-multipart = ">=1.2.0"
@@ -80,6 +81,7 @@ pre-commit = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+python-jose = "*"
 redis = "*"
 sqlalchemy = "*"
 starlette = "*"
@@ -97,12 +99,14 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 structlog = ["structlog"]
+jwt = ["python-jose", "cryptography"]
 full = [
     "brotli",
     "cryptography",
     "memcached",
     "opentelemetry",
     "picologging",
+    "python-jose",
     "redis",
     "structlog",
 ]
