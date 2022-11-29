@@ -12,7 +12,7 @@ from starlite import (
     get,
 )
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
-from starlite.security import SessionAuth
+from starlite.security.session_auth import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 
 

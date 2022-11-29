@@ -13,7 +13,7 @@ from starlite import (
     post,
 )
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
-from starlite.security import SessionAuth
+from starlite.security.session_auth import SessionAuth
 
 
 # Let's assume we have a User model that is a pydantic model.
