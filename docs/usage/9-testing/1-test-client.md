@@ -1,6 +1,6 @@
 # Test Client
 
-Starlite extends the Starlette testing client, which in turn is built using
+Starlite's test client is built on top of
 the [httpx](https://github.com/encode/httpx) library. To use the test client you should pass to it an
 instance of Starlite as the `app` kwarg.
 
