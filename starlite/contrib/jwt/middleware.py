@@ -69,7 +69,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         auth_header = connection.headers.get(self.auth_header)
         if not auth_header:
             raise NotAuthorizedException("No JWT token found in request header")
-        _, _, encoded_token = auth_header.partition(" ")
+        encoded_token = auth_header.partition(" ")[-1]
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
 
     async def authenticate_token(
