@@ -34,15 +34,7 @@ the call method. For example:
 ```
 
 
-The above example defined the function `my_template_function` as a callable inside the template that can be called using
-the key `check_context_key`. Using the Jinja syntax this will be:
+Run the example with `uvicorn template_functions:app`, visit  http://127.0.0.1:8000, and
+you'll see
 
-```text
-{{check_context_key}}
-```
-
-And using Mako
-
-```text
-${check_context_key}
-```
+![Template engine callable example](/starlite/images/examples/template_engine_callable.png)

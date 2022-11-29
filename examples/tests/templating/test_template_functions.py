@@ -4,6 +4,6 @@ from starlite import TestClient
 
 def test_template_functions() -> None:
     with TestClient(app=app) as client:
-        pass
-
-
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.text == "<strong>check_context_key: </strong>nope"
