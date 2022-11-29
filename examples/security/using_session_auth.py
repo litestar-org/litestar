@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional
+from typing import Any, Dict, Literal, Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, SecretStr
