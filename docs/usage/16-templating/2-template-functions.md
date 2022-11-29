@@ -3,22 +3,19 @@
 Both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) and [Mako](https://www.makotemplates.org/) allow users to define custom
 callables that are ran inside the template. Starlite builds on this and offers some functions out of the box.
 
-## The `url_for` Callable
+`url_for`
+:   To access urls for route handlers you can use the `url_for` function. Its signature and behaviour
+    matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
+    can be found [here](../2-route-handlers/4-route-handler-indexing.md)
 
-To access urls for route handlers you can use the `url_for` function. Its signature and behaviour
-matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
-can be found [here](../2-route-handlers/4-route-handler-indexing.md)
+`csrf_token`
+:   This function returns the request's unique [`csrf_token`](../7-middleware/3-builtin-middlewares/3-csrf-middleware.md). You can use this
+    if you wish to insert the `csrf_token` into non-HTML based templates, or insert it into HTML templates not using a hidden input field but
+    by some other means, for example inside a special `<meta>` tag.
 
-## The `csrf_token` Callable
-
-This function returns the request's unique [`csrf_token`](../7-middleware/3-builtin-middlewares/3-csrf-middleware.md). You can use this
-if you wish to insert the `csrf_token` into non-HTML based templates, or insert it into HTML templates not using a hidden input field but
-by some other means, for example inside a special `<meta>` tag.
-
-## The `url_for_static_asset` Callable
-
-URLs for static files can be created using the `url_for_static_asset` function. It's signature and behaviour are identical to
-[`app.url_for_static_asset`][starlite.app.Starlite.url_for_static_asset].
+`url_for_static_asset`
+:   URLs for static files can be created using the `url_for_static_asset` function. It's signature and behaviour are identical to
+    [`app.url_for_static_asset`][starlite.app.Starlite.url_for_static_asset].
 
 ## Registering Template Callables
 
@@ -28,36 +25,16 @@ for the two built in engines, and it can be used to register callables that will
 should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
 the call method. For example:
 
-```python
-from starlite import TemplateConfig, Starlite
-from starlite.template.mako import MakoTemplateEngine
-
-template_config = TemplateConfig(directory="templates", engine=MakoTemplateEngine)
-
-
-def my_template_function(ctx: dict) -> str:
-    return ctx.get("my_context_key", "nope")
-
-
-template_config.engine.register_template_callable(
-    key="check_context_key", template_callable=my_template_function
-)
-
-app = Starlite(
-    route_handlers=[...],
-    template_config=template_config,
-)
+```py title="template_functions.py"
+--8<-- "examples/templating/template_functions.py"
 ```
 
-The above example defined the function `my_template_function` as a callable inside the template that can be called using
-the key `check_context_key`. Using the Jinja syntax this will be:
-
-```text
-{{check_context_key}}
+```html title="templates/index.html.jinja2"
+--8<-- "examples/templating/templates/index.html.jinja2"
 ```
 
-And using Mako
 
-```text
-${check_context_key}
-```
+Run the example with `uvicorn template_functions:app`, visit  http://127.0.0.1:8000, and
+you'll see
+
+![Template engine callable example](/starlite/images/examples/template_engine_callable.png)
