@@ -8,11 +8,11 @@ from starlite import (
     BaseRouteHandler,
     OpenAPIConfig,
     Provide,
-    SessionAuth,
     create_test_client,
     get,
 )
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.security import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 
 
