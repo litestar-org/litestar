@@ -51,6 +51,7 @@ picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
 pydantic-openapi-schema = "*"
+python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 starlite-multipart = ">=1.2.0"
