@@ -172,6 +172,15 @@ To **run your application**, use an ASGI server such as [uvicorn](https://www.uv
 uvicorn my_app.main:app --reload
 ```
 
+## Example Applications
+
+- [starlite-pg-redis-docker](https://github.com/starlite-api/starlite-pg-redis-docker): In addition to Starlite, this
+  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
+  Starlite projects, this application is open to contributions, big and small.
+- [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
+  for testing and POC work.
+
+
 ## About the Starlite Project
 
 Starlite is a high-level, opinionated framework, built with validation (on top of [pydantic](https://pydantic-docs.helpmanual.io/)) in mind.
@@ -191,10 +200,28 @@ it has a different design, different project goals and a completely different co
    client- and server-side sessions, caching, OpenTelemetry integration and many more. It's not aiming to be "the next Django"
    (for example, it will never feature its own ORM), but its scope is not micro either.
 
-## Example Applications
 
-- [starlite-pg-redis-docker](https://github.com/starlite-api/starlite-pg-redis-docker): In addition to Starlite, this
-  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
-  Starlite projects, this application is open to contributions, big and small.
-- [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
-  for testing and POC work.
+### Project Governance
+
+From its inception, Starlite was envisaged as a community driven project. We encourage users to become involved with the
+project - feel free to open issues, chime in on discussions, review pull requests and of course - contribute code.
+
+The project is led by a group of maintainers. You can see the list of maintainers in the `pyproject.toml` file.
+Additionally, substantial contributors are invited to be members of the `starlite-api` organization. Our aim is to
+increase the number of maintainers and have at least 5 active maintainers - this will ensure the long term stability and
+growth of Starlite in the long run. Contributors who show commitment, contribute great code and show a willingness to
+become maintainers will be invited to do so. So really feel free to contribute and propose yourself as a maintainer once
+you contribute substantially.
+
+
+### Contribution Guide
+
+Any and all contributions and involvement with the project is welcome. The easiest way to begin contributing
+is to check out the open issues - and reach out on our discord server or Matrix space.
+
+--8<-- "CONTRIBUTING.MD"
+
+
+### License
+
+--8<-- "LICENSE"
