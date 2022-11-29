@@ -25,7 +25,7 @@ class User(BaseModel):
     email: EmailStr
 
 
-# The JWTAuth package requires a retrieve handler callable that receives the JWT token model and the ASGI connection
+# JWTCookieAuth requires a retrieve handler callable that receives the JWT token model and the ASGI connection
 # and returns the 'User' instance correlating to it.
 #
 # Notes:
