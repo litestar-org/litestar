@@ -20,9 +20,9 @@ regularly declared pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The [`DTOFactory`][starlite.dto.DTOFactory] class supports [plugins](10-plugins/0-plugins-intro.md), for example, this
+The [`DTOFactory`][starlite.dto.DTOFactory] class supports [plugins](../10-plugins/0-plugins-intro.md), for example, this
 is how it could be used with an SQLAlchemy declarative class using the
-[SQLAlchemyPlugin](10-plugins/1-sql-alchemy-plugin.md):
+[SQLAlchemyPlugin](../10-plugins/1-sql-alchemy-plugin.md):
 
 ```python
 from sqlalchemy import Column, Float, Integer, String
@@ -189,63 +189,6 @@ class MyClassDTO(BaseModel):
     third: str
 ```
 
-## Partial DTOs
-
-For [PATCH](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH) HTTP methods, you may only need to
-partially modify a resource. In these cases, DTOs can be wrapped with [`Partial`][starlite.types.Partial].
-
-```python
-from pydantic import BaseModel
-from starlite.types.partial import Partial
-
-
-class CompanyDTO(BaseModel):
-    id: int
-    name: str
-    worth: float
-
-
-PartialCompanyDTO = Partial[CompanyDTO]
-```
-
-The created `PartialCompanyDTO` is equivalent to the following declaration:
-
-```python
-from typing import Optional
-from pydantic import BaseModel
-
-
-class PartialCompanyDTO(BaseModel):
-    id: Optional[int]
-    name: Optional[str]
-    worth: Optional[float]
-```
-
-[`Partial`][starlite.types.Partial] can also be used inline when creating routes.
-
-```python
-from pydantic import UUID4, BaseModel
-from starlite.controller import Controller
-from starlite.handlers import patch
-from starlite.types.partial import Partial
-
-
-class UserOrder(BaseModel):
-    order_id: UUID4
-    order_item_id: UUID4
-    notes: str
-
-
-class UserOrderController(Controller):
-    path = "/user"
-
-    @patch(path="/{order_id:uuid}")
-    async def update_user_order(
-        self, order_id: UUID4, data: Partial[UserOrder]
-    ) -> UserOrder:
-        ...
-```
-
 ## DTO Methods
 
 ### DTO.from_model_instance()
@@ -279,7 +222,7 @@ dto_instance = CompanyDTO.from_model_instance(company_instance)
 
 In the above, `dto_instance` is a validated pydantic model instance.
 
-### DTO.to_model_instance()
+## DTO.to_model_instance()
 
 When you have an instance of a [`DTO`][starlite.dto.DTO] model, you can convert it into a model instance using the
 [`to_model_instance()`][starlite.dto.DTO.to_model_instance] method:

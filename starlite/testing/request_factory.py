@@ -63,38 +63,37 @@ class RequestFactory:
              scheme: Scheme for the server.
 
         Examples:
-        ```python
-        from starlite import RequestEncodingType, Starlite
-        from starlite.testing import RequestFactory
+            ```python
+            from starlite import RequestEncodingType, Starlite, RequestFactory
 
-        from tests import PersonFactory
+            from tests import PersonFactory
 
-        my_app = Starlite(route_handlers=[])
-        my_server = "starlite.org"
+            my_app = Starlite(route_handlers=[])
+            my_server = "starlite.org"
 
-        # Create a GET request
-        query_params = {"id": 1}
-        get_user_request = RequestFactory(app=my_app, server=my_server).get(
-            "/person", query_params=query_params
-        )
+            # Create a GET request
+            query_params = {"id": 1}
+            get_user_request = RequestFactory(app=my_app, server=my_server).get(
+                "/person", query_params=query_params
+            )
 
-        # Create a POST request
-        new_person = PersonFactory.build()
-        create_user_request = RequestFactory(app=my_app, server=my_server).post(
-            "/person", data=person
-        )
+            # Create a POST request
+            new_person = PersonFactory.build()
+            create_user_request = RequestFactory(app=my_app, server=my_server).post(
+                "/person", data=person
+            )
 
-        # Create a request with a special header
-        headers = {"header1": "value1"}
-        request_with_header = RequestFactory(app=my_app, server=my_server).get(
-            "/person", query_params=query_params, headers=headers
-        )
+            # Create a request with a special header
+            headers = {"header1": "value1"}
+            request_with_header = RequestFactory(app=my_app, server=my_server).get(
+                "/person", query_params=query_params, headers=headers
+            )
 
-        # Create a request with a media type
-        request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
-            "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
-        )
-        ```
+            # Create a request with a media type
+            request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
+                "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
+            )
+            ```
         """
 
         self.app = app if app is not None else _create_default_app()

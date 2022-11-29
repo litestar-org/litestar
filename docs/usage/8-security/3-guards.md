@@ -7,7 +7,7 @@ If verification fails, the guard should raise an HTTPException, usually a
 [`NotAuthorizedException`][starlite.exceptions.NotAuthorizedException] with a `status_code` of 401.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Starlite app. As we have done
-for [authentication](8-authentication/0-intro.md), we will assume that we added some sort of persistence layer without actually
+for `authentication`, we will assume that we added some sort of persistence layer without actually
 specifying it in the example.
 
 We begin by creating an `Enum` with two roles - `consumer` and `admin`:
@@ -118,7 +118,7 @@ guards on different levels of your app, and they will combine.
 ## The Route Handler "opt" Key
 
 Occasionally there might be a need to set some values on the route handler itself - these can be permissions, or some
-other flag. This can be achieved with [`opts` kwarg](./2-route-handlers/5-handler-opts.md) of route handler
+other flag. This can be achieved with [`opts` kwarg](../2-route-handlers/5-handler-opts.md) of route handler
 
 To illustrate this lets say we want to have an endpoint that is guarded by a "secret" token, to which end we create
 the following guard:

@@ -50,7 +50,7 @@ the `Provide` class.
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
 preferred way of handling this
-is [extending the Starlite AbstractAuthenticationMiddleware class](usage/8-authentication/0-intro.md).
+is [extending the Starlite AbstractAuthenticationMiddleware class](usage/8-security/0-intro.md).
 
 ## Third Party Packages
 

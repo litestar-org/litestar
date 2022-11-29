@@ -78,7 +78,7 @@ if TYPE_CHECKING:
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
-    """Sets ENV variables for testing."""
+    """Sets ENV variables for 9-testing."""
     environ.update(PICCOLO_CONF="tests.piccolo_conf")
 
 
