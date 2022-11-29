@@ -184,11 +184,8 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         Returns:
             The encoded token formatted for the HTTP headers
         """
-        if self.openapi_components.securitySchemes:
-            security = self.openapi_components.securitySchemes.get(self.openapi_security_scheme_name, None)
-            if isinstance(security, SecurityScheme):
-                return f"{security.scheme} {encoded_token}"
-        return encoded_token
+        security = self.openapi_components.securitySchemes.get(self.openapi_security_scheme_name, None)  # type: ignore
+        return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
 
 
 class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
