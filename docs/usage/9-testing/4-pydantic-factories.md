@@ -1,6 +1,6 @@
 # Using pydantic-factories
 
-Starlite bundles the library [pydantic-factories](https://github.com/Goldziher/pydantic-factories), which offers an easy
+[Pydantic-factories](https://github.com/starlite-api/pydantic-factories) offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
