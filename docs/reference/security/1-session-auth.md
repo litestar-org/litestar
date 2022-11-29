@@ -1,6 +1,6 @@
 # Session Auth
 
-::: starlite.security.SessionAuth
+::: starlite.security.session_auth.SessionAuth
     options:
         members:
             - authentication_middleware_class

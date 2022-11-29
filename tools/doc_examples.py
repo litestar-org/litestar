@@ -91,7 +91,7 @@ def extract_examples(
         if len(code_blocks) > 1:
             target_path = target_path.with_name(target_path.stem + f"_{i + 1}.py")
 
-        content = content.replace(code_block, f'```python\n--8<-- "{target_path}"\n```\n')
+        content = content.replace(code_block, f'```py\n--8<-- "{target_path}"\n```\n')
         if not (code_match := CODE_BLOCK_CODE.match(code_block)):
             raise ValueError(f"Unexpectedly missing code block in {file}")
         code = code_match.group(1).strip()
