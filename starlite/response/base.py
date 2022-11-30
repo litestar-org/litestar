@@ -21,7 +21,7 @@ from starlite.status_codes import (
     HTTP_304_NOT_MODIFIED,
 )
 from starlite.utils.helpers import get_enum_string_value
-from starlite.utils.serialization import default_serializer, encode_json
+from starlite.utils.serialization import default_serializer, encode_json, encode_msgpack
 
 if TYPE_CHECKING:
 
@@ -219,6 +219,8 @@ class Response(Generic[T]):
         try:
             if self.media_type.startswith("text/"):
                 return content.encode(self.encoding) if content else b""  # type: ignore
+            if self.media_type == MediaType.MESSAGEPACK:
+                return encode_msgpack(content)
             return encode_json(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
