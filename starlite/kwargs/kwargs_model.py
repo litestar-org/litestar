@@ -69,6 +69,7 @@ class KwargsModel:
         "dependency_batches",
         "expected_cookie_params",
         "expected_form_data",
+        "expected_msgpack_data",
         "expected_header_params",
         "expected_path_params",
         "expected_query_params",
@@ -85,6 +86,7 @@ class KwargsModel:
         expected_cookie_params: Set[ParameterDefinition],
         expected_dependencies: Set[Dependency],
         expected_form_data: Optional[Tuple[RequestEncodingType, ModelField]],
+        expected_msgpack_data: Optional[ModelField],
         expected_header_params: Set[ParameterDefinition],
         expected_path_params: Set[ParameterDefinition],
         expected_query_params: Set[ParameterDefinition],
@@ -98,6 +100,7 @@ class KwargsModel:
             expected_cookie_params: Any expected cookie parameter kwargs
             expected_dependencies: Any expected dependency kwargs
             expected_form_data: Any expected form data kwargs
+            expected_msgpack_data: Any expected MessagePack data kwargs
             expected_header_params: Any expected header parameter kwargs
             expected_path_params: Any expected path parameter kwargs
             expected_query_params: Any expected query parameter kwargs
@@ -107,6 +110,7 @@ class KwargsModel:
         """
         self.expected_cookie_params = expected_cookie_params
         self.expected_form_data = expected_form_data
+        self.expected_msgpack_data = expected_msgpack_data
         self.expected_header_params = expected_header_params
         self.expected_path_params = expected_path_params
         self.expected_query_params = expected_query_params
@@ -117,6 +121,7 @@ class KwargsModel:
             expected_cookie_params
             or expected_dependencies
             or expected_form_data
+            or expected_msgpack_data
             or expected_header_params
             or expected_path_params
             or expected_query_params
@@ -310,7 +315,9 @@ class KwargsModel:
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
         expected_form_data = None
+        expected_msgpack_data = None
         data_model_field = signature_model.__fields__.get("data")
+
         if data_model_field:
             media_type = data_model_field.field_info.extra.get("media_type")
             if media_type in (
@@ -318,6 +325,8 @@ class KwargsModel:
                 RequestEncodingType.URL_ENCODED,
             ):
                 expected_form_data = (media_type, data_model_field)
+            elif media_type == RequestEncodingType.MESSAGEPACK:
+                expected_msgpack_data = data_model_field
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -348,6 +357,7 @@ class KwargsModel:
 
         return KwargsModel(
             expected_form_data=expected_form_data,  # pyright: ignore
+            expected_msgpack_data=expected_msgpack_data,
             expected_dependencies=expected_dependencies,
             expected_path_params=expected_path_parameters,
             expected_query_params=expected_query_parameters,
@@ -416,9 +426,7 @@ class KwargsModel:
         dependency_kwargs_model: "KwargsModel",
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
-        if (expected_form_data and not dependency_kwargs_model.expected_form_data) or (
-            not expected_form_data and dependency_kwargs_model.expected_form_data
-        ):
+        if bool(expected_form_data) != bool(dependency_kwargs_model.expected_form_data):
             raise ImproperlyConfiguredException(
                 "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             )

@@ -47,6 +47,8 @@ def dec_hook(type_: Any, value: Any) -> Any:
 
 _msgspec_json_encoder = msgspec.json.Encoder(enc_hook=default_serializer)
 _msgspec_json_decoder = msgspec.json.Decoder(dec_hook=dec_hook)
+_msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
+_msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
 def encode_json(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
@@ -76,3 +78,32 @@ def decode_json(raw: Union[str, bytes]) -> Any:
     if isinstance(raw, str):
         raw = raw.encode("utf-8")
     return _msgspec_json_decoder.decode(raw)
+
+
+def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
+    """Encode a value into MessagePack.
+
+    Args:
+        obj: Value to encode
+        enc_hook: Optional callable to support non-natively supported types
+
+    Returns:
+        MessagePack as bytes
+    """
+    if enc_hook is None or enc_hook is default_serializer:
+        return _msgspec_msgpack_encoder.encode(obj)
+    return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+
+
+def decode_msgpack(raw: Union[str, bytes]) -> Any:
+    """Decode a MessagePack string/bytes into an object.
+
+    Args:
+        raw: Value to decode
+
+    Returns:
+        An object
+    """
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8")
+    return _msgspec_msgpack_decoder.decode(raw)

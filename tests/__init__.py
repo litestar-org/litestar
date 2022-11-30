@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List, Optional
 from uuid import UUID
 
+import msgspec
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic_factories import ModelFactory
@@ -65,6 +66,15 @@ class PydanticDataClassPerson:
 
 
 class TypedDictPerson(TypedDict):
+    first_name: str
+    last_name: str
+    id: str
+    optional: Optional[str]
+    complex: Dict[str, List[Dict[str, str]]]
+    pets: Optional[List[Pet]]
+
+
+class MsgSpecStructPerson(msgspec.Struct):
     first_name: str
     last_name: str
     id: str
