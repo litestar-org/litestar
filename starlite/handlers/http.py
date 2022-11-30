@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import lru_cache
 from inspect import Signature, isawaitable
 from itertools import chain
 from operator import attrgetter
@@ -82,16 +81,12 @@ if TYPE_CHECKING:
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
 
-@lru_cache(1024)
 def _normalize_cookies(local_cookies: FrozenSet["Cookie"], layered_cookies: FrozenSet["Cookie"]) -> List[Cookie]:
     """Given two lists of cookies, ensure the uniqueness of cookies by key and return a normalized dict ready to be set
     on the response.
     """
-    return [
-        cookie
-        for cookie in sorted(frozenset.union(local_cookies, layered_cookies), key=attrgetter("key"))
-        if not cookie.documentation_only
-    ]
+    sorted_set = sorted(frozenset.union(local_cookies, layered_cookies), key=attrgetter("key"))
+    return [cookie for cookie in sorted_set if not cookie.documentation_only]
 
 
 def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
