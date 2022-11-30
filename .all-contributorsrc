@@ -579,6 +579,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "ste-pool",
+      "name": "ste-pool",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17198460?v=4",
+      "profile": "https://github.com/ste-pool",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
