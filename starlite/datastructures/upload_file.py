@@ -12,7 +12,7 @@ class UploadFile(MultipartUploadFile):
     """Representation of a file upload, modifying the pydantic schema."""
 
     @classmethod
-    def __modify_schema__(cls, field_schema: Dict[str, Any], _: Optional["ModelField"]) -> None:
+    def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
         """Create a pydantic JSON schema.
 
         Args:
@@ -22,9 +22,10 @@ class UploadFile(MultipartUploadFile):
         Returns:
             None
         """
-        field_schema.update(
-            {"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream", "format": "binary"}
-        )
+        if field:
+            field_schema.update(
+                {"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream", "format": "binary"}
+            )
 
     def __repr__(self) -> str:
         return f"{self.filename} - {self.content_type}"

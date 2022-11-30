@@ -50,18 +50,29 @@ def test_upload_file_request_body_generation() -> None:
     components = schema_dict["components"]
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
         "type": "string",
+        "schema_format": "binary",
         "contentMediaType": "application/octet-stream",
     }
     assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
-        "items": {"type": "string", "contentMediaType": "application/octet-stream"},
+        "items": {"type": "string", "schema_format": "binary", "contentMediaType": "application/octet-stream"},
         "type": "array",
     }
     assert components == {
         "schemas": {
             "FormData": {
                 "properties": {
-                    "cv": {"type": "string", "contentMediaType": "application/octet-stream", "title": "Cv"},
-                    "image": {"type": "string", "contentMediaType": "application/octet-stream", "title": "Image"},
+                    "cv": {
+                        "type": "string",
+                        "schema_format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "title": "Cv",
+                    },
+                    "image": {
+                        "type": "string",
+                        "schema_format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "title": "Image",
+                    },
                 },
                 "type": "object",
                 "required": ["cv", "image"],
