@@ -5,7 +5,7 @@ available on all layers of the app - individual route handlers, controllers, rou
 itself:
 
 ```py
---8<-- "examples/responses/response_headers.py"
+--8<-- "examples/responses/response_headers_1.py"
 ```
 
 In the above example the response returned from `my_route_handler` will have headers set from each layer of the
