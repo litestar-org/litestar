@@ -18,6 +18,7 @@
             - json
             - logger
             - method
+            - msgpack
             - path_params
             - query_params
             - receive

@@ -115,3 +115,13 @@ Finally, you can also access the files as a list without the filenames:
 ```py
 --8<-- "examples/request_data/request_data_10.py"
 ```
+
+
+## MessagePack data
+
+To receive `MessagePack` data, you can either specify the appropriate `Content-Type`
+with `Body`,  or set the `Content-Type` header of the request to `application/x-msgpack`.
+
+```py title="msgpack_request.py"
+--8<-- "examples/request_data/msgpack_request.py"
+```

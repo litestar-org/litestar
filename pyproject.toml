@@ -149,7 +149,7 @@ disable = [
     "unused-import",
 ]
 enable = "useless-suppression"
-extension-pkg-allow-list = ["pydantic", "orjson", "picologging"]
+extension-pkg-allow-list = ["pydantic", "msgspec", "picologging"]
 
 [tool.pylint.REPORTS]
 reports = "no"

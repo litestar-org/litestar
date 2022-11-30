@@ -20,6 +20,7 @@ value of `text/plain`. It will also set the corresponding values in the OpenAPI 
 MediaType has the following members:
 
 - MediaType.JSON: `application/json`
+- MediaType.MessagePack: `application/x-msgpack`
 - MediaType.TEXT: `text/plain`
 - MediaType.HTML: `text/html`
 
@@ -37,18 +38,32 @@ As previously mentioned, the default `media_type` is `MediaType.JSON`. which sup
 - pydantic dataclasses
 - pydantic models
 - models from libraries that extend pydantic models
-- numpy ndarray
 - lists containing any of the above elements
-
-Since Starlite uses the excellent (and super fast!) [orjson](https://github.com/ijl/orjson#numpy) library to handle
-JSON (also in requests), you can use the following values as part of your responses without issue:
-
-- all UUIDs
-- datetime classes
-- numpy primitives and objects (see [orjson docs](https://github.com/ijl/orjson#numpy))
+- UUIDs
+- datetime objects
+- [`msgspec.Struct`](https://jcristharif.com/msgspec/structs.html)
 
 If you need to return other values and would like to extend serialization you can do
 this [using Custom Responses](10-custom-responses.md).
+
+## MessagePack Responses
+
+In addition to JSON, Starlite offers support for the [MessagePack](https://msgpack.org/)
+format which can be a time and space efficient alternative to JSON.
+
+It supports all the same types as JSON serialization. To send a `MessagePack` response,
+simply specify the media type as `MediaType.MESSAGEPACK`:
+
+```python
+from typing import Dict
+from starlite import get, MediaType
+
+
+@get(path="/health-check", media_type=MediaType.MESSAGEPACK)
+def health_check() -> Dict[str, str]:
+    return {"hello": "world"}
+```
+
 
 ## Text Responses
 
