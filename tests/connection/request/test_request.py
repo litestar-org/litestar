@@ -15,6 +15,7 @@ from starlite.connection import Request, empty_send
 from starlite.datastructures import Address
 from starlite.response import Response
 from starlite.testing import TestClient, create_test_client
+from starlite.utils.serialization import encode_msgpack
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -40,6 +41,26 @@ async def test_request_valid_body_to_json(anyio_backend: str) -> None:
         request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
         request_json = await request_empty_payload.json()
         assert request_json == {"test": "valid"}
+
+
+async def test_request_empty_body_to_msgpack(anyio_backend: str) -> None:
+    with patch.object(Request, "body", return_value=b""):
+        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_msgpack = await request_empty_payload.msgpack()
+        assert request_msgpack is None
+
+
+async def test_request_invalid_body_to_msgpack(anyio_backend: str) -> None:
+    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(DecodeError):
+        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        await request_empty_payload.msgpack()
+
+
+async def test_request_valid_body_to_msgpack(anyio_backend: str) -> None:
+    with patch.object(Request, "body", return_value=encode_msgpack({"test": "valid"})):
+        request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
+        request_msgpack = await request_empty_payload.msgpack()
+        assert request_msgpack == {"test": "valid"}
 
 
 def test_request_url_for() -> None:

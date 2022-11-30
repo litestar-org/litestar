@@ -13,7 +13,7 @@ from starlite.exceptions import InternalServerException
 from starlite.multipart import parse_content_header, parse_multipart_form
 from starlite.parsers import parse_url_encoded_form_data
 from starlite.types import Empty
-from starlite.utils.serialization import decode_json
+from starlite.utils.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
 
@@ -33,7 +33,7 @@ SERVER_PUSH_HEADERS = {
 class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
     """The Starlite Request class."""
 
-    __slots__ = ("_json", "_form", "_body", "_content_type", "is_connected")
+    __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "is_connected")
 
     scope: "HTTPScope"
     """
@@ -61,6 +61,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         self._body: Any = scope.get("_body", Empty)
         self._form: Any = scope.get("_form", Empty)
         self._json: Any = scope.get("_json", Empty)
+        self._msgpack: Any = scope.get("_msgpack", Empty)
         self._content_type: Any = scope.get("_content_type", Empty)
 
     @property
@@ -93,6 +94,17 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             body = await self.body()
             self._json = self.scope["_json"] = decode_json(body or b"null")  # type: ignore[typeddict-item]
         return self._json
+
+    async def msgpack(self) -> Any:
+        """Retrieve the MessagePack request body from the request.
+
+        Returns:
+            An arbitrary value
+        """
+        if self._msgpack is Empty:
+            body = await self.body()
+            self._msgpack = self.scope["_msgpack"] = decode_msgpack(body or b"\xc0")  # type: ignore[typeddict-item]
+        return self._msgpack
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
         """Return an async generator that streams chunks of bytes.
