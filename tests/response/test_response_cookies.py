@@ -1,4 +1,4 @@
-from starlite import Controller, Cookie, HttpMethod, Router, Starlite, get
+from starlite import Controller, Cookie, HttpMethod, Response, Router, Starlite, get
 from starlite.testing import create_test_client
 
 
@@ -53,3 +53,48 @@ def test_response_cookie_rendering() -> None:
     with create_test_client(test_method) as client:
         response = client.get("/")
         assert response.headers["Set-Cookie"] == "test=123; Path=/; SameSite=lax"
+
+
+def test_response_cookie_documentation_only_not_rendering() -> None:
+    @get(
+        "/",
+        response_cookies=[
+            Cookie(
+                key="my-cookie",
+                description="my-cookie documentations",
+                documentation_only=True,
+            )
+        ],
+    )
+    def test_method() -> None:
+        return None
+
+    with create_test_client(test_method) as client:
+        response = client.get("/")
+        assert "Set-Cookie" not in response.headers
+
+
+def test_response_cookie_documentation_only_not_producing_second_header() -> None:
+    # this test ensures that https://github.com/starlite-api/starlite/issues/870
+    # has been fixed
+    def after_request(response: Response) -> Response:
+        response.set_cookie("my-cookie", "123")
+        return response
+
+    @get(
+        "/",
+        response_cookies=[
+            Cookie(
+                key="my-cookie",
+                description="my-cookie documentations",
+                documentation_only=True,
+            )
+        ],
+    )
+    def test_method() -> None:
+        return None
+
+    with create_test_client(test_method, after_request=after_request) as client:
+        response = client.get("/")
+        assert response.headers["Set-Cookie"] == "my-cookie=123; Path=/; SameSite=lax"
+        assert len(response.headers.get_list("Set-Cookie")) == 1

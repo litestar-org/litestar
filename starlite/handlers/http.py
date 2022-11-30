@@ -195,7 +195,7 @@ def _create_data_handler(
     normalized_headers = [
         (k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in _normalize_headers(headers).items()
     ]
-    cookie_headers = [cookie.to_encoded_header() for cookie in cookies]
+    cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
 
     async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
