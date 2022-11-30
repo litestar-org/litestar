@@ -23,7 +23,9 @@ class UploadFile(MultipartUploadFile):
             None
         """
         if field:
-            field_schema.update({"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream"})
+            field_schema.update(
+                {"type": OpenAPIType.STRING.value, "contentMediaType": "application/octet-stream", "format": "binary"}
+            )
 
     def __repr__(self) -> str:
         return f"{self.filename} - {self.content_type}"
