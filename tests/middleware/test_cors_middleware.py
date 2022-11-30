@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, cast
 
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
 from starlite import CORSConfig, create_test_client, get
@@ -41,6 +41,7 @@ def test_setting_cors_middleware() -> None:
     allow_credentials=booleans(),
     expose_headers=lists(sampled_from(["X-First-Header", "SomeOtherHeader", "X-Second-Header"])),
 )
+@settings(deadline=None)
 def test_cors_simple_response(
     origin: Optional[str], allow_origins: List[str], allow_credentials: bool, expose_headers: List[str]
 ) -> None:

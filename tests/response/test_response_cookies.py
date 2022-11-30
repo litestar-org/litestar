@@ -1,4 +1,7 @@
+from uuid import uuid4
+
 from starlite import Controller, Cookie, HttpMethod, Response, Router, Starlite, get
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
 
@@ -75,8 +78,7 @@ def test_response_cookie_documentation_only_not_rendering() -> None:
 
 
 def test_response_cookie_documentation_only_not_producing_second_header() -> None:
-    # this test ensures that https://github.com/starlite-api/starlite/issues/870
-    # has been fixed
+    # https://github.com/starlite-api/starlite/issues/870
     def after_request(response: Response) -> Response:
         response.set_cookie("my-cookie", "123")
         return response
@@ -98,3 +100,30 @@ def test_response_cookie_documentation_only_not_producing_second_header() -> Non
         response = client.get("/")
         assert response.headers["Set-Cookie"] == "my-cookie=123; Path=/; SameSite=lax"
         assert len(response.headers.get_list("Set-Cookie")) == 1
+
+
+def test_response_cookie_is_always_set() -> None:
+    # https://github.com/starlite-api/starlite/issues/888
+    @get(path="/set-cookie")
+    def set_cookie_handler() -> Response[None]:
+        return Response(
+            content=None,
+            cookies=[
+                Cookie(
+                    key="test",
+                    value=str(uuid4()),
+                    expires=10,
+                )
+            ],
+        )
+
+    with create_test_client([set_cookie_handler]) as client:
+        response = client.get("/set-cookie")
+        assert response.status_code == HTTP_200_OK
+        assert response.cookies.get("test")
+        cookie = response.cookies.get("test")
+        client.cookies.clear()
+        response = client.get("/set-cookie")
+        assert response.status_code == HTTP_200_OK
+        assert response.cookies.get("test")
+        assert cookie != response.cookies.get("test")
