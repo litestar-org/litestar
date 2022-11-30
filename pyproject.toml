@@ -46,7 +46,6 @@ cryptography = { version = "*", optional = true }
 httpx = ">=0.22"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
-orjson = "*"
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
@@ -56,6 +55,7 @@ pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
+msgspec = {git = "https://github.com/jcrist/msgspec.git"}
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"

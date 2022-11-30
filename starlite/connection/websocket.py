@@ -12,8 +12,6 @@ from typing import (
     overload,
 )
 
-from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
-
 from starlite.connection.base import (
     ASGIConnection,
     Auth,
@@ -24,7 +22,7 @@ from starlite.connection.base import (
 from starlite.datastructures.headers import Headers
 from starlite.exceptions import WebSocketDisconnect, WebSocketException
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
-from starlite.utils.serialization import default_serializer
+from starlite.utils.serialization import decode_json, default_serializer, encode_json
 
 if TYPE_CHECKING:
     from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
@@ -227,7 +225,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
             An arbitrary value
         """
         data = await self.receive_data(mode=mode)
-        return loads(data)
+        return decode_json(data)
 
     async def send_data(
         self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8"
@@ -314,7 +312,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
             None
         """
         await self.send_data(
-            data=dumps(data, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS),
+            data=encode_json(data, serializer),
             mode=mode,
             encoding=encoding,
         )

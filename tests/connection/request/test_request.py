@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
 from unittest.mock import patch
 
 import pytest
-from orjson import JSONDecodeError
+from msgspec import DecodeError
 
 from starlite import InternalServerException, MediaType, StaticFilesConfig, get
 from starlite.connection import Request, empty_send
@@ -30,7 +30,7 @@ async def test_request_empty_body_to_json(anyio_backend: str) -> None:
 
 
 async def test_request_invalid_body_to_json(anyio_backend: str) -> None:
-    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(JSONDecodeError):
+    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(DecodeError):
         request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
         await request_empty_payload.json()
 

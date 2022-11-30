@@ -1,11 +1,11 @@
 from typing import Callable
 
-from orjson import dumps
 from piccolo.testing.model_builder import ModelBuilder
 
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
+from starlite.utils.serialization import encode_json
 
 from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
 from .tables import Band, Concert, Manager, RecordingStudio, Venue
@@ -39,5 +39,5 @@ async def test_create_piccolo_table_instance(scaffold_piccolo: Callable, anyio_b
         data["band_1"] = band_1.id  # type: ignore[attr-defined]
         data["band_2"] = band_2.id  # type: ignore[attr-defined]
         data["venue"] = venue.id  # type: ignore[attr-defined]
-        response = client.post("/concert", content=dumps(data))
+        response = client.post("/concert", content=encode_json(data))
         assert response.status_code == HTTP_201_CREATED

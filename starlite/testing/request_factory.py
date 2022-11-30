@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
-from orjson import dumps, loads
 from pydantic import BaseModel
 
 from starlite.app import Starlite
@@ -11,18 +10,15 @@ from starlite.exceptions import MissingDependencyException
 from starlite.handlers.http import get
 from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
-from starlite.utils import default_serializer
+from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
 
 try:
-    from httpx._content import (
-        encode_json,
-        encode_multipart_data,
-        encode_urlencoded_data,
-    )
+    from httpx._content import encode_json as httpx_encode_json
+    from httpx._content import encode_multipart_data, encode_urlencoded_data
     from httpx._types import FileTypes  # noqa: TC002
 except ImportError as e:
     raise MissingDependencyException(
@@ -265,11 +261,11 @@ class RequestFactory:
             if isinstance(data, BaseModel):
                 data = data.dict()
             if request_media_type == RequestEncodingType.JSON:
-                encoding_headers, stream = encode_json(data)
+                encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
                 encoding_headers, stream = encode_multipart_data(data, files=files or [], boundary=None)  # type: ignore[assignment]
             else:
-                encoding_headers, stream = encode_urlencoded_data(loads(dumps(data, default=default_serializer)))
+                encoding_headers, stream = encode_urlencoded_data(decode_json(encode_json(data)))
             headers.update(encoding_headers)
             body = b""
             for chunk in stream:

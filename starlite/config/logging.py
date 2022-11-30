@@ -14,13 +14,13 @@ from typing import (
     cast,
 )
 
-from orjson import dumps
 from pydantic import BaseModel, Field, validator
 
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
     from typing import NoReturn
@@ -179,7 +179,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
             A 'logging.getLogger' like function.
         """
 
-        if "picologging" in str(dumps(self.handlers)):
+        if "picologging" in str(encode_json(self.handlers)):
             try:
                 from picologging import config, getLogger
             except ImportError as e:  # pragma: no cover
@@ -210,7 +210,7 @@ def default_structlog_processors() -> Optional[List[Processor]]:  # pyright: ign
             structlog.processors.add_log_level,
             structlog.processors.format_exc_info,
             structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.JSONRenderer(serializer=dumps),
+            structlog.processors.JSONRenderer(serializer=encode_json),
         ]
     except ImportError:  # pragma: no cover
         return None

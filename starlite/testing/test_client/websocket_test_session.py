@@ -3,11 +3,10 @@ from queue import Queue
 from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, Union, cast
 
 from anyio import sleep
-from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps, loads
 
 from starlite.exceptions import WebSocketDisconnect
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
-from starlite.utils import default_serializer
+from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
 
@@ -144,9 +143,7 @@ class WebSocketTestSession:
         Returns:
             None.
         """
-        self.send(
-            data=dumps(data, default=default_serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS), mode=mode
-        )
+        self.send(encode_json(data), mode=mode)
 
     def close(self, code: int = WS_1000_NORMAL_CLOSURE) -> None:
         """Sends an 'websocket.disconnect' event.
@@ -205,6 +202,8 @@ class WebSocketTestSession:
             An arbitrary value
         """
         message = self.receive()
+
         if mode == "text":
-            return loads(cast("str", message.get("text", "")))
-        return loads(cast("bytes", message.get("bytes", b"")))
+            return decode_json(cast("str", message.get("text", "")))
+
+        return decode_json(cast("bytes", message.get("bytes", b"")))

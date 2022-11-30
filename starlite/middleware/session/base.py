@@ -16,7 +16,6 @@ from typing import (
     cast,
 )
 
-from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, constr
 
 from starlite.connection import ASGIConnection
@@ -24,7 +23,8 @@ from starlite.datastructures import Cookie, MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.types import Empty, Scopes
-from starlite.utils import default_serializer, get_serializer_from_scope
+from starlite.utils import get_serializer_from_scope
+from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send
@@ -143,8 +143,8 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         Returns:
             `data` serialized as bytes.
         """
-        serializer = (get_serializer_from_scope(scope) if scope else None) or default_serializer
-        return dumps(data, default=serializer, option=OPT_SERIALIZE_NUMPY)
+        serializer = get_serializer_from_scope(scope) if scope else None
+        return encode_json(data, serializer)
 
     @staticmethod
     def deserialize_data(data: Any) -> Dict[str, Any]:
@@ -156,7 +156,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         Returns:
             Deserialized data as a dictionary
         """
-        return cast("Dict[str, Any]", loads(data))
+        return cast("Dict[str, Any]", decode_json(data))
 
     @abstractmethod
     async def store_in_message(

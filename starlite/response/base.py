@@ -12,10 +12,7 @@ from typing import (
     Union,
 )
 
-from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-
-from starlite.datastructures.cookie import Cookie
-from starlite.datastructures.headers import ETag
+from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import (
@@ -24,7 +21,7 @@ from starlite.status_codes import (
     HTTP_304_NOT_MODIFIED,
 )
 from starlite.utils.helpers import get_enum_string_value
-from starlite.utils.serialization import default_serializer
+from starlite.utils.serialization import default_serializer, encode_json
 
 if TYPE_CHECKING:
 
@@ -199,7 +196,7 @@ class Response(Generic[T]):
 
     @staticmethod
     def serializer(value: Any) -> Any:
-        """Return a serializer for orjson to handle pydantic models.
+        """Return a serializer to handle non-natively supported types.
 
         Args:
             value: A value to serialize
@@ -222,7 +219,7 @@ class Response(Generic[T]):
         try:
             if self.media_type.startswith("text/"):
                 return content.encode(self.encoding) if content else b""  # type: ignore
-            return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+            return encode_json(content)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

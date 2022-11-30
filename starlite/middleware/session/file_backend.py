@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 from os import PathLike
 from typing import Callable, NamedTuple, Optional, Type
 
-import orjson
 from anyio import Path
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
+from starlite.utils.serialization import decode_json, encode_json
 
 
 class FileStorageMetadataWrapper(NamedTuple):
@@ -35,7 +35,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
     @staticmethod
     async def _load_from_path(path: Path) -> FileStorageMetadataWrapper:
-        data = orjson.loads(await path.read_bytes())
+        data = decode_json(await path.read_bytes())
         return FileStorageMetadataWrapper(**data)
 
     @staticmethod
@@ -77,7 +77,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
             expires=(datetime.utcnow().replace(tzinfo=None) + timedelta(seconds=self.config.max_age)).isoformat(),
             data=data.decode(),
         )
-        await path.write_bytes(orjson.dumps(wrapped_data._asdict()))
+        await path.write_bytes(encode_json(wrapped_data._asdict()))
 
     async def delete(self, session_id: str) -> None:
         """Delete the file associated with `session_id`.

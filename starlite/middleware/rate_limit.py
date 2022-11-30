@@ -14,7 +14,6 @@ from typing import (
     cast,
 )
 
-from orjson import dumps, loads
 from pydantic import BaseModel, validator
 
 from starlite.connection import Request
@@ -24,6 +23,7 @@ from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.types import Message, SyncOrAsyncUnion
 from starlite.utils import AsyncCallable
+from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from typing import Awaitable
@@ -163,7 +163,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         now = int(time())
         cached_string = await self.cache.get(key)
         if cached_string:
-            cache_object = CacheObject(**loads(cached_string))
+            cache_object = CacheObject(**decode_json(cached_string))
             if cache_object.reset <= now:
                 return CacheObject(history=[], reset=now + duration)
 
@@ -184,7 +184,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await self.cache.set(key, dumps(cache_object), expiration=DURATION_VALUES[self.unit])
+        await self.cache.set(key, encode_json(cache_object), expiration=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any]") -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.

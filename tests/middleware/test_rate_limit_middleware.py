@@ -3,7 +3,6 @@ from typing import Any
 
 import pytest
 from freezegun import freeze_time
-from orjson import dumps, loads
 
 from starlite import Request, get
 from starlite.middleware.rate_limit import (
@@ -14,6 +13,7 @@ from starlite.middleware.rate_limit import (
 )
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import create_test_client
+from starlite.utils.serialization import decode_json, encode_json
 
 
 @pytest.mark.parametrize("unit", ["minute", "second", "hour", "day"])
@@ -32,7 +32,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         cached_value = await cache.get(cache_key)
-        cache_object = CacheObject(**loads(cached_value))
+        cache_object = CacheObject(**decode_json(cached_value))
         assert len(cache_object.history) == 1
 
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
@@ -68,11 +68,11 @@ async def test_reset() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         cached_value = await cache.get(cache_key)
-        cache_object = CacheObject(**loads(cached_value))
+        cache_object = CacheObject(**decode_json(cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2
-        await cache.set(cache_key, dumps(cache_object))
+        await cache.set(cache_key, encode_json(cache_object))
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

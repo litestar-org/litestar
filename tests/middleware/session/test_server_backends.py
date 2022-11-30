@@ -4,7 +4,6 @@ from secrets import token_hex
 from typing import TYPE_CHECKING
 
 import anyio
-import orjson
 import pytest
 import sqlalchemy as sa
 
@@ -14,6 +13,7 @@ from starlite.middleware.session.sqlalchemy_backend import (
     AsyncSQLAlchemyBackend,
     SQLAlchemyBackend,
 )
+from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
     from starlite.middleware.session.base import ServerSideBackend
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 def generate_session_data() -> bytes:
-    return orjson.dumps({token_hex(): token_hex()})
+    return encode_json({token_hex(): token_hex()})
 
 
 @pytest.fixture
