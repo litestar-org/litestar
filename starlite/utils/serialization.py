@@ -1,4 +1,5 @@
 from dataclasses import asdict, is_dataclass
+from datetime import date, datetime, time
 from pathlib import PurePath, PurePosixPath
 from typing import Any, Callable, Optional, Union
 from uuid import UUID
@@ -27,6 +28,8 @@ def default_serializer(value: Any) -> Any:
         return asdict(value)
     if isinstance(value, UUID):
         return str(value)
+    if isinstance(value, (datetime, date, time)):
+        return value.isoformat()
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
