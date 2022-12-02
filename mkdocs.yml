@@ -37,6 +37,7 @@ theme:
 extra_css:
   - css/typo.css
   - css/color.css
+  - css/theme.css
 nav:
   - Intro: index.md
   - Usage:
@@ -68,11 +69,7 @@ nav:
           - usage/3-parameters/2-header-and-cookie-parameters.md
           - usage/3-parameters/3-the-parameter-function.md
           - usage/3-parameters/4-layered-parameters.md
-      - Request Data:
-          - usage/4-request-data/0-request-data.md
-          - usage/4-request-data/1-the-body-function.md
-          - usage/4-request-data/2-url-encoded-form-data.md
-          - usage/4-request-data/3-multipart-form-data.md
+      - usage/4-request-data.md
       - Responses:
           - usage/5-responses/0-responses-intro.md
           - usage/5-responses/1-media-type.md

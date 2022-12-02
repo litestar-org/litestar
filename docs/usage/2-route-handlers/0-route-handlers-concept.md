@@ -81,7 +81,7 @@ kwargs are inspected by Starlite and then injected into the request handler.
 The following sources can be accessed using annotated function kwargs:
 
 1. [path, query, header and cookie parameters](../3-parameters/3-the-parameter-function.md)
-2. [request data](../4-request-data/0-request-data.md)
+2. [request data](../4-request-data.md)
 3. [dependencies](../6-dependency-injection/0-dependency-injection-intro.md)
 
 Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
