@@ -84,6 +84,11 @@ To access a single file simply type `data` as `UploadFile`:
     --8<-- "examples/request_data/request_data_7.py"
     ```
 
+    !!! tip "Technical details"
+        `UploadFile.read` wraps [SpooledTemporaryFile][tempfile.SpooledTemporaryFile]
+        so it can be used asynchronously. Inside of a synchronous function we don't need
+        this wrapper, so we can use `SpooledTemporaryFile.read()` directly.
+
 
 ### Multiple files
 
