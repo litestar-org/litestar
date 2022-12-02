@@ -12,33 +12,30 @@ if TYPE_CHECKING:
 class UploadFile:
     """Representation of a file upload, modifying the pydantic schema."""
 
-    __slots__ = ("filename", "file", "content_type", "headers", "is_in_memory")
+    __slots__ = ("filename", "file", "content_type", "headers")
 
     def __init__(
         self,
         filename: str,
         content_type: str,
         headers: Optional[Dict[str, str]] = None,
-        spool_max_size: int = 1024 * 1024,
         file: Optional[BinaryIO] = None,
     ) -> None:
-        """Upload file container.
+        """Upload file in-memory container.
 
         Args:
             filename: The filename.
             content_type: Content type for the file.
             headers: Any attached headers.
-            spool_max_size: Max value to allocate for temporary files.
             file: Optional file data.
         """
         self.filename = filename
         self.content_type = content_type
-        self.file = file or SpooledTemporaryFile(max_size=spool_max_size)  # pylint: disable=consider-using-with
+        self.file = file
         self.headers = headers or {}
-        self.is_in_memory = not getattr(self.file, "_rolled", True)
 
-    async def write(self, data: bytes) -> None:
-        """Async proxy for data writing.
+    def write(self, data: bytes) -> None:
+        """Proxy for data writing.
 
         Args:
             data: Byte string to write.
@@ -46,13 +43,10 @@ class UploadFile:
         Returns:
             None
         """
-        if self.is_in_memory:
-            self.file.write(data)
-        else:
-            await run_sync(self.file.write, data)
+        self.file.write(data)
 
-    async def read(self, size: int = -1) -> bytes:
-        """Async proxy for data reading.
+    def read(self, size: int = -1) -> bytes:
+        """Proxy for data reading.
 
         Args:
             size: position from which to read.
@@ -60,11 +54,9 @@ class UploadFile:
         Returns:
             Byte string.
         """
-        if self.is_in_memory:
-            return self.file.read(size)
-        return await run_sync(self.file.read, size)
+        return self.file.read(size)
 
-    async def seek(self, offset: int) -> None:
+    def seek(self, offset: int) -> None:
         """Async proxy for file seek.
 
         Args:
@@ -73,21 +65,15 @@ class UploadFile:
         Returns:
             None.
         """
-        if self.is_in_memory:
-            self.file.seek(offset)
-        else:
-            await run_sync(self.file.seek, offset)
+        self.file.seek(offset)
 
-    async def close(self) -> None:
+    def close(self) -> None:
         """Async proxy for file close.
 
         Returns:
             None.
         """
-        if self.is_in_memory:
-            self.file.close()
-        else:
-            await run_sync(self.file.close)
+        self.file.close()
 
     def __repr__(self) -> str:
         return f"{self.filename} - {self.content_type}"

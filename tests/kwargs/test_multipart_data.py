@@ -30,7 +30,7 @@ async def form_handler(request: Request) -> Dict[str, Any]:
     output = {}
     for key, value in data.items():
         if isinstance(value, UploadFile):
-            content = await value.read()
+            content = value.read()
             output[key] = {
                 "filename": value.filename,
                 "content": content.decode(),
@@ -49,7 +49,7 @@ async def form_multi_item_handler(request: Request) -> Dict[str, Any]:
         if key not in output:
             output[key] = []
         if isinstance(value, UploadFile):
-            content = await value.read()
+            content = value.read()
             output[key].append(
                 {
                     "filename": value.filename,
@@ -68,7 +68,7 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
     output = {}
     for key, value in data.items():
         if isinstance(value, UploadFile):
-            content = await value.read()
+            content = value.read()
             output[key] = {
                 "filename": value.filename,
                 "content": content.decode(),
@@ -109,7 +109,7 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert await data.image.read() == b"data"
+        assert data.image.read() == b"data"
         assert data.tags == ["1", "2", "3"]
         assert data.profile == person
 
@@ -370,7 +370,7 @@ def test_postman_multipart_form_data() -> None:
 def test_image_upload() -> None:
     @post("/")
     async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        await data.read()
+        data.read()
 
     with open(join(dirname(realpath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
         route_handlers=[hello_world]
@@ -384,7 +384,7 @@ def test_optional_formdata() -> None:
     @post("/")
     async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         if data is not None:
-            await data.read()
+            data.read()
 
     with create_test_client(route_handlers=[hello_world]) as client:
 

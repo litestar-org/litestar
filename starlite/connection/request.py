@@ -12,7 +12,7 @@ from starlite.connection.base import (
 from starlite.datastructures.multi_dicts import FormMultiDict
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
-from starlite.multipart import MultipartParser, parse_options_header
+from starlite.multipart import parse_multipart_form, parse_content_header
 from starlite.parsers import parse_url_encoded_form_data
 from starlite.types import Empty
 
@@ -81,7 +81,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
         if self._content_type is Empty:
-            self._content_type = self.scope["_content_type"] = parse_options_header(self.headers.get("Content-Type"))  # type: ignore[typeddict-item]
+            self._content_type = self.scope["_content_type"] = parse_content_header(self.headers.get("Content-Type"))
         return cast("Tuple[str, Dict[str, str]]", self._content_type)
 
     async def json(self) -> Any:
@@ -144,8 +144,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if self._form is Empty:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
-                parser = MultipartParser(stream=self.stream(), message_boundary=options.get("boundary", ""))
-                self._form = self.scope["_form"] = form_values = await parser.parse()  # type: ignore[typeddict-item]
+                self._form = self.scope["_form"] = form_values = parse_multipart_form(
+                    body=await self.body(), boundary=options.get("boundary", "").encode()
+                )
                 return FormMultiDict(form_values)
             if content_type == RequestEncodingType.URL_ENCODED:
                 self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore

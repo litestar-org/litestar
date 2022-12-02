@@ -118,7 +118,7 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
 class FormMultiDict(ImmutableMultiDict[Any]):
     """MultiDict for form data."""
 
-    async def close(self) -> None:
+    def close(self) -> None:
         """Close all files in the multi-dict.
 
         Returns:
@@ -126,4 +126,4 @@ class FormMultiDict(ImmutableMultiDict[Any]):
         """
         for _, value in self.multi_items():
             if isinstance(value, UploadFile):
-                await value.close()
+                value.close()

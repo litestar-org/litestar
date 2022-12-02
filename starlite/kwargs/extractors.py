@@ -20,7 +20,7 @@ from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
-from starlite.multipart import MultipartParser
+from starlite.multipart import parse_multipart_form
 from starlite.parsers import (
     parse_headers,
     parse_query_string,
@@ -261,24 +261,17 @@ def create_multipart_extractor(
     async def extract_multipart(
         connection: "Request[Any, Any]",
     ) -> Any:
-        parser = MultipartParser(
-            stream=connection.stream(),
-            message_boundary=connection.content_type[-1].get("boundary", ""),
+        body = await connection.body()
+        connection.scope["_form"] = form_values = parse_multipart_form(
+            body=body, boundary=connection.content_type[-1].get("boundary", "").encode()
         )
-        connection.scope["_form"] = form_values = await parser.parse()  # type: ignore[typeddict-item]
 
         if field_shape is SHAPE_LIST:
-            return [v for k, v in form_values]
+            return list(form_values.values())
         if field_shape is SHAPE_SINGLETON and field_type is UploadFile and form_values:
-            return [v for k, v in form_values if isinstance(v, UploadFile)][0]
-        if form_values:
-            output: DefaultDict[str, Union[List[Any], Any]] = defaultdict(list)
-            for k, v in form_values:
-                output[k].append(v)
+            return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
 
-            return {k: v if len(v) > 1 else v[0] for k, v in output.items()}
-
-        return {} if not is_data_optional else None
+        return form_values if form_values or not is_data_optional else None
 
     return cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
