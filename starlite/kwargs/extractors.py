@@ -246,7 +246,7 @@ async def json_extractor(
 
 def create_multipart_extractor(
     field_shape: int, field_type: Any, is_data_optional: bool
-) -> Callable[["ASGIConnection"], Coroutine[None, None, Any]]:
+) -> Callable[["ASGIConnection[Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
@@ -281,12 +281,12 @@ def create_multipart_extractor(
 
         return {} if not is_data_optional else None
 
-    return extract_multipart
+    return cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
 
 def create_url_encoded_data_extractor(
     is_data_optional: bool,
-) -> Callable[["ASGIConnection"], Coroutine[None, None, Any]]:
+) -> Callable[["ASGIConnection[Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
@@ -299,12 +299,12 @@ def create_url_encoded_data_extractor(
     async def extract_url_encoded_extractor(
         connection: "Request[Any, Any]",
     ) -> Any:
-        connection.scope["_form"] = form_values = parse_url_encoded_form_data(
+        connection.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-item]
             await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
         )
         return form_values if form_values or not is_data_optional else None
 
-    return extract_url_encoded_extractor
+    return cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor)
 
 
 def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, Any], "ASGIConnection"], None]:
@@ -318,7 +318,7 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
     """
 
     if not kwargs_model.expected_form_data:
-        data_extractor = json_extractor
+        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
     else:
         media_type, model_field = kwargs_model.expected_form_data
 
@@ -333,8 +333,8 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
 
     def extractor(
         values: Dict[str, Any],
-        connection: "Request[Any, Any]",
+        connection: "ASGIConnection[Any, Any, Any]",
     ) -> None:
-        values["data"] = data_extractor(connection=connection)
+        values["data"] = data_extractor(connection)
 
     return extractor

@@ -37,10 +37,7 @@ from starlite.datastructures import Headers, UploadFile
 
 @dataclass
 class FieldEvent:
-    """
-    Container for multipart field message.
-
-    """
+    """Container for multipart field message."""
 
     __slots__ = (
         "name",
@@ -55,9 +52,7 @@ class FieldEvent:
 
 @dataclass
 class DataEvent:
-    """
-    Container for multipart data message.
-    """
+    """Container for multipart data message."""
 
     __slots__ = (
         "data",
@@ -225,9 +220,7 @@ OPTION_HEADER_PIECE_RE = re.compile(
 
 
 class ProcessingStage(Enum):
-    """
-    The stages in which the multipart parser state machine can be in.
-    """
+    """The stages in which the multipart parser state machine can be in."""
 
     PREAMBLE = 1
     PART = 2
@@ -237,6 +230,14 @@ class ProcessingStage(Enum):
 
 
 def load_field_data(current_field_data: bytes) -> Any:
+    """Load the given field data - try as JSON, if failing decode into string.
+
+    Args:
+        current_field_data: A byte string to load.
+
+    Returns:
+        An arbitrary value.
+    """
     try:
         return loads(current_field_data)
     except JSONDecodeError:
@@ -247,8 +248,9 @@ def load_field_data(current_field_data: bytes) -> Any:
 
 
 class MultipartParser:
-    """
-    Parser for multi-part form data. This class is a stateful decoder of a data stream.
+    """Parser for multi-part form data.
+
+    This class is a stateful decoder of a data stream.
     """
 
     __slots__ = (
@@ -297,7 +299,7 @@ class MultipartParser:
 
     async def parse(self) -> List[Tuple[str, Union[str, UploadFile]]]:
         """Parse the data stream into a tuple of key value pairs.
-        
+
         Returns:
             A tuple of parsed key value pairs.
         """
@@ -314,7 +316,7 @@ class MultipartParser:
                 if field_event.filename:
                     file_data = UploadFile(
                         filename=field_event.filename,
-                        headers=Headers(field_event.headers),
+                        headers=field_event.headers,
                         content_type=field_event.headers.get("content-type", ""),
                     )
                     await file_data.write(event.data)
@@ -383,7 +385,7 @@ class MultipartParser:
         return None
 
     def _process_data(self) -> Optional[DataEvent]:
-        match = self.boundary_re.search(self.buffer) if self.buffer.find(b"--" + self.message_boundary) != -1 else None
+        match = self.boundary_re.search(self.buffer)
         if match is not None:
             if match.group(1).startswith(b"--"):
                 self.processing_stage = ProcessingStage.EPILOGUE
