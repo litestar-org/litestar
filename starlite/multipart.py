@@ -1,5 +1,5 @@
-"""The contents of this file incorporate code adapted from
-https://github.com/pallets/werkzeug.
+"""The contents of this file incorporate code adapted from https://github.com/pallets/werkzeug.
+
 Copyright 2007 Pallets
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -27,19 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import AsyncGenerator, Dict, List, Optional, Tuple, Union
+from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple, Union
 from urllib.parse import unquote_to_bytes
 
-from orjson import loads, JSONDecodeError
+from orjson import JSONDecodeError, loads
 
 from starlite.datastructures import Headers, UploadFile
-
-
-@dataclass
-class PreambleEvent:
-    __slots__ = ("data",)
-
-    data: bytes
 
 
 @dataclass
@@ -47,23 +40,12 @@ class FieldEvent:
     __slots__ = (
         "name",
         "headers",
-    )
-
-    name: str
-    headers: Dict[str, str]
-
-
-@dataclass
-class FileEvent:
-    __slots__ = (
-        "name",
-        "headers",
         "filename",
     )
 
     name: str
-    filename: str
     headers: Dict[str, str]
+    filename: Optional[str]
 
 
 @dataclass
@@ -75,16 +57,6 @@ class DataEvent:
 
     data: bytes
     more_data: bool
-
-
-@dataclass
-class EpilogueEvent:
-    __slots__ = ("data",)
-
-    data: bytes
-
-
-MultipartMessageEvent = Union[PreambleEvent, FileEvent, FieldEvent, DataEvent, EpilogueEvent]
 
 
 def get_buffer_last_newline(buffer: bytearray) -> int:
@@ -255,6 +227,16 @@ class ProcessingStage(Enum):
     COMPLETE = 5
 
 
+def load_field_data(current_field_data: bytes) -> Any:
+    try:
+        return loads(current_field_data)
+    except JSONDecodeError:
+        try:
+            return current_field_data.decode()
+        except UnicodeDecodeError:
+            return current_field_data.decode("latin-1")
+
+
 class MultipartParser:
     __slots__ = (
         "boundary_re",
@@ -269,8 +251,8 @@ class MultipartParser:
 
     def __init__(
         self,
-        message_boundary: bytes,
-        headers: Dict[str, str],
+        message_boundary: str,
+        headers: Headers,
         stream: AsyncGenerator[bytes, None],
     ) -> None:
         """A decoder for multipart messages.
@@ -310,21 +292,23 @@ class MultipartParser:
         current_field_data = bytearray()
         file_data: Optional[UploadFile] = None
 
-        while event := self._next_event():
-            if event is None or isinstance(event, EpilogueEvent):
+        while self.processing_stage != ProcessingStage.COMPLETE:
+            if self.processing_stage == ProcessingStage.EPILOGUE:
+                self._process_epilogue()
                 break
-            if isinstance(event, FieldEvent):
-                current_field_name = event.name
+            if self.processing_stage == ProcessingStage.PREAMBLE:
+                self._process_preamble()
                 continue
-            if isinstance(event, FileEvent):
+            if self.processing_stage == ProcessingStage.PART and (event := self._process_part()):
                 current_field_name = event.name
-                file_data = UploadFile(
-                    filename=event.filename,
-                    content_type=event.headers.get("content-type", ""),
-                    headers=Headers(event.headers),
-                )
+                if event.filename is not None:
+                    file_data = UploadFile(
+                        filename=event.filename,
+                        content_type=event.headers.get("content-type", ""),
+                        headers=Headers(event.headers),
+                    )
                 continue
-            if isinstance(event, DataEvent):
+            if self.processing_stage == ProcessingStage.DATA and (event := self._process_data()):
                 if file_data:
                     await file_data.write(event.data)
                 else:
@@ -338,22 +322,11 @@ class MultipartParser:
                     output.append((current_field_name, file_data))
                     file_data = None
                 else:
-                    try:
-                        field_data = loads(current_field_data)
-                    except JSONDecodeError:
-                        try:
-                            field_data = current_field_data.decode()
-                        except UnicodeDecodeError:
-                            field_data = current_field_data.decode("latin-1")
-                    finally:
-                        output.append((current_field_name, field_data))
-
+                    output.append((current_field_name, load_field_data(current_field_data)))
                 current_field_data.clear()
-
         return output
 
-    def _process_preamble(self) -> Optional[PreambleEvent]:
-        event: Optional[PreambleEvent] = None
+    def _process_preamble(self) -> None:
         match = self.preamble_re.search(self.buffer, self.search_position)
         if match is not None:
             if match.group(1).startswith(b"--"):
@@ -361,17 +334,13 @@ class MultipartParser:
             else:
                 self.processing_stage = ProcessingStage.PART
 
-            data = bytes(self.buffer[: match.start()])
             del self.buffer[: match.end()]
-            event = PreambleEvent(data=data)
-        if event:
             self.search_position = 0
         else:
             self.search_position = max(0, len(self.buffer) - len(self.message_boundary) - SEARCH_BUFFER_LENGTH)
-        return event
 
-    def _process_part(self) -> Optional[Union[FileEvent, FieldEvent]]:
-        event: Optional[Union[FileEvent, FieldEvent]] = None
+    def _process_part(self) -> Optional[FieldEvent]:
+        event: Optional[FieldEvent] = None
         match = BLANK_LINE_RE.search(self.buffer, self.search_position)
         if match is not None:
             headers = parse_multipart_headers(self.buffer[: match.start()])
@@ -382,23 +351,15 @@ class MultipartParser:
                 raise ValueError("Missing Content-Disposition header")
 
             extra = parse_options_header(content_disposition_header)[-1]
-            if "filename" in extra:
-                event = FileEvent(
-                    filename=extra["filename"],
-                    headers=headers,
-                    name=extra.get("name", ""),
-                )
-            else:
-                event = FieldEvent(
-                    headers=headers,
-                    name=extra.get("name", ""),
-                )
-        if event:
             self.search_position = 0
             self.processing_stage = ProcessingStage.DATA
-        else:
-            self.search_position = max(0, len(self.buffer) - SEARCH_BUFFER_LENGTH)
-        return event
+            return FieldEvent(
+                headers=headers,
+                name=extra.get("name", ""),
+                filename=extra.get("filename", None),
+            )
+
+        self.search_position = max(0, len(self.buffer) - SEARCH_BUFFER_LENGTH)
 
     def _process_data(self) -> Optional[DataEvent]:
         match = self.boundary_re.search(self.buffer) if self.buffer.find(b"--" + self.message_boundary) != -1 else None
@@ -417,25 +378,6 @@ class MultipartParser:
             del self.buffer[:data_length]
         return DataEvent(data=data, more_data=more_data) if data or not more_data else None
 
-    def _process_epilogue(self) -> EpilogueEvent:
-        event = EpilogueEvent(data=bytes(self.buffer))  # noqa: R504
+    def _process_epilogue(self) -> None:
         del self.buffer[:]
         self.processing_stage = ProcessingStage.COMPLETE
-        return event
-
-    def _next_event(self) -> Optional[MultipartMessageEvent]:
-        """Processes the data according the parser's processing_stage. The processing_stage is updated according to the
-        parser's processing_stage machine logic. Thus calling this method updates the processing_stage as well.
-
-        Returns:
-            An optional event instance, depending on the processing_stage of the message processing.
-        """
-        if self.processing_stage == ProcessingStage.PREAMBLE:
-            return self._process_preamble()
-        if self.processing_stage == ProcessingStage.PART:
-            return self._process_part()
-        if self.processing_stage == ProcessingStage.DATA:
-            return self._process_data()
-        if self.processing_stage == ProcessingStage.EPILOGUE:
-            return self._process_epilogue()
-        return None
