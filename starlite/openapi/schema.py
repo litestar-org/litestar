@@ -205,8 +205,11 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
             schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name)
         )
     if field_type is UploadFile:
-        return Schema(
+        # the following is a hack -https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
+        # the format for OA 3.1 is type + contentMediaType, for 3.0.* is type + format, we do both.
+        return Schema(  # type: ignore
             type=OpenAPIType.STRING,
+            format="binary",
             contentMediaType="application/octet-stream",
         )
     # this is a failsafe to ensure we always return a value

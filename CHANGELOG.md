@@ -1,5 +1,13 @@
 # Changelog
 
+[1.43.1]
+
+- support legacy OpenAPI file upload format
+- fix cookie caching issues
+- honour documentation_only flag for cookies
+- change `StructLoggingConfing.processor` type hint to `List`
+- remove `SessionAuth` import
+
 [1.43.0]
 
 - add security module and JWT auth contrib
