@@ -13,7 +13,7 @@ from starlite.connection.base import (
 from starlite.datastructures.multi_dicts import FormMultiDict
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
-from starlite.multipart import MultipartFormDataParser, parse_options_header
+from starlite.multipart import MultipartParser, parse_options_header
 from starlite.types import Empty
 
 if TYPE_CHECKING:
@@ -144,8 +144,10 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if self._form is Empty:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
-                parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
-                form_values = await parser()
+                parser = MultipartParser(
+                    headers=self.headers, stream=self.stream(), message_boundary=options.get("boundary", "")
+                )
+                form_values = await parser.parse()
                 self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore[typeddict-item]
 
             elif content_type == RequestEncodingType.URL_ENCODED:

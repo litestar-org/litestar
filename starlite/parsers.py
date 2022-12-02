@@ -24,9 +24,6 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     """
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
-        if not isinstance(value, UploadFile):
-            with suppress(JSONDecodeError):
-                value = loads(value)
         existing_value = values_dict.get(key)
         if isinstance(existing_value, list):
             values_dict[key].append(value)

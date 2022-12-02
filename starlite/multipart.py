@@ -1,8 +1,36 @@
+"""The contents of this file incorporate code adapted from
+https://github.com/pallets/werkzeug.
+Copyright 2007 Pallets
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+1.  Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+2.  Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+3.  Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
 import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import AsyncGenerator, Dict, List, Optional, Tuple, Union
 from urllib.parse import unquote_to_bytes
+
+from orjson import loads, JSONDecodeError
 
 from starlite.datastructures import Headers, UploadFile
 
@@ -82,24 +110,22 @@ def get_buffer_last_newline(buffer: bytearray) -> int:
     return min(last_nl, last_cr)
 
 
-def parse_headers(data: bytes, charset: str = "utf-8") -> Dict[str, str]:
+def parse_multipart_headers(data: bytes) -> Dict[str, str]:
     """Given a message byte string, parse the headers component of it and return a dictionary of normalized key/value
     pairs.
 
     Args:
         data: A byte string.
-        charset: Encoding charset used
 
     Returns:
         A string / string dictionary of parsed values.
     """
     data = RFC2231_HEADER_CONTINUATION_RE.sub(b" ", data)
 
-    headers: Dict[str, str] = {}
-    for name, value in [line.decode(charset).split(":", 1) for line in data.splitlines() if line.strip() != b""]:
-        headers[name.strip().lower()] = value.strip()
-
-    return headers
+    return {
+        k.strip().lower(): v.strip()
+        for k, v in [line.decode().split(":", 1) for line in data.splitlines() if line.strip() != b""]
+    }
 
 
 def unquote_header_value(value: str, is_filename: bool = False) -> str:
@@ -146,6 +172,7 @@ def parse_options_header(value: Optional[str]) -> Tuple[str, Dict[str, str]]:
         rest = match.group(2)
         encoding: Optional[str]
         continued_encoding: Optional[str] = None
+
         while rest:
             optmatch = OPTION_HEADER_PIECE_RE.match(rest)
             if not optmatch:
@@ -187,7 +214,6 @@ BLANK_LINE_RE = re.compile(b"(?:\r\n\r\n|\r\r|\n\n)", re.MULTILINE)
 LINE_BREAK_RE = re.compile(LINE_BREAK, re.MULTILINE)
 RFC2231_HEADER_CONTINUATION_RE = re.compile(b"%s[ \t]" % LINE_BREAK, re.MULTILINE)
 SEARCH_BUFFER_LENGTH = 8
-
 OPTION_HEADER_START_MIME_RE = re.compile(r",\s*([^;,\s]+)([;,]\s*.+)?")
 OPTION_HEADER_PIECE_RE = re.compile(
     r"""
@@ -229,35 +255,37 @@ class ProcessingStage(Enum):
     COMPLETE = 5
 
 
-class MultipartDecoder:
+class MultipartParser:
     __slots__ = (
         "boundary_re",
         "buffer",
-        "charset",
-        "max_file_size",
+        "headers",
         "message_boundary",
         "preamble_re",
         "processing_stage",
         "search_position",
+        "stream",
     )
 
     def __init__(
-        self, message_boundary: Union[bytes, str], max_file_size: Optional[int] = None, charset: str = "utf-8"
+        self,
+        message_boundary: bytes,
+        headers: Dict[str, str],
+        stream: AsyncGenerator[bytes, None],
     ) -> None:
         """A decoder for multipart messages.
 
         Args:
             message_boundary: The message message_boundary as specified by [RFC7578][https://www.rfc-editor.org/rfc/rfc7578]
-            max_file_size: Maximum number of bytes allowed for the message.
+            headers: A mapping of headers.
+            stream: An async generator yielding a stream.
         """
         self.buffer = bytearray()
-        self.charset = charset
-        self.max_file_size = max_file_size
+        self.headers = headers
+        self.message_boundary = message_boundary.encode("latin-1")
         self.processing_stage = ProcessingStage.PREAMBLE
         self.search_position = 0
-        self.message_boundary = (
-            message_boundary if isinstance(message_boundary, bytes) else message_boundary.encode("latin-1")
-        )
+        self.stream = stream
 
         # The preamble must end with a message_boundary where the message_boundary is prefixed by a line break, RFC2046.
         self.preamble_re = re.compile(
@@ -272,11 +300,57 @@ class MultipartDecoder:
             re.MULTILINE,
         )
 
-    def __call__(self, data: bytes) -> None:
-        if data:
-            if self.max_file_size is not None and len(self.buffer) + len(data) > self.max_file_size:
-                raise RequestEntityTooLarge()
-            self.buffer.extend(data)
+    async def parse(self) -> List[Tuple[str, Union[str, UploadFile]]]:
+        async for chunk in self.stream:
+            self.buffer.extend(chunk)
+
+        output: List[Tuple[str, Union[str, UploadFile]]] = []
+
+        current_field_name = ""
+        current_field_data = bytearray()
+        file_data: Optional[UploadFile] = None
+
+        while event := self._next_event():
+            if event is None or isinstance(event, EpilogueEvent):
+                break
+            if isinstance(event, FieldEvent):
+                current_field_name = event.name
+                continue
+            if isinstance(event, FileEvent):
+                current_field_name = event.name
+                file_data = UploadFile(
+                    filename=event.filename,
+                    content_type=event.headers.get("content-type", ""),
+                    headers=Headers(event.headers),
+                )
+                continue
+            if isinstance(event, DataEvent):
+                if file_data:
+                    await file_data.write(event.data)
+                else:
+                    current_field_data.extend(event.data)
+
+                if event.more_data:
+                    continue
+
+                if file_data:
+                    await file_data.seek(0)
+                    output.append((current_field_name, file_data))
+                    file_data = None
+                else:
+                    try:
+                        field_data = loads(current_field_data)
+                    except JSONDecodeError:
+                        try:
+                            field_data = current_field_data.decode()
+                        except UnicodeDecodeError:
+                            field_data = current_field_data.decode("latin-1")
+                    finally:
+                        output.append((current_field_name, field_data))
+
+                current_field_data.clear()
+
+        return output
 
     def _process_preamble(self) -> Optional[PreambleEvent]:
         event: Optional[PreambleEvent] = None
@@ -300,14 +374,14 @@ class MultipartDecoder:
         event: Optional[Union[FileEvent, FieldEvent]] = None
         match = BLANK_LINE_RE.search(self.buffer, self.search_position)
         if match is not None:
-            headers = parse_headers(self.buffer[: match.start()], charset=self.charset)
+            headers = parse_multipart_headers(self.buffer[: match.start()])
             del self.buffer[: match.end()]
 
             content_disposition_header = headers.get("content-disposition")
             if not content_disposition_header:
                 raise ValueError("Missing Content-Disposition header")
 
-            _, extra = parse_options_header(content_disposition_header)
+            extra = parse_options_header(content_disposition_header)[-1]
             if "filename" in extra:
                 event = FileEvent(
                     filename=extra["filename"],
@@ -349,7 +423,7 @@ class MultipartDecoder:
         self.processing_stage = ProcessingStage.COMPLETE
         return event
 
-    def next_event(self) -> Optional[MultipartMessageEvent]:
+    def _next_event(self) -> Optional[MultipartMessageEvent]:
         """Processes the data according the parser's processing_stage. The processing_stage is updated according to the
         parser's processing_stage machine logic. Thus calling this method updates the processing_stage as well.
 
@@ -365,82 +439,3 @@ class MultipartDecoder:
         if self.processing_stage == ProcessingStage.EPILOGUE:
             return self._process_epilogue()
         return None
-
-
-class MultipartFormDataParser:
-    __slots__ = ("headers", "stream", "decoder", "charset")
-
-    def __init__(
-        self,
-        headers: Dict[str, str],
-        stream: AsyncGenerator[bytes, None],
-        max_file_size: Optional[int],
-        charset: str = "utf-8",
-    ) -> None:
-        """Parses multipart/formdata.
-
-        Args:
-            headers: A mapping of headers.
-            stream: An async generator yielding a stream.
-            max_file_size: Max file size allowed.
-            charset: Charset used to encode the data.
-        """
-        self.headers = {k.lower(): v for k, v in headers.items()}
-        _, options = parse_options_header(self.headers.get("content-type", ""))
-        self.stream = stream
-        self.charset = options.get("charset", charset)
-        self.decoder = MultipartDecoder(
-            message_boundary=options.get("boundary", ""), max_file_size=max_file_size, charset=charset
-        )
-
-    async def parse(self) -> List[Tuple[str, Union[str, UploadFile]]]:
-        """Parses a chunk into a list of items.
-
-        Returns:
-            A list of tuples, each containing the field name and its value - either a string or an upload file datum.
-        """
-        items: List[Tuple[str, Union[str, UploadFile]]] = []
-
-        field_name = ""
-        data = bytearray()
-        upload_file: Optional[UploadFile] = None
-        while True:
-            event = self.decoder.next_event()
-            if event is None or isinstance(event, EpilogueEvent):
-                break
-            if isinstance(event, FieldEvent):
-                field_name = event.name
-            elif isinstance(event, FileEvent):
-                field_name = event.name
-                upload_file = UploadFile(
-                    filename=event.filename,
-                    content_type=event.headers.get("content-type", ""),
-                    headers=Headers(event.headers),
-                )
-            elif isinstance(event, DataEvent):
-                if upload_file:
-                    await upload_file.write(event.data)
-                    if not event.more_data:
-                        await upload_file.seek(0)
-                        items.append((field_name, upload_file))
-                        upload_file = None
-                        data.clear()
-                else:
-                    data.extend(event.data)
-                    if not event.more_data:
-                        try:
-                            items.append((field_name, data.decode(self.charset)))
-                        except UnicodeDecodeError:
-                            items.append((field_name, data.decode("latin-1")))
-                        data.clear()
-        return items
-
-    async def __call__(self) -> List[Tuple[str, Union[str, UploadFile]]]:
-        """Asynchronously parses the stream data.
-
-        Returns:
-            A list of tuples, each containing the field name and its value - either a string or an upload file datum.
-        """
-        async for chunk in self.stream:
-            self.decoder(chunk)
-        return await self.parse()
