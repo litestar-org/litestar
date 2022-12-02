@@ -104,7 +104,7 @@ def extract_examples(
                     module_name=str(target_path.with_suffix("")).replace("/", "."),
                     name=target_path.stem,
                     code=test_file_path.read_text() if i else "",
-                    counter=i,
+                    counter=i + 1,
                 )
             )
             print(f"Created test stub in: {test_file_path}")  # noqa: T201
@@ -153,12 +153,14 @@ def cli() -> None:
     parser_check = subparsers.add_parser("check", help="check all doc files")
     parser_extract = subparsers.add_parser("extract", help="extract inline code examples from a file")
 
-    parser_check.add_argument("--line-length", default=15, help="maximum line length for inline code blocks")
+    parser_check.add_argument("--line-length", default=15, help="maximum line length for inline code blocks", type=int)
 
     parser_extract.add_argument("filename", help="source file name")
     parser_extract.add_argument("-n", "--name", help="name of the generated module without extension")
     parser_extract.add_argument("-d", "--directory", default="examples", help="target directory for extracted files")
-    parser_extract.add_argument("-l", "--line-length", default=15, help="maximum line length for inline code blocks")
+    parser_extract.add_argument(
+        "-l", "--line-length", default=15, help="maximum line length for inline code blocks", type=int
+    )
     parser_extract.add_argument("-t", "--test-stub", action="store_true", default=True, help="generate test stubs")
 
     parser_check.set_defaults(func=check_command)
