@@ -279,7 +279,9 @@ classmethod-decorators = [
 [tool.ruff.per-file-ignores]
 "__init__.py" = ['F401']
 "starlite/types/builtin_types.py" = ['F401']
-
+"tests/**/*.py" = ['S101','D101','D102','D103','D107','S105','S106','FBT001','N806']
+"examples/**/*.py" = ['S101','D101','D102','D103','D107','S105','S106','FBT001','N806']
+"tools/**/*.py" = ['S101','D101','D102','D103','D107','S105','S106','FBT001','N806']
 [tool.ruff.isort]
 known-first-party = ["starlite", 'tests']
 
