@@ -1,4 +1,3 @@
-from dataclasses import asdict, is_dataclass
 from datetime import date, datetime, time
 from pathlib import PurePath, PurePosixPath
 from typing import Any, Callable, Optional, Union
@@ -24,8 +23,6 @@ def default_serializer(value: Any) -> Any:
         return value.get_secret_value()
     if isinstance(value, (PurePath, PurePosixPath)):
         return str(value)
-    if is_dataclass(value):
-        return asdict(value)
     if isinstance(value, UUID):
         return str(value)
     if isinstance(value, (datetime, date, time)):
