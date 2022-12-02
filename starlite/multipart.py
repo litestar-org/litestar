@@ -267,7 +267,6 @@ class MultipartParser:
     def __init__(
         self,
         message_boundary: str,
-        headers: Headers,
         stream: AsyncGenerator[bytes, None],
     ) -> None:
         """Parse for multipart messages.
@@ -278,7 +277,6 @@ class MultipartParser:
             stream: An async generator yielding a stream.
         """
         self.buffer = bytearray()
-        self.headers = headers
         self.message_boundary = message_boundary.encode("latin-1")
         self.processing_stage = ProcessingStage.PREAMBLE
         self.search_position = 0

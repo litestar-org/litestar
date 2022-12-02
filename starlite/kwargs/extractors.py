@@ -262,7 +262,6 @@ def create_multipart_extractor(
         connection: "Request[Any, Any]",
     ) -> Any:
         parser = MultipartParser(
-            headers=connection.headers,
             stream=connection.stream(),
             message_boundary=connection.content_type[-1].get("boundary", ""),
         )

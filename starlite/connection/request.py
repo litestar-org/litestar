@@ -144,9 +144,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if self._form is Empty:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
-                parser = MultipartParser(
-                    headers=self.headers, stream=self.stream(), message_boundary=options.get("boundary", "")
-                )
+                parser = MultipartParser(stream=self.stream(), message_boundary=options.get("boundary", ""))
                 self._form = self.scope["_form"] = form_values = await parser.parse()  # type: ignore[typeddict-item]
                 return FormMultiDict(form_values)
             if content_type == RequestEncodingType.URL_ENCODED:
