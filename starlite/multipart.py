@@ -37,6 +37,11 @@ from starlite.datastructures import Headers, UploadFile
 
 @dataclass
 class FieldEvent:
+    """
+    Container for multipart field message.
+
+    """
+
     __slots__ = (
         "name",
         "headers",
@@ -50,6 +55,10 @@ class FieldEvent:
 
 @dataclass
 class DataEvent:
+    """
+    Container for multipart data message.
+    """
+
     __slots__ = (
         "data",
         "more_data",
@@ -60,11 +69,11 @@ class DataEvent:
 
 
 def get_buffer_last_newline(buffer: bytearray) -> int:
-    """Returns the position of the last new line break. Handles malformed new line formatting.
+    """Return the position of the last new line break. Handles malformed new line formatting.
 
     Notes:
         - This function makes use of rindex specifically because -1 is also used. Hence, using find cannot work.
-        -  Multipart line breaks MUST be CRLF (\r\n) by RFC-7578, except that many implementations break this and either
+        - Multipart line breaks MUST be CRLF by RFC-7578, except that many implementations break this and either
             use CR or LF alone.
 
     Returns:
@@ -101,7 +110,7 @@ def parse_multipart_headers(data: bytes) -> Dict[str, str]:
 
 
 def unquote_header_value(value: str, is_filename: bool = False) -> str:
-    """Unquotes a header value. This does not use the real unquoting but what browsers are actually using for quoting.
+    """Unquote a header value. This does not use the real unquoting but what browsers are actually using for quoting.
 
     Args:
         value: Value to unquoted.
@@ -118,7 +127,7 @@ def unquote_header_value(value: str, is_filename: bool = False) -> str:
 
 
 def parse_options_header(value: Optional[str]) -> Tuple[str, Dict[str, str]]:
-    """Parses a 'Content-Type' or 'Content-Disposition' header, returning the header value and any options as a
+    """Parse a 'Content-Type' or 'Content-Disposition' header, returning the header value and any options as a
     dictionary.
 
     Args:
@@ -177,10 +186,6 @@ def parse_options_header(value: Optional[str]) -> Tuple[str, Dict[str, str]]:
     return result[0] if result else "", {}
 
 
-class RequestEntityTooLarge(Exception):
-    pass
-
-
 LINE_BREAK = b"(?:\r\n|\n|\r)"
 BLANK_LINE_RE = re.compile(b"(?:\r\n\r\n|\r\r|\n\n)", re.MULTILINE)
 LINE_BREAK_RE = re.compile(LINE_BREAK, re.MULTILINE)
@@ -220,6 +225,10 @@ OPTION_HEADER_PIECE_RE = re.compile(
 
 
 class ProcessingStage(Enum):
+    """
+    The stages in which the multipart parser state machine can be in.
+    """
+
     PREAMBLE = 1
     PART = 2
     DATA = 3
@@ -238,6 +247,10 @@ def load_field_data(current_field_data: bytes) -> Any:
 
 
 class MultipartParser:
+    """
+    Parser for multi-part form data. This class is a stateful decoder of a data stream.
+    """
+
     __slots__ = (
         "boundary_re",
         "buffer",
@@ -255,7 +268,7 @@ class MultipartParser:
         headers: Headers,
         stream: AsyncGenerator[bytes, None],
     ) -> None:
-        """A decoder for multipart messages.
+        """Parse for multipart messages.
 
         Args:
             message_boundary: The message message_boundary as specified by [RFC7578][https://www.rfc-editor.org/rfc/rfc7578]
@@ -283,33 +296,27 @@ class MultipartParser:
         )
 
     async def parse(self) -> List[Tuple[str, Union[str, UploadFile]]]:
+        """Parse the data stream into a tuple of key value pairs.
+        
+        Returns:
+            A tuple of parsed key value pairs.
+        """
         async for chunk in self.stream:
             self.buffer.extend(chunk)
 
         output: List[Tuple[str, Union[str, UploadFile]]] = []
-
-        current_field_name = ""
+        field_event: Optional[FieldEvent] = None
         current_field_data = bytearray()
-        file_data: Optional[UploadFile] = None
 
         while self.processing_stage != ProcessingStage.COMPLETE:
-            if self.processing_stage == ProcessingStage.EPILOGUE:
-                self._process_epilogue()
-                break
-            if self.processing_stage == ProcessingStage.PREAMBLE:
-                self._process_preamble()
-                continue
-            if self.processing_stage == ProcessingStage.PART and (event := self._process_part()):
-                current_field_name = event.name
-                if event.filename is not None:
+            if field_event and (event := self._process_data()):
+                file_data: Optional[UploadFile] = None
+                if field_event.filename:
                     file_data = UploadFile(
-                        filename=event.filename,
-                        content_type=event.headers.get("content-type", ""),
-                        headers=Headers(event.headers),
+                        filename=field_event.filename,
+                        headers=Headers(field_event.headers),
+                        content_type=field_event.headers.get("content-type", ""),
                     )
-                continue
-            if self.processing_stage == ProcessingStage.DATA and (event := self._process_data()):
-                if file_data:
                     await file_data.write(event.data)
                 else:
                     current_field_data.extend(event.data)
@@ -319,11 +326,23 @@ class MultipartParser:
 
                 if file_data:
                     await file_data.seek(0)
-                    output.append((current_field_name, file_data))
-                    file_data = None
+                    output.append((field_event.name, file_data))
                 else:
-                    output.append((current_field_name, load_field_data(current_field_data)))
+                    output.append((field_event.name, load_field_data(current_field_data)))
+
+                field_event = None
                 current_field_data.clear()
+
+            if self.processing_stage == ProcessingStage.PART:
+                field_event = self._process_part()
+                continue
+            if self.processing_stage == ProcessingStage.PREAMBLE:
+                self._process_preamble()
+                continue
+            if self.processing_stage == ProcessingStage.EPILOGUE:
+                self._process_epilogue()
+                break
+
         return output
 
     def _process_preamble(self) -> None:
@@ -336,11 +355,12 @@ class MultipartParser:
 
             del self.buffer[: match.end()]
             self.search_position = 0
+        elif search_position := max(0, len(self.buffer) - len(self.message_boundary) - SEARCH_BUFFER_LENGTH):
+            self.search_position = search_position
         else:
-            self.search_position = max(0, len(self.buffer) - len(self.message_boundary) - SEARCH_BUFFER_LENGTH)
+            self.processing_stage = ProcessingStage.EPILOGUE
 
     def _process_part(self) -> Optional[FieldEvent]:
-        event: Optional[FieldEvent] = None
         match = BLANK_LINE_RE.search(self.buffer, self.search_position)
         if match is not None:
             headers = parse_multipart_headers(self.buffer[: match.start()])
@@ -360,6 +380,7 @@ class MultipartParser:
             )
 
         self.search_position = max(0, len(self.buffer) - SEARCH_BUFFER_LENGTH)
+        return None
 
     def _process_data(self) -> Optional[DataEvent]:
         match = self.boundary_re.search(self.buffer) if self.buffer.find(b"--" + self.message_boundary) != -1 else None

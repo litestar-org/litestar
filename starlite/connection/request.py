@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cast
-from urllib.parse import parse_qsl
 
 from orjson import loads
 
@@ -14,6 +13,7 @@ from starlite.datastructures.multi_dicts import FormMultiDict
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
 from starlite.multipart import MultipartParser, parse_options_header
+from starlite.parsers import parse_url_encoded_form_data
 from starlite.types import Empty
 
 if TYPE_CHECKING:
@@ -147,16 +147,15 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
                 parser = MultipartParser(
                     headers=self.headers, stream=self.stream(), message_boundary=options.get("boundary", "")
                 )
-                form_values = await parser.parse()
-                self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore[typeddict-item]
-
-            elif content_type == RequestEncodingType.URL_ENCODED:
-                self._form = self.scope["_form"] = FormMultiDict(  # type: ignore[typeddict-item]
-                    parse_qsl((await self.body()).decode(options.get("charset", "latin-1")))
+                self._form = self.scope["_form"] = form_values = await parser.parse()  # type: ignore[typeddict-item]
+                return FormMultiDict(form_values)
+            if content_type == RequestEncodingType.URL_ENCODED:
+                self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(
+                    await self.body(), encoding=options.get("charset", "utf-8")
                 )
-            else:
-                self._form = self.scope["_form"] = FormMultiDict()  # type: ignore[typeddict-item]
-        return cast("FormMultiDict", self._form)
+                return FormMultiDict(form_values)
+            return FormMultiDict()
+        return FormMultiDict(self._form)
 
     async def send_push_promise(self, path: str) -> None:
         """Send a push promise.

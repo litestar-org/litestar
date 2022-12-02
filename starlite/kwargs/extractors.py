@@ -4,6 +4,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
+    Coroutine,
     DefaultDict,
     Dict,
     List,
@@ -14,9 +15,17 @@ from typing import (
     cast,
 )
 
-from starlite.enums import ParamType
+from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
+
+from starlite.datastructures.upload_file import UploadFile
+from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
-from starlite.parsers import parse_form_data, parse_headers, parse_query_string
+from starlite.multipart import MultipartParser
+from starlite.parsers import (
+    parse_headers,
+    parse_query_string,
+    parse_url_encoded_form_data,
+)
 from starlite.types import Empty
 
 if TYPE_CHECKING:
@@ -218,6 +227,86 @@ def socket_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> No
     values["socket"] = connection
 
 
+async def json_extractor(
+    connection: "Request[Any, Any]",
+) -> Any:
+    """Extract the data from request and insert it into the kwargs injected to the handler.
+
+    Notes:
+        - this extractor sets a Coroutine as the value in the kwargs. These are resolved at a later stage.
+
+    Args:
+        connection: The ASGI connection instance.
+
+    Returns:
+        None
+    """
+    return await connection.json()
+
+
+def create_multipart_extractor(
+    field_shape: int, field_type: Any, is_data_optional: bool
+) -> Callable[["ASGIConnection"], Coroutine[None, None, Any]]:
+    """Create a multipart form-data extractor.
+
+    Args:
+        field_shape: The pydantic field shape.
+        field_type: A type for the field.
+        is_data_optional: Boolean dictating whether the field is optional.
+
+    Returns:
+        An extractor function.
+    """
+
+    async def extract_multipart(
+        connection: "Request[Any, Any]",
+    ) -> Any:
+        parser = MultipartParser(
+            headers=connection.headers,
+            stream=connection.stream(),
+            message_boundary=connection.content_type[-1].get("boundary", ""),
+        )
+        connection.scope["_form"] = form_values = await parser.parse()  # type: ignore[typeddict-item]
+
+        if field_shape is SHAPE_LIST:
+            return [v for k, v in form_values]
+        if field_shape is SHAPE_SINGLETON and field_type is UploadFile and form_values:
+            return [v for k, v in form_values if isinstance(v, UploadFile)][0]
+        if form_values:
+            output: DefaultDict[str, Union[List[Any], Any]] = defaultdict(list)
+            for k, v in form_values:
+                output[k].append(v)
+
+            return {k: v if len(v) > 1 else v[0] for k, v in output.items()}
+
+        return {} if not is_data_optional else None
+
+    return extract_multipart
+
+
+def create_url_encoded_data_extractor(
+    is_data_optional: bool,
+) -> Callable[["ASGIConnection"], Coroutine[None, None, Any]]:
+    """Create extractor for url encoded form-data.
+
+    Args:
+        is_data_optional: Boolean dictating whether the field is optional.
+
+    Returns:
+        An extractor function.
+    """
+
+    async def extract_url_encoded_extractor(
+        connection: "Request[Any, Any]",
+    ) -> Any:
+        connection.scope["_form"] = form_values = parse_url_encoded_form_data(
+            await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
+        )
+        return form_values if form_values or not is_data_optional else None
+
+    return extract_url_encoded_extractor
+
+
 def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, Any], "ASGIConnection"], None]:
     """Create an extractor for a request's body.
 
@@ -228,30 +317,24 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
         An extractor for the request's body.
     """
 
-    async def _get_data_from_request(connection: "Request") -> Any:
-        if kwargs_model.expected_form_data:
-            media_type, model_field = kwargs_model.expected_form_data
-            form_data = await connection.form()
-            parsed_form = parse_form_data(media_type=media_type, form_data=form_data, field=model_field)
-            return parsed_form if parsed_form or not kwargs_model.is_data_optional else None
-        return await connection.json()
+    if not kwargs_model.expected_form_data:
+        data_extractor = json_extractor
+    else:
+        media_type, model_field = kwargs_model.expected_form_data
 
-    def data_extractor(
+        if media_type == RequestEncodingType.MULTI_PART:
+            data_extractor = create_multipart_extractor(
+                field_shape=model_field.shape,
+                field_type=model_field.type_,
+                is_data_optional=kwargs_model.is_data_optional,
+            )
+        else:
+            data_extractor = create_url_encoded_data_extractor(is_data_optional=kwargs_model.is_data_optional)
+
+    def extractor(
         values: Dict[str, Any],
-        connection: "ASGIConnection",
+        connection: "Request[Any, Any]",
     ) -> None:
-        """Extract the data from request and insert it into the kwargs injected to the handler.
+        values["data"] = data_extractor(connection=connection)
 
-        Notes:
-            - this extractor sets a Coroutine as the value in the kwargs. These are resolved at a later stage.
-
-        Args:
-            connection: The ASGI connection instance.
-            values: The kwargs that are extracted from the connection and will be injected into the handler.
-
-        Returns:
-            None
-        """
-        values["data"] = _get_data_from_request(cast("Request", connection))
-
-    return data_extractor
+    return extractor
