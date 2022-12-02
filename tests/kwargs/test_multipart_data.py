@@ -6,9 +6,9 @@ from typing import Any, Dict, List, Optional, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
-from starlite_multipart.datastructures import UploadFile
 
 from starlite import Body, Request, RequestEncodingType, post
+from starlite.datastructures import UploadFile
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory

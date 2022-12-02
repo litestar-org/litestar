@@ -2,9 +2,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cas
 from urllib.parse import parse_qsl
 
 from orjson import loads
-from starlite_multipart import MultipartFormDataParser
-from starlite_multipart import UploadFile as MultipartUploadFile
-from starlite_multipart import parse_options_header
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -14,13 +11,12 @@ from starlite.connection.base import (
     empty_send,
 )
 from starlite.datastructures.multi_dicts import FormMultiDict
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
+from starlite.multipart import MultipartFormDataParser, parse_options_header
 from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from typing import BinaryIO
 
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
@@ -150,20 +146,6 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             if content_type == RequestEncodingType.MULTI_PART:
                 parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
                 form_values = await parser()
-                form_values = [
-                    (
-                        k,
-                        UploadFile(
-                            filename=v.filename,
-                            content_type=v.content_type,
-                            headers=v.headers,
-                            file=cast("BinaryIO", v.file),
-                        )
-                        if isinstance(v, MultipartUploadFile)
-                        else v,
-                    )
-                    for k, v in form_values
-                ]
                 self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore[typeddict-item]
 
             elif content_type == RequestEncodingType.URL_ENCODED:

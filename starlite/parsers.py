@@ -6,7 +6,6 @@ from urllib.parse import parse_qsl, unquote
 
 from orjson import JSONDecodeError, loads
 from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
-from starlite_multipart.datastructures import UploadFile as MultipartUploadFile
 
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import RequestEncodingType
@@ -17,9 +16,6 @@ if TYPE_CHECKING:
 
     from starlite.datastructures.multi_dicts import FormMultiDict
 
-_true_values = {"True", "true"}
-_false_values = {"False", "false"}
-
 
 def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict", field: "ModelField") -> Any:
     """Transform the multidict into a regular dict, try to load json on all non-file values.
@@ -28,7 +24,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     """
     values_dict: Dict[str, Any] = {}
     for key, value in form_data.multi_items():
-        if not isinstance(value, MultipartUploadFile):
+        if not isinstance(value, UploadFile):
             with suppress(JSONDecodeError):
                 value = loads(value)
         existing_value = values_dict.get(key)
@@ -41,7 +37,7 @@ def parse_form_data(media_type: "RequestEncodingType", form_data: "FormMultiDict
     if media_type == RequestEncodingType.MULTI_PART:
         if field.shape is SHAPE_LIST:
             return list(values_dict.values())
-        if field.shape is SHAPE_SINGLETON and field.type_ in (UploadFile, MultipartUploadFile) and values_dict:
+        if field.shape is SHAPE_SINGLETON and field.type_ is UploadFile and values_dict:
             return list(values_dict.values())[0]
     return values_dict
 
