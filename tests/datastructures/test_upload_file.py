@@ -17,5 +17,10 @@ async def test_upload_file_methods() -> None:
     await upload_file.seek(5)  # type: ignore[unreachable]
     assert await upload_file.read() == b"extra_data"
 
+    await upload_file.write(b"writing_async_extra_data")
+
+    await upload_file.seek(15)
+    assert await upload_file.read() == b"writing_async_extra_data"
+
     await upload_file.close()
     assert upload_file.file.closed
