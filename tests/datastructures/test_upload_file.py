@@ -10,6 +10,7 @@ async def test_upload_file_methods() -> None:
     data = urandom(5)
     upload_file = UploadFile(content_type="application/text", filename="tmp.txt", max_spool_size=10, file_data=data)
 
+    assert repr(upload_file) == "tmp.txt - application/text"
     assert not upload_file.rolled_to_disk
 
     assert await upload_file.read() == data
