@@ -6,5 +6,6 @@
             - __init__
             - close
             - read
+            - rolled_to_disk
             - seek
             - write
