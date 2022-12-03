@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from inspect import Traceback
 
     from starlite.signature import SignatureModel
-    from starlite.types import AnyCallable, AnyGenerator, ASGIApp, Receive, Scope, Send
+    from starlite.types import AnyCallable, AnyGenerator
 
 
 class Provide:
@@ -154,22 +154,6 @@ class DependencyCleanupGroup:
         async with create_task_group() as task_group:
             for generator in self._generators:
                 task_group.start_soon(self._wrap_next(generator))
-
-    def wrap_asgi(self, app: "ASGIApp") -> "ASGIApp":
-        """Wrap an ASGI callable such that all generators will be called before it.
-
-        Args:
-            app: An ASGI callable
-
-        Returns:
-            An ASGI callable
-        """
-
-        async def wrapped(scope: "Scope", receive: "Receive", send: "Send") -> None:
-            await self.cleanup()
-            await app(scope, receive, send)
-
-        return wrapped
 
     async def __aenter__(self) -> None:
         """Support the async contextmanager protocol to allow for easier catching and throwing of exceptions into the
