@@ -54,8 +54,10 @@ def async_generator_dependency(
     return dependency
 
 
+@pytest.mark.parametrize("cache", [False, True])
 @pytest.mark.parametrize("dependency_fixture", ["generator_dependency", "async_generator_dependency"])
 def test_generator_dependency(
+    cache: bool,
     request: FixtureRequest,
     dependency_fixture: str,
     cleanup_mock: MagicMock,
@@ -64,7 +66,7 @@ def test_generator_dependency(
 ) -> None:
     dependency = request.getfixturevalue(dependency_fixture)
 
-    @get("/", dependencies={"dep": Provide(dependency)})
+    @get("/", dependencies={"dep": Provide(dependency)}, cache=cache)
     def handler(dep: str) -> Dict[str, str]:
         return {"value": dep}
 
