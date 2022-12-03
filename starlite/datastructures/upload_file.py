@@ -21,6 +21,7 @@ class UploadFile:
         filename: str,
         file_data: Optional[bytes] = None,
         headers: Optional[Dict[str, str]] = None,
+        max_spool_size: int = ONE_MEGA_BYTE,
     ) -> None:
         """Upload file in-memory container.
 
@@ -29,10 +30,11 @@ class UploadFile:
             filename: The filename.
             file_data: File data.
             headers: Any attached headers.
+            max_spool_size: The size above which the temporary file will be rolled to disk.
         """
         self.filename = filename
         self.content_type = content_type
-        self.file = SpooledTemporaryFile(max_size=ONE_MEGA_BYTE)  # pylint: disable=consider-using-with
+        self.file = SpooledTemporaryFile(max_size=max_spool_size)  # pylint: disable=consider-using-with
         self.headers = headers or {}
 
         if file_data:

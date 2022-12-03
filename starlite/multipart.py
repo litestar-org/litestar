@@ -100,8 +100,8 @@ def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
                     field_name = form_parameters.get("name")
                     file_name = form_parameters.get("filename")
 
-                    if file_name is None and form_parameters.get("filename*"):
-                        encoding, _, value = decode_rfc2231(form_parameters["filename*"])
+                    if file_name is None and (filename_with_asterisk := form_parameters.get("filename*")):
+                        encoding, _, value = decode_rfc2231(filename_with_asterisk)
                         file_name = unquote(value, encoding=encoding or content_charset)
 
                 elif form_header_field == "content-type":
