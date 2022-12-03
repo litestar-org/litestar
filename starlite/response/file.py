@@ -15,6 +15,7 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
+from starlite.constants import ONE_MEGA_BYTE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
@@ -36,8 +37,6 @@ if TYPE_CHECKING:
         Send,
     )
     from starlite.types.file_types import FileInfo, FileSystemProtocol
-
-ONE_MEGA_BYTE: int = 1024 * 1024
 
 
 async def async_file_iterator(

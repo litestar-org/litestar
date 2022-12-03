@@ -1,8 +1,9 @@
 # flake8: noqa
+from collections import defaultdict
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, DefaultDict, Dict, List, Optional, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
@@ -30,7 +31,7 @@ async def form_handler(request: Request) -> Dict[str, Any]:
     output = {}
     for key, value in data.items():
         if isinstance(value, UploadFile):
-            content = value.read()
+            content = await value.read()
             output[key] = {
                 "filename": value.filename,
                 "content": content.decode(),
@@ -42,23 +43,22 @@ async def form_handler(request: Request) -> Dict[str, Any]:
 
 
 @post("/form")
-async def form_multi_item_handler(request: Request) -> Dict[str, Any]:
+async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
     data = await request.form()
-    output: Dict[str, list] = {}
+    output: DefaultDict[str, list] = defaultdict(list)
     for key, value in data.multi_items():
-        if key not in output:
-            output[key] = []
-        if isinstance(value, UploadFile):
-            content = value.read()
-            output[key].append(
-                {
-                    "filename": value.filename,
-                    "content": content.decode(),
-                    "content_type": value.content_type,
-                }
-            )
-        else:
-            output[key].append(value)
+        for v in value:
+            if isinstance(v, UploadFile):
+                content = await v.read()
+                output[key].append(
+                    {
+                        "filename": v.filename,
+                        "content": content.decode(),
+                        "content_type": v.content_type,
+                    }
+                )
+            else:
+                output[key].append(v)
     return output
 
 
@@ -68,7 +68,7 @@ async def form_with_headers_handler(request: Request) -> Dict[str, Any]:
     output = {}
     for key, value in data.items():
         if isinstance(value, UploadFile):
-            content = value.read()
+            content = await value.read()
             output[key] = {
                 "filename": value.filename,
                 "content": content.decode(),
@@ -109,7 +109,8 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert data.image.read() == b"data"
+        file_data = await data.image.read()
+        assert file_data == b"data"
         assert data.tags == ["1", "2", "3"]
         assert data.profile == person
 
@@ -188,11 +189,7 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "filename": "test2.txt",
                 "content": "<file2 content>",
                 "content_type": "text/plain",
-                "headers": [
-                    ["content-disposition", 'form-data; name="test2"; filename="test2.txt"'],
-                    ["x-custom", "f2"],
-                    ["content-type", "text/plain"],
-                ],
+                "headers": [["content-disposition", "form-data"], ["x-custom", "f2"], ["content-type", "text/plain"]],
             },
         }
 
@@ -370,7 +367,7 @@ def test_postman_multipart_form_data() -> None:
 def test_image_upload() -> None:
     @post("/")
     async def hello_world(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        data.read()
+        await data.read()
 
     with open(join(dirname(realpath(__file__)), "flower.jpeg"), "rb") as f, create_test_client(
         route_handlers=[hello_world]
@@ -384,7 +381,7 @@ def test_optional_formdata() -> None:
     @post("/")
     async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         if data is not None:
-            data.read()
+            await data.read()
 
     with create_test_client(route_handlers=[hello_world]) as client:
 

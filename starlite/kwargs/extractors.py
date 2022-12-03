@@ -261,9 +261,12 @@ def create_multipart_extractor(
     async def extract_multipart(
         connection: "Request[Any, Any]",
     ) -> Any:
-        body = await connection.body()
-        connection.scope["_form"] = form_values = parse_multipart_form(
-            body=body, boundary=connection.content_type[-1].get("boundary", "").encode()
+        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
+            connection.scope["_form"]  # type: ignore[typeddict-item]
+            if "_form" in connection.scope
+            else parse_multipart_form(
+                body=await connection.body(), boundary=connection.content_type[-1].get("boundary", "").encode()
+            )
         )
 
         if field_shape is SHAPE_LIST:
@@ -291,8 +294,12 @@ def create_url_encoded_data_extractor(
     async def extract_url_encoded_extractor(
         connection: "Request[Any, Any]",
     ) -> Any:
-        connection.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-item]
-            await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
+        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
+            connection.scope["_form"]  # type: ignore[typeddict-item]
+            if "_form" in connection.scope
+            else parse_url_encoded_form_data(
+                await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
+            )
         )
         return form_values if form_values or not is_data_optional else None
 

@@ -1,8 +1,9 @@
 from tempfile import SpooledTemporaryFile
-from typing import TYPE_CHECKING, Any, BinaryIO, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from anyio.to_thread import run_sync
 
+from starlite.constants import ONE_MEGA_BYTE
 from starlite.openapi.enums import OpenAPIType
 
 if TYPE_CHECKING:
@@ -16,25 +17,38 @@ class UploadFile:
 
     def __init__(
         self,
-        filename: str,
         content_type: str,
+        filename: str,
+        file_data: Optional[bytes] = None,
         headers: Optional[Dict[str, str]] = None,
-        file: Optional[BinaryIO] = None,
     ) -> None:
         """Upload file in-memory container.
 
         Args:
-            filename: The filename.
             content_type: Content type for the file.
+            filename: The filename.
+            file_data: File data.
             headers: Any attached headers.
-            file: Optional file data.
         """
         self.filename = filename
         self.content_type = content_type
-        self.file = file
+        self.file = SpooledTemporaryFile(max_size=ONE_MEGA_BYTE)  # pylint: disable=consider-using-with
         self.headers = headers or {}
 
-    def write(self, data: bytes) -> None:
+        if file_data:
+            self.file.write(file_data)
+            self.file.seek(0)
+
+    @property
+    def rolled_to_disk(self) -> bool:
+        """Determine whether the spooled file exceeded the rolled-to-disk threshold and is no longer in memory.
+
+        Returns:
+            A boolean flag
+        """
+        return getattr(self.file, "_rolled", False)
+
+    async def write(self, data: bytes) -> int:
         """Proxy for data writing.
 
         Args:
@@ -43,9 +57,11 @@ class UploadFile:
         Returns:
             None
         """
-        self.file.write(data)
+        if self.rolled_to_disk:
+            return await run_sync(self.file.write, data)
+        return self.file.write(data)
 
-    def read(self, size: int = -1) -> bytes:
+    async def read(self, size: int = -1) -> bytes:
         """Proxy for data reading.
 
         Args:
@@ -54,9 +70,11 @@ class UploadFile:
         Returns:
             Byte string.
         """
+        if self.rolled_to_disk:
+            return await run_sync(self.file.read, size)
         return self.file.read(size)
 
-    def seek(self, offset: int) -> None:
+    async def seek(self, offset: int) -> int:
         """Async proxy for file seek.
 
         Args:
@@ -65,15 +83,19 @@ class UploadFile:
         Returns:
             None.
         """
-        self.file.seek(offset)
+        if self.rolled_to_disk:
+            return await run_sync(self.file.seek, offset)
+        return self.file.seek(offset)
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Async proxy for file close.
 
         Returns:
             None.
         """
-        self.file.close()
+        if self.rolled_to_disk:
+            return await run_sync(self.file.close)
+        return self.file.close()
 
     def __repr__(self) -> str:
         return f"{self.filename} - {self.content_type}"
