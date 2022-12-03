@@ -163,10 +163,11 @@ class HTTPRoute(BaseRoute):
                 plugins=request.app.plugins,
                 request=request,
             )
-        if cleanup_group:
-            return cleanup_group.wrap_asgi(response)
 
-        return response
+        if cleanup_group:
+            await cleanup_group.cleanup()
+
+        return response  # noqa: R504
 
     @staticmethod
     async def _get_response_data(
