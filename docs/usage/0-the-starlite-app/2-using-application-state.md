@@ -33,7 +33,7 @@ Starlite constructor:
 
 !!! note
     The `initial_state` can be a dictionary, an instance of [`ImmutableState`][starlite.datastructures.ImmutableState]
-    or [`tate`][starlite.datastructures.ImmutableState], or a list of tuples containing key/value pairs.
+    or [`State`][starlite.datastructures.State], or a list of tuples containing key/value pairs.
 
 !!! important
     Any value passed to `initial_state` will be deep copied - to prevent mutation from outside the application context.
