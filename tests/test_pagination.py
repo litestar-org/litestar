@@ -1,27 +1,28 @@
 from itertools import islice
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
-from starlite import create_test_client, get
-from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.pagination import (
+from starlite import (
     AbstractCursorPaginator,
     AbstractLimitOffsetPaginator,
     CursorPagination,
     LimitOffsetPagination,
+    create_test_client,
+    get,
 )
+from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.status_codes import HTTP_200_OK
 from tests import Person, PersonFactory
 
 
-class TestIndexOffsetPaginator(AbstractLimitOffsetPaginator[Any]):
-    def __init__(self, data: List[Any]):
+class TestIndexOffsetPaginator(AbstractLimitOffsetPaginator[Person]):
+    def __init__(self, data: List[Person]):
 
         self.data = data
 
-    def get_total(self) -> int:
+    async def get_total(self) -> int:
         return len(self.data)
 
-    def get_items(self, limit: int, offset: int) -> List[Any]:
+    async def get_items(self, limit: int, offset: int) -> List[Person]:
         return list(islice(islice(self.data, offset, None), limit))
 
 
@@ -71,7 +72,7 @@ class TestCursorPagination(AbstractCursorPaginator[str, Person]):
     def __init__(self, data: List[Person]):
         self.data = data
 
-    def get_items(self, cursor: Optional[str], results_per_page: int) -> "Tuple[List[Person], Optional[str]]":
+    async def get_items(self, cursor: Optional[str], results_per_page: int) -> "Tuple[List[Person], Optional[str]]":
         results = self.data[:results_per_page]
         return results, results[-1].id
 

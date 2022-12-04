@@ -23,6 +23,7 @@ from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
+from starlite.datastructures.pagination import CursorPagination, LimitOffsetPagination
 from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
@@ -32,7 +33,6 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
-from starlite.pagination import CursorPagination, LimitOffsetPagination
 from starlite.utils import (
     is_dataclass_class_or_instance_typeguard,
     is_typeddict_typeguard,
