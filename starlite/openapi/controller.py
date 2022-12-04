@@ -139,10 +139,13 @@ class OpenAPIController(Controller):
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with an OpenAPIConfig")
 
-        request_path = set(filter(None, request.url.path.split("/")))
+        asgi_root_path = set(filter(None, request.scope.get("root_path", "").split("/")))
+        full_request_path = set(filter(None, request.url.path.split("/")))
+        request_path = full_request_path.difference(asgi_root_path)
         root_path = set(filter(None, self.path.split("/")))
 
         config = request.app.openapi_config
+
         if request_path == root_path and config.root_schema_site in config.enabled_endpoints:
             return True
 
