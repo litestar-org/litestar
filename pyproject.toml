@@ -175,7 +175,8 @@ exclude_lines = [
     'if TYPE_CHECKING:',
     'except ImportError as e:',
     'except ImportError:',
-    '\.\.\.'
+    '\.\.\.',
+    'raise NotImplementedError'
 ]
 
 [tool.pytest.ini_options]
