@@ -21,7 +21,7 @@ class UploadFile:
         filename: str,
         file_data: Optional[bytes] = None,
         headers: Optional[Dict[str, str]] = None,
-        max_spool_size: int = ONE_MEGA_BYTE,
+        max_spool_size: int = ONE_MEGABYTE,
     ) -> None:
         """Upload file in-memory container.
 
