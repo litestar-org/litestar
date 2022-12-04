@@ -12,4 +12,4 @@ RESERVED_KWARGS = {"state", "headers", "cookies", "request", "socket", "data", "
 SCOPE_STATE_DEPENDENCY_CACHE = "dependency_cache"
 SCOPE_STATE_NAMESPACE = "__starlite__"
 SCOPE_STATE_RESPONSE_COMPRESSED = "response_compressed"
-ONE_MEGA_BYTE: int = 1024 * 1024
+ONE_MEGABYTE: int = 1024 * 1024
