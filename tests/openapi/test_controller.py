@@ -1,3 +1,7 @@
+from typing import List
+
+import pytest
+
 from starlite import OpenAPIConfig
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import MediaType
@@ -5,6 +9,8 @@ from starlite.openapi.controller import OpenAPIController
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
+
+root_paths: List[str] = ["", "/part1", "/part1/part2"]
 
 
 def test_default_redoc_cdn_urls() -> None:
@@ -117,29 +123,41 @@ def test_openapi_stoplight_elements_offline() -> None:
         assert OfflineOpenAPIController.stoplight_elements_js_url in response.text
 
 
-def test_openapi_root() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+@pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_root(root_path: str) -> None:
+    with create_test_client(
+        [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path
+    ) as client:
         response = client.get("/schema")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
 
-def test_openapi_redoc() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+@pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_redoc(root_path: str) -> None:
+    with create_test_client(
+        [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path
+    ) as client:
         response = client.get("/schema/redoc")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
 
-def test_openapi_swagger() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+@pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_swagger(root_path: str) -> None:
+    with create_test_client(
+        [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path
+    ) as client:
         response = client.get("/schema/swagger")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
 
-def test_openapi_stoplight_elements() -> None:
-    with create_test_client([PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG) as client:
+@pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_stoplight_elements(root_path: str) -> None:
+    with create_test_client(
+        [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path
+    ) as client:
         response = client.get("/schema/elements/")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
