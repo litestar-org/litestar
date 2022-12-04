@@ -588,6 +588,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Alc-Alc",
+      "name": "Alc-Alc",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45509143?v=4",
+      "profile": "https://github.com/Alc-Alc",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
