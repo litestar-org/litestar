@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from anyio.to_thread import run_sync
 
-from starlite.constants import ONE_MEGA_BYTE
+from starlite.constants import ONE_MEGABYTE
 from starlite.openapi.enums import OpenAPIType
 
 if TYPE_CHECKING:

@@ -314,7 +314,7 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fakeredis"
-version = "2.1.0"
+version = "2.2.0"
 description = "Fake implementation of redis API for testing purposes."
 category = "dev"
 optional = false
@@ -450,7 +450,7 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "hypothesis"
-version = "6.59.0"
+version = "6.60.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -462,7 +462,7 @@ exceptiongroup = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
-all = ["backports.zoneinfo (>=0.2.1)", "black (>=19.10b0)", "click (>=7.0)", "django (>=3.2)", "dpcontracts (>=0.4)", "importlib-metadata (>=3.6)", "lark (>=0.10.1)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2022.6)"]
+all = ["backports.zoneinfo (>=0.2.1)", "black (>=19.10b0)", "click (>=7.0)", "django (>=3.2)", "dpcontracts (>=0.4)", "importlib-metadata (>=3.6)", "lark (>=0.10.1)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "tzdata (>=2022.7)"]
 cli = ["black (>=19.10b0)", "click (>=7.0)", "rich (>=9.0.0)"]
 codemods = ["libcst (>=0.3.16)"]
 dateutil = ["python-dateutil (>=1.4)"]
@@ -475,7 +475,7 @@ pandas = ["pandas (>=1.0)"]
 pytest = ["pytest (>=4.6)"]
 pytz = ["pytz (>=2014.1)"]
 redis = ["redis (>=3.0.0)"]
-zoneinfo = ["backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.6)"]
+zoneinfo = ["backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.7)"]
 
 [[package]]
 name = "identify"
@@ -725,7 +725,7 @@ attrs = ">=19.2.0"
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -858,7 +858,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-factories"
-version = "1.16.0"
+version = "1.17.0"
 description = "Mock data generation for pydantic based models and python dataclasses"
 category = "main"
 optional = false
@@ -871,11 +871,11 @@ typing-extensions = "*"
 
 [[package]]
 name = "pydantic-openapi-schema"
-version = "1.3.0"
+version = "1.4.0"
 description = "OpenAPI Schema using pydantic. Forked for Starlite-API from 'openapi-schema-pydantic'."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 email-validator = "*"
@@ -904,7 +904,7 @@ zstd = ["zstandard"]
 name = "pyparsing"
 version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.8"
 
@@ -1015,16 +1015,15 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "redis"
-version = "4.3.5"
+version = "4.4.0"
 description = "Python client for Redis database and key-value store"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 async-timeout = ">=4.0.2"
 hiredis = {version = ">=1.0.0", optional = true, markers = "extra == \"hiredis\""}
-packaging = ">=20.4"
 
 [package.extras]
 hiredis = ["hiredis (>=1.0.0)"]
@@ -1638,8 +1637,8 @@ faker = [
     {file = "Faker-15.3.4.tar.gz", hash = "sha256:2d5443724f640ce07658ca8ca8bbd40d26b58914e63eec6549727869aa67e2cc"},
 ]
 fakeredis = [
-    {file = "fakeredis-2.1.0-py3-none-any.whl", hash = "sha256:f85c535d38946d436f8fef14cb946ea2774c35437991ece72f2bc9cbfc9e7e65"},
-    {file = "fakeredis-2.1.0.tar.gz", hash = "sha256:1329b6150794d4f45d82cb643cc7e8192b33bdb3dc829fb9dcfdf2e82696b2dc"},
+    {file = "fakeredis-2.2.0-py3-none-any.whl", hash = "sha256:1ac7adf04dcbf8f9886add5972018e0e42781ee772fbaa0a573350cd4e4c66f7"},
+    {file = "fakeredis-2.2.0.tar.gz", hash = "sha256:dacdede58b0e682d5dc6176518858b6933c3d529ec18270f162ad5aaf97f5769"},
 ]
 filelock = [
     {file = "filelock-3.8.0-py3-none-any.whl", hash = "sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4"},
@@ -1768,8 +1767,8 @@ httpx = [
     {file = "httpx-0.23.1.tar.gz", hash = "sha256:202ae15319be24efe9a8bd4ed4360e68fde7b38bcc2ce87088d416f026667d19"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.59.0-py3-none-any.whl", hash = "sha256:4eb2875097a07553a1006cb2b96fab21682e4359b138b2ae3c5f5d8b3f5a8bf1"},
-    {file = "hypothesis-6.59.0.tar.gz", hash = "sha256:af05e24b123c9413b8752bbf822105dbb112f56456fb240723d7f410eebf78bb"},
+    {file = "hypothesis-6.60.0-py3-none-any.whl", hash = "sha256:3e8a1e061a6bfa3d8c282dafec100f2c8c527ea50b6560e9a33adf0e2e5fef8f"},
+    {file = "hypothesis-6.60.0.tar.gz", hash = "sha256:39c06cd49f491204380d7c7aa45389d3fb84ee80ea1e3f10afc744044aceb751"},
 ]
 identify = [
     {file = "identify-2.5.9-py2.py3-none-any.whl", hash = "sha256:a390fb696e164dbddb047a0db26e57972ae52fbd037ae68797e5ae2f4492485d"},
@@ -2121,12 +2120,12 @@ pydantic = [
     {file = "pydantic-1.10.2.tar.gz", hash = "sha256:91b8e218852ef6007c2b98cd861601c6a09f1aa32bbbb74fab5b1c33d4a1e410"},
 ]
 pydantic-factories = [
-    {file = "pydantic_factories-1.16.0-py3-none-any.whl", hash = "sha256:4917849704338c1dda0d081094852c625ad99966d26231bd09bb95021fa6b321"},
-    {file = "pydantic_factories-1.16.0.tar.gz", hash = "sha256:478baaf7ce01905ea2b6dd6f68fddd2e98808c3386ad029e55c89e197101b705"},
+    {file = "pydantic_factories-1.17.0-py3-none-any.whl", hash = "sha256:11c267ccbb7d54b1b456f68060f31472a5e53151314679e6f9367962b4d3a6f8"},
+    {file = "pydantic_factories-1.17.0.tar.gz", hash = "sha256:f6b2cdf715f8c3e4a84e2851c0fb493af2009398159594c000192a38ce192129"},
 ]
 pydantic-openapi-schema = [
-    {file = "pydantic-openapi-schema-1.3.0.tar.gz", hash = "sha256:2aed6913080f1dae94234e00d0905504c6aab65ab6afe246ed7aa98da989f69e"},
-    {file = "pydantic_openapi_schema-1.3.0-py3-none-any.whl", hash = "sha256:37a264596a3cd0c2627cf98e22fbf1231e76c19cd83c536d847fa17a2e80c211"},
+    {file = "pydantic_openapi_schema-1.4.0-py3-none-any.whl", hash = "sha256:e925be0153107b7995aacfb56c0a4da2d2323714f3bbd497e4b43a3377b92473"},
+    {file = "pydantic_openapi_schema-1.4.0.tar.gz", hash = "sha256:4561fd6364601ed5e79d483fa57874e154ad0355aa45c9f397067fef575fcb86"},
 ]
 pymongo = [
     {file = "pymongo-4.3.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:74731c9e423c93cbe791f60c27030b6af6a948cef67deca079da6cd1bb583a8e"},
@@ -2279,8 +2278,8 @@ pyyaml = [
     {file = "PyYAML-6.0.tar.gz", hash = "sha256:68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2"},
 ]
 redis = [
-    {file = "redis-4.3.5-py3-none-any.whl", hash = "sha256:46652271dc7525cd5a9667e5b0ca983c848c75b2b8f7425403395bb8379dcf25"},
-    {file = "redis-4.3.5.tar.gz", hash = "sha256:30c07511627a4c5c4d970e060000772f323174f75e745a26938319817ead7a12"},
+    {file = "redis-4.4.0-py3-none-any.whl", hash = "sha256:cae3ee5d1f57d8caf534cd8764edf3163c77e073bdd74b6f54a87ffafdc5e7d9"},
+    {file = "redis-4.4.0.tar.gz", hash = "sha256:7b8c87d19c45d3f1271b124858d2a5c13160c4e74d4835e28273400fa34d5228"},
 ]
 rfc3986 = [
     {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},

@@ -89,7 +89,7 @@ class FileResponse(StreamingResponse):
         path: Union[str, "PathLike", "Path"],
         *,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        chunk_size: int = ONE_MEGA_BYTE,
+        chunk_size: int = ONE_MEGABYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
