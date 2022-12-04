@@ -1,14 +1,15 @@
 # flake8: noqa
+from collections import defaultdict
 from os import path
 from os.path import dirname, join, realpath
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, DefaultDict, Dict, List, Optional, Type
 
 import pytest
 from pydantic import BaseConfig, BaseModel
-from starlite_multipart.datastructures import UploadFile
 
 from starlite import Body, Request, RequestEncodingType, post
+from starlite.datastructures import UploadFile
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
@@ -42,23 +43,22 @@ async def form_handler(request: Request) -> Dict[str, Any]:
 
 
 @post("/form")
-async def form_multi_item_handler(request: Request) -> Dict[str, Any]:
+async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
     data = await request.form()
-    output: Dict[str, list] = {}
+    output: DefaultDict[str, list] = defaultdict(list)
     for key, value in data.multi_items():
-        if key not in output:
-            output[key] = []
-        if isinstance(value, UploadFile):
-            content = await value.read()
-            output[key].append(
-                {
-                    "filename": value.filename,
-                    "content": content.decode(),
-                    "content_type": value.content_type,
-                }
-            )
-        else:
-            output[key].append(value)
+        for v in value:
+            if isinstance(v, UploadFile):
+                content = await v.read()
+                output[key].append(
+                    {
+                        "filename": v.filename,
+                        "content": content.decode(),
+                        "content_type": v.content_type,
+                    }
+                )
+            else:
+                output[key].append(v)
     return output
 
 
@@ -109,7 +109,8 @@ def test_request_body_multi_part_mixed_field_content_types() -> None:
 
     @post(path="/form")
     async def test_method(data: MultiPartFormWithMixedFields = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert await data.image.read() == b"data"
+        file_data = await data.image.read()
+        assert file_data == b"data"
         assert data.tags == ["1", "2", "3"]
         assert data.profile == person
 
@@ -188,11 +189,7 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "filename": "test2.txt",
                 "content": "<file2 content>",
                 "content_type": "text/plain",
-                "headers": [
-                    ["content-disposition", 'form-data; name="test2"; filename="test2.txt"'],
-                    ["x-custom", "f2"],
-                    ["content-type", "text/plain"],
-                ],
+                "headers": [["content-disposition", "form-data"], ["x-custom", "f2"], ["content-type", "text/plain"]],
             },
         }
 
@@ -295,6 +292,25 @@ def test_multipart_request_without_charset_for_filename() -> None:
                 "content": "<file content>",
                 "content_type": "image/jpeg",
             }
+        }
+
+
+def test_multipart_request_with_asterisks_filename() -> None:
+    with create_test_client(form_handler) as client:
+        response = client.post(
+            "/form",
+            content=(
+                # file
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
+                b"Content-Disposition: form-data; name='file'; filename*=utf-8''Na%C3%AFve%20file.jpg\r\n"  # noqa: E501
+                b"Content-Type: image/jpeg\r\n\r\n"
+                b"<file content>\r\n"
+                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
+        )
+        assert response.json() == {
+            "'file'": {"filename": "Naïve file.jpg", "content": "<file content>", "content_type": "image/jpeg"}
         }
 
 

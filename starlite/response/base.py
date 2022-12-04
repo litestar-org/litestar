@@ -14,7 +14,8 @@ from typing import (
 
 from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 
-from starlite.datastructures import Cookie, ETag
+from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.headers import ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import (

@@ -1,31 +1,32 @@
 from typing import Any, Dict
+from urllib.parse import urlencode
 
 import pytest
-from pydantic import BaseConfig
-from pydantic.fields import ModelField
 
-from starlite import Cookie, RequestEncodingType
-from starlite.datastructures import FormMultiDict, MultiDict
-from starlite.parsers import parse_cookie_string, parse_form_data, parse_query_string
+from starlite import Cookie
+from starlite.datastructures import MultiDict
+from starlite.parsers import (
+    parse_cookie_string,
+    parse_query_string,
+    parse_url_encoded_form_data,
+)
 from starlite.testing import RequestFactory
 
 
 def test_parse_form_data() -> None:
-    form_data = FormMultiDict(
-        [
-            ("value", "10"),
-            ("value", "12"),
-            ("veggies", '["tomato", "potato", "aubergine"]'),
-            ("nested", '{"some_key": "some_value"}'),
-            ("calories", "122.53"),
-            ("healthy", True),
-            ("polluting", False),
-        ]
-    )
-    result = parse_form_data(
-        media_type=RequestEncodingType.MULTI_PART,
-        form_data=form_data,
-        field=ModelField(name="test", type_=int, class_validators=None, model_config=BaseConfig),
+    result = parse_url_encoded_form_data(
+        encoded_data=urlencode(
+            [
+                ("value", "10"),
+                ("value", "12"),
+                ("veggies", '["tomato", "potato", "aubergine"]'),
+                ("nested", '{"some_key": "some_value"}'),
+                ("calories", "122.53"),
+                ("healthy", True),
+                ("polluting", False),
+            ]
+        ).encode(),
+        encoding="utf-8",
     )
     assert result == {
         "value": [10, 12],

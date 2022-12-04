@@ -54,7 +54,6 @@ pydantic-openapi-schema = "*"
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
-starlite-multipart = ">=1.2.0"
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 

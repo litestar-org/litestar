@@ -4,8 +4,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
-from starlite.datastructures import Headers
+from starlite.datastructures.headers import Headers
 from starlite.datastructures.provide import DependencyCleanupGroup
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
@@ -79,6 +80,9 @@ class HTTPRoute(BaseRoute):
         after_response_handler = route_handler.resolve_after_response()
         if after_response_handler:
             await after_response_handler(request)  # type: ignore
+
+        if form_data := scope.get("_form", {}):
+            await self._cleanup_temporary_files(form_data=cast("Dict[str, Any]", form_data))
 
     def create_handler_map(self) -> None:
         """Parse the `router_handlers` of this route and return a mapping of
@@ -313,3 +317,9 @@ class HTTPRoute(BaseRoute):
             http_method=[HttpMethod.OPTIONS],
             include_in_schema=False,
         )(options_handler)
+
+    @staticmethod
+    async def _cleanup_temporary_files(form_data: Dict[str, Any]) -> None:
+        for v in form_data.values():
+            if isinstance(v, UploadFile) and not v.file.closed:
+                await v.close()

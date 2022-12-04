@@ -13,7 +13,7 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.2.2
+    rev: v3.2.3
     hooks:
       - id: pyupgrade
         args: ["--py38-plus"]
@@ -113,7 +113,7 @@ repos:
       - id: slotscheck
         exclude: "test_*"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.6"
+    rev: "v2.15.7"
     hooks:
       - id: pylint
         exclude: "tests|examples"
@@ -135,7 +135,6 @@ repos:
             redis,
             sqlalchemy,
             starlette,
-            starlite_multipart,
             structlog,
             tortoise_orm,
             httpx,
@@ -164,7 +163,6 @@ repos:
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
-            starlite_multipart,
             structlog,
             tortoise-orm,
             types-beautifulsoup4,
@@ -206,6 +204,5 @@ repos:
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
-            starlite_multipart,
             structlog,
           ]

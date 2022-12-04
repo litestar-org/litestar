@@ -1,10 +1,6 @@
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cast
-from urllib.parse import parse_qsl
 
 from orjson import loads
-from starlite_multipart import MultipartFormDataParser
-from starlite_multipart import UploadFile as MultipartUploadFile
-from starlite_multipart import parse_options_header
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -14,13 +10,13 @@ from starlite.connection.base import (
     empty_send,
 )
 from starlite.datastructures.multi_dicts import FormMultiDict
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
+from starlite.multipart import parse_content_header, parse_multipart_form
+from starlite.parsers import parse_url_encoded_form_data
 from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from typing import BinaryIO
 
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
@@ -85,7 +81,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
         if self._content_type is Empty:
-            self._content_type = self.scope["_content_type"] = parse_options_header(self.headers.get("Content-Type"))  # type: ignore[typeddict-item]
+            self._content_type = self.scope["_content_type"] = parse_content_header(self.headers.get("Content-Type", ""))  # type: ignore[typeddict-item]
         return cast("Tuple[str, Dict[str, str]]", self._content_type)
 
     async def json(self) -> Any:
@@ -148,31 +144,17 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
         if self._form is Empty:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
-                parser = MultipartFormDataParser(headers=self.headers, stream=self.stream(), max_file_size=None)
-                form_values = await parser()
-                form_values = [
-                    (
-                        k,
-                        UploadFile(
-                            filename=v.filename,
-                            content_type=v.content_type,
-                            headers=v.headers,
-                            file=cast("BinaryIO", v.file),
-                        )
-                        if isinstance(v, MultipartUploadFile)
-                        else v,
-                    )
-                    for k, v in form_values
-                ]
-                self._form = self.scope["_form"] = FormMultiDict(form_values)  # type: ignore[typeddict-item]
-
-            elif content_type == RequestEncodingType.URL_ENCODED:
-                self._form = self.scope["_form"] = FormMultiDict(  # type: ignore[typeddict-item]
-                    parse_qsl((await self.body()).decode(options.get("charset", "latin-1")))
+                self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-item]
+                    body=await self.body(), boundary=options.get("boundary", "").encode()
                 )
-            else:
-                self._form = self.scope["_form"] = FormMultiDict()  # type: ignore[typeddict-item]
-        return cast("FormMultiDict", self._form)
+                return FormMultiDict(form_values)
+            if content_type == RequestEncodingType.URL_ENCODED:
+                self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-item]
+                    await self.body(), encoding=options.get("charset", "utf-8")
+                )
+                return FormMultiDict(form_values)
+            return FormMultiDict()
+        return FormMultiDict(self._form)
 
     async def send_push_promise(self, path: str) -> None:
         """Send a push promise.

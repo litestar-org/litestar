@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Generic, Optional, Type, TypeVar, Union, cast
 
-import anyio.to_thread
 import sqlalchemy as sa
+from anyio.to_thread import run_sync
 from pydantic import validator
 from sqlalchemy.ext.asyncio import AsyncSession as AsyncSASession
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -230,7 +230,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        return await anyio.to_thread.run_sync(self._get_sync, session_id)
+        return await run_sync(self._get_sync, session_id)
 
     def _set_sync(self, session_id: str, data: bytes) -> None:
         sa_session = self._create_sa_session()
@@ -256,7 +256,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        return await anyio.to_thread.run_sync(self._set_sync, session_id, data)
+        return await run_sync(self._set_sync, session_id, data)
 
     def _delete_sync(self, session_id: str) -> None:
         sa_session = self._create_sa_session()
@@ -272,7 +272,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        return await anyio.to_thread.run_sync(self._delete_sync, session_id)
+        return await run_sync(self._delete_sync, session_id)
 
     def _delete_all_sync(self) -> None:
         sa_session = self._create_sa_session()
@@ -286,7 +286,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        await anyio.to_thread.run_sync(self._delete_all_sync)
+        await run_sync(self._delete_all_sync)
 
     def _delete_expired_sync(self) -> None:
         sa_session = self._create_sa_session()
@@ -299,7 +299,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         Returns:
             None
         """
-        await anyio.to_thread.run_sync(self._delete_expired_sync)
+        await run_sync(self._delete_expired_sync)
 
 
 class SQLAlchemyBackendConfig(ServerSideSessionConfig):
