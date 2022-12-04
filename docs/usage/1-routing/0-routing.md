@@ -1,7 +1,6 @@
 # Routing
 
-Although Starlite builds on the Starlette ASGI toolkit as a basis, it does not use the Starlette routing system,
-which uses regex matching, and instead it implements its own solution that is based on the concept of a
+Starlite implements its routing solution that is based on the concept of a
 [radix tree](https://en.wikipedia.org/wiki/Radix_tree) or `trie`.
 
 ## Why Radix Based Routing?
