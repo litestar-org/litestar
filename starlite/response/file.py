@@ -15,7 +15,7 @@ from typing import (
 from urllib.parse import quote
 from zlib import adler32
 
-from starlite.constants import ONE_MEGA_BYTE
+from starlite.constants import ONE_MEGABYTE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.streaming import StreamingResponse
