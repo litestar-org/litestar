@@ -15,7 +15,7 @@ from pydantic import (
     ConstrainedSet,
     ConstrainedStr,
 )
-from pydantic.fields import FieldInfo, ModelField, Undefined
+from pydantic.fields import SHAPE_GENERIC, FieldInfo, ModelField, Undefined
 from pydantic_factories import ModelFactory
 from pydantic_factories.exceptions import ParameterError
 from pydantic_factories.utils import is_optional, is_pydantic_model, is_union
@@ -23,7 +23,13 @@ from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
+from starlite.datastructures.pagination import (
+    ClassicPagination,
+    CursorPagination,
+    OffsetPagination,
+)
 from starlite.datastructures.upload_file import UploadFile
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
     EXTRA_TO_OPENAPI_PROPERTY_MAP,
     PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
@@ -184,6 +190,12 @@ def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Sche
     return schema
 
 
+class GenericPydanticSchema(OpenAPI310PydanticSchema):
+    """Special `Schema` class to indicate a reference from pydantic 'GenericClass' instances."""
+
+    schema_class: Any
+
+
 def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]) -> Schema:
     """Get or create a Schema object for the given field type."""
     field_type = field.outer_type_
@@ -214,6 +226,79 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         )
     # this is a failsafe to ensure we always return a value
     return Schema()  # pragma: no cover
+
+
+def get_schema_for_generic_type(field: "ModelField", plugins: List["PluginProtocol"]) -> Schema:
+    """Handle generic types.
+
+    Raises:
+        ImproperlyConfiguredException: if generic type is not supported.
+
+    Args:
+        field: Pydantic 'ModelField' instance.
+        plugins: A list of plugins.
+
+    Returns:
+        A schema.
+    """
+    field_type = field.type_
+
+    if field_type is ClassicPagination:
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            properties={
+                "items": Schema(
+                    type=OpenAPIType.ARRAY,
+                    items=create_schema(
+                        field=field.sub_fields[0],  # type: ignore[index]
+                        generate_examples=False,
+                        plugins=plugins,
+                    ),
+                ),
+                "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
+                "current_page": Schema(type=OpenAPIType.INTEGER, description="Current page number."),
+                "total_pages": Schema(type=OpenAPIType.INTEGER, description="Total number of pages."),
+            },
+        )
+
+    if field_type is OffsetPagination:
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            properties={
+                "items": Schema(
+                    type=OpenAPIType.ARRAY,
+                    items=create_schema(
+                        field=field.sub_fields[0],  # type: ignore[index]
+                        generate_examples=False,
+                        plugins=plugins,
+                    ),
+                ),
+                "limit": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
+                "offset": Schema(type=OpenAPIType.INTEGER, description="Offset from the beginning of the query."),
+                "total": Schema(type=OpenAPIType.INTEGER, description="Total number of items."),
+            },
+        )
+
+    if field_type is CursorPagination:
+        cursor_schema = create_schema(field=field.sub_fields[0], generate_examples=False, plugins=plugins)  # type: ignore[index]
+        cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
+
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            properties={
+                "items": Schema(
+                    type=OpenAPIType.ARRAY,
+                    items=create_schema(
+                        field=field.sub_fields[1],  # type: ignore[index]
+                        generate_examples=False,
+                        plugins=plugins,
+                    ),
+                ),
+                "cursor": cursor_schema,
+                "results_per_page": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
+            },
+        )
+    raise ImproperlyConfiguredException(f"cannot generate OpenAPI schema for generic type {field_type}")
 
 
 def create_examples_for_field(field: ModelField) -> List[Example]:
@@ -257,7 +342,7 @@ def create_schema(
         schema = create_constrained_field_schema(
             field_type=field.outer_type_, sub_fields=field.sub_fields, plugins=plugins
         )
-    elif field.sub_fields:
+    elif field.sub_fields and field.shape != SHAPE_GENERIC:
         openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
         if openapi_type == OpenAPIType.ARRAY:
@@ -273,6 +358,8 @@ def create_schema(
                 schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
             else:
                 schema.items = items[0]
+    elif field.shape == SHAPE_GENERIC:
+        schema = get_schema_for_generic_type(field=field, plugins=plugins)
     else:
         # value is not a complex typing - hence we can try and get the value schema directly
         schema = get_schema_for_field_type(field=field, plugins=plugins)

@@ -86,6 +86,7 @@ nav:
           - usage/5-responses/9-template-responses.md
           - usage/5-responses/10-custom-responses.md
           - usage/5-responses/11-background-tasks.md
+          - usage/5-responses/12-pagination.md
       - Dependency Injection:
           - usage/6-dependency-injection/0-dependency-injection-intro.md
           - usage/6-dependency-injection/1-dependency-kwargs.md
@@ -196,6 +197,7 @@ nav:
           - reference/datastructures/6-upload-file.md
           - reference/datastructures/7-multi-dicts.md
           - reference/datastructures/8-url.md
+          - reference/datastructures/9-pagination.md
       - Exceptions:
           - reference/exceptions/0-base-exceptions.md
           - reference/exceptions/1-http-exceptions.md

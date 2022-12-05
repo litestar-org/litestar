@@ -330,15 +330,15 @@ lua = ["lupa (>=1.14,<2.0)"]
 
 [[package]]
 name = "filelock"
-version = "3.8.0"
+version = "3.8.2"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["furo (>=2022.6.21)", "sphinx (>=5.1.1)", "sphinx-autodoc-typehints (>=1.19.1)"]
-testing = ["covdefaults (>=2.2)", "coverage (>=6.4.2)", "pytest (>=7.1.2)", "pytest-cov (>=3)", "pytest-timeout (>=2.1)"]
+docs = ["furo (>=2022.9.29)", "sphinx (>=5.3)", "sphinx-autodoc-typehints (>=1.19.5)"]
+testing = ["covdefaults (>=2.2.2)", "coverage (>=6.5)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
 
 [[package]]
 name = "freezegun"
@@ -1141,7 +1141,7 @@ sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
 name = "starlette"
-version = "0.22.0"
+version = "0.23.0"
 description = "The little ASGI library that shines."
 category = "dev"
 optional = false
@@ -1641,8 +1641,8 @@ fakeredis = [
     {file = "fakeredis-2.2.0.tar.gz", hash = "sha256:dacdede58b0e682d5dc6176518858b6933c3d529ec18270f162ad5aaf97f5769"},
 ]
 filelock = [
-    {file = "filelock-3.8.0-py3-none-any.whl", hash = "sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4"},
-    {file = "filelock-3.8.0.tar.gz", hash = "sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc"},
+    {file = "filelock-3.8.2-py3-none-any.whl", hash = "sha256:8df285554452285f79c035efb0c861eb33a4bcfa5b7a137016e32e6a90f9792c"},
+    {file = "filelock-3.8.2.tar.gz", hash = "sha256:7565f628ea56bfcd8e54e42bdc55da899c85c1abfe1b5bcfd147e9188cebb3b2"},
 ]
 freezegun = [
     {file = "freezegun-1.2.2-py3-none-any.whl", hash = "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"},
@@ -2356,8 +2356,8 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.44.tar.gz", hash = "sha256:2dda5f96719ae89b3ec0f1b79698d86eb9aecb1d54e990abb3fdd92c04b46a90"},
 ]
 starlette = [
-    {file = "starlette-0.22.0-py3-none-any.whl", hash = "sha256:b5eda991ad5f0ee5d8ce4c4540202a573bb6691ecd0c712262d0bc85cf8f2c50"},
-    {file = "starlette-0.22.0.tar.gz", hash = "sha256:b092cbc365bea34dd6840b42861bdabb2f507f8671e642e8272d2442e08ea4ff"},
+    {file = "starlette-0.23.0-py3-none-any.whl", hash = "sha256:a0412476cff97f7296b7257b0c1e637d94da060b28767be5d70e98d1da9c4864"},
+    {file = "starlette-0.23.0.tar.gz", hash = "sha256:0e45cf465f2966e4c332ec7e72edb5c045dc9be32f6a470c1046cdd7ce51e05a"},
 ]
 structlog = [
     {file = "structlog-22.3.0-py3-none-any.whl", hash = "sha256:b403f344f902b220648fa9f286a23c0cc5439a5844d271fec40562dbadbc70ad"},
