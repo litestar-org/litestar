@@ -23,7 +23,6 @@ from tests import Person, PersonFactory
 
 class TestSyncClassicPaginator(AbstractSyncClassicPaginator[Person]):
     def __init__(self, data: List[Person]):
-
         self.data = data
 
     def get_total(self, page_size: int) -> int:
@@ -35,7 +34,6 @@ class TestSyncClassicPaginator(AbstractSyncClassicPaginator[Person]):
 
 class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[Person]):
     def __init__(self, data: List[Person]):
-
         self.data = data
 
     async def get_total(self, page_size: int) -> int:
@@ -72,7 +70,7 @@ class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
 data = PersonFactory.batch(50)
 
 
-@pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestSyncClassicPaginator(data=data)))
+@pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestAsyncClassicPaginator(data=data)))
 def test_classic_pagination_data_shape(paginator: Any) -> None:
     @get("/async")
     async def async_handler(page_size: int, current_page: int) -> ClassicPagination[Person]:
@@ -96,7 +94,7 @@ def test_classic_pagination_data_shape(paginator: Any) -> None:
         assert response_data["current_page"] == 1
 
 
-@pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestSyncClassicPaginator(data=data)))
+@pytest.mark.parametrize("paginator", (TestSyncClassicPaginator(data=data), TestAsyncClassicPaginator(data=data)))
 def test_classic_pagination_openapi_schema(paginator: Any) -> None:
     @get("/async")
     async def async_handler(page_size: int, current_page: int) -> ClassicPagination[Person]:
