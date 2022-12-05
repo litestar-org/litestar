@@ -1,25 +1,33 @@
 # Changelog
 
+[1.44.0]
+
+- add support for pagination.
+- add new multipart parser.
+- update `urlencoded` parsing.
+- fix `OpenAPIController` when ASGI `root_path` is set on ASGI server.
+- fix generator based dependencies cached responses.
+
 [1.43.1]
 
-- support legacy OpenAPI file upload format
-- fix cookie caching issues
-- honour documentation_only flag for cookies
-- change `StructLoggingConfing.processor` type hint to `List`
-- remove `SessionAuth` import
+- change `StructLoggingConfing.processor` type hint to `List`.
+- fix cookie caching issues.
+- honour documentation_only flag for cookies.
+- remove `SessionAuth` import.
+- support legacy OpenAPI file upload format.
 
 [1.43.0]
 
-- add security module and JWT auth contrib
-- deprecate `middleware.session.memcached_backend.MemcachedBackend.delete_all`
+- add security module and JWT auth contrib.
+- deprecate `middleware.session.memcached_backend.MemcachedBackend.delete_all`.
 
 [1.42.0]
 
-- support different types of path parameters for different leaf nodes
-- add dependencies with `yield`
-- update custom state injection and add `ImmutableState`
-- fix #854 - Incorrect path resolution of 'path' type parameters
-- fix #849 - Make LoggingMiddleware handle request bodies correctly
+- support different types of path parameters for different leaf nodes.
+- add dependencies with `yield`.
+- update custom state injection and add `ImmutableState`.
+- fix #854 - Incorrect path resolution of 'path' type parameters.
+- fix #849 - Make LoggingMiddleware handle request bodies correctly.
 
 [1.41.0]
 
