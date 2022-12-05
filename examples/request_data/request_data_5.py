@@ -1,6 +1,6 @@
-from starlite import Body, RequestEncodingType, post
-from starlite import Body, post, Starlite
 from dataclasses import dataclass
+
+from starlite import Body, RequestEncodingType, Starlite, post
 
 
 @dataclass

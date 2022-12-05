@@ -1,4 +1,4 @@
-from starlite import Body, UploadFile, RequestEncodingType, post, Starlite, MediaType
+from starlite import Body, MediaType, RequestEncodingType, Starlite, UploadFile, post
 
 
 @post(path="/", media_type=MediaType.TEXT)

@@ -1,5 +1,6 @@
-from starlite import Body, post, Starlite
 from dataclasses import dataclass
+
+from starlite import Body, Starlite, post
 
 
 @dataclass

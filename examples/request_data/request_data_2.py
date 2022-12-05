@@ -1,6 +1,6 @@
-from starlite import post, Starlite
-
 from dataclasses import dataclass
+
+from starlite import Starlite, post
 
 
 @dataclass

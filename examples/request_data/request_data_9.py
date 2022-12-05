@@ -1,5 +1,6 @@
-from starlite import Body, RequestEncodingType, UploadFile, post, Starlite
 from typing import Dict
+
+from starlite import Body, RequestEncodingType, Starlite, UploadFile, post
 
 
 @post(path="/")

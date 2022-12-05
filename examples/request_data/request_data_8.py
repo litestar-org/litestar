@@ -1,6 +1,8 @@
 from typing import Dict
-from pydantic import BaseModel, BaseConfig
-from starlite import Body, RequestEncodingType, UploadFile, post, Starlite
+
+from pydantic import BaseConfig, BaseModel
+
+from starlite import Body, RequestEncodingType, Starlite, UploadFile, post
 
 
 class FormData(BaseModel):

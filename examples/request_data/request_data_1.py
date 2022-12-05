@@ -1,5 +1,6 @@
 from typing import Dict
-from starlite import post, Starlite
+
+from starlite import Starlite, post
 
 
 @post(path="/")
