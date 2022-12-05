@@ -23,7 +23,11 @@ from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
-from starlite.datastructures.pagination import CursorPagination, LimitOffsetPagination
+from starlite.datastructures.pagination import (
+    ClassicPagination,
+    CursorPagination,
+    OffsetPagination,
+)
 from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
@@ -239,7 +243,25 @@ def get_schema_for_generic_type(field: "ModelField", plugins: List["PluginProtoc
     """
     field_type = field.type_
 
-    if field_type is LimitOffsetPagination:
+    if field_type is ClassicPagination:
+        return Schema(
+            type=OpenAPIType.OBJECT,
+            properties={
+                "items": Schema(
+                    type=OpenAPIType.ARRAY,
+                    items=create_schema(
+                        field=field.sub_fields[0],  # type: ignore[index]
+                        generate_examples=False,
+                        plugins=plugins,
+                    ),
+                ),
+                "page_size": Schema(type=OpenAPIType.INTEGER, description="Number of items per page."),
+                "current_page": Schema(type=OpenAPIType.INTEGER, description="Current page number."),
+                "total_pages": Schema(type=OpenAPIType.INTEGER, description="Total number of pages."),
+            },
+        )
+
+    if field_type is OffsetPagination:
         return Schema(
             type=OpenAPIType.OBJECT,
             properties={

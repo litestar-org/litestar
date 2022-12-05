@@ -12,10 +12,15 @@ from starlite.datastructures.multi_dicts import (
     MultiDict,
 )
 from starlite.datastructures.pagination import (
-    AbstractCursorPaginator,
-    AbstractLimitOffsetPaginator,
+    AbstractAsyncClassicPaginator,
+    AbstractAsyncCursorPaginator,
+    AbstractAsyncOffsetPaginator,
+    AbstractSyncClassicPaginator,
+    AbstractSyncCursorPaginator,
+    AbstractSyncOffsetPaginator,
+    ClassicPagination,
     CursorPagination,
-    LimitOffsetPagination,
+    OffsetPagination,
 )
 from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
@@ -31,12 +36,17 @@ from starlite.datastructures.upload_file import UploadFile
 from starlite.datastructures.url import URL, Address, make_absolute_url
 
 __all__ = (
-    "AbstractCursorPaginator",
-    "AbstractLimitOffsetPaginator",
+    "AbstractAsyncClassicPaginator",
+    "AbstractAsyncCursorPaginator",
+    "AbstractAsyncOffsetPaginator",
+    "AbstractSyncClassicPaginator",
+    "AbstractSyncCursorPaginator",
+    "AbstractSyncOffsetPaginator",
     "Address",
     "BackgroundTask",
     "BackgroundTasks",
     "CacheControlHeader",
+    "ClassicPagination",
     "Cookie",
     "CursorPagination",
     "ETag",
@@ -45,9 +55,9 @@ __all__ = (
     "Headers",
     "ImmutableMultiDict",
     "ImmutableState",
-    "LimitOffsetPagination",
     "MultiDict",
     "MutableScopeHeaders",
+    "OffsetPagination",
     "Provide",
     "Redirect",
     "ResponseContainer",
