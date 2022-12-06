@@ -2,9 +2,12 @@ from collections import defaultdict
 from contextlib import suppress
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
-from json import JSONDecodeError, loads
 from typing import Any, DefaultDict, Dict, List, Tuple
 from urllib.parse import parse_qsl, unquote
+
+from msgspec import DecodeError
+
+from starlite.utils.serialization import decode_json
 
 
 @lru_cache(1024)
@@ -55,8 +58,8 @@ def parse_url_encoded_form_data(encoded_data: bytes, encoding: str) -> Dict[str,
     """
     decoded_dict: DefaultDict[str, List[Any]] = defaultdict(list)
     for k, v in parse_query_string(query_string=encoded_data, encoding=encoding):
-        with suppress(JSONDecodeError):
-            v = loads(v) if isinstance(v, str) else v
+        with suppress(DecodeError):
+            v = decode_json(v) if isinstance(v, str) else v
         decoded_dict[k].append(v)
     return {k: v if len(v) > 1 else v[0] for k, v in decoded_dict.items()}
 
