@@ -18,7 +18,7 @@ class PersonFactory(ModelFactory[Person]):
 # we will implement a paginator - the paginator must implement the method 'get_items'.
 
 
-class PersonOffsetPaginator(AbstractSyncCursorPaginator[str, Person]):
+class PersonCursorPaginator(AbstractSyncCursorPaginator[str, Person]):
     def __init__(self) -> None:
         self.data = PersonFactory.batch(50)
 
@@ -27,7 +27,7 @@ class PersonOffsetPaginator(AbstractSyncCursorPaginator[str, Person]):
         return results, results[-1].id
 
 
-paginator = PersonOffsetPaginator()
+paginator = PersonCursorPaginator()
 
 
 # we now create a regular handler. The handler will receive a single query parameter - 'cursor', which
