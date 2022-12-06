@@ -23,10 +23,6 @@ def default_serializer(value: Any) -> Any:
         return value.get_secret_value()
     if isinstance(value, (PurePath, PurePosixPath)):
         return str(value)
-    if isinstance(value, UUID):
-        return str(value)
-    if isinstance(value, (datetime, date, time)):
-        return value.isoformat()
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
