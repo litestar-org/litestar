@@ -23,17 +23,10 @@ To start using sessions in your application all you have to do is create an inst
 of a [configuration][starlite.middleware.session.base.BaseBackendConfig] object and
 add its middleware to your application's middleware stack:
 
-=== "Python == 3.8"
 
-    ```py title="Hello World"
-    --8<-- "examples/middleware/session/cookies_full_example_py37.py"
-    ```
-
-=== "Python > 3.9"
-
-    ```py title="Hello World"
-    --8<-- "examples/middleware/session/cookies_full_example.py"
-    ```
+```py title="Hello World"
+--8<-- "examples/middleware/session/cookies_full_example.py"
+```
 
 !!! note
     Since both client- and server-side sessions rely on cookies (one for storing the actual session

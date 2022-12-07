@@ -1,0 +1,4 @@
+mkdocs-material
+mkdocstrings[python]
+black
+git+https://github.com/provinzkraut/AutoPyTabs.git
