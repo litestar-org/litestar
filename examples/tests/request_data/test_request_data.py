@@ -41,9 +41,16 @@ def test_request_data_4() -> None:
 
 def test_request_data_5() -> None:
     with TestClient(app=app_5) as client:
-        res = client.post("/", data={"id": 1, "name": "John"})
-        assert res.status_code == 201
+        res = client.post(
+            "/",
+            content=b'--d26a9a4ed2f441fba9ab42d04b42099e\r\nContent-Disposition: form-data; name="id"\r\n\r\n1\r\n--d26a9a4ed2f441fba9ab42d04b42099e\r\nContent-Disposition: form-data; name="name"\r\n\r\nJohn\r\n--d26a9a4ed2f441fba9ab42d04b42099e--\r\n',
+            headers={
+                "Content-Length": "211",
+                "Content-Type": "multipart/form-data; boundary=d26a9a4ed2f441fba9ab42d04b42099e",
+            },
+        )
         assert res.json() == {"id": 1, "name": "John"}
+        assert res.status_code == 201
 
 
 def test_request_data_6() -> None:
