@@ -27,7 +27,6 @@ from starlite.parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.types import Empty
-from starlite.utils import decode_msgpack
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
@@ -245,7 +244,7 @@ async def json_extractor(
     return await connection.json()
 
 
-async def message_pack_extractor(connection: "Request[Any, Any]") -> Any:
+async def msgpack_extractor(connection: "Request[Any, Any]") -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -257,8 +256,7 @@ async def message_pack_extractor(connection: "Request[Any, Any]") -> Any:
     Returns:
         The MessagePack value.
     """
-    body = await connection.body()
-    return decode_msgpack(body)
+    return await connection.msgpack()
 
 
 def create_multipart_extractor(
@@ -345,9 +343,7 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
         else:
             data_extractor = create_url_encoded_data_extractor(is_data_optional=kwargs_model.is_data_optional)
     elif kwargs_model.expected_msgpack_data:
-        data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", message_pack_extractor
-        )
+        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
     else:
         data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
 
