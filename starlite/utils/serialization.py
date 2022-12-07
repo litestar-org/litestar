@@ -69,8 +69,6 @@ def decode_json(raw: Union[str, bytes]) -> Any:
     Returns:
         An object
     """
-    if isinstance(raw, str):
-        raw = raw.encode("utf-8")
     return _msgspec_json_decoder.decode(raw)
 
 
@@ -89,7 +87,7 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
     return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
 
 
-def decode_msgpack(raw: Union[str, bytes]) -> Any:
+def decode_msgpack(raw: bytes) -> Any:
     """Decode a MessagePack string/bytes into an object.
 
     Args:
@@ -98,6 +96,4 @@ def decode_msgpack(raw: Union[str, bytes]) -> Any:
     Returns:
         An object
     """
-    if isinstance(raw, str):
-        raw = raw.encode("utf-8")
     return _msgspec_msgpack_decoder.decode(raw)
