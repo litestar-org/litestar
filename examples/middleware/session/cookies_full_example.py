@@ -1,4 +1,5 @@
 from os import urandom
+from typing import Dict
 
 from starlite import Request, Starlite, delete, get, post
 from starlite.middleware.session.cookie_backend import CookieBackendConfig
@@ -9,7 +10,7 @@ session_config = CookieBackendConfig(secret=urandom(16))  # type: ignore[arg-typ
 
 
 @get("/session")
-def check_session_handler(request: Request) -> dict[str, bool]:
+def check_session_handler(request: Request) -> Dict[str, bool]:
     """Handler function that accesses request.session."""
     return {"has_session": request.session != {}}
 

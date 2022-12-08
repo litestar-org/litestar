@@ -9,9 +9,7 @@ article p, article li {
 article p {
   margin: 1.25rem 0;
 }
-article p + .highlight {
-  margin-top: -1rem;
-}
+
 
 article .admonition p {
   margin: .6rem 0;
@@ -35,6 +33,7 @@ article center > p {
   margin: 1.35rem 0 1rem;
   font-weight: 400;
 }
+
 
 [dir="ltr"] .md-header__title {
   margin-left: 0;
