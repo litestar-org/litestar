@@ -55,7 +55,7 @@ pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-msgspec = {git = "https://github.com/jcrist/msgspec.git"}
+msgspec = "^0.10.0"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
