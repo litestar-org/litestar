@@ -24,7 +24,7 @@ def default_serializer(value: Any) -> Any:
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
-def dec_hook(type_: Any, value: Any) -> Any:
+def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
     """Transform values non-natively supported by `msgspec`
 
     Args:
