@@ -2,6 +2,7 @@ from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Generic,
     List,
@@ -54,6 +55,10 @@ class Response(Generic[T]):
         "status_code",
         "raw_headers",
     )
+
+    serializer: Callable[[Any], Any] = default_serializer
+    """Callable to transform non-natively supported types into supported types.
+    Should raise `TypeError` if a type cannot be transformed into a supported type"""
 
     def __init__(
         self,
@@ -194,19 +199,6 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
-    @staticmethod
-    def serializer(value: Any) -> Any:
-        """Return a serializer to handle non-natively supported types.
-
-        Args:
-            value: A value to serialize
-        Returns:
-            A serialized value
-        Raises:
-            TypeError: if value is not supported
-        """
-        return default_serializer(value)
-
     def render(self, content: Any) -> bytes:
         """Handle the rendering of content T into a bytes string.
 
@@ -220,8 +212,8 @@ class Response(Generic[T]):
             if self.media_type.startswith("text/"):
                 return content.encode(self.encoding) if content else b""  # type: ignore
             if self.media_type == MediaType.MESSAGEPACK:
-                return encode_msgpack(content)
-            return encode_json(content)
+                return encode_msgpack(content, self.serializer)
+            return encode_json(content, self.serializer)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 
