@@ -69,7 +69,7 @@ def decode_json(raw: Union[str, bytes]) -> Any:
     Returns:
         An object
     """
-    return _msgspec_json_decoder.decode(raw)  # type: ignore[arg-type]
+    return _msgspec_json_decoder.decode(raw)
 
 
 def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
