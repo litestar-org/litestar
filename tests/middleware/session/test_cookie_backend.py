@@ -7,7 +7,6 @@ from unittest import mock
 
 import pytest
 from cryptography.exceptions import InvalidTag
-from orjson import dumps
 from pydantic import SecretBytes, ValidationError
 
 from starlite import Request, get, post
@@ -19,6 +18,7 @@ from starlite.middleware.session.cookie_backend import (
     CookieBackendConfig,
 )
 from starlite.testing import create_test_client
+from starlite.utils.serialization import encode_json
 
 
 @pytest.mark.parametrize(
@@ -161,7 +161,7 @@ def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backe
     encrypted_session = cookie_session_backend.dump_data(create_session())
     # The attacker will tamper with the AAD to increase the expiry time of the cookie.
     attacker_chosen_time = 300  # In seconds
-    fraudulent_associated_data = dumps(
+    fraudulent_associated_data = encode_json(
         {"expires_at": round(time.time()) + cookie_session_backend.config.max_age + attacker_chosen_time}
     )
     decoded = b64decode(b"".join(encrypted_session))

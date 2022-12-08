@@ -1,11 +1,11 @@
 import yaml
-from orjson import loads
 from pydantic_openapi_schema.utils import construct_open_api_with_schema_class
 
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import OpenAPIMediaType
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
+from starlite.utils.serialization import decode_json
 from tests.openapi.utils import PersonController, PetController
 
 
@@ -30,7 +30,7 @@ def test_openapi_json() -> None:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_JSON.value
-        assert response.json() == loads(
+        assert response.json() == decode_json(
             construct_open_api_with_schema_class(client.app.openapi_schema).json(by_alias=True, exclude_none=True)
         )
 

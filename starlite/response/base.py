@@ -2,6 +2,7 @@ from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Generic,
     List,
@@ -12,10 +13,7 @@ from typing import (
     Union,
 )
 
-from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
-
-from starlite.datastructures.cookie import Cookie
-from starlite.datastructures.headers import ETag
+from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import (
@@ -24,7 +22,7 @@ from starlite.status_codes import (
     HTTP_304_NOT_MODIFIED,
 )
 from starlite.utils.helpers import get_enum_string_value
-from starlite.utils.serialization import default_serializer
+from starlite.utils.serialization import default_serializer, encode_json, encode_msgpack
 
 if TYPE_CHECKING:
 
@@ -57,6 +55,10 @@ class Response(Generic[T]):
         "status_code",
         "raw_headers",
     )
+
+    serializer: Callable[[Any], Any] = staticmethod(default_serializer)
+    """Callable to transform non-natively supported types into supported types.
+    Should raise `TypeError` if a type cannot be transformed into a supported type"""
 
     def __init__(
         self,
@@ -197,19 +199,6 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
-    @staticmethod
-    def serializer(value: Any) -> Any:
-        """Return a serializer for orjson to handle pydantic models.
-
-        Args:
-            value: A value to serialize
-        Returns:
-            A serialized value
-        Raises:
-            TypeError: if value is not supported
-        """
-        return default_serializer(value)
-
     def render(self, content: Any) -> bytes:
         """Handle the rendering of content T into a bytes string.
 
@@ -222,7 +211,9 @@ class Response(Generic[T]):
         try:
             if self.media_type.startswith("text/"):
                 return content.encode(self.encoding) if content else b""  # type: ignore
-            return dumps(content, default=self.serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+            if self.media_type == MediaType.MESSAGEPACK:
+                return encode_msgpack(content, self.serializer)
+            return encode_json(content, self.serializer)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

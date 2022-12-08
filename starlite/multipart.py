@@ -26,11 +26,13 @@ SOFTWARE.
 import re
 from collections import defaultdict
 from email.utils import decode_rfc2231
-from json import JSONDecodeError, loads
 from typing import Any, DefaultDict, Dict, List, Tuple
 from urllib.parse import unquote
 
+from msgspec import DecodeError
+
 from starlite.datastructures.upload_file import UploadFile
+from starlite.utils.serialization import decode_json
 
 _token, _quoted = r"([\w!#$%&'*+\-.^_`|~]+)", r'"([^"]*)"'
 _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
@@ -118,8 +120,8 @@ def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
                     fields[field_name].append(form_file)
                 else:
                     try:
-                        fields[field_name].append(loads(post_data))
-                    except JSONDecodeError:
+                        fields[field_name].append(decode_json(post_data))
+                    except DecodeError:
                         fields[field_name].append(post_data.decode(content_charset))
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}

@@ -28,7 +28,13 @@ from .scope import (
     set_starlite_scope_state,
 )
 from .sequence import find_index, unique
-from .serialization import default_serializer
+from .serialization import (
+    decode_json,
+    decode_msgpack,
+    default_serializer,
+    encode_json,
+    encode_msgpack,
+)
 from .sync import (
     AsyncCallable,
     AsyncIteratorWrapper,
@@ -38,20 +44,22 @@ from .sync import (
 )
 
 __all__ = (
+    "as_async_callable_list",
+    "async_partial",
     "AsyncCallable",
     "AsyncIteratorWrapper",
     "ConnectionDataExtractor",
-    "ExceptionResponseContent",
-    "Ref",
-    "ResponseDataExtractor",
-    "as_async_callable_list",
-    "async_partial",
     "convert_dataclass_to_model",
     "convert_typeddict_to_model",
     "create_exception_response",
     "create_parsed_model_field",
+    "decode_json",
+    "decode_msgpack",
     "default_serializer",
     "deprecated",
+    "encode_json",
+    "encode_msgpack",
+    "ExceptionResponseContent",
     "find_index",
     "generate_csrf_hash",
     "generate_csrf_token",
@@ -70,6 +78,8 @@ __all__ = (
     "join_paths",
     "normalize_path",
     "obfuscate",
+    "Ref",
+    "ResponseDataExtractor",
     "set_starlite_scope_state",
     "should_skip_dependency_validation",
     "unique",

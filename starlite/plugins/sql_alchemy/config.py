@@ -12,14 +12,14 @@ from typing import (
     cast,
 )
 
-from orjson import OPT_SERIALIZE_NUMPY, dumps, loads
 from pydantic import BaseConfig, BaseModel, root_validator, validator
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.datastructures.state import State  # noqa: TC001
 from starlite.exceptions import MissingDependencyException
 from starlite.types import BeforeMessageSendHookHandler
-from starlite.utils import AsyncCallable, default_serializer
+from starlite.utils import AsyncCallable
+from starlite.utils.serialization import decode_json, encode_json
 
 from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol
 
@@ -58,11 +58,7 @@ def serializer(value: Any) -> str:
     Returns:
         JSON string.
     """
-    return dumps(
-        value,
-        default=default_serializer,
-        option=OPT_SERIALIZE_NUMPY,
-    ).decode("utf-8")
+    return encode_json(value).decode("utf-8")
 
 
 async def default_before_send_handler(message: "Message", _: "State", scope: "Scope") -> None:
@@ -119,7 +115,7 @@ class SQLAlchemyEngineConfig(BaseModel):
     future: bool = True
     hide_parameters: Optional[bool] = None
     isolation_level: Optional[IsolationLevel] = None
-    json_deserializer: Callable[[str], Any] = loads
+    json_deserializer: Callable[[str], Any] = decode_json
     json_serializer: Callable[[Any], str] = serializer
     label_length: Optional[int] = None
     listeners: Any = None
@@ -189,7 +185,7 @@ class SQLAlchemyConfig(BaseModel):
     """
     set_json_serializers: bool = True
     """
-    A boolean flag dictating whether to set 'orjson' based serializer/deserializer functions.
+    A boolean flag dictating whether to set 'msgspec' based serializer/deserializer functions.
 
     Notes:
     - Some databases or some versions of some databases do not have a JSON column type. E.g. some older versions of

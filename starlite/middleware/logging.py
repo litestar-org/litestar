@@ -1,7 +1,6 @@
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
 
-from orjson import OPT_OMIT_MICROSECONDS, OPT_SERIALIZE_NUMPY, dumps
 from pydantic import BaseModel
 
 from starlite.constants import (
@@ -23,6 +22,7 @@ from starlite.utils.extractors import (
     ResponseDataExtractor,
     ResponseExtractorField,
 )
+from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
     from starlite.connection import Request
@@ -153,9 +153,9 @@ class LoggingMiddleware(AbstractMiddleware):
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
-    def _serialize_value(self, serializer: "Serializer", value: Any) -> Any:
+    def _serialize_value(self, serializer: Optional["Serializer"], value: Any) -> Any:
         if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
-            value = dumps(value, default=serializer, option=OPT_SERIALIZE_NUMPY | OPT_OMIT_MICROSECONDS)
+            value = encode_json(value, serializer)
         if isinstance(value, bytes):
             return value.decode("utf-8")
         return value
@@ -171,7 +171,7 @@ class LoggingMiddleware(AbstractMiddleware):
         """
 
         data: Dict[str, Any] = {"message": self.config.request_log_message}
-        serializer = get_serializer_from_scope(request.scope) or default_serializer
+        serializer = get_serializer_from_scope(request.scope)
         extracted_data = self.request_extractor(connection=request)
         for key in self.config.request_log_fields:
             value = extracted_data.get(key)

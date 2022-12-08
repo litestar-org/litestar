@@ -239,9 +239,24 @@ async def json_extractor(
         connection: The ASGI connection instance.
 
     Returns:
-        None
+        The JSON value.
     """
     return await connection.json()
+
+
+async def msgpack_extractor(connection: "Request[Any, Any]") -> Any:
+    """Extract the data from request and insert it into the kwargs injected to the handler.
+
+    Notes:
+        - this extractor sets a Coroutine as the value in the kwargs. These are resolved at a later stage.
+
+    Args:
+        connection: The ASGI connection instance.
+
+    Returns:
+        The MessagePack value.
+    """
+    return await connection.msgpack()
 
 
 def create_multipart_extractor(
@@ -316,9 +331,7 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
         An extractor for the request's body.
     """
 
-    if not kwargs_model.expected_form_data:
-        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
-    else:
+    if kwargs_model.expected_form_data:
         media_type, model_field = kwargs_model.expected_form_data
 
         if media_type == RequestEncodingType.MULTI_PART:
@@ -329,6 +342,10 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
             )
         else:
             data_extractor = create_url_encoded_data_extractor(is_data_optional=kwargs_model.is_data_optional)
+    elif kwargs_model.expected_msgpack_data:
+        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
+    else:
+        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
 
     def extractor(
         values: Dict[str, Any],

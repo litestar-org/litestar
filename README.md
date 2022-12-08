@@ -74,7 +74,7 @@ app = Starlite(route_handlers=[hello_world])
 - Support for dataclasses and `TypedDict`
 - Tortoise ORM Support (via plugin)
 - Trio support (built-in, via AnyIO)
-- Ultra-fast json serialization and deserialization using [orjson](https://github.com/ijl/orjson)
+- Ultra-fast json serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
 - Validation and Parsing using [Pydantic](https://github.com/samuelcolvin/pydantic)
 
 ## Example Applications

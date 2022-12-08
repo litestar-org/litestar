@@ -6,13 +6,13 @@ from base64 import b64decode, b64encode
 from os import urandom
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
 
-from orjson import dumps, loads
 from pydantic import SecretBytes, validator
 
 from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import MissingDependencyException
 from starlite.types import Empty
+from starlite.utils.serialization import decode_json, encode_json
 
 from .base import BaseBackendConfig, BaseSessionBackend
 
@@ -47,8 +47,8 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
 
     def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
-        """Given orjson serializable data, including pydantic models and numpy types, dump it into a bytes string,
-        encrypt, encode and split it into chunks of the desirable size.
+        """Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
+        encode and split it into chunks of the desirable size.
 
         Args:
             data: Data to serialize, encrypt, encode and chunk.
@@ -62,7 +62,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
         """
         serialized = self.serlialize_data(data, scope)
-        associated_data = dumps({"expires_at": round(time.time()) + self.config.max_age})
+        associated_data = encode_json({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
         encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)
         encoded = b64encode(nonce + encrypted + AAD + associated_data)
@@ -81,7 +81,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         nonce = decoded[:NONCE_SIZE]
         aad_starts_from = decoded.find(AAD)
         associated_data = decoded[aad_starts_from:].replace(AAD, b"") if aad_starts_from != -1 else None
-        if associated_data and loads(associated_data)["expires_at"] > round(time.time()):
+        if associated_data and decode_json(associated_data)["expires_at"] > round(time.time()):
             encrypted_session = decoded[NONCE_SIZE:aad_starts_from]
             decrypted = self.aesgcm.decrypt(nonce, encrypted_session, associated_data=associated_data)
             return self.deserialize_data(decrypted)

@@ -1,7 +1,6 @@
 from functools import cached_property
 from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
 
-from orjson import OPT_INDENT_2, OPT_OMIT_MICROSECONDS, dumps
 from yaml import dump as dump_yaml
 
 from starlite.connection import Request
@@ -11,6 +10,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import get
 from starlite.response import Response
 from starlite.status_codes import HTTP_404_NOT_FOUND
+from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
 
@@ -34,7 +34,7 @@ class OpenAPISchemaResponse(Response):
         content_dict = content.dict(by_alias=True, exclude_none=True)
         if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
             return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
-        return dumps(content_dict, option=OPT_INDENT_2 | OPT_OMIT_MICROSECONDS)
+        return encode_json(content_dict)
 
 
 class OpenAPIController(Controller):
@@ -330,9 +330,9 @@ class OpenAPIController(Controller):
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
 
-            self._dumped_modified_schema = dumps(
-                schema_copy.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2
-            ).decode("utf-8")
+            self._dumped_modified_schema = encode_json(schema_copy.json(by_alias=True, exclude_none=True)).decode(
+                "utf-8"
+            )
 
         head = f"""
           <head>
@@ -434,9 +434,7 @@ class OpenAPIController(Controller):
         schema = self.get_schema_from_request(request)
 
         if not self._dumped_schema:
-            self._dumped_schema = dumps(schema.json(by_alias=True, exclude_none=True), option=OPT_INDENT_2).decode(
-                "utf-8"
-            )
+            self._dumped_schema = encode_json(schema.json(by_alias=True, exclude_none=True)).decode("utf-8")
 
         head = f"""
           <head>
