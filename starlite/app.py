@@ -14,6 +14,7 @@ from typing import (
     cast,
 )
 
+from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import TypedDict
 
 from starlite.asgi import ASGIRouter
@@ -22,9 +23,13 @@ from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIC
 from starlite.config.logging import get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import ImmutableState, State
-from starlite.exceptions import NoRouteMatchFoundException
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    NoRouteMatchFoundException,
+)
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.middleware.cors import CORSMiddleware
+from starlite.openapi.path_item import create_path_item
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import SignatureModelFactory
@@ -374,7 +379,8 @@ class Starlite(Router):
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
-            self.openapi_schema = self.openapi_config.create_openapi_schema_model(self)
+            self.openapi_schema = self.openapi_config.to_openapi_schema()
+            self.update_openapi_schema()
             self.register(self.openapi_config.openapi_controller)
 
         for static_config in (
@@ -409,19 +415,23 @@ class Starlite(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
-    def register(self, value: "ControllerRouterHandler") -> None:  # type: ignore[override]
+    def register(self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False) -> None:  # type: ignore[override]
         """Register a route handler on the app.
 
         This method can be used to dynamically add endpoints to an application.
 
         Args:
             value: an instance of [Router][starlite.router.Router], a subclasses of
-        [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
+                [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
+            add_to_openapi_schema: Whether to add the registered route to the OpenAPI Schema. This affects only HTTP route
+                handlers.
 
         Returns:
             None
         """
         routes = super().register(value=value)
+
+        should_add_to_openapi_schema = False
 
         for route in routes:
             route_handlers = get_route_handlers(route)
@@ -432,10 +442,12 @@ class Starlite(Router):
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
                 route_handler.resolve_opts()
+
                 if isinstance(route_handler, HTTPRouteHandler):
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_response()
                     route_handler.resolve_response_handler()
+                    should_add_to_openapi_schema = add_to_openapi_schema
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
@@ -444,6 +456,9 @@ class Starlite(Router):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
 
         self.asgi_router.construct_routing_trie()
+
+        if should_add_to_openapi_schema:
+            self.update_openapi_schema()
 
     def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
         """Receives a route handler name and returns an optional dictionary containing the route handler instance and
@@ -680,3 +695,29 @@ class Starlite(Router):
 
             return wrapped_send
         return send
+
+    def update_openapi_schema(self) -> None:
+        """Create and `OpenAPI` instance for the given application.
+
+        Args:
+            app (Starlite): [Starlite][starlite.app.Starlite] instance.
+
+        Returns:
+            An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
+        """
+        if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
+            raise ImproperlyConfiguredException("cannot generate openapi schema without initializing an OpenAPIConfig")
+
+        for route in self.routes:
+            if (
+                isinstance(route, HTTPRoute)
+                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
+                and (route.path_format or "/") not in self.openapi_schema.paths
+            ):
+                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(
+                    route=route,
+                    create_examples=self.openapi_config.create_examples,
+                    plugins=self.plugins,
+                    use_handler_docstrings=self.openapi_config.use_handler_docstrings,
+                )
+        self.openapi_schema = construct_open_api_with_schema_class(self.openapi_schema)
