@@ -697,13 +697,10 @@ class Starlite(Router):
         return send
 
     def update_openapi_schema(self) -> None:
-        """Create and `OpenAPI` instance for the given application.
-
-        Args:
-            app (Starlite): [Starlite][starlite.app.Starlite] instance.
+        """Update the openapi schema to reflect the route handlers registered on the app.
 
         Returns:
-            An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
+            None
         """
         if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
             raise ImproperlyConfiguredException("cannot generate openapi schema without initializing an OpenAPIConfig")
