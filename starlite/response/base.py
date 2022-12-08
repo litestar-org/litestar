@@ -56,7 +56,7 @@ class Response(Generic[T]):
         "raw_headers",
     )
 
-    serializer: Callable[[Any], Any] = default_serializer
+    serializer: Callable[[Any], Any] = staticmethod(default_serializer)
     """Callable to transform non-natively supported types into supported types.
     Should raise `TypeError` if a type cannot be transformed into a supported type"""
 
