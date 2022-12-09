@@ -67,15 +67,14 @@ class SignatureModel(BaseModel):
         """
         try:
             signature = cls(**kwargs)
-        except ValidationError as exc:
-            raise cls.construct_exception(connection, exc) from exc
-        else:
             if signature.field_plugin_mappings:
                 return {key: signature.resolve_field_value(key) for key in cls.__fields__}
             return {
                 key: signature.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
                 for key in cls.__fields__
             }
+        except ValidationError as exc:
+            raise cls.construct_exception(connection, exc) from exc
 
     def resolve_field_value(self, key: str) -> Any:
         """Given a field key, return value using plugin mapping, if available."""
