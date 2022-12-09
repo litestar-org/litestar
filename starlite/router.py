@@ -1,6 +1,16 @@
-import collections
+from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, Dict, ItemsView, List, Optional, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    DefaultDict,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Union,
+    cast,
+)
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -50,8 +60,8 @@ class Router:
 
     __slots__ = (
         "after_request",
-        "before_request",
         "after_response",
+        "before_request",
         "cache_control",
         "dependencies",
         "etag",
@@ -62,6 +72,7 @@ class Router:
         "owner",
         "parameters",
         "path",
+        "registered_route_handler_ids",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -130,6 +141,7 @@ class Router:
             security: A list of dictionaries that will be added to the schema of all route handlers under the router.
             tags: A list of string tags that will be appended to the schema of all route handlers under the router.
         """
+
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.before_request = AsyncCallable(before_request) if before_request else None
@@ -149,6 +161,7 @@ class Router:
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.security = security or []
         self.tags = tags or []
+        self.registered_route_handler_ids: Set[int] = set()
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
@@ -165,8 +178,10 @@ class Router:
             Collection of handlers added to the router.
         """
         validated_value = self._validate_registration_value(value)
+
         routes: List["BaseRoute"] = []
-        for route_path, handler_or_method_map in self._map_route_handlers(value=validated_value):
+
+        for route_path, handler_or_method_map in self.get_route_handler_map(value=validated_value).items():
             path = join_paths([self.path, route_path])
             if isinstance(handler_or_method_map, WebsocketRouteHandler):
                 route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = WebSocketRoute(
@@ -199,9 +214,11 @@ class Router:
                         route_handlers=route_handlers,
                     )
                     self.routes[existing_route_index] = route
+
                 else:
                     route = HTTPRoute(path=path, route_handlers=route_handlers)
                     self.routes.append(route)
+
             routes.append(route)
         return routes
 
@@ -212,7 +229,7 @@ class Router:
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: Dict[str, RouteHandlerMapItem] = collections.defaultdict(dict)
+        route_map: Dict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 for route_handler in route.route_handlers:
@@ -223,54 +240,37 @@ class Router:
         return route_map
 
     @classmethod
-    def _map_route_handlers(
+    def get_route_handler_map(
         cls,
-        value: Union[Controller, BaseRouteHandler, "Router"],
-    ) -> ItemsView[str, RouteHandlerMapItem]:
+        value: Union["Controller", "BaseRouteHandler", "Router"],
+    ) -> Dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Router):
-            return value.route_handler_method_map.items()
+            return value.route_handler_method_map
+
         if isinstance(value, BaseRouteHandler):
-            return cls._map_route_handlers_for_base_route_handler(value)
-        # we are dealing with a controller
-        return cls._map_route_handlers_for_controller(value)
+            copied_value = copy(value)
+            return cast(
+                "Dict[str, RouteHandlerMapItem]",
+                {
+                    path: {http_method: copied_value for http_method in value.http_methods}
+                    if isinstance(value, HTTPRouteHandler)
+                    else copied_value
+                    for path in value.paths
+                },
+            )
 
-    @staticmethod
-    def _map_route_handlers_for_base_route_handler(value: BaseRouteHandler) -> ItemsView[str, RouteHandlerMapItem]:
-        """Map route handlers to HTTP methods for an input BaseRouteHandler."""
-        value_ = copy(value)
-        handlers_map: Dict[str, RouteHandlerMapItem] = {}
-        for path in value_.paths:
-            if isinstance(value_, HTTPRouteHandler):
-                handlers_map[path] = {http_method: value_ for http_method in value_.http_methods}
-            elif isinstance(value_, (WebsocketRouteHandler, ASGIRouteHandler)):
-                handlers_map[path] = value_
-        return handlers_map.items()
-
-    @classmethod
-    def _map_route_handlers_for_controller(cls, value: Controller) -> ItemsView[str, RouteHandlerMapItem]:
-        """Map route handlers to HTTP methods for an input Controller."""
-        handlers_map: Dict[str, RouteHandlerMapItem] = {}
+        handlers_map: DefaultDict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route_handler in value.get_route_handlers():
             for handler_path in route_handler.paths:
                 path = join_paths([value.path, handler_path]) if handler_path else value.path
                 if isinstance(route_handler, HTTPRouteHandler):
-                    handlers_map[path] = cls._create_http_handler_item(handlers_map, route_handler, path)
+                    for http_method in route_handler.http_methods:
+                        handlers_map[path][http_method] = route_handler  # type: ignore
                 else:
                     handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
-        return handlers_map.items()
 
-    @staticmethod
-    def _create_http_handler_item(
-        handlers_map: Dict[str, RouteHandlerMapItem], route_handler: HTTPRouteHandler, path: str
-    ) -> RouteHandlerMapItem:
-        """Create a dict of HTTP method to route handler for a single controller path."""
-        handler_item: Optional[RouteHandlerMapItem] = handlers_map.get(path)
-        if not isinstance(handler_item, dict):
-            handler_item = {}
-        for http_method in route_handler.http_methods:
-            handler_item[http_method] = route_handler
-        return handler_item
+        return handlers_map
 
     def _validate_registration_value(
         self, value: ControllerRouterHandler
@@ -278,16 +278,22 @@ class Router:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
             return value(owner=self)
-        if not isinstance(value, (Router, BaseRouteHandler)):
-            raise ImproperlyConfiguredException(
-                "Unsupported value passed to `Router.register`. "
-                "If you passed in a function or method, "
-                "make sure to decorate it first with one of the routing decorators"
-            )
+
         if isinstance(value, Router):
             if value.owner:
                 raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
-        value.owner = self
-        return cast("Union[Controller, BaseRouteHandler, Router]", value)
+
+            value.owner = self
+            return value
+
+        if isinstance(value, BaseRouteHandler):
+            value.owner = self
+            return value
+
+        raise ImproperlyConfiguredException(
+            "Unsupported value passed to `Router.register`. "
+            "If you passed in a function or method, "
+            "make sure to decorate it first with one of the routing decorators"
+        )

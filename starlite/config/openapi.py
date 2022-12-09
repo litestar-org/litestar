@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Set, Type, Union, cast
+from typing import Dict, List, Literal, Optional, Set, Type, Union, cast
 
 from pydantic import AnyUrl, BaseModel
-from pydantic_openapi_schema import construct_open_api_with_schema_class
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
     Contact,
@@ -17,11 +16,6 @@ from pydantic_openapi_schema.v3_1_0 import (
 )
 
 from starlite.openapi.controller import OpenAPIController
-from starlite.openapi.path_item import create_path_item
-from starlite.routes.http import HTTPRoute
-
-if TYPE_CHECKING:
-    from starlite.app import Starlite
 
 
 class OpenAPIConfig(BaseModel):
@@ -144,29 +138,5 @@ class OpenAPIConfig(BaseModel):
                 summary=self.summary,
                 termsOfService=self.terms_of_service,
             ),
+            paths={},
         )
-
-    def create_openapi_schema_model(self, app: "Starlite") -> "OpenAPI":
-        """Create and `OpenAPI` instance for the given application.
-
-        Args:
-            app (Starlite): [Starlite][starlite.app.Starlite] instance.
-
-        Returns:
-            An instance of [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI].
-        """
-        schema = self.to_openapi_schema()
-        schema.paths = {}
-        for route in app.routes:
-            if (
-                isinstance(route, HTTPRoute)
-                and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
-                and (route.path_format or "/") not in schema.paths
-            ):
-                schema.paths[route.path_format or "/"] = create_path_item(
-                    route=route,
-                    create_examples=self.create_examples,
-                    plugins=app.plugins,
-                    use_handler_docstrings=self.use_handler_docstrings,
-                )
-        return construct_open_api_with_schema_class(schema)
