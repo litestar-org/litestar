@@ -421,7 +421,7 @@ class Starlite(Router):
         This method can be used to dynamically add endpoints to an application.
 
         Args:
-            value: an instance of [Router][starlite.router.Router], a subclasses of
+            value: an instance of [Router][starlite.router.Router], a subclass of
                 [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
             add_to_openapi_schema: Whether to add the registered route to the OpenAPI Schema. This affects only HTTP route
                 handlers.
