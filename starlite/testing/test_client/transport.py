@@ -106,7 +106,7 @@ class TestClientTransport(BaseTransport):
         netloc = unquote(request.url.netloc.decode(encoding="ascii"))
         path = request.url.path
         raw_path = request.url.raw_path
-        query = unquote(request.url.query.decode(encoding="ascii"))
+        query = request.url.query.decode(encoding="ascii")
         default_port = 433 if scheme in {"https", "wss"} else 80
 
         if ":" in netloc:

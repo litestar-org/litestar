@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import (
     Any,
     Deque,
+    Dict,
     FrozenSet,
     List,
     MutableSequence,
@@ -14,7 +15,7 @@ from urllib.parse import urlencode
 
 import pytest
 
-from starlite import Parameter, get
+from starlite import Parameter, Request, get
 from starlite.datastructures import MultiDict
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
@@ -190,3 +191,34 @@ def test_query_kwarg() -> None:
     with create_test_client(test_method) as client:
         response = client.get(f"{test_path}?{params}")
         assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.parametrize(
+    "values",
+    (
+        (("first", "x@test.com"), ("second", "aaa")),
+        (("first", "&@A.ac"), ("second", "aaa")),
+        (("first", "a@A.ac&"), ("second", "aaa")),
+        (("first", "a@A&.ac"), ("second", "aaa")),
+    ),
+)
+def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
+    # https://github.com/starlite-api/starlite/issues/915
+
+    request_values: Dict[str, Any] = {}
+
+    @get(path="/handler")
+    def handler(request: Request, first: str, second: str) -> None:
+        request_values["first"] = first
+        request_values["second"] = second
+        request_values["query"] = request.query_params
+
+    params = dict(values)
+
+    with create_test_client(handler) as client:
+        response = client.get("/handler", params=params)
+        assert response.status_code == HTTP_200_OK
+        assert request_values["first"] == params["first"]
+        assert request_values["second"] == params["second"]
+        assert request_values["query"].get("first") == params["first"]
+        assert request_values["query"].get("second") == params["second"]
