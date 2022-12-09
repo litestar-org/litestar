@@ -22,7 +22,12 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
-from starlite.utils import create_parsed_model_field, get_enum_string_value, get_name
+from starlite.utils import (
+    create_parsed_model_field,
+    get_enum_string_value,
+    get_name,
+    is_class_and_subclass,
+)
 
 if TYPE_CHECKING:
 
@@ -68,7 +73,7 @@ def create_success_response(
         if signature.return_annotation is Template:
             return_annotation = str  # since templates return str
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
-        elif get_origin(signature.return_annotation) is StarliteResponse:
+        elif is_class_and_subclass(get_origin(signature.return_annotation), StarliteResponse):
             return_annotation = get_args(signature.return_annotation)[0] or Any
         as_parsed_model_field = create_parsed_model_field(return_annotation)
         schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples, plugins=plugins)
