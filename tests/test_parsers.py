@@ -1,9 +1,9 @@
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 from urllib.parse import urlencode
 
 import pytest
 
-from starlite import Cookie
+from starlite import Cookie, HttpMethod, create_test_client
 from starlite.datastructures import MultiDict
 from starlite.parsers import (
     parse_cookie_string,
@@ -78,3 +78,20 @@ def test_parse_query_string() -> None:
         "healthy": [True],
         "polluting": [False],
     }
+
+
+@pytest.mark.parametrize(
+    "values",
+    (
+        (("first", "x@test.com"), ("second", "aaa")),
+        (("first", "&@A.ac"), ("second", "aaa")),
+        (("first", "a@A.ac&"), ("second", "aaa")),
+        (("first", "a@A&.ac"), ("second", "aaa")),
+    ),
+)
+def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
+    # https://github.com/starlite-api/starlite/issues/915
+    with create_test_client([]) as client:
+        request = client.build_request(method=HttpMethod.GET, url="http://www.example.com", params=dict(values))
+        parsed_query = parse_query_string(request.url.query)
+        assert parsed_query == values
