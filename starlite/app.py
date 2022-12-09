@@ -697,7 +697,7 @@ class Starlite(Router):
         return send
 
     def update_openapi_schema(self) -> None:
-        """Update the openapi schema to reflect the route handlers registered on the app.
+        """Update the OpenAPI schema to reflect the route handlers registered on the app.
 
         Returns:
             None
