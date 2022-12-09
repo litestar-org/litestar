@@ -703,7 +703,7 @@ class Starlite(Router):
             None
         """
         if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
-            raise ImproperlyConfiguredException("cannot generate openapi schema without initializing an OpenAPIConfig")
+            raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
 
         for route in self.routes:
             if (
