@@ -30,6 +30,7 @@ from starlite.openapi.responses import (
     create_responses,
     create_success_response,
 )
+from starlite.response.base import T
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_307_TEMPORARY_REDIRECT,
@@ -266,3 +267,15 @@ def test_additional_responses_overlap_with_other_responses() -> None:
         match="Additional response for status code 200 already exists in success or error responses",
     ):
         create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+
+
+def test_create_response_for_response_subclass() -> None:
+    class CustomResponse(Response[T]):
+        pass
+
+    @get(path="/test")
+    def handler() -> CustomResponse[Person]:
+        return CustomResponse(content=PersonFactory.build())
+
+    response = create_success_response(handler, True, plugins=[])
+    assert response.content["application/json"].media_type_schema.schema_class is Person  # type: ignore
