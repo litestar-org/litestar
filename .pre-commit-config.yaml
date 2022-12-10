@@ -117,7 +117,7 @@ repos:
     rev: "v2.15.8"
     hooks:
       - id: pylint
-        exclude: "tests|examples"
+        exclude: "tests|examples|test_apps"
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
@@ -144,6 +144,7 @@ repos:
     rev: "v0.991"
     hooks:
       - id: mypy
+        exclude: "test_apps"
         additional_dependencies:
           [
             aiomcache,
@@ -175,6 +176,7 @@ repos:
     rev: v1.1.283
     hooks:
       - id: pyright
+        exclude: "test_apps"
         additional_dependencies:
           [
             aiomcache,

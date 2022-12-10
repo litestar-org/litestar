@@ -123,10 +123,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     handlers: Dict[str, Dict[str, Any]] = Field(default_factory=get_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance."""
     loggers: Dict[str, Dict[str, Any]] = {
-        "starlite": {
-            "level": "INFO",
-            "handlers": ["queue_listener"],
-        },
+        "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
     }
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding Logger instance."""
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {
