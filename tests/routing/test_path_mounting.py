@@ -25,7 +25,19 @@ def test_supports_mounting() -> None:
         response = Response(scope["path"], media_type=MediaType.TEXT)
         await response(scope, receive, send)
 
-    with create_test_client(asgi_handler) as client:
+    @asgi("/sub/path", is_mount=True)
+    async def asgi_handler_mount_path(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        response = Response(scope["mount_path"], media_type=MediaType.TEXT)
+        await response(scope, receive, send)
+
+    @asgi("/not/mount")
+    async def asgi_handler_not_mounted_path(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        response = Response(f'{scope["mount_path"]}', media_type=MediaType.TEXT)
+        await response(scope, receive, send)
+
+    with create_test_client(
+        route_handlers=[asgi_handler, asgi_handler_mount_path, asgi_handler_not_mounted_path]
+    ) as client:
         response = client.get("/base/sub/path")
         assert response.status_code == HTTP_200_OK
         assert response.text == "/"
@@ -37,6 +49,14 @@ def test_supports_mounting() -> None:
         response = client.get("/base/sub/path/abcd/complex/123/terminus")
         assert response.status_code == HTTP_200_OK
         assert response.text == "/abcd/complex/123/terminus"
+
+        response = client.get("/sub/path/deep/path")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "/sub/path"
+
+        response = client.get("/not/mount")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "None"
 
 
 def test_supports_sub_routes_below_asgi_handlers() -> None:

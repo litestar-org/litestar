@@ -22,7 +22,7 @@ def traverse_route_map(
         path: The request's path.
 
     Raises:
-         NotFoundException: if no correlating node is found.
+        NotFoundException: If no correlating node is found.
 
     Returns:
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
@@ -61,6 +61,9 @@ def parse_node_handlers(
         node: The trie node to parse.
         method: The scope's method.
 
+    Raises:
+        KeyError: If no matching method is found.
+
     Returns:
         An ASGI Handler tuple.
     """
@@ -82,6 +85,9 @@ def parse_path_params(
         parameter_definitions: The parameter definitions tuple from the route.
         path_param_values: The string values extracted from the url
 
+    Raises:
+        ValueError: If any of path parameters can not be parsed into a value.
+
     Returns:
         A dictionary of parsed path parameters.
     """
@@ -98,7 +104,7 @@ def parse_path_to_route(
     path: str,
     plain_routes: Set[str],
     root_node: "RouteTrieNode",
-) -> Tuple["ASGIApp", "RouteHandlerType", str, dict]:
+) -> Tuple["ASGIApp", "RouteHandlerType", str, dict, Optional[str]]:
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
@@ -110,16 +116,18 @@ def parse_path_to_route(
         mount_paths_regex: A compiled regex to match the mount routes.
 
     Raises:
-        MethodNotAllowedException: if no matching method is found.
+        MethodNotAllowedException: If no matching method is found.
+        NotFoundException: If no correlating node is found or if path params can not be parsed into values according to the node definition.
 
     Returns:
-        A tuple containing the stack of middlewares and the route handler that is wrapped by it.
+        A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path, any parsed path params
+        and mount path if available.
     """
 
     try:
         if path in plain_routes:
             asgi_app, handler = parse_node_handlers(node=root_node.children[path], method=method)
-            return asgi_app, handler, path, {}
+            return asgi_app, handler, path, {}, None
 
         if mount_paths_regex and (match := mount_paths_regex.search(path)):
             mount_path = path[match.start() : match.end()]
@@ -129,7 +137,7 @@ def parse_path_to_route(
             # any such handler.
             if not mount_node.children or not any(sub_route in path for sub_route in mount_node.children):  # type: ignore
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
-                return asgi_app, handler, remaining_path or "/", {}
+                return asgi_app, handler, remaining_path or "/", {}, mount_path
 
         node, path_parameters, path = traverse_route_map(
             root_node=root_node,
@@ -138,12 +146,7 @@ def parse_path_to_route(
         asgi_app, handler = parse_node_handlers(node=node, method=method)
         parsed_path_parameters = parse_path_params(node.path_parameters, tuple(path_parameters))
 
-        return (
-            asgi_app,
-            handler,
-            path,
-            parsed_path_parameters,
-        )
+        return (asgi_app, handler, path, parsed_path_parameters, None)
     except KeyError as e:
         raise MethodNotAllowedException() from e
     except ValueError as e:

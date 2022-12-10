@@ -86,6 +86,7 @@ class BaseScope(HeaderScope):
     query_string: bytes
     raw_path: bytes
     root_path: str
+    mount_path: Optional[str]
     route_handler: "RouteHandlerType"
     scheme: str
     server: Optional[Tuple[str, Optional[int]]]

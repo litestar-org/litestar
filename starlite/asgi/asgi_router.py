@@ -74,13 +74,20 @@ class ASGIRouter:
         """
         scope.setdefault("path_params", {})
         normalized_path = normalize_path(scope["path"])
-        asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
-            path=normalized_path, method=scope.get("method")
-        )
+        (
+            asgi_app,
+            scope["route_handler"],
+            scope["path"],
+            scope["path_params"],
+            scope["mount_path"],
+        ) = self.handle_routing(path=normalized_path, method=scope.get("method"))
+
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
-    def handle_routing(self, path: str, method: Optional["Method"]) -> Tuple["ASGIApp", "RouteHandlerType", str, dict]:
+    def handle_routing(
+        self, path: str, method: Optional["Method"]
+    ) -> Tuple["ASGIApp", "RouteHandlerType", str, dict, Optional[str]]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
 
         Args:
@@ -88,7 +95,8 @@ class ASGIRouter:
             method: The scope's method, if any.
 
         Returns:
-            A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path and any parsed path params.
+            A tuple composed of the ASGIApp of the route, the route handler instance, the resolved and normalized path, any parsed path params
+            and mount path if available.
         """
         return parse_path_to_route(
             mount_paths_regex=self._mount_paths_regex,

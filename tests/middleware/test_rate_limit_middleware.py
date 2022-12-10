@@ -1,10 +1,11 @@
 from time import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from freezegun import freeze_time
 
 from starlite import Request, get
+from starlite.config import StaticFilesConfig
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -14,6 +15,9 @@ from starlite.middleware.rate_limit import (
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import create_test_client
 from starlite.utils.serialization import decode_json, encode_json
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.mark.parametrize("unit", ["minute", "second", "hour", "day"])
@@ -154,3 +158,31 @@ def test_check_throttle_handler() -> None:
 
         response = client.get("/path2")
         assert response.status_code == HTTP_200_OK
+
+
+async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
+    # https://github.com/starlite-api/starlite/issues/781
+    @get("/not-excluded")
+    def handler() -> None:
+        return None
+
+    path1 = tmpdir / "test.css"
+    path1.write_text("styles content", "utf-8")
+
+    static_files_config = StaticFilesConfig(directories=[tmpdir], path="/src/static")  # pyright: ignore
+    rate_limit_config = RateLimitConfig(
+        rate_limit=("minute", 1),
+        exclude=[r"^/src.*$"],
+    )
+    with create_test_client(
+        [handler], static_files_config=static_files_config, middleware=[rate_limit_config.middleware]
+    ) as client:
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/not-excluded")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+        response = client.get("/src/static/test.css")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "styles content"

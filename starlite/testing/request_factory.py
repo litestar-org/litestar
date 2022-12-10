@@ -143,6 +143,7 @@ class RequestFactory:
             scheme=self.scheme,
             server=(self.server, self.port),
             root_path=self.root_path.rstrip("/"),
+            mount_path=None,
             path=path,
             headers=[],
             app=self.app,
