@@ -14,6 +14,8 @@ from starlite.testing import create_test_client
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
+    from starlite.types.callable_types import GetLogger
+
 
 @get("/")
 def handler() -> Response:
@@ -24,17 +26,25 @@ def handler() -> Response:
     )
 
 
-# due to the limitations of caplog we have to place this call here.
-get_logger = LoggingConfig(handlers=default_handlers).configure()
+@pytest.fixture
+def get_logger() -> "GetLogger":
+    # due to the limitations of caplog we have to place this call here.
+    # we also have to allow propagation.
+    return LoggingConfig(
+        handlers=default_handlers,
+        loggers={
+            "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
+        },
+    ).configure()
 
 
-def test_logging_middleware_regular_logger(caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     with create_test_client(
         route_handlers=[handler], middleware=[LoggingMiddlewareConfig().middleware]
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
-        client.cookies = {"request-cookie": "abc"}  # type: ignore
         client.app.get_logger = get_logger
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
         response = client.get("/", headers={"request-header": "1"})
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
@@ -94,7 +104,7 @@ def test_logging_middleware_struct_logger() -> None:
         }
 
 
-def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_exclude_pattern(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     @get("/exclude")
     def handler2() -> None:
         return None
@@ -116,7 +126,7 @@ def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture") -> None
         assert len(caplog.messages) == 2
 
 
-def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_exclude_opt_key(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
         return None
@@ -139,7 +149,9 @@ def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture") -> None
 
 
 @pytest.mark.parametrize("include", [True, False])
-def test_logging_middleware_compressed_response_body(include: bool, caplog: "LogCaptureFixture") -> None:
+def test_logging_middleware_compressed_response_body(
+    get_logger: "GetLogger", include: bool, caplog: "LogCaptureFixture"
+) -> None:
     with create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(backend="gzip", minimum_size=1),
@@ -168,3 +180,26 @@ def test_logging_middleware_post_body() -> None:
         res = client.post("/", json={"foo": "bar"})
         assert res.status_code == 201
         assert res.json() == {"foo": "bar"}
+
+
+@pytest.mark.parametrize("logger_name", ("starlite", "other"))
+def test_logging_messages_are_not_doubled(
+    get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
+) -> None:
+    # https://github.com/starlite-api/starlite/issues/896
+
+    @get("/")
+    async def hello_world_handler() -> Dict[str, str]:
+        return {"hello": "world"}
+
+    logging_middleware_config = LoggingMiddlewareConfig(logger_name=logger_name)
+
+    with create_test_client(
+        hello_world_handler,
+        logging_config=LoggingConfig(),
+        middleware=[logging_middleware_config.middleware],
+    ) as client, caplog.at_level(INFO):
+        client.app.get_logger = get_logger
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2

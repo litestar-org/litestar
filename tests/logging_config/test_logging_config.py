@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, Any, Dict
 from unittest.mock import Mock, patch
 
@@ -21,8 +22,6 @@ from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
-
-    from starlite.types import Logger
 
 
 @pytest.mark.parametrize(
@@ -67,27 +66,29 @@ def test_correct_default_handlers_set(picologging_exists: bool) -> None:
 )
 def test_dictconfig_startup(dict_config_class: str, handlers: Any) -> None:
     with patch(dict_config_class) as dict_config_mock:
-        test_logger = LoggingConfig(handlers=handlers)
+        test_logger = LoggingConfig(
+            handlers=handlers,
+        )
         with create_test_client([], on_startup=[test_logger.configure]):
             assert dict_config_mock.called
 
 
-@pytest.mark.parametrize("logger", [LoggingConfig(handlers=default_handlers).configure()("starlite")])
-def test_standard_queue_listener_logger(logger: "Logger", caplog: "LogCaptureFixture") -> None:
-    with caplog.at_level("INFO"):
+LoggingConfig(
+    handlers=default_handlers,
+    loggers={
+        "test_logger": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
+    },
+).configure()
+
+
+def test_standard_queue_listener_logger(caplog: "LogCaptureFixture") -> None:
+    with caplog.at_level("INFO", logger="test_logger"):
+        logger = logging.getLogger("test_logger")
         logger.info("Testing now!")
         assert "Testing now!" in caplog.text
         var = "test_var"
         logger.info("%s", var)
         assert var in caplog.text
-
-
-@pytest.mark.xfail(reason="see: https://github.com/microsoft/picologging/issues/90")
-@pytest.mark.parametrize("logger", [LoggingConfig(handlers=default_picologging_handlers).configure()("starlite")])
-def test_picologging_queue_listener_logger(logger: "Logger", caplog: "LogCaptureFixture") -> None:
-    with caplog.at_level("INFO"):
-        logger.info("Testing now!")
-        assert "Testing now!" in caplog.text
 
 
 @patch("picologging.config.dictConfig")

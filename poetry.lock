@@ -654,7 +654,7 @@ setuptools = "*"
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.14.0"
+version = "1.15.0"
 description = "OpenTelemetry Python API"
 category = "main"
 optional = false
@@ -666,7 +666,7 @@ setuptools = ">=16.0"
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.35b0"
+version = "0.36b0"
 description = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 category = "main"
 optional = false
@@ -679,7 +679,7 @@ wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "opentelemetry-instrumentation-asgi"
-version = "0.35b0"
+version = "0.36b0"
 description = "ASGI instrumentation for OpenTelemetry"
 category = "main"
 optional = false
@@ -688,31 +688,31 @@ python-versions = ">=3.7"
 [package.dependencies]
 asgiref = ">=3.0,<4.0"
 opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.35b0"
-opentelemetry-semantic-conventions = "0.35b0"
-opentelemetry-util-http = "0.35b0"
+opentelemetry-instrumentation = "0.36b0"
+opentelemetry-semantic-conventions = "0.36b0"
+opentelemetry-util-http = "0.36b0"
 
 [package.extras]
 instruments = ["asgiref (>=3.0,<4.0)"]
-test = ["opentelemetry-instrumentation-asgi[instruments]", "opentelemetry-test-utils (==0.35b0)"]
+test = ["opentelemetry-instrumentation-asgi[instruments]", "opentelemetry-test-utils (==0.36b0)"]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.14.0"
+version = "1.15.0"
 description = "OpenTelemetry Python SDK"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-opentelemetry-api = "1.14.0"
-opentelemetry-semantic-conventions = "0.35b0"
+opentelemetry-api = "1.15.0"
+opentelemetry-semantic-conventions = "0.36b0"
 setuptools = ">=16.0"
 typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.35b0"
+version = "0.36b0"
 description = "OpenTelemetry Semantic Conventions"
 category = "main"
 optional = false
@@ -720,7 +720,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "opentelemetry-util-http"
-version = "0.35b0"
+version = "0.36b0"
 description = "Web util for OpenTelemetry"
 category = "main"
 optional = false
@@ -747,7 +747,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "pathspec"
-version = "0.10.2"
+version = "0.10.3"
 description = "Utility library for gitignore style pattern matching of file paths."
 category = "dev"
 optional = false
@@ -1231,7 +1231,7 @@ psycopg = ["psycopg[binary,pool]"]
 
 [[package]]
 name = "tox"
-version = "4.0.3"
+version = "4.0.5"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
@@ -1980,28 +1980,28 @@ nodeenv = [
     {file = "nodeenv-1.7.0.tar.gz", hash = "sha256:e0e7f7dfb85fc5394c6fe1e8fa98131a2473e04311a45afb6508f7cf1836fa2b"},
 ]
 opentelemetry-api = [
-    {file = "opentelemetry_api-1.14.0-py3-none-any.whl", hash = "sha256:d98107f65a815b7d3bc90b79abd6460fefe7b9ccb9c6958e2e37129e360a811a"},
-    {file = "opentelemetry_api-1.14.0.tar.gz", hash = "sha256:9629d87680a765a1e3e16f8bd156d59e7ed00f4282f9df00c217d53229356fba"},
+    {file = "opentelemetry_api-1.15.0-py3-none-any.whl", hash = "sha256:e6c2d2e42140fd396e96edf75a7ceb11073f4efb4db87565a431cc9d0f93f2e0"},
+    {file = "opentelemetry_api-1.15.0.tar.gz", hash = "sha256:79ab791b4aaad27acc3dc3ba01596db5b5aac2ef75c70622c6038051d6c2cded"},
 ]
 opentelemetry-instrumentation = [
-    {file = "opentelemetry_instrumentation-0.35b0-py3-none-any.whl", hash = "sha256:0ca91ef51c6748e91892cd1322b1fceede77d1300dc718a5ec4c3deee5649beb"},
-    {file = "opentelemetry_instrumentation-0.35b0.tar.gz", hash = "sha256:a7cb996b37920911db7534dc739ab3fe18e4f769431481bec01d6538a11cadd9"},
+    {file = "opentelemetry_instrumentation-0.36b0-py3-none-any.whl", hash = "sha256:83ba4ae7d5292b5b33e0f851cc5c76d8f91196b9b3527800fc13855c33383ac2"},
+    {file = "opentelemetry_instrumentation-0.36b0.tar.gz", hash = "sha256:e3ddac9b3b93408ef26c8ecbf38f717042977e16381bb4cd329a5b4cf16998cf"},
 ]
 opentelemetry-instrumentation-asgi = [
-    {file = "opentelemetry_instrumentation_asgi-0.35b0-py3-none-any.whl", hash = "sha256:88fd0dfe701935e12a62fd4c6767420d4ce6ee2ec73ef8ed223590b90f79c4d6"},
-    {file = "opentelemetry_instrumentation_asgi-0.35b0.tar.gz", hash = "sha256:fd3101fb9b23e311b7a0690594180e55a62f06b843e2da3113a764a3341c2ba9"},
+    {file = "opentelemetry_instrumentation_asgi-0.36b0-py3-none-any.whl", hash = "sha256:764c22455180d646f7fbc9d2fa119cca86dea9bada3c70c21f606bf4722034f5"},
+    {file = "opentelemetry_instrumentation_asgi-0.36b0.tar.gz", hash = "sha256:6a271d895d5eae4d98484be60abbc407871bf0dfd1dcfe916f38bf0260e79757"},
 ]
 opentelemetry-sdk = [
-    {file = "opentelemetry_sdk-1.14.0-py3-none-any.whl", hash = "sha256:81d76b23ed0eb0dc6b2b614ed7b27f7a84921df1395261b3732ef1deac95c414"},
-    {file = "opentelemetry_sdk-1.14.0.tar.gz", hash = "sha256:1b58bd9bb96b917c66cdd00bcfd719aca15695a0720fd0332d7db2a6a74c02c8"},
+    {file = "opentelemetry_sdk-1.15.0-py3-none-any.whl", hash = "sha256:555c533e9837766119bbccc7a80458c9971d853a6f1da683a2246cd5e53b4645"},
+    {file = "opentelemetry_sdk-1.15.0.tar.gz", hash = "sha256:98dbffcfeebcbff12c0c974292d6ea603180a145904cf838b1fe4d5c99078425"},
 ]
 opentelemetry-semantic-conventions = [
-    {file = "opentelemetry_semantic_conventions-0.35b0-py3-none-any.whl", hash = "sha256:eb5320719d919db2ff8ac60a7577dfa2316cf02bccc6a3b1f50d051885dd96b7"},
-    {file = "opentelemetry_semantic_conventions-0.35b0.tar.gz", hash = "sha256:3c24717f2838a6b4db45d68abf69078942e876c2347e0a83a09c1533017d85d2"},
+    {file = "opentelemetry_semantic_conventions-0.36b0-py3-none-any.whl", hash = "sha256:adc05635e87b9d3e007c9f530eed487fc3ef2177d02f82f674f28ebf9aff8243"},
+    {file = "opentelemetry_semantic_conventions-0.36b0.tar.gz", hash = "sha256:829dc221795467d98b773c04096e29be038d77526dc8d6ac76f546fb6279bf01"},
 ]
 opentelemetry-util-http = [
-    {file = "opentelemetry_util_http-0.35b0-py3-none-any.whl", hash = "sha256:60652fb093099a8f71e7cfb63fd1d286d4e71f3ffe3e0435678060acd4d151ca"},
-    {file = "opentelemetry_util_http-0.35b0.tar.gz", hash = "sha256:8a38064a32a023ef2f1469c1a615461c4240fa99fd4ea9d0eef4d416af47ccaa"},
+    {file = "opentelemetry_util_http-0.36b0-py3-none-any.whl", hash = "sha256:2d858af8ff8a035da650d564efb3ed1baba1de6479998d344de3a7597333fded"},
+    {file = "opentelemetry_util_http-0.36b0.tar.gz", hash = "sha256:804807d9f50f3e7e135356531e8662e37f8c4c3edd54fc5b1826cb62202098c9"},
 ]
 outcome = [
     {file = "outcome-1.2.0-py2.py3-none-any.whl", hash = "sha256:c4ab89a56575d6d38a05aa16daeaa333109c1f96167aba8901ab18b6b5e0f7f5"},
@@ -2012,8 +2012,8 @@ packaging = [
     {file = "packaging-22.0.tar.gz", hash = "sha256:2198ec20bd4c017b8f9717e00f0c8714076fc2fd93816750ab48e2c41de2cfd3"},
 ]
 pathspec = [
-    {file = "pathspec-0.10.2-py3-none-any.whl", hash = "sha256:88c2606f2c1e818b978540f73ecc908e13999c6c3a383daf3705652ae79807a5"},
-    {file = "pathspec-0.10.2.tar.gz", hash = "sha256:8f6bf73e5758fd365ef5d58ce09ac7c27d2833a8d7da51712eac6e27e35141b0"},
+    {file = "pathspec-0.10.3-py3-none-any.whl", hash = "sha256:3c95343af8b756205e2aba76e843ba9520a24dd84f68c22b9f93251507509dd6"},
+    {file = "pathspec-0.10.3.tar.gz", hash = "sha256:56200de4077d9d0791465aa9095a01d421861e405b5096955051deefd697d6f6"},
 ]
 piccolo = [
     {file = "piccolo-0.101.0-py3-none-any.whl", hash = "sha256:693c560318ca37a1fc070031fcdc92b357047ab21aedd6bdadf9b38ade4702f9"},
@@ -2373,8 +2373,8 @@ tortoise-orm = [
     {file = "tortoise_orm-0.19.2-py3-none-any.whl", hash = "sha256:a99b8c9f42d5cd49493c70471b5c9a5df8ecf49cc624f2f41b9dc75bba993ac5"},
 ]
 tox = [
-    {file = "tox-4.0.3-py3-none-any.whl", hash = "sha256:9661644cc970cd52660e0b724d45baffaa300665298b712705aabbda32b2c8bb"},
-    {file = "tox-4.0.3.tar.gz", hash = "sha256:e067703550a28ebe010b4f650a16d3efa30340f7ba32016b08759fbb52a6f80c"},
+    {file = "tox-4.0.5-py3-none-any.whl", hash = "sha256:e71aee9e77646791c00e226301d5ef8d26cf68ac46b1825d3d46ba538518c235"},
+    {file = "tox-4.0.5.tar.gz", hash = "sha256:11a2f5e18ac76b544f7006f6959821ec39bfe24e42cbf990fc0e212c1a07d092"},
 ]
 trio = [
     {file = "trio-0.22.0-py3-none-any.whl", hash = "sha256:f1dd0780a89bfc880c7c7994519cb53f62aacb2c25ff487001c0052bd721cdf0"},
