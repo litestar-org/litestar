@@ -52,7 +52,11 @@ async def resolve_dependency(
         cleanup_group: DependencyCleanupGroup to which generators returned by `dependency` will be added
     """
     signature_model = get_signature_model(dependency.provide)
-    dependency_kwargs = signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+    dependency_kwargs = (
+        signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+        if signature_model.__fields__
+        else {}
+    )
     value = await dependency.provide(**dependency_kwargs)
 
     if isgenerator(value):

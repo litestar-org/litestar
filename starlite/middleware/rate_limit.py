@@ -148,6 +148,13 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
         host = request.client.host if request.client else "anonymous"
         identifier = request.headers.get("X-Forwarded-For") or request.headers.get("X-Real-IP") or host
+        route_handler = request.scope["route_handler"]
+        if getattr(route_handler, "is_mount", False):
+            identifier += "::mount"
+
+        if getattr(route_handler, "is_static", False):
+            identifier += "::static"
+
         return f"{type(self).__name__}::{identifier}"
 
     async def retrieve_cached_history(self, key: str) -> CacheObject:

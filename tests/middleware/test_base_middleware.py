@@ -1,6 +1,14 @@
 from typing import TYPE_CHECKING
 
-from starlite import AbstractMiddleware, DefineMiddleware, ValidationException, get
+from starlite import (
+    AbstractMiddleware,
+    DefineMiddleware,
+    MediaType,
+    Response,
+    ValidationException,
+    asgi,
+    get,
+)
 from starlite.datastructures.headers import MutableScopeHeaders
 from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
@@ -46,7 +54,7 @@ def test_raises_exception() -> None:
 
 def test_exclude_by_pattern() -> None:
     class SubclassMiddleware(AbstractMiddleware):
-        exclude = "123"
+        exclude = r"^/123"
 
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
             async def _send(message: "Message") -> None:
@@ -65,12 +73,21 @@ def test_exclude_by_pattern() -> None:
     def second_handler() -> dict:
         return {"hello": "world"}
 
+    @asgi("/mount", is_mount=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        response = Response("ok", media_type=MediaType.TEXT)
+        await response(scope, receive, send)
+
     with create_test_client(
-        [first_handler, second_handler], middleware=[DefineMiddleware(SubclassMiddleware)]
+        [first_handler, second_handler, handler], middleware=[DefineMiddleware(SubclassMiddleware)]
     ) as client:
         response = client.get("/123")
         assert "test" not in response.headers
+
         response = client.get("/456")
+        assert "test" in response.headers
+
+        response = client.get("/mount/123")
         assert "test" in response.headers
 
 

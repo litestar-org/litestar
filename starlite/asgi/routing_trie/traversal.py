@@ -22,7 +22,7 @@ def traverse_route_map(
         path: The request's path.
 
     Raises:
-         NotFoundException: if no correlating node is found.
+        NotFoundException: If no correlating node is found.
 
     Returns:
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
@@ -61,6 +61,9 @@ def parse_node_handlers(
         node: The trie node to parse.
         method: The scope's method.
 
+    Raises:
+        KeyError: If no matching method is found.
+
     Returns:
         An ASGI Handler tuple.
     """
@@ -81,6 +84,9 @@ def parse_path_params(
     Args:
         parameter_definitions: The parameter definitions tuple from the route.
         path_param_values: The string values extracted from the url
+
+    Raises:
+        ValueError: If any of path parameters can not be parsed into a value.
 
     Returns:
         A dictionary of parsed path parameters.
@@ -111,6 +117,7 @@ def parse_path_to_route(
 
     Raises:
         MethodNotAllowedException: if no matching method is found.
+        NotFoundException: If no correlating node is found or if path params can not be parsed into values according to the node definition.
 
     Returns:
         A tuple containing the stack of middlewares and the route handler that is wrapped by it.

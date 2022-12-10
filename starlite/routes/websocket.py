@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.routes.base import BaseRoute
-from starlite.signature import get_signature_model
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket
@@ -54,30 +53,29 @@ class WebSocketRoute(BaseRoute):
             None
         """
         websocket: "WebSocket[Any, Any]" = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
-        if self.route_handler.resolve_guards():
-            await self.route_handler.authorize_connection(connection=websocket)
 
-        kwargs, cleanup_group = await self._resolve_kwargs(websocket=websocket)
-
-        async with cleanup_group:
-            await self.route_handler.fn.value(**kwargs)
-        await cleanup_group.cleanup()
-
-    async def _resolve_kwargs(
-        self, websocket: "WebSocket[Any, Any]"
-    ) -> Tuple[Dict[str, Any], "DependencyCleanupGroup"]:
-        """Resolve the required kwargs from the request data.
-
-        Args:
-            websocket: WebSocket instance
-
-        Returns:
-            Dictionary of parsed kwargs
-        """
         if not self.handler_parameter_model:  # pragma: no cover
             raise ImproperlyConfiguredException("handler parameter model not defined")
 
-        signature_model = get_signature_model(self.route_handler)
-        kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
-        cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, kwargs)
-        return signature_model.parse_values_from_connection_kwargs(connection=websocket, **kwargs), cleanup_group
+        if self.route_handler.resolve_guards():
+            await self.route_handler.authorize_connection(connection=websocket)
+
+        parsed_kwargs: Dict[str, Any] = {}
+        cleanup_group: Optional["DependencyCleanupGroup"] = None
+
+        if self.handler_parameter_model.has_kwargs and self.route_handler.signature_model:
+            parsed_kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
+
+            if self.handler_parameter_model.dependency_batches:
+                cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, parsed_kwargs)
+
+            parsed_kwargs = self.route_handler.signature_model.parse_values_from_connection_kwargs(
+                connection=websocket, **parsed_kwargs
+            )
+
+        if cleanup_group:
+            async with cleanup_group:
+                await self.route_handler.fn.value(**parsed_kwargs)
+            await cleanup_group.cleanup()
+        else:
+            await self.route_handler.fn.value(**parsed_kwargs)

@@ -50,6 +50,7 @@ class SignatureModel(BaseModel):
     """Pydantic model representing a signature."""
 
     class Config(BaseConfig):
+        copy_on_model_validation = "none"
         arbitrary_types_allowed = True
 
     dependency_name_set: ClassVar[Set[str]]
@@ -66,7 +67,12 @@ class SignatureModel(BaseModel):
         """
         try:
             signature = cls(**kwargs)
-            return {key: signature.resolve_field_value(key) for key in cls.__fields__}
+            if signature.field_plugin_mappings:
+                return {key: signature.resolve_field_value(key) for key in cls.__fields__}
+            return {
+                key: signature.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
+                for key in cls.__fields__
+            }
         except ValidationError as exc:
             raise cls.construct_exception(connection, exc) from exc
 

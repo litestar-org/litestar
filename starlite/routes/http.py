@@ -5,16 +5,16 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
-from starlite.datastructures.provide import DependencyCleanupGroup
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import HTTPRouteHandler
-from starlite.response import RedirectResponse, Response
+from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
+    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.kwargs import KwargsModel
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
@@ -77,8 +77,8 @@ class HTTPRoute(BaseRoute):
         )
 
         await response(scope, receive, send)
-        after_response_handler = route_handler.resolve_after_response()
-        if after_response_handler:
+
+        if after_response_handler := route_handler.resolve_after_response():
             await after_response_handler(request)  # type: ignore
 
         if form_data := scope.get("_form", {}):
@@ -119,20 +119,21 @@ class HTTPRoute(BaseRoute):
         Returns:
             An instance of Response or a compatible ASGIApp or a subclass of it
         """
-        response: Optional["ASGIApp"] = None
-        if route_handler.cache:
-            response = await self._get_cached_response(request=request, route_handler=route_handler)
+        if route_handler.cache and (
+            response := await self._get_cached_response(request=request, route_handler=route_handler)
+        ):
+            return response
 
-        if not response:
-            response = await self._call_handler_function(
-                scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+        response = await self._call_handler_function(
+            scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+        )
+
+        if route_handler.cache:
+            await self._set_cached_response(
+                response=response,
+                request=request,
+                route_handler=route_handler,
             )
-            if route_handler.cache:
-                await self._set_cached_response(
-                    response=response,
-                    request=request,
-                    route_handler=route_handler,
-                )
 
         return response
 
@@ -145,11 +146,10 @@ class HTTPRoute(BaseRoute):
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
         """
-        response_data = None
-        before_request_handler = route_handler.resolve_before_request()
+        response_data: Any = None
         cleanup_group: Optional["DependencyCleanupGroup"] = None
 
-        if before_request_handler:
+        if before_request_handler := route_handler.resolve_before_request():
             response_data = await before_request_handler(request)
 
         if not response_data:
@@ -157,21 +157,21 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        response: "ASGIApp"
-        if isinstance(response_data, RedirectResponse):
-            response = response_data
-        else:
-            response = await route_handler.to_response(
+        response: "ASGIApp" = (
+            response_data  # type: ignore[assignment]
+            if isinstance(response_data, Response)
+            else await route_handler.to_response(
                 app=scope["app"],
                 data=response_data,
                 plugins=request.app.plugins,
                 request=request,
             )
+        )
 
         if cleanup_group:
             await cleanup_group.cleanup()
 
-        return response  # noqa: R504
+        return response
 
     @staticmethod
     async def _get_response_data(
@@ -187,17 +187,26 @@ class HTTPRoute(BaseRoute):
             if "data" in kwargs:
                 kwargs["data"] = await kwargs["data"]
 
-            cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
+            if parameter_model.dependency_batches:
+                cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
                 connection=request, **kwargs
             )
 
-        async with (cleanup_group or DependencyCleanupGroup()):
+        if cleanup_group:
+            async with cleanup_group:
+                if route_handler.has_sync_callable:
+                    data = route_handler.fn.value(**parsed_kwargs)
+                else:
+                    data = await route_handler.fn.value(**parsed_kwargs)
+
+        else:
             if route_handler.has_sync_callable:
                 data = route_handler.fn.value(**parsed_kwargs)
             else:
                 data = await route_handler.fn.value(**parsed_kwargs)
+
         return data, cleanup_group
 
     @staticmethod
