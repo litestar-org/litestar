@@ -20,8 +20,8 @@ starlette_app = asgi(path="/some/sub-path", is_mount=True)(
         debug=True,
         routes=[
             Route("/", index),
-            Route("/abc", index),
-            Route("/123/another/sub-path", index),
+            Route("/abc/", index),
+            Route("/123/another/sub-path/", index),
         ],
     )
 )

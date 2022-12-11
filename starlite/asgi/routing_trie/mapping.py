@@ -21,7 +21,7 @@ def add_mount_route(
     current_node: "RouteTrieNode",
     mount_routes: Dict[str, "RouteTrieNode"],
     root_node: "RouteTrieNode",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
+    route: "ASGIRoute",
 ) -> "RouteTrieNode":
     """Add a node for a mount route.
 
@@ -47,6 +47,7 @@ def add_mount_route(
             current_node = current_node.children[component]  # type: ignore[index]
 
     current_node.is_mount = True
+    current_node.is_static = route.route_handler.is_static
 
     if route.path != "/":
         mount_routes[route.path] = root_node.children[route.path] = current_node
@@ -90,7 +91,7 @@ def add_route_to_trie(
             current_node=current_node,
             mount_routes=mount_routes,
             root_node=root_node,
-            route=route,
+            route=cast("ASGIRoute", route),
         )
     elif not has_path_parameters:
         plain_routes.add(route.path)

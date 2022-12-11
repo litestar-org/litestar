@@ -30,6 +30,7 @@ class RouteTrieNode:
         "children",
         "is_asgi",
         "is_mount",
+        "is_static",
         "is_path_param_node",
         "is_path_type",
         "path_parameters",
@@ -63,6 +64,10 @@ class RouteTrieNode:
     """
     Designate the node as being a mount route.
     """
+    is_static: bool
+    """
+    Designate the node as being a static mount route.
+    """
     path_parameters: Tuple["PathParameterDefinition", ...]
     """
     A list of tuples containing path parameter definitions. This is used for parsing extracted path parameter values.
@@ -83,6 +88,7 @@ def create_node() -> RouteTrieNode:
         is_path_param_node=False,
         is_asgi=False,
         is_mount=False,
+        is_static=False,
         is_path_type=False,
         path_parameters=(),
     )
