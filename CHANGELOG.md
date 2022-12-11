@@ -1,5 +1,15 @@
 # Changelog
 
+[1.45.0]
+
+- add `MessagePack` support and serialization with `msgspec`.
+- fix OpenAPI support for custom responses with generic types.
+- fix OpenAPI support for dynamic route handlers.
+- fix TestClient handling of escaped ampersands in query params.
+- fix logger propagation causing duplicate messages.
+- fix mounting starlette apps require trailing slashes.
+- fix rate-limiting of mount paths.
+
 [1.44.0]
 
 - add support for pagination.
