@@ -8,8 +8,6 @@ from starlite import (
     MissingDependencyException,
     NotFoundException,
     Starlite,
-    StaticFilesConfig,
-    TemplateConfig,
     asgi,
     delete,
     get,
@@ -17,7 +15,6 @@ from starlite import (
     post,
 )
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
-from starlite.template.jinja import JinjaTemplateEngine
 
 try:
     from piccolo_admin.endpoints import create_admin
@@ -85,10 +82,6 @@ app = Starlite(
         delete_task,
     ],
     plugins=[PiccoloORMPlugin()],
-    template_config=TemplateConfig(directory="test_apps/piccolo_admin_app/home/templates", engine=JinjaTemplateEngine),
-    static_files_config=[
-        StaticFilesConfig(directories=["static"], path="/static/"),
-    ],
     on_startup=[open_database_connection_pool],
     on_shutdown=[close_database_connection_pool],
 )

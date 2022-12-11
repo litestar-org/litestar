@@ -44,15 +44,15 @@ def test_supports_mounting() -> None:
 
         response = client.get("/base/sub/path/abcd")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/abcd"
+        assert response.text == "/abcd/"
 
         response = client.get("/base/sub/path/abcd/complex/123/terminus")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/abcd/complex/123/terminus"
+        assert response.text == "/abcd/complex/123/terminus/"
 
         response = client.get("/sub/path/deep/path")
         assert response.status_code == HTTP_200_OK
-        assert response.text == "/deep/path"
+        assert response.text == "/deep/path/"
 
         response = client.get("/not/mount")
         assert response.status_code == HTTP_200_OK
