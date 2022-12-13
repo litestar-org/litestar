@@ -53,7 +53,7 @@ def test_response_serialization_structured_types(content: Any, response_type: An
     if isinstance(value, dict) and "enum" in value:
         assert content.__class__(**value)["enum"] == content["enum"].value
     elif isinstance(value, dict) and "secret" in value:
-        assert content.__class__(**value)["secret"] == content["secret"].get_secret_value()
+        assert content.__class__(**value)["secret"] == str(content["secret"])
     elif isinstance(value, dict) and "pure_path" in value:
         assert content.__class__(**value)["pure_path"] == str(content["pure_path"])
     elif isinstance(value, dict):

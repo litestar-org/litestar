@@ -1,26 +1,71 @@
-from pathlib import PurePath, PurePosixPath
-from typing import Any, Callable, Optional, Union
+from pathlib import PurePosixPath
+from typing import Any, Callable, Dict, Optional, Union
 
 import msgspec
-from pydantic import BaseModel, SecretStr
+from pydantic import (
+    AnyUrl,
+    BaseModel,
+    ByteSize,
+    ConstrainedBytes,
+    ConstrainedDate,
+    ConstrainedDecimal,
+    ConstrainedFloat,
+    ConstrainedFrozenSet,
+    ConstrainedInt,
+    ConstrainedList,
+    ConstrainedSet,
+    ConstrainedStr,
+    EmailStr,
+    NameEmail,
+    PaymentCardNumber,
+    SecretField,
+    StrictBool,
+)
+from pydantic.color import Color
+
+DEFAULT_TYPE_ENCODERS: Dict[Any, Callable[[Any], Any]] = {
+    PurePosixPath: str,
+    # pydantic specific types
+    BaseModel: lambda m: m.dict(),
+    ByteSize: lambda b: b.real,
+    EmailStr: str,
+    NameEmail: str,
+    Color: str,
+    AnyUrl: str,
+    SecretField: str,
+    ConstrainedInt: int,
+    ConstrainedFloat: float,
+    ConstrainedStr: str,
+    ConstrainedBytes: lambda b: b.decode("utf-8"),
+    ConstrainedList: list,
+    ConstrainedSet: set,
+    ConstrainedFrozenSet: frozenset,
+    ConstrainedDecimal: float,
+    ConstrainedDate: lambda d: d.isoformat(),
+    PaymentCardNumber: str,
+    StrictBool: int,  # pydantic compatibility
+}
 
 
-def default_serializer(value: Any) -> Any:
-    """Return the default serializer for a given object based on its type.
+def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[Any], Any]]] = None) -> Any:
+    """Transform values non-natively supported by `msgspec`
 
     Args:
-        value: A value to serialize
+        value: A value to serialize#
+        type_encoders: Mapping of types to callables to transforming types
     Returns:
         A serialized value
     Raises:
         TypeError: if value is not supported
     """
-    if isinstance(value, BaseModel):
-        return value.dict()
-    if isinstance(value, SecretStr):
-        return value.get_secret_value()
-    if isinstance(value, (PurePath, PurePosixPath)):
-        return str(value)
+    if type_encoders is None:
+        type_encoders = DEFAULT_TYPE_ENCODERS
+    for base in value.__class__.__mro__[:-1]:
+        try:
+            encoder = type_encoders[base]
+        except KeyError:
+            continue
+        return encoder(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
