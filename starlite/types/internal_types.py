@@ -34,7 +34,7 @@ StarliteType = Starlite
 RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]
 ResponseType = Type[Response]
 ControllerRouterHandler = Union[Type[Controller], RouteHandlerType, Router, Callable[..., Any]]
-RouteHandlerMapItem = Union[WebsocketRouteHandler, ASGIRouteHandler, Dict[Method, HTTPRouteHandler]]
+RouteHandlerMapItem = Dict[Union[Method, Literal["websocket"], Literal["asgi"]], RouteHandlerType]
 
 
 class PathParameterDefinition(NamedTuple):
