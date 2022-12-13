@@ -35,8 +35,8 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        data = await self.memcached.get(key=self._id_to_storage_key(session_id))  # type: ignore[call-overload]
-        return cast("Optional[bytes]", data)
+        data = await self.memcached.get(key=self._id_to_storage_key(session_id))
+        return data
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store `data` in memcached under `<prefix>:<session_id>`. If there is already data associated with
@@ -80,7 +80,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
             This method is deprecated since 1.43.0. If you need this functionality,
             consider using the redis backend instead.
         """
-        stats: Dict[bytes, Optional[bytes]] = await self.memcached.stats("items")
+        stats: Dict[bytes, Optional[bytes]] = await self.memcached.stats("items")  # type: ignore[arg-type]
         for key, raw_val in stats.items():
             if not raw_val:
                 continue
@@ -88,8 +88,8 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
             val = int(raw_val)
             if field != b"number" or val == 0:
                 continue
-            item_request: Dict[bytes, Optional[bytes]] = await self.memcached.stats(
-                "cachedump", slab, str(val + 10).encode()
+            item_request: Dict[bytes, Optional[bytes]] = await self.memcached.stats(  # type: ignore[call-arg]
+                "cachedump", slab, str(val + 10).encode()  # type: ignore[arg-type]
             )
             for keys in item_request:
                 await self.memcached.delete(keys)
