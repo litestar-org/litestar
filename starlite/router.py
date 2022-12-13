@@ -38,6 +38,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
     RouteHandlerMapItem,
+    RouteHandlerType,
 )
 from starlite.utils import (
     find_index,
@@ -181,27 +182,19 @@ class Router:
 
         routes: List["BaseRoute"] = []
 
-        for route_path, handler_or_method_map in self.get_route_handler_map(value=validated_value).items():
+        for route_path, handlers_map in self.get_route_handler_map(value=validated_value).items():
             path = join_paths([self.path, route_path])
-            if isinstance(handler_or_method_map, WebsocketRouteHandler):
-                route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = WebSocketRoute(
-                    path=path, route_handler=handler_or_method_map
-                )
-                self.routes.append(route)
-            elif isinstance(handler_or_method_map, ASGIRouteHandler):
-                route = ASGIRoute(path=path, route_handler=handler_or_method_map)
-                self.routes.append(route)
-            else:
-                existing_handlers = self.route_handler_method_map.get(path, {})
-
-                if not isinstance(existing_handlers, dict):
-                    raise ImproperlyConfiguredException(
-                        "Cannot have both HTTP routes and websocket / asgi route handlers on the same path"
-                    )
-
-                route_handlers = unique(handler_or_method_map.values())
-                if existing_handlers:
-                    route_handlers.extend(unique(existing_handlers.values()))
+            if http_handlers := unique(
+                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
+            ):
+                if existing_handlers := unique(
+                    [
+                        handler
+                        for handler in self.route_handler_method_map.get(path, {}).values()
+                        if isinstance(handler, HTTPRouteHandler)
+                    ]
+                ):
+                    http_handlers.extend(existing_handlers)
                     existing_route_index = find_index(
                         self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
                     )
@@ -209,17 +202,26 @@ class Router:
                     if existing_route_index == -1:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")
 
-                    route = HTTPRoute(
+                    route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = HTTPRoute(
                         path=path,
-                        route_handlers=route_handlers,
+                        route_handlers=http_handlers,
                     )
                     self.routes[existing_route_index] = route
-
                 else:
-                    route = HTTPRoute(path=path, route_handlers=route_handlers)
+                    route = HTTPRoute(path=path, route_handlers=http_handlers)
                     self.routes.append(route)
+                routes.append(route)
 
-            routes.append(route)
+            if websocket_handler := handlers_map.get("websocket"):
+                route = WebSocketRoute(path=path, route_handler=cast("WebsocketRouteHandler", websocket_handler))
+                self.routes.append(route)
+                routes.append(route)
+
+            if asgi_handler := handlers_map.get("asgi"):
+                route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
+                self.routes.append(route)
+                routes.append(route)
+
         return routes
 
     @property
@@ -234,31 +236,31 @@ class Router:
             if isinstance(route, HTTPRoute):
                 for route_handler in route.route_handlers:
                     for method in route_handler.http_methods:
-                        route_map[route.path][method] = route_handler  # type: ignore
+                        route_map[route.path][method] = route_handler
             else:
-                route_map[route.path] = cast("WebSocketRoute", route).route_handler
+                route_map[route.path][
+                    "websocket" if isinstance(route, WebSocketRoute) else "asgi"
+                ] = route.route_handler
         return route_map
 
     @classmethod
     def get_route_handler_map(
         cls,
-        value: Union["Controller", "BaseRouteHandler", "Router"],
-    ) -> Dict[str, RouteHandlerMapItem]:
+        value: Union["Controller", "RouteHandlerType", "Router"],
+    ) -> Dict[str, "RouteHandlerMapItem"]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Router):
             return value.route_handler_method_map
 
-        if isinstance(value, BaseRouteHandler):
+        if isinstance(value, (HTTPRouteHandler, ASGIRouteHandler, WebsocketRouteHandler)):
             copied_value = copy(value)
-            return cast(
-                "Dict[str, RouteHandlerMapItem]",
-                {
-                    path: {http_method: copied_value for http_method in value.http_methods}
-                    if isinstance(value, HTTPRouteHandler)
-                    else copied_value
-                    for path in value.paths
-                },
-            )
+            if isinstance(value, HTTPRouteHandler):
+                return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
+
+            return {
+                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
+                for path in value.paths
+            }
 
         handlers_map: DefaultDict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route_handler in value.get_route_handlers():
@@ -266,15 +268,17 @@ class Router:
                 path = join_paths([value.path, handler_path]) if handler_path else value.path
                 if isinstance(route_handler, HTTPRouteHandler):
                     for http_method in route_handler.http_methods:
-                        handlers_map[path][http_method] = route_handler  # type: ignore
+                        handlers_map[path][http_method] = route_handler
                 else:
-                    handlers_map[path] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
+                    handlers_map[path][
+                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"
+                    ] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
 
         return handlers_map
 
     def _validate_registration_value(
         self, value: ControllerRouterHandler
-    ) -> Union[Controller, BaseRouteHandler, "Router"]:
+    ) -> Union["Controller", "RouteHandlerType", "Router"]:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
             return value(owner=self)
