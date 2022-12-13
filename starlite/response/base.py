@@ -22,7 +22,12 @@ from starlite.status_codes import (
     HTTP_304_NOT_MODIFIED,
 )
 from starlite.utils.helpers import get_enum_string_value
-from starlite.utils.serialization import default_serializer, encode_json, encode_msgpack
+from starlite.utils.serialization import (
+    DEFAULT_TYPE_ENCODERS,
+    default_serializer,
+    encode_json,
+    encode_msgpack,
+)
 
 if TYPE_CHECKING:
 
@@ -56,9 +61,8 @@ class Response(Generic[T]):
         "raw_headers",
     )
 
-    serializer: Callable[[Any], Any] = staticmethod(default_serializer)
-    """Callable to transform non-natively supported types into supported types.
-    Should raise `TypeError` if a type cannot be transformed into a supported type"""
+    type_encoders: Dict[Any, Callable[[Any], Any]] = DEFAULT_TYPE_ENCODERS
+    """Encoders for non-natively supported types"""
 
     def __init__(
         self,
@@ -198,6 +202,15 @@ class Response(Generic[T]):
         cookie = Cookie(key=key, path=path, domain=domain, expires=0, max_age=0)
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
+
+    @classmethod
+    def serializer(cls, value: Any) -> Any:
+        """Transform non-natively supported types into supported types using `Response.type_encoders`.
+
+        Should raise `TypeError` if a type cannot be transformed into a supported type
+        """
+
+        return default_serializer(value, cls.type_encoders)
 
     def render(self, content: Any) -> bytes:
         """Handle the rendering of content T into a bytes string.

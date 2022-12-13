@@ -22,6 +22,8 @@ from tests import Person, PersonFactory
 
 
 class TestSyncClassicPaginator(AbstractSyncClassicPaginator[Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
         self.data = data
 
@@ -33,6 +35,8 @@ class TestSyncClassicPaginator(AbstractSyncClassicPaginator[Person]):
 
 
 class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
         self.data = data
 
@@ -44,6 +48,8 @@ class TestAsyncClassicPaginator(AbstractAsyncClassicPaginator[Person]):
 
 
 class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
 
         self.data = data
@@ -56,6 +62,8 @@ class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[Person]):
 
 
 class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
 
         self.data = data
@@ -179,6 +187,8 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
 
 
 class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
         self.data = data
 
@@ -188,6 +198,8 @@ class TestSyncCursorPagination(AbstractSyncCursorPaginator[str, Person]):
 
 
 class TestAsyncCursorPagination(AbstractAsyncCursorPaginator[str, Person]):
+    __test__ = False
+
     def __init__(self, data: List[Person]):
         self.data = data
 
