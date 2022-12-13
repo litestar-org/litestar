@@ -1,5 +1,10 @@
 # Changelog
 
+[1.45.1]
+
+- fix controller support for mixed websocket and http route handlers
+- fix serialization of pydantic types
+
 [1.45.0]
 
 - add `MessagePack` support and serialization with `msgspec`.
