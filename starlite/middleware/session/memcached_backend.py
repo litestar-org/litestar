@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Type, cast
+from typing import Dict, Optional, Type
 
 from aiomcache import Client as MemcacheClient
 
@@ -35,8 +35,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         Returns:
             The session data, if existing, otherwise `None`.
         """
-        data = await self.memcached.get(key=self._id_to_storage_key(session_id))
-        return data
+        return await self.memcached.get(key=self._id_to_storage_key(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store `data` in memcached under `<prefix>:<session_id>`. If there is already data associated with
