@@ -355,7 +355,10 @@ class SignatureModelFactory:
                 self.field_definitions[parameter.name] = self.create_field_definition_from_parameter(parameter)
 
                 if is_class_and_subclass(parameter.annotation, BaseModel):
-                    error_msg_templates = getattr(parameter.annotation.Config, "error_msg_templates", {})
+                    error_msg_templates = {
+                        **error_msg_templates,
+                        **getattr(parameter.annotation.Config, "error_msg_templates", {}),
+                    }
 
             signature_model = SignatureModel.create_with_error_msg_templates(error_msg_templates or {})
             model: Type[SignatureModel] = create_model(
