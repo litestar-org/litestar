@@ -27,6 +27,7 @@ from starlite.exceptions import (
 )
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 from starlite.utils import (
+    is_class_and_subclass,
     is_dependency_field,
     is_optional_union,
     should_skip_dependency_validation,
@@ -123,6 +124,23 @@ class SignatureModel(BaseModel):
         """Extract method and URL from Request or WebSocket."""
         method = connection.method if isinstance(connection, Request) else ScopeType.WEBSOCKET
         return method, connection.url
+
+    @classmethod
+    def create_with_error_msg_templates(cls, templates: Dict[str, str]) -> Type["SignatureModel"]:
+        """Create SignatureModel with error_msg_templates.
+
+        Args:
+            templates: A dictionary of custom error_msg_templates
+
+        Returns:
+            type[SignauteModel]
+        """
+
+        class CustomSignatureModel(cls):  # type:ignore[valid-type, misc]
+            class Config(cls.Config):  # type:ignore[name-defined, misc]
+                error_msg_templates = templates
+
+        return CustomSignatureModel
 
 
 class SignatureParameter:
@@ -316,6 +334,8 @@ class SignatureModelFactory:
             type[SignatureModel]
         """
         try:
+            error_msg_templates: Dict[str, str] = {}
+
             for parameter in self.signature_parameters:
                 self.check_for_unprovided_dependency(parameter)
                 self.collect_dependency_names(parameter)
@@ -333,9 +353,14 @@ class SignatureModelFactory:
                 if plugin:
                     parameter.annotation = self.get_type_annotation_from_plugin(parameter, plugin)
                 self.field_definitions[parameter.name] = self.create_field_definition_from_parameter(parameter)
+
+                if is_class_and_subclass(parameter.annotation, BaseModel):
+                    error_msg_templates = getattr(parameter.annotation.Config, "error_msg_templates", {})
+
+            signature_model = SignatureModel.create_with_error_msg_templates(error_msg_templates or {})
             model: Type[SignatureModel] = create_model(
                 self.fn_name + "_signature_model",
-                __base__=SignatureModel,
+                __base__=signature_model,
                 __module__=self.fn_module_name,
                 **self.field_definitions,
             )

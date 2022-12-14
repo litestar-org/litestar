@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Set, Type, cast
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseConfig, BaseModel, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 
 from starlite import Provide, get
@@ -264,3 +264,31 @@ app = Starlite(route_handlers=[hello_world], openapi_config=None)
         resp = client.get("/")
         assert resp.status_code == 200
         assert resp.json() == {"hello": "world"}
+
+
+def test_signature_model_throws_custom_error_message() -> None:
+    class MyModel(BaseModel):
+        name: str
+
+        class Config(BaseConfig):
+            max_anystr_length = 10
+            error_msg_templates = {"value_error.any_str.max_length": "max_length:{limit_value}"}
+
+    def fn(a: MyModel) -> None:
+        pass
+
+    model = make_signature_model(fn)
+    with pytest.raises(ValidationException) as error:
+        model.parse_values_from_connection_kwargs(
+            connection=RequestFactory().get(), a={"name": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+        )
+
+    exc = error.value
+    assert exc.extra == [
+        {
+            "loc": ("a", "name"),
+            "msg": "max_length:10",
+            "type": "value_error.any_str.max_length",
+            "ctx": {"limit_value": 10},
+        }
+    ]
