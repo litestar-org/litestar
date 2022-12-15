@@ -37,6 +37,9 @@ packages = [
     { include = "starlite" },
 ]
 
+[tool.poetry.scripts]
+starlite = "starlite.cli:cli"
+
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 aiomcache = { version = "*", optional = true }
@@ -101,6 +104,7 @@ redis = ["redis"]
 structlog = ["structlog"]
 jwt = ["python-jose", "cryptography"]
 tortoise-orm = ["tortoise-orm"]
+cli = ["click", "rich"]
 full = [
     "brotli",
     "cryptography",
@@ -110,6 +114,7 @@ full = [
     "python-jose",
     "redis",
     "structlog",
+    "cli",
 ]
 
 

@@ -139,6 +139,9 @@ repos:
             structlog,
             tortoise_orm,
             httpx,
+            click,
+            rich,
+            uvicorn,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -171,6 +174,9 @@ repos:
             types-freezegun,
             types-pyyaml,
             types-redis,
+            click,
+            rich,
+            uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.285
@@ -208,4 +214,7 @@ repos:
             sqlalchemy2-stubs,
             starlette,
             structlog,
+            click,
+            rich,
+            uvicorn,
           ]
