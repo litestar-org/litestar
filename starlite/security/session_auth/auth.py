@@ -82,7 +82,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
             securitySchemes={
                 "sessionCookie": SecurityScheme(
                     type="apiKey",
-                    name="Set-Cookie",
+                    name=self.session_backend_config.key,
                     security_scheme_in="cookie",
                     description="Session cookie authentication.",
                 )

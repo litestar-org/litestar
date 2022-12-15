@@ -72,7 +72,7 @@ def test_abstract_security_config_registers_route_handlers() -> None:
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
-                        "name": "Set-Cookie",
+                        "name": "session",
                         "security_scheme_in": "cookie",
                     }
                 }
@@ -101,7 +101,7 @@ def test_abstract_security_config_registers_route_handlers() -> None:
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
-                        "name": "Set-Cookie",
+                        "name": "session",
                         "security_scheme_in": "cookie",
                     },
                 }
@@ -127,7 +127,7 @@ def test_abstract_security_config_registers_route_handlers() -> None:
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
-                        "name": "Set-Cookie",
+                        "name": "session",
                         "security_scheme_in": "cookie",
                     },
                     "app": {"type": "http", "description": "test.", "name": "test", "security_scheme_in": "cookie"},

@@ -67,9 +67,10 @@ def test_authentication() -> None:
 
 
 def test_session_auth_openapi() -> None:
+    backend_config = MemoryBackendConfig()
     session_auth = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler,
-        session_backend_config=MemoryBackendConfig(),
+        session_backend_config=backend_config,
     )
     app = Starlite(route_handlers=[], on_app_init=[session_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
@@ -82,7 +83,7 @@ def test_session_auth_openapi() -> None:
                 "sessionCookie": {
                     "type": "apiKey",
                     "description": "Session cookie authentication.",
-                    "name": "Set-Cookie",
+                    "name": backend_config.key,
                     "security_scheme_in": "cookie",
                 }
             }
