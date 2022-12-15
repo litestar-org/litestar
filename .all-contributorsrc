@@ -597,6 +597,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "asomethings",
+      "name": "asomethings",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16171942?v=4",
+      "profile": "http://asomethings.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
