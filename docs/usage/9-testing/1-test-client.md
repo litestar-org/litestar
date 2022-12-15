@@ -85,3 +85,18 @@ two methods:
 ```py title="Getting session data"
 --8<-- "examples/testing/get_session_data.py"
 ```
+
+## Using a blocking portal
+
+The `TestClient` uses a feature of [anyio](https://anyio.readthedocs.io/en/stable/) called a **Blocking Portal**.
+
+The [anyio.abc.BlockingPortal](https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.BlockingPortal) allows `TestClient`
+to execute asynchronous functions using a synchronous call. `TestClient` creates a blocking portal to manage
+`Starlite`'s async logic, and it allows `TestClient`'s API to remain fully synchronous.
+
+Any tests that are using an instance of `TestClient` can also make use of the blocking portal to execute asynchronous functions
+without the test itself being asynchronous.
+
+```py title="Using a blocking portal"
+--8<-- "examples/testing/test_with_portal.py"
+```

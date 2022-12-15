@@ -15,6 +15,7 @@
             - head
             - set_session_data
             - get_session_data
+            - portal
 
 ::: starlite.testing.test_client.WebSocketTestSession
     options:
