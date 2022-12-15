@@ -9,3 +9,5 @@ def index(snake_case: str = Parameter(query="camelCase")) -> Dict[str, str]:
 
 
 app = Starlite(route_handlers=[index])
+
+# run: /?camelCase=foo

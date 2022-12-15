@@ -10,3 +10,5 @@ def hello_world() -> Dict[str, str]:
 
 
 app = Starlite(route_handlers=[hello_world])
+
+# run: /
