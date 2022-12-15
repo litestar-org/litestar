@@ -9,11 +9,13 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Generator, List, Tuple
+from typing import TYPE_CHECKING, Dict, Generator, List, Tuple
 
 import httpx
-from mkdocs.config.base import Config as MkDocsConfig
-from mkdocs.structure.files import File, Files
+
+if TYPE_CHECKING:
+    from mkdocs.config.base import Config as MkDocsConfig
+    from mkdocs.structure.files import File, Files
 
 RGX_RUN = re.compile(r"# +?run:(.*)")
 RGX_SNIPPET = re.compile(r'--8<-- "(.*)"')
@@ -66,7 +68,7 @@ def run_app(path: Path) -> Generator[int, None, None]:
     AVAILABLE_PORTS.append(port)
 
 
-def extract_run_args(content: str) -> tuple[str, List[List[str]]]:
+def extract_run_args(content: str) -> Tuple[str, List[List[str]]]:
     new_lines = []
     run_configs = []
     for line in content.splitlines():
@@ -78,7 +80,7 @@ def extract_run_args(content: str) -> tuple[str, List[List[str]]]:
     return "\n".join(new_lines), run_configs
 
 
-def extract_from_docs_file(file: File, tmp_path: Path) -> List[RunConfig]:
+def extract_from_docs_file(file: "File", tmp_path: Path) -> List[RunConfig]:
     tmp_docs_file = tmp_path / secrets.token_hex()
     content = Path(file.abs_src_path).read_text()
 
@@ -146,12 +148,12 @@ def exec_from_config(config: RunConfig) -> Tuple[RunConfig, str]:
             results.append(result)
 
     replacement_block = config.updated_code_block
-    replacement_block += '\n??? example "Run it"\n'
-    replacement_block += "\n".join((indent(f"```shell\n{r}\n```") for r in results))
+    replacement_block += "\n!!! example\n"
+    replacement_block += "\n".join(indent(f"```shell\n{r}\n```") for r in results)
     return config, replacement_block
 
 
-def on_files(files: Files, config: MkDocsConfig) -> None:
+def on_files(files: "Files", config: "MkDocsConfig") -> None:
     tmp_examples_path = Path(".tmp_examples")
     if tmp_examples_path.exists():
         shutil.rmtree(tmp_examples_path)
@@ -177,7 +179,7 @@ def on_files(files: Files, config: MkDocsConfig) -> None:
         tmp_docs_file.write_text(content)
 
 
-def on_post_build(config: MkDocsConfig) -> None:
+def on_post_build(config: "MkDocsConfig") -> None:
     tmp_examples_path = Path(".tmp_examples")
     if tmp_examples_path.exists():
         shutil.rmtree(tmp_examples_path)

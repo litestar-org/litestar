@@ -96,7 +96,7 @@ and include their result in the documentation page when its being built. This on
 1. Create an example file with an `app` object in it, which is an instance of `Starlite`
 2. Add a comment in the form of `# run: /hello` to the example file
 
-When building the docs (or serving them locally), a process serving the `app` instance 
+When building the docs (or serving them locally), a process serving the `app` instance
 will be launched, and the requests specified in the comments will be run against it. The
 comments will be stripped from the result, and the output of the `curl` invocation inserted
 after the example code-block.
@@ -142,7 +142,7 @@ def hello_world() -> Dict[str, str]:
 app = Starlite(route_handlers=[hello_world])
 ```
 
-??? example "Run it"
+!!! example
     ```shell
     > curl http://127.0.0.1:8000/
     {"hello": "world"}
