@@ -167,6 +167,11 @@ class TestClient(Client, Generic[T]):
 
     @contextmanager
     def portal(self) -> Generator["BlockingPortal", None, None]:
+        """Get a BlockingPortal.
+
+        Returns:
+            A contextmanager for a BlockingPortal.
+        """
         if hasattr(self, "blocking_portal"):
             yield self.blocking_portal
         else:
