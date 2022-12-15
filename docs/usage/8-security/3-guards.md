@@ -1,7 +1,7 @@
 # Guards
 
 Guards are callables that receive two arguments - `connection`, which is the [`ASGIConnection`][starlite.connection.ASGIConnection]
-instance, and `route_handler`, which is a copy of the [`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler] model.
+instance, and `route_handler`, which is a copy of the [`BaseRouteHandler`][starlite.handlers.base.BaseRouteHandler].
 Their role is to `authorize` the request by verifying that the connection is allowed to reach the endpoint handler in question.
 If verification fails, the guard should raise an HTTPException, usually a
 [`NotAuthorizedException`][starlite.exceptions.NotAuthorizedException] with a `status_code` of 401.
