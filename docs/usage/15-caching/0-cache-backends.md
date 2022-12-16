@@ -27,8 +27,8 @@ Starlite also ships with two other ready to use cache backends:
   [aiomcache](https://github.com/aio-libs/aiomcache) to make sure requests are not blocked.
 
 !!! note
-  `memcached` is a required dependency when using this backend. You can install it as an extra with
-  `pip install starlite[memcached]` or independently.
+    `memcached` is a required dependency when using this backend. You can install it as an extra with
+    `pip install starlite[memcached]` or independently.
 
 ## Configuring Caching
 
