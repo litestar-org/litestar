@@ -38,10 +38,10 @@ def parse_query_string(query_string: bytes, encoding: str = "utf-8") -> Tuple[Tu
     Returns:
         A tuple of key value pairs.
     """
-    _bools = {b"true": True, b"false": False, b"True": True, b"False": False}
+    _bools = {"true": True, "false": False, "True": True, "False": False}
     return tuple(
-        (k.decode(encoding), v.decode(encoding) if v not in _bools else _bools[v])
-        for k, v in parse_qsl(query_string, keep_blank_values=True)
+        (k, v if v not in _bools else _bools[v])
+        for k, v in parse_qsl(str(query_string, encoding=encoding), keep_blank_values=True, encoding=encoding)
     )
 
 

@@ -38,6 +38,21 @@ def test_parse_form_data() -> None:
     }
 
 
+def test_parse_utf8_form_data() -> None:
+    result = parse_url_encoded_form_data(
+        encoded_data=urlencode(
+            [
+                ("value", "äüß"),
+            ]
+        ).encode(),
+        encoding="utf-8",
+    )
+    assert result == {
+        "value": "äüß"
+    }
+
+
+
 @pytest.mark.parametrize(
     "cookie_string, expected",
     (
