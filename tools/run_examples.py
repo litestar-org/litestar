@@ -1,3 +1,7 @@
+import importlib
+import logging
+import multiprocessing
+import os
 import re
 import secrets
 import shlex
@@ -6,12 +10,15 @@ import socket
 import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Generator, List, Tuple
 
 import httpx
+import uvicorn
+
+from starlite import Starlite
 
 if TYPE_CHECKING:
     from mkdocs.config.base import Config as MkDocsConfig
@@ -19,10 +26,13 @@ if TYPE_CHECKING:
 
 RGX_RUN = re.compile(r"# +?run:(.*)")
 RGX_SNIPPET = re.compile(r'--8<-- "(.*)"')
-RGX_CODE_BLOCK = re.compile(r"```py[\w\W]+?```")
+RGX_CODE_BLOCK = re.compile(r" *```py[\w\W]+?```")
 
 
 AVAILABLE_PORTS = list(range(9000, 9999))
+
+
+logger = logging.getLogger("mkdocs")
 
 
 @dataclass(frozen=True)
@@ -34,12 +44,32 @@ class RunConfig:
     updated_code_block: str
 
 
-def indent(string: str, level: int = 4) -> str:
-    return "\n".join((" " * level) + line for line in string.splitlines())
+def indent(string: str, indent_char: str = " ", level: int = 4) -> str:
+    return "\n".join((indent_char * level) + line for line in string.splitlines())
+
+
+def get_indentation(text: str) -> Tuple[str, int]:
+    if match := re.match("^[ \t]+", text):
+        indentation = match.group()
+        indent_char = indentation[0]
+        return indent_char, len(indentation)
+    return " ", 0
+
+
+def _load_app_from_path(path: Path) -> Starlite:
+    module = importlib.import_module(str(path.with_suffix("")).replace("/", "."))
+    for obj in module.__dict__.values():
+        if isinstance(obj, Starlite):
+            return obj
+    raise RuntimeError(f"No Starlite app found in {path}")
 
 
 @contextmanager
 def run_app(path: Path) -> Generator[int, None, None]:
+    """Run an example app from a python file.
+
+    The first `Starlite` instance found in the file will be used as target to run.
+    """
     while AVAILABLE_PORTS:
         port = AVAILABLE_PORTS.pop()
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -48,12 +78,14 @@ def run_app(path: Path) -> Generator[int, None, None]:
     else:
         raise RuntimeError("Could not find an open port")
 
-    proc = subprocess.Popen(
-        ["uvicorn", str(path.with_suffix("")).replace("/", ".") + ":app", "--no-access-log", "--port", str(port)],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False,
-    )
+    app = _load_app_from_path(path)
+
+    def run() -> None:
+        with redirect_stderr(Path(os.devnull).open()):
+            uvicorn.run(app, port=port, access_log=False)
+
+    proc = multiprocessing.Process(target=run)
+    proc.start()
     for _ in range(50):
         try:
             httpx.get(f"http://127.0.0.1:{port}", timeout=0.1)
@@ -69,6 +101,10 @@ def run_app(path: Path) -> Generator[int, None, None]:
 
 
 def extract_run_args(content: str) -> Tuple[str, List[List[str]]]:
+    """Extract run args from a python file.
+
+    Return the file content stripped of the run comments and a list of argument lists
+    """
     new_lines = []
     run_configs = []
     for line in content.splitlines():
@@ -81,6 +117,10 @@ def extract_run_args(content: str) -> Tuple[str, List[List[str]]]:
 
 
 def extract_from_docs_file(file: "File", tmp_path: Path) -> List[RunConfig]:
+    """Extract `RunConfig`s from a documentation file.
+
+    If configurations are found, set up a temporary documentation file and replace the `File`s source with it.
+    """
     tmp_docs_file = tmp_path / secrets.token_hex()
     content = Path(file.abs_src_path).read_text()
 
@@ -95,7 +135,8 @@ def extract_from_docs_file(file: "File", tmp_path: Path) -> List[RunConfig]:
         if not snippet_sources:
             continue
         if len(snippet_sources) > 1:
-            raise RuntimeError("Multiple snippet sources found")
+            logger.warning(f"In {file.src_path}: Multiple snippets found in code block. Skipping")
+            continue
 
         snippet_source = snippet_sources[0]
         if not snippet_source.endswith("py"):
@@ -103,6 +144,7 @@ def extract_from_docs_file(file: "File", tmp_path: Path) -> List[RunConfig]:
 
         example_file = Path(snippet_source)
         if not example_file.exists():
+            logger.warning(f"In {file.src_path}: Example file not found: {example_file}")
             continue
         example_content = example_file.read_text()
         updated_example_content, run_args = extract_run_args(example_content)
@@ -131,6 +173,12 @@ def extract_from_docs_file(file: "File", tmp_path: Path) -> List[RunConfig]:
 
 
 def exec_from_config(config: RunConfig) -> Tuple[RunConfig, str]:
+    """Execute a `RunConfig`.
+
+    Start a server with the example application, run the specified requests against it and write and output back into
+    the temporary documentation file
+    """
+
     results = []
 
     with run_app(config.example_file) as port:
@@ -142,19 +190,26 @@ def exec_from_config(config: RunConfig) -> Tuple[RunConfig, str]:
             proc = subprocess.run(args, capture_output=True, text=True)
             stdout = proc.stdout.splitlines()
             if not stdout:
-                raise RuntimeError(f"Example: {config.example_file}:{args} yielded no results")
+                logger.error(f"Example: {config.example_file}:{args} yielded no results")
+                continue
 
             result = "\n".join(line for line in ("> " + (" ".join(clean_args)), *stdout))
             results.append(result)
 
-    replacement_block = config.updated_code_block
-    replacement_block += "\n!!! example\n"
-    replacement_block += "\n".join(indent(f"```shell\n{r}\n```") for r in results)
-    return config, replacement_block
+    indent_char, indent_level = get_indentation(config.updated_code_block)
+    replacement_block = '\n!!! example "Run it"\n'
+    replacement_block += indent("\n".join(f"```shell\n{r}\n```" for r in results), indent_char, 4)
+    if indent_level:
+        replacement_block = indent(replacement_block, indent_char, indent_level)
+
+    return config, config.updated_code_block + "\n" + replacement_block
 
 
 def on_files(files: "Files", config: "MkDocsConfig") -> None:
-    tmp_examples_path = Path(".tmp_examples")
+    """Extract runnable examples from code snippets, run them concurrently, store the results in temporary files and
+    modify the corresponding `File`.
+    """
+    tmp_examples_path = Path(".tmp_docs_examples")
     if tmp_examples_path.exists():
         shutil.rmtree(tmp_examples_path)
     tmp_examples_path.mkdir(exist_ok=True)
@@ -180,6 +235,7 @@ def on_files(files: "Files", config: "MkDocsConfig") -> None:
 
 
 def on_post_build(config: "MkDocsConfig") -> None:
-    tmp_examples_path = Path(".tmp_examples")
+    """Cleanup temporary files."""
+    tmp_examples_path = Path(".tmp_docs_examples")
     if tmp_examples_path.exists():
         shutil.rmtree(tmp_examples_path)
