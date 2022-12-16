@@ -607,6 +607,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "garburator",
+      "name": "Garry Bullock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14207857?v=4",
+      "profile": "https://github.com/garburator",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
