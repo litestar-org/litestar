@@ -59,7 +59,7 @@ def parse_form_query_string(form_query_string: bytes, encoding: str = "utf-8") -
     _bools = {"true": True, "false": False, "True": True, "False": False}
     return tuple(
         (k, v if v not in _bools else _bools[v])
-        for k, v in parse_qsl(str(form_query_string, encoding=encoding), keep_blank_values=True, encoding=encoding)
+        for k, v in parse_qsl(str(form_query_string, encoding=encoding), keep_blank_values=True)
     )
 
 
