@@ -47,10 +47,7 @@ def test_parse_utf8_form_data() -> None:
         ).encode(),
         encoding="utf-8",
     )
-    assert result == {
-        "value": "äüß"
-    }
-
+    assert result == {"value": "äüß"}
 
 
 @pytest.mark.parametrize(
