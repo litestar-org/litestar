@@ -8,13 +8,6 @@ will be interpreted as a query parameter.
 --8<-- "examples/parameters/query_params.py"
 ```
 
-If you run the app, then visit http://localhost:8000/?param=hello in your browser,
-you'll see the following result:
-
-```json
-{"param": "hello"}
-```
-
 !!! info "Technical details"
       These parameters will be parsed from the function signature and used to generate a pydantic model.
       This model in turn will be used to validate the parameters and generate the OpenAPI schema.
@@ -33,52 +26,26 @@ a `ValidationException` will be raised.
 
 ## Settings defaults
 
+In this example, `param` will have the value `"hello"` if it's not specified in the request.
+If it's passed as a query parameter however, it will be overwritten:
+
 ```py
 --8<-- "examples/parameters/query_params_default.py"
 ```
-
-In this example, `param` will have the value `"hello"` if it's not specified in the request.
-
-Now, visiting http://localhost:8000 in your browser, results in
-
-```json
-{"param": "hello"}
-```
-
-without having specified the parameter. If you instead go to http://localhost:8000?param=world,
-you'll see that the default has been overwritten:
-
-```json
-{"param": "world"}
-```
-
 
 ## Optional parameters
 
 Instead of only setting a default value, it's also possible to make a query parameter
 entirely optional.
 
+Here, we give a default value of `None`, but still declare the type of the query parameter
+to be a string. This means "This parameter is not required. If it is given, it has to be a string.
+If it is not given, it will have a default value of `None`
+
 ```py
 --8<-- "examples/parameters/query_params_optional.py"
 ```
 
-Here, we give a default value of `None`, but still declare the type of the query parameter
-to be a string. This means "This parameter is not required. If it is given, it has to be a string.
-If it is not given, it will have a default value of `None`"
-
-To see this behaviour in action run the app and navigate your browser to: http://localhost:8000
-
-You'll see that the result is now:
-
-```json
-{"param": null}
-```
-
-If the query parameter is specified (http://localhost:8000?param=goodbye) it will be:
-
-```json
-{"param": "goodbye"}
-```
 
 ## Type coercion
 
@@ -91,22 +58,13 @@ everything that works there will work for query parameters as well.
 --8<-- "examples/parameters/query_params_types.py"
 ```
 
-Check it out by visiting: http://localhost:8000?date=2022-11-28T13:22:06.916540&floating_number=0.1&number=42&strings=1&strings=2
-
-```json
-{
-      "datetime": "2022-11-29T13:22:06",
-      "int":42,
-      "float":0.1,
-      "list":["1","2"]
-}
-```
-
 
 ## Specifying alternative names and constraints
 
 Sometimes you might want to "remap" query parameters to allow a different name in the URL
-than what's being used in the handler function. This can be done by making use of [Parameter](reference/params/0-parameter/).
+than what's being used in the handler function. This can be done by making use of
+[Parameter](reference/params/0-parameter/).
+
 
 ```py
 --8<-- "examples/parameters/query_params_remap.py"
@@ -115,6 +73,7 @@ than what's being used in the handler function. This can be done by making use o
 Here, we remap from `snake_case` in the handler function to `camelCase` in the URL.
 This means that for the URL `http://127.0.0.1:8000?camelCase=foo`, the value of `camelCase`
 will be used for the value of the `snake_case` parameter.
+
 
 `Parameter` also allows us to define additional constraints:
 

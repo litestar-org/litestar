@@ -9,3 +9,7 @@ def index(param: str = "hello") -> Dict[str, str]:
 
 
 app = Starlite(route_handlers=[index])
+
+
+# run: /
+# run: /?param=john

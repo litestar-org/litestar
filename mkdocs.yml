@@ -310,6 +310,8 @@ plugins:
             separate_signature: true
             show_if_no_docstring: true
             line_length: 100
+hooks:
+  - tools/run_examples.py
 watch:
   - starlite
   - examples

@@ -176,7 +176,7 @@ repos:
     rev: v1.1.283
     hooks:
       - id: pyright
-        exclude: "test_apps"
+        exclude: "test_apps|tools"
         additional_dependencies:
           [
             aiomcache,

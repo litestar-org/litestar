@@ -88,6 +88,67 @@ Please follow the next guidelines when adding a new example:
 ```
 ````
 
+#### Automatically execute examples
+
+Our docs include an mkdocs hook that can automatically run requests against example apps
+and include their result in the documentation page when its being built. This only requires 2 steps:
+
+1. Create an example file with an `app` object in it, which is an instance of `Starlite`
+2. Add a comment in the form of `# run: /hello` to the example file
+
+When building the docs (or serving them locally), a process serving the `app` instance
+will be launched, and the requests specified in the comments will be run against it. The
+comments will be stripped from the result, and the output of the `curl` invocation inserted
+after the example code-block.
+
+The `# run: ` syntax is nothing special; Everything after the colon will be passed to
+the `curl` command that's being invoked. The URL is being built automatically, so the
+specified path can just be a path relative to the app.
+
+In practice, this looks like the following:
+
+```python
+from typing import Dict
+
+from starlite import Starlite, get
+
+
+@get("/")
+def hello_world() -> Dict[str, str]:
+    """Handler function that returns a greeting dictionary."""
+    return {"hello": "world"}
+
+
+app = Starlite(route_handlers=[hello_world])
+
+# run: /
+```
+
+This will produce the following markdown:
+
+<pre>
+```python
+from typing import Dict
+
+from starlite import Starlite, get
+
+
+@get("/")
+def hello_world() -> Dict[str, str]:
+    """Handler function that returns a greeting dictionary."""
+    return {"hello": "world"}
+
+
+app = Starlite(route_handlers=[hello_world])
+```
+
+!!! example
+    ```shell
+    > curl http://127.0.0.1:8000/
+    {"hello": "world"}
+    ```
+</pre>
+
 #### Cleaning up examples
 
 If you want to contribute to the ongoing effort of #343, you can use the `tools/doc_examples.py`
