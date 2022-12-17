@@ -6,4 +6,5 @@
             - directory
             - engine
             - engine_callback
+            - engine_instance
             - to_engine
