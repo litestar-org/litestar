@@ -13,7 +13,10 @@ class Cookie:
     key: str
     """Key for the cookie."""
     path: str = "/"
-    """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    """Path fragment that must exist in the request url for the cookie to be valid.
+
+    Defaults to '/'.
+    """
     value: Optional[str] = None
     """Value for the cookie, if none given defaults to empty string."""
     max_age: Optional[int] = None
@@ -27,11 +30,14 @@ class Cookie:
     httponly: Optional[bool] = None
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
-    """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    """Controls whether or not a cookie is sent with cross-site requests.
+
+    Defaults to 'lax'.
+    """
     description: Optional[str] = None
-    """Description of the response cookie header for OpenAPI documentation"""
+    """Description of the response cookie header for OpenAPI documentation."""
     documentation_only: bool = False
-    """Defines the Cookie instance as for OpenAPI documentation purpose only"""
+    """Defines the Cookie instance as for OpenAPI documentation purpose only."""
 
     @property
     def simple_cookie(self) -> SimpleCookie:

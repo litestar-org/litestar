@@ -42,36 +42,24 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         arbitrary_types_allowed = True
 
     authentication_middleware_class: Type[AbstractAuthenticationMiddleware]
-    """
-    The authentication middleware class to use. Must inherit from [AbstractAuthenticationMiddleware][starlite.middleware.authentication.AbstractAuthenticationMiddleware]
+    """The authentication middleware class to use.
+
+    Must inherit from [AbstractAuthenticationMiddleware][starlite.middleware.authentication.AbstractAuthenticationMiddleware]
     """
     guards: Optional[Iterable[Guard]] = None
-    """
-    An iterable of guards to call for requests, providing authorization functionalities.
-    """
+    """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: Optional[Union[str, List[str]]] = None
-    """
-    A pattern or list of patterns to skip in the authentication middleware.
-    """
+    """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = "exclude_from_auth"
-    """
-    An identifier to use on routes to disable authentication and authorization checks for a particular route.
-    """
+    """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     scopes: Optional[Scopes] = None
-    """
-    ASGI scopes processed by the authentication middleware, if None both 'http' and 'websocket' will be processed.
-    """
+    """ASGI scopes processed by the authentication middleware, if None both 'http' and 'websocket' will be processed."""
     route_handlers: Optional[Iterable[ControllerRouterHandler]] = None
-    """
-    An optional iterable of route handlers to register.
-    """
+    """An optional iterable of route handlers to register."""
     dependencies: Optional[Dict[str, Provide]] = None
-    """
-    An optional dictionary of dependency providers.
-    """
+    """An optional dictionary of dependency providers."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Optional[Any]]]
-    """
-    Callable that receives the 'auth' value from the authentication middleware and returns a 'user' value.
+    """Callable that receives the 'auth' value from the authentication middleware and returns a 'user' value.
 
     Notes:
     - User and Auth can be any arbitrary values specified by the security backend.

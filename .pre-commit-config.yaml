@@ -23,7 +23,7 @@ repos:
       - id: pycln
         args: [--config=pyproject.toml]
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.1
+    rev: v5.11.3
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
@@ -67,7 +67,7 @@ repos:
             --disable=MD038,
           ]
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.0
+    rev: v1.5.1
     hooks:
       - id: docformatter
         args:
@@ -173,7 +173,7 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.283
+    rev: v1.1.284
     hooks:
       - id: pyright
         exclude: "test_apps|tools"

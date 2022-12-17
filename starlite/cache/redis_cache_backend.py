@@ -20,7 +20,7 @@ class RedisCacheBackendConfig(BaseModel):
     """Redis cache backend configuration."""
 
     url: str
-    """Redis connection URL"""
+    """Redis connection URL."""
     db: Optional[int] = None
     """Redis DB ID (optional)"""
     port: Optional[int] = None

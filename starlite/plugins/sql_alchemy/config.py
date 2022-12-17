@@ -156,71 +156,66 @@ class SQLAlchemyConfig(BaseModel):
         e.g. 'postgresql+asyncpg://...' instead of 'postgresql://', and for sync connections its the opposite.
     """
     use_async_engine: bool = True
-    """
-    Dictate whether the engine created is an async connection or not.
+    """Dictate whether the engine created is an async connection or not.
 
     Notes:
     - This option must correlate to the type of 'connection_string'. That is, an async connection string required an
         async connection and vice versa.
     """
     create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
-    """
-    Callable that creates an 'AsyncEngine' instance or instance of its subclass.
-    """
+    """Callable that creates an 'AsyncEngine' instance or instance of its subclass."""
     create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
-    """
-    Callable that creates an 'Engine' or 'FutureEngine' instance or instance of its subclass.
-    """
+    """Callable that creates an 'Engine' or 'FutureEngine' instance or instance of its subclass."""
     dependency_key: str = "db_session"
-    """
-    Key to use for the dependency injection of database sessions.
-    """
+    """Key to use for the dependency injection of database sessions."""
     engine_app_state_key: str = "db_engine"
-    """
-    Key under which to store the SQLAlchemy engine in the application [State][starlite.datastructures.State] instance.
+    """Key under which to store the SQLAlchemy engine in the application [State][starlite.datastructures.State]
+    instance.
     """
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
-    """
-    Configuration for the SQLAlchemy engine. The configuration options are documented in the SQLAlchemy documentation.
+    """Configuration for the SQLAlchemy engine.
+
+    The configuration options are documented in the SQLAlchemy documentation.
     """
     set_json_serializers: bool = True
-    """
-    A boolean flag dictating whether to set 'msgspec' based serializer/deserializer functions.
+    """A boolean flag dictating whether to set 'msgspec' based serializer/deserializer functions.
 
     Notes:
     - Some databases or some versions of some databases do not have a JSON column type. E.g. some older versions of
         SQLite for example. In this case this flag should be false or an error will be raised by SQLAlchemy.
     """
     session_class: Optional[Union[Type[Session], Type[AsyncSession]]] = None
-    """
-    The session class to use. If not set, the session class will default to 'sqlalchemy.orm.Session' for sync
-        connections and 'sqlalchemy.ext.asyncio.AsyncSession' for async ones.
+    """The session class to use.
+
+    If not set, the session class will default to 'sqlalchemy.orm.Session' for sync connections and
+    'sqlalchemy.ext.asyncio.AsyncSession' for async ones.
     """
     session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
-    """
-    Configuration options for the 'sessionmaker'. The configuration options are documented in the
-        SQLAlchemy documentation.
+    """Configuration options for the 'sessionmaker'.
+
+    The configuration options are documented in the SQLAlchemy documentation.
     """
     session_maker_class: Type[SessionMakerTypeProtocol] = sessionmaker
-    """
-    Sessionmaker class to use.
-    """
+    """Sessionmaker class to use."""
     session_maker_app_state_key: str = "session_maker_class"
-    """
-    Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State] instance.
+    """Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State]
+    instance.
     """
     session_maker_instance: Optional[SessionMakerInstanceProtocol] = None
-    """
-    Optional sessionmaker to use. If set, the plugin will use the provided instance rather than instantiate a sessionmaker.
+    """Optional sessionmaker to use.
+
+    If set, the plugin will use the provided instance rather than instantiate a sessionmaker.
     """
     engine_instance: Optional[Union[Engine, FutureEngine, AsyncEngine]] = None
-    """
-    Optional engine to use. If set, the plugin will use the provided instance rather than instantiate an engine.
+    """Optional engine to use.
+
+    If set, the plugin will use the provided instance rather than instantiate an engine.
     """
     before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
-    """
-    Handler to call before the ASGI message is sent. The handler should handle closing the session stored in the ASGI
-    scope, if its still open, and committing and uncommitted data.
+    """Handler to call before the ASGI message is sent.
+
+    The handler should handle closing the session stored in the ASGI scope, if its still open, and committing and
+    uncommitted data.
     """
 
     @validator("before_send_handler", always=True)

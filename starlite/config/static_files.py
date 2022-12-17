@@ -24,46 +24,36 @@ class StaticFilesConfig(BaseModel):
         arbitrary_types_allowed = True
 
     path: constr(min_length=1)  # type: ignore
-    """
-        Path to serve static files from.
-        Note that the path cannot contain path parameters.
+    """Path to serve static files from.
+
+    Note that the path cannot contain path parameters.
     """
     directories: List[DirectoryPath]
-    """
-        A list of directories to serve files from.
-    """
+    """A list of directories to serve files from."""
     html_mode: bool = False
-    """
-        Flag dictating whether serving html. If true, the default file will be 'index.html'.
+    """Flag dictating whether serving html.
+
+    If true, the default file will be 'index.html'.
     """
     name: Optional[str] = None
-    """
-        An optional string identifying the static files handler.
-    """
+    """An optional string identifying the static files handler."""
     file_system: Any = BaseLocalFileSystem()
-    """
-        The file_system spec to use for serving files.
+    """The file_system spec to use for serving files.
 
-        Notes:
-            - A file_system is a class that adheres to the
-                [FileSystemProtocol][starlite.types.FileSystemProtocol].
-            - You can use any of the file systems exported from the
-                [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
+    Notes:
+        - A file_system is a class that adheres to the
+            [FileSystemProtocol][starlite.types.FileSystemProtocol].
+        - You can use any of the file systems exported from the
+            [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
     opt: Optional[Dict[str, Any]] = None
-    """
-        A string key dictionary of arbitrary values that will be added to the static files handler.
-    """
+    """A string key dictionary of arbitrary values that will be added to the static files handler."""
     guards: Optional[List[Guard]] = None
-    """
-        A list of [Guard][starlite.types.Guard] callables.
-    """
+    """A list of [Guard][starlite.types.Guard] callables."""
     exception_handlers: Optional[ExceptionHandlersMap] = None
-    """
-        A dictionary that maps handler functions to status codes and/or exception types.
-    """
+    """A dictionary that maps handler functions to status codes and/or exception types."""
     send_as_attachment: bool = False
-    """Whether to send the file as an attachment"""
+    """Whether to send the file as an attachment."""
 
     @validator("path", always=True)
     def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument

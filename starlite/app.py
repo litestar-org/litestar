@@ -90,14 +90,12 @@ if TYPE_CHECKING:
     from starlite.types.callable_types import AnyCallable, GetLogger
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
-"""
-    The default OpenAPI config used if not configuration is explicitly passed
-    to the [Starlite][starlite.app.Starlite] instance constructor.
+"""The default OpenAPI config used if not configuration is explicitly passed to the [Starlite][starlite.app.Starlite]
+instance constructor.
 """
 DEFAULT_CACHE_CONFIG = CacheConfig()
-"""
-    The default cache config used if not configuration is explicitly passed
-    to the [Starlite][starlite.app.Starlite] instance constructor.
+"""The default cache config used if not configuration is explicitly passed to the [Starlite][starlite.app.Starlite]
+instance constructor.
 """
 
 
@@ -112,7 +110,10 @@ class HandlerIndex(TypedDict):
     handler: "RouteHandlerType"
     """Route handler instance."""
     identifier: str
-    """Unique identifier of the handler. Either equal to the 'name' attribute or the __str__ value of the handler."""
+    """Unique identifier of the handler.
+
+    Either equal to the 'name' attribute or the __str__ value of the handler.
+    """
 
 
 class Starlite(Router):

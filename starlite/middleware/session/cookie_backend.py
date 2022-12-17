@@ -173,8 +173,8 @@ class CookieBackendConfig(BaseBackendConfig):
     _backend_class: Type[CookieBackend] = CookieBackend
 
     secret: SecretBytes
-    """
-    A secret key to use for generating an encryption key.
+    """A secret key to use for generating an encryption key.
+
     Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.
     """
 

@@ -8,7 +8,10 @@ class WebSocketException(StarLiteException):
     """Exception class for websocket related events."""
 
     code: int
-    """Exception code. Should be a number in the 4000+ range."""
+    """Exception code.
+
+    Should be a number in the 4000+ range.
+    """
 
     def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:
         """Initialize `WebSocketException`.

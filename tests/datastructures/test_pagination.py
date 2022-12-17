@@ -51,7 +51,6 @@ class TestSyncOffsetPaginator(AbstractSyncOffsetPaginator[Person]):
     __test__ = False
 
     def __init__(self, data: List[Person]):
-
         self.data = data
 
     def get_total(self) -> int:
@@ -65,7 +64,6 @@ class TestAsyncOffsetPaginator(AbstractAsyncOffsetPaginator[Person]):
     __test__ = False
 
     def __init__(self, data: List[Person]):
-
         self.data = data
 
     async def get_total(self) -> int:

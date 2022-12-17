@@ -53,16 +53,23 @@ class ResponseContainer(ABC, GenericModel, Generic[R]):
         arbitrary_types_allowed = True
 
     background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
-    """A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
+    """A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or.
+
     [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
     Defaults to None.
     """
     headers: Dict[str, Any] = {}
-    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
     cookies: List[Cookie] = []
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header. Defaults to None."""
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
     media_type: Optional[Union[MediaType, str]] = None
-    """If defined, overrides the media type configured in the route decorator"""
+    """If defined, overrides the media type configured in the route decorator."""
     encoding: str = "utf-8"
     """The encoding to be used for the response headers."""
 
@@ -94,22 +101,28 @@ class File(ResponseContainer[FileResponse]):
     """Container type for returning File responses."""
 
     path: FilePath
-    """Path to the file to send"""
+    """Path to the file to send."""
     filename: Optional[str] = None
     """An optional filename to set in the header."""
     stat_result: Optional[os.stat_result] = None
-    """An optional result of calling 'os.stat'. If not provided, this will be done by the response constructor."""
-    chunk_size: int = DEFAULT_CHUNK_SIZE
-    """The size of chunks to use when streaming the file"""
-    content_disposition_type: Literal["attachment", "inline"] = "attachment"
-    """The type of the 'Content-Disposition'. Either 'inline' or 'attachment'."""
-    etag: Optional[ETag] = None
+    """An optional result of calling 'os.stat'.
+
+    If not provided, this will be done by the response constructor.
     """
-    An optional [ETag][starlite.datastructures.ETag] instance. If not provided, an etag will be automatically generated.
+    chunk_size: int = DEFAULT_CHUNK_SIZE
+    """The size of chunks to use when streaming the file."""
+    content_disposition_type: Literal["attachment", "inline"] = "attachment"
+    """The type of the 'Content-Disposition'.
+
+    Either 'inline' or 'attachment'.
+    """
+    etag: Optional[ETag] = None
+    """An optional [ETag][starlite.datastructures.ETag] instance.
+
+    If not provided, an etag will be automatically generated.
     """
     file_system: Any = BaseLocalFileSystem()
-    """
-    The file_system spec to use loading the file.
+    """The file_system spec to use loading the file.
 
     Notes:
         - A file_system is a class that adheres to the
@@ -118,9 +131,7 @@ class File(ResponseContainer[FileResponse]):
             [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
     file_info: Optional[FileInfo] = None
-    """
-    The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
-    """
+    """The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -130,7 +141,7 @@ class File(ResponseContainer[FileResponse]):
 
         Args:
             value: An optional result [stat][os.stat] result.
-            values: The values dict.
+            values: The dict of values.
 
         Returns:
             A stat_result
@@ -194,7 +205,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
     """Container type for returning Redirect responses."""
 
     path: str
-    """Redirection path"""
+    """Redirection path."""
 
     def to_response(  # type: ignore[override]
         self,
@@ -285,7 +296,10 @@ class Template(ResponseContainer["TemplateResponse"]):
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
     context: Dict[str, Any] = {}
-    """A dictionary of key/value pairs to be passed to the temple engine's render method. Defaults to None."""
+    """A dictionary of key/value pairs to be passed to the temple engine's render method.
+
+    Defaults to None.
+    """
 
     def to_response(
         self,

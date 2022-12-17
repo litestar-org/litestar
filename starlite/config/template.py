@@ -16,17 +16,11 @@ class TemplateConfig(BaseModel):
         arbitrary_types_allowed = True
 
     directory: Union[DirectoryPath, List[DirectoryPath]]
-    """
-        A directory or list of directories from which to serve templates.
-    """
+    """A directory or list of directories from which to serve templates."""
     engine: Type[TemplateEngineProtocol]
-    """
-        A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol].
-    """
+    """A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol]."""
     engine_callback: Optional[Callable[[Any], None]] = None
-    """
-        A callback function that allows modifying the instantiated templating protocol.
-    """
+    """A callback function that allows modifying the instantiated templating protocol."""
 
     def to_engine(self) -> "TemplateEngineProtocol":
         """Instantiate the template engine."""

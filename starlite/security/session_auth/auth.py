@@ -22,8 +22,9 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
     """A session backend config."""
 
     authentication_middleware_class: Type[SessionAuthMiddleware] = SessionAuthMiddleware
-    """
-    The authentication middleware class to use. Must inherit from [SessionAuthMiddleware][starlite.security.session_auth.middleware.SessionAuthMiddleware]
+    """The authentication middleware class to use.
+
+    Must inherit from [SessionAuthMiddleware][starlite.security.session_auth.middleware.SessionAuthMiddleware]
     """
 
     @property

@@ -19,13 +19,9 @@ class AuthenticationResult(BaseModel):
     """Pydantic model for authentication data."""
 
     user: Any
-    """
-    The user model, this can be any value corresponding to a user of the API
-    """
+    """The user model, this can be any value corresponding to a user of the API."""
     auth: Any = None
-    """
-    The auth value, this can for example be a JWT token.
-    """
+    """The auth value, this can for example be a JWT token."""
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True

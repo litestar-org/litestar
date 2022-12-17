@@ -114,24 +114,32 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     disable_existing_loggers: bool = False
     """Whether any existing non-root loggers are to be disabled."""
     filters: Optional[Dict[str, Dict[str, Any]]] = None
-    """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding Filter instance."""
+    """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding
+    Filter instance.
+    """
     propagate: bool = True
     """If messages must propagate to handlers higher up the logger hierarchy from this logger."""
     formatters: Dict[str, Dict[str, Any]] = {
         "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
     }
     handlers: Dict[str, Dict[str, Any]] = Field(default_factory=get_default_handlers)
-    """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding Handler instance."""
+    """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
+    Handler instance.
+    """
     loggers: Dict[str, Dict[str, Any]] = {
         "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
     }
-    """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding Logger instance."""
+    """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
+    Logger instance.
+    """
     root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {
         "handlers": ["queue_listener"],
         "level": "INFO",
     }
-    """This will be the configuration for the root logger. Processing of the configuration will be as for any logger,
-    except that the propagate setting will not be applicable."""
+    """This will be the configuration for the root logger.
+
+    Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.
+    """
 
     @validator("handlers", always=True)
     def validate_handlers(  # pylint: disable=no-self-argument
@@ -254,11 +262,11 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
     wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
     """Structlog bindable logger."""
     context_class: Optional[Dict[str, Any]] = None
-    """Context class (a 'contextvar' context) for the logger"""
+    """Context class (a 'contextvar' context) for the logger."""
     logger_factory: Optional[Callable[..., WrappedLogger]] = Field(default_factory=default_logger_factory)
     """Logger factory to use."""
     cache_logger_on_first_use: bool = True
-    """Whether to cache the logger configuration and reuse. """
+    """Whether to cache the logger configuration and reuse."""
 
     def configure(self) -> "GetLogger":
         """Return logger with the given configuration.

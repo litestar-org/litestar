@@ -36,18 +36,16 @@ class CacheConfig(BaseModel):
         arbitrary_types_allowed = True
 
     backend: Optional[CacheBackendProtocol] = None
-    """
-        Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default
-        [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
+    """Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default.
+
+    [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
     """
     expiration: int = 60
-    """
-        Default cache expiration in seconds
-    """
+    """Default cache expiration in seconds."""
     cache_key_builder: CacheKeyBuilder = default_cache_key_builder
-    """
-        [CacheKeyBuilder][starlite.types.CacheKeyBuilder],
-        [default_cache_key_builder][starlite.config.cache.default_cache_key_builder] if not provided
+    """[CacheKeyBuilder][starlite.types.CacheKeyBuilder],
+
+    [default_cache_key_builder][starlite.config.cache.default_cache_key_builder] if not provided
     """
 
     def to_cache(self) -> Cache:

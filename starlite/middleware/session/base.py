@@ -46,9 +46,8 @@ class BaseBackendConfig(BaseModel):
     _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
 
     key: constr(min_length=1, max_length=256) = "session"  # type: ignore[valid-type]
-    """
-    Key to use for the cookie inside the header,
-    e.g. `session=<data>` where 'session' is the cookie key and <data> is the session data.
+    """Key to use for the cookie inside the header, e.g. `session=<data>` where 'session' is the cookie key and <data>
+    is the session data.
 
     Notes:
         - If a session cookie exceeds 4KB in size it is split. In this case the key will be of the format
@@ -59,7 +58,10 @@ class BaseBackendConfig(BaseModel):
     scopes: Scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """Scopes for the middleware - options are 'http' and 'websocket' with the default being both"""
     path: str = "/"
-    """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    """Path fragment that must exist in the request url for the cookie to be valid.
+
+    Defaults to '/'.
+    """
     domain: Optional[str] = None
     """Domain for which the cookie is valid."""
     secure: bool = False
@@ -67,11 +69,14 @@ class BaseBackendConfig(BaseModel):
     httponly: bool = True
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
-    """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    """Controls whether or not a cookie is sent with cross-site requests.
+
+    Defaults to 'lax'.
+    """
     exclude: Optional[Union[str, List[str]]] = None
     """A pattern or list of patterns to skip in the session middleware."""
     exclude_opt_key: str = "skip_session"
-    """An identifier to use on routes to disable the session middleware for a particular route"""
+    """An identifier to use on routes to disable the session middleware for a particular route."""
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -105,9 +110,7 @@ class ServerSideSessionConfig(BaseBackendConfig):
     """Base configuration for server side backends."""
 
     session_id_bytes: int = 32
-    """
-    Number of bytes used to generate a random session-ID
-    """
+    """Number of bytes used to generate a random session-ID."""
 
 
 class BaseSessionBackend(ABC, Generic[ConfigT]):

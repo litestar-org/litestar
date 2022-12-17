@@ -30,55 +30,51 @@ class OpenTelemetryConfig(BaseModel):
         arbitrary_types_allowed = True
 
     scope_span_details_extractor: Callable[[Scope], Tuple[str, dict]] = get_route_details_from_scope
-    """
-    Callback which should return a string and a tuple, representing the desired default span name and a dictionary with any additional span attributes to set.
+    """Callback which should return a string and a tuple, representing the desired default span name and a dictionary
+    with any additional span attributes to set.
     """
     server_request_hook_handler: Optional[OpenTelemetryHookHandler] = None
-    """
-    Optional callback which is called with the server span and ASGI scope object for every incoming request.
-    """
+    """Optional callback which is called with the server span and ASGI scope object for every incoming request."""
     client_request_hook_handler: Optional[OpenTelemetryHookHandler] = None
-    """
-    Optional callback which is called with the internal span and an ASGI scope which is sent as a dictionary for when the method receive is called.
+    """Optional callback which is called with the internal span and an ASGI scope which is sent as a dictionary for when
+    the method receive is called.
     """
     client_response_hook_handler: Optional[OpenTelemetryHookHandler] = None
-    """
-    Optional callback which is called with the internal span and an ASGI event which is sent as a dictionary for when the method send is called.
+    """Optional callback which is called with the internal span and an ASGI event which is sent as a dictionary for when
+    the method send is called.
     """
     meter_provider: Optional[MeterProvider] = None
-    """
-    Optional meter provider to use. If omitted the current globally configured one is used.
+    """Optional meter provider to use.
+
+    If omitted the current globally configured one is used.
     """
     tracer_provider: Optional[TracerProvider] = None
-    """
-    Optional tracer provider to use. If omitted the current globally configured one is used.
+    """Optional tracer provider to use.
+
+    If omitted the current globally configured one is used.
     """
     meter: Optional[Meter] = None
-    """
-    Optional meter to use. If omitted the provided meter provider or the global one will be used.
+    """Optional meter to use.
+
+    If omitted the provided meter provider or the global one will be used.
     """
     exclude: Optional[Union[str, List[str]]] = None
-    """
-    A pattern or list of patterns to skip in the Allowed Hosts middleware.
-    """
+    """A pattern or list of patterns to skip in the Allowed Hosts middleware."""
     exclude_opt_key: Optional[str] = None
-    """
-    An identifier to use on routes to disable hosts check for a particular route.
-    """
+    """An identifier to use on routes to disable hosts check for a particular route."""
     exclude_urls_env_key: str = "STARLITE"
-    """
-    Key to use when checking whether a list of excluded urls is passed via ENV. OpenTelemetry supports excluding urls
-    by passing an env in the format '{exclude_urls_env_key}_EXCLUDED_URLS'.
-    With the default being 'STARLITE_EXCLUDED_URLS'.
+    """Key to use when checking whether a list of excluded urls is passed via ENV.
+
+    OpenTelemetry supports excluding urls by passing an env in the format '{exclude_urls_env_key}_EXCLUDED_URLS'. With
+    the default being 'STARLITE_EXCLUDED_URLS'.
     """
     scopes: Optional[Scopes] = None
-    """
-    ASGI scopes processed by the middleware, if None both 'http' and 'websocket' will be processed.
-    """
+    """ASGI scopes processed by the middleware, if None both 'http' and 'websocket' will be processed."""
     middleware_class: Type[OpenTelemetryInstrumentationMiddleware] = OpenTelemetryInstrumentationMiddleware
-    """
-    The middleware class to use. Should be a subclass of OpenTelemetry
-        InstrumentationMiddleware][starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
+    """The middleware class to use.
+
+    Should be a subclass of OpenTelemetry
+    InstrumentationMiddleware][starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware].
     """
 
     @property

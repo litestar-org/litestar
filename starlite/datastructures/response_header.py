@@ -8,9 +8,9 @@ class ResponseHeader(Header):
     """Container type for a response header."""
 
     documentation_only: bool = False
-    """defines the ResponseHeader instance as for OpenAPI documentation purpose only"""
+    """Defines the ResponseHeader instance as for OpenAPI documentation purpose only."""
     value: Any = None
-    """value to set for the response header"""
+    """Value to set for the response header."""
 
     @validator("value", always=True)
     def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument

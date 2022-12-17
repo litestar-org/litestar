@@ -16,9 +16,9 @@ class Address(NamedTuple):
     """Just a network address."""
 
     host: str
-    """Address host"""
+    """Address host."""
     port: int
-    """Address port"""
+    """Address port."""
 
 
 def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
@@ -58,23 +58,23 @@ class URL:
     _parsed_url: Optional[str]
 
     scheme: str
-    """URL scheme"""
+    """URL scheme."""
     netloc: str
-    """Network location"""
+    """Network location."""
     path: str
-    """Hierarchical path"""
+    """Hierarchical path."""
     fragment: str
-    """Fragment component"""
+    """Fragment component."""
     query: str
-    """Query string"""
+    """Query string."""
     username: Optional[str]
-    """Username if specified"""
+    """Username if specified."""
     password: Optional[str]
-    """Password if specified"""
+    """Password if specified."""
     port: Optional[int]
-    """Port if specified"""
+    """Port if specified."""
     hostname: Optional[str]
-    """Hostname if specified"""
+    """Hostname if specified."""
 
     @lru_cache  # type: ignore[misc]  # noqa: B019
     def __new__(cls, url: Union[str, SplitResult]) -> "URL":

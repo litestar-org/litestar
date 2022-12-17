@@ -37,40 +37,27 @@ class RouteTrieNode:
     )
 
     asgi_handlers: Dict[Union["Method", Literal["websocket", "asgi"]], "ASGIHandlerTuple"]
-    """
-    A mapping of ASGI handlers stored on the node.
-    """
+    """A mapping of ASGI handlers stored on the node."""
     child_keys: Set[Union[str, Type[PathParameterSentinel]]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
     children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]
-    """
-    A dictionary mapping path components or using the PathParameterSentinel class to child nodes.
-    """
+    """A dictionary mapping path components or using the PathParameterSentinel class to child nodes."""
     is_path_param_node: bool
-    """
-    Designates the node as having a path parameter.
-    """
+    """Designates the node as having a path parameter."""
     is_path_type: bool
-    """
-    Designates the node as having a 'path' type path parameter.
-    """
+    """Designates the node as having a 'path' type path parameter."""
     is_asgi: bool
-    """
-    Designate the node as having an `@asgi` type handler.
-    """
+    """Designate the node as having an `@asgi` type handler."""
     is_mount: bool
-    """
-    Designate the node as being a mount route.
-    """
+    """Designate the node as being a mount route."""
     is_static: bool
-    """
-    Designate the node as being a static mount route.
-    """
+    """Designate the node as being a static mount route."""
     path_parameters: Tuple["PathParameterDefinition", ...]
-    """
-    A list of tuples containing path parameter definitions. This is used for parsing extracted path parameter values.
+    """A list of tuples containing path parameter definitions.
+
+    This is used for parsing extracted path parameter values.
     """
 
 

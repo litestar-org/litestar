@@ -14,21 +14,13 @@ class ClassicPagination(Generic[T]):
     __slots__ = ("items", "page_size", "current_page", "total_pages")
 
     items: List[T]
-    """
-    List of data being sent as part of the response.
-    """
+    """List of data being sent as part of the response."""
     page_size: int
-    """
-    Number of items per page.
-    """
+    """Number of items per page."""
     current_page: int
-    """
-    Current page number.
-    """
+    """Current page number."""
     total_pages: int
-    """
-    Total number of pages.
-    """
+    """Total number of pages."""
 
 
 @dataclass
@@ -38,21 +30,16 @@ class OffsetPagination(Generic[T]):
     __slots__ = ("items", "limit", "offset", "total")
 
     items: List[T]
-    """
-    List of data being sent as part of the response.
-    """
+    """List of data being sent as part of the response."""
     limit: int
-    """
-    Maximal number of items to send.
-    """
+    """Maximal number of items to send."""
     offset: int
-    """
-    Offset from the beginning of the query. Identical to an index.
+    """Offset from the beginning of the query.
+
+    Identical to an index.
     """
     total: int
-    """
-    Total number of items.
-    """
+    """Total number of items."""
 
 
 @dataclass
@@ -62,16 +49,13 @@ class CursorPagination(Generic[C, T]):
     __slots__ = ("items", "results_per_page", "cursor", "next_cursor")
 
     items: List[T]
-    """
-    List of data being sent as part of the response.
-    """
+    """List of data being sent as part of the response."""
     results_per_page: int
-    """
-    Maximal number of items to send.
-    """
+    """Maximal number of items to send."""
     cursor: Optional[C]
-    """
-    Unique ID, designating the last identifier in the given data set. This value can be used to request the "next" batch of records.
+    """Unique ID, designating the last identifier in the given data set.
+
+    This value can be used to request the "next" batch of records.
     """
 
 

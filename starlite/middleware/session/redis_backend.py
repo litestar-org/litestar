@@ -80,6 +80,6 @@ class RedisBackendConfig(ServerSideSessionConfig):
     _backend_class: Type[RedisBackend] = RedisBackend
 
     redis: Redis
-    """`redis.asyncio.Redis` instance"""
+    """`redis.asyncio.Redis` instance."""
     key_prefix: str = "STARLITE_SESSION"
     """Prefix to store data under after the schema of `<prefix>:<session-ID>`"""

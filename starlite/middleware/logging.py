@@ -234,47 +234,41 @@ class LoggingMiddlewareConfig(BaseModel):
     """Configuration for `LoggingMiddleware`"""
 
     exclude: Optional[Union[str, List[str]]] = None
-    """
-    List of paths to exclude from logging.
-    """
+    """List of paths to exclude from logging."""
     exclude_opt_key: Optional[str] = None
-    """
-    An identifier to use on routes to disable logging for a particular route.
-    """
+    """An identifier to use on routes to disable logging for a particular route."""
     include_compressed_body: bool = False
-    """
-    Include body of compressed response in middleware. If `"body"` not set in
+    """Include body of compressed response in middleware. If `"body"` not set in.
+
     [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields] this config value
     is ignored.
     """
     logger_name: str = "starlite"
-    """
-    Name of the logger to retrieve using `app.get_logger("<name>")`.
-    """
+    """Name of the logger to retrieve using `app.get_logger("<name>")`."""
     request_cookies_to_obfuscate: Set[str] = {"session"}
-    """
-    Request cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
+    """Request cookie keys to obfuscate.
+
+    Obfuscated values are replaced with '*****'.
     """
     request_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
-    """
-    Request header keys to obfuscate. Obfuscated values are replaced with '*****'.
+    """Request header keys to obfuscate.
+
+    Obfuscated values are replaced with '*****'.
     """
     response_cookies_to_obfuscate: Set[str] = {"session"}
-    """
-    Response cookie keys to obfuscate. Obfuscated values are replaced with '*****'.
+    """Response cookie keys to obfuscate.
+
+    Obfuscated values are replaced with '*****'.
     """
     response_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
-    """
-    Response header keys to obfuscate. Obfuscated values are replaced with '*****'.
+    """Response header keys to obfuscate.
+
+    Obfuscated values are replaced with '*****'.
     """
     request_log_message: str = "HTTP Request"
-    """
-    Log message to prepend when logging a request.
-    """
+    """Log message to prepend when logging a request."""
     response_log_message: str = "HTTP Response"
-    """
-    Log message to prepend when logging a response.
-    """
+    """Log message to prepend when logging a response."""
     request_log_fields: Iterable[RequestExtractorField] = (
         "path",
         "method",
@@ -285,14 +279,12 @@ class LoggingMiddlewareConfig(BaseModel):
         "path_params",
         "body",
     )
-    """
-    Fields to extract and log from the request.
+    """Fields to extract and log from the request.
 
     Notes:
         -  The order of fields in the iterable determines the order of the log message logged out.
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of requests, use and empty iterable.
-
     """
     response_log_fields: Iterable[ResponseExtractorField] = (
         "status_code",
@@ -300,8 +292,8 @@ class LoggingMiddlewareConfig(BaseModel):
         "headers",
         "body",
     )
-    """
-    Fields to extract and log from the response. The order of fields in the iterable determines the order of the log message logged out.
+    """Fields to extract and log from the response. The order of fields in the iterable determines the order of the log
+    message logged out.
 
     Notes:
         -  The order of fields in the iterable determines the order of the log message logged out.
@@ -309,8 +301,9 @@ class LoggingMiddlewareConfig(BaseModel):
         -  To turn off logging of responses, use and empty iterable.
     """
     middleware_class: Type[LoggingMiddleware] = LoggingMiddleware
-    """
-    Middleware class to use. Should be a subclass of [starlite.middleware.LoggingMiddleware].
+    """Middleware class to use.
+
+    Should be a subclass of [starlite.middleware.LoggingMiddleware].
     """
 
     @property

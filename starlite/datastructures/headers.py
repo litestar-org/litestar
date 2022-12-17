@@ -249,7 +249,7 @@ class Header(BaseModel, ABC):
             return field_name.replace("_", "-")
 
     documentation_only: bool = False
-    """Defines the header instance as for OpenAPI documentation purpose only"""
+    """Defines the header instance as for OpenAPI documentation purpose only."""
 
     @abstractmethod
     def _get_header_value(self) -> str:

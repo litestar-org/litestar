@@ -240,9 +240,8 @@ class RateLimitConfig(BaseModel):
     exclude_opt_key: Optional[str] = None
     """An identifier to use on routes to disable rate limiting for a particular route."""
     check_throttle_handler: Optional[Callable[[Request[Any, Any]], SyncOrAsyncUnion[bool]]] = None
-    """
-    Handler callable that receives the request instance, returning a boolean dictating whether or not the
-    request should be checked for rate limiting.
+    """Handler callable that receives the request instance, returning a boolean dictating whether or not the request
+    should be checked for rate limiting.
     """
     middleware_class: Type[RateLimitMiddleware] = RateLimitMiddleware
     """The middleware class to use."""

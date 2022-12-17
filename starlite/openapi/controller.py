@@ -41,65 +41,42 @@ class OpenAPIController(Controller):
     """Controller for OpenAPI endpoints."""
 
     path: str = "/schema"
-    """
-        Base path for the OpenAPI documentation endpoints.
-    """
+    """Base path for the OpenAPI documentation endpoints."""
     style: str = "body { margin: 0; padding: 0 }"
-    """
-    Base styling of the html body.
-    """
+    """Base styling of the html body."""
     redoc_version: str = "next"
-    """
-    Redoc version to download from the CDN.
-    """
+    """Redoc version to download from the CDN."""
     swagger_ui_version: str = "4.15.5"
-    """
-    SwaggerUI version to download from the CDN.
-    """
+    """SwaggerUI version to download from the CDN."""
     stoplight_elements_version: str = "7.7.5"
-    """
-    StopLight Elements version to download from the CDN.
-    """
+    """StopLight Elements version to download from the CDN."""
     favicon_url: str = ""
-    """
-    URL to download a favicon from.
-    """
+    """URL to download a favicon from."""
     redoc_google_fonts: bool = True
-    """
-    Download google fonts via CDN. Should be set to `False` when not using a CDN.
+    """Download google fonts via CDN.
+
+    Should be set to `False` when not using a CDN.
     """
     redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
-    """
-    Download url for the Redoc JS bundle.
-    """
+    """Download url for the Redoc JS bundle."""
     swagger_css_url: str = f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui.css"
-    """
-    Download url for the Swagger UI CSS bundle.
-    """
+    """Download url for the Swagger UI CSS bundle."""
     swagger_ui_bundle_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-bundle.js"
     )
-    """
-    Download url for the Swagger UI JS bundle.
-    """
+    """Download url for the Swagger UI JS bundle."""
     swagger_ui_standalone_preset_js_url: str = (
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{swagger_ui_version}/swagger-ui-standalone-preset.js"
     )
-    """
-    Download url for the Swagger Standalone Preset JS bundle.
-    """
+    """Download url for the Swagger Standalone Preset JS bundle."""
     stoplight_elements_css_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/styles.min.css"
     )
-    """
-    Download url for the Stoplight Elements CSS bundle.
-    """
+    """Download url for the Stoplight Elements CSS bundle."""
     stoplight_elements_js_url: str = (
         f"https://unpkg.com/@stoplight/elements@{stoplight_elements_version}/web-components.min.js"
     )
-    """
-    Download url for the Stoplight Elements JS bundle.
-    """
+    """Download url for the Stoplight Elements JS bundle."""
 
     # internal
     _dumped_schema: str = ""

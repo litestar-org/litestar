@@ -28,33 +28,28 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     """
 
     algorithm: str = "HS256"
-    """
-    Algorithm to use for JWT hashing.
-    """
+    """Algorithm to use for JWT hashing."""
     auth_header: str = "Authorization"
-    """
-    Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
+    """Request header key from which to retrieve the token.
+
+    E.g. 'Authorization' or 'X-Api-Key'.
     """
     default_token_expiration: timedelta = timedelta(days=1)
-    """
-    The default value for token expiration.
-    """
+    """The default value for token expiration."""
     token_secret: str
-    """
-    Key with which to generate the token hash.
+    """Key with which to generate the token hash.
 
     Notes:
         - This value should be kept as a secret and the standard practice is to inject it into the environment.
     """
     openapi_security_scheme_name: str = "BearerToken"
-    """
-    The value to use for the OpenAPI security scheme and security requirements
-    """
+    """The value to use for the OpenAPI security scheme and security requirements."""
     description: str = "JWT api-key authentication and authorization."
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: Type[JWTAuthenticationMiddleware] = JWTAuthenticationMiddleware
-    """
-    The authentication middleware class to use. Must inherit from [JWTAuthenticationMiddleware][starlite.contrib.jwt.JWTAuthenticationMiddleware]
+    """The authentication middleware class to use.
+
+    Must inherit from [JWTAuthenticationMiddleware][starlite.contrib.jwt.JWTAuthenticationMiddleware]
     """
 
     @property
@@ -198,18 +193,25 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
     key: str = "token"
     """Key for the cookie."""
     path: str = "/"
-    """Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'."""
+    """Path fragment that must exist in the request url for the cookie to be valid.
+
+    Defaults to '/'.
+    """
     domain: Optional[str] = None
     """Domain for which the cookie is valid."""
     secure: Optional[bool] = None
     """Https is required for the cookie."""
     samesite: Literal["lax", "strict", "none"] = "lax"
-    """Controls whether or not a cookie is sent with cross-site requests. Defaults to 'lax'."""
+    """Controls whether or not a cookie is sent with cross-site requests.
+
+    Defaults to 'lax'.
+    """
     description: str = "JWT cookie-based authentication and authorization."
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: Type[JWTCookieAuthenticationMiddleware] = JWTCookieAuthenticationMiddleware
-    """
-    The authentication middleware class to use. Must inherit from [JWTCookieAuthenticationMiddleware][starlite.contrib.jwt.JWTCookieAuthenticationMiddleware]
+    """The authentication middleware class to use.
+
+    Must inherit from [JWTCookieAuthenticationMiddleware][starlite.contrib.jwt.JWTCookieAuthenticationMiddleware]
     """
 
     @property
@@ -314,9 +316,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
     """
 
     token_url: str
-    """
-    The URL for retrieving a new token.
-    """
+    """The URL for retrieving a new token."""
     oauth_scopes: Optional[Dict[str, str]] = None
     """Oauth Scopes available for the token."""
     description: str = "OAUTH2 password bearer authentication and authorization."

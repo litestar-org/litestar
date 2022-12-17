@@ -21,7 +21,7 @@
 ### JSON
 
 Serializing a d
-ictionary into JSON
+dictionary into JSON
 
 ![RPS JSON](./images/benchmarks/rps_json.svg)
 

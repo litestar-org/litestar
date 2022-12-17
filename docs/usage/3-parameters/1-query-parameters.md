@@ -39,7 +39,7 @@ Instead of only setting a default value, it's also possible to make a query para
 entirely optional.
 
 Here, we give a default value of `None`, but still declare the type of the query parameter
-to be a string. This means "This parameter is not required. If it is given, it has to be a string.
+to be a string. This means that this parameter is not required. If it is given, it has to be a string.
 If it is not given, it will have a default value of `None`
 
 ```py

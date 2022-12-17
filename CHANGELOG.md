@@ -81,7 +81,7 @@
 
 [1.38.0]
 
-- add 'AllowedHostsMiddleware`.
+- add `AllowedHostsMiddleware`.
 - add `*args` override to `Logger` protocol.
 - add `QueryMultiDict` for `request.query` and `socket.query`.
 - add `ServerErrorMiddleware` with own exception printer.

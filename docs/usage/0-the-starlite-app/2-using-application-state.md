@@ -6,7 +6,7 @@ hooks can receive an optional kwarg called `state`, which is the application's s
 The advantage of using application `state`, is that it can be accessed during multiple stages of the connection, and
 it can be injected into dependencies and route handlers.
 
-The Application State is an instance of the [`State`][starlite.datastructures.State] datastructure and it is accessible
+The Application State is an instance of the [`State`][starlite.datastructures.State] datastructure, and it is accessible
 via the
 [`app.state`][starlite.app.Starlite] attribute. As such it can be accessed wherever the app instance is accessible.
 
@@ -59,12 +59,11 @@ use custom classes for State, e.g.:
 
 
 
-While this is very powerful, it might encourage users to follow anti-patterns: its important to emphasize that using
+While this is very powerful, it might encourage users to follow anti-patterns: it's important to emphasize that using
 state can lead to code that's hard to reason about and bugs that are difficult to understand, due to changes in
-different ASGI
-contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion. To discourage
-its use, Starlite also offers a builtin `ImmutableState` class. You can use this class to type state and ensure that no
-mutation of state is allowed:
+different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
+To discourage its use, Starlite also offers a builtin `ImmutableState` class. You can use this class to type state and
+ensure that no mutation of state is allowed:
 
 ```py title="Using Custom State"
 --8<-- "examples/application_state/using_immutable_state.py"

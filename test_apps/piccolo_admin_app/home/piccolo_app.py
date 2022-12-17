@@ -1,5 +1,3 @@
-"""Import all of the Tables subclasses in your app here, and register them with the APP_CONFIG."""
-
 import os
 
 from piccolo.conf.apps import AppConfig, table_finder

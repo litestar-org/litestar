@@ -62,7 +62,7 @@ class Response(Generic[T]):
     )
 
     type_encoders: Dict[Any, Callable[[Any], Any]] = DEFAULT_TYPE_ENCODERS
-    """Encoders for non-natively supported types"""
+    """Encoders for non-natively supported types."""
 
     def __init__(
         self,

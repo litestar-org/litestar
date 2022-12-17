@@ -20,7 +20,7 @@ class MemcachedCacheBackendConfig(BaseModel):
     """Memcached cache backend configuration."""
 
     host: str
-    """memcached host"""
+    """Memcached host."""
     port: Optional[int] = None
     """memcached port (optional, defaults to 11211)"""
     pool_size: Optional[int] = None
@@ -63,8 +63,8 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             Cached value if existing else `None`.
         """
 
-        value = await self._memcached_client.get(key=key.encode("utf-8"))
-        return self._config.deserialize(value)  # type: ignore[arg-type]
+        value = await self._memcached_client.get(key=key.encode("utf-8"))  # type: ignore[call-overload]
+        return self._config.deserialize(value)  # pyright: ignore
 
     async def set(self, key: str, value: Any, expiration: int) -> None:  # pylint: disable=invalid-overridden-method
         """Set sa value in cache for a given key for a duration determined by expiration.

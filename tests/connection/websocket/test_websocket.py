@@ -1,7 +1,7 @@
 """A large part of the tests in this file were adapted from:
 
-https://github.com/encode/starlette/blob/master/tests/test_websockets.py And are
-meant to ensure our compatibility with their API.
+https://github.com/encode/starlette/blob/master/tests/test_websockets.py And are meant to ensure our compatibility with
+their API.
 """
 
 from typing import TYPE_CHECKING, Any, Literal

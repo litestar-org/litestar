@@ -12,9 +12,9 @@ class CacheObject:
     """A container class for cache data."""
 
     value: Any
-    """ cache data """
+    """Cache data."""
     expiration: datetime
-    """ timestamp of cache """
+    """Timestamp of cache."""
 
 
 class SimpleCacheBackend(CacheBackendProtocol):

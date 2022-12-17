@@ -56,17 +56,11 @@ class ASGIConnection(Generic[Handler, User, Auth]):
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
 
     scope: "Scope"
-    """
-    The ASGI scope attached to the connection.
-    """
+    """The ASGI scope attached to the connection."""
     receive: "Receive"
-    """
-    The ASGI receive function.
-    """
+    """The ASGI receive function."""
     send: "Send"
-    """
-    The ASGI send function.
-    """
+    """The ASGI send function."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
         """Initialize `ASGIConnection`.

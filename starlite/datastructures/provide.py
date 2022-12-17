@@ -118,7 +118,8 @@ class DependencyCleanupGroup:
             raise RuntimeError("Cannot call cleanup on a closed DependencyCleanupGroup")
         self._generators.append(generator)
 
-    def _wrap_next(self, generator: "AnyGenerator") -> Callable[[], Coroutine[None, None, None]]:
+    @staticmethod
+    def _wrap_next(generator: "AnyGenerator") -> Callable[[], Coroutine[None, None, None]]:
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:

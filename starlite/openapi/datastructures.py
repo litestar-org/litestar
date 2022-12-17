@@ -9,10 +9,10 @@ class ResponseSpec(BaseModel):
     """Container type of additional responses."""
 
     model: Type[BaseModel]
-    """A model that describes the content of the response"""
+    """A model that describes the content of the response."""
     generate_examples: bool = True
-    """Generate examples for the response content"""
+    """Generate examples for the response content."""
     description: str = "Additional response"
-    """A description of the response"""
+    """A description of the response."""
     media_type: MediaType = MediaType.JSON
-    """Response media type"""
+    """Response media type."""

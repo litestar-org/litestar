@@ -26,83 +26,59 @@ class OpenAPIConfig(BaseModel):
     """
 
     create_examples: bool = False
-    """
-        Generate examples using the pydantic-factories library.
-    """
+    """Generate examples using the pydantic-factories library."""
     openapi_controller: Type[OpenAPIController] = OpenAPIController
-    """
-        Controller for generating OpenAPI routes.
-        Must be subclass of [OpenAPIController][starlite.openapi.controller.OpenAPIController].
+    """Controller for generating OpenAPI routes.
+
+    Must be subclass of [OpenAPIController][starlite.openapi.controller.OpenAPIController].
     """
     title: str
-    """
-        Title of API documentation.
-    """
+    """Title of API documentation."""
     version: str
-    """
-        API version, e.g. '1.0.0'.
-    """
+    """API version, e.g. '1.0.0'."""
     contact: Optional[Contact] = None
-    """
-        API contact information, should be an [Contact][pydantic_openapi_schema.v3_1_0.contact.Contact] instance.
-    """
+    """API contact information, should be an [Contact][pydantic_openapi_schema.v3_1_0.contact.Contact] instance."""
     description: Optional[str] = None
-    """
-        API description.
-    """
+    """API description."""
     external_docs: Optional[ExternalDocumentation] = None
-    """
-        Links to external documentation.
-        Should be an instance of [ExternalDocumentation][pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation].
+    """Links to external documentation.
+
+    Should be an instance of [ExternalDocumentation][pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation].
     """
     license: Optional[License] = None
-    """
-        API Licensing information.
-        Should be an instance of [License][pydantic_openapi_schema.v3_1_0.license.License].
+    """API Licensing information.
+
+    Should be an instance of [License][pydantic_openapi_schema.v3_1_0.license.License].
     """
     security: Optional[List[SecurityRequirement]] = None
-    """
-        API Security requirements information.
-        Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement].
+    """API Security requirements information.
+
+    Should be an instance of [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement].
     """
     components: Optional[Union[Components, List[Components]]] = None
-    """
-        API Components information.
-        Should be an instance of [Components][pydantic_openapi_schema.v3_10_0.components.Components] or a list thereof.
+    """API Components information.
+
+    Should be an instance of [Components][pydantic_openapi_schema.v3_10_0.components.Components] or a list thereof.
     """
     servers: List[Server] = [Server(url="/")]
-    """
-        A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances.
-    """
+    """A list of [Server][pydantic_openapi_schema.v3_1_0.server.Server] instances."""
     summary: Optional[str] = None
-    """
-        A summary text.
-    """
+    """A summary text."""
     tags: Optional[List[Tag]] = None
-    """
-        A list of [Tag][pydantic_openapi_schema.v3_1_0.tag.Tag] instances.
-    """
+    """A list of [Tag][pydantic_openapi_schema.v3_1_0.tag.Tag] instances."""
     terms_of_service: Optional[AnyUrl] = None
-    """
-        URL to page that contains terms of service.
-    """
+    """URL to page that contains terms of service."""
     use_handler_docstrings: bool = False
-    """
-        Draw operation description from route handler docstring if not otherwise provided.
-    """
+    """Draw operation description from route handler docstring if not otherwise provided."""
     webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
-    """
-        A mapping of key to either [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem]
-        or [Reference][pydantic_openapi_schema.v3_1_0.reference.Reference] objects.
+    """A mapping of key to either [PathItem][pydantic_openapi_schema.v3_1_0.path_item.PathItem] or.
+
+    [Reference][pydantic_openapi_schema.v3_1_0.reference.Reference] objects.
     """
     root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
-    """
-        The static schema generator to use for the "root" path of `/schema/`.
-    """
+    """The static schema generator to use for the "root" path of `/schema/`."""
     enabled_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
-    """
-        A set of the enabled documentation sites and schema download endpoints.
-    """
+    """A set of the enabled documentation sites and schema download endpoints."""
 
     def to_openapi_schema(self) -> "OpenAPI":
         """Return an `OpenAPI` instance from the values stored in `self`.

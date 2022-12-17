@@ -36,7 +36,7 @@ def _find_matching_lineno(source_lines: list[str], find: str) -> int:
         if match_lines == source_lines[i : i + len(match_lines)]:
             return i + 1
 
-    raise RuntimeError("Could not match linneo")
+    raise RuntimeError("Could not match line number")
 
 
 def _is_allowed_code_block(code_block: str, max_line_length: int) -> bool:

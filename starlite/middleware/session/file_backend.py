@@ -122,7 +122,7 @@ class FileBackendConfig(ServerSideSessionConfig):
     storage_path: PathLike
     """Disk path under which to store session files."""
     make_filename: Optional[Callable[[str], str]] = None
-    """
-    Callable that turns a session-ID into a filename used for storage. By default, the
-    session-ID will be used as a filename
+    """Callable that turns a session-ID into a filename used for storage.
+
+    By default, the session-ID will be used as a filename
     """
