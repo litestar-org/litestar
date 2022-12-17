@@ -21,9 +21,9 @@ from starlite import (
     put,
     websocket,
 )
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
-from starlite.template.jinja import JinjaTemplateEngine
-from starlite.template.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
 
 
