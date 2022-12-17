@@ -20,7 +20,7 @@ jobs:
           virtualenvs-create: false
           installer-parallel: true
       - name: Install App Dependencies
-        run: | 
+        run: |
             poetry install --no-interaction --only main
             pip install -r requirements-docs.txt
       - name: Deploy to GH-Pages
