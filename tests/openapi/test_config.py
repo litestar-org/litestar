@@ -1,6 +1,7 @@
+from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
-from starlite import OpenAPIConfig
+from starlite import OpenAPIConfig, Starlite, get
 
 
 def test_merged_components_correct() -> None:
@@ -33,4 +34,37 @@ def test_merged_components_correct() -> None:
                 "allowReserved": False,
             },
         },
+    }
+
+
+def test_by_alias() -> None:
+    class ModelWithAlias(BaseModel):
+        first: str = Field(alias="second")
+
+    @get("/")
+    def handler() -> ModelWithAlias:
+        return ModelWithAlias(first="abc")
+
+    app = Starlite(
+        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True)
+    )
+
+    assert app.openapi_schema
+    assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
+        "properties": {"second": {"type": "string", "title": "Second"}},
+        "type": "object",
+        "required": ["second"],
+        "title": "ModelWithAlias",
+    }
+
+    app = Starlite(
+        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=False)
+    )
+
+    assert app.openapi_schema
+    assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
+        "properties": {"first": {"type": "string", "title": "Second"}},
+        "type": "object",
+        "required": ["first"],
+        "title": "ModelWithAlias",
     }

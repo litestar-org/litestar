@@ -49,7 +49,7 @@ opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
-pydantic-openapi-schema = "*"
+pydantic-openapi-schema = ">=1.5.0"
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }

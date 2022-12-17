@@ -79,6 +79,8 @@ class OpenAPIConfig(BaseModel):
     """The static schema generator to use for the "root" path of `/schema/`."""
     enabled_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
     """A set of the enabled documentation sites and schema download endpoints."""
+    by_alias: bool = True
+    """Render pydantic model schema using field aliases, if defined."""
 
     def to_openapi_schema(self) -> "OpenAPI":
         """Return an `OpenAPI` instance from the values stored in `self`.

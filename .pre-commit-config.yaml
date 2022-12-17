@@ -114,7 +114,7 @@ repos:
       - id: slotscheck
         exclude: "test_*"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.8"
+    rev: "v2.15.9"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps"
