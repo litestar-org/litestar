@@ -24,4 +24,4 @@ jobs:
             poetry install --no-interaction --only main
             pip install -r requirements-docs.txt
       - name: Deploy to GH-Pages
-      - run: mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force
