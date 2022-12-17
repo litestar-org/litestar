@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict
 
 from starlite import Starlite, Template, TemplateConfig, get
-from starlite.template.jinja import JinjaTemplateEngine
+from starlite.contrib.jinja import JinjaTemplateEngine
 
 
 def my_template_function(ctx: Dict) -> str:

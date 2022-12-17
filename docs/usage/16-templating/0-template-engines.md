@@ -10,7 +10,7 @@ To register one of the built-in template engines you simply need to pass it to t
 
 ```python
 from starlite import TemplateConfig, Starlite
-from starlite.template.jinja import JinjaTemplateEngine
+from starlite.contrib.jinja import JinjaTemplateEngine
 
 app = Starlite(
     route_handlers=[...],
@@ -22,7 +22,7 @@ Or
 
 ```python
 from starlite import TemplateConfig, Starlite
-from starlite.template.mako import MakoTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
 
 app = Starlite(
     route_handlers=[...],
@@ -84,7 +84,7 @@ modify the instantiated template engine instance. For example:
 
 ```python
 from starlite import TemplateConfig
-from starlite.template.jinja import JinjaTemplateEngine
+from starlite.contrib.jinja import JinjaTemplateEngine
 
 
 def engine_callback(jinja_engine: JinjaTemplateEngine) -> JinjaTemplateEngine:

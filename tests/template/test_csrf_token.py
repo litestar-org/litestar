@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 
 from starlite import CSRFConfig, MediaType, Template, TemplateConfig, get
-from starlite.template.jinja import JinjaTemplateEngine
-from starlite.template.mako import MakoTemplateEngine
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
 from starlite.types import Scope
 from starlite.utils import generate_csrf_token

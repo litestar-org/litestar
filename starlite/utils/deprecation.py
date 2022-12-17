@@ -7,7 +7,7 @@ from typing_extensions import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")
-DeprecatedKind = Literal["function", "method", "attribute", "property", "class", "parameter"]
+DeprecatedKind = Literal["function", "method", "attribute", "property", "class", "parameter", "import"]
 
 
 def warn_deprecation(
@@ -32,17 +32,25 @@ def warn_deprecation(
         kind: Type of the deprecated thing
     """
     parts = []
-    access_type = "Call to" if kind in {"function", "method"} else "Use of"
-    removal_in = removal_in or "the next major version"
+
+    if kind == "import":
+        access_type = "Import of"
+    elif kind in {"function", "method"}:
+        access_type = "Call to"
+    else:
+        access_type = "Use of"
+
     if pending:
         parts.append(f"{access_type} {kind} awaiting deprecation {deprecated_name!r}")
     else:
         parts.append(f"{access_type} deprecated {kind} {deprecated_name!r}")
+
     parts.append(f"Deprecated in starlite {version}")
-    if removal_in:
-        parts.append(f"This {kind} will be removed in {removal_in}")
+    parts.append(f"This {kind} will be removed in {removal_in or 'the next major version'}")
+
     if alternative:
         parts.append(f"Use {alternative!r} instead")
+
     if info:
         parts.append(info)
 
