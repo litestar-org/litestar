@@ -238,10 +238,7 @@ nav:
           - reference/plugins/1-sqlalchemy-plugin.md
           - reference/plugins/2-piccolo-orm-plugin.md
           - reference/plugins/3-tortoise-orm-plugin.md
-      - Templating:
-          - reference/template/0-base.md
-          - reference/template/1-jinja.md
-          - reference/template/2-mako.md
+      - reference/template/base.md
       - Testing:
           - reference/testing/0-test-client.md
           - reference/testing/1-request-factory.md
@@ -266,6 +263,8 @@ nav:
       - Contrib:
           - reference/contrib/opentelemetry.md
           - reference/contrib/jwt.md
+          - reference/contrib/jinja.md
+          - reference/contrib/mako.md
   - migration.md
   - benchmarks.md
 
