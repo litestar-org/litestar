@@ -1,9 +1,10 @@
 from typing import Any
-from warnings import warn
 
 from .base import TemplateEngineProtocol, TemplateProtocol
 
 __all__ = ("TemplateEngineProtocol", "TemplateProtocol")
+
+from ..utils import warn_deprecation
 
 
 def __getattr__(name: str) -> Any:
@@ -28,10 +29,11 @@ def __getattr__(name: str) -> Any:
         export = MakoTemplate
         module = "mako"
 
-    warn(
-        f"Importing {name} from {__package__} is deprecated, use `from startlite.contrib.{module} import {name}` instead.",
-        DeprecationWarning,
-        stacklevel=2,
+    warn_deprecation(
+        deprecated_name=f"{name} from {__package__}",
+        kind="import",
+        alternative=f"'from startlite.contrib.{module} import {name}'",
+        version="1.46.0",
     )
 
     globals()[name] = export
