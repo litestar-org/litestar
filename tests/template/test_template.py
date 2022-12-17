@@ -1,11 +1,17 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Type
+
+import pytest
+from pydantic import ValidationError
 
 from starlite import Starlite, Template, TemplateConfig, get
 from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from starlite.template import TemplateEngineProtocol
 
 
 def test_handler_raise_for_no_template_engine() -> None:
@@ -37,3 +43,16 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
 
     assert received_engine is not None
     assert received_engine is app.template_engine
+
+
+@pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
+def test_engine_instance(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
+    engine_instance = engine(template_dir)
+    config = TemplateConfig(engine=engine_instance)
+    assert config.engine_instance is engine_instance
+
+
+@pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
+def test_directory_validation(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
+    with pytest.raises(ValidationError):
+        TemplateConfig(engine=engine)

@@ -345,7 +345,7 @@ class Starlite(Router):
         self.plugins = config.plugins
         self.request_class = config.request_class or Request
         self.static_files_config = config.static_files_config
-        self.template_engine = config.template_config.to_engine() if config.template_config else None
+        self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
 
         super().__init__(
