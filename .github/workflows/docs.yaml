@@ -17,10 +17,10 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          virtualenvs-create: false
           installer-parallel: true
       - name: Install App Dependencies
         run: poetry install --no-interaction --only main
       - run: pip install -r requirements-docs.txt
+      - name: Deploy to GH-Pages
       - run: mkdocs gh-deploy --force
