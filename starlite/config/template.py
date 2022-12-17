@@ -39,7 +39,7 @@ class TemplateConfig(Generic[T], GenericModel):
     _engine_instance: T = PrivateAttr()
 
     @root_validator
-    def validate_config(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_config(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=E0213
         """Ensure that directory is set if engine is a class.
 
         Args:
@@ -56,7 +56,7 @@ class TemplateConfig(Generic[T], GenericModel):
         """Instantiate the template engine."""
         template_engine = cast("T", self.engine(self.directory) if isclass(self.engine) else self.engine)
         if callable(self.engine_callback):
-            self.engine_callback(template_engine)
+            self.engine_callback(template_engine)  # pylint: disable=E1102
         self._engine_instance = template_engine
         return template_engine
 

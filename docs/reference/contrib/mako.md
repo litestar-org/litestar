@@ -1,6 +1,6 @@
 # Mako Template Engine
 
-::: starlite.template.mako.MakoTemplateEngine
+::: starlite.contrib.mako.MakoTemplateEngine
     options:
         members:
             - __init__

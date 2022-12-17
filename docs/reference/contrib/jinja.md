@@ -1,6 +1,6 @@
 # Jinja Template Engine
 
-::: starlite.template.jinja.JinjaTemplateEngine
+::: starlite.contrib.jinja.JinjaTemplateEngine
     options:
         members:
             - __init__
