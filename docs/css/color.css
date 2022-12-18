@@ -115,7 +115,7 @@
   --md-typeset-kbd-border-color: var(--clr-grey--dark);
 
   /* Typeset `table` color shades */
-  --md-typeset-table-color: var(--clr-black--translucent);
+  --md-typeset-table-color: var(--clr-grey--dark);
 
   /* Admonition color shades */
   --md-admonition-fg-color:          var(--md-default-fg-color);
