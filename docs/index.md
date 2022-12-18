@@ -251,5 +251,3 @@ is to check out the open issues - and reach out on our discord server or Matrix 
 ### License
 
 --8<-- "LICENSE"
-
-

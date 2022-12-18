@@ -22,7 +22,8 @@ the [registering routes](usage/1-routing/1-registering-routes.md) part of the do
     from fastapi import FastAPI
 
     app = FastAPI()
-    
+
+
     @app.get("/")
     async def index() -> dict[str, str]:
         ...
@@ -33,11 +34,13 @@ the [registering routes](usage/1-routing/1-registering-routes.md) part of the do
     from starlette.applications import Starlette
     from starlette.routing import Route
 
+
     async def index(request):
         ...
 
+
     routes = [Route("/", endpoint=index)]
-    
+
     app = Starlette(routes=routes)
     ```
 
@@ -45,12 +48,13 @@ the [registering routes](usage/1-routing/1-registering-routes.md) part of the do
 
     ```python
     from starlite import Starlite, get
-    
-    
+
+
     @get("/")
     async def index() -> dict[str, str]:
         ...
-    
+
+
     app = Starlite([get])
     ```
 
@@ -86,35 +90,35 @@ and to easily access dependencies from higher levels.
 
     ```python
     from fastapi import FastAPI, Depends, APIRouter
-    
-    
+
+
     async def route_dependency() -> bool:
         ...
-    
-    
+
+
     async def nested_dependency() -> str:
         ...
-    
-    
+
+
     async def router_dependency() -> int:
         ...
-    
-    
+
+
     async def app_dependency(data: str = Depends(nested_dependency)) -> int:
         ...
-    
-    
+
+
     router = APIRouter(dependencies=[Depends(router_dependency)])
     app = FastAPI(dependencies=[Depends(nested_dependency)])
     app.include_router(router)
-    
-    
+
+
     @app.get("/")
     async def handler(
-            val_route: bool = Depends(route_dependency),
-            val_router: int = Depends(router_dependency),
-            val_nested: str = Depends(nested_dependency),
-            val_app: int = Depends(app_dependency),
+        val_route: bool = Depends(route_dependency),
+        val_router: int = Depends(router_dependency),
+        val_nested: str = Depends(nested_dependency),
+        val_app: int = Depends(app_dependency),
     ) -> None:
         ...
     ```
@@ -124,34 +128,37 @@ and to easily access dependencies from higher levels.
     ```python
     from starlite import Starlite, Provide, get, Router
 
+
     async def route_dependency() -> bool:
         ...
-    
+
+
     async def nested_dependency() -> str:
         ...
-    
+
+
     async def router_dependency() -> int:
         ...
-    
+
+
     async def app_dependency(nested: str) -> int:
         ...
-    
+
+
     @get("/", dependencies={"val_route": Provide(route_dependency)})
     async def handler(
-            val_route: bool, 
-            val_router: int, 
-            val_nested: str, 
-            val_app: int
+        val_route: bool, val_router: int, val_nested: str, val_app: int
     ) -> None:
         ...
-    
+
+
     router = Router(dependencies={"val_router": Provide(router_dependency)})
     app = Starlite(
-        route_handlers=[handler], 
+        route_handlers=[handler],
         dependencies={
-            "val_app": Provide(app_dependency), 
-            "val_nested": Provide(nested_dependency)
-        }
+            "val_app": Provide(app_dependency),
+            "val_nested": Provide(nested_dependency),
+        },
     )
     ```
 
@@ -165,11 +172,14 @@ is extending [`AbstractAuthenticationMiddleware`](usage/8-security/0-intro.md).
     ```python
     from fastapi import FastAPI, Depends, Request
 
+
     async def authenticate(request: Request) -> None:
         ...
-    
+
+
     app = FastAPI()
-    
+
+
     @app.get("/", dependencies=[Depends(authenticate)])
     async def index() -> dict[str, str]:
         ...
@@ -179,9 +189,13 @@ is extending [`AbstractAuthenticationMiddleware`](usage/8-security/0-intro.md).
     ```python
     from starlite import Starlite, get, ASGIConnection, BaseRouteHandler
 
-    async def authenticate(connection: ASGIConnection, route_handler: BaseRouteHandler) -> None:
+
+    async def authenticate(
+        connection: ASGIConnection, route_handler: BaseRouteHandler
+    ) -> None:
         ...
-    
+
+
     @get("/", guards=[authenticate])
     async def index() -> dict[str, str]:
         ...
@@ -190,6 +204,158 @@ is extending [`AbstractAuthenticationMiddleware`](usage/8-security/0-intro.md).
 ### Middleware
 
 Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
-that make use of FastAPI/Starlette specific middleware features such as 
+that make use of FastAPI/Starlette specific middleware features such as
 Starlette's [`BaseHTTPMiddleware`](https://www.starlette.io/middleware/#basehttpmiddleware) are not compatible,
 but can be easily replaced by making use of [`AbstractMiddleware`](usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/)
+
+
+## From Flask
+
+### Routing
+
+=== "Flask"
+    ```python
+    from flask import Flask
+
+    app = Flask(__name__)
+
+
+    @app.route("/")
+    def index():
+        return "Index Page"
+
+
+    @app.route("/hello")
+    def hello():
+        return "Hello, World"
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get
+
+
+    @get("/")
+    def index() -> str:
+        return "Index Page"
+
+
+    @get("/hello")
+    def hello() -> str:
+        return "Hello, World"
+
+
+    app = Starlite([index, hello])
+    ```
+
+#### Path parameters
+
+=== "Flask"
+    ```python
+    from flask import Flask
+
+    app = Flask(__name__)
+
+
+    @app.route("/user/<username>")
+    def show_user_profile(username):
+        return f"User {username}"
+
+
+    @app.route("/post/<int:post_id>")
+    def show_post(post_id):
+        return f"Post {post_id}"
+
+
+    @app.route("/path/<path:subpath>")
+    def show_subpath(subpath):
+        return f"Subpath {subpath}"
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get
+    from pathlib import Path
+
+
+    @get("/user/{username:str}")
+    def show_user_profile(username: str) -> str:
+        return f"User {username}"
+
+
+    @get("/post/{post_id:int}")
+    def show_post(post_id: int) -> str:
+        return f"Post {post_id}"
+
+
+    @get("/path/{subpath:path}")
+    def show_subpath(subpath: Path) -> str:
+        return f"Subpath {subpath}"
+
+
+    app = Starlite([show_user_profile, show_post, show_subpath])
+    ```
+
+### Request object
+
+In Flask, the current request can be accessed through a global `request` variable. In Starlite,
+the request can be accessed through an optional parameter in the handler function.
+
+=== "Flask"
+    ```python
+    from flask import Flask, request
+
+    app = Flask(__name__)
+
+
+    @app.get("/")
+    def index():
+        print(request.args)
+    ```
+
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, Request
+
+
+    @get("/")
+    def index(request: Request) -> None:
+        print(request.query_params)
+    ```
+
+### Templates
+
+Flask comes with the [Jinja](https://jinja.palletsprojects.com/en/3.1.x/) templating
+engine built-in. You can use Jinja with Starlite as well, but you'll need to install it
+explicitly. You can do by installing Starlite with `pip install starlite[jinja]`.
+In addition to Jinja, Starlite supports [Mako](https://www.makotemplates.org/) templates as well.
+
+=== "Flask"
+    ```python
+    from flask import Flask, render_template
+
+    app = Flask(__name__)
+
+
+    @app.route("/hello/<name>")
+    def hello(name):
+        return render_template("hello.html", name=name)
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, TemplateConfig, Template
+    from starlite.contrib.jinja import JinjaTemplateEngine
+
+
+    @get("/hello/{name:str}")
+    def hello(name: str) -> Template:
+        return Template(name="hello.html", context={"name": name})
+
+
+    app = Starlite(
+        [hello],
+        template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
+    )
+    ```
