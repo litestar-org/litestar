@@ -3,9 +3,11 @@
 ::: starlite.config.openapi.OpenAPIConfig
     options:
         members:
+            - by_alias
             - contact
             - create_examples
             - description
+            - enabled_endpoints
             - external_docs
             - license
             - openapi_controller
@@ -19,4 +21,3 @@
             - use_handler_docstrings
             - version
             - webhooks
-            - enabled_endpoints

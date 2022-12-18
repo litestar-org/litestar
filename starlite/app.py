@@ -718,4 +718,6 @@ class Starlite(Router):
                     plugins=self.plugins,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                 )
-        self.openapi_schema = construct_open_api_with_schema_class(self.openapi_schema)
+        self.openapi_schema = construct_open_api_with_schema_class(
+            open_api_schema=self.openapi_schema, by_alias=self.openapi_config.by_alias
+        )
