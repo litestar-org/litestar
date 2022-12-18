@@ -43,7 +43,7 @@ def test_by_alias() -> None:
 
     @get("/")
     def handler() -> ModelWithAlias:
-        return ModelWithAlias(first="abc")
+        return ModelWithAlias(second="abc")
 
     app = Starlite(
         route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True)
