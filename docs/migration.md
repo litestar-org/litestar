@@ -1,4 +1,4 @@
-# Migration to Starlite
+# Migrating to Starlite
 
 Migrating **from either Starlette or FastAPI** to Starlite is rather uncomplicated, because the frameworks are for the
 most
@@ -317,6 +317,12 @@ but can be easily replaced by making use of [`AbstractMiddleware`](usage/7-middl
     app = Starlite([show_user_profile, show_post, show_subpath])
     ```
 
+
+!!! info "Learn more"
+    To learn more about path parameters check out this chapter
+    in the documentation: [Path parameters](usage/3-parameters/0-path-parameters/)
+
+
 ### Request object
 
 In Flask, the current request can be accessed through a global `request` variable. In Starlite,
@@ -331,7 +337,7 @@ the request can be accessed through an optional parameter in the handler functio
 
     @app.get("/")
     def index():
-        print(request.args)
+        print(request.method)
     ```
 
 
@@ -342,8 +348,82 @@ the request can be accessed through an optional parameter in the handler functio
 
     @get("/")
     def index(request: Request) -> None:
-        print(request.query_params)
+        print(request.method)
     ```
+
+#### Request methods
+
+| Flask                         | Starlite                                                                                   |
+|-------------------------------|--------------------------------------------------------------------------------------------|
+| `request.args`                | `request.query_params`                                                                     |
+| `request.base_url`            | `request.base_url`                                                                         |
+| `request.authorization`       | `request.auth`                                                                             |
+| `request.cache_control`       | `request.headers.get("cache-control")`                                                     |
+| `request.content_encoding`    | `request.headers.get("content-encoding")`                                                  |
+| `request.content_length`      | `request.headers.get("content-length")`                                                    |
+| `request.content_md5`         | -                                                                                          |
+| `request.content_type`        | `request.content_type`                                                                     |
+| `request.cookies`             | `request.cookies`                                                                          |
+| `request.data`                | `request.body()`                                                                           |
+| `request.date`                | `request.headers.get("date")`                                                              |
+| `request.endpoint`            | `request.route_handler`                                                                    |
+| `request.environ`             | `request.scope`                                                                            |
+| `request.files`               | Use [`UploadFile`](usage/4-request-data/#file-uploads)                                     |
+| `request.form`                | `request.form()`, prefer [`Body`](usage/4-request-data/#specifying-a-content-type)         |
+| `request.get_json`            | `request.json()`, prefer the [`data keyword argument`](usage/4-request-data/#request-body) |
+| `request.headers`             | `request.headers`                                                                          |
+| `request.host`                | -                                                                                          |
+| `request.host_url`            | -                                                                                          |
+| `request.if_match`            | `request.headers.get("if-match")`                                                          |
+| `request.if_modified_since`   | `request.headers.get("if_modified_since")`                                                 |
+| `request.if_none_match`       | `request.headers.get("if_none_match")`                                                     |
+| `request.if_range`            | `request.headers.get("if_range")`                                                          |
+| `request.if_unmodified_since` | `request.headers.get("if_unmodified_since")`                                               |
+| `request.method`              | `request.method`                                                                           |
+| `request.mimetype`            | -                                                                                          |
+| `request.mimetype_params`     | -                                                                                          |
+| `request.origin`              | -                                                                                          |
+| `request.path`                | `request.scope["path"]`                                                                    |
+| `request.query_string`        | `request.scope["query_string"]`                                                            |
+| `request.range`               | `request.headers.get("range")`                                                             |
+| `request.referrer`            | `request.headers.get("referrer")`                                                          |
+| `request.remote_addr`         | -                                                                                          |
+| `request.remote_user`         | -                                                                                          |
+| `request.root_path`           | `request.scope["root_path"]`                                                               |
+| `request.server`              | `request.scope["server"]`                                                                  |
+| `request.stream`              | `request.stream`                                                                           |
+| `request.url`                 | `request.url`                                                                              |
+| `request.url_charset`         | -                                                                                          |
+| `request.user_agent`          | `request.headers.get("user-agent")`                                                        |
+| `request.user_agent`          | `request.headers.get("user-agent")`                                                        |
+
+
+!!! info "Read more"
+    To learn more about requests, check out these chapters in the documentation:
+    
+    - [Request data](usage/4-request-data/)
+    - [Request reference](reference/connection/1-request/)
+
+
+### Static files
+
+Like Flask, Starlite also has capabilities for serving static files, but while Flask
+will automatically serve files from a `static` folder, this has to be configured explicitly
+in Starlite.
+
+```python
+from starlite import Starlite, StaticFilesConfig
+
+app = Starlite(
+    [], 
+    static_files_config=StaticFilesConfig(path="/static", directories=["static"])
+)
+```
+
+!!! info "Read more"
+    To learn more about static files check out this chapter in the documentation: 
+    [Static files](usage/0-the-starlite-app/3-static-files/)
+
 
 ### Templates
 
@@ -380,3 +460,233 @@ In addition to Jinja, Starlite supports [Mako](https://www.makotemplates.org/) t
         template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
     )
     ```
+
+!!! info "Read more"
+    To learn more about templates check out this chapter in the documentation: 
+    [Template engines](usage/16-templating/0-template-engines/)
+
+
+### Setting cookies and headers
+
+=== "Flask"
+    ```python
+    from flask import Flask, make_response
+    
+    app = Flask(__name__)
+    
+    
+    @app.get("/")
+    def index():
+        response = make_response("hello")
+        response.set_cookie("my-cookie", "cookie-value")
+        response.headers["my-header"] = "header-value"
+        return response
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, ResponseHeader, Cookie, Response
+    
+    @get(
+        "/static", 
+         response_headers={"my-header": ResponseHeader(value="header-value")},
+        response_cookies=[Cookie("my-cookie", "cookie-value")]
+    )
+    def static() -> str:
+        # you can set headers and cookies when defining handlers
+        ...
+    
+    @get("/dynamic")
+    def dynamic() -> Response[str]:
+        # or dynamically, by returning an instance of Response
+        return Response(
+            "hello",
+            headers={"my-header": "header-value"},
+            cookies=[Cookie("my-cookie", "cookie-value")]
+        )
+    ```
+
+!!! info "Read more"
+    To learn more about response headers and cookies check out these chapters in the 
+    documentation:
+    
+    - [Response headers](/usage/5-responses/4-response-headers/)
+    - [Response cookies](/usage/5-responses/5-response-cookies/)
+
+
+### Redirects 
+
+For redirects, instead of `redirect` use `Redirect`:
+
+=== "Flask"
+    ```python
+    from flask import Flask, redirect, url_for
+    
+    app = Flask(__name__)
+    
+    
+    @app.get("/")
+    def index():
+        return "hello"
+    
+    
+    @app.get("/hello")
+    def hello():
+        return redirect(url_for("index"))
+    ```
+
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, Redirect
+    
+    
+    @get("/")
+    def index() -> str:
+        return "hello"
+    
+    
+    @get("/hello")
+    def hello() -> Redirect:
+        return Redirect(path="index")
+    
+    app = Starlite([index, hello])
+    ```
+
+### Raising HTTP errors
+
+Instead of using the `abort` function, raise an `HTTPException`:
+
+=== "Flask"
+    ```python
+    from flask import Flask, abort
+    
+    app = Flask(__name__)
+    
+    
+    @app.get("/")
+    def index():
+        abort(400, "this did not work")
+    ```
+
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, HTTPException
+    
+    
+    @get("/")
+    def index() -> None:
+        raise HTTPException(status_code=400, detail="this did not work")
+    
+    app = Starlite([index])
+    ```
+
+!!! info "Learn more"
+    To learn more about exceptions check out this chapter in the documentation: [Exceptions](usage/17-exceptions)
+
+### Setting status codes
+
+=== "Flask"
+    ```python
+    from flask import Flask
+    
+    app = Flask(__name__)
+    
+    @app.get("/")
+    def index():
+        return "not found", 404 
+    ```
+
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, Response
+    
+    
+    @get("/static", status_code=404)
+    def static_status() -> str:
+        return "not found"
+    
+    
+    @get("/dynamic")
+    def dynamic_status() -> Response[str]:
+        return Response("not found", status_code=404)
+    
+    app = Starlite([static_status, dynamic_status])
+    ```
+
+
+### Serialization
+
+Flask uses a mix of explicit conversion (such as `jsonify`) and inference (i.e. the type 
+of the returned data) to determine how data should be serialized. Starlite instead assumes
+the data returned is intended to be serialized into JSON and will do so unless told otherwise.
+
+=== "Flask"
+    ```python
+    from flask import Flask, Response
+    
+    app = Flask(__name__)
+    
+    @app.get("/json")
+    def get_json():
+        return {"hello": "world"}
+    
+    @app.get("/text")
+    def get_text():
+        return "hello, world!"
+    
+    @app.get("/html")
+    def get_html():
+        return Response("<strong>hello, world</strong>", mimetype="text/html")
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, get, MediaType
+    
+    @get("/json")
+    def get_json() -> dict[str, str]:
+        return {"hello": "world"}
+
+    @get("/text", media_type=MediaType.TEXT)
+    def get_text() -> str:
+        return "hello, world"
+    
+    @get("/html", media_type=MediaType.HTML)
+    def get_html() -> str:
+        return "<strong>hello, world</strong>"
+    
+    app = Starlite([get_json, get_text, get_html])
+    ```
+
+
+### Error handling
+
+=== "Flask"
+    ```python
+    from flask import Flask
+    from werkzeug.exceptions import HTTPException
+    
+    app = Flask(__name__)
+    
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        ...
+    ```
+
+=== "Starlite"
+    ```python
+    from starlite import Starlite, HTTPException, Request, Response
+    
+    def handle_exception(request: Request, exception: Exception) -> Response:
+        ...
+    
+    app = Starlite([], exception_handlers={HTTPException: handle_exception})
+    ```
+
+
+!!! info "Learn more"
+    To learn more about exception handling check out this chapter in the documentation: 
+    [Exception handling](usage/17-exceptions/#exception-handling)
