@@ -47,6 +47,8 @@ class ExceptionHandlerMiddleware:
             await self.app(scope, receive, send)
         except Exception as e:  # pylint: disable=broad-except
             starlite_app = scope["app"]
+            if self.debug:
+                print(f"Exception in ASGI application: {e}")  # noqa: T201
             for hook in starlite_app.after_exception:
                 await hook(e, scope, starlite_app.state)
 
