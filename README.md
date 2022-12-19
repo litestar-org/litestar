@@ -29,8 +29,9 @@
 
 # Starlite
 
-Starlite is a powerful, flexible and highly performant ASGI API framework written in modern python and offering first
-class typing support.
+Starlite is a powerful, performant, flexible and opinionated ASGI framework,
+offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
+integration.
 
 Check out the [documentation 📚](https://starlite-api.github.io/starlite/).
 
