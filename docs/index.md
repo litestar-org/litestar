@@ -24,7 +24,9 @@
 </center>
 <!-- markdownlint-restore -->
 
-Starlite is a light, opinionated and flexible ASGI API framework built on top of **[pydantic](https://github.com/samuelcolvin/pydantic)**.
+Starlite is a powerful, flexible, highly performant and opinionated ASGI framework,
+offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
+integration.
 
 The Starlite framework supports **[plugins](usage/10-plugins/0-plugins-intro.md)**, ships
 with **[dependency injection](usage/6-dependency-injection/0-dependency-injection-intro.md)**,
@@ -103,7 +105,9 @@ class User(BaseModel):
     id: UUID4
 ```
 
-Alternatively, you can **use a dataclass** – either from dataclasses or from pydantic, or a [`TypedDict`][typing.TypedDict]:
+You can also use dataclasses (standard library and Pydantic),
+[`TypedDict`s][typing.TypedDict] or
+[`msgspec.Struct`s](https://jcristharif.com/msgspec/structs.html):
 
 ```python title="my_app/models/user.py"
 from uuid import UUID
@@ -119,7 +123,7 @@ class User:
     id: UUID
 ```
 
-**Define a Controller** for your data model:
+**Define a Controller for your data model:**
 
 ```python title="my_app/controllers/user.py"
 from typing import List
@@ -158,7 +162,8 @@ class UserController(Controller):
         ...
 ```
 
-When **instantiating** your app, **import your controller** into your application's entry-point and pass it to Starlite:
+When instantiating your app, import your *controller* into your application's
+entry-point and pass it to Starlite:
 
 ```python title="my_app/main.py"
 from starlite import Starlite
@@ -182,26 +187,39 @@ uvicorn my_app.main:app --reload
 - [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
 
+## About Starlite
 
-## About the Starlite Project
+1. Starlite is a community-driven project. This means not a single author,
+   but rather a core team of maintainers is leading the project, supported by a community
+   of contributors. Starlite currently has 5 maintainers and is being very actively developed.
+2. Starlite draws inspiration from [NestJS](https://nestjs.com/) - a contemporary TypeScript framework - which places
+   opinions and patterns at its core.
+3. While still allowing for **function-based endpoints**, Starlite seeks to build on Python's powerful and versatile
+   OOP, by placing **class-based controllers** at its core.
+4. Starlite is **not** a microframework. Unlike frameworks such as FastAPI, Starlette or Flask, Starlite includes a lot
+   of functionalities out of the box needed for a typical modern web application, such as ORM integration,
+   client- and server-side sessions, caching, OpenTelemetry integration and many more. It's not aiming to be "the next
+   Django" (for example, it will never feature its own ORM), but its scope is not micro either.
 
-Starlite is a high-level, opinionated framework, built with validation (on top of [pydantic](https://pydantic-docs.helpmanual.io/)) in mind.
-The idea to build an ASGI framework that's deeply integrated with pydantic is of course not new - it was first done in FastAPI,
-which in this regard (and some others) was a source of inspiration for this framework. Nonetheless, Starlite is not FastAPI -
-it has a different design, different project goals and a completely different codebase.
+### Comparison with other frameworks
 
-1. The goal of this project is to be community-driven. That is, not to have a single author,
-   but rather a core team of maintainers leading the project, as well as community contributors.
-   Starlite currently has 5 maintainers and is being very actively developed.
-2. Starlite draws **inspiration from NestJS** - a contemporary TypeScript framework - which places opinions and patterns
-   at its core.
-3. While still allowing for **function-based endpoints**, Starlite seeks to build on Python's powerful and versatile OOP,
-   by placing **class-based controllers** at its core.
-4. Starlite is **not** a microframework. Unlike frameworks such as FastAPI, Starlette or Flask, Starlite includes a lot of
-   functionalities out of the box needed for a typical modern web application, such as ORM integration,
-   client- and server-side sessions, caching, OpenTelemetry integration and many more. It's not aiming to be "the next Django"
-   (for example, it will never feature its own ORM), but its scope is not micro either.
-
+|                             | Starlite                           | FastAPI             | Starlette        | Sanic               | Quart               |
+|-----------------------------|------------------------------------|---------------------|------------------|---------------------|---------------------|
+| OpenAPI                     | :material-check:                   | :material-check:    | :material-minus: | :material-minus:    | :material-minus:    |
+| Automatic API documentation | Swagger, ReDoc, Stoplight Elements | Swagger, ReDoc      | :material-minus: | :material-minus:    | :material-minus:    |
+| Data validation             | :material-check:                   | :material-check:    | :material-minus: | :material-minus:    | :material-minus:    |
+| Dependency Injection        | :material-check:                   | :material-check:    | :material-minus: | :material-check:    | :material-minus:    |
+| Class based routing         | :material-check:                   | (Through extension) | :material-check: | :material-check:    | :material-check:    |
+| ORM integration             | SQLAlchemy, Tortoise, Piccolo      | :material-minus:    | :material-minus: | :material-minus:    | (Through extension) |
+| Templating                  | Jinja, Mako                        | Jinja               | Jinja            | Jinja               | Jinja               |
+| MessagePack                 | :material-check:                   | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
+| CORS                        | :material-check:                   | :material-check:    | :material-check: | :material-check:    | (Through extension) |
+| CSRF                        | :material-check:                   | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
+| Rate-limiting               | :material-check:                   | :material-minus:    | :material-minus: | (Through extension) | :material-minus:    |
+| JWT                         | :material-check:                   | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
+| Sessions                    | :material-check:                   | Client-side         | Client-side      | :material-minus:    | Client-side         |
+| Authentication              | JWT / Session based                | material-minus:     | material-minus:  | :material-minus:    | :material-minus:    |
+| Caching                     | :material-check:                   | material-minus:     | material-minus:  | :material-minus:    | :material-minus:    |
 
 ### Project Governance
 
@@ -215,14 +233,12 @@ growth of Starlite in the long run. Contributors who show commitment, contribute
 become maintainers will be invited to do so. So really feel free to contribute and propose yourself as a maintainer once
 you contribute substantially.
 
-
 ### Contribution Guide
 
 Any and all contributions and involvement with the project is welcome. The easiest way to begin contributing
 is to check out the open issues - and reach out on our discord server or Matrix space.
 
 --8<-- "CONTRIBUTING.MD"
-
 
 ### License
 

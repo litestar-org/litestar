@@ -234,8 +234,19 @@ def on_files(files: "Files", config: "MkDocsConfig") -> None:
         tmp_docs_file.write_text(content)
 
 
-def on_post_build(config: "MkDocsConfig") -> None:
+def _cleanup_temp_files() -> None:
     """Cleanup temporary files."""
     tmp_examples_path = Path(".tmp_docs_examples")
     if tmp_examples_path.exists():
         shutil.rmtree(tmp_examples_path)
+
+
+def on_post_build(config: "MkDocsConfig") -> None:
+    _cleanup_temp_files()
+
+
+def on_build_error(exc: Exception) -> None:
+    _cleanup_temp_files()
+
+
+on_shutdown = _cleanup_temp_files
