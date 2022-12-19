@@ -201,6 +201,27 @@ is extending [`AbstractAuthenticationMiddleware`](usage/8-security/0-intro.md).
         ...
     ```
 
+
+#### Dependency overrides
+
+While FastAPI includes a mechanism to override dependencies on an existing application object,
+Starlite promotes architecular solutions to the issue this is aimed to solve. Therefore, overriding 
+dependencies in Starlite is strictly supported at definition time, i.e. when you're defining
+handlers, controllers, routers and applications. Dependency overrides are fundamentally 
+the same idea as mocking and should be approached with the same caution and used sparingly 
+instead of being the default.
+
+To achieve the same effect there are three general approaches:
+
+1. Structuring the application with different environments in mind. This could mean for example 
+   connecting to a different database depending on the environment, which in turn is set via
+   and env-variable. This is sufficient and most cases and designing your application around this
+   principle is a general good practice since it facilitates configurability and integration-testing
+   capabilities
+2. Isolating tests for unit testing and using `create_test_client`
+3. Resort to mocking if none of the above approaches can be made to work
+
+
 ### Middleware
 
 Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
