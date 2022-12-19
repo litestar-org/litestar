@@ -1,21 +1,19 @@
 # Migrating to Starlite
 
-Migrating **from either Starlette or FastAPI** to Starlite is rather uncomplicated, because the frameworks are for the
-most
-part **inter-compatible**. So what does need to be changed?
+Migrating from [Starlette](https://www.starlette.io/) or
+[FastAPI](https://fastapi.tiangolo.com/) to Starlite is straightforward, as they are both
+ASGI frameworks and as such build on the same fundamental principles. The following sections
+can help to navigate a migration from either framework by introducing Starlite-equivalents
+to common functionalities.
 
 ## From Starlette / FastAPI
 
 ### Routing Decorators
 
-Starlite does not include any decorator as part of the `Router` or `Starlite` instances. **All routes have to be
-declared
-using [route handlers](usage/2-route-handlers/1-http-route-handlers.md)** – in standalone functions or controller
-methods. You then have to
-register them with the app, either by first **registering them on a router** and then **registering the router on the
-app**, or
-by **registering them directly on the app**. See
-the [registering routes](usage/1-routing/1-registering-routes.md) part of the documentation for details.
+Starlite does not include any decorator as part of the `Router` or `Starlite` instances.
+Instead, all routes are declared using [route handlers](usage/2-route-handlers/1-http-route-handlers.md),
+either as standalone functions or controller methods. The handler can then be registered
+on an application or router instance.
 
 === "FastAPI"
     ```python
@@ -58,6 +56,11 @@ the [registering routes](usage/1-routing/1-registering-routes.md) part of the do
     app = Starlite([get])
     ```
 
+!!! info "Learn more"
+    To learn more about registering routes, check out this chapter
+    in the documentation: [registering routes](usage/1-routing/1-registering-routes.md)
+
+
 ### Routers and Routes
 
 There are a few key differences between Starlite's and Starlette's `Router` class:
@@ -68,11 +71,13 @@ There are a few key differences between Starlite's and Starlette's `Router` clas
 
 If you are using Starlette's `Route`s, you will need to replace these with [route handlers](usage/2-route-handlers/1-http-route-handlers.md).
 
+
 ### Host based routing
 
 Host based routing class is intentionally unsupported. If your application relies on `Host` you will have to separate
 the logic into different services and handle this part of request dispatching with a proxy server like [nginx](https://www.nginx.com/)
 or [traefik](https://traefik.io/).
+
 
 ### Dependency Injection
 
@@ -162,6 +167,12 @@ and to easily access dependencies from higher levels.
     )
     ```
 
+
+!!! info "Learn more"
+    To learn more about dependency injection, check out this chapter
+    in the documentation: [Dependency injection](usage/6-dependency-injection/0-dependency-injection-intro/)
+
+
 #### Authentication
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
@@ -202,18 +213,23 @@ is extending [`AbstractAuthenticationMiddleware`](usage/8-security/0-intro.md).
     ```
 
 
+!!! info "Learn more"
+    To learn more about security and authentication, check out this chapter in the
+    documentation: [Security](usage/8-security/0-intro/)
+
+
 #### Dependency overrides
 
 While FastAPI includes a mechanism to override dependencies on an existing application object,
-Starlite promotes architecular solutions to the issue this is aimed to solve. Therefore, overriding 
+Starlite promotes architecular solutions to the issue this is aimed to solve. Therefore, overriding
 dependencies in Starlite is strictly supported at definition time, i.e. when you're defining
-handlers, controllers, routers and applications. Dependency overrides are fundamentally 
-the same idea as mocking and should be approached with the same caution and used sparingly 
+handlers, controllers, routers and applications. Dependency overrides are fundamentally
+the same idea as mocking and should be approached with the same caution and used sparingly
 instead of being the default.
 
 To achieve the same effect there are three general approaches:
 
-1. Structuring the application with different environments in mind. This could mean for example 
+1. Structuring the application with different environments in mind. This could mean for example
    connecting to a different database depending on the environment, which in turn is set via
    and env-variable. This is sufficient and most cases and designing your application around this
    principle is a general good practice since it facilitates configurability and integration-testing
@@ -231,6 +247,24 @@ but can be easily replaced by making use of [`AbstractMiddleware`](usage/7-middl
 
 
 ## From Flask
+
+### ASGI vs WSGI
+
+[Flask](https://flask.palletsprojects.com) is a WSGI framework, whereas Starlite
+is built using the modern [ASGI](https://asgi.readthedocs.io) standard. A key difference
+is that *ASGI* is built with async in mind.
+
+While Flask has added support for `async/await`, it remains synchronous at its core;
+The async support in Flask is limited to individual endpoints.
+What this means is that while you can use `async def` to define endpoints in Flask,
+**they will not run concurrently** - requests will still be processed one at a time.
+Flask handles asynchronous endpoints by creating an event loop for each request, run the
+endpoint function in it and then return its result.
+
+ASGI on the other hand does the exact opposite; It runs everything in a central event loop.
+Starlite then adds support for synchronous functions by running them in a non-blocking way
+*on the event loop*. What this means is that synchronous and asynchronous code both run
+concurrently.
 
 ### Routing
 
@@ -319,7 +353,7 @@ but can be easily replaced by making use of [`AbstractMiddleware`](usage/7-middl
 
 
 !!! info "Learn more"
-    To learn more about path parameters check out this chapter
+    To learn more about path parameters, check out this chapter
     in the documentation: [Path parameters](usage/3-parameters/0-path-parameters/)
 
 
@@ -399,8 +433,8 @@ the request can be accessed through an optional parameter in the handler functio
 
 
 !!! info "Read more"
-    To learn more about requests, check out these chapters in the documentation:
-    
+    To learn more about requests,, check out these chapters in the documentation:
+
     - [Request data](usage/4-request-data/)
     - [Request reference](reference/connection/1-request/)
 
@@ -415,13 +449,12 @@ in Starlite.
 from starlite import Starlite, StaticFilesConfig
 
 app = Starlite(
-    [], 
-    static_files_config=StaticFilesConfig(path="/static", directories=["static"])
+    [], static_files_config=StaticFilesConfig(path="/static", directories=["static"])
 )
 ```
 
 !!! info "Read more"
-    To learn more about static files check out this chapter in the documentation: 
+    To learn more about static files, check out this chapter in the documentation:
     [Static files](usage/0-the-starlite-app/3-static-files/)
 
 
@@ -462,7 +495,7 @@ In addition to Jinja, Starlite supports [Mako](https://www.makotemplates.org/) t
     ```
 
 !!! info "Read more"
-    To learn more about templates check out this chapter in the documentation: 
+    To learn more about templates, check out this chapter in the documentation:
     [Template engines](usage/16-templating/0-template-engines/)
 
 
@@ -471,10 +504,10 @@ In addition to Jinja, Starlite supports [Mako](https://www.makotemplates.org/) t
 === "Flask"
     ```python
     from flask import Flask, make_response
-    
+
     app = Flask(__name__)
-    
-    
+
+
     @app.get("/")
     def index():
         response = make_response("hello")
@@ -486,50 +519,52 @@ In addition to Jinja, Starlite supports [Mako](https://www.makotemplates.org/) t
 === "Starlite"
     ```python
     from starlite import Starlite, get, ResponseHeader, Cookie, Response
-    
+
+
     @get(
-        "/static", 
-         response_headers={"my-header": ResponseHeader(value="header-value")},
-        response_cookies=[Cookie("my-cookie", "cookie-value")]
+        "/static",
+        response_headers={"my-header": ResponseHeader(value="header-value")},
+        response_cookies=[Cookie("my-cookie", "cookie-value")],
     )
     def static() -> str:
         # you can set headers and cookies when defining handlers
         ...
-    
+
+
     @get("/dynamic")
     def dynamic() -> Response[str]:
         # or dynamically, by returning an instance of Response
         return Response(
             "hello",
             headers={"my-header": "header-value"},
-            cookies=[Cookie("my-cookie", "cookie-value")]
+            cookies=[Cookie("my-cookie", "cookie-value")],
         )
     ```
 
 !!! info "Read more"
-    To learn more about response headers and cookies check out these chapters in the 
+    To learn more about response headers and cookies, check out these chapters in the
     documentation:
-    
+
     - [Response headers](/usage/5-responses/4-response-headers/)
     - [Response cookies](/usage/5-responses/5-response-cookies/)
 
 
-### Redirects 
+### Redirects
 
 For redirects, instead of `redirect` use `Redirect`:
 
 === "Flask"
     ```python
     from flask import Flask, redirect, url_for
-    
+
     app = Flask(__name__)
-    
-    
+
+
     @app.get("/")
     def index():
         return "hello"
-    
-    
+
+
     @app.get("/hello")
     def hello():
         return redirect(url_for("index"))
@@ -539,17 +574,18 @@ For redirects, instead of `redirect` use `Redirect`:
 === "Starlite"
     ```python
     from starlite import Starlite, get, Redirect
-    
-    
+
+
     @get("/")
     def index() -> str:
         return "hello"
-    
-    
+
+
     @get("/hello")
     def hello() -> Redirect:
         return Redirect(path="index")
-    
+
+
     app = Starlite([index, hello])
     ```
 
@@ -560,10 +596,10 @@ Instead of using the `abort` function, raise an `HTTPException`:
 === "Flask"
     ```python
     from flask import Flask, abort
-    
+
     app = Flask(__name__)
-    
-    
+
+
     @app.get("/")
     def index():
         abort(400, "this did not work")
@@ -573,70 +609,76 @@ Instead of using the `abort` function, raise an `HTTPException`:
 === "Starlite"
     ```python
     from starlite import Starlite, get, HTTPException
-    
-    
+
+
     @get("/")
     def index() -> None:
         raise HTTPException(status_code=400, detail="this did not work")
-    
+
+
     app = Starlite([index])
     ```
 
 !!! info "Learn more"
-    To learn more about exceptions check out this chapter in the documentation: [Exceptions](usage/17-exceptions)
+    To learn more about exceptions, check out this chapter in the documentation: [Exceptions](usage/17-exceptions)
 
 ### Setting status codes
 
 === "Flask"
     ```python
     from flask import Flask
-    
+
     app = Flask(__name__)
-    
+
+
     @app.get("/")
     def index():
-        return "not found", 404 
+        return "not found", 404
     ```
 
 
 === "Starlite"
     ```python
     from starlite import Starlite, get, Response
-    
-    
+
+
     @get("/static", status_code=404)
     def static_status() -> str:
         return "not found"
-    
-    
+
+
     @get("/dynamic")
     def dynamic_status() -> Response[str]:
         return Response("not found", status_code=404)
-    
+
+
     app = Starlite([static_status, dynamic_status])
     ```
 
 
 ### Serialization
 
-Flask uses a mix of explicit conversion (such as `jsonify`) and inference (i.e. the type 
+Flask uses a mix of explicit conversion (such as `jsonify`) and inference (i.e. the type
 of the returned data) to determine how data should be serialized. Starlite instead assumes
 the data returned is intended to be serialized into JSON and will do so unless told otherwise.
 
 === "Flask"
     ```python
     from flask import Flask, Response
-    
+
     app = Flask(__name__)
-    
+
+
     @app.get("/json")
     def get_json():
         return {"hello": "world"}
-    
+
+
     @app.get("/text")
     def get_text():
         return "hello, world!"
-    
+
+
     @app.get("/html")
     def get_html():
         return Response("<strong>hello, world</strong>", mimetype="text/html")
@@ -645,19 +687,23 @@ the data returned is intended to be serialized into JSON and will do so unless t
 === "Starlite"
     ```python
     from starlite import Starlite, get, MediaType
-    
+
+
     @get("/json")
     def get_json() -> dict[str, str]:
         return {"hello": "world"}
 
+
     @get("/text", media_type=MediaType.TEXT)
     def get_text() -> str:
         return "hello, world"
-    
+
+
     @get("/html", media_type=MediaType.HTML)
     def get_html() -> str:
         return "<strong>hello, world</strong>"
-    
+
+
     app = Starlite([get_json, get_text, get_html])
     ```
 
@@ -668,9 +714,10 @@ the data returned is intended to be serialized into JSON and will do so unless t
     ```python
     from flask import Flask
     from werkzeug.exceptions import HTTPException
-    
+
     app = Flask(__name__)
-    
+
+
     @app.errorhandler(HTTPException)
     def handle_exception(e):
         ...
@@ -679,14 +726,16 @@ the data returned is intended to be serialized into JSON and will do so unless t
 === "Starlite"
     ```python
     from starlite import Starlite, HTTPException, Request, Response
-    
+
+
     def handle_exception(request: Request, exception: Exception) -> Response:
         ...
-    
+
+
     app = Starlite([], exception_handlers={HTTPException: handle_exception})
     ```
 
 
 !!! info "Learn more"
-    To learn more about exception handling check out this chapter in the documentation: 
+    To learn more about exception handling, check out this chapter in the documentation:
     [Exception handling](usage/17-exceptions/#exception-handling)
