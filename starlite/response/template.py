@@ -1,3 +1,4 @@
+from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from starlite.enums import MediaType
@@ -8,6 +9,13 @@ if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
     from starlite.types import ResponseCookies
+
+
+EXTENSION_MEDIA_TYPES = {
+    ".html": MediaType.HTML,
+    ".xml": MediaType.XML,
+    ".css": MediaType.CSS,
+}
 
 
 class TemplateResponse(Response[bytes]):
@@ -24,6 +32,7 @@ class TemplateResponse(Response[bytes]):
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
+        media_type: Union[MediaType, str] = MediaType.HTML,
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 
@@ -36,9 +45,27 @@ class TemplateResponse(Response[bytes]):
                 [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response
+                'Set-Cookie' header.
             encoding: Content encoding
+            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum. If not set, try to infer
+                the media type based on the template name. If this fails, fall back to `text/plain`.
         """
+        if media_type == MediaType.JSON:  # we assume this is the default
+            # if ".htm" in template_name:
+            #     media_type = MediaType.HTML
+            # elif ".xml" in template_name:
+            #     media_type = MediaType.XML
+            # else:
+            #     media_type = MediaType.TEXT
+            suffixes = PurePath(template_name).suffixes
+            for suffix in suffixes:
+                if _type := EXTENSION_MEDIA_TYPES.get(suffix):
+                    media_type = _type
+                    break
+            else:
+                media_type = MediaType.TEXT
+
         template = template_engine.get_template(template_name)
         super().__init__(
             background=background,
@@ -46,6 +73,6 @@ class TemplateResponse(Response[bytes]):
             cookies=cookies,
             encoding=encoding,
             headers=headers,
-            media_type=MediaType.HTML,
+            media_type=media_type,
             status_code=status_code,
         )
