@@ -218,8 +218,8 @@ uvicorn my_app.main:app --reload
 | Rate-limiting               | :material-check:                   | :material-minus:    | :material-minus: | (Through extension) | :material-minus:    |
 | JWT                         | :material-check:                   | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
 | Sessions                    | :material-check:                   | Client-side         | Client-side      | :material-minus:    | Client-side         |
-| Authentication              | JWT / Session based                | material-minus:     | material-minus:  | :material-minus:    | :material-minus:    |
-| Caching                     | :material-check:                   | material-minus:     | material-minus:  | :material-minus:    | :material-minus:    |
+| Authentication              | JWT / Session based                | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
+| Caching                     | :material-check:                   | :material-minus:    | :material-minus: | :material-minus:    | :material-minus:    |
 
 ### Project Governance
 
