@@ -18,6 +18,8 @@
             - JSON
             - TEXT
             - MESSAGEPACK
+            - CSS
+            - XML
 
 ::: starlite.enums.OpenAPIMediaType
     options:
