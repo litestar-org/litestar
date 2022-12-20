@@ -11,6 +11,7 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
+    overload,
 )
 
 from starlite.datastructures import Cookie, ETag
@@ -118,6 +119,11 @@ class Response(Generic[T]):
         )
         self.raw_headers: List[Tuple[bytes, bytes]] = []
 
+    @overload
+    def set_cookie(self, /, cookie: Cookie) -> None:
+        ...
+
+    @overload
     def set_cookie(
         self,
         key: str,
@@ -130,10 +136,25 @@ class Response(Generic[T]):
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
     ) -> None:
-        """Ses a cookie on the response.
+        ...
+
+    def set_cookie(  # type: ignore[misc]
+        self,
+        key: Union[str, Cookie],
+        value: Optional[str] = None,
+        max_age: Optional[int] = None,
+        expires: Optional[int] = None,
+        path: str = "/",
+        domain: Optional[str] = None,
+        secure: bool = False,
+        httponly: bool = False,
+        samesite: Literal["lax", "strict", "none"] = "lax",
+    ) -> None:
+        """Set a cookie on the response. If passed a [Cookie][starlite.Cookie] instance, keyword arguments will be
+        ignored.
 
         Args:
-            key: Key for the cookie.
+            key: Key for the cookie or a [Cookie][starlite.Cookie] instance.
             value: Value for the cookie, if none given defaults to empty string.
             max_age: Maximal age of the cookie before its invalidated.
             expires: Expiration date as unix MS timestamp.
@@ -146,8 +167,8 @@ class Response(Generic[T]):
         Returns:
             None.
         """
-        self.cookies.append(
-            Cookie(
+        if not isinstance(key, Cookie):
+            key = Cookie(
                 domain=domain,
                 expires=expires,
                 httponly=httponly,
@@ -158,7 +179,7 @@ class Response(Generic[T]):
                 secure=secure,
                 value=value,
             )
-        )
+        self.cookies.append(key)
 
     def set_header(self, key: str, value: str) -> None:
         """Set a header on the response.
