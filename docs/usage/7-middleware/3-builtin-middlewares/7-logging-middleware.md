@@ -1,7 +1,7 @@
 # Logging Middleware
 
 Starlite ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the [app level logging configuration](../../0-the-starlite-app/4-logging.md):
+the [app level logging configuration](/starlite/usage/0-the-starlite-app#logging):
 
 ```python
 from starlite import Starlite, LoggingConfig, get
@@ -24,7 +24,7 @@ app = Starlite(
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or [structlog](https://www.structlog.org/en/stable/index.html), depending on the configuration used (
-see [logging](../../0-the-starlite-app/4-logging.md) for more details).
+see [logging](/starlite//usage/0-the-starlite-app.md#logging) for more details).
 
 ## Obfuscating Logging Output
 
