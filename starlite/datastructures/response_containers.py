@@ -290,7 +290,7 @@ class Stream(ResponseContainer[StreamingResponse]):
         )
 
 
-class Template(ResponseContainer["TemplateResponse"]):
+class Template(ResponseContainer[TemplateResponse]):
     """Container type for returning Template responses."""
 
     name: str
@@ -336,6 +336,7 @@ class Template(ResponseContainer["TemplateResponse"]):
             status_code=status_code,
             template_engine=app.template_engine,
             template_name=self.name,
+            media_type=media_type,
         )
 
     def create_template_context(self, request: "Request") -> Dict[str, Any]:
