@@ -3,7 +3,13 @@ from typing import Any, Optional
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
-from starlite import ImproperlyConfiguredException, MediaType, OpenAPIMediaType, get
+from starlite import (
+    Cookie,
+    ImproperlyConfiguredException,
+    MediaType,
+    OpenAPIMediaType,
+    get,
+)
 from starlite.response import Response
 from starlite.status_codes import (
     HTTP_100_CONTINUE,
@@ -43,11 +49,15 @@ def test_response_headers_do_not_lowercase_values() -> None:
         assert response.headers["foo"] == "BaR"
 
 
-def test_set_cookie() -> None:
+@pytest.mark.parametrize("as_instance", [True, False])
+def test_set_cookie(as_instance: bool) -> None:
     @get("/")
     def handler() -> Response:
         response = Response(content=None)
-        response.set_cookie("test", "abc", max_age=60, expires=60, secure=True, httponly=True)
+        if as_instance:
+            response.set_cookie(Cookie(key="test", value="abc", max_age=60, expires=60, secure=True, httponly=True))
+        else:
+            response.set_cookie(key="test", value="abc", max_age=60, expires=60, secure=True, httponly=True)
         assert len(response.cookies) == 1
         return response
 
