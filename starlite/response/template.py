@@ -1,3 +1,4 @@
+from mimetypes import guess_type
 from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
@@ -9,13 +10,6 @@ if TYPE_CHECKING:
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
     from starlite.types import ResponseCookies
-
-
-EXTENSION_MEDIA_TYPES = {
-    ".html": MediaType.HTML,
-    ".xml": MediaType.XML,
-    ".css": MediaType.CSS,
-}
 
 
 class TemplateResponse(Response[bytes]):
@@ -52,15 +46,9 @@ class TemplateResponse(Response[bytes]):
                 the media type based on the template name. If this fails, fall back to `text/plain`.
         """
         if media_type == MediaType.JSON:  # we assume this is the default
-            # if ".htm" in template_name:
-            #     media_type = MediaType.HTML
-            # elif ".xml" in template_name:
-            #     media_type = MediaType.XML
-            # else:
-            #     media_type = MediaType.TEXT
             suffixes = PurePath(template_name).suffixes
             for suffix in suffixes:
-                if _type := EXTENSION_MEDIA_TYPES.get(suffix):
+                if _type := guess_type("name" + suffix)[0]:
                     media_type = _type
                     break
             else:

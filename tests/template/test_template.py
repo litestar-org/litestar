@@ -84,7 +84,7 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
         (".xml", MediaType.XML),
         (".xml.other", MediaType.XML),
         (".txt", MediaType.TEXT),
-        (".tpl", MediaType.TEXT),
+        (".unknown", MediaType.TEXT),
         ("", MediaType.TEXT),
     ],
 )
