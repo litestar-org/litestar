@@ -5,7 +5,7 @@ an instance of Starlite and then a test client using it. There are multiple use 
 generic logic that is decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
 
 You can pass to this helper all the kwargs accepted by
-the [starlite constructor](../0-the-starlite-app/0-the-starlite-app.md), with
+the [starlite constructor](/starlite/usage/0-the-starlite-app.md), with
 the `route_handlers` kwarg being **required**. Yet unlike the Starlite app, which expects `route_handlers` to be a list,
 here you can also pass individual values.
 

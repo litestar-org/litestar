@@ -41,14 +41,15 @@ extra_css:
 nav:
   - Intro: index.md
   - Usage:
-      - The Starlite App:
-          - usage/0-the-starlite-app/0-the-starlite-app.md
-          - usage/0-the-starlite-app/1-startup-and-shutdown.md
-          - usage/0-the-starlite-app/2-using-application-state.md
-          - usage/0-the-starlite-app/3-static-files.md
-          - usage/0-the-starlite-app/4-logging.md
-          - usage/0-the-starlite-app/5-application-hooks.md
-          - usage/0-the-starlite-app/6-application-init-hook.md
+#      - The Starlite App:
+#          - usage/0-the-starlite-app/0-the-starlite-app.md
+#          - usage/0-the-starlite-app/1-startup-and-shutdown.md
+#          - usage/0-the-starlite-app/2-using-application-state.md
+#          - usage/0-the-starlite-app/3-static-files.md
+#          - usage/0-the-starlite-app/4-logging.md
+#          - usage/0-the-starlite-app/5-application-hooks.md
+#          - usage/0-the-starlite-app/6-application-init-hook.md
+      - usage/0-the-starlite-app.md
       - Routing:
           - usage/1-routing/0-routing.md
           - usage/1-routing/1-registering-routes.md
