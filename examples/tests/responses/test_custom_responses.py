@@ -1,5 +1,5 @@
-from starlite import TestClient
 from examples.responses.custom_responses import app as app_1
+from starlite import TestClient
 
 
 def test_custom_responses() -> None:
