@@ -20,7 +20,7 @@ def retrieve_resource() -> Resource:
 
 
 def after_request_handler(response: Response) -> Response:
-    response.set_cookie(**Cookie(key="Random-Cookie", value=str(randint(1, 100))).dict)
+    response.set_cookie(key="Random-Cookie", value=str(randint(1, 100)))
     return response
 
 
