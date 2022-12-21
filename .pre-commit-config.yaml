@@ -173,7 +173,7 @@ repos:
             types-redis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.284
+    rev: v1.1.285
     hooks:
       - id: pyright
         exclude: "test_apps|tools"
