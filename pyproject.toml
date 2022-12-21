@@ -55,7 +55,7 @@ pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-msgspec = ">=0.10.1"
+msgspec = "^0.11.0"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
