@@ -118,3 +118,30 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert client.app.state.called
+
+
+def test_exception_handler_middleware_debug_logging() -> None:
+    from unittest.mock import patch
+
+    @get("/test")
+    def handler() -> None:
+        raise RuntimeError()
+
+    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
+        client.app.debug = True
+        response = client.get("/test")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        mock_debug.assert_called_once_with("Exception in ASGI application", exc_info=True)
+
+    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
+        client.app.debug = False
+        response = client.get("/test")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        mock_debug.assert_not_called()
+
+    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
+        client.app.debug = False
+        client.app.logger = None
+        response = client.get("/test")
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+        mock_debug.assert_not_called()
