@@ -56,9 +56,10 @@ redis = { version = "*", optional = true, extras = ["hiredis"] }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 msgspec = "^0.11.0"
-starlite-cli = { git = "https://github.com/starlite-api/starlite-cli.git", optional = true }
 jinja2 = { version = "^3.1.2", optional = true }
 mako = { version = "^1.2.4", optional = true }
+click = {version = "^8.1.3", optional = true}
+rich = {version = "^12.6.0", optional = true}
 tortoise-orm = {version = ">=0.17.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
@@ -92,7 +93,9 @@ structlog = "*"
 tortoise-orm = ">=0.17.0"
 tox = "*"
 trio = "*"
-starlite-cli = { git = "https://github.com/starlite-api/starlite-cli.git", optional = true }
+click = "^8.1.3"
+rich = "^12.6.0"
+python-dotenv = "^0.21.0"
 
 
 [tool.poetry.extras]
@@ -104,7 +107,6 @@ picologging = ["picologging"]
 redis = ["redis"]
 structlog = ["structlog"]
 jwt = ["python-jose", "cryptography"]
-cli = ["starlite-cli"]
 tortoise-orm = ["tortoise-orm"]
 cli = ["click", "rich"]
 full = [
@@ -118,11 +120,10 @@ full = [
     "structlog",
     "cli"
 ]
-standard = [
-    "picologging",
-    "cli",
-    "jinja"
-]
+standard = ["picologging", "cli", "jinja"]
+
+[tool.poetry.scripts]
+starlite = {callable = "starlite.cli:cli", extras = ["cli"] }
 
 
 [build-system]

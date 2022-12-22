@@ -142,6 +142,7 @@ repos:
             click,
             rich,
             uvicorn,
+            python-dotenv,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -177,6 +178,7 @@ repos:
             click,
             rich,
             uvicorn,
+            python-dotenv,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.285
@@ -217,4 +219,5 @@ repos:
             click,
             rich,
             uvicorn,
+            python-dotenv,
           ]
