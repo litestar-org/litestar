@@ -20,6 +20,7 @@ from starlite.cli import (
     _format_is_enabled,
 )
 from starlite.cli import cli as cli_command
+from starlite.utils.cli import on_cli_init
 
 
 @contextmanager
@@ -228,12 +229,10 @@ def test_clear_sessions(
     mock_delete.assert_called_once()
 
 
-def test_cli_init_callback(runner: CliRunner, app_file: Path, monkeypatch: MonkeyPatch) -> None:
+def test_cli_init_callback(runner: CliRunner, app_file: Path) -> None:
     mock = MagicMock()
 
-    monkeypatch.setattr(starlite.cli, "CLI_INIT_CALLBACKS", [mock])
+    on_cli_init(mock)
+    runner.invoke(cli_command, "info")
 
-    result = runner.invoke(cli_command, "info")
-
-    assert result.exit_code == 0
     mock.assert_called_once_with(cli_command)
