@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import importlib
 import inspect
 from dataclasses import dataclass
@@ -7,7 +5,7 @@ from functools import wraps
 from importlib.metadata import version
 from os import getenv
 from pathlib import Path
-from typing import Any, Callable, Iterable, TypeVar, cast
+from typing import Any, Callable, Iterable, Tuple, TypeVar, cast
 
 from click import (
     ClickException,
@@ -50,11 +48,15 @@ class StarliteCLIException(ClickException):
 class StarliteEnv:
     """Information about the current Starlite environment variables."""
 
-    app_path: str | None
+    app_path: str
     debug: bool
+    app: Starlite
+    host: str | None = None
+    port: int | None = None
+    reload: bool | None = None
 
     @classmethod
-    def from_env(cls) -> StarliteEnv:
+    def from_env(cls, app_path: str | None) -> "StarliteEnv":
         """Load environment variables.
 
         If `python-dotenv` is installed, use it to populate environment first
@@ -65,7 +67,22 @@ class StarliteEnv:
             dotenv.load_dotenv()
         except ImportError:
             pass
-        return cls(app_path=getenv("STARLITE_APP"), debug=_bool_from_env("STARLITE_DEBUG"))
+
+        if not app_path:
+            app_path, app = _autodiscover_app(getenv("STARLITE_APP"))
+        else:
+            app = _load_app_from_path(app_path)
+
+        port = getenv("STARLITE_PORT")
+
+        return cls(
+            app_path=app_path,
+            app=app,
+            debug=_bool_from_env("STARLITE_DEBUG"),
+            host=getenv("STARLITE_HOST"),
+            port=int(port) if port else None,
+            reload=_bool_from_env("STARLITE_RELOAD"),
+        )
 
 
 def _bool_from_env(key: str, default: bool = False) -> bool:
@@ -82,24 +99,39 @@ def _load_app_from_path(app_path: str) -> Starlite:
     return cast("Starlite", getattr(module, app_name))
 
 
-def _autodiscover_app(env: StarliteEnv) -> tuple[str, Starlite]:
-    if app_path := env.app_path:
+AUTODISCOVER_PATHS = [
+    "asgi.py",
+    "app.py",
+    "application.py",
+    "app/__init__.py",
+    "application/__init__.py",
+]
+
+
+def _path_to_dotted_path(path: Path) -> str:
+    if path.stem == "__init__":
+        path = path.parent
+    return ".".join(path.with_suffix("").parts)
+
+
+def _autodiscover_app(app_path: str | None) -> Tuple[str, Starlite]:
+    if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
         return app_path, _load_app_from_path(app_path)
 
     cwd = Path().cwd()
-    for name in ["asgi.py", "app.py", "application.py"]:
+    for name in AUTODISCOVER_PATHS:
         path = cwd / name
         if not path.exists():
             continue
 
-        module = importlib.import_module(path.stem)
+        dotted_path = _path_to_dotted_path(path.relative_to(cwd))
+        module = importlib.import_module(dotted_path)
         for attr, value in module.__dict__.items():
             if isinstance(value, Starlite):
-                app_string = f"{path.stem}:{attr}"
+                app_string = f"{dotted_path}:{attr}"
                 console.print(f"Using Starlite app from [bright_blue]{path}:{attr}")
                 return app_string, value
-
     raise StarliteCLIException("Could not find a Starlite app")
 
 
@@ -111,7 +143,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
     def wrapped(ctx: Context, /, *args: P.args, **kwargs: P.kwargs) -> T:
         env = ctx.ensure_object(StarliteEnv)
         if "app" in params:
-            kwargs["app"] = _autodiscover_app(env)[1]
+            kwargs["app"] = env.app
         if "env" in params:
             kwargs["env"] = env
         return func(*args, **kwargs)
@@ -201,52 +233,48 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
 
 
 @group()
+@option("--app", "app_path", help="Module path to a Starlite application")
 @pass_context
-def cli(ctx: Context) -> None:
+def cli(ctx: Context, app_path: str | None) -> None:
     """Starlite CLI."""
 
     for callback in CLI_INIT_CALLBACKS:
         callback(cli)
     _wrap_commands(cli.commands.values())
-    ctx.obj = StarliteEnv.from_env()
+    ctx.obj = StarliteEnv.from_env(app_path)
 
 
 @cli.command(name="info")
 def info_command(app: Starlite) -> None:
     """Show information about the detected Starlite app."""
+
     _show_app_info(app)
 
 
 @cli.command()
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
-@option("-p", "--port", help="Serve under this port", type=int, default=8000)
-@option("--host", help="Server under this host", default="127.0.0.1")
+@option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
+@option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
-@option("--app", "app_path", help="Starlite app to run")
 def run(
     reload: bool,
     port: int,
     host: str,
-    app_path: str | None,
     debug: bool,
     env: StarliteEnv,
+    app: Starlite,
 ) -> None:
     """Run a Starlite app.
 
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance>, or set as an
-    environment variable STARLITE_APP with the same format. If none of those is given, the app will be automatically
-    discovered from a file with one of the canonical names: app.py, asgi.py or application.py
+    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance>, set as an
+    environment variable STARLITE_APP with the same format or automatically discovered from one of these canonical
+    paths: app.py, asgi.py, application.py or app/__init__.py
     """
 
     try:
         import uvicorn
     except ImportError:
         raise StarliteCLIException("Uvicorn needs to be installed to run an app")  # pylint: disable=W0707
-
-    if not app_path:
-        app_path, app = _autodiscover_app(env)
-    else:
-        app = _load_app_from_path(app_path)
 
     if debug or env.debug:
         app.debug = True
@@ -255,7 +283,12 @@ def run(
 
     console.rule("[yellow]Starting server process", align="left")
 
-    uvicorn.run(app_path, reload=reload, host=host, port=port)
+    uvicorn.run(
+        env.app_path,
+        reload=env.reload or reload,
+        host=env.host or host,
+        port=env.port or port,
+    )
 
 
 @cli.command()

@@ -1,5 +1,4 @@
-from __future__ import annotations
-
+import shutil
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator
@@ -10,31 +9,42 @@ from click.testing import CliRunner
 from pytest import MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
-from examples.hello_world import app as hello_world_app
 from starlite import Starlite
 from starlite.cli import (
+    AUTODISCOVER_PATHS,
     StarliteCLIException,
     StarliteEnv,
     _autodiscover_app,
     _format_is_enabled,
+    _get_session_backend,
+    _path_to_dotted_path,
 )
 from starlite.cli import cli as cli_command
+from starlite.middleware.rate_limit import RateLimitConfig
+from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.utils.cli import on_cli_init
 
 
 @contextmanager
-def create_app_file(path: str | Path) -> Generator[Path, None, None]:
-    tmp_path = Path.cwd() / path
-    tmp_path.write_text(
+def create_app_file(file: str | Path, directory: str | Path | None = None) -> Generator[Path, None, None]:
+    base = Path.cwd()
+    if directory:
+        base = base / directory
+        base.mkdir()
+    tmp_app_file = base / file
+    tmp_app_file.write_text(
         """
 from starlite import Starlite
 app = Starlite([])
 """
     )
     try:
-        yield tmp_path
+        yield tmp_app_file
     finally:
-        tmp_path.unlink()
+        if directory:
+            shutil.rmtree(directory)
+        else:
+            tmp_app_file.unlink()
 
 
 @fixture
@@ -67,45 +77,73 @@ def test_format_is_enabled() -> None:
     assert _format_is_enabled("a") == "[green]Enabled[/]"
 
 
-@pytest.mark.parametrize("path_env", ["foo.bar:baz", None])
+def test_get_session_backend() -> None:
+    session_middleware = MemoryBackendConfig().middleware
+    app = Starlite(
+        [],
+        middleware=[
+            RateLimitConfig(rate_limit=("second", 1)).middleware,
+            session_middleware,
+        ],
+    )
+
+    assert _get_session_backend(app) is session_middleware.kwargs["backend"]
+
+
+@pytest.mark.parametrize("env_name,attr_name", [("STARLITE_DEBUG", "debug"), ("STARLITE_RELOAD", "reload")])
 @pytest.mark.parametrize(
-    "debug_env,debug_expected",
+    "env_value,expected_value",
     [("true", True), ("True", True), ("1", True), ("0", False), (None, False)],
 )
-def test_starlite_env_from_env(
+def test_starlite_env_from_env_booleans(
     monkeypatch: MonkeyPatch,
-    debug_env: str | None,
-    debug_expected: bool,
-    path_env: str | None,
+    app_file: Path,
+    attr_name: str,
+    env_name: str,
+    env_value: str | None,
+    expected_value: bool,
 ) -> None:
-    if path_env is not None:
-        monkeypatch.setenv("STARLITE_APP", "foo.bar:baz")
-    if debug_env is not None:
-        monkeypatch.setenv("STARLITE_DEBUG", debug_env)
+    if env_value is not None:
+        monkeypatch.setenv(env_name, env_value)
 
-    env = StarliteEnv.from_env()
-    assert env.debug is debug_expected
-    assert env.app_path == path_env
+    env = StarliteEnv.from_env(f"{app_file.stem}:app")
 
-
-def test_autodiscover_from_env() -> None:
-    env = StarliteEnv(app_path="examples.hello_world:app", debug=False)
-    path, app = _autodiscover_app(env)
-    assert path == "examples.hello_world:app"
-    assert app is hello_world_app
+    assert getattr(env, attr_name) is expected_value
+    assert isinstance(env.app, Starlite)
 
 
-@pytest.mark.parametrize("path", ["asgi.py", "app.py", "application.py"])
-def test_autodiscover_from_files(path: str) -> None:
-    with create_app_file(path) as tmp_file_path:
-        app_path, app = _autodiscover_app(StarliteEnv.from_env())
-    assert isinstance(app, Starlite)
-    assert app_path == f"{tmp_file_path.stem}:app"
+def test_starlite_env_from_env_port(monkeypatch: MonkeyPatch, app_file: Path) -> None:
+    env = StarliteEnv.from_env(f"{app_file.stem}:app")
+    assert env.port is None
+
+    monkeypatch.setenv("STARLITE_PORT", "7000")
+    env = StarliteEnv.from_env(f"{app_file.stem}:app")
+    assert env.port == 7000
+
+
+def test_starlite_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) -> None:
+    env = StarliteEnv.from_env(f"{app_file.stem}:app")
+    assert env.host is None
+
+    monkeypatch.setenv("STARLITE_HOST", "0.0.0.0")
+    env = StarliteEnv.from_env(f"{app_file.stem}:app")
+    assert env.host == "0.0.0.0"
+
+
+@pytest.mark.parametrize("path", AUTODISCOVER_PATHS)
+def test_env_from_env_autodiscover_from_files(path: str) -> None:
+    directory = None
+    if "/" in path:
+        directory, path = path.split("/", 1)
+    with create_app_file(path, directory) as tmp_file_path:
+        env = StarliteEnv.from_env(None)
+    assert isinstance(env.app, Starlite)
+    assert env.app_path == f"{_path_to_dotted_path(tmp_file_path.relative_to(Path.cwd()))}:app"
 
 
 def test_autodiscover_not_found() -> None:
     with pytest.raises(StarliteCLIException):
-        _autodiscover_app(StarliteEnv(app_path=None, debug=False))
+        _autodiscover_app(None)
 
 
 def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) -> None:
@@ -116,6 +154,7 @@ def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) 
     mock.assert_called_once()
 
 
+@pytest.mark.parametrize("set_in_env", [True, False])
 @pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
 @pytest.mark.parametrize("port", [8081, None])
@@ -123,32 +162,44 @@ def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) 
 def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
+    monkeypatch: MonkeyPatch,
     mock_uvicorn_run: MagicMock,
     reload: bool | None,
     port: int | None,
     host: str | None,
     custom_app_file: Path | None,
+    set_in_env: bool,
 ) -> None:
     mock_show_app_info = mocker.patch("starlite.cli._show_app_info")
 
     args = ["run"]
+
+    if custom_app_file:
+        args[0:0] = ["--app", f"{custom_app_file.stem}:app"]
+
     if reload:
-        args.append("--reload")
+        if set_in_env:
+            monkeypatch.setenv("STARLITE_RELOAD", "true")
+        else:
+            args.append("--reload")
     else:
         reload = False
 
     if port:
-        args.extend(["--port", str(port)])
+        if set_in_env:
+            monkeypatch.setenv("STARLITE_PORT", str(port))
+        else:
+            args.extend(["--port", str(port)])
     else:
         port = 8000
 
     if host:
-        args.extend(["--host", host])
+        if set_in_env:
+            monkeypatch.setenv("STARLITE_HOST", host)
+        else:
+            args.extend(["--host", host])
     else:
         host = "127.0.0.1"
-
-    if custom_app_file:
-        args.extend(["--app", f"{custom_app_file.stem}:app"])
 
     with create_app_file(custom_app_file or "asgi.py") as path:
 

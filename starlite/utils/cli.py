@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 if TYPE_CHECKING:
@@ -9,7 +7,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T", bound="CLIInitCallback")
 
-CLI_INIT_CALLBACKS: list[CLIInitCallback] = []
+CLI_INIT_CALLBACKS: list["CLIInitCallback"] = []
 
 
 def on_cli_init(func: T) -> T:
