@@ -5,7 +5,7 @@ from functools import wraps
 from importlib.metadata import version
 from os import getenv
 from pathlib import Path
-from typing import Any, Callable, Iterable, Tuple, TypeVar, cast
+from typing import Any, Callable, Iterable, Optional, Tuple, TypeVar, cast
 
 from click import (
     ClickException,
@@ -51,12 +51,12 @@ class StarliteEnv:
     app_path: str
     debug: bool
     app: Starlite
-    host: str | None = None
-    port: int | None = None
-    reload: bool | None = None
+    host: Optional[str] = None
+    port: Optional[int] = None
+    reload: Optional[bool] = None
 
     @classmethod
-    def from_env(cls, app_path: str | None) -> "StarliteEnv":
+    def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
         """Load environment variables.
 
         If `python-dotenv` is installed, use it to populate environment first
@@ -114,7 +114,7 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: str | None) -> Tuple[str, Starlite]:
+def _autodiscover_app(app_path: Optional[str]) -> Tuple[str, Starlite]:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
         return app_path, _load_app_from_path(app_path)
@@ -235,7 +235,7 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
 @group()
 @option("--app", "app_path", help="Module path to a Starlite application")
 @pass_context
-def cli(ctx: Context, app_path: str | None) -> None:
+def cli(ctx: Context, app_path: Optional[str]) -> None:
     """Starlite CLI."""
 
     for callback in CLI_INIT_CALLBACKS:

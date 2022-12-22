@@ -1,7 +1,7 @@
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
@@ -26,7 +26,9 @@ from starlite.utils.cli import on_cli_init
 
 
 @contextmanager
-def create_app_file(file: str | Path, directory: str | Path | None = None) -> Generator[Path, None, None]:
+def create_app_file(
+    file: Union[str, Path], directory: Optional[Union[str, Path]] = None
+) -> Generator[Path, None, None]:
     base = Path.cwd()
     if directory:
         base = base / directory
@@ -100,7 +102,7 @@ def test_starlite_env_from_env_booleans(
     app_file: Path,
     attr_name: str,
     env_name: str,
-    env_value: str | None,
+    env_value: Optional[str],
     expected_value: bool,
 ) -> None:
     if env_value is not None:
@@ -164,10 +166,10 @@ def test_run_command(
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     mock_uvicorn_run: MagicMock,
-    reload: bool | None,
-    port: int | None,
-    host: str | None,
-    custom_app_file: Path | None,
+    reload: Optional[bool],
+    port: Optional[int],
+    host: Optional[str],
+    custom_app_file: Optional[Path],
     set_in_env: bool,
 ) -> None:
     mock_show_app_info = mocker.patch("starlite.cli._show_app_info")
