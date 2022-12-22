@@ -10,7 +10,6 @@ from click.testing import CliRunner
 from pytest import MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
-import starlite.cli
 from examples.hello_world import app as hello_world_app
 from starlite import Starlite
 from starlite.cli import (
