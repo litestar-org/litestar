@@ -301,6 +301,7 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://starlite-api.github.io/pydantic-openapi-schema/objects.inv
             - https://multidict.aio-libs.org/en/stable/objects.inv
+            - https://click.palletsprojects.com/objects.inv
           options:
             heading_level: 3
             members: []

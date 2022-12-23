@@ -116,3 +116,48 @@ The `clear` subcommand clears all sessions from the backend.
 ```shell
 starlite sessions clear
 ```
+
+## Extending the CLI
+
+Starlite's CLI is built with [click](https://click.palletsprojects.com/), and can be easily extended.
+All that's needed to add subcommands under the `starlite` command is adding an
+[entry point](https://packaging.python.org/en/latest/specifications/entry-points/), pointing
+to a [`click.Command`][click.Command] or [`click.Group`][click.Group], under the
+`starlite.commands` group.
+
+=== "setup.py"
+
+    ```python
+    from setuptools import setup
+
+    setup(
+        name="my-starlite-plugin",
+        ...,
+        entry_points={
+            "starlite.commands": ["my_command=my_starlite_plugin.cli:main"],
+        },
+    )
+    ```
+
+=== "Poetry"
+
+    ```toml
+    [tool.poetry.plugins."starlite.commands"]
+    my_command = "my_starlite_plugin.cli:main"
+    ```
+
+### Accessing the app instance
+
+When extending the Starlite CLI, you most likely need access to the loaded `Starlite` instance.
+This can be achieved by adding the special `app` parameter to your CLI functions. This will cause
+`Starlite` instance to be injected into the function whenever it is being called from a click-context.
+
+```python
+import click
+from starlite import Starlite
+
+
+@click.command()
+def my_command(app: Starlite) -> None:
+    ...
+```
