@@ -1,5 +1,6 @@
 import importlib
 import shutil
+import sys
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator, Optional, Union
@@ -296,7 +297,10 @@ def test_register_commands_from_entrypoint(mocker: MockerFixture, runner: CliRun
 
     mock_entry_point = MagicMock()
     mock_entry_point.load = lambda: custom_group
-    mocker.patch("starlite.cli.importlib.metadata.entry_points", return_value=[mock_entry_point])
+    if sys.version_info < (3, 10):
+        mocker.patch("importlib_metadata.entry_points", return_value=[mock_entry_point])
+    else:
+        mocker.patch("importlib.metadata.entry_points", return_value=[mock_entry_point])
     cli_command = importlib.reload(starlite.cli).cli
 
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")

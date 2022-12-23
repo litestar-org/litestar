@@ -1,8 +1,9 @@
 import importlib
 import inspect
+import sys
 from dataclasses import dataclass
 from functools import wraps
-from importlib.metadata import entry_points, version
+from importlib.metadata import version
 from os import getenv
 from pathlib import Path
 from typing import (
@@ -44,6 +45,12 @@ from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from starlite.types import AnyCallable
+
+if sys.version_info >= (3, 10):
+    from importlib.metadata import entry_points
+else:
+    from importlib_metadata import entry_points
+
 
 P = ParamSpec("P")
 T = TypeVar("T")
