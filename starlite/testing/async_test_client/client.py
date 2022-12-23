@@ -79,6 +79,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnectio
 
 class AsyncTestClient(AsyncClient, Generic[T]):
     __test__ = False
+    blocking_portal: "BlockingPortal"
     lifespan_handler: LifeSpanHandler
     exit_stack: "AsyncExitStack"
 
