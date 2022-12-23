@@ -13,7 +13,7 @@ from typing import (
 )
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
-from starlite.testing.test_client import TestClient
+from starlite.testing.sync_test_client import TestClient
 
 if TYPE_CHECKING:
     from starlite import (

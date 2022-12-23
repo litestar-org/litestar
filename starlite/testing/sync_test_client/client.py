@@ -20,8 +20,8 @@ from anyio.from_thread import BlockingPortal, start_blocking_portal
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
-from starlite.testing.test_client.life_span_handler import LifeSpanHandler
-from starlite.testing.test_client.transport import (
+from starlite.testing.sync_test_client.life_span_handler import LifeSpanHandler
+from starlite.testing.sync_test_client.transport import (
     ConnectionUpgradeException,
     TestClientTransport,
 )
@@ -52,7 +52,9 @@ if TYPE_CHECKING:
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from starlite.middleware.session.cookie_backend import CookieBackend
-    from starlite.testing.test_client.websocket_test_session import WebSocketTestSession
+    from starlite.testing.sync_test_client.websocket_test_session import (
+        WebSocketTestSession,
+    )
 
 
 T = TypeVar("T", bound=ASGIApp)
