@@ -139,6 +139,10 @@ repos:
             structlog,
             tortoise_orm,
             httpx,
+            click,
+            rich,
+            uvicorn,
+            python-dotenv,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -161,6 +165,7 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pytest,
+            pytest-mock,
             python-jose,
             sqlalchemy,
             sqlalchemy2-stubs,
@@ -171,6 +176,10 @@ repos:
             types-freezegun,
             types-pyyaml,
             types-redis,
+            click,
+            rich,
+            uvicorn,
+            python-dotenv,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.285
@@ -201,6 +210,7 @@ repos:
             pydantic_factories,
             pydantic_openapi_schema,
             pytest,
+            pytest-mock,
             python-jose,
             pyyaml,
             redis,
@@ -208,4 +218,8 @@ repos:
             sqlalchemy2-stubs,
             starlette,
             structlog,
+            click,
+            rich,
+            uvicorn,
+            python-dotenv,
           ]
