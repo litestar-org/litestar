@@ -2,10 +2,22 @@ import importlib
 import inspect
 from dataclasses import dataclass
 from functools import wraps
-from importlib.metadata import version
+from importlib.metadata import entry_points, version
 from os import getenv
 from pathlib import Path
-from typing import Any, Callable, Iterable, Optional, Tuple, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from click import (
     ClickException,
@@ -28,12 +40,23 @@ from starlite import DefineMiddleware, HTTPRoute, Starlite, WebSocketRoute
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import ServerSideBackend
 from starlite.utils import get_name, is_class_and_subclass
-from starlite.utils.cli import CLI_INIT_CALLBACKS
 from starlite.utils.helpers import unwrap_partial
+
+if TYPE_CHECKING:
+    from starlite.types import AnyCallable
 
 P = ParamSpec("P")
 T = TypeVar("T")
 console = Console()
+
+
+AUTODISCOVER_PATHS = [
+    "asgi.py",
+    "app.py",
+    "application.py",
+    "app/__init__.py",
+    "application/__init__.py",
+]
 
 
 class StarliteCLIException(ClickException):
@@ -85,6 +108,60 @@ class StarliteEnv:
         )
 
 
+class StarliteGroup(Group):
+    """`click.Group` subclass that automatically injects `app` and `env` kwargs into commands that request it."""
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
+        **attrs: Any,
+    ):
+        """Init `StarliteGroup`"""
+        self.group_class = StarliteGroup
+        super().__init__(name=name, commands=commands, **attrs)
+
+    def add_command(self, cmd: Command, name: Optional[str] = None) -> None:
+        """Add command.
+
+        If necessary, inject `app` and `env` kwargs
+        """
+        if cmd.callback:
+            cmd.callback = _inject_args(cmd.callback)
+        super().add_command(cmd)
+
+    def command(self, *args: Any, **kwargs: Any) -> Union[Callable[["AnyCallable"], Command], Command]:  # type: ignore[override]
+        # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
+        """Add a function as a command.
+
+        If necessary, inject `app` and `env` kwargs
+        """
+
+        def decorator(f: "AnyCallable") -> Command:
+            f = _inject_args(f)
+            return cast("Command", Group.command(self, *args, **kwargs)(f))  # pylint: disable=E1102
+
+        return decorator
+
+
+class StarliteExtensionGroup(StarliteGroup):
+    """`StarliteGroup` subclass that will load Starlite-CLI extensions from the `starlite.commands` entry_point."""
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
+        **attrs: Any,
+    ):
+        """Init `StarliteExtensionGroup`"""
+        super().__init__(name=name, commands=commands, **attrs)
+
+        for entry_point in entry_points(group="starlite.commands"):
+            command = entry_point.load()
+            _wrap_commands([command])
+            self.add_command(command, entry_point.name)
+
+
 def _bool_from_env(key: str, default: bool = False) -> bool:
     value = getenv(key)
     if not value:
@@ -97,15 +174,6 @@ def _load_app_from_path(app_path: str) -> Starlite:
     module_path, app_name = app_path.split(":")
     module = importlib.import_module(module_path)
     return cast("Starlite", getattr(module, app_name))
-
-
-AUTODISCOVER_PATHS = [
-    "asgi.py",
-    "app.py",
-    "application.py",
-    "app/__init__.py",
-    "application/__init__.py",
-]
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -232,15 +300,13 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
     console.print(table)
 
 
-@group()
+@group(cls=StarliteExtensionGroup)
 @option("--app", "app_path", help="Module path to a Starlite application")
 @pass_context
 def cli(ctx: Context, app_path: Optional[str]) -> None:
     """Starlite CLI."""
 
-    for callback in CLI_INIT_CALLBACKS:
-        callback(cli)
-    _wrap_commands(cli.commands.values())
+    # _wrap_commands(cli.commands.values())
     ctx.obj = StarliteEnv.from_env(app_path)
 
 

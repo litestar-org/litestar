@@ -1,3 +1,4 @@
+import importlib
 import shutil
 from contextlib import contextmanager
 from pathlib import Path
@@ -5,10 +6,12 @@ from typing import Generator, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
+from click import group
 from click.testing import CliRunner
 from pytest import MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
+import starlite.cli
 from starlite import Starlite
 from starlite.cli import (
     AUTODISCOVER_PATHS,
@@ -22,7 +25,6 @@ from starlite.cli import (
 from starlite.cli import cli as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
-from starlite.utils.cli import on_cli_init
 
 
 @contextmanager
@@ -281,10 +283,23 @@ def test_clear_sessions(
     mock_delete.assert_called_once()
 
 
-def test_cli_init_callback(runner: CliRunner, app_file: Path) -> None:
-    mock = MagicMock()
+def test_register_commands_from_entrypoint(mocker: MockerFixture, runner: CliRunner, app_file: Path) -> None:
+    mock_command_callback = MagicMock()
 
-    on_cli_init(mock)
-    runner.invoke(cli_command, "info")
+    @group()
+    def custom_group() -> None:
+        pass
 
-    mock.assert_called_once_with(cli_command)
+    @custom_group.command()
+    def custom_command(app: Starlite) -> None:
+        mock_command_callback()
+
+    mock_entry_point = MagicMock()
+    mock_entry_point.load = lambda: custom_group
+    mocker.patch("starlite.cli.importlib.metadata.entry_points", return_value=[mock_entry_point])
+    cli_command = importlib.reload(starlite.cli).cli
+
+    result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
+
+    assert result.exit_code == 0
+    mock_command_callback.assert_called_once_with()
