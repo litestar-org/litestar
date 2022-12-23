@@ -1,5 +1,16 @@
 # Changelog
 
+[1.46.0]
+
+- fix: Make SessionAuth openapi_schema use backend_config.key
+- fix: Support utf-8 encoded strings in form data
+- fix: Fix 964: Jinja Template response ignores MediaType settings
+- change: Move `JinjaTemplateEngine` and `MakoTemplateEngine` to contrib
+- change: Update template config
+- feature: Support for controlling Pydantic models' alias in OpenAPI Schema
+- feature: Support `Cookie` instances in `Response.set_cookie`
+- feature: CLI by
+
 [1.45.1]
 
 - fix controller support for mixed websocket and http route handlers
