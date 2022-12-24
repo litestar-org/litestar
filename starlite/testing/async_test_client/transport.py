@@ -79,21 +79,18 @@ class AsyncTestClientTransport(AsyncBaseTransport):
     def create_send(request: "Request", context: SendReceiveContext) -> "Send":
         async def send(message: "Message") -> None:
             if message["type"] == "http.response.start":
-                assert not context[  # noqa: SCS108
-                    "response_started"
-                ], 'Received multiple "http.response.start" messages.'
+                if context["response_started"]:
+                    raise AssertionError('Received multiple "http.response.start" messages.')
                 context["raw_kwargs"]["status_code"] = message["status"]
                 context["raw_kwargs"]["headers"] = [
                     (k.decode("utf-8"), v.decode("utf-8")) for k, v in message.get("headers", [])
                 ]
                 context["response_started"] = True
             elif message["type"] == "http.response.body":
-                assert context[  # noqa: SCS108
-                    "response_started"
-                ], 'Received "http.response.body" without "http.response.start".'
-                assert not context[  # noqa: SCS108
-                    "response_complete"
-                ].is_set(), 'Received "http.response.body" after response completed.'
+                if not context["response_started"]:
+                    raise AssertionError('Received "http.response.body" without "http.response.start".')
+                if context["response_complete"].is_set():
+                    raise AssertionError('Received "http.response.body" after response completed.')
                 body = message.get("body", b"")
                 more_body = message.get("more_body", False)
                 if request.method != "HEAD":
@@ -138,7 +135,7 @@ class AsyncTestClientTransport(AsyncBaseTransport):
             "server": (host, port),
         }
 
-    async def handle_async_request(self, request: "Request") -> "Response":  # noqa
+    async def handle_async_request(self, request: "Request") -> "Response":
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
@@ -176,8 +173,9 @@ class AsyncTestClientTransport(AsyncBaseTransport):
             )
         else:
             if not context["response_started"]:  # pragma: no cover
-                if self.raise_server_exceptions:
-                    assert context["response_started"], "TestClient did not receive any response."  # noqa
+                if self.raise_server_exceptions:  # noqa: SIM102
+                    if not context["response_started"]:
+                        raise AssertionError("TestClient did not receive any response.")
                 return Response(
                     status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
                 )

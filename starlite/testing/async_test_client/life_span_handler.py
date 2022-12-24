@@ -31,15 +31,16 @@ class LifeSpanHandler:
             self.task.result()
         return cast("LifeSpanSendMessage", message)
 
-    async def wait_startup(self) -> None:  # noqa: S108
+    async def wait_startup(self) -> None:
         event: "LifeSpanStartupEvent" = {"type": "lifespan.startup"}
         await self.stream_receive.send(event)
 
         message = await self.receive()
-        assert message["type"] in (  # noqa
+        if message["type"] not in (
             "lifespan.startup.complete",
             "lifespan.startup.failed",
-        )
+        ):
+            raise AssertionError
         if message["type"] == "lifespan.startup.failed":
             await self.receive()
 
@@ -49,10 +50,11 @@ class LifeSpanHandler:
             await self.stream_receive.send(lifespan_shutdown_event)
 
             message = await self.receive()
-            assert message["type"] in (  # noqa
+            if message["type"] not in (
                 "lifespan.shutdown.complete",
                 "lifespan.shutdown.failed",
-            )
+            ):
+                raise AssertionError
             if message["type"] == "lifespan.shutdown.failed":
                 await self.receive()
 
