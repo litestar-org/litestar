@@ -222,7 +222,7 @@ dto_instance = CompanyDTO.from_model_instance(company_instance)
 
 In the above, `dto_instance` is a validated pydantic model instance.
 
-## DTO.to_model_instance()
+### DTO.to_model_instance()
 
 When you have an instance of a [`DTO`][starlite.dto.DTO] model, you can convert it into a model instance using the
 [`to_model_instance()`][starlite.dto.DTO.to_model_instance] method:
@@ -248,7 +248,7 @@ class Company(Base):
 CompanyDTO = dto_factory("CompanyDTO", Company)
 
 
-@get()
+@post()
 def create_company(data: CompanyDTO) -> Company:
     return data.to_model_instance()
 ```
@@ -260,3 +260,50 @@ In the above `company_instance` is an instance of the SQLAlchemy declarative cla
     If you exclude keys or add additional fields, you should make sure this does not cause an error when trying to
     generate a model class from a dto instance. For example, if you exclude required fields from a pydantic model and try
     to create an instance from a dto that doesn't have these, a validation error will be raised.
+
+## Automatic Conversion on Response
+
+When you use a DTO as a return type in a route handler, if the returned data is a model or a dict, it will be converted to the DTO automatically:
+```python
+from starlite import get
+from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.orm import declarative_base
+from starlite import DTOFactory
+from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.status_codes import HTTP_404_NOT_FOUND
+
+dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+
+Base = declarative_base()
+
+
+class Company(Base):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    worth = Column(Float)
+    secret = Column(String)
+
+
+ReadCompanyDTO = dto_factory("CompanyDTO", Company, exclude=["secret"])
+
+companies = [
+    Company(id=1, name="My Firm", worth=1000000.0, secret="secret"),
+    Company(id=2, name="My New Firm", worth=1000.0, secret="abc123")
+]
+
+@get("/{company_id: int}")
+def get_company(company_id: int) -> ReadCompanyDTO:
+    try:
+        return companies[company_id - 1]
+    except IndexError:
+        raise HTTPException(
+            detail=f"Company not found",
+            status_code=HTTP_404_NOT_FOUND,
+        )
+
+@get()
+def get_companies() -> list[ReadCompanyDTO]:
+    return companies
+```
+
+In the above, when requesting route of a company, the `secret` attribute will not be included in the response. And it also works when returning a list companies.
