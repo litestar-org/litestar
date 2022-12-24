@@ -61,6 +61,7 @@ class DTO(GenericModel, Generic[T]):
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
+        orm_mode = True
 
     dto_source_model: ClassVar[Any]
     dto_field_mapping: ClassVar[Dict[str, str]]
@@ -127,13 +128,16 @@ class DTO(GenericModel, Generic[T]):
             Instance of source model type.
         """
         values = self.dict()
+
         for dto_key, original_key in self.dto_field_mapping.items():
             value = values.pop(dto_key)
             values[original_key] = value
+
         if self.dto_source_plugin is not None and self.dto_source_plugin.is_plugin_supported_type(
             self.dto_source_model
         ):
             return cast("T", self.dto_source_plugin.from_dict(model_class=self.dto_source_model, **values))
+
         # we are dealing with a pydantic model or dataclass
         return cast("T", self.dto_source_model(**values))
 
@@ -160,7 +164,8 @@ class DTOFactory:
         exclude: Optional[List[str]] = None,
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
-    ) -> Type[DTO[T]]:
+        base: Type[DTO] = DTO,
+    ) -> Type[DTO[Type[T]]]:
         """Given a supported model class - either pydantic, [`TypedDict`][typing.TypedDict], dataclass or a class supported
         via plugins, create a DTO pydantic model class.
 
@@ -227,7 +232,9 @@ class DTOFactory:
         field_mapping = field_mapping or {}
         fields, plugin = self._get_fields_from_source(source)
         field_definitions = self._populate_field_definitions(exclude, field_definitions, field_mapping, fields)
-        dto = cast("Type[DTO[T]]", create_model(name, __base__=DTO, **field_definitions))  # type:ignore[call-overload]
+        dto = cast(
+            "Type[DTO[Type[T]]]", create_model(name, __base__=base, **field_definitions)  # type:ignore[call-overload]
+        )
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
         dto.dto_field_mapping = {}
