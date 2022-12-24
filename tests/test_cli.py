@@ -36,6 +36,7 @@ def create_app_file(
     if directory:
         base = base / directory
         base.mkdir()
+
     tmp_app_file = base / file
     tmp_app_file.write_text(
         """
@@ -43,6 +44,7 @@ from starlite import Starlite
 app = Starlite([])
 """
     )
+
     try:
         yield tmp_app_file
     finally:
@@ -140,8 +142,10 @@ def test_env_from_env_autodiscover_from_files(path: str) -> None:
     directory = None
     if "/" in path:
         directory, path = path.split("/", 1)
+
     with create_app_file(path, directory) as tmp_file_path:
         env = StarliteEnv.from_env(None)
+
     assert isinstance(env.app, Starlite)
     assert env.app_path == f"{_path_to_dotted_path(tmp_file_path.relative_to(Path.cwd()))}:app"
 
