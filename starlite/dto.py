@@ -165,7 +165,7 @@ class DTOFactory:
         field_mapping: Optional[Dict[str, Union[str, Tuple[str, Any]]]] = None,
         field_definitions: Optional[Dict[str, Tuple[Any, Any]]] = None,
         base: Type[DTO] = DTO,
-    ) -> Type[DTO[Type[T]]]:
+    ) -> Type[DTO[T]]:
         """Given a supported model class - either pydantic, [`TypedDict`][typing.TypedDict], dataclass or a class supported
         via plugins, create a DTO pydantic model class.
 
@@ -233,7 +233,7 @@ class DTOFactory:
         fields, plugin = self._get_fields_from_source(source)
         field_definitions = self._populate_field_definitions(exclude, field_definitions, field_mapping, fields)
         dto = cast(
-            "Type[DTO[Type[T]]]", create_model(name, __base__=base, **field_definitions)  # type:ignore[call-overload]
+            "Type[DTO[T]]", create_model(name, __base__=base, **field_definitions)  # type:ignore[call-overload]
         )
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
