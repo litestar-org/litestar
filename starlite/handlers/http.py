@@ -2,6 +2,7 @@ from enum import Enum
 from inspect import Signature, isawaitable
 from itertools import chain
 from operator import attrgetter
+from pathlib import PurePath
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -472,7 +473,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         if not self.media_type:
             if self.signature.return_annotation in {str, bytes, int, float, AnyStr} or any(
-                is_class_and_subclass(self.signature.return_annotation, t_type) for t_type in (str, bytes, int, float)
+                is_class_and_subclass(self.signature.return_annotation, t_type)
+                for t_type in (str, bytes, int, float, Enum, PurePath)
             ):
                 self.media_type = MediaType.TEXT
             else:
@@ -706,7 +708,7 @@ class get(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -851,7 +853,7 @@ class head(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1013,7 +1015,7 @@ class post(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1157,7 +1159,7 @@ class put(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1301,7 +1303,7 @@ class patch(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1445,7 +1447,7 @@ class delete(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
