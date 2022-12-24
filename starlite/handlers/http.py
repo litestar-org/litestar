@@ -34,6 +34,7 @@ from starlite.datastructures.response_containers import (
     Redirect,
     ResponseContainer,
 )
+from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -66,7 +67,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import Ref, is_async_callable
+from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callable
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -111,6 +112,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     Returns:
         Value for the response body
     """
+
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
         return data
@@ -184,6 +186,7 @@ def _create_data_handler(
     headers: "ResponseHeadersMap",
     media_type: str,
     response_class: "ResponseType",
+    return_annotation: Any,
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
@@ -192,14 +195,10 @@ def _create_data_handler(
     ]
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
+    is_dto_annotation = is_class_and_subclass(return_annotation, DTO[Any])
+    is_dto_iterable_annotation = annotation_is_iterable_of_type(return_annotation, DTO[Any])
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
-        if isawaitable(data):
-            data = await data
-
-        if plugins:
-            data = await _normalize_response_data(data=data, plugins=plugins)
-
+    async def create_response(data: Any) -> "ASGIApp":
         response = response_class(
             background=background,
             content=data,
@@ -212,6 +211,24 @@ def _create_data_handler(
             return await after_request(response)  # type: ignore
 
         return response
+
+    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
+        if isawaitable(data):
+            data = await data
+
+        if plugins:
+            data = await _normalize_response_data(data=data, plugins=plugins)
+
+        if is_dto_annotation and not isinstance(data, DTO):
+            data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)
+
+        elif is_dto_iterable_annotation and not isinstance(data[0], DTO):  # pyright: ignore
+            data = [
+                return_annotation(**datum) if isinstance(datum, dict) else return_annotation.from_model_instance(datum)
+                for datum in data
+            ]
+
+        return await create_response(data=data)
 
     return handler
 
@@ -558,6 +575,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
+
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
                 handler = _create_response_container_handler(
                     after_request=after_request,
@@ -566,13 +584,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     media_type=media_type,
                     status_code=self.status_code,
                 )
+
             elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
+
             elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
                 ASGIApp,
                 "ASGIApp",
             }:
                 handler = _create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
+
             else:
                 handler = _create_data_handler(
                     after_request=after_request,
@@ -581,6 +602,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
+                    return_annotation=self.signature.return_annotation,
                     status_code=self.status_code,
                 )
 
