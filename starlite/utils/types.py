@@ -19,8 +19,13 @@ def annotation_is_iterable_of_type(
     Returns:
         A type-guard boolean.
     """
-    if (args := get_args(annotation)) and isinstance(
-        annotation, (List, Sequence, Iterable, Iterator, Tuple, Deque, tuple, list, deque)  # type: ignore
+    if (args := get_args(annotation)) and (
+        isinstance(annotation, (List, Sequence, Iterable, Iterator, Tuple, Deque, tuple, list, deque))  # type: ignore
+        # for python 3.8 and 3.9 we need to use string comparison rather than isinstance checks.
+        or any(
+            repr(annotation).startswith(repr(type_variable))
+            for type_variable in (List, Sequence, Iterable, Iterator, Tuple, Deque)
+        )
     ):
         return args[0] is type_value
     return False
