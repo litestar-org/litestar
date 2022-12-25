@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Mapped, declarative_base
+
 from starlite import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 
@@ -8,10 +9,10 @@ dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 Base = declarative_base()
 
 
-class Company(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
+class Company(Base):  # pyright: ignore
+    id: Mapped[int] = Column(Integer, primary_key=True)  # type: ignore
+    name: Mapped[str] = Column(String)  # type: ignore
+    worth: Mapped[float] = Column(Float)  # type: ignore
 
 
 CompanyDTO = dto_factory("CompanyDTO", Company)

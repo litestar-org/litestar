@@ -1,8 +1,9 @@
 from typing import List
-from starlite import get, HTTPException
+
 from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.orm import declarative_base
-from starlite import DTOFactory
+from sqlalchemy.orm import Mapped, declarative_base
+
+from starlite import DTOFactory, HTTPException, get
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
@@ -11,11 +12,11 @@ dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 Base = declarative_base()
 
 
-class Company(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
-    secret = Column(String)
+class Company(Base):  # pyright: ignore
+    id: Mapped[int] = Column(Integer, primary_key=True)  # type: ignore
+    name: Mapped[str] = Column(String)  # type: ignore
+    worth: Mapped[float] = Column(Float)  # type: ignore
+    secret: Mapped[str] = Column(String)  # type: ignore
 
 
 ReadCompanyDTO = dto_factory("CompanyDTO", Company, exclude=["secret"])
@@ -27,7 +28,7 @@ companies: List[Company] = [
 
 
 @get("/{company_id: int}")
-def get_company(company_id: int) -> ReadCompanyDTO:
+def get_company(company_id: int) -> ReadCompanyDTO:  # type: ignore
     try:
         return companies[company_id - 1]
     except IndexError:
@@ -38,5 +39,5 @@ def get_company(company_id: int) -> ReadCompanyDTO:
 
 
 @get()
-def get_companies() -> List[ReadCompanyDTO]:
+def get_companies() -> List[ReadCompanyDTO]:  # type: ignore
     return companies
