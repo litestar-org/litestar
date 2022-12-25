@@ -1,9 +1,7 @@
 from enum import Enum
-from pathlib import Path
 from typing import Any, AnyStr
 
 import pytest
-from pydantic import ByteSize, ConstrainedFloat
 from pydantic.types import PaymentCardBrand
 
 from starlite import MediaType, get
@@ -23,15 +21,10 @@ class MyBytes(bytes):
     (
         (str, MediaType.TEXT),
         (bytes, MediaType.TEXT),
-        (int, MediaType.TEXT),
-        (float, MediaType.TEXT),
         (AnyStr, MediaType.TEXT),
         (MyBytes, MediaType.TEXT),
         (PaymentCardBrand, MediaType.TEXT),
-        (ByteSize, MediaType.TEXT),
-        (ConstrainedFloat, MediaType.TEXT),
-        (MyEnum, MediaType.TEXT),
-        (Path, MediaType.TEXT),
+        (MyEnum, MediaType.JSON),
         (dict, MediaType.JSON),
         (Person, MediaType.JSON),
     ),

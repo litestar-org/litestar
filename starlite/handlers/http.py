@@ -2,7 +2,6 @@ from enum import Enum
 from inspect import Signature, isawaitable
 from itertools import chain
 from operator import attrgetter
-from pathlib import PurePath
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -472,9 +471,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._validate_handler_function()
 
         if not self.media_type:
-            if self.signature.return_annotation in {str, bytes, int, float, AnyStr} or any(
-                is_class_and_subclass(self.signature.return_annotation, t_type)
-                for t_type in (str, bytes, int, float, Enum, PurePath)
+            if self.signature.return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
+                is_class_and_subclass(self.signature.return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
             ):
                 self.media_type = MediaType.TEXT
             else:
