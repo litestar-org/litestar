@@ -22,11 +22,10 @@ def test_parse_form_data() -> None:
                 ("veggies", '["tomato", "potato", "aubergine"]'),
                 ("nested", '{"some_key": "some_value"}'),
                 ("calories", "122.53"),
-                ("healthy", True),
-                ("polluting", False),
+                ("healthy", "true"),
+                ("polluting", "false"),
             ]
         ).encode(),
-        encoding="utf-8",
     )
     assert result == {
         "value": [10, 12],
@@ -45,7 +44,6 @@ def test_parse_utf8_form_data() -> None:
                 ("value", "äüß"),
             ]
         ).encode(),
-        encoding="utf-8",
     )
     assert result == {"value": "äüß"}
 
