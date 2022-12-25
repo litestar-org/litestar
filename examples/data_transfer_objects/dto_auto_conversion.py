@@ -3,16 +3,19 @@ from typing import List
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, HTTPException, get
+from starlite import DTOFactory, HTTPException, Starlite, get
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
-dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
+sqlalchemy_plugin = SQLAlchemyPlugin()
+dto_factory = DTOFactory(plugins=[sqlalchemy_plugin])
 
 Base = declarative_base()
 
 
 class Company(Base):  # pyright: ignore
+    __tablename__ = "company"
+
     id: Mapped[int] = Column(Integer, primary_key=True)  # type: ignore
     name: Mapped[str] = Column(String)  # type: ignore
     worth: Mapped[float] = Column(Float)  # type: ignore
@@ -41,3 +44,9 @@ def get_company(company_id: int) -> ReadCompanyDTO:  # type: ignore
 @get()
 def get_companies() -> List[ReadCompanyDTO]:  # type: ignore
     return companies
+
+
+app = Starlite(
+    route_handlers=[get_company, get_companies],
+    plugins=[sqlalchemy_plugin],
+)

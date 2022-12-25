@@ -10,6 +10,8 @@ Base = declarative_base()
 
 
 class Company(Base):  # pyright: ignore
+    __tablename__ = "company"
+
     id: Mapped[int] = Column(Integer, primary_key=True)  # type: ignore
     name: Mapped[str] = Column(String)  # type: ignore
     worth: Mapped[float] = Column(Float)  # type: ignore
