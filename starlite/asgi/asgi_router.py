@@ -139,17 +139,13 @@ class ASGIRouter:
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:
-            node = add_route_to_trie(
+            add_route_to_trie(
                 app=self.app,
                 mount_routes=self._mount_routes,
                 plain_routes=self._plain_routes,
                 root_node=self.root_route_map_node,
                 route=route,
             )
-
-            if node.path_parameters != route.path_parameters:
-                raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
-
             self._store_handler_to_route_mapping(route)
             self._registered_routes.add(route)
 
