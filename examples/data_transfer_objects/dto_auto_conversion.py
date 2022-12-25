@@ -16,10 +16,10 @@ Base = declarative_base()
 class Company(Base):  # pyright: ignore
     __tablename__ = "company"
 
-    id: Mapped[int] = Column(Integer, primary_key=True)  # type: ignore
-    name: Mapped[str] = Column(String)  # type: ignore
-    worth: Mapped[float] = Column(Float)  # type: ignore
-    secret: Mapped[str] = Column(String)  # type: ignore
+    id: Mapped[int] = Column(Integer, primary_key=True)  # pyright: ignore
+    name: Mapped[str] = Column(String)  # pyright: ignore
+    worth: Mapped[float] = Column(Float)  # pyright: ignore
+    secret: Mapped[str] = Column(String)  # pyright: ignore
 
 
 ReadCompanyDTO = dto_factory("CompanyDTO", Company, exclude=["secret"])

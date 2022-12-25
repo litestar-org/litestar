@@ -19,10 +19,9 @@ def test_dto_from_model_instance() -> None:
 
 
 def test_dto_to_model_instance() -> None:
-    company_dto_instance = ToModelCompanyDTO(id=1, name="My Firm", worth=1000000.0)
+    company_dto_instance = ToModelCompanyDTO(id=1, name="My Firm", worth=1000000.0)  # type: ignore
     model_instance = company_dto_instance.to_model_instance()
 
     assert isinstance(model_instance, Company)
-    assert model_instance.id == company_dto_instance.id
-    assert model_instance.name == company_dto_instance.name
-    assert model_instance.worth == company_dto_instance.worth
+    for field in ToModelCompanyDTO.__fields__:
+        assert getattr(model_instance, field) == getattr(company_dto_instance, field)
