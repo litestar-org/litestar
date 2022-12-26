@@ -102,17 +102,29 @@ uvicorn = "*"
 
 [tool.poetry.extras]
 brotli = ["brotli"]
-cli = ["click", "rich"]
 cryptography = ["cryptography"]
-jwt = ["python-jose", "cryptography"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-standard = ["picologging", "cli", "jinja"]
 structlog = ["structlog"]
+jwt = ["python-jose", "cryptography"]
 tortoise-orm = ["tortoise-orm"]
-full = ["brotli", "cryptography", "memcached", "opentelemetry", "picologging", "python-jose", "redis", "structlog", "cli"]
+cli = ["click", "rich"]
+full = [
+    "brotli",
+    "cryptography",
+    "aiomcache",
+    "opentelemetry-instrumentation-asgi",
+    "picologging",
+    "redis",
+    "structlog",
+    "python-jose",
+    "tortoise-orm",
+    "click",
+    "rich"
+]
+standard = ["click", "jinja", "picologging", "rich"]
 
 [tool.poetry.scripts]
 starlite = {callable = "starlite.cli:cli", extras = ["cli"] }
