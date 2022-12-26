@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING, Any, NoReturn
 
 import pytest
 
-from starlite import Starlite, get
-from starlite.status_codes import HTTP_200_OK
+from starlite import Controller, Starlite, delete, get, head, patch, post, put
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import TestClient
 
 if TYPE_CHECKING:
@@ -94,3 +94,55 @@ async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> Non
 def test_warns_problematic_domain() -> None:
     with pytest.warns(UserWarning):
         TestClient(app=mock_asgi_app, base_url="http://testserver")
+
+
+@pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
+def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:  # noqa: C901
+    class MockController(Controller):
+        @get("/")
+        def mock_service_endpoint_get(self) -> dict:
+            return {"mock": "example"}
+
+        @post("/")
+        def mock_service_endpoint_post(self) -> dict:
+            return {"mock": "example"}
+
+        @put("/")
+        def mock_service_endpoint_put(self) -> None:
+            ...
+
+        @patch("/")
+        def mock_service_endpoint_patch(self) -> None:
+            ...
+
+        @delete("/")
+        def mock_service_endpoint_delete(self) -> None:
+            ...
+
+        @head("/")
+        def mock_service_endpoint_head(self) -> None:
+            ...
+
+    mock_service = Starlite(route_handlers=[MockController])
+    with TestClient(mock_service, backend=test_client_backend) as client:
+        if method == "get":
+            response = client.get("/")
+            assert response.status_code == HTTP_200_OK
+        elif method == "post":
+            response = client.post("/")
+            assert response.status_code == HTTP_201_CREATED
+        elif method == "put":
+            response = client.put("/")
+            assert response.status_code == HTTP_200_OK
+        elif method == "patch":
+            response = client.patch("/")
+            assert response.status_code == HTTP_200_OK
+        elif method == "delete":
+            response = client.delete("/")
+            assert response.status_code == HTTP_204_NO_CONTENT
+        elif method == "head":
+            response = client.head("/")
+            assert response.status_code == HTTP_200_OK
+        else:
+            response = client.options("/")
+            assert response.status_code == HTTP_204_NO_CONTENT

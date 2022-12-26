@@ -84,7 +84,8 @@ class WebSocketTestSession:
             self.send_queue.put(message)
 
         try:
-            await self.client.app(self.scope, receive, send)
+            await self.client.app(self.scope, receive, send)  # type: ignore [arg-type]
+
         except BaseException as exc:
             self.send_queue.put(exc)
             raise

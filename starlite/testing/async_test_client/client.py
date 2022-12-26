@@ -1,27 +1,21 @@
-import warnings
-from contextlib import AsyncExitStack, contextmanager
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    Generic,
-    Optional,
-    TypeVar,
-    Union,
-)
+from contextlib import AsyncExitStack
+from http.cookiejar import CookieJar
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
 
-from anyio.from_thread import BlockingPortal, start_blocking_portal
-
-from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
-from starlite.datastructures import MutableScopeHeaders  # noqa: TC001
+from starlite import HttpMethod
+from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
 from starlite.testing.async_test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.async_test_client.transport import AsyncTestClientTransport
-from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
+from starlite.testing.base.client_base import (
+    BaseTestClient,
+    fake_asgi_connection,
+    fake_http_send_message,
+)
+from starlite.types import AnyIOBackend, ASGIApp
 
 try:
-    from httpx import USE_CLIENT_DEFAULT, AsyncClient, Response
+    from httpx import USE_CLIENT_DEFAULT, AsyncClient, Cookies, Request, Response
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -42,44 +36,13 @@ if TYPE_CHECKING:
         URLTypes,
     )
 
-    from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
+    from starlite.middleware.session.base import BaseBackendConfig
 
 
 T = TypeVar("T", bound=ASGIApp)
 
 
-def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEvent:
-    headers.setdefault("content-type", "application/text")
-    return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.headers)
-
-
-def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any]:
-    scope = {
-        "type": "http",
-        "path": "/",
-        "raw_path": b"/",
-        "root_path": "",
-        "scheme": "http",
-        "query_string": b"",
-        "client": ("testclient", 50000),
-        "server": ("testserver", 80),
-        "method": "GET",
-        "http_version": "1.1",
-        "extensions": {"http.response.template": {}},
-        "app": app,
-        "state": {},
-        "path_params": {},
-        "route_handler": None,
-        "_cookies": cookies,
-    }
-    return ASGIConnection[Any, Any, Any](
-        scope=scope,  # type: ignore[arg-type]
-    )
-
-
-class AsyncTestClient(AsyncClient, Generic[T]):
-    __test__ = False
-    blocking_portal: "BlockingPortal"
+class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
     lifespan_handler: LifeSpanHandler
     exit_stack: "AsyncExitStack"
 
@@ -94,20 +57,17 @@ class AsyncTestClient(AsyncClient, Generic[T]):
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ):
-        if "." not in base_url:
-            warnings.warn(
-                f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
-                f"'{base_url}.local'",
-                UserWarning,
-            )
-        self._session_backend: Optional["BaseSessionBackend"] = None
-        if session_config:
-            self._session_backend = session_config._backend_class(config=session_config)
-        self.app = app
-        self.backend = backend
-        self.backend_options = backend_options
-        super().__init__(
-            app=self.app,
+        BaseTestClient.__init__(
+            self,
+            app=app,
+            base_url=base_url,
+            backend=backend,
+            backend_options=backend_options,
+            session_config=session_config,
+        )
+        AsyncClient.__init__(
+            self,
+            app=app,
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,
@@ -119,39 +79,18 @@ class AsyncTestClient(AsyncClient, Generic[T]):
             ),
         )
 
-    @property
-    def session_backend(self) -> "BaseSessionBackend":
-        if not self._session_backend:
-            raise ImproperlyConfiguredException(
-                "Session has not been initialized for this TestClient instance. You can"
-                "do so by passing a configuration object to TestClient: TestClient(app=app, session_config=...)"
-            )
-        return self._session_backend
-
-    @contextmanager
-    def portal(self) -> Generator["BlockingPortal", None, None]:
-        """Get a BlockingPortal.
-
-        Returns:
-            A contextmanager for a BlockingPortal.
-        """
-        if hasattr(self, "blocking_portal"):
-            yield self.blocking_portal
-        else:
-            with start_blocking_portal(backend=self.backend, backend_options=self.backend_options) as portal:
-                yield portal
-
     async def __aenter__(self) -> "AsyncTestClient[T]":
         async with AsyncExitStack() as stack:
+            self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
 
             @stack.callback
             def reset_portal() -> None:
                 delattr(self, "blocking_portal")
 
-            @stack.push_async_callback
-            async def wait_shutdown() -> None:
-                await self.lifespan_handler.wait_shutdown()
+            @stack.callback
+            def wait_shutdown() -> None:
+                portal.call(self.lifespan_handler.wait_shutdown)
 
             self.exit_stack = stack.pop_all()
         return self
@@ -196,7 +135,8 @@ class AsyncTestClient(AsyncClient, Generic[T]):
         Returns:
             An HTTPX Response.
         """
-        return await super().request(
+        return await AsyncClient.request(
+            self,
             url=self.base_url.join(url),
             method=method.value if isinstance(method, HttpMethod) else method,
             content=content,
@@ -210,4 +150,337 @@ class AsyncTestClient(AsyncClient, Generic[T]):
             follow_redirects=follow_redirects,
             timeout=timeout,
             extensions=extensions,
+        )
+
+    async def get(  # type: ignore [override]
+        self,
+        url: "URLTypes",
+        *,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a GET request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.get(
+            self,
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def options(
+        self,
+        url: "URLTypes",
+        *,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends an OPTIONS request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.options(
+            self,
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def head(
+        self,
+        url: "URLTypes",
+        *,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a HEAD request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.head(
+            self,
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def post(
+        self,
+        url: "URLTypes",
+        *,
+        content: Optional["RequestContent"] = None,
+        data: Optional["RequestData"] = None,
+        files: Optional["RequestFiles"] = None,
+        json: Optional[Any] = None,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a POST request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.post(
+            self,
+            url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def put(
+        self,
+        url: "URLTypes",
+        *,
+        content: Optional["RequestContent"] = None,
+        data: Optional["RequestData"] = None,
+        files: Optional["RequestFiles"] = None,
+        json: Optional[Any] = None,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a PUT request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.put(
+            self,
+            url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def patch(
+        self,
+        url: "URLTypes",
+        *,
+        content: Optional["RequestContent"] = None,
+        data: Optional["RequestData"] = None,
+        files: Optional["RequestFiles"] = None,
+        json: Optional[Any] = None,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a PATCH request.
+
+        Args:
+            url: URL or path for the request.
+            content: Request content.
+            data: Form encoded data.
+            files: Multipart files to send.
+            json: JSON data to send.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.patch(
+            self,
+            url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def delete(
+        self,
+        url: "URLTypes",
+        *,
+        params: Optional["QueryParamTypes"] = None,
+        headers: Optional["HeaderTypes"] = None,
+        cookies: Optional["CookieTypes"] = None,
+        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
+        extensions: Optional[Dict[str, Any]] = None,
+    ) -> Response:
+        """Sends a DELETE request.
+
+        Args:
+            url: URL or path for the request.
+            params: Query parameters.
+            headers: Request headers.
+            cookies: Request cookies.
+            auth: Auth headers.
+            follow_redirects: Whether to follow redirects.
+            timeout: Request timeout.
+            extensions: Dictionary of ASGI extensions.
+
+        Returns:
+            An HTTPX Response.
+        """
+        return await AsyncClient.delete(
+            self,
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+    async def set_session_data_async(self, data: Dict[str, Any]) -> None:
+        mutable_headers = MutableScopeHeaders()
+        await self.session_backend.store_in_message(
+            scope_session=data,
+            message=fake_http_send_message(mutable_headers),
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),
+            ),
+        )
+        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
+
+        cookies = Cookies(CookieJar())
+        cookies.extract_cookies(response)
+        self.cookies.update(cookies)
+
+    async def get_session_data_async(self) -> Dict[str, Any]:
+        return await self.session_backend.load_from_connection(
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),
+            ),
         )
