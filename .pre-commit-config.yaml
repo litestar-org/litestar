@@ -23,7 +23,7 @@ repos:
       - id: pycln
         args: [--config=pyproject.toml]
   - repo: https://github.com/pycqa/isort
-    rev: v5.11.3
+    rev: 5.11.4
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
@@ -122,23 +122,28 @@ repos:
         additional_dependencies:
           [
             aiomcache,
+            click,
+            fast-query-parsers,
             fsspec,
+            httpx,
+            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
-            msgspec,
             piccolo,
             picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
+            python-dotenv,
             python-jose,
             pyyaml,
             redis,
+            rich,
             sqlalchemy,
             starlette,
             structlog,
             tortoise_orm,
-            httpx,
+            uvicorn,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -149,19 +154,24 @@ repos:
           [
             aiomcache,
             beanie,
+            click,
+            fast-query-parsers,
             fsspec,
             httpx,
+            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
-            msgspec,
             piccolo,
             picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
             pytest,
+            pytest-mock,
+            python-dotenv,
             python-jose,
+            rich,
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
@@ -171,6 +181,7 @@ repos:
             types-freezegun,
             types-pyyaml,
             types-redis,
+            uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.285
@@ -183,7 +194,9 @@ repos:
             beanie,
             beautifulsoup4,
             brotli,
+            click,
             cryptography,
+            fast-query-parsers,
             freezegun,
             fsspec,
             httpx,
@@ -191,21 +204,25 @@ repos:
             jinja2,
             mako,
             mongomock_motor,
+            msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
             opentelemetry-sdk,
-            msgspec,
             piccolo,
             picologging,
             pydantic,
             pydantic_factories,
             pydantic_openapi_schema,
             pytest,
+            pytest-mock,
+            python-dotenv,
             python-jose,
             pyyaml,
             redis,
+            rich,
             sqlalchemy,
             sqlalchemy2-stubs,
             starlette,
             structlog,
+            uvicorn,
           ]

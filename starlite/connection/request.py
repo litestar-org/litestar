@@ -156,7 +156,7 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
                 return FormMultiDict(form_values)
             if content_type == RequestEncodingType.URL_ENCODED:
                 self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-item]
-                    await self.body(), encoding=options.get("charset", "utf-8")
+                    await self.body(),
                 )
                 return FormMultiDict(form_values)
             return FormMultiDict()

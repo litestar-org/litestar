@@ -42,13 +42,18 @@ from .sync import (
     async_partial,
     is_async_callable,
 )
+from .types import annotation_is_iterable_of_type
 
 __all__ = (
-    "as_async_callable_list",
-    "async_partial",
     "AsyncCallable",
     "AsyncIteratorWrapper",
     "ConnectionDataExtractor",
+    "ExceptionResponseContent",
+    "Ref",
+    "ResponseDataExtractor",
+    "annotation_is_iterable_of_type",
+    "as_async_callable_list",
+    "async_partial",
     "convert_dataclass_to_model",
     "convert_typeddict_to_model",
     "create_exception_response",
@@ -59,7 +64,6 @@ __all__ = (
     "deprecated",
     "encode_json",
     "encode_msgpack",
-    "ExceptionResponseContent",
     "find_index",
     "generate_csrf_hash",
     "generate_csrf_token",
@@ -78,8 +82,6 @@ __all__ = (
     "join_paths",
     "normalize_path",
     "obfuscate",
-    "Ref",
-    "ResponseDataExtractor",
     "set_starlite_scope_state",
     "should_skip_dependency_validation",
     "unique",

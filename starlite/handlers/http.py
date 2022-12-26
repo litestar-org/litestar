@@ -5,6 +5,7 @@ from operator import attrgetter
 from typing import (
     TYPE_CHECKING,
     Any,
+    AnyStr,
     Awaitable,
     Callable,
     Dict,
@@ -19,6 +20,7 @@ from typing import (
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
+from typing_extensions import get_args
 
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
@@ -34,6 +36,7 @@ from starlite.datastructures.response_containers import (
     Redirect,
     ResponseContainer,
 )
+from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -66,7 +69,7 @@ from starlite.types import (
     ResponseHeadersMap,
     ResponseType,
 )
-from starlite.utils import Ref, is_async_callable
+from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callable
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
@@ -111,6 +114,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
     Returns:
         Value for the response body
     """
+
     plugin = get_plugin_for_value(value=data, plugins=plugins)
     if not plugin:
         return data
@@ -184,6 +188,7 @@ def _create_data_handler(
     headers: "ResponseHeadersMap",
     media_type: str,
     response_class: "ResponseType",
+    return_annotation: Any,
     status_code: int,
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
@@ -192,14 +197,10 @@ def _create_data_handler(
     ]
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
+    is_dto_annotation = is_class_and_subclass(return_annotation, DTO)
+    is_dto_iterable_annotation = annotation_is_iterable_of_type(return_annotation, DTO)
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
-        if isawaitable(data):
-            data = await data
-
-        if plugins:
-            data = await _normalize_response_data(data=data, plugins=plugins)
-
+    async def create_response(data: Any) -> "ASGIApp":
         response = response_class(
             background=background,
             content=data,
@@ -212,6 +213,24 @@ def _create_data_handler(
             return await after_request(response)  # type: ignore
 
         return response
+
+    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
+        if isawaitable(data):
+            data = await data
+
+        if is_dto_annotation and not isinstance(data, DTO):
+            data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)
+
+        elif is_dto_iterable_annotation and not isinstance(data[0], DTO):  # pyright: ignore
+            dto_type = cast("Type[DTO]", get_args(return_annotation)[0])
+            data = [
+                dto_type(**datum) if isinstance(datum, dict) else dto_type.from_model_instance(datum) for datum in data
+            ]
+
+        elif plugins and not (is_dto_annotation or is_dto_iterable_annotation):
+            data = await _normalize_response_data(data=data, plugins=plugins)
+
+        return await create_response(data=data)
 
     return handler
 
@@ -312,7 +331,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
         http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]],
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -422,7 +441,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
         self.etag = etag
-        self.media_type = media_type
+        self.media_type: Union[MediaType, str] = media_type or ""
         self.response_class = response_class
         self.response_cookies = response_cookies
         self.response_headers = response_headers
@@ -450,6 +469,15 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.fn = Ref["MaybePartial[AnyCallable]"](fn)
         self.signature = Signature.from_callable(fn)
         self._validate_handler_function()
+
+        if not self.media_type:
+            if self.signature.return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
+                is_class_and_subclass(self.signature.return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
+            ):
+                self.media_type = MediaType.TEXT
+            else:
+                self.media_type = MediaType.JSON
+
         return self
 
     def resolve_response_class(self) -> Type["Response"]:
@@ -558,6 +586,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
+
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
                 handler = _create_response_container_handler(
                     after_request=after_request,
@@ -566,13 +595,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     media_type=media_type,
                     status_code=self.status_code,
                 )
+
             elif is_class_and_subclass(self.signature.return_annotation, Response):
                 handler = _create_response_handler(cookies=cookies, after_request=after_request)
+
             elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
                 ASGIApp,
                 "ASGIApp",
             }:
                 handler = _create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
+
             else:
                 handler = _create_data_handler(
                     after_request=after_request,
@@ -581,6 +613,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
+                    return_annotation=self.signature.return_annotation,
                     status_code=self.status_code,
                 )
 
@@ -673,7 +706,7 @@ class get(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -818,7 +851,7 @@ class head(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -980,7 +1013,7 @@ class post(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1124,7 +1157,7 @@ class put(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1268,7 +1301,7 @@ class patch(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
@@ -1412,7 +1445,7 @@ class delete(HTTPRouteHandler):
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
         guards: Optional[List[Guard]] = None,
-        media_type: Union[MediaType, str] = MediaType.JSON,
+        media_type: Optional[Union[MediaType, str]] = None,
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,

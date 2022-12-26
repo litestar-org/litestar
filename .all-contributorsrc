@@ -625,6 +625,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dialvarezs",
+      "name": "Diego Alvarez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13831919?v=4",
+      "profile": "https://github.com/dialvarezs",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -244,9 +244,14 @@ class Response(Generic[T]):
         """
         try:
             if self.media_type.startswith("text/"):
-                return content.encode(self.encoding) if content else b""  # type: ignore
+                if not content:
+                    return b""
+
+                return content.encode(self.encoding)  # type: ignore
+
             if self.media_type == MediaType.MESSAGEPACK:
                 return encode_msgpack(content, self.serializer)
+
             return encode_json(content, self.serializer)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e

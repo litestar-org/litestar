@@ -146,7 +146,8 @@ def parse_path_to_route(
             path=path,
         )
         asgi_app, handler = parse_node_handlers(node=node, method=method)
-        parsed_path_parameters = parse_path_params(node.path_parameters, tuple(path_parameters))
+        key = method or ("asgi" if node.is_asgi else "websocket")
+        parsed_path_parameters = parse_path_params(node.path_parameters[key], tuple(path_parameters))
 
         return (
             asgi_app,
