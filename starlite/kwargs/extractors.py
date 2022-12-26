@@ -312,9 +312,7 @@ def create_url_encoded_data_extractor(
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
             connection.scope["_form"]  # type: ignore[typeddict-item]
             if "_form" in connection.scope
-            else parse_url_encoded_form_data(
-                await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
-            )
+            else parse_url_encoded_form_data(await connection.body())
         )
         return form_values if form_values or not is_data_optional else None
 
