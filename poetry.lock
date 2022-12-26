@@ -360,6 +360,17 @@ json = ["jsonpath-ng (>=1.5,<2.0)"]
 lua = ["lupa (>=1.14,<2.0)"]
 
 [[package]]
+name = "fast-query-parsers"
+version = "0.1.0"
+description = "Ultra-fast query string and url-encoded form-data parsers"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+maturin = "*"
+
+[[package]]
 name = "filelock"
 version = "3.8.2"
 description = "A platform independent file lock."
@@ -615,6 +626,21 @@ description = "Safely add untrusted strings to HTML/XML markup."
 category = "main"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "maturin"
+version = "0.14.7"
+description = "Build and publish crates with pyo3, rust-cpython and cffi bindings as well as rust binaries as python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+patchelf = ["patchelf"]
+zig = ["ziglang (>=0.10.0,<0.11.0)"]
 
 [[package]]
 name = "mongomock"
@@ -1296,7 +1322,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1441,7 +1467,7 @@ tortoise-orm = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<4.0"
-content-hash = "e7b376785c54355b0344100d149fa74eefa59acf8cb6c6d2066bdc3f59a271fe"
+content-hash = "17b6a444bdd266892858d187ee5ed43805b6729621f665dbe3c11b51414fd61c"
 
 [metadata.files]
 aiomcache = [
@@ -1768,6 +1794,24 @@ fakeredis = [
     {file = "fakeredis-2.2.0-py3-none-any.whl", hash = "sha256:1ac7adf04dcbf8f9886add5972018e0e42781ee772fbaa0a573350cd4e4c66f7"},
     {file = "fakeredis-2.2.0.tar.gz", hash = "sha256:dacdede58b0e682d5dc6176518858b6933c3d529ec18270f162ad5aaf97f5769"},
 ]
+fast-query-parsers = [
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-macosx_10_7_x86_64.whl", hash = "sha256:c68bcf28b280eb3ad87dc4ad53482f3b767170b3553e9412dad4afd536b95af6"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:3926f628ccb212cbe0b44fe79cc455538280a156c9d6c585613d06ea36970a93"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f7052ca1658542d1aca6ed9831389bcd23dbda3bb4fef691a418c77bfe476bbf"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:aff36b60f1ab232fcd2e0a64786f48c23f9b94893d7eb2b3860d439633fb6495"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:52471d9be336c786f65b2dc0aee3ed0b85ae0cd9641ed3996f7efe7282be6e38"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:c3452449b2ae62d0c1f3f87d44af1edbbbceef895f9151cb8f06cfd8cb0b26e9"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:a6a06f7f93088a5c5e34769ecfff80702005f824bec9cfbc125d1a0a1879d74c"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0eaad3c0bc84395fc7b2bf4571f4ddf355d390acc21817f0f925658dabacfff7"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:53dcfcd9f266d8d34390f97e65cdaf413b37cc3ee4734b35c0b06031ed74d886"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:ba168d29ce2b3c5fa6bf56880aa176a8e4302c5df8b208eba873b69db64540a3"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:dc774b2e39161b767937f5ecf5199f3f1ae9fa4ebb15cb858a05c8176ed92049"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-musllinux_1_2_i686.whl", hash = "sha256:9bb176306ad20488c7d6ed1c0a601b33c692a3a5f5161bb021c70907671e7761"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:dba36401bad33fee511ccc724ec93da45aca9da19cf3518214d9d379ea004230"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-win32.whl", hash = "sha256:b935bcf2f9d42cc49cd138d79237de6d1c16d152e9ec0cab44207f1024742bd1"},
+    {file = "fast_query_parsers-0.1.0-cp38-abi3-win_amd64.whl", hash = "sha256:02e1c9345466b83c4eadcad55a52ec7aef7c5df410a3d0fd01372ed0119aa041"},
+    {file = "fast_query_parsers-0.1.0.tar.gz", hash = "sha256:c611ad80e3e7ac09255c611f0e785c0e832ce7e74fac7597252f43aaf1a3290b"},
+]
 filelock = [
     {file = "filelock-3.8.2-py3-none-any.whl", hash = "sha256:8df285554452285f79c035efb0c861eb33a4bcfa5b7a137016e32e6a90f9792c"},
     {file = "filelock-3.8.2.tar.gz", hash = "sha256:7565f628ea56bfcd8e54e42bdc55da899c85c1abfe1b5bcfd147e9188cebb3b2"},
@@ -2025,6 +2069,21 @@ markupsafe = [
     {file = "MarkupSafe-2.1.1-cp39-cp39-win32.whl", hash = "sha256:d4306c36ca495956b6d568d276ac11fdd9c30a36f1b6eb928070dc5360b22e1c"},
     {file = "MarkupSafe-2.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:46d00d6cfecdde84d40e572d63735ef81423ad31184100411e6e3388d405e247"},
     {file = "MarkupSafe-2.1.1.tar.gz", hash = "sha256:7f91197cc9e48f989d12e4e6fbc46495c446636dfc81b9ccf50bb0ec74b91d4b"},
+]
+maturin = [
+    {file = "maturin-0.14.7-py3-none-linux_armv6l.whl", hash = "sha256:6c8fbbe4ddc41ca6a6cbc994e51d920dc907d20e3676b3403485f07945c4067a"},
+    {file = "maturin-0.14.7-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:dbdafb191475cfe3c29789deeb5330923dae4e620776e8b84fe7fa2fc5da3047"},
+    {file = "maturin-0.14.7-py3-none-macosx_10_9_x86_64.macosx_10_9_arm64.macosx_10_9_universal2.whl", hash = "sha256:8f4602fa53f606ed39e33f0150e4d2c13ce1d75161bda31f1783c62d49f5df7d"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_12_i686.manylinux2010_i686.musllinux_1_1_i686.whl", hash = "sha256:799d582f25ac2fce6a2aedf28ac34e7872ddafa8f995dfae73d7f9906754269d"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:6bb39a7e696d0a916eeadb5c6bce087e1b759fb528e180a894875669d3b86bd4"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:cc90a505c359e5cb3c7b69582b0cda2a2d67943b34188537b487c9425fd5cf86"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.musllinux_1_1_armv7l.whl", hash = "sha256:ee04493dda88b4eda2334238a1981ecbb517c820807b3f8c3d58832bf58a4e9f"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.musllinux_1_1_ppc64le.whl", hash = "sha256:74c547b936c074d4fb555087d0910422f86fdfafe2ec953d3ed308ef7b0d1844"},
+    {file = "maturin-0.14.7-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:5ae45fca0618ea29c177aa3c3d3c6a88f6676e2d69c24e82e7a31372cf2a2ee6"},
+    {file = "maturin-0.14.7-py3-none-win32.whl", hash = "sha256:4f5aa10540a1aeffd61552e567f9967572e9070e869d5110e0f3d5f3f7f90b1a"},
+    {file = "maturin-0.14.7-py3-none-win_amd64.whl", hash = "sha256:274913158beff0a7028f235c881eb4521fa38e7547feea957d6e6a5dfe6930cd"},
+    {file = "maturin-0.14.7-py3-none-win_arm64.whl", hash = "sha256:a33a61d64161bf4ab75b32a6054e4c786779cad1370bd44c6e28e4857029390a"},
+    {file = "maturin-0.14.7.tar.gz", hash = "sha256:87a8f894e828d64bfba34c507e11da7fb50ade7de46959685d7e4ca3251c443f"},
 ]
 mongomock = [
     {file = "mongomock-4.1.2-py2.py3-none-any.whl", hash = "sha256:08a24938a05c80c69b6b8b19a09888d38d8c6e7328547f94d46cadb7f47209f2"},

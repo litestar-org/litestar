@@ -1,5 +1,13 @@
 # Changelog
 
+[1.47.0]
+
+- fix: Don't import `CookieBackendConfig` by default in `starlite.middleware.sessions`
+- feature: Auto generation of DTOs from response data
+- feature: Media type inference to HTTP handlers
+- feature: Support differently named path parameters
+- other: Add `fast-query-parsers`
+
 [1.46.0]
 
 - fix: Make SessionAuth openapi_schema use backend_config.key
