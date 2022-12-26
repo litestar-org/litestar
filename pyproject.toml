@@ -109,10 +109,22 @@ memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-standard = ["picologging", "cli", "jinja"]
+standard = ["click", "jinja", "picologging", "rich"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
-full = ["brotli", "cryptography", "memcached", "opentelemetry", "picologging", "python-jose", "redis", "structlog", "cli"]
+full = [
+    "brotli",
+    "cryptography",
+    "aiomcache",
+    "opentelemetry-instrumentation-asgi",
+    "picologging",
+    "redis",
+    "structlog",
+    "python-jose",
+    "tortoise-orm",
+    "click",
+    "rich"
+]
 
 [tool.poetry.scripts]
 starlite = {callable = "starlite.cli:cli", extras = ["cli"] }
