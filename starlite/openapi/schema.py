@@ -198,7 +198,7 @@ class GenericPydanticSchema(OpenAPI310PydanticSchema):
 
 def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]) -> Schema:
     """Get or create a Schema object for the given field type."""
-    field_type = field.outer_type_
+    field_type = field.type_ if issubclass(field.type_, Enum) else field.outer_type_
     if field_type in TYPE_MAP:
         return TYPE_MAP[field_type].copy()
     if is_pydantic_model(field_type):
