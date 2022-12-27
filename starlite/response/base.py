@@ -1,8 +1,8 @@
+from functools import partial
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Generic,
     List,
@@ -22,6 +22,7 @@ from starlite.status_codes import (
     HTTP_204_NO_CONTENT,
     HTTP_304_NOT_MODIFIED,
 )
+from starlite.utils import deprecated
 from starlite.utils.helpers import get_enum_string_value
 from starlite.utils.serialization import (
     DEFAULT_TYPE_ENCODERS,
@@ -40,6 +41,8 @@ if TYPE_CHECKING:
         ResponseCookies,
         Scope,
         Send,
+        Serializer,
+        TypeEncodersMap,
     )
 
 T = TypeVar("T")
@@ -60,10 +63,8 @@ class Response(Generic[T]):
         "status_allows_body",
         "status_code",
         "raw_headers",
+        "_enc_hook",
     )
-
-    type_encoders: Dict[Any, Callable[[Any], Any]] = DEFAULT_TYPE_ENCODERS
-    """Encoders for non-natively supported types."""
 
     def __init__(
         self,
@@ -76,6 +77,7 @@ class Response(Generic[T]):
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
         is_head_response: bool = False,
+        type_encoders: Optional["TypeEncodersMap"] = None,
     ) -> None:
         """Initialize the response.
 
@@ -91,6 +93,7 @@ class Response(Generic[T]):
                 the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
         self.background = background
         self.cookies = cookies or []
@@ -102,6 +105,7 @@ class Response(Generic[T]):
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
         self.status_code = status_code
+        self._enc_hook = self.get_serializer(type_encoders)
 
         if not self.status_allows_body or is_head_response:
             if content:
@@ -118,6 +122,32 @@ class Response(Generic[T]):
             f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
         )
         self.raw_headers: List[Tuple[bytes, bytes]] = []
+
+    @classmethod
+    @deprecated(
+        "1.48.0",
+        pending=True,
+        info="Set `type_encoders` on a higher layer "
+        "instead or pass `type_encoders` to the `Response` instance directly",
+    )
+    def serializer(cls, value: Any) -> Any:
+        """Transform non-natively supported types into supported types.
+
+        Should raise `TypeError` if a type cannot be transformed into a supported type
+        """
+
+    @classmethod
+    def get_serializer(cls, type_encoders: Optional["TypeEncodersMap"] = None) -> "Serializer":
+        """Get the serializer for this response class.
+
+        If `Response.serializer` is not overridden in a subclass, use `default_serializer` and pass `type_encoders` to
+        it.
+        """
+        if cls.serializer != Response.serializer:
+            return cls.serializer
+        if type_encoders:
+            return partial(default_serializer, type_encoders={**DEFAULT_TYPE_ENCODERS, **type_encoders})
+        return default_serializer
 
     @overload
     def set_cookie(self, /, cookie: Cookie) -> None:
@@ -224,15 +254,6 @@ class Response(Generic[T]):
         self.cookies = [c for c in self.cookies if c != cookie]
         self.cookies.append(cookie)
 
-    @classmethod
-    def serializer(cls, value: Any) -> Any:
-        """Transform non-natively supported types into supported types using `Response.type_encoders`.
-
-        Should raise `TypeError` if a type cannot be transformed into a supported type
-        """
-
-        return default_serializer(value, cls.type_encoders)
-
     def render(self, content: Any) -> bytes:
         """Handle the rendering of content T into a bytes string.
 
@@ -250,9 +271,9 @@ class Response(Generic[T]):
                 return content.encode(self.encoding)  # type: ignore
 
             if self.media_type == MediaType.MESSAGEPACK:
-                return encode_msgpack(content, self.serializer)
+                return encode_msgpack(content, self._enc_hook)
 
-            return encode_json(content, self.serializer)
+            return encode_json(content, self._enc_hook)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

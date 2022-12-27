@@ -17,11 +17,20 @@ def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
         A serializer function
     """
     route_handler = scope["route_handler"]
-    if hasattr(route_handler, "resolve_response_class"):
-        return route_handler.resolve_response_class().serializer  # pyright: ignore
-
     app = scope["app"]
-    return app.response_class.serializer if app.response_class else None
+
+    if response_class := (
+        route_handler.resolve_response_class()  # pyright: ignore
+        if hasattr(route_handler, "resolve_response_class")
+        else app.response_class
+    ):
+        return response_class.get_serializer(
+            route_handler.resolve_type_encoders()  # pyright: ignore
+            if hasattr(route_handler, "resolve_type_encoders")
+            else app.type_encoders
+        )
+
+    return None
 
 
 def get_starlite_scope_state(scope: "Scope", key: str, default: Any = Empty) -> Any:

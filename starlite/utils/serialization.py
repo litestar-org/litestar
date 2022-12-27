@@ -1,5 +1,5 @@
 from pathlib import PurePosixPath
-from typing import Any, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
 import msgspec
 from pydantic import (
@@ -23,7 +23,10 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-DEFAULT_TYPE_ENCODERS: Dict[Any, Callable[[Any], Any]] = {
+if TYPE_CHECKING:
+    from starlite.types import TypeEncodersMap
+
+DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     PurePosixPath: str,
     # pydantic specific types
     BaseModel: lambda m: m.dict(),
