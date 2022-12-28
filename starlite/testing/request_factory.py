@@ -16,14 +16,9 @@ if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
 
-try:
-    from httpx._content import encode_json as httpx_encode_json
-    from httpx._content import encode_multipart_data, encode_urlencoded_data
-    from httpx._types import FileTypes  # noqa: TC002
-except ImportError as e:
-    raise MissingDependencyException(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    ) from e
+from httpx._content import encode_json as httpx_encode_json
+from httpx._content import encode_multipart_data, encode_urlencoded_data
+from httpx._types import FileTypes  # noqa: TC002
 
 
 def _create_default_route_handler() -> "HTTPRouteHandler":

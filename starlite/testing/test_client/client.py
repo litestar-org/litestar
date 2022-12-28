@@ -28,13 +28,7 @@ from starlite.testing.test_client.transport import (
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 from starlite.utils import deprecated
 
-try:
-    from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
-except ImportError as e:
-    raise MissingDependencyException(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    ) from e
-
+from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
