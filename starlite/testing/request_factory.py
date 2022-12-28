@@ -1,12 +1,14 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlencode
 
+from httpx._content import encode_json as httpx_encode_json
+from httpx._content import encode_multipart_data, encode_urlencoded_data
+from httpx._types import FileTypes  # noqa: TC002
 from pydantic import BaseModel
 
 from starlite.app import Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
-from starlite.exceptions import MissingDependencyException
 from starlite.handlers.http import get
 from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
@@ -15,10 +17,6 @@ from starlite.utils.serialization import decode_json, encode_json
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
-
-from httpx._content import encode_json as httpx_encode_json
-from httpx._content import encode_multipart_data, encode_urlencoded_data
-from httpx._types import FileTypes  # noqa: TC002
 
 
 def _create_default_route_handler() -> "HTTPRouteHandler":
