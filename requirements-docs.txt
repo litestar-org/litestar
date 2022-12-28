@@ -4,3 +4,4 @@ black
 httpx
 uvicorn
 git+https://github.com/provinzkraut/AutoPyTabs.git
+mike
