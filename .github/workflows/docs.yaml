@@ -5,10 +5,12 @@ on:
     branches: [main]
     types:
       - completed
+  release:
+    types: [published]
 jobs:
   docs:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'release' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -23,5 +25,16 @@ jobs:
         run: |
             poetry install --no-interaction --only main
             pip install -r requirements-docs.txt
-      - name: Deploy to GH-Pages
-        run: mkdocs gh-deploy --force
+      - name: Setup mike
+        run: |
+          git fetch origin gh-pages --depth=0
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Deploy to GH-Pages (preview)
+        if:  ${{ github.event_name == 'push' }}
+        run: mike deploy main --push
+      - name: Deploy to GH-Pages (release)
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        run: |
+          STARLITE_VERSION=$(python -c "print('$(poetry version --short)'.rsplit('.', 1)[0])")
+          mike deploy $STARLITE_VERSION latest --push --force --update-aliases
