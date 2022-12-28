@@ -16,6 +16,7 @@ from typing import (
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
+from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.datastructures import MutableScopeHeaders
@@ -27,8 +28,6 @@ from starlite.testing.test_client.transport import (
 )
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 from starlite.utils import deprecated
-
-from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
