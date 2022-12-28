@@ -20,7 +20,6 @@ from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.datastructures import MutableScopeHeaders
-from starlite.exceptions import MissingDependencyException
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
