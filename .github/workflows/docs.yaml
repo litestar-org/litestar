@@ -27,7 +27,7 @@ jobs:
             pip install -r requirements-docs.txt
       - name: Setup mike
         run: |
-          git fetch origin gh-pages --depth=0
+          git fetch origin gh-pages --depth=1
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Deploy to GH-Pages (preview)
