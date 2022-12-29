@@ -16,10 +16,10 @@ from typing import (
 from urllib.parse import urljoin
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
+from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 from starlite import ASGIConnection, HttpMethod, ImproperlyConfiguredException
 from starlite.datastructures import MutableScopeHeaders
-from starlite.exceptions import MissingDependencyException
 from starlite.testing.test_client.life_span_handler import LifeSpanHandler
 from starlite.testing.test_client.transport import (
     ConnectionUpgradeException,
@@ -27,14 +27,6 @@ from starlite.testing.test_client.transport import (
 )
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 from starlite.utils import deprecated
-
-try:
-    from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
-except ImportError as e:
-    raise MissingDependencyException(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    ) from e
-
 
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
