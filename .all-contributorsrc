@@ -635,6 +635,15 @@
         "doc",
         "code"
       ]
+    },
+    {
+      "login": "rgajason",
+      "name": "Jason Nance",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51208317?v=4",
+      "profile": "https://www.rgare.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
