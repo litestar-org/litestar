@@ -4451,8 +4451,9 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">cookies</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">is_head_response</span><span class="o">=</span><span class="kc">False</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">is_head_response</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">type_encoders</span><span class="o">=</span><span class="kc">None</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="p">)</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -4551,6 +4552,16 @@ the response 'Set-Cookie' header.</p></td>
           <td><p>Whether the response should send only the headers ("head" request) or also the content.</p></td>
           <td>
                 <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>type_encoders</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<span title="starlite.types.TypeEncodersMap">TypeEncodersMap</span>]</code>
+          </td>
+          <td><p>A mapping of types to callables that transform them into types supported for serialization.</p></td>
+          <td>
+                <code>None</code>
           </td>
         </tr>
     </tbody>
@@ -4976,7 +4987,7 @@ the response 'Set-Cookie' header.</p></td>
 
   <div class="doc doc-contents ">
   
-      <p>Transform non-natively supported types into supported types using <code>Response.type_encoders</code>.</p>
+      <p>Transform non-natively supported types into supported types.</p>
 <p>Should raise <code>TypeError</code> if a type cannot be transformed into a supported type</p>
 
   </div>

@@ -4490,8 +4490,9 @@ Controllers, Routers and Route Handlers should be registered on it.</p>
 <a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>    <span class="n">static_files_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>    <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>    <span class="n">template_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>    <span class="n">websocket_class</span><span class="o">=</span><span class="kc">None</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="p">)</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>    <span class="n">type_encoders</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>    <span class="n">websocket_class</span><span class="o">=</span><span class="kc">None</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="p">)</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -4926,6 +4927,16 @@ See <a class="autorefs autorefs-external" href="https://starlite-api.github.io/p
                 <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-internal" title="starlite.config.TemplateConfig" href="../config/7-template-config/#starlite.config.template.TemplateConfig">TemplateConfig</a>]</code>
           </td>
           <td><p>An instance of <a class="autorefs autorefs-internal" href="../config/7-template-config/#starlite.config.template.TemplateConfig">TemplateConfig</a></p></td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>type_encoders</code></td>
+          <td>
+                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<span title="starlite.types.TypeEncodersMap">TypeEncodersMap</span>]</code>
+          </td>
+          <td><p>A mapping of types to callables that transform them into types supported for serialization.</p></td>
           <td>
                 <code>None</code>
           </td>
