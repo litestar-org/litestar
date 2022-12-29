@@ -7,6 +7,7 @@ from pydantic_openapi_schema.v3_1_0.path_item import PathItem
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
+from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -59,6 +60,31 @@ def extract_layered_values(
     return list(set(tags)) if tags else None, security or None
 
 
+def get_unique_operation_id(route: "HTTPRoute", route_handler: "HTTPRouteHandler", http_method: "Method") -> str:
+    if route_handler.operation_id:
+        if len(route_handler.http_methods) > 1:
+            return f"{http_method}_{route_handler.operation_id}"
+        else:
+            return route_handler.operation_id
+    else:
+        path_components_str = []
+        for path_component in route.path_components:
+            if isinstance(path_component, PathParameterDefinition):
+                path_components_str.append(path_component.name)
+            else:
+                path_components_str.append(path_component)
+        return "_".join(path_components_str) + f"_{http_method}_{route_handler.handler_name}"
+
+
+def get_start_of_path_components_str(path_components: list[str | PathParameterDefinition]) -> list[str]:
+    output = []
+    for component in path_components:
+        if isinstance(component, PathParameterDefinition):
+            break
+        output.append(component)
+    return output
+
+
 def create_path_item(
     route: "HTTPRoute", create_examples: bool, plugins: List["PluginProtocol"], use_handler_docstrings: bool
 ) -> PathItem:
@@ -78,7 +104,12 @@ def create_path_item(
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = unwrap_partial(route_handler.handler_name).replace("_", " ").title()
+            handler_name = unwrap_partial(route_handler.handler_name)
+            operation_id = route_handler.operation_id or handler_name
+            if len(route_handler.http_methods) > 1:
+                operation_id = "_".join((http_method, operation_id))
+            operation_id = "_".join((*get_start_of_path_components_str(route.path_components), operation_id))
+
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
@@ -87,7 +118,7 @@ def create_path_item(
 
             tags, security = extract_layered_values(route_handler)
             operation = Operation(
-                operationId=route_handler.operation_id or handler_name,
+                operationId=operation_id,
                 tags=tags,
                 summary=route_handler.summary,
                 description=get_description_for_handler(route_handler, use_handler_docstrings),

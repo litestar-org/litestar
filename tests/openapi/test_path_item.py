@@ -1,8 +1,9 @@
-from typing import cast
+from typing import Any, cast
 
 import pytest
 
-from starlite import HTTPRoute, Starlite
+from starlite import Controller, HTTPRoute, Request, Router, Starlite
+from starlite.handlers import HTTPRouteHandler
 from starlite.openapi.path_item import create_path_item
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
@@ -15,16 +16,64 @@ def route() -> HTTPRoute:
     return cast("HTTPRoute", app.routes[index])
 
 
+@pytest.fixture()
+def routes_with_router() -> tuple[HTTPRoute, HTTPRoute]:
+    class PersonControllerV2(PersonController):
+        pass
+
+    router_v1 = Router(
+        path="/v1",
+        route_handlers=[PersonController]
+    )
+    router_v2 = Router(
+        path="/v2",
+        route_handlers=[PersonControllerV2]
+    )
+    app = Starlite(route_handlers=[router_v1, router_v2], openapi_config=None)
+    index_v1 = find_index(app.routes, lambda x: x.path_format == "/v1/{service_id}/person/{person_id}")
+    index_v2 = find_index(app.routes, lambda x: x.path_format == "/v2/{service_id}/person/{person_id}")
+    return cast("HTTPRoute", app.routes[index_v1]), cast("HTTPRoute", app.routes[index_v2])
+
+
+@pytest.fixture()
+def route_with_multiple_methods() -> HTTPRoute:
+
+    class MultipleMethodsRouteController(Controller):
+        path = "/"
+
+        @HTTPRouteHandler("/", http_method=["GET", "HEAD"])
+        async def root(
+                self, *, request: Request[str, str]
+        ) -> None:
+            pass
+
+    app = Starlite(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
+    index = find_index(app.routes, lambda x: x.path_format == "/")
+    return cast("HTTPRoute", app.routes[index])
+
+
 def test_create_path_item(route: HTTPRoute) -> None:
     schema = create_path_item(route=route, create_examples=True, plugins=[], use_handler_docstrings=False)
     assert schema.delete
-    assert schema.delete.operationId == "Delete Person"
+    assert schema.delete.operationId == "delete_person"
     assert schema.get
-    assert schema.get.operationId == "Get Person By Id"
+    assert schema.get.operationId == "get_person_by_id"
     assert schema.patch
-    assert schema.patch.operationId == "Partial Update Person"
+    assert schema.patch.operationId == "partial_update_person"
     assert schema.put
-    assert schema.put.operationId == "Update Person"
+    assert schema.put.operationId == "update_person"
+
+
+def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_methods: HTTPRoute) -> None:
+    schema = create_path_item(route=route_with_multiple_methods, create_examples=True, plugins=[], use_handler_docstrings=False)
+    assert schema.get.operationId != schema.head.operationId
+
+
+def test_routes_with_different_paths_should_generate_unique_operation_ids(routes_with_router: tuple[HTTPRoute, HTTPRoute]) -> None:
+    route_v1, route_v2 = routes_with_router
+    schema_v1 = create_path_item(route=route_v1, create_examples=True, plugins=[], use_handler_docstrings=False)
+    schema_v2 = create_path_item(route=route_v2, create_examples=True, plugins=[], use_handler_docstrings=False)
+    assert schema_v1.get.operationId != schema_v2.get.operationId
 
 
 def test_create_path_item_use_handler_docstring_false(route: HTTPRoute) -> None:
