@@ -23,7 +23,7 @@ You can also modify the generated schema for the route handler using the followi
 - `description`: Text used for the route's schema _description_ section.
 - `response_description`: Text used for the route's response schema _description_ section.
 - `operation_id`: An identifier used for the route's schema _operationId_. Defaults to the `__name__` attribute of the
-  wrapped function.
+  wrapped function. Will be prefixed with the method name when function is decorated with `HTTPRouteHandler` and multiple `http_method`. Will also be prefixed with path strings used in `Routers` and `Controllers` to make sure id is unique.
 - `deprecated`: A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema. Defaults
   to `False`.
 - `raises`: A list of exception classes extending from `starlite.HttpException`. This list should describe all
