@@ -3,23 +3,12 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
 import msgspec
 from pydantic import (
-    AnyUrl,
     BaseModel,
     ByteSize,
     ConstrainedBytes,
     ConstrainedDate,
-    ConstrainedDecimal,
-    ConstrainedFloat,
-    ConstrainedFrozenSet,
-    ConstrainedInt,
-    ConstrainedList,
-    ConstrainedSet,
-    ConstrainedStr,
-    EmailStr,
     NameEmail,
-    PaymentCardNumber,
     SecretField,
-    StrictBool,
 )
 from pydantic.color import Color
 
@@ -31,23 +20,20 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     # pydantic specific types
     BaseModel: lambda m: m.dict(),
     ByteSize: lambda b: b.real,
-    EmailStr: str,
     NameEmail: str,
     Color: str,
-    AnyUrl: str,
     SecretField: str,
-    ConstrainedInt: int,
-    ConstrainedFloat: float,
-    ConstrainedStr: str,
     ConstrainedBytes: lambda b: b.decode("utf-8"),
-    ConstrainedList: list,
-    ConstrainedSet: set,
-    ConstrainedFrozenSet: frozenset,
-    ConstrainedDecimal: float,
     ConstrainedDate: lambda d: d.isoformat(),
-    PaymentCardNumber: str,
-    StrictBool: int,  # pydantic compatibility
 }
+
+MSGSPEC_BASE_TYPES = [
+    str,
+    int,
+    float,
+    set,
+    frozenset,
+]
 
 
 def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[Any], Any]]] = None) -> Any:
@@ -69,6 +55,9 @@ def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[A
         except KeyError:
             continue
         return encoder(value)
+    for base in MSGSPEC_BASE_TYPES:
+        if isinstance(value, base):
+            return base(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 

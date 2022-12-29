@@ -71,3 +71,29 @@ def test_response_serialization_text_types(content: Any, response_type: Any, med
         content, media_type=media_type, status_code=HTTP_200_OK
     )
     assert response.body == content.encode("utf-8")
+
+
+@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.MESSAGEPACK])
+@pytest.mark.parametrize(
+    "raw_value, base_type",
+    [
+        ["str", str],
+        [123, int],
+        [1.5, float],
+        [{1, 2, 3}, set],
+        [{1, 2, 3}, frozenset],
+    ],
+)
+def test_response_serialization_custom_types(raw_value: Any, base_type: type, media_type: MediaType) -> None:
+    class CustomType(base_type):  # type: ignore[misc, valid-type]
+        pass
+
+    content = CustomType(raw_value)
+
+    response = Response[CustomType](content, media_type=media_type, status_code=HTTP_200_OK)
+    if media_type == media_type.JSON:
+        value = loads(response.body)
+    else:
+        value = msgspec.msgpack.decode(response.body)
+
+    assert content.__class__(value) == content
