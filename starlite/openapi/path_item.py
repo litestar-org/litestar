@@ -56,7 +56,7 @@ def extract_layered_values(
             tags.extend(layer.tags)
         if layer.security:
             security.extend(layer.security)
-    return list(set(tags)) if tags else None, security or None
+    return sorted(set(tags)) if tags else None, security or None
 
 
 def create_path_item(
