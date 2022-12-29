@@ -1,28 +1,37 @@
 # Changelog
 
+[1.48.0]
+
+- add docs versioning.
+- add support for layered `type_encoders`.
+- fix Sorting of tags in OpenAPI schema.
+- fix rendering of Enum params in OpenAPI.
+- fix swagger check for schema.
+- update `fast-query-parsers` and `pydantic`.
+
 [1.47.0]
 
-- fix: Don't import `CookieBackendConfig` by default in `starlite.middleware.sessions`
-- feature: Auto generation of DTOs from response data
-- feature: Media type inference to HTTP handlers
-- feature: Support differently named path parameters
-- other: Add `fast-query-parsers`
+- fix Don't import `CookieBackendConfig` by default in `starlite.middleware.sessions`.
+- add Auto generation of DTOs from response data.
+- add Media type inference to HTTP handlers.
+- add Support differently named path parameters.
+- add `fast-query-parsers`.
 
 [1.46.0]
 
-- fix: Make SessionAuth openapi_schema use backend_config.key
-- fix: Support utf-8 encoded strings in form data
-- fix: Fix 964: Jinja Template response ignores MediaType settings
-- change: Move `JinjaTemplateEngine` and `MakoTemplateEngine` to contrib
-- change: Update template config
-- feature: Support for controlling Pydantic models' alias in OpenAPI Schema
-- feature: Support `Cookie` instances in `Response.set_cookie`
-- feature: CLI by
+- add CLI.
+- add Support `Cookie` instances in `Response.set_cookie`.
+- add Support for controlling Pydantic models' alias in OpenAPI Schema.
+- fix Jinja Template response ignores MediaType settings.
+- fix Make SessionAuth openapi_schema use backend_config.key.
+- fix Support utf-8 encoded strings in form data.
+- update Move `JinjaTemplateEngine` and `MakoTemplateEngine` to contrib.
+- update Update template config.
 
 [1.45.1]
 
-- fix controller support for mixed websocket and http route handlers
-- fix serialization of pydantic types
+- fix controller support for mixed websocket and http route handlers.
+- fix serialization of pydantic types.
 
 [1.45.0]
 
