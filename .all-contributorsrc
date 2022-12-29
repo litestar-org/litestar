@@ -632,6 +632,16 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/13831919?v=4",
       "profile": "https://github.com/dialvarezs",
       "contributions": [
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "rgajason",
+      "name": "Jason Nance",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51208317?v=4",
+      "profile": "https://www.rgare.com",
+      "contributions": [
         "doc"
       ]
     }

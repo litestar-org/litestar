@@ -175,7 +175,7 @@ against different python versions. To achieve this you can use the `tox` config 
 4. Restart shell.
 5. Remove any existing poetry environment: `$ poetry env remove python`
 6. Tell poetry to use system python: `$ poetry env use system`
-7. Install the dependencies `$ poetry install --extras testing`
+7. Install the dependencies `$ poetry install`
 
 ### Tox Commands
 
