@@ -66,6 +66,8 @@ class Response(Generic[T]):
         "_enc_hook",
     )
 
+    type_encoders: Optional["TypeEncodersMap"] = None
+
     def __init__(
         self,
         content: T,
@@ -143,10 +145,18 @@ class Response(Generic[T]):
         If `Response.serializer` is not overridden in a subclass, use `default_serializer` and pass `type_encoders` to
         it.
         """
-        if cls.serializer != Response.serializer:
-            return cls.serializer
+        # check if `serializer` has been overridden. This is temporary workaround to
+        # support the deprecated `serializer` until its removal
+        for klass in cls.__mro__:
+            if klass is Response:
+                continue
+            if "serializer" in klass.__dict__:
+                return cls.serializer
+
+        type_encoders = {**(cls.type_encoders or {}), **(type_encoders or {})}
         if type_encoders:
             return partial(default_serializer, type_encoders={**DEFAULT_TYPE_ENCODERS, **type_encoders})
+
         return default_serializer
 
     @overload

@@ -576,13 +576,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             A `TypeEncodersMap` to use for this response or `None`
         """
-        type_encoders: Optional[TypeEncodersMap] = None
+        type_encoders: TypeEncodersMap = {}
         for layer in self.ownership_layers:
             if layer_type_encoders := layer.type_encoders:
-                if type_encoders is None:
-                    type_encoders = {}
                 type_encoders.update(layer_type_encoders)
-        return type_encoders
+        return type_encoders or None
 
     def resolve_response_handler(
         self,
