@@ -8,7 +8,7 @@ The example below illustrates how to deal with [MultiDict][starlite.datastructur
 instances.
 
 ```py
---8<--"examples/responses/custom_responses.py"
+--8<-- "examples/responses/custom_responses.py"
 ```
 
 !!! info "Layered architecture"

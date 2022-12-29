@@ -375,3 +375,4 @@ Parameters that support layering are:
 - [`response_headers`](/starlite/usage/5-responses/4-response-headers/)
 - `security`
 - `tags`
+- `type_encoders`
