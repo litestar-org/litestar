@@ -19,3 +19,4 @@
             - response_headers
             - security
             - tags
+            - type_encoders

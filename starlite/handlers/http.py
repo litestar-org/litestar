@@ -68,6 +68,7 @@ from starlite.types import (
     ResponseCookies,
     ResponseHeadersMap,
     ResponseType,
+    TypeEncodersMap,
 )
 from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callable
 from starlite.utils.predicates import is_class_and_subclass
@@ -190,6 +191,7 @@ def _create_data_handler(
     response_class: "ResponseType",
     return_annotation: Any,
     status_code: int,
+    type_encoders: Optional[TypeEncodersMap],
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
     normalized_headers = [
@@ -206,6 +208,7 @@ def _create_data_handler(
             content=data,
             media_type=media_type,
             status_code=status_code,
+            type_encoders=type_encoders,
         )
         response.raw_headers = raw_headers
 
@@ -293,6 +296,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "deprecated",
         "description",
         "etag",
+        "has_sync_callable",
         "http_methods",
         "include_in_schema",
         "media_type",
@@ -309,7 +313,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "sync_to_thread",
         "tags",
         "template_name",
-        "has_sync_callable",
+        "type_encoders",
     )
 
     has_sync_callable: bool
@@ -353,6 +357,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `HTTPRouteHandler`.
@@ -414,6 +419,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:
@@ -457,6 +463,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
+        self.type_encoders = type_encoders
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
@@ -563,6 +570,18 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         return cast("Optional[AfterResponseHookHandler]", self._resolved_after_response)
 
+    def resolve_type_encoders(self) -> Optional[TypeEncodersMap]:
+        """Resolve `type_encoders` by merging existing `type_encoders` from all layers.
+
+        Returns:
+            A `TypeEncodersMap` to use for this response or `None`
+        """
+        type_encoders: TypeEncodersMap = {}
+        for layer in self.ownership_layers:
+            if layer_type_encoders := layer.type_encoders:
+                type_encoders.update(layer_type_encoders)
+        return type_encoders or None
+
     def resolve_response_handler(
         self,
     ) -> Callable[[Any], Awaitable["ASGIApp"]]:
@@ -586,6 +605,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             response_class = self.resolve_response_class()
             headers = self.resolve_response_headers()
             cookies = self.resolve_response_cookies()
+            type_encoders = self.resolve_type_encoders()
 
             if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
                 handler = _create_response_container_handler(
@@ -615,6 +635,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     response_class=response_class,
                     return_annotation=self.signature.return_annotation,
                     status_code=self.status_code,
+                    type_encoders=type_encoders,
                 )
 
             self._resolved_response_handler = handler
@@ -728,6 +749,7 @@ class get(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `get`.
@@ -785,6 +807,7 @@ class get(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+                       type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -825,6 +848,7 @@ class get(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -873,6 +897,7 @@ class head(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `head`.
@@ -933,6 +958,7 @@ class head(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -973,6 +999,7 @@ class head(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -1035,6 +1062,7 @@ class post(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `post`
@@ -1092,6 +1120,7 @@ class post(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -1131,6 +1160,7 @@ class post(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -1179,6 +1209,7 @@ class put(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `put`
@@ -1236,6 +1267,7 @@ class put(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -1275,6 +1307,7 @@ class put(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -1323,6 +1356,7 @@ class patch(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `patch`.
@@ -1380,6 +1414,7 @@ class patch(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -1419,6 +1454,7 @@ class patch(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -1467,6 +1503,7 @@ class delete(HTTPRouteHandler):
         security: Optional[List[SecurityRequirement]] = None,
         summary: Optional[str] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize `delete`
@@ -1524,6 +1561,7 @@ class delete(HTTPRouteHandler):
             security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
@@ -1563,5 +1601,6 @@ class delete(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_encoders=type_encoders,
             **kwargs,
         )

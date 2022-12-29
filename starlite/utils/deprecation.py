@@ -7,7 +7,7 @@ from typing_extensions import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")
-DeprecatedKind = Literal["function", "method", "attribute", "property", "class", "parameter", "import"]
+DeprecatedKind = Literal["function", "method", "classmethod", "attribute", "property", "class", "parameter", "import"]
 
 
 def warn_deprecation(
@@ -67,7 +67,7 @@ def deprecated(
     alternative: Optional[str] = None,
     info: Optional[str] = None,
     pending: bool = False,
-    kind: Optional[Literal["function", "method", "property"]] = None,
+    kind: Optional[Literal["function", "method", "classmethod", "property"]] = None,
 ) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """Create a decorator wrapping a function, method or property with a warning call about a (pending) deprecation.
 

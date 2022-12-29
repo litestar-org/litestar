@@ -39,6 +39,7 @@ from starlite.types import (
     ResponseType,
     RouteHandlerMapItem,
     RouteHandlerType,
+    TypeEncodersMap,
 )
 from starlite.utils import (
     find_index,
@@ -80,6 +81,7 @@ class Router:
         "routes",
         "security",
         "tags",
+        "type_encoders",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -104,6 +106,7 @@ class Router:
         route_handlers: List[ControllerRouterHandler],
         security: Optional[List[SecurityRequirement]] = None,
         tags: Optional[List[str]] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
     ) -> None:
         """Initialize a `Router`.
 
@@ -141,6 +144,7 @@ class Router:
                 function decorated by the route handler decorators.
             security: A list of dictionaries that will be added to the schema of all route handlers under the router.
             tags: A list of string tags that will be appended to the schema of all route handlers under the router.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
 
         self.after_request = AsyncCallable(after_request) if after_request else None  # type: ignore[arg-type]
@@ -163,6 +167,7 @@ class Router:
         self.security = security or []
         self.tags = tags or []
         self.registered_route_handler_ids: Set[int] = set()
+        self.type_encoders = type_encoders
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
