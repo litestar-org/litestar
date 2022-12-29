@@ -350,7 +350,6 @@ class Starlite(Router):
         self.request_class = config.request_class or Request
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
-        self.type_encoders = config.type_encoders
         self.websocket_class = config.websocket_class or WebSocket
 
         super().__init__(
@@ -373,6 +372,7 @@ class Starlite(Router):
             route_handlers=[],
             security=config.security,
             tags=config.tags,
+            type_encoders=config.type_encoders,
         )
         for plugin in self.plugins:
             plugin.on_app_init(app=self)
