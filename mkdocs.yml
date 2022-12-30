@@ -4,6 +4,7 @@ repo_name: starlite-api/starlite
 site_url: https://starlite-api.github.io/starlite
 theme:
   name: material
+  custom_dir: docs_theme/overrides
   palette:
     - media: "(prefers-color-scheme: dark)"
       scheme: mirage
@@ -136,10 +137,7 @@ nav:
           - usage/15-caching/0-cache-backends.md
           - usage/15-caching/1-response-caching.md
           - usage/15-caching/2-interacting-with-cache.md
-      - Templates:
-          - usage/16-templating/0-template-engines.md
-          - usage/16-templating/1-template-context.md
-          - usage/16-templating/2-template-functions.md
+      - usage/16-templating.md
       - usage/17-exceptions.md
       - Contrib:
           - usage/18-contrib/0-open-telemetry.md
