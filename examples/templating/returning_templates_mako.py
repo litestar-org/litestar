@@ -1,6 +1,7 @@
+from pathlib import Path
+
+from starlite import Request, Starlite, Template, TemplateConfig, get
 from starlite.contrib.mako import MakoTemplateEngine
-from starlite import Request, Template, get
-from starlite import Starlite, TemplateConfig
 
 
 @get(path="/")
@@ -10,5 +11,8 @@ def index(request: Request) -> Template:
 
 app = Starlite(
     route_handlers=[index],
-    template_config=TemplateConfig(directory="templates", engine=MakoTemplateEngine),
+    template_config=TemplateConfig(
+        directory=Path("templates"),
+        engine=MakoTemplateEngine,
+    ),
 )

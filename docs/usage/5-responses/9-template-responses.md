@@ -1,7 +1,7 @@
 # Template Responses
 
 Template responses are used to render templates into HTML. To use a template response you must first register
-a [template engine](../16-templating/0-template-engines.md) on the application level. Once an engine is in place, you can use a template
+a [template engine](../16-templating#template-engines) on the application level. Once an engine is in place, you can use a template
 response like so:
 
 ```python

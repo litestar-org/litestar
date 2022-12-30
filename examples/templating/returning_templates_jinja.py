@@ -1,5 +1,6 @@
-from starlite import Request, Template, get
-from starlite import Starlite, TemplateConfig
+from pathlib import Path
+
+from starlite import Request, Starlite, Template, TemplateConfig, get
 from starlite.contrib.jinja import JinjaTemplateEngine
 
 
@@ -10,5 +11,8 @@ def index(request: Request) -> Template:
 
 app = Starlite(
     route_handlers=[index],
-    template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
+    template_config=TemplateConfig(
+        directory=Path("templates"),
+        engine=JinjaTemplateEngine,
+    ),
 )

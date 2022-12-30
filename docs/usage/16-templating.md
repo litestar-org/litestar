@@ -12,34 +12,34 @@ To register one of the built-in template engines you simply need to pass it to t
 
 === "Jinja"
     ```python
-    --8<-- "examples/templating/template_engine_jinja.py"
+    --8 < --"examples/templating/template_engine_jinja.py"
     ```
 
 === "Mako"
     ```python
-    --8<-- "examples/templating/template_engine_mako.py"
+    --8 < --"examples/templating/template_engine_mako.py"
     ```
 
 !!! info
-    The `directory` parameter passed to [`TemplateConfig`][starlite.config.template.TemplateConfig] 
+    The `directory` parameter passed to [`TemplateConfig`][starlite.config.template.TemplateConfig]
     can be either a directory or list of directories to use for loading templates.
 
 ## Template Responses
 
-Once you have a template engine registered you can return [`Template`s][starlite.Template] from 
+Once you have a template engine registered you can return [`Template`s][starlite.Template] from
 your route handlers:
 
 === "Jinja"
     ```python
-    --8<-- "examples/templating/returning_templates_jinja.py"
+    --8 < --"examples/templating/returning_templates_jinja.py"
     ```
 
 === "Mako"
     ```python
-    --8<-- "examples/templating/returning_templates_mako.py"
+    --8 < --"examples/templating/returning_templates_mako.py"
     ```
 
-- `name` is the name of the template file within on of the specified directories. If 
+- `name` is the name of the template file within on of the specified directories. If
 no file with that name is found, a [`TemplateNotFoundException`][starlite.exceptions.TemplateNotFoundException]
 exception will be raised.
 - `context` is a dictionary containing arbitrary data that will be passed to the template
@@ -73,11 +73,11 @@ Once you have your custom engine you can register it as you would the built-in e
 
 ### Accessing the Template Engine instance
 
-If you need to access the template engine instance, you can do so via the 
+If you need to access the template engine instance, you can do so via the
 [`TemplateConfig.engine`][starlite.config.template.TemplateConfig] attribute:
 
 ```python
---8<-- "examples/templating/engine_instance.py"
+--8 < --"examples/templating/engine_instance.py"
 ```
 
 
@@ -88,7 +88,7 @@ object to the template as well as defining callables that will be available insi
 
 ### Accessing the request instance
 
-The current [`Request`][starlite.connection.request.Request] is available within the 
+The current [`Request`][starlite.connection.request.Request] is available within the
 template context under `request`, which also provides access to the [app instance](/starlite/usage/the-starlite-app).
 
 Accessing `app.state.key` for example would look like this:
@@ -117,7 +117,7 @@ Accessing `app.state.key` for example would look like this:
 
 ### Adding CSRF Inputs
 
-If you want to add a hidden `<input>` tag containing a 
+If you want to add a hidden `<input>` tag containing a
 [CSRF token](https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_request_forgery_csrf),
 you first need to configure [CSRF protection](/starlite/usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md).
 With that in place, you can now insert the CSRF input field inside an HTML form:
