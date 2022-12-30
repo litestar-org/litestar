@@ -60,7 +60,7 @@ def extract_layered_values(
     return list(set(tags)) if tags else None, security or None
 
 
-def get_start_of_path_components_str(path_components: List[Union[str, PathParameterDefinition]]) -> list[str]:
+def get_start_of_path_components_str(path_components: List[Union[str, PathParameterDefinition]]) -> List[str]:
     """Extract str from path_components until the first occurrence of PathParameterDefinition. This is used to get none
     parameter paths from Routes to prefix operation_id.
 
