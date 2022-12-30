@@ -1,27 +1,30 @@
+from collections import deque
+from decimal import Decimal
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
 from pathlib import PurePosixPath
+from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
 import msgspec
 from pydantic import (
-    AnyUrl,
     BaseModel,
     ByteSize,
     ConstrainedBytes,
     ConstrainedDate,
     ConstrainedDecimal,
-    ConstrainedFloat,
-    ConstrainedFrozenSet,
-    ConstrainedInt,
-    ConstrainedList,
-    ConstrainedSet,
-    ConstrainedStr,
-    EmailStr,
     NameEmail,
-    PaymentCardNumber,
     SecretField,
     StrictBool,
 )
 from pydantic.color import Color
+from pydantic.json import decimal_encoder
 
 if TYPE_CHECKING:
     from starlite.types import TypeEncodersMap
@@ -31,22 +34,36 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     # pydantic specific types
     BaseModel: lambda m: m.dict(),
     ByteSize: lambda b: b.real,
-    EmailStr: str,
     NameEmail: str,
     Color: str,
-    AnyUrl: str,
     SecretField: str,
-    ConstrainedInt: int,
-    ConstrainedFloat: float,
-    ConstrainedStr: str,
     ConstrainedBytes: lambda b: b.decode("utf-8"),
-    ConstrainedList: list,
-    ConstrainedSet: set,
-    ConstrainedFrozenSet: frozenset,
     ConstrainedDecimal: float,
     ConstrainedDate: lambda d: d.isoformat(),
-    PaymentCardNumber: str,
-    StrictBool: int,  # pydantic compatibility
+    IPv4Address: str,
+    IPv4Interface: str,
+    IPv4Network: str,
+    IPv6Address: str,
+    IPv6Interface: str,
+    IPv6Network: str,
+    # pydantic compatibility
+    deque: list,
+    Decimal: decimal_encoder,
+    StrictBool: int,
+    Pattern: lambda o: o.pattern,
+    # support subclasses of stdlib types, e.g. pydantic's constrained types. If no
+    # previous type matched, these will be the last type in the mro, so we use this to
+    # (attempt to) convert a subclass into its base class.
+    # see https://github.com/jcrist/msgspec/issues/248
+    # and https://github.com/starlite-api/starlite/issues/1003
+    str: str,
+    int: int,
+    float: float,
+    list: list,
+    tuple: tuple,
+    set: set,
+    frozenset: frozenset,
+    dict: dict,
 }
 
 
