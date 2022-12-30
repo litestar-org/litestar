@@ -60,22 +60,6 @@ def extract_layered_values(
     return list(set(tags)) if tags else None, security or None
 
 
-def get_unique_operation_id(route: "HTTPRoute", route_handler: "HTTPRouteHandler", http_method: "Method") -> str:
-    if route_handler.operation_id:
-        if len(route_handler.http_methods) > 1:
-            return f"{http_method}_{route_handler.operation_id}"
-        else:
-            return route_handler.operation_id
-    else:
-        path_components_str = []
-        for path_component in route.path_components:
-            if isinstance(path_component, PathParameterDefinition):
-                path_components_str.append(path_component.name)
-            else:
-                path_components_str.append(path_component)
-        return "_".join(path_components_str) + f"_{http_method}_{route_handler.handler_name}"
-
-
 def get_start_of_path_components_str(path_components: list[str | PathParameterDefinition]) -> list[str]:
     output = []
     for component in path_components:
