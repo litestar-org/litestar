@@ -61,6 +61,15 @@ def extract_layered_values(
 
 
 def get_start_of_path_components_str(path_components: list[str | PathParameterDefinition]) -> list[str]:
+    """Extract str from path_components until the first occurrence of PathParameterDefinition. This is used to get none
+    parameter paths from Routes to prefix operation_id.
+
+    Args:
+        path_components: A list of str and PathParameterDefinition instances
+
+    Returns:
+        A list of str
+    """
     output = []
     for component in path_components:
         if isinstance(component, PathParameterDefinition):
