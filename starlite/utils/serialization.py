@@ -93,19 +93,19 @@ _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
 _msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
-def encode_json(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
+def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
     """Encode a value into JSON.
 
     Args:
         obj: Value to encode
-        enc_hook: Optional callable to support non-natively supported types
+        default: Optional callable to support non-natively supported types.
 
     Returns:
         JSON as bytes
     """
-    if enc_hook is None or enc_hook is default_serializer:
+    if default is None or default is default_serializer:
         return _msgspec_json_encoder.encode(obj)
-    return msgspec.json.encode(obj, enc_hook=enc_hook)
+    return msgspec.json.encode(obj, enc_hook=default)
 
 
 def decode_json(raw: Union[str, bytes]) -> Any:
