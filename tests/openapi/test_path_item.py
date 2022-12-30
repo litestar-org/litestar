@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any, cast, Tuple
 
 import pytest
 
@@ -17,7 +17,7 @@ def route() -> HTTPRoute:
 
 
 @pytest.fixture()
-def routes_with_router() -> tuple[HTTPRoute, HTTPRoute]:
+def routes_with_router() -> Tuple[HTTPRoute, HTTPRoute]:
     class PersonControllerV2(PersonController):
         pass
 
@@ -69,7 +69,7 @@ def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_meth
     assert schema.get.operationId != schema.head.operationId
 
 
-def test_routes_with_different_paths_should_generate_unique_operation_ids(routes_with_router: tuple[HTTPRoute, HTTPRoute]) -> None:
+def test_routes_with_different_paths_should_generate_unique_operation_ids(routes_with_router: Tuple[HTTPRoute, HTTPRoute]) -> None:
     route_v1, route_v2 = routes_with_router
     schema_v1 = create_path_item(route=route_v1, create_examples=True, plugins=[], use_handler_docstrings=False)
     schema_v2 = create_path_item(route=route_v2, create_examples=True, plugins=[], use_handler_docstrings=False)
