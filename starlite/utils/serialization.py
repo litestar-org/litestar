@@ -51,7 +51,9 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Decimal: decimal_encoder,
     StrictBool: int,
     Pattern: lambda o: o.pattern,
-    # support subclasses of stdlib types, e.g. pydantic's constrained types.
+    # support subclasses of stdlib types, e.g. pydantic's constrained types. If no
+    # previous type matched, these will be the last type in the mro, so we use this to
+    # (attempt to) convert a subclass into its base class.
     # see https://github.com/jcrist/msgspec/issues/248
     # and https://github.com/starlite-api/starlite/issues/1003
     str: str,
