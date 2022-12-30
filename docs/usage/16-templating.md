@@ -11,13 +11,13 @@ template engines.
 To register one of the built-in template engines you simply need to pass it to the Starlite constructor:
 
 === "Jinja"
-    ```python
-    --8 < --"examples/templating/template_engine_jinja.py"
+    ```py
+    --8<-- "examples/templating/template_engine_jinja.py"
     ```
 
 === "Mako"
-    ```python
-    --8 < --"examples/templating/template_engine_mako.py"
+    ```py
+    --8<-- "examples/templating/template_engine_mako.py"
     ```
 
 !!! info
@@ -30,13 +30,13 @@ Once you have a template engine registered you can return [`Template`s][starlite
 your route handlers:
 
 === "Jinja"
-    ```python
-    --8 < --"examples/templating/returning_templates_jinja.py"
+    ```py
+    --8<-- "examples/templating/returning_templates_jinja.py"
     ```
 
 === "Mako"
-    ```python
-    --8 < --"examples/templating/returning_templates_mako.py"
+    ```py
+    --8<-- "examples/templating/returning_templates_mako.py"
     ```
 
 - `name` is the name of the template file within on of the specified directories. If
@@ -76,8 +76,8 @@ Once you have your custom engine you can register it as you would the built-in e
 If you need to access the template engine instance, you can do so via the
 [`TemplateConfig.engine`][starlite.config.template.TemplateConfig] attribute:
 
-```python
---8 < --"examples/templating/engine_instance.py"
+```py
+--8<-- "examples/templating/engine_instance.py"
 ```
 
 
