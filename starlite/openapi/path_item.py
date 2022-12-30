@@ -1,5 +1,5 @@
 from inspect import cleandoc
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union, cast
 
 from pydantic_openapi_schema.v3_1_0.operation import Operation
 from pydantic_openapi_schema.v3_1_0.path_item import PathItem
@@ -60,7 +60,7 @@ def extract_layered_values(
     return list(set(tags)) if tags else None, security or None
 
 
-def get_start_of_path_components_str(path_components: list[str | PathParameterDefinition]) -> list[str]:
+def get_start_of_path_components_str(path_components: List[Union[str, PathParameterDefinition]]) -> list[str]:
     """Extract str from path_components until the first occurrence of PathParameterDefinition. This is used to get none
     parameter paths from Routes to prefix operation_id.
 
