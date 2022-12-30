@@ -271,7 +271,6 @@ extra:
   version:
     provider: mike
     default: latest
-    alias_type: symlink
 markdown_extensions:
   - admonition
   - attr_list
@@ -315,6 +314,9 @@ plugins:
             separate_signature: true
             show_if_no_docstring: true
             line_length: 100
+  - mike:
+      alias_type: symlink
+      canonical_version: latest
 hooks:
   - tools/run_examples.py
 watch:
