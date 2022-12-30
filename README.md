@@ -99,7 +99,7 @@ this piece of history with it.
 Starlite is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
 
 You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests),
-or read more about it [here](https://starlite-api.github.io/starlite/benchmarks) in our documentation.
+or read more about it [here](https://starlite-api.github.io/starlite/latest/benchmarks) in our documentation.
 
 ### JSON Benchmarks
 
