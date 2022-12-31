@@ -121,24 +121,10 @@ The only required configuration kwarg is `rate_limit`, which expects a tuple con
 Starlite ships with a robust logging middleware that allows logging HTTP request and responses while building on
 the [app level logging configuration](/starlite/usage/0-the-starlite-app#logging):
 
-```python
-from starlite import Starlite, LoggingConfig, get
-from starlite.middleware import LoggingMiddlewareConfig
-
-logging_middleware_config = LoggingMiddlewareConfig()
-
-
-@get("/")
-def my_handler() -> dict[str, str]:
-    return {"hello": "world"}
-
-
-app = Starlite(
-    route_handlers=[my_handler],
-    logging_config=LoggingConfig(),
-    middleware=[logging_middleware_config.middleware],
-)
+```py
+--8<-- "examples/examples/logging_middleware.py"
 ```
+
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or [structlog](https://www.structlog.org/en/stable/index.html), depending on the configuration used (
