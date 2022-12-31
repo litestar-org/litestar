@@ -1,12 +1,24 @@
 # Templates
 
+Starlite has built-in support for both the [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/)
+and [Mako](https://www.makotemplates.org/) template engines, as well as abstractions to
+make use of any template engine you wish.
+
 ## Template engines
 
-Starlite has built-in support for both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/)
-and [Mako](https://www.makotemplates.org/) as template engines, and it also offers a simple way to add additional
-template engines.
+To stay lightweight, a Starlite installation does not include the *Jinja* or *Mako*
+libraries themselves. Before you can start using them, you have to install it via the
+respective extra:
 
-### Registering a Template Engine
+- `pip install starlite[jinja]` for *Jinja2*
+- `pip install starlite[mako]` for *Mako*
+
+!!! info
+    *Jinja* is included in the `standard` extra. If you installed Starlite using
+    `starlite[standard]`, you do not need to explicitly add the `jinja` extra.
+
+
+### Registering a template engine
 
 To register one of the built-in template engines you simply need to pass it to the Starlite constructor:
 
@@ -24,28 +36,8 @@ To register one of the built-in template engines you simply need to pass it to t
     The `directory` parameter passed to [`TemplateConfig`][starlite.config.template.TemplateConfig]
     can be either a directory or list of directories to use for loading templates.
 
-## Template Responses
 
-Once you have a template engine registered you can return [`Template`s][starlite.Template] from
-your route handlers:
-
-=== "Jinja"
-    ```py
-    --8<-- "examples/templating/returning_templates_jinja.py"
-    ```
-
-=== "Mako"
-    ```py
-    --8<-- "examples/templating/returning_templates_mako.py"
-    ```
-
-- `name` is the name of the template file within on of the specified directories. If
-no file with that name is found, a [`TemplateNotFoundException`][starlite.exceptions.TemplateNotFoundException]
-exception will be raised.
-- `context` is a dictionary containing arbitrary data that will be passed to the template
-engine's `render` method. For *Jinja* and *Mako*, this data will be available in the [template context](#template-context)
-
-### Defining a Custom Template Engine
+### Defining a custom template engine
 
 If you wish to use another templating engine, you can easily do so by implementing
 [`TemplateEngineProtocol`][starlite.template.TemplateEngineProtocol]. This class accepts a generic
@@ -71,17 +63,46 @@ class TemplateEngineProtocol(Protocol[SomeTemplate]):
 
 Once you have your custom engine you can register it as you would the built-in engines.
 
-### Accessing the Template Engine instance
+
+### Accessing the template engine instance
 
 If you need to access the template engine instance, you can do so via the
 [`TemplateConfig.engine`][starlite.config.template.TemplateConfig] attribute:
 
-```py
---8<-- "examples/templating/engine_instance.py"
-```
+
+=== "Jinja"
+    ```py
+    --8<-- "examples/templating/engine_instance_jinja.py"
+    ```
+
+=== "Mako"
+    ```py
+    --8<-- "examples/templating/engine_instance_mako.py"
+    ```
+
+## Template responses
+
+Once you have a template engine registered you can return [`Template`s][starlite.Template] from
+your route handlers:
+
+=== "Jinja"
+    ```py
+    --8<-- "examples/templating/returning_templates_jinja.py"
+    ```
+
+=== "Mako"
+    ```py
+    --8<-- "examples/templating/returning_templates_mako.py"
+    ```
+
+- `name` is the name of the template file within on of the specified directories. If
+no file with that name is found, a [`TemplateNotFoundException`][starlite.exceptions.TemplateNotFoundException]
+exception will be raised.
+- `context` is a dictionary containing arbitrary data that will be passed to the template
+engine's `render` method. For *Jinja* and *Mako*, this data will be available in the [template context](#template-context)
 
 
-## Template Context
+## Template context
 
 Both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) and [Mako](https://www.makotemplates.org/) support passing a context
 object to the template as well as defining callables that will be available inside the template.
@@ -115,7 +136,7 @@ Accessing `app.state.key` for example would look like this:
     </html>
     ```
 
-### Adding CSRF Inputs
+### Adding CSRF inputs
 
 If you want to add a hidden `<input>` tag containing a
 [CSRF token](https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_request_forgery_csrf),
@@ -159,7 +180,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
 The input is hidden so users cannot see and interact with it. It will though be sent back to the server when submitted,
 and the CSRF middleware will check that the token is valid.
 
-### Passing Template Context
+### Passing template context
 
 Passing context to the template is very simple - its one of the kwargs expected by the [`Template`][starlite.response.TemplateResponse]
 container, so simply pass a string keyed dictionary of values:
@@ -174,10 +195,12 @@ def info() -> Template:
 ```
 
 
-## Template Callables
+## Template callables
 
 Both [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) and [Mako](https://www.makotemplates.org/) allow users to define custom
 callables that are ran inside the template. Starlite builds on this and offers some functions out of the box.
+
+### Built-in callables
 
 `url_for`:   To access urls for route handlers you can use the `url_for` function. Its signature and behaviour
     matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
@@ -190,7 +213,7 @@ callables that are ran inside the template. Starlite builds on this and offers s
 `url_for_static_asset`:   URLs for static files can be created using the `url_for_static_asset` function. It's signature and behaviour are identical to
     [`app.url_for_static_asset`][starlite.app.Starlite.url_for_static_asset].
 
-### Registering Template Callables
+### Registering template callables
 
 The Starlite [`TemplateEngineProtocol`][starlite.template.base.TemplateEngineProtocol] specifies the method
 `register_template_callable` that allows defining a custom callable on a template engine. This method is implemented
@@ -198,13 +221,24 @@ for the two built in engines, and it can be used to register callables that will
 should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
 the call method. For example:
 
-```py title="template_functions.py"
---8<-- "examples/templating/template_functions.py"
-```
+=== "Jinja"
+    ```py title="template_functions.py"
+    --8<-- "examples/templating/template_functions_jinja.py"
+    ```
 
-```html title="templates/index.html.jinja2"
---8<-- "examples/templating/templates/index.html.jinja2"
-```
+    ```html title="templates/index.html.jinja2"
+    --8<-- "examples/templating/templates/index.html.jinja2"
+    ```
+
+
+=== "Mako"
+    ```py title="template_functions.py"
+    --8<-- "examples/templating/template_functions_mako.py"
+    ```
+
+    ```html title="templates/index.html.jinja2"
+    --8<-- "examples/templating/templates/index.html.maki"
+    ```
 
 
 Run the example with `uvicorn template_functions:app`, visit  http://127.0.0.1:8000, and

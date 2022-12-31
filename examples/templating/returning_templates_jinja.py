@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from starlite import Request, Starlite, Template, TemplateConfig, get
+from starlite import Starlite, Template, TemplateConfig, get
 from starlite.contrib.jinja import JinjaTemplateEngine
 
 
 @get(path="/")
-def index(request: Request) -> Template:
-    return Template(name="info.html", context={"user": request.user})
+def index(name: str) -> Template:
+    return Template(name="hello.html.jinja2", context={"name": name})
 
 
 app = Starlite(
