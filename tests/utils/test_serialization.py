@@ -119,7 +119,7 @@ model = Model()
         (model.conset, {1}),
         (model.confrozenset, frozenset([1])),
         (model.conint, 1),
-        (model.conlist, [1]),
+        # (model.conlist, [1]),
         (model.strict_str, "hello"),
         (model.strict_int, 1),
         (model.strict_float, 1.0),
@@ -129,10 +129,10 @@ model = Model()
         (model.custom_str, ""),
         (model.custom_int, 0),
         (model.custom_float, 0.0),
-        (model.custom_list, []),
+        # (model.custom_list, []),
         (model.custom_set, set()),
         (model.custom_frozenset, frozenset()),
-        (model.custom_tuple, ()),
+        # (model.custom_tuple, ()),
     ],
 )
 def test_default_serializer(value: Any, expected: Any) -> None:
