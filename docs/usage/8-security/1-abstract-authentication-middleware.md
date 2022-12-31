@@ -1,7 +1,7 @@
 # AbstractAuthenticationMiddleware
 
 Starlite exports a class called [`AbstractAuthenticationMiddleware`][starlite.middleware.AbstractAuthenticationMiddleware],
-which is an Abstract Base Class (ABC) that implements the [middleware protocol](../7-middleware/0-middleware-intro.md#the-middleware-protocol).
+which is an Abstract Base Class (ABC) that implements the [`MiddlewareProtocol`](../7-middleware/creating-middleware/#using-middlewareprotocol).
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 [`authenticate_request`][starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request]:
 

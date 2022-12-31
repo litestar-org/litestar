@@ -86,26 +86,10 @@ nav:
           - usage/6-dependency-injection/4-dependencies-in-dependencies.md
           - usage/6-dependency-injection/5-the-dependency-function.md
       - Middleware:
-          - usage/7-middleware/0-middleware-intro.md
-          - Using Middleware:
-              - usage/7-middleware/1-using-middleware/0-using-middleware-intro.md
-              - usage/7-middleware/1-using-middleware/1-layering-middleware.md
-              - usage/7-middleware/1-using-middleware/2-middleware-call-order.md
-              - usage/7-middleware/1-using-middleware/3-define-middleware.md
-              - usage/7-middleware/1-using-middleware/4-middleware-and-exceptions.md
-          - Creating Middleware:
-              - usage/7-middleware/2-creating-middleware/0-creating-middleware-intro.md
-              - usage/7-middleware/2-creating-middleware/1-using-middleware-protocol.md
-              - usage/7-middleware/2-creating-middleware/2-using-abstract-middleware.md
-          - Builtin Middlewares:
-              - usage/7-middleware/3-builtin-middlewares/0-builtin-middlewares-intro.md
-              - usage/7-middleware/3-builtin-middlewares/1-cors-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/2-allowed-hosts-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/4-compression-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/5-session-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/6-rate-limit-middleware.md
-              - usage/7-middleware/3-builtin-middlewares/7-logging-middleware.md
+          - usage/7-middleware/middleware-intro.md
+          - usage/7-middleware/using-middleware.md
+          - usage/7-middleware/creating-middleware.md
+          - usage/7-middleware/builtin-middlewares.md
       - Security:
           - usage/8-security/0-intro.md
           - usage/8-security/1-abstract-authentication-middleware.md

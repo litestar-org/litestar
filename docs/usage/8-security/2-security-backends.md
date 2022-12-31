@@ -10,7 +10,7 @@ the [API References](../../reference/security/0-base.md).
 ## Session Auth Backend
 
 Starlite offers a builtin session auth backend that can be used out of the box with any of the
-[session backends](../7-middleware/3-builtin-middlewares/5-session-middleware.md) supported by the Starlite session
+[session backends](../7-middleware/builtin-middlewares#session-middleware) supported by the Starlite session
 middleware.
 
 ```py title="Using Session Auth"
