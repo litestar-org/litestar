@@ -200,6 +200,38 @@ for which routes and request types the middleware is called:
 
 Thus, in the following example, the middleware will only run against the route handler called `not_excluded_handler`:
 
-``` py
+```py
 --8<-- "examples/middleware/base.py"
 ```
+
+
+## Using DefineMiddleware to pass arguments
+
+Starlite offers a simple way to pass positional arguments (`*args`) and key-word arguments (`**kwargs`) to middleware
+using the [`DefineMiddleware`][starlite.middleware.base.DefineMiddleware] class. Let's extend
+the factory function used in the examples above to take some args and kwargs and then use `DefineMiddleware` to pass
+these values to our middleware:
+
+```python
+from starlite.types import ASGIApp, Scope, Receive, Send
+from starlite import Starlite, DefineMiddleware
+
+
+def middleware_factory(my_arg: int, *, app: ASGIApp, my_kwarg: str) -> ASGIApp:
+    async def my_middleware(scope: Scope, receive: Receive, send: Send) -> None:
+        # here we can use my_arg and my_kwarg for some purpose
+        ...
+        await app(scope, receive, send)
+
+    return my_middleware
+
+
+app = Starlite(
+    route_handlers=[...],
+    middleware=[DefineMiddleware(middleware_factory, 1, my_kwarg="abc")],
+)
+```
+
+The `DefineMiddleware` is a simple container - it takes a middleware callable as a first parameter, and then any
+positional arguments, followed by key word arguments. The middleware callable will be called with these values as well
+as the kwarg `app` as mentioned above.

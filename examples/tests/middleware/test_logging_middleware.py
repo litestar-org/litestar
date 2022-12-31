@@ -1,13 +1,15 @@
 import logging
+from typing import TYPE_CHECKING
 
 import pytest
-from pytest import LogCaptureFixture
+
+if TYPE_CHECKING:
+    from pytest import LogCaptureFixture
+    from starlite.types.callable_types import GetLogger
 
 from examples.middleware.logging_middleware import app
-from starlite import LoggingConfig
-from starlite import TestClient
+from starlite import LoggingConfig, TestClient
 from starlite.config.logging import default_handlers
-from starlite.types.callable_types import GetLogger
 
 
 @pytest.fixture

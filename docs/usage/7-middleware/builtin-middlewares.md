@@ -122,7 +122,7 @@ Starlite ships with a robust logging middleware that allows logging HTTP request
 the [app level logging configuration](/starlite/usage/0-the-starlite-app#logging):
 
 ```py
---8<-- "examples/examples/logging_middleware.py"
+--8<-- "examples/middleware/logging_middleware.py"
 ```
 
 
