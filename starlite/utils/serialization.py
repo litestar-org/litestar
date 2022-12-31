@@ -18,7 +18,6 @@ from pydantic import (
     ByteSize,
     ConstrainedBytes,
     ConstrainedDate,
-    ConstrainedDecimal,
     NameEmail,
     SecretField,
     StrictBool,
@@ -38,7 +37,6 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Color: str,
     SecretField: str,
     ConstrainedBytes: lambda b: b.decode("utf-8"),
-    ConstrainedDecimal: float,
     ConstrainedDate: lambda d: d.isoformat(),
     IPv4Address: str,
     IPv4Interface: str,
@@ -51,19 +49,15 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Decimal: decimal_encoder,
     StrictBool: int,
     Pattern: lambda o: o.pattern,
-    # support subclasses of stdlib types, e.g. pydantic's constrained types. If no
-    # previous type matched, these will be the last type in the mro, so we use this to
-    # (attempt to) convert a subclass into its base class.
-    # see https://github.com/jcrist/msgspec/issues/248
+    # support subclasses of stdlib types, If no previous type matched, these will be
+    # the last type in the mro, so we use this to (attempt to) convert a subclass into
+    # its base class. # see https://github.com/jcrist/msgspec/issues/248
     # and https://github.com/starlite-api/starlite/issues/1003
     str: str,
     int: int,
     float: float,
-    list: list,
-    tuple: tuple,
     set: set,
     frozenset: frozenset,
-    dict: dict,
 }
 
 
