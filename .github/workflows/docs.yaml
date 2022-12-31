@@ -32,7 +32,7 @@ jobs:
           git config user.email github-actions@github.com
       - name: Deploy to GH-Pages (preview)
         if:  ${{ github.event_name != 'release' }}
-        run: mike deploy main --push --force
+        run: mike deploy dev --push --force
       - name: Deploy to GH-Pages (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: |
