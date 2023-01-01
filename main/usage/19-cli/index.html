@@ -4405,9 +4405,9 @@ Starlite applications, powered by <a href="https://click.palletsprojects.com/">c
 <p>Dependencies for the CLI are not included by default, to keep the packages needed to install
 Starlite to a minimum. To enable the CLI, Starlite has to be installed with the <code>cli</code> or <code>standard</code>
 extra:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install starlite<span class="o">[</span>cli<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>cli<span class="o">]</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip install starlite<span class="o">[</span>standard<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>standard<span class="o">]</span>
 </code></pre></div>
 <p>After installing any of these two, the <code>starlite</code> command will be available as the entrypoint
 to the CLI.</p>
@@ -4443,7 +4443,7 @@ the app will be automatically discovered as described in <a href="#autodiscovery
 </table>
 <h4 id="run">Run</h4>
 <p>The <code>run</code> command runs a Starlite application using <a href="https://www.uvicorn.org/">uvicorn</a>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>starlite run
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>starlite<span class="w"> </span>run
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -4492,12 +4492,12 @@ deploy production applications</p>
 </table>
 <h4 id="info">Info</h4>
 <p>The <code>info</code> command displays useful information about the selected application and its configuration</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>starlite info
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>starlite<span class="w"> </span>info
 </code></pre></div>
 <p><img alt="starlite info" src="/starlite/images/cli/starlite_info.png" /></p>
 <h4 id="routes">Routes</h4>
 <p>The <code>routes</code> command displays a tree view of the routing table</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>starlite routes
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>starlite<span class="w"> </span>routes
 </code></pre></div>
 <p><img alt="starlite info" src="/starlite/images/cli/starlite_routes.png" /></p>
 <h4 id="sessions">Sessions</h4>
@@ -4505,11 +4505,11 @@ deploy production applications</p>
 <a href="/starlite/usage/7-middleware/3-builtin-middlewares/5-session-middleware/#server-side-sessions">server-side session backends</a>.</p>
 <h5 id="delete">Delete</h5>
 <p>The <code>delete</code> subcommand deletes a specific session from the backend.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>starlite sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>starlite<span class="w"> </span>sessions<span class="w"> </span>delete<span class="w"> </span>cc3debc7-1ab6-4dc8-a220-91934a473717
 </code></pre></div>
 <h5 id="clear">Clear</h5>
 <p>The <code>clear</code> subcommand clears all sessions from the backend.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>starlite sessions clear
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>starlite<span class="w"> </span>sessions<span class="w"> </span>clear
 </code></pre></div>
 <h2 id="extending-the-cli">Extending the CLI</h2>
 <p>Starlite's CLI is built with <a href="https://click.palletsprojects.com/">click</a>, and can be easily extended.
@@ -4532,8 +4532,8 @@ to a <a class="autorefs autorefs-external" href="https://click.palletsprojects.c
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">[tool.poetry.plugins.&quot;starlite.commands&quot;]</span><span class="w"></span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;my_starlite_plugin.cli:main&quot;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">[tool.poetry.plugins.&quot;starlite.commands&quot;]</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;my_starlite_plugin.cli:main&quot;</span>
 </code></pre></div>
 </div>
 </div>

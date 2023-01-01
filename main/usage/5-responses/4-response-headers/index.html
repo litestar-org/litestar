@@ -4287,12 +4287,12 @@ itself:</p>
 </code></pre></div>
 <p>In the above example the response returned from <code>my_route_handler</code> will have headers set from each layer of the
 application using the given key+value combinations. I.e. it will be a dictionary equal to this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="w"></span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;my-local-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local header&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;controller-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;controller header&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;router-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;router header&quot;</span><span class="p">,</span><span class="w"></span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;app-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app header&quot;</span><span class="w"></span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;my-local-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local header&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;controller-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;controller header&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;router-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;router header&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;app-level-header&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app header&quot;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
 </code></pre></div>
 <p>The respective descriptions will be used for the OpenAPI documentation.</p>
 <h2 id="dynamic-headers">Dynamic Headers</h2>
@@ -4418,18 +4418,18 @@ specifications.</p>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/chance_of_rain&quot;</span><span class="p">)</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">def</span> <span class="nf">get_chance_of_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        <span class="sd">&quot;&quot;&quot;This endpoint uses the cache control value defined in the controller which overrides the app value.&quot;&quot;&quot;</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint uses the cache control value defined in the controller which overrides the app value.&quot;&quot;&quot;</span>
 <a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>        <span class="k">return</span> <span class="mf">0.5</span>
 <a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
 <a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/timestamp&quot;</span><span class="p">,</span> <span class="n">cache_control</span><span class="o">=</span><span class="n">CacheControlHeader</span><span class="p">(</span><span class="n">no_store</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    <span class="k">def</span> <span class="nf">get_server_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>        <span class="sd">&quot;&quot;&quot;This endpoint overrides the cache control value defined in the controller.&quot;&quot;&quot;</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint overrides the cache control value defined in the controller.&quot;&quot;&quot;</span>
 <a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
 <a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
 <a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population&quot;</span><span class="p">)</span>
 <a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="k">def</span> <span class="nf">get_population_count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>    <span class="sd">&quot;&quot;&quot;This endpoint will use the cache control defined in the app.&quot;&quot;&quot;</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;This endpoint will use the cache control defined in the app.&quot;&quot;&quot;</span>
 <a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>    <span class="k">return</span> <span class="mi">100000</span>
 <a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>
 <a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
@@ -4465,7 +4465,7 @@ in any cache.</li>
 <a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
 <a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/chance_of_rain&quot;</span><span class="p">)</span>
 <a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="k">def</span> <span class="nf">get_chance_of_rain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="sd">&quot;&quot;&quot;This endpoint uses the etag value in the controller which overrides the app value.</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint uses the etag value in the controller which overrides the app value.</span>
 <a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
 <a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="sd">        The returned header will be `etag: &quot;foo&quot;`</span>
 <a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="sd">        &quot;&quot;&quot;</span>
@@ -4473,7 +4473,7 @@ in any cache.</li>
 <a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
 <a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/timestamp&quot;</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">))</span>
 <a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>    <span class="k">def</span> <span class="nf">get_server_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>        <span class="sd">&quot;&quot;&quot;This endpoint overrides the etag defined in the controller.</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;This endpoint overrides the etag defined in the controller.</span>
 <a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>
 <a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="sd">        The returned header will be `etag: W/&quot;bar&quot;`</span>
 <a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="sd">        &quot;&quot;&quot;</span>
@@ -4482,7 +4482,7 @@ in any cache.</li>
 <a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>
 <a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population&quot;</span><span class="p">)</span>
 <a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="k">def</span> <span class="nf">get_population_count</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a>    <span class="sd">&quot;&quot;&quot;This endpoint will use the etag defined in the app.</span>
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;This endpoint will use the etag defined in the app.</span>
 <a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a>
 <a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a><span class="sd">    The returned header will be `etag: &quot;bar&quot;`</span>
 <a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -4491,7 +4491,7 @@ in any cache.</li>
 <a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a>
 <a id="__codelineno-6-39" name="__codelineno-6-39" href="#__codelineno-6-39"></a><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/population-dynamic&quot;</span><span class="p">,</span> <span class="n">etag</span><span class="o">=</span><span class="n">ETag</span><span class="p">(</span><span class="n">documentation_only</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <a id="__codelineno-6-40" name="__codelineno-6-40" href="#__codelineno-6-40"></a><span class="k">def</span> <span class="nf">get_population_count_dynamic</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-6-41" name="__codelineno-6-41" href="#__codelineno-6-41"></a>    <span class="sd">&quot;&quot;&quot;The etag defined in this route handler will not be returned, and does not need a value.</span>
+<a id="__codelineno-6-41" name="__codelineno-6-41" href="#__codelineno-6-41"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The etag defined in this route handler will not be returned, and does not need a value.</span>
 <a id="__codelineno-6-42" name="__codelineno-6-42" href="#__codelineno-6-42"></a>
 <a id="__codelineno-6-43" name="__codelineno-6-43" href="#__codelineno-6-43"></a><span class="sd">    It will only be used for OpenAPI generation.</span>
 <a id="__codelineno-6-44" name="__codelineno-6-44" href="#__codelineno-6-44"></a><span class="sd">    &quot;&quot;&quot;</span>

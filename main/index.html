@@ -4294,39 +4294,39 @@ with <strong><a href="usage/6-dependency-injection/0-dependency-injection-intro/
 <strong><a href="https://msgpack.org/">MessagePack</a></strong> support – among other common API-framework components such
 as <strong><a href="usage/7-middleware/0-middleware-intro/">middleware</a></strong>.</p>
 <h2 id="installation">Installation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install starlite
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite
 </code></pre></div>
 <details>
 <summary>Extras</summary>
 <p><a href="usage/7-middleware/0-middleware-intro/#brotli">Brotli Compression Middleware</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip install starlite<span class="o">[</span>brotli<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>brotli<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/7-middleware/3-builtin-middlewares/5-session-middleware/#Client-side-sessions">Client-side sessions</a>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip install starlite<span class="o">[</span>cryptography<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>cryptography<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/7-middleware/3-builtin-middlewares/5-session-middleware/#redis-storage">Server-side sessions with redis / Redis caching</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip install starlite<span class="o">[</span>redis<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>redis<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/7-middleware/3-builtin-middlewares/5-session-middleware/#memcached-storage">Server-side sessions with memcached / memcached caching</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip install starlite<span class="o">[</span>memcached<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>memcached<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/0-the-starlite-app/4-logging/#using-picologging">Picologging</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip install starlite<span class="o">[</span>picologging<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>picologging<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/0-the-starlite-app/4-logging/#using-structlog">StructLog</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip install starlite<span class="o">[</span>structlog<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>structlog<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/18-contrib/0-open-telemetry/">OpenTelemetry</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip install starlite<span class="o">[</span>openetelemetry<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>openetelemetry<span class="o">]</span>
 </code></pre></div></p>
 <p><a href="usage/19-cli">CLI</a>:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pip install starlite<span class="o">[</span>cli<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>cli<span class="o">]</span>
 </code></pre></div></p>
 <p>Standard installation (includes CLI, picologging and Jinja2 templating):
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pip install starlite<span class="o">[</span>standard<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>standard<span class="o">]</span>
 </code></pre></div></p>
 <p>All extras:
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pip install starlite<span class="o">[</span>full<span class="o">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>full<span class="o">]</span>
 </code></pre></div></p>
 </details>
 <h2 id="minimal-example">Minimal Example</h2>
@@ -4440,7 +4440,7 @@ entry-point and pass it to Starlite:</p>
 <a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">])</span>
 </code></pre></div>
 <p>To <strong>run your application</strong>, use an ASGI server such as <a href="https://www.uvicorn.org/">uvicorn</a>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uvicorn my_app.main:app --reload
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uvicorn<span class="w"> </span>my_app.main:app<span class="w"> </span>--reload
 </code></pre></div>
 <h2 id="example-applications">Example Applications</h2>
 <ul>

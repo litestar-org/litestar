@@ -4114,10 +4114,10 @@
 <h1 id="open-telemetry-instrumentation">Open Telemetry Instrumentation</h1>
 <p>Starlite includes optional OpenTelemetry instrumentation that is exported from <code>starlite.contrib.opentelemtry</code>. To use
 this package, you should first install the required dependencies:</p>
-<div class="highlight"><span class="filename">as separate packages</span><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install opentelemetry-instrumentation-asgi
+<div class="highlight"><span class="filename">as separate packages</span><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>opentelemetry-instrumentation-asgi
 </code></pre></div>
 <p>Or by installing Starlite with the <code>opentelemetry</code> extra:</p>
-<div class="highlight"><span class="filename">as 'extra' dependencies</span><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip install starlite<span class="o">[</span>opentelemetry<span class="o">]</span>
+<div class="highlight"><span class="filename">as 'extra' dependencies</span><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>opentelemetry<span class="o">]</span>
 </code></pre></div>
 <p>Once these requirements are satisfied, you can instrument your Starlite application by creating an instance
 of <a class="autorefs autorefs-internal" href="../../../reference/contrib/opentelemetry/#starlite.contrib.opentelemetry.OpenTelemetryConfig">OpenTelemetryConfig</a> and passing the middleware it creates to

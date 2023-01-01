@@ -4235,10 +4235,10 @@ will be interpreted as a query parameter.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Run it</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt; curl http://127.0.0.1:8000/?param<span class="o">=</span>foo
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>foo
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt; curl http://127.0.0.1:8000/?param<span class="o">=</span>bar
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>bar
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;bar&quot;</span><span class="o">}</span>
 </code></pre></div></p>
 </div>
@@ -4292,10 +4292,10 @@ If it's passed as a query parameter however, it will be overwritten:</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Run it</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt; curl http://127.0.0.1:8000/
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;hello&quot;</span><span class="o">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt; curl http://127.0.0.1:8000/?param<span class="o">=</span>john
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>john
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;john&quot;</span><span class="o">}</span>
 </code></pre></div></p>
 </div>
@@ -4351,10 +4351,10 @@ If it is not given, it will have a default value of <code>None</code></p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Run it</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt; curl http://127.0.0.1:8000/
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:null<span class="o">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt; curl http://127.0.0.1:8000/?param<span class="o">=</span>goodbye
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>goodbye
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;goodbye&quot;</span><span class="o">}</span>
 </code></pre></div></p>
 </div>
@@ -4418,7 +4418,7 @@ everything that works there will work for query parameters as well.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Run it</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt; curl http://127.0.0.1:8000/?date<span class="o">=</span><span class="m">2022</span>-11-28T13:22:06.916540<span class="p">&amp;</span><span class="nv">floating_number</span><span class="o">=</span><span class="m">0</span>.1<span class="p">&amp;</span><span class="nv">number</span><span class="o">=</span><span class="m">42</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">2</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?date<span class="o">=</span><span class="m">2022</span>-11-28T13:22:06.916540<span class="p">&amp;</span><span class="nv">floating_number</span><span class="o">=</span><span class="m">0</span>.1<span class="p">&amp;</span><span class="nv">number</span><span class="o">=</span><span class="m">42</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">2</span>
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="o">{</span><span class="s2">&quot;datetime&quot;</span>:<span class="s2">&quot;2022-11-29T13:22:06.916540&quot;</span>,<span class="s2">&quot;int&quot;</span>:42,<span class="s2">&quot;float&quot;</span>:0.1,<span class="s2">&quot;list&quot;</span>:<span class="o">[</span><span class="s2">&quot;1&quot;</span>,<span class="s2">&quot;2&quot;</span><span class="o">]}</span>
 </code></pre></div>
 </div>
@@ -4458,7 +4458,7 @@ than what's being used in the handler function. This can be done by making use o
 </div>
 <div class="admonition example">
 <p class="admonition-title">Run it</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>&gt; curl http://127.0.0.1:8000/?camelCase<span class="o">=</span>foo
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?camelCase<span class="o">=</span>foo
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
 </code></pre></div>
 </div>
