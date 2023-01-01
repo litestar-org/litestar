@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-69-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-70-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -368,6 +368,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="https://github.com/NiclasHaderer"><img src="https://avatars.githubusercontent.com/u/109728711?v=4?s=100" width="100px;" alt="Niclas Haderer"/><br /><sub><b>Niclas Haderer</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=NiclasHaderer" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/dialvarezs"><img src="https://avatars.githubusercontent.com/u/13831919?v=4?s=100" width="100px;" alt="Diego Alvarez"/><br /><sub><b>Diego Alvarez</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=dialvarezs" title="Documentation">📖</a> <a href="https://github.com/starlite-api/starlite/commits?author=dialvarezs" title="Code">💻</a></td>
       <td align="center"><a href="https://www.rgare.com"><img src="https://avatars.githubusercontent.com/u/51208317?v=4?s=100" width="100px;" alt="Jason Nance"/><br /><sub><b>Jason Nance</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=rgajason" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/spikenn"><img src="https://avatars.githubusercontent.com/u/32995595?v=4?s=100" width="100px;" alt="Igor Kapadze"/><br /><sub><b>Igor Kapadze</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=spikenn" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
