@@ -62,15 +62,15 @@ You can customize exception handling by passing a dictionary, mapping either sta
 or exception classes to callables. For example, if you would like to replace the default
 exception handler with a handler that returns plain-text responses you could do this:
 
-```python
---8 < --"examples/exceptions/override_default_handler.py"
+```py
+--8<-- "examples/exceptions/override_default_handler.py"
 ```
 
 The above will define a top level exception handler that will apply the `plain_text_exception_handler` function to all
 exceptions that inherit from `HTTPException`. You could of course be more granular:
 
-```python
---8 < --"examples/exceptions/per_exception_handlers.py"
+```py
+--8<-- "examples/exceptions/per_exception_handlers.py"
 ```
 
 The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
@@ -81,8 +81,8 @@ Starlite supports defining exception handlers on all layers of the app, with the
 them. In the following example, the exception handler for the route handler function will only handle
 the `ValidationException` occurring within that route handler:
 
-```python
---8 < --"examples/exceptions/layered_handlers.py"
+```py
+--8<-- "examples/exceptions/layered_handlers.py"
 ```
 
 ### Exception Handling Layers
