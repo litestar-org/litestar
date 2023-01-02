@@ -1,11 +1,13 @@
-# Exceptions and Exception Handling
+# Exceptions and exception handling
 
-Starlite define a base error called [`StarliteException`][starlite.exceptions.StarLiteException] which serves as a basis
+Starlite define a base exception called [`StarliteException`][starlite.exceptions.StarLiteException] which serves as a basis
 to all other exceptions.
 
-In general, Starlite will raise two types of exceptions - exceptions that arise during application init, which fall
-under the broad scope of configurations errors, and exceptions that are raised as part of the normal application flow,
-i.e. exceptions in route handlers, dependencies and middleware that should be serialized in some fashion.
+In general, Starlite will raise two types of exceptions:
+
+1. Exceptions that arise during application init, which fall
+2. Exceptions that are raised as part of the normal application flow, i.e.
+exceptions in route handlers, dependencies and middleware, that should be serialized in some fashion.
 
 ## Configuration Exceptions
 
@@ -19,8 +21,10 @@ the issue.
 
 ## Application Exceptions
 
-For application exceptions, Starlite uses the class `HTTPException`, which inherits from `StarliteException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
-the `HTTPException` class and the kwargs it accepts.
+For application exceptions, Starlite uses the class `HTTPException`, which inherits from
+`StarliteException`. See the [API Reference][starlite.exceptions.HTTPException] for full details on
+the `HTTPException` class and the kwargs it accepts. This exception will be serialized
+into a JSON response of the following schema:
 
 ```json
 {
@@ -32,13 +36,16 @@ the `HTTPException` class and the kwargs it accepts.
 
 Starlite also offers several pre-configured **exception subclasses** with pre-set error codes that you can use, such as:
 
-- `ImproperlyConfiguredException`: status code 500. Used internally for configuration errors.
-- `ValidationException`: status code 400. This is the exception raised when validation or parsing fails.
-- `NotFoundException`: status code 404.
-- `NotAuthorizedException`: status code 401.
-- `PermissionDeniedException`: status code 403.
-- `InternalServerException`: status code 500.
-- `ServiceUnavailableException`: status code 503.
+| Exception                                                                 | Status code | Description                              |
+|---------------------------------------------------------------------------|-------------|------------------------------------------|
+| [`ImproperlyConfiguredException`][starlite.ImproperlyConfiguredException] | 500         | Used internally for configuration errors |
+| [`ValidationException`][starlite.ValidationException]                     | 400         | Raised when validation or parsing failed |
+| [`NotFoundException`][starlite.NotFoundException]                         | 404         | HTTP status code 404                     |
+| [`NotAuthorizedException`][starlite.NotAuthorizedException]               | 401         | HTTP status code 401                     |
+| [`PermissionDeniedException`][starlite.PermissionDeniedException]         | 403         | HTTP status code 403                     |
+| [`InternalServerException`][starlite.InternalServerException]             | 500         | HTTP status code 500                     |
+| [`ServiceUnavailableException`][starlite.ServiceUnavailableException]     | 503         | HTTP status code 503                     |
+
 
 When a value fails `pydantic` validation, the result will be a `ValidationException` with the `extra` key set to the
 pydantic validation errors. Thus, this data will be made available for the API consumers by default.
@@ -49,104 +56,33 @@ See the [API Reference section for exceptions](../reference/exceptions/0-base-ex
 
 Starlite handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
 [`HTTPException`][starlite.exceptions.HTTPException], the responses will include the appropriate `status_code`.
-Otherwise, the responses will **default to 500** - "Internal Server Error".
+Otherwise, the responses will default to `500 - "Internal Server Error"`.
 
-You can **customize exception handling** by passing a dictionary – mapping either `error status codes`,
-or `exception classes`, to callables. For example, if you would like to replace the default exception handler with a
-handler that returns plain-text responses you could do this:
+You can customize exception handling by passing a dictionary, mapping either status codes
+or exception classes to callables. For example, if you would like to replace the default
+exception handler with a handler that returns plain-text responses you could do this:
 
 ```python
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite import HTTPException, MediaType, Request, Response, Starlite
-
-
-def plain_text_exception_handler(_: Request, exc: Exception) -> Response:
-    """Default handler for exceptions subclassed from HTTPException"""
-    status_code = HTTP_500_INTERNAL_SERVER_ERROR
-    detail = ""
-    if hasattr(exc, "detail"):
-        detail = exc.detail
-    if hasattr(exc, "status_code"):
-        status_code = exc.status_code
-    return Response(
-        media_type=MediaType.TEXT,
-        content=detail,
-        status_code=status_code,
-    )
-
-
-app = Starlite(
-    route_handlers=[...],
-    exception_handlers={HTTPException: plain_text_exception_handler},
-)
+--8 < --"examples/exceptions/override_default_handler.py"
 ```
 
 The above will define a top level exception handler that will apply the `plain_text_exception_handler` function to all
 exceptions that inherit from `HTTPException`. You could of course be more granular:
 
 ```python
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite import ValidationException, Request, Response, Starlite
-
-
-def first_exception_handler(request: Request, exc: Exception) -> Response:
-    ...
-
-
-def second_exception_handler(request: Request, exc: Exception) -> Response:
-    ...
-
-
-def third_exception_handler(request: Request, exc: Exception) -> Response:
-    ...
-
-
-app = Starlite(
-    route_handlers=[...],
-    exception_handlers={
-        ValidationException: first_exception_handler,
-        HTTP_500_INTERNAL_SERVER_ERROR: second_exception_handler,
-        ValueError: third_exception_handler,
-    },
-)
+--8 < --"examples/exceptions/per_exception_handlers.py"
 ```
 
 The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
 specific needs.
 
 While it does not make much sense to have different functions with a top-level exception handling,
-Starlite supports defining exception handlers on all levels of the app, with the lower levels overriding levels above
-them. Thus, in the following example, the exception handler for the route handler function will handle
-the `ValidationException` related to it:
+Starlite supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
+them. In the following example, the exception handler for the route handler function will only handle
+the `ValidationException` occurring within that route handler:
 
 ```python
-from starlite import (
-    HTTPException,
-    ValidationException,
-    Request,
-    Response,
-    Starlite,
-    get,
-)
-
-
-def top_level_handler(request: Request, exc: Exception) -> Response:
-    ...
-
-
-def handler_level_handler(request: Request, exc: Exception) -> Response:
-    ...
-
-
-@get("/greet", exception_handlers={ValidationException: top_level_handler})
-def my_route_handler(name: str) -> str:
-    return f"hello {name}"
-
-
-app = Starlite(
-    route_handlers=[my_route_handler],
-    exception_handlers={HTTPException: top_level_handler},
-)
+--8 < --"examples/exceptions/layered_handlers.py"
 ```
 
 ### Exception Handling Layers
@@ -160,53 +96,8 @@ exceptions are handled correctly:
   <figcaption>Exception Handlers</figcaption>
 </figure>
 
-Because of the above structure, the exceptions raised by the ASGI Router itself, namely `404 Not Found`
+
+As a result of the above structure, the exceptions raised by the ASGI Router itself, namely `404 Not Found`
 and `405 Method Not Allowed` are handled only by exception handlers defined on the app layer. Thus, if you want to affect
 these exceptions, you will need to pass the exception handlers for them to the Starlite constructor and cannot use other
 layers for this purpose.
-
-### Examples
-
-#### Logging Exception Handler
-
-!!! note
-    The [`create_exception_response`][starlite.utils.create_exception_response] function is used internally to produce default error responses if no
-    handler has been registered to a route. This is available as part of the public API of Starlite so that you can
-    apply it wherever necessary to ensure consistent error responses across your application.
-
-```python
-import logging
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.response import Response
-from starlite.utils import create_exception_response
-from starlite.connection import Request
-from starlite import Starlite
-
-logger = logging.getLogger(__name__)
-
-
-def logging_exception_handler(request: Request, exc: Exception) -> Response:
-    """
-    Logs exception and returns appropriate response.
-
-    Parameters
-    ----------
-    request : Request
-        The request that caused the exception.
-    exc :
-        The exception caught by the Starlite exception handling middleware and passed to the
-        callback.
-
-    Returns
-    -------
-    Response
-    """
-    logger.error("Application Exception", exc_info=exc)
-    return create_exception_response(exc)
-
-
-app = Starlite(
-    ...,
-    exception_handlers={HTTP_500_INTERNAL_SERVER_ERROR: logging_exception_handler},
-)
-```
