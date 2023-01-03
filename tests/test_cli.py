@@ -3,19 +3,20 @@ import shutil
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator, Optional, Union
+from typing import Callable, Generator, List, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
 from click import group
 from click.testing import CliRunner
-from pytest import MonkeyPatch, fixture
+from pytest import FixtureRequest, MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
 import starlite.cli
 from starlite import Starlite
 from starlite.cli import (
     AUTODISCOVER_PATHS,
+    LoadedApp,
     StarliteCLIException,
     StarliteEnv,
     _autodiscover_app,
@@ -28,9 +29,52 @@ from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
 
+@pytest.fixture
+def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
+    def patcher(paths: List[str]) -> None:
+        old_paths = starlite.cli.AUTODISCOVER_PATHS[::]
+        starlite.cli.AUTODISCOVER_PATHS[:] = paths
+
+        def finalizer() -> None:
+            starlite.cli.AUTODISCOVER_PATHS[:] = old_paths
+
+        request.addfinalizer(finalizer)
+
+    return patcher
+
+
+APP_FILE_CONTENT = """
+from starlite import Starlite
+app = Starlite([])
+"""
+
+
+CREATE_APP_FILE_CONTENT = """
+from starlite import Starlite
+
+def create_app():
+    return Starlite([])
+"""
+
+
+GENERIC_APP_FACTORY_FILE_CONTENT = """
+from starlite import Starlite
+
+def any_name() -> Starlite:
+    return Starlite([])
+"""
+
+GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION = """
+from starlite import Starlite
+
+def any_name() -> "Starlite":
+    return Starlite([])
+"""
+
+
 @contextmanager
 def create_app_file(
-    file: Union[str, Path], directory: Optional[Union[str, Path]] = None
+    file: Union[str, Path], directory: Optional[Union[str, Path]] = None, content: Optional[str] = None
 ) -> Generator[Path, None, None]:
     base = Path.cwd()
     if directory:
@@ -39,7 +83,8 @@ def create_app_file(
 
     tmp_app_file = base / file
     tmp_app_file.write_text(
-        """
+        content
+        or """
 from starlite import Starlite
 app = Starlite([])
 """
@@ -137,13 +182,22 @@ def test_starlite_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) ->
     assert env.host == "0.0.0.0"
 
 
+@pytest.mark.parametrize(
+    "file_content",
+    [
+        APP_FILE_CONTENT,
+        CREATE_APP_FILE_CONTENT,
+        GENERIC_APP_FACTORY_FILE_CONTENT,
+        GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
+    ],
+)
 @pytest.mark.parametrize("path", AUTODISCOVER_PATHS)
-def test_env_from_env_autodiscover_from_files(path: str) -> None:
+def test_env_from_env_autodiscover_from_files(path: str, file_content: str) -> None:
     directory = None
     if "/" in path:
         directory, path = path.split("/", 1)
 
-    with create_app_file(path, directory) as tmp_file_path:
+    with create_app_file(path, directory, content=file_content) as tmp_file_path:
         env = StarliteEnv.from_env(None)
 
     assert isinstance(env.app, Starlite)
@@ -217,13 +271,77 @@ def test_run_command(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(f"{path.stem}:app", reload=reload, port=port, host=host)
+    mock_uvicorn_run.assert_called_once_with(
+        f"{path.stem}:app",
+        reload=reload,
+        port=port,
+        host=host,
+        factory=False,
+    )
     mock_show_app_info.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "file_name,file_content,factory_name",
+    [
+        ("_create_app.py", CREATE_APP_FILE_CONTENT, "create_app"),
+        ("_generic_app_factory.py", GENERIC_APP_FACTORY_FILE_CONTENT, "any_name"),
+        ("_generic_app_factory_string_ann.py", GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION, "any_name"),
+    ],
+    ids=["create-app", "generic", "generic-string-annotated"],
+)
+def test_run_command_with_autodiscover_app_factory(
+    runner: CliRunner,
+    mock_uvicorn_run: MagicMock,
+    file_name: str,
+    file_content: str,
+    factory_name: str,
+    patch_autodiscovery_paths: Callable[[List[str]], None],
+) -> None:
+
+    patch_autodiscovery_paths([file_name])
+    with create_app_file(file_name, content=file_content) as path:
+        result = runner.invoke(cli_command, "run")
+
+    assert result.exception is None
+    assert result.exit_code == 0
+
+    mock_uvicorn_run.assert_called_once_with(
+        f"{path.stem}:{factory_name}",
+        reload=False,
+        port=8000,
+        host="127.0.0.1",
+        factory=True,
+    )
+
+
+def test_run_command_with_app_factory(
+    runner: CliRunner,
+    mock_uvicorn_run: MagicMock,
+) -> None:
+
+    with create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT) as path:
+        app_path = f"{path.stem}:create_app"
+        result = runner.invoke(cli_command, ["--app", app_path, "run"])
+
+    assert result.exception is None
+    assert result.exit_code == 0
+
+    mock_uvicorn_run.assert_called_once_with(
+        f"{app_path}",
+        reload=False,
+        port=8000,
+        host="127.0.0.1",
+        factory=True,
+    )
 
 
 def test_run_command_force_debug(app_file: Path, mocker: MockerFixture, runner: CliRunner) -> None:
     mock_app = MagicMock()
-    mocker.patch("starlite.cli._autodiscover_app", return_value=(str(app_file), mock_app))
+    mocker.patch(
+        "starlite.cli._autodiscover_app",
+        return_value=LoadedApp(app=mock_app, app_path=str(app_file), is_factory=False),
+    )
 
     runner.invoke(cli_command, "run --debug")
 

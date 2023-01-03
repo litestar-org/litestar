@@ -23,14 +23,16 @@ to the CLI.
 
 ## Autodiscovery
 
-Starlite will automatically discover Starlite applications in certain places:
+Starlite will automatically discover Starlite applications and application factories in
+certain places:
 
 - `app.py`
 - `application.py`
 - `asgi.py`
 - `app/__init__.py`
 
-If any of these files contains an instance of the `Starlite` class, the CLI will pick it up.
+If any of these files contains an instance of the `Starlite` class, a function named `create_app`,
+or a function annotated as returning a `Starlite` instance, the CLI will pick it up.
 
 
 ## Commands

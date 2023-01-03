@@ -14,7 +14,6 @@ from typing import (
     Iterable,
     Optional,
     Sequence,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -84,6 +83,7 @@ class StarliteEnv:
     host: Optional[str] = None
     port: Optional[int] = None
     reload: Optional[bool] = None
+    is_app_factory: bool = False
 
     @classmethod
     def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
@@ -99,20 +99,30 @@ class StarliteEnv:
             pass
 
         if not app_path:
-            app_path, app = _autodiscover_app(getenv("STARLITE_APP"))
+            loaded_app = _autodiscover_app(getenv("STARLITE_APP"))
         else:
-            app = _load_app_from_path(app_path)
+            loaded_app = _load_app_from_path(app_path)
 
         port = getenv("STARLITE_PORT")
 
         return cls(
-            app_path=app_path,
-            app=app,
+            app_path=loaded_app.app_path,
+            app=loaded_app.app,
             debug=_bool_from_env("STARLITE_DEBUG"),
             host=getenv("STARLITE_HOST"),
             port=int(port) if port else None,
             reload=_bool_from_env("STARLITE_RELOAD"),
+            is_app_factory=loaded_app.is_factory,
         )
+
+
+@dataclass
+class LoadedApp:
+    """Information about a loaded Starlite app."""
+
+    app: Starlite
+    app_path: str
+    is_factory: bool
 
 
 class StarliteGroup(Group):
@@ -177,10 +187,15 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
     return value in ("true", "1")
 
 
-def _load_app_from_path(app_path: str) -> Starlite:
+def _load_app_from_path(app_path: str) -> LoadedApp:
     module_path, app_name = app_path.split(":")
     module = importlib.import_module(module_path)
-    return cast("Starlite", getattr(module, app_name))
+    app = getattr(module, app_name)
+    is_factory = False
+    if not isinstance(app, Starlite) and callable(app):
+        app = app()
+        is_factory = True
+    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -189,10 +204,10 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: Optional[str]) -> Tuple[str, Starlite]:
+def _autodiscover_app(app_path: Optional[str]) -> LoadedApp:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
-        return app_path, _load_app_from_path(app_path)
+        return _load_app_from_path(app_path)
 
     cwd = Path().cwd()
     for name in AUTODISCOVER_PATHS:
@@ -202,12 +217,28 @@ def _autodiscover_app(app_path: Optional[str]) -> Tuple[str, Starlite]:
 
         dotted_path = _path_to_dotted_path(path.relative_to(cwd))
         module = importlib.import_module(dotted_path)
+
         for attr, value in module.__dict__.items():
             if isinstance(value, Starlite):
                 app_string = f"{dotted_path}:{attr}"
-                console.print(f"Using Starlite app from [bright_blue]{path}:{attr}")
-                return app_string, value
-    raise StarliteCLIException("Could not find a Starlite app")
+                console.print(f"Using Starlite app from [bright_blue]{app_string}")
+                return LoadedApp(app=value, app_path=app_string, is_factory=False)
+
+        if hasattr(module, "create_app"):
+            app_string = f"{dotted_path}:create_app"
+            console.print(f"Using Starlite factory [bright_blue]{app_string}")
+            return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
+
+        for attr, value in module.__dict__.items():
+            if not callable(value):
+                continue
+            signature = inspect.signature(value)
+            if signature.return_annotation in ("Starlite", Starlite):
+                app_string = f"{dotted_path}:{attr}"
+                console.print(f"Using Starlite factory [bright_blue]{app_string}")
+                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
+
+    raise StarliteCLIException("Could not find a Starlite app or factory")
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
@@ -313,7 +344,6 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
 def cli(ctx: Context, app_path: Optional[str]) -> None:
     """Starlite CLI."""
 
-    # _wrap_commands(cli.commands.values())
     ctx.obj = StarliteEnv.from_env(app_path)
 
 
@@ -339,9 +369,11 @@ def run(
 ) -> None:
     """Run a Starlite app.
 
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance>, set as an
-    environment variable STARLITE_APP with the same format or automatically discovered from one of these canonical
-    paths: app.py, asgi.py, application.py or app/__init__.py
+    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
+    set as an environment variable STARLITE_APP with the same format or automatically discovered from one of these
+    canonical paths: app.py, asgi.py, application.py or app/__init__.py. When autodiscovering application factories,
+    functions with the name `create_app` are considered, or functions that are annotated as returning a `Starlite`
+    instance.
     """
 
     try:
@@ -361,6 +393,7 @@ def run(
         reload=env.reload or reload,
         host=env.host or host,
         port=env.port or port,
+        factory=env.is_app_factory,
     )
 
 
