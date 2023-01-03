@@ -16,7 +16,7 @@ import starlite.cli
 from starlite import Starlite
 from starlite.cli import (
     AUTODISCOVER_PATHS,
-    DiscoveredApp,
+    LoadedApp,
     StarliteCLIException,
     StarliteEnv,
     _autodiscover_app,
@@ -290,7 +290,7 @@ def test_run_command(
     ],
     ids=["create-app", "generic", "generic-string-annotated"],
 )
-def test_run_command_with_app_factory(
+def test_run_command_with_autodiscover_app_factory(
     runner: CliRunner,
     mock_uvicorn_run: MagicMock,
     file_name: str,
@@ -315,11 +315,32 @@ def test_run_command_with_app_factory(
     )
 
 
+def test_run_command_with_app_factory(
+    runner: CliRunner,
+    mock_uvicorn_run: MagicMock,
+) -> None:
+
+    with create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT) as path:
+        app_path = f"{path.stem}:create_app"
+        result = runner.invoke(cli_command, ["--app", app_path, "run"])
+
+    assert result.exception is None
+    assert result.exit_code == 0
+
+    mock_uvicorn_run.assert_called_once_with(
+        f"{app_path}",
+        reload=False,
+        port=8000,
+        host="127.0.0.1",
+        factory=True,
+    )
+
+
 def test_run_command_force_debug(app_file: Path, mocker: MockerFixture, runner: CliRunner) -> None:
     mock_app = MagicMock()
     mocker.patch(
         "starlite.cli._autodiscover_app",
-        return_value=DiscoveredApp(app=mock_app, app_path=str(app_file), is_factory=False),
+        return_value=LoadedApp(app=mock_app, app_path=str(app_file), is_factory=False),
     )
 
     runner.invoke(cli_command, "run --debug")

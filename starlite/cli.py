@@ -91,7 +91,6 @@ class StarliteEnv:
 
         If `python-dotenv` is installed, use it to populate environment first
         """
-        is_app_factory = False
         try:
             import dotenv
 
@@ -100,24 +99,30 @@ class StarliteEnv:
             pass
 
         if not app_path:
-            discovery = _autodiscover_app(getenv("STARLITE_APP"))
-            app = discovery.app
-            app_path = discovery.app_path
-            is_app_factory = discovery.is_factory
+            loaded_app = _autodiscover_app(getenv("STARLITE_APP"))
         else:
-            app = _load_app_from_path(app_path)
+            loaded_app = _load_app_from_path(app_path)
 
         port = getenv("STARLITE_PORT")
 
         return cls(
-            app_path=app_path,
-            app=app,
+            app_path=loaded_app.app_path,
+            app=loaded_app.app,
             debug=_bool_from_env("STARLITE_DEBUG"),
             host=getenv("STARLITE_HOST"),
             port=int(port) if port else None,
             reload=_bool_from_env("STARLITE_RELOAD"),
-            is_app_factory=is_app_factory,
+            is_app_factory=loaded_app.is_factory,
         )
+
+
+@dataclass
+class LoadedApp:
+    """Information about a loaded Starlite app."""
+
+    app: Starlite
+    app_path: str
+    is_factory: bool
 
 
 class StarliteGroup(Group):
@@ -182,15 +187,15 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
     return value in ("true", "1")
 
 
-def _load_app_from_path(app_path: str) -> Starlite:
+def _load_app_from_path(app_path: str) -> LoadedApp:
     module_path, app_name = app_path.split(":")
     module = importlib.import_module(module_path)
     app = getattr(module, app_name)
+    is_factory = False
     if not isinstance(app, Starlite) and callable(app):
         app = app()
-    if not isinstance(app, Starlite):
-        raise StarliteCLIException(f"{app_path} is not a Starlite application")
-    return app
+        is_factory = True
+    return LoadedApp(app=app, app_path=app_path, is_factory=is_factory)
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -199,19 +204,10 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-@dataclass
-class DiscoveredApp:
-    """Information about an autodiscovery result."""
-
-    app: Starlite
-    app_path: str
-    is_factory: bool
-
-
-def _autodiscover_app(app_path: Optional[str]) -> DiscoveredApp:
+def _autodiscover_app(app_path: Optional[str]) -> LoadedApp:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
-        return DiscoveredApp(app=_load_app_from_path(app_path), app_path=app_path, is_factory=False)
+        return _load_app_from_path(app_path)
 
     cwd = Path().cwd()
     for name in AUTODISCOVER_PATHS:
@@ -226,12 +222,12 @@ def _autodiscover_app(app_path: Optional[str]) -> DiscoveredApp:
             if isinstance(value, Starlite):
                 app_string = f"{dotted_path}:{attr}"
                 console.print(f"Using Starlite app from [bright_blue]{app_string}")
-                return DiscoveredApp(app=value, app_path=app_string, is_factory=False)
+                return LoadedApp(app=value, app_path=app_string, is_factory=False)
 
         if hasattr(module, "create_app"):
             app_string = f"{dotted_path}:create_app"
             console.print(f"Using Starlite factory [bright_blue]{app_string}")
-            return DiscoveredApp(app=module.create_app(), app_path=app_string, is_factory=True)
+            return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
 
         for attr, value in module.__dict__.items():
             if not callable(value):
@@ -240,7 +236,7 @@ def _autodiscover_app(app_path: Optional[str]) -> DiscoveredApp:
             if signature.return_annotation in ("Starlite", Starlite):
                 app_string = f"{dotted_path}:{attr}"
                 console.print(f"Using Starlite factory [bright_blue]{app_string}")
-                return DiscoveredApp(app=value(), app_path=f"{app_string}", is_factory=True)
+                return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
 
     raise StarliteCLIException("Could not find a Starlite app or factory")
 
