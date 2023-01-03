@@ -137,6 +137,7 @@ class Response(Generic[T]):
 
         Should raise `TypeError` if a type cannot be transformed into a supported type
         """
+        return default_serializer(value, cls.type_encoders)
 
     @classmethod
     def get_serializer(cls, type_encoders: Optional["TypeEncodersMap"] = None) -> "Serializer":
