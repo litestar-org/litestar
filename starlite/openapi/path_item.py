@@ -74,7 +74,7 @@ def get_start_of_path_components_str(path_components: List[Union[str, PathParame
     for component in path_components:
         if isinstance(component, PathParameterDefinition):
             break
-        output.append(component)
+        output.append(component.title())
     return output
 
 
@@ -97,11 +97,11 @@ def create_path_item(
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = unwrap_partial(route_handler.handler_name)
+            handler_name = unwrap_partial(route_handler.handler_name).title().replace("_", "")
             operation_id = route_handler.operation_id or handler_name
             if len(route_handler.http_methods) > 1:
-                operation_id = "_".join((http_method, operation_id))
-            operation_id = "_".join((*get_start_of_path_components_str(route.path_components), operation_id))
+                operation_id = "".join((http_method.title(), operation_id))
+            operation_id = "".join((*get_start_of_path_components_str(route.path_components), operation_id))
 
             request_body = None
             if "data" in handler_fields:
