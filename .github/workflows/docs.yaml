@@ -23,8 +23,7 @@ jobs:
           installer-parallel: true
       - name: Install App Dependencies
         run: |
-            poetry install --no-interaction --only main
-            pip install -r requirements-docs.txt
+            poetry install --no-interaction --only main,docs
       - name: Setup mike
         run: |
           git fetch origin gh-pages --depth=1
