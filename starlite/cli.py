@@ -14,7 +14,6 @@ from typing import (
     Iterable,
     Optional,
     Sequence,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -84,7 +83,7 @@ class StarliteEnv:
     host: Optional[str] = None
     port: Optional[int] = None
     reload: Optional[bool] = None
-    is_app_factory: Optional[bool] = False
+    is_app_factory: bool = False
 
     @classmethod
     def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
@@ -186,10 +185,12 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
 def _load_app_from_path(app_path: str) -> Starlite:
     module_path, app_name = app_path.split(":")
     module = importlib.import_module(module_path)
-    obj = getattr(module, app_name)
-    if not isinstance(obj, Starlite) and callable(obj):
-        return obj()
-    return obj
+    app = getattr(module, app_name)
+    if not isinstance(app, Starlite) and callable(app):
+        app = app()
+    if not isinstance(app, Starlite):
+        raise StarliteCLIException(f"{app_path} is not a Starlite application")
+    return app
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -200,6 +201,8 @@ def _path_to_dotted_path(path: Path) -> str:
 
 @dataclass
 class DiscoveredApp:
+    """Information about an autodiscovery result."""
+
     app: Starlite
     app_path: str
     is_factory: bool
@@ -345,7 +348,6 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
 def cli(ctx: Context, app_path: Optional[str]) -> None:
     """Starlite CLI."""
 
-    # _wrap_commands(cli.commands.values())
     ctx.obj = StarliteEnv.from_env(app_path)
 
 
