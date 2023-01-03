@@ -373,9 +373,11 @@ def run(
 ) -> None:
     """Run a Starlite app.
 
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance>, set as an
-    environment variable STARLITE_APP with the same format or automatically discovered from one of these canonical
-    paths: app.py, asgi.py, application.py or app/__init__.py
+    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
+    set as an environment variable STARLITE_APP with the same format or automatically discovered from one of these
+    canonical paths: app.py, asgi.py, application.py or app/__init__.py. When autodiscovering application factories,
+    functions with the name `create_app` are considered, or functions that are annotated as returning a `Starlite`
+    instance.
     """
 
     try:
