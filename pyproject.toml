@@ -100,6 +100,19 @@ python-dotenv = "*"
 pytest-mock = "*"
 uvicorn = "*"
 
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "*"
+mkdocs-material = "^9.0.1"
+mkdocstrings = {extras = ["python"], version = "^0.19.1"}
+black = "^22.12.0"
+httpx = "^0.23.2"
+uvicorn = "^0.20.0"
+auto-pytabs = {git = "https://github.com/provinzkraut/AutoPyTabs.git"}
+mike = "^1.1.2"
+
 [tool.poetry.extras]
 brotli = ["brotli"]
 cli = ["click", "rich"]
