@@ -296,7 +296,6 @@ def test_run_command_with_app_factory(
     file_name: str,
     file_content: str,
     factory_name: str,
-    monkeypatch: MonkeyPatch,
     patch_autodiscovery_paths: Callable[[List[str]], None],
 ) -> None:
 
