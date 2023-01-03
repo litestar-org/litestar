@@ -84,6 +84,7 @@ class StarliteEnv:
     host: Optional[str] = None
     port: Optional[int] = None
     reload: Optional[bool] = None
+    is_app_factory: Optional[bool] = False
 
     @classmethod
     def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
@@ -91,6 +92,7 @@ class StarliteEnv:
 
         If `python-dotenv` is installed, use it to populate environment first
         """
+        is_app_factory = False
         try:
             import dotenv
 
@@ -99,7 +101,10 @@ class StarliteEnv:
             pass
 
         if not app_path:
-            app_path, app = _autodiscover_app(getenv("STARLITE_APP"))
+            discovery = _autodiscover_app(getenv("STARLITE_APP"))
+            app = discovery.app
+            app_path = discovery.app_path
+            is_app_factory = discovery.is_factory
         else:
             app = _load_app_from_path(app_path)
 
@@ -112,6 +117,7 @@ class StarliteEnv:
             host=getenv("STARLITE_HOST"),
             port=int(port) if port else None,
             reload=_bool_from_env("STARLITE_RELOAD"),
+            is_app_factory=is_app_factory,
         )
 
 
@@ -180,7 +186,10 @@ def _bool_from_env(key: str, default: bool = False) -> bool:
 def _load_app_from_path(app_path: str) -> Starlite:
     module_path, app_name = app_path.split(":")
     module = importlib.import_module(module_path)
-    return cast("Starlite", getattr(module, app_name))
+    obj = getattr(module, app_name)
+    if not isinstance(obj, Starlite) and callable(obj):
+        return obj()
+    return obj
 
 
 def _path_to_dotted_path(path: Path) -> str:
@@ -189,10 +198,17 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: Optional[str]) -> Tuple[str, Starlite]:
+@dataclass
+class DiscoveredApp:
+    app: Starlite
+    app_path: str
+    is_factory: bool
+
+
+def _autodiscover_app(app_path: Optional[str]) -> DiscoveredApp:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
-        return app_path, _load_app_from_path(app_path)
+        return DiscoveredApp(app=_load_app_from_path(app_path), app_path=app_path, is_factory=False)
 
     cwd = Path().cwd()
     for name in AUTODISCOVER_PATHS:
@@ -202,12 +218,28 @@ def _autodiscover_app(app_path: Optional[str]) -> Tuple[str, Starlite]:
 
         dotted_path = _path_to_dotted_path(path.relative_to(cwd))
         module = importlib.import_module(dotted_path)
+
         for attr, value in module.__dict__.items():
             if isinstance(value, Starlite):
                 app_string = f"{dotted_path}:{attr}"
-                console.print(f"Using Starlite app from [bright_blue]{path}:{attr}")
-                return app_string, value
-    raise StarliteCLIException("Could not find a Starlite app")
+                console.print(f"Using Starlite app from [bright_blue]{app_string}")
+                return DiscoveredApp(app=value, app_path=app_string, is_factory=False)
+
+        if hasattr(module, "create_app"):
+            app_string = f"{dotted_path}:create_app"
+            console.print(f"Using Starlite factory [bright_blue]{app_string}")
+            return DiscoveredApp(app=module.create_app(), app_path=app_string, is_factory=True)
+
+        for attr, value in module.__dict__.items():
+            if not callable(value):
+                continue
+            signature = inspect.signature(value)
+            if signature.return_annotation in ("Starlite", Starlite):
+                app_string = f"{dotted_path}:{attr}"
+                console.print(f"Using Starlite factory [bright_blue]{app_string}")
+                return DiscoveredApp(app=value(), app_path=f"{app_string}", is_factory=True)
+
+    raise StarliteCLIException("Could not find a Starlite app or factory")
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
@@ -361,6 +393,7 @@ def run(
         reload=env.reload or reload,
         host=env.host or host,
         port=env.port or port,
+        factory=env.is_app_factory,
     )
 
 
