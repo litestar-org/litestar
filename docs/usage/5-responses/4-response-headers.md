@@ -49,7 +49,7 @@ the handler on different layers of the application as explained in the pertinent
 the headers on the corresponding layer:
 
 ```py
---8<-- "examples/response_headers_3.py"
+--8<-- "examples/responses/response_headers_3.py"
 ```
 
 In the above we set the response header using an `after_request_handler` function on the router level. Because the
