@@ -3,13 +3,13 @@ import shutil
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator, Optional, Union
+from typing import Callable, Generator, List, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
 from click import group
 from click.testing import CliRunner
-from pytest import MonkeyPatch, fixture
+from pytest import FixtureRequest, MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
 import starlite.cli
@@ -27,6 +27,21 @@ from starlite.cli import (
 from starlite.cli import cli as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+
+@pytest.fixture
+def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
+    def patcher(paths: List[str]) -> None:
+        old_paths = starlite.cli.AUTODISCOVER_PATHS[::]
+        starlite.cli.AUTODISCOVER_PATHS[:] = paths
+
+        def finalizer() -> None:
+            starlite.cli.AUTODISCOVER_PATHS[:] = old_paths
+
+        request.addfinalizer(finalizer)
+
+    return patcher
+
 
 APP_FILE_CONTENT = """
 from starlite import Starlite
@@ -282,10 +297,10 @@ def test_run_command_with_app_factory(
     file_content: str,
     factory_name: str,
     monkeypatch: MonkeyPatch,
+    patch_autodiscovery_paths: Callable[[List[str]], None],
 ) -> None:
-    from starlite import cli
 
-    monkeypatch.setattr(cli, "AUTODISCOVER_PATHS", [file_name])
+    patch_autodiscovery_paths([file_name])
     with create_app_file(file_name, content=file_content) as path:
         result = runner.invoke(cli_command, "run")
 
