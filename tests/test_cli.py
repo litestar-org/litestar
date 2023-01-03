@@ -283,9 +283,9 @@ def test_run_command_with_app_factory(
     factory_name: str,
     monkeypatch: MonkeyPatch,
 ) -> None:
-    import starlite.cli
+    from starlite import cli
 
-    monkeypatch.setattr(starlite.cli, "AUTODISCOVER_PATHS", [file_name])
+    monkeypatch.setattr(cli, "AUTODISCOVER_PATHS", [file_name])
     with create_app_file(file_name, content=file_content) as path:
         result = runner.invoke(cli_command, "run")
 
