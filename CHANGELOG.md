@@ -1,5 +1,12 @@
 # Changelog
 
+[1.48.1]
+
+- rename `enc_hook` -> `default` in `encode_json`
+- re-enable `super()` calls to `Response.serializer`
+- extend serializable type
+- support application factory pattern in CLI `run` command
+
 [1.48.0]
 
 - add docs versioning.
