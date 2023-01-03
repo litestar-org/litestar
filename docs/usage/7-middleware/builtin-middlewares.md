@@ -16,9 +16,6 @@ app = Starlite(route_handlers=[...], cors_config=cors_config)
 
 See the [API Reference][starlite.config.CORSConfig] for full details on the `CORSConfig` class and the kwargs it accepts.
 
-!!! note
-    The asterisks symbol in the above kwargs means "match any".
-
 
 ## Allowed Hosts
 
