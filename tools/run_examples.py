@@ -245,7 +245,7 @@ def on_post_build(config: "MkDocsConfig") -> None:
     _cleanup_temp_files()
 
 
-def on_build_error(exc: Exception) -> None:
+def on_build_error(error: Exception) -> None:
     _cleanup_temp_files()
 
 

@@ -33,7 +33,7 @@ with **[dependency injection](usage/6-dependency-injection/0-dependency-injectio
 **[security primitives](usage/8-security/0-intro.md)**,
 **[OpenAPI specifications-generation](usage/12-openapi/0-openapi-intro.md)**,
 **[MessagePack](https://msgpack.org/)** support – among other common API-framework components such
-as **[middleware](usage/7-middleware/0-middleware-intro.md)**.
+as **[middleware](usage/7-middleware/middleware-intro.md)**.
 
 ## Installation
 
@@ -43,22 +43,22 @@ pip install starlite
 
 ??? "Extras"
 
-    [Brotli Compression Middleware](usage/7-middleware/0-middleware-intro.md#brotli):
+    [Brotli Compression Middleware](usage/7-middleware/builtin-middlewares#brotli):
         ```shell
         pip install starlite[brotli]
         ```
 
-    [Client-side sessions](usage/7-middleware/3-builtin-middlewares/5-session-middleware.md#Client-side-sessions)
+    [Client-side sessions](usage/7-middleware/builtin-middlewares#client-side-sessions)
         ```shell
         pip install starlite[cryptography]
         ```
 
-    [Server-side sessions with redis / Redis caching](usage/7-middleware/3-builtin-middlewares/5-session-middleware/#redis-storage):
+    [Server-side sessions with redis](usage/7-middleware/builtin-middlewares#redis-storage) / [redis caching](usage/15-caching/0-cache-backends):
         ```shell
         pip install starlite[redis]
         ```
 
-    [Server-side sessions with memcached / memcached caching](usage/7-middleware/3-builtin-middlewares/5-session-middleware/#memcached-storage):
+    [Server-side sessions with memcached](usage/7-middleware/builtin-middlewares#memcached-storage) / [memcached caching](usage/15-caching/0-cache-backends):
         ```shell
         pip install starlite[memcached]
         ```
