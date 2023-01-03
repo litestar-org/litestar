@@ -4082,14 +4082,16 @@ extra:</p>
 <p>After installing any of these two, the <code>starlite</code> command will be available as the entrypoint
 to the CLI.</p>
 <h2 id="autodiscovery">Autodiscovery</h2>
-<p>Starlite will automatically discover Starlite applications in certain places:</p>
+<p>Starlite will automatically discover Starlite applications and application factories in
+certain places:</p>
 <ul>
 <li><code>app.py</code></li>
 <li><code>application.py</code></li>
 <li><code>asgi.py</code></li>
 <li><code>app/__init__.py</code></li>
 </ul>
-<p>If any of these files contains an instance of the <code>Starlite</code> class, the CLI will pick it up.</p>
+<p>If any of these files contains an instance of the <code>Starlite</code> class, a function named <code>create_app</code>,
+or a function annotated as returning a <code>Starlite</code> instance, the CLI will pick it up.</p>
 <h2 id="commands">Commands</h2>
 <h3 id="starlite">Starlite</h3>
 <p>The <code>starlite</code> command is the main entrypoint to the CLI. If the <code>--app</code> flag is not passed,
