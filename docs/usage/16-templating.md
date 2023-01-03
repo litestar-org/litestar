@@ -177,8 +177,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
     </html>
     ```
 
-The input is hidden so users cannot see and interact with it. It will though be sent back to the server when submitted,
-and the CSRF middleware will check that the token is valid.
+The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent back to the server when the form is submitted, and is checked by the CSRF middleware.
 
 ### Passing template context
 
@@ -204,7 +203,7 @@ callables that are ran inside the template. Starlite builds on this and offers s
 
 `url_for`:   To access urls for route handlers you can use the `url_for` function. Its signature and behaviour
     matches [`route_reverse`][starlite.app.Starlite.route_reverse] behaviour. More details about route handler indexing
-    can be found [here](/starlite/usage/2-route-handlers/4-route-handler-indexing.md)
+    can be found [here](/starlite/usage/2-route-handlers/4-route-handler-indexing).
 
 `csrf_token`:   This function returns the request's unique [`csrf_token`](/starlite/usage/7-middleware/3-builtin-middlewares/3-csrf-middleware.md). You can use this
     if you wish to insert the `csrf_token` into non-HTML based templates, or insert it into HTML templates not using a hidden input field but

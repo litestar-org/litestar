@@ -3,7 +3,7 @@
 ## CORS
 
 CORS ([Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)) is a common security
-mechanism - that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
+mechanism that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
 of [`CORSConfig`][starlite.config.CORSConfig] to the [Starlite constructor][starlite.app.Starlite]:
 
 ```python
@@ -43,8 +43,8 @@ app = Starlite(
 !!! note
     You can use wildcard prefixes (`*.`) in the beginning of a domain to match any combination of subdomains. Thus,
     `*.example.com` will match `www.example.com` but also `x.y.z.example.com` etc. You can also simply put `*` in trusted
-    hosts, which means - allow all. This though is basically turning the middleware off, so it's better to simply not enable
-    it to begin with in this case. You should note that a wildcard cannot be used only in the prefix of a domain name,
+    hosts, which means allow all. This is akin to turning the middleware off, so in this case it may be better to not enable
+    it in the first place. You should note that a wildcard can only be used only in the prefix of a domain name,
     not in the middle or end. Doing so will result in a validation exception being raised.
 
 For further configuration options, consult the [config reference documentation][starlite.config.AllowedHostsConfig].
@@ -58,7 +58,7 @@ You can enable either backend by passing an instance of [`CompressionConfig`][st
 
 ### GZIP
 
-You can enable gzip compression of responses by passing an instance of `starlite.config.CompressionConfig` with the `backend` parameter set to `"gzip"`:
+You can enable gzip compression of responses by passing an instance of `starlite.config.CompressionConfig` with the `backend` parameter set to `"gzip"`.
 
 You can configure the following additional gzip-specific values:
 
@@ -76,9 +76,9 @@ app = Starlite(
 
 ### Brotli
 
-The Brotli package is required to run this middleware. It is available as an extras to starlite with the `brotli` extra. (`pip install starlite[brotli]`)
+The Brotli package is required to run this middleware. It is available as an extras to starlite with the `brotli` extra (`pip install starlite[brotli]`).
 
-You can enable brotli compression of responses by passing an instance of `starlite.config.CompressionConfig` with the `backend` parameter set to `"brotli"`:
+You can enable brotli compression of responses by passing an instance of `starlite.config.CompressionConfig` with the `backend` parameter set to `"brotli"`.
 
 You can configure the following additional brotli-specific values:
 
@@ -192,9 +192,7 @@ add its middleware to your application's middleware stack:
 !!! note
     Since both client- and server-side sessions rely on cookies (one for storing the actual session
     data, the other for storing the session ID), they share most of the cookie configuration.
-    A complete reference of the cookie configuration can be found here:
-
-    [BaseBackendConfig][starlite.middleware.session.base.BaseBackendConfig]
+    A complete reference of the cookie configuration can be found at [BaseBackendConfig][starlite.middleware.session.base.BaseBackendConfig].
 
 ### Client-side sessions
 
@@ -261,7 +259,7 @@ in memcached. Session data stored in memcached will expire automatically after i
 [max_age][starlite.middleware.session.base.BaseBackendConfig.max_age] has been passed.
 
 !!! important
-    This requires the `aiomamcache` package. To install it you can install starlite with
+    This requires the `aiomemcache` package. To install it you can install starlite with
     `pip install starlite[memcached]`
 
 ```py title="memcached_backend.py"

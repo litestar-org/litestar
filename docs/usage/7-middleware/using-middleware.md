@@ -79,10 +79,10 @@ This response will follow the normal "flow" of the application and therefore, mi
 still applied to it.
 
 As with any good rule, there are exceptions to it. In this case they are two exceptions
-raised be Starlite's ASGI router:
+raised by Starlite's ASGI router:
 
 - [`NotFoundException`][starlite.NotFoundException]
-- [`MethodNotAllowedException`][starlite.MethodNotAllowedException]
+- [`MethodNotAllowedException`][starlite.exceptions.MethodNotAllowedException]
 
 They are raised **before the middleware stack is called** and will only be handled by exception
 handlers defined on the `Starlite` instance itself. If you wish to modify error responses generated
