@@ -7,6 +7,7 @@ from typing import (
     Dict,
     Generator,
     Generic,
+    Mapping,
     Optional,
     Sequence,
     TypeVar,
@@ -205,7 +206,7 @@ class TestClient(Client, Generic[T]):
         auth: Optional[Union["AuthTypes", "UseClientDefault"]] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a request.
 
@@ -253,7 +254,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a GET request.
 
@@ -291,7 +292,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends an OPTIONS request.
 
@@ -329,7 +330,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a HEAD request.
 
@@ -371,7 +372,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a POST request.
 
@@ -421,7 +422,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a PUT request.
 
@@ -471,7 +472,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a PATCH request.
 
@@ -517,7 +518,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a DELETE request.
 
@@ -555,7 +556,7 @@ class TestClient(Client, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> "WebSocketTestSession":
         """Sends a GET request to establish a websocket connection.
 
