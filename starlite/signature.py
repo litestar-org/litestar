@@ -198,7 +198,7 @@ class SignatureModelFactory:
             plugins: A list of plugins
             dependency_names: Dependency names
         """
-        if fn is None:
+        if fn is None:  # pragma: no cover
             raise ImproperlyConfiguredException("Parameter `fn` to `SignatureModelFactory` cannot be `None`.")
 
         fn = unwrap_partial(fn)

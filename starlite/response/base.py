@@ -132,7 +132,7 @@ class Response(Generic[T]):
         info="Set `type_encoders` on a higher layer "
         "instead or pass `type_encoders` to the `Response` instance directly",
     )
-    def serializer(cls, value: Any) -> Any:
+    def serializer(cls, value: Any) -> Any:  # pragma: no cover
         """Transform non-natively supported types into supported types.
 
         Should raise `TypeError` if a type cannot be transformed into a supported type

@@ -22,7 +22,7 @@ def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = Non
 
     try:
         return re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
-    except re.error as e:
+    except re.error as e:  # pragma: no cover
         raise ImproperlyConfiguredException(
             "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
         ) from e

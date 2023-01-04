@@ -7,7 +7,6 @@ from starlite.asgi.routing_trie.types import (
     create_node,
 )
 from starlite.asgi.utils import wrap_in_exception_handler
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal_types import PathParameterDefinition
 
 if TYPE_CHECKING:
@@ -34,8 +33,6 @@ def add_mount_route(
     Returns:
         A trie node.
     """
-    if route.path_parameters:
-        raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
 
     # we need to ensure that we can traverse the map both through the full path key, e.g. "/my-route/sub-path" and
     # via the components keys ["my-route, "sub-path"]

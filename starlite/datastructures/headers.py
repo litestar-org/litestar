@@ -237,7 +237,7 @@ class MutableScopeHeaders(MutableMapping):
 class Header(BaseModel, ABC):
     """An abstract type for HTTP headers."""
 
-    HEADER_NAME: ClassVar[str]
+    HEADER_NAME: ClassVar[str] = ""
 
     class Config:
         allow_population_by_field_name = True
@@ -271,7 +271,7 @@ class Header(BaseModel, ABC):
         """
 
         if not self.HEADER_NAME:
-            raise AttributeError("Missing header name")
+            raise ImproperlyConfiguredException("Missing header name")
 
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 

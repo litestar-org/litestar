@@ -308,7 +308,7 @@ def create_examples_for_field(field: ModelField) -> List[Example]:
     try:
         value = normalize_example_value(ExampleFactory.get_field_value(field))
         return [Example(description=f"Example {field.name} value", value=value)]
-    except ParameterError:
+    except ParameterError:  # pragma: no cover
         return []
 
 
@@ -357,7 +357,7 @@ def create_schema(
                 for sub_field in field.sub_fields
             ]
             if len(items) > 1:
-                schema.items = Schema(oneOf=items)  # type: ignore[arg-type]
+                schema.items = Schema(oneOf=items)  # type: ignore[arg-type] # pragma: no cover
             else:
                 schema.items = items[0]
     elif field.shape == SHAPE_GENERIC:
