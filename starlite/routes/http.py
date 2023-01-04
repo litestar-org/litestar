@@ -187,6 +187,9 @@ class HTTPRoute(BaseRoute):
             if "data" in kwargs:
                 kwargs["data"] = await kwargs["data"]
 
+            if "body" in kwargs:
+                kwargs["body"] = await kwargs["body"]
+
             if parameter_model.dependency_batches:
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 

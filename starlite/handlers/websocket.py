@@ -71,10 +71,9 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
         if "socket" not in self.signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
-        if "request" in self.signature.parameters:
-            raise ImproperlyConfiguredException("The 'request' kwarg is not supported with websocket handlers")
-        if "data" in self.signature.parameters:
-            raise ImproperlyConfiguredException("The 'data' kwarg is not supported with websocket handlers")
+        for param in ("request", "body", "data"):
+            if param in self.signature.parameters:
+                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket handlers")
         if not is_async_callable(self.fn.value):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
 
