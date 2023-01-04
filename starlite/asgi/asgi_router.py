@@ -151,7 +151,7 @@ class ASGIRouter:
 
         validate_node(node=self.root_route_map_node)
         if self._mount_routes:
-            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))
+            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))  # pyright: ignore
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.

@@ -292,7 +292,7 @@ class HTTPRoute(BaseRoute):
                 if pre_flight_requested_headers:
                     if cors_config.is_allow_all_headers:
                         response_headers["Access-Control-Allow-Headers"] = ", ".join(
-                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
+                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
                         )
                     elif any(
                         header.lower() not in cors_config.allow_headers for header in pre_flight_requested_headers

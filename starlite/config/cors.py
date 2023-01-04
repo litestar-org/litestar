@@ -111,7 +111,7 @@ class CORSConfig(BaseModel):
             headers["Access-Control-Allow-Credentials"] = str(self.allow_credentials).lower()
         if not self.is_allow_all_headers:
             headers["Access-Control-Allow-Headers"] = ", ".join(
-                sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
+                sorted(set(self.allow_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
             )
         if self.allow_methods:
             headers["Access-Control-Allow-Methods"] = ", ".join(

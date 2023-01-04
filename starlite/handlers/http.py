@@ -808,6 +808,7 @@ class get(HTTPRouteHandler):
             summary: Text used for the route's schema summary section.
             tags: A list of string tags that will be appended to the OpenAPI schema.
                        type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if "http_method" in kwargs:
