@@ -1,12 +1,8 @@
 name: docs
 on:
-  workflow_run:
-    workflows: ["ci"]
-    branches: [main]
-    types:
-      - completed
-  release:
-    types: [published]
+  push:
+    branches:
+      - 'main'
 jobs:
   docs:
     runs-on: ubuntu-latest
