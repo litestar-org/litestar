@@ -1,24 +1,23 @@
-from typing import Optional
+from typing import Dict, Optional
 
-from starlite import Request, Starlite, get, Response, MediaType
+from starlite import Request, Starlite, get
 
 
-async def before_request_handler(request: Request) -> Optional[Response]:
-    name = request.query_params.get("name", "Luke")
+async def before_request_handler(request: Request) -> Optional[Dict[str, str]]:
+    name = request.query_params["name"]
     if name == "Ben":
-        return Response(
-            "These are not the bytes you are looking for",
-            media_type=MediaType.TEXT,
-        )
+        return {"message": "These are not the bytes you are looking for"}
     request.state["message"] = f"Use the handler, {name}"
+    return None
 
 
 @get("/")
-async def handler(request: Request) -> str:
-    return request.state.get("message")
+async def handler(request: Request, name: str) -> Dict[str, str]:
+    message: str = request.state["message"]
+    return {"message": message}
 
 
 app = Starlite(route_handlers=[handler], before_request=before_request_handler)
 
-# run: /
+# run: /?name=Luke
 # run: /?name=Ben
