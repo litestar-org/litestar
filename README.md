@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-71-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-72-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -372,6 +372,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center"><a href="https://jarmos.vercel.app"><img src="https://avatars.githubusercontent.com/u/31373860?v=4?s=100" width="100px;" alt="Somraj Saha"/><br /><sub><b>Somraj Saha</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Jarmos-san" title="Documentation">📖</a></td>
+      <td align="center"><a href="http://skulason.me"><img src="https://avatars.githubusercontent.com/u/11139514?v=4?s=100" width="100px;" alt="Magnús Ágúst Skúlason"/><br /><sub><b>Magnús Ágúst Skúlason</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=maggias" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
