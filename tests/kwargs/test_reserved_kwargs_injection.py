@@ -275,7 +275,7 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
         path = test_path
 
         @decorator()
-        async def test_method(self, request: Request[Any, Any], body: bytes) -> None:
+        async def test_method(self, request: Request[Any, Any, Any], body: bytes) -> None:
             assert body == await request.body()
 
     with create_test_client(MyController) as client:

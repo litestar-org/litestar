@@ -106,7 +106,7 @@ async def signup(data: UserCreatePayload, request: Request) -> User:
 # the endpoint below requires the user to be already authenticated
 # to be able to access it.
 @get("/user")
-def get_user(request: Request[User, dict[Literal["user_id"], str]]) -> Any:
+def get_user(request: Request[User, dict[Literal["user_id"], str], Any]) -> Any:
     # because this route requires authentication, we can access
     # `request.user`, which is the authenticated user returned
     # by the 'retrieve_user_handler' function we passed to SessionAuth.

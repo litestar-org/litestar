@@ -52,7 +52,7 @@ class WebSocketRoute(BaseRoute):
         Returns:
             None
         """
-        websocket: "WebSocket[Any, Any]" = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
+        websocket: "WebSocket[Any, Any, Any]" = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
 
         if not self.handler_parameter_model:  # pragma: no cover
             raise ImproperlyConfiguredException("handler parameter model not defined")

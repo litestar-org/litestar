@@ -398,7 +398,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
             None
         """
 
-        connection = ASGIConnection[Any, Any, Any](scope, receive=receive, send=send)
+        connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
         scope["session"] = await self.backend.load_from_connection(connection)
 
         await self.app(scope, receive, self.create_send_wrapper(connection))

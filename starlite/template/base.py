@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class TemplateContext(TypedDict):
     """Dictionary representing a template context."""
 
-    request: "Request[Any, Any]"
+    request: "Request[Any, Any, Any]"
     csrf_input: str
 
 
