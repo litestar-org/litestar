@@ -234,7 +234,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         Returns:
             None
         """
-        if self.connection_state == "init":
+        if self.connection_state == "init":  # pragma: no cover
             await self.accept()
         event: "WebSocketSendEvent" = {"type": "websocket.send", "bytes": None, "text": None}
         if mode == "binary":

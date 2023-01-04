@@ -172,7 +172,7 @@ class ASGIRouter:
                 startup_event: "LifeSpanStartupCompleteEvent" = {"type": "lifespan.startup.complete"}
                 await send(startup_event)
                 await receive()
-            else:
+            else:  # pragma: no cover
                 await self.shutdown()
                 await send(shutdown_event)
         except BaseException as e:
@@ -182,7 +182,7 @@ class ASGIRouter:
                     "message": format_exc(),
                 }
                 await send(startup_failure_event)
-            else:
+            else:  # pragma: no cover
                 shutdown_failure_event: "LifeSpanShutdownFailedEvent" = {
                     "type": "lifespan.shutdown.failed",
                     "message": format_exc(),

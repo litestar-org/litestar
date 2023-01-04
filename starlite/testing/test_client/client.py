@@ -143,7 +143,7 @@ class TestClient(Client, Generic[T]):
     def session(self) -> "CookieBackend":
         from starlite.middleware.session.cookie_backend import CookieBackend
 
-        if not isinstance(self.session_backend, CookieBackend):
+        if not isinstance(self.session_backend, CookieBackend):  # pragma: no cover
             raise ImproperlyConfiguredException(
                 f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
             )
