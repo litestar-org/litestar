@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
+from re import Pattern
 from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
 
 from pydantic import (
@@ -116,7 +117,7 @@ def create_string_constrained_field_schema(field_type: Union[Type[ConstrainedStr
         schema.minLength = field_type.min_length
     if field_type.max_length:
         schema.maxLength = field_type.max_length
-    if issubclass(field_type, ConstrainedStr) and field_type.regex is not None:
+    if issubclass(field_type, ConstrainedStr) and isinstance(field_type.regex, Pattern):
         schema.pattern = field_type.regex.pattern
     if field_type.to_lower:
         schema.description = "must be in lower case"
