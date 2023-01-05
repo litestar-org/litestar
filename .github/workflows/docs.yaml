@@ -1,9 +1,16 @@
 name: docs
 on:
-  push
+  workflow_run:
+    workflows: ["ci"]
+    branches: [main]
+    types:
+      - completed
+  release:
+    types: [published]
 jobs:
   docs:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -24,12 +31,9 @@ jobs:
           git config user.email github-actions@github.com
       - name: Deploy to GH-Pages (preview)
         if:  ${{ github.event_name != 'release' }}
-        run: |
-          mike deploy dev --push --force
-          STARLITE_VERSION=$(python -c "print('$(poetry version --short)'.rsplit('.', 1)[0])")
-          mike deploy $STARLITE_VERSION latest --push --force --update-aliases --no-redirect --title "$STARLITE_VERSION (latest)"
+        run: mike deploy dev --push --force
       - name: Deploy to GH-Pages (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: |
           STARLITE_VERSION=$(python -c "print('$(poetry version --short)'.rsplit('.', 1)[0])")
-          mike deploy $STARLITE_VERSION latest --push --force --update-aliases
+          mike deploy $STARLITE_VERSION latest --push --force --update-aliases --no-redirect --title "$STARLITE_VERSION (latest)"
