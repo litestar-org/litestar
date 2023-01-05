@@ -1,6 +1,6 @@
 # Background Tasks
 
-All Starlite responses and response containers (e.g. `File`, `Template` etc.) allow passing in a `background_task`
+All Starlite responses and response containers (e.g. `File`, `Template` etc.) allow passing in a `background`
 kwarg. This kwarg accepts either an instance of [`BackgroundTask`][starlite.datastructures.background_tasks.BackgroundTask]
 or
 an instance of [`BackgroundTasks`][starlite.datastructures.background_tasks.BackgroundTasks], which wraps an iterable
