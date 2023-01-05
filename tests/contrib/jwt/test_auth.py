@@ -62,7 +62,7 @@ async def test_jwt_auth(
     )
 
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
-    def my_handler(request: Request["User", Token]) -> None:
+    def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
         assert request.user.dict() == user.dict()
         assert request.auth.sub == str(user.id)
@@ -164,7 +164,7 @@ async def test_jwt_cookie_auth(
     )
 
     @get("/my-endpoint", middleware=[jwt_auth.middleware])
-    def my_handler(request: Request["User", Token]) -> None:
+    def my_handler(request: Request["User", Token, Any]) -> None:
         assert request.user
         assert request.user.dict() == user.dict()
         assert request.auth.sub == str(user.id)
