@@ -1,89 +1,67 @@
 # Life Cycle Hooks
 
-Life cycle hooks allows a user to execute a function at a certain point, as indicated by the hook's name, during the
-request-response cycle.
+Life cycle hooks allow the execution of a callable at a certain point during the request-response
+cycle. The hooks available are:
+
+| Name                                | Runs                               |
+|-------------------------------------|------------------------------------|
+| [`before_request`](#before-request) | Before the router handler function |
+| [`after_request`](#after-request)   | After the route handler function   |
+| [`after_response`](#after-response) | After the response has been sent   |
+
 
 ## Before Request
 
-The `before_request` hook runs immediately before calling the route handler function. It accepts either a sync or async
-function that receives the [`Request`][starlite.connection.Request] instance as its sole parameter.
-While the handler function does not need to return a value, if it does return a value other than `None`, then the route
-handler will not be called and this value will instead be used for the response. Thus, the `before_request` handler
-allows bypassing the route handler selectively.
+The `before_request` hook runs immediately before calling the route handler function. It
+can be any callable accepting a [`Request`][starlite.Request] as its first parameter
+and returns either `None` or a value that can be used in a response.
+If a value is returned, the router handler for this request will be bypassed.
 
-```python
-from starlite import Starlite, Request
-
-
-async def my_before_request_handler(request: Request) -> None:
-    ...
-
-
-app = Starlite(route_handlers=[...], before_request=my_before_request_handler)
+```py
+--8<-- "examples/lifecycle_hooks/before_request.py"
 ```
 
 ## After Request
 
-The `after_request` hook is called after the route handler function returned and the response object has been resolved.
-It receives either a sync or async function that receives the `Response` object, which can be either an instance
-of `starlite.response.Response` or any subclass of the Starlette `Response` object. This function must return
-a `Response` object - either the one that was passed in, or a different one. The `after_response` hook allows users to
-modify responses, e.g. placing cookies or headers on them, or even to completely replace them given certain conditions.
+The `after_request` hook runs after the route handler returned and the response object
+has been resolved. It can be any callable which takes a [`Response`][starlite.Response]
+instance as its first parameter, and returns a `Response` instance. The `Response`
+instance returned does not necessarily have to be the one that was received.
 
-```python
-from starlite import Starlite, Response
-
-
-async def my_after_request_handler(response: Response) -> Response:
-    ...
-
-
-app = Starlite(route_handlers=[...], after_request=my_after_request_handler)
+```py
+--8<-- "examples/lifecycle_hooks/after_request.py"
 ```
 
 ## After Response
 
-The `after_response` hook is called after the response has been awaited, that is - after a response has been sent to the
-requester. It receives either a sync or async function that receives the [`Request`][starlite.connection.Request]
-object. The function should not return any values. This hook is meant for data post-processing, transmission of data to third party
+The `after_response` hook runs after the response has been returned by the server.
+It can be any callable accepting a [`Request`][starlite.Request] as its first parameter
+and does not return any value.
+
+This hook is meant for data post-processing, transmission of data to third party
 services, gathering of metrics etc.
 
-```python
-from starlite import Starlite, Request
-
-
-async def my_after_response_handler(request: Request) -> None:
-    ...
-
-
-app = Starlite(route_handlers=[...], after_response=my_after_response_handler)
+```py
+--8<-- "examples/lifecycle_hooks/after_response.py"
 ```
 
-## Overriding Handlers
-
-You can configure life cycle hook handlers on all layers of your application, that is - on the Starlite instance itself,
-on routers, controllers or individual route handlers.
-
-Each layer overrides the layer above it - thus, the handlers defined for a specific function will override those defined
-on its router, which will in turn override those defined on the app level.
-
-```python
-from starlite import Starlite, Router, Controller, get
+!!! info "Explanation"
+    Since the request has already been returned by the time the `after_response` is called,
+    the updated state of `COUNTER` is not reflected in the response.
 
 
-# this overrides the router and app
-class MyController(Controller):
-    path = "/my-path"
-
-    # this overrides the controller, router and app
-    @get(after_request=..., before_request=...)
-    def my_handler(self) -> None:
-        ...
+## Layered hooks
 
 
-# this overrides the app, for all routes below the router these functions will be used
-router = Router(route_handlers=[MyController], after_request=..., before_request=...)
+!!! info "Layered architecture"
+    Life cycle hooks are part of Starlite's layered architecture, which means you can
+    set them on every layer of the application. If you set hooks on multiple layers,
+    the layer closest to the route handler will take precedence.
 
-# this is top level
-app = Starlite(route_handlers=[router], after_request=..., before_request=...)
+    You can read more about this here:
+    [Layered architecture](/starlite/usage/0-the-starlite-app#layered-architecture)
+
+
+```py
+--8<-- "examples/lifecycle_hooks/layered_hooks.py"
 ```

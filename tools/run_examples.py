@@ -184,10 +184,14 @@ def exec_from_config(config: RunConfig) -> Tuple[RunConfig, str]:
     with run_app(config.example_file) as port:
         for run_args in config.args:
             url_path, *options = run_args
-            args = ["curl", f"http://127.0.0.1:{port}{url_path}", *options]
+            args = ["curl", "-s", f"http://127.0.0.1:{port}{url_path}", *options]
             clean_args = ["curl", f"http://127.0.0.1:8000{url_path}", *options]
 
-            proc = subprocess.run(args, capture_output=True, text=True)
+            proc = subprocess.run(
+                args,
+                capture_output=True,
+                text=True,
+            )
             stdout = proc.stdout.splitlines()
             if not stdout:
                 logger.error(f"Example: {config.example_file}:{args} yielded no results")
