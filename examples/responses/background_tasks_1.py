@@ -1,6 +1,5 @@
-from typing import Dict
-
 import logging
+from typing import Dict
 
 from starlite import BackgroundTask, Response, Starlite, get
 

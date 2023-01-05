@@ -42,7 +42,7 @@ instances:
 ```
 
 [`BackgroundTasks`][starlite.datastructures.background_tasks.BackgroundTasks] class
-accepts an optional keyword argument `run_in_task_group` with a default value of `False`. Setting this to `True` allows background tasks to run concurrently, using an [`anyio.task_group`](https://anyio.readthedocs.io/en/stable/tasks.html). 
+accepts an optional keyword argument `run_in_task_group` with a default value of `False`. Setting this to `True` allows background tasks to run concurrently, using an [`anyio.task_group`](https://anyio.readthedocs.io/en/stable/tasks.html).
 
 !!! note
     Setting `run_in_task_group` to `True` will not preserve execution order.
