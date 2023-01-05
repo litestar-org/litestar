@@ -11,21 +11,8 @@ that will be called after the response finishes sending the data.
 
 Thus, in the following example the passed in background task will be executed after the response sends:
 
-```python
-import logging
-
-from starlite import BackgroundTask, get
-
-logger = logging.getLogger(__name__)
-
-
-async def logging_task(identifier: str, message: str) -> None:
-    logger.info(f"{identifier}: {message}")
-
-
-@get("/", background=BackgroundTask(logging_task, "greeter", message="was called"))
-def greeter() -> dict[str, str]:
-    return {"hello": "world"}
+```py title="Background Task Set in Decorator"
+--8<-- "examples/responses/background_tasks_2.py"
 ```
 
 When the `greeter` handler is called, the logging task will be called with any `*args` and `**kwargs` passed into the
