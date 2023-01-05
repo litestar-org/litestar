@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 async def logging_task(identifier: str, message: str) -> None:
-    logger.info(f"{identifier}: {message}")
+    logger.info("%s: %s", identifier, message)
 
 
 @get("/", background=BackgroundTask(logging_task, "greeter", message="was called"))
