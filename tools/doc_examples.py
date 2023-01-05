@@ -57,7 +57,7 @@ def _find_code_blocks(content: str, max_line_length: int) -> list[str]:
 
 def extract_examples(
     file_name: str,
-    target_dir_name: str = "examples",
+    target_dir_name: str = "",
     name: str | None = None,
     max_line_length: int = 15,
     generate_tests: bool = True,
@@ -157,7 +157,7 @@ def cli() -> None:
 
     parser_extract.add_argument("filename", help="source file name")
     parser_extract.add_argument("-n", "--name", help="name of the generated module without extension")
-    parser_extract.add_argument("-d", "--directory", default="examples", help="target directory for extracted files")
+    parser_extract.add_argument("-d", "--directory", default="", help="target directory for extracted files")
     parser_extract.add_argument(
         "-l", "--line-length", default=15, help="maximum line length for inline code blocks", type=int
     )

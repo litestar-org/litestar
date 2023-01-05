@@ -243,6 +243,7 @@ nav:
           - reference/contrib/mako.md
   - migration.md
   - benchmarks.md
+  - changelog.md
 
 extra:
   social:
