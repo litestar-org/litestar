@@ -224,7 +224,7 @@ def _create_data_handler(
         if is_dto_annotation and not isinstance(data, DTO):
             data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)
 
-        elif is_dto_iterable_annotation and not isinstance(data[0], DTO):  # pyright: ignore
+        elif is_dto_iterable_annotation and len(data) and not isinstance(data[0], DTO):  # pyright: ignore
             dto_type = cast("Type[DTO]", get_args(return_annotation)[0])
             data = [
                 dto_type(**datum) if isinstance(datum, dict) else dto_type.from_model_instance(datum) for datum in data
