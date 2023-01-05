@@ -1,3 +1,5 @@
+from typing import Dict
+
 import logging
 
 from starlite import BackgroundTask, BackgroundTasks, Response, Starlite, get
@@ -15,7 +17,7 @@ async def saving_task(name: str) -> None:
 
 
 @get("/")
-def greeter(name: str) -> Response[dict[str, str]]:
+def greeter(name: str) -> Response[Dict[str, str]]:
     return Response(
         {"hello": name},
         background=BackgroundTasks(

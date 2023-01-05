@@ -20,9 +20,7 @@ When the `greeter` handler is called, the logging task will be called with any `
 !!! note
     In the above example `"greeter"` is an arg and `message=f"was called with name {name}"` is a kwarg.
     The function signature of `logging_task` allows for this, so this should pose no problem.
-    Starlite uses [`ParamSpec`][typing.ParamSpec] to ensure that a
-    [`BackgroundTask`][starlite.datastructures.background_tasks.BackgroundTask] is properly typed,
-    so it will get type checking for any passed in args and kwargs.
+    [`BackgroundTask`][starlite.datastructures.background_tasks.BackgroundTask] is typed with [`ParamSpec`][typing.ParamSpec], enabling correct type checking for arguments and keyword arguments passed to it.
 
 Route decorators (e.g. `@get`, `@post`, etc.) also allow passing in a background task with the `background` kwarg:
 
@@ -44,9 +42,7 @@ instances:
 ```
 
 [`BackgroundTasks`][starlite.datastructures.background_tasks.BackgroundTasks] class
-accepts one optional kwargs aside from the tasks, `run_in_task_group`, which is a boolean flag
-that defaults to `False`. If you set this value to `True`, then the tasks will run concurrently, using
-an [`anyio.task_group`](https://anyio.readthedocs.io/en/stable/tasks.html).
+accepts an optional keyword argument `run_in_task_group` with a default value of `False`. Setting this to `True` allows background tasks to run concurrently, using an [`anyio.task_group`](https://anyio.readthedocs.io/en/stable/tasks.html). 
 
 !!! note
     Setting `run_in_task_group` to `True` will not preserve execution order.
