@@ -28,7 +28,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         auth_header: str,
         exclude: Optional[Union[str, List[str]]],
         exclude_opt_key: str,
-        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
         scopes: "Scopes",
         token_secret: str,
     ):
@@ -53,7 +53,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.retrieve_user_handler = retrieve_user_handler
         self.token_secret = token_secret
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any, Any]") -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
         token from the DB.
 
@@ -73,7 +73,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
 
     async def authenticate_token(
-        self, encoded_token: str, connection: "ASGIConnection[Any, Any, Any]"
+        self, encoded_token: str, connection: "ASGIConnection[Any, Any, Any, Any]"
     ) -> AuthenticationResult:
         """Given an encoded JWT token, parse, validate and look up sub within token.
 
@@ -112,7 +112,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         auth_header: str,
         exclude: Optional[Union[str, List[str]]],
         exclude_opt_key: str,
-        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
         scopes: "Scopes",
         token_secret: str,
     ):
@@ -144,7 +144,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         )
         self.auth_cookie_key = auth_cookie_key
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any, Any]") -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
         token from the DB.
 

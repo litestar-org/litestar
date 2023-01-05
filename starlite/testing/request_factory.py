@@ -212,7 +212,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a [Request][starlite.connection.Request] instance that has body (data)
 
         Args:
@@ -281,7 +281,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a GET [Request][starlite.connection.Request] instance.
 
         Args:
@@ -332,7 +332,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
         Args:
@@ -387,7 +387,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a PUT [Request][starlite.connection.Request] instance.
 
         Args:
@@ -442,7 +442,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a PATCH [Request][starlite.connection.Request] instance.
 
         Args:
@@ -495,7 +495,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a POST [Request][starlite.connection.Request] instance.
 
         Args:

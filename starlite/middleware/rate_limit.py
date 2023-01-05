@@ -92,7 +92,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         if not hasattr(self, "cache"):
             self.cache = scope["app"].cache
 
-        request: "Request[Any, Any]" = scope["app"].request_class(scope)
+        request: "Request[Any, Any, Any]" = scope["app"].request_class(scope)
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
             cache_object = await self.retrieve_cached_history(key)
@@ -137,7 +137,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         return send_wrapper
 
-    def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
+    def cache_key_from_request(self, request: "Request[Any, Any, Any]") -> str:
         """Get a cache-key from a `Request`
 
         Args:
@@ -193,7 +193,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         cache_object.history = [int(time()), *cache_object.history]
         await self.cache.set(key, encode_json(cache_object), expiration=DURATION_VALUES[self.unit])
 
-    async def should_check_request(self, request: "Request[Any, Any]") -> bool:
+    async def should_check_request(self, request: "Request[Any, Any, Any]") -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
@@ -239,7 +239,7 @@ class RateLimitConfig(BaseModel):
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: Optional[str] = None
     """An identifier to use on routes to disable rate limiting for a particular route."""
-    check_throttle_handler: Optional[Callable[[Request[Any, Any]], SyncOrAsyncUnion[bool]]] = None
+    check_throttle_handler: Optional[Callable[[Request[Any, Any, Any]], SyncOrAsyncUnion[bool]]] = None
     """Handler callable that receives the request instance, returning a boolean dictating whether or not the request
     should be checked for rate limiting.
     """

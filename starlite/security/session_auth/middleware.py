@@ -74,7 +74,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         exclude: Optional[Union[str, List[str]]],
         exclude_opt_key: str,
         scopes: Optional[Scopes],
-        retrieve_user_handler: "AsyncCallable[[Dict[str, Any], ASGIConnection[Any, Any, Any]], Awaitable[Any]]",
+        retrieve_user_handler: "AsyncCallable[[Dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
     ):
         """Session based authentication middleware.
 
@@ -88,7 +88,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
         self.retrieve_user_handler = retrieve_user_handler
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any, Any, Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> AuthenticationResult:
         """Authenticate an incoming connection.
 
         Args:

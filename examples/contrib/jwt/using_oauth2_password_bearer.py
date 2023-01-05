@@ -31,7 +31,7 @@ class User(BaseModel):
 # Notes:
 # - 'User' can be any arbitrary value you decide upon.
 # - The callable can be either sync or async - both will work.
-async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any]) -> Optional[User]:
+async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any, Any]) -> Optional[User]:
     # logic here to retrieve the user instance
     cached_value = await connection.cache.get(token.sub)
     if cached_value:
@@ -52,7 +52,7 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 
 # Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(request: "Request[Any, Any]", data: User) -> Response[User]:
+async def login_handler(request: "Request[Any, Any, Any]", data: User) -> Response[User]:
     await request.cache.set(str(data.id), data.dict())
     response = oauth2_auth.login(identifier=str(data.id), response_body=data)
 
@@ -64,7 +64,7 @@ async def login_handler(request: "Request[Any, Any]", data: User) -> Response[Us
 
 # We also have some other routes, for example:
 @get("/some-path")
-def some_route_handler(request: Request[User, Token]) -> Any:
+def some_route_handler(request: Request[User, Token, Any]) -> Any:
     # request.user is set to the instance of user returned by the middleware
     assert isinstance(request.user, User)
     # request.auth is the instance of 'starlite_jwt.Token' created from the data encoded in the auth header

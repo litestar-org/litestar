@@ -171,6 +171,7 @@ That's it. The `JWTAuthenticationMiddleware` will now run for every request, and
 http route handler in the following way:
 
 ```python
+from typing import Any
 from starlite import Request, get
 
 from my_app.db.models import User
@@ -178,7 +179,7 @@ from my_app.security.jwt import Token
 
 
 @get("/")
-def my_route_handler(request: Request[User, Token]) -> None:
+def my_route_handler(request: Request[User, Token, Any]) -> None:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
     assert isinstance(user, User)
@@ -188,6 +189,8 @@ def my_route_handler(request: Request[User, Token]) -> None:
 Or for a websocket route:
 
 ```python
+from typing import Any
+
 from starlite import WebSocket, websocket
 
 from my_app.db.models import User
@@ -195,7 +198,7 @@ from my_app.security.jwt import Token
 
 
 @websocket("/")
-async def my_route_handler(socket: WebSocket[User, Token]) -> None:
+async def my_route_handler(socket: WebSocket[User, Token, Any]) -> None:
     user = socket.user  # correctly typed as User
     auth = socket.auth  # correctly typed as Token
     assert isinstance(user, User)
@@ -243,7 +246,7 @@ from my_app.db.models import User
 from my_app.security.jwt import Token
 
 
-async def my_dependency(request: Request[User, Token]) -> Any:
+async def my_dependency(request: Request[User, Token, Any]) -> Any:
     user = request.user  # correctly typed as User
     auth = request.auth  # correctly typed as Token
     assert isinstance(user, User)

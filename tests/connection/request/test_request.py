@@ -135,7 +135,7 @@ def test_custom_request_class() -> None:
 
 def test_request_url() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         data = {"method": request.method, "url": str(request.url)}
         response = Response(content=data)
         await response(scope, receive, send)
@@ -150,7 +150,7 @@ def test_request_url() -> None:
 
 def test_request_query_params() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         params = dict(request.query_params)
         response = Response(content={"params": params})
         await response(scope, receive, send)
@@ -162,7 +162,7 @@ def test_request_query_params() -> None:
 
 def test_request_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         headers = dict(request.headers)
         response = Response(content={"headers": headers})
         await response(scope, receive, send)
@@ -189,13 +189,13 @@ def test_request_headers() -> None:
     ),
 )
 def test_request_client(scope: "Scope", expected_client: Optional[Address]) -> None:
-    client = Request[Any, Any](scope).client
+    client = Request[Any, Any, Any](scope).client
     assert client == expected_client
 
 
 def test_request_body() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         response = Response(content={"body": body.decode()})
         await response(scope, receive, send)
@@ -214,7 +214,7 @@ def test_request_body() -> None:
 
 def test_request_stream() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         body = b""
         async for chunk in request.stream():
             body += chunk
@@ -235,7 +235,7 @@ def test_request_stream() -> None:
 
 def test_request_form_urlencoded() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         form = await request.form()
         response = Response(content={"form": dict(form)})
         await response(scope, receive, send)
@@ -248,7 +248,7 @@ def test_request_form_urlencoded() -> None:
 
 def test_request_body_then_stream() -> None:
     async def app(scope: "Any", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         chunks = b""
         async for chunk in request.stream():
@@ -264,7 +264,7 @@ def test_request_body_then_stream() -> None:
 
 def test_request_stream_then_body() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         chunks = b""
         async for chunk in request.stream():
             chunks += chunk
@@ -283,7 +283,7 @@ def test_request_stream_then_body() -> None:
 
 def test_request_json() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         data = await request.json()
         response = Response(content={"json": data})
         await response(scope, receive, send)
@@ -295,7 +295,7 @@ def test_request_json() -> None:
 
 def test_request_raw_path() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
         response = Response(content=f"{path}, {raw_path}", media_type=MediaType.TEXT)
@@ -310,7 +310,7 @@ def test_request_without_setting_receive() -> None:
     """If Request is instantiated without the 'receive' channel, then .body() is not available."""
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope)
+        request = Request[Any, Any, Any](scope)
         try:
             data = await request.json()
         except RuntimeError:
@@ -327,7 +327,7 @@ async def test_request_disconnect() -> None:
     """If a client disconnect occurs while reading request body then InternalServerException should be raised."""
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         await request.body()
 
     async def receiver() -> dict:
@@ -339,10 +339,10 @@ async def test_request_disconnect() -> None:
 
 def test_request_state() -> None:
     @get("/")
-    def handler(request: Request[Any, Any]) -> dict:
+    def handler(request: Request[Any, Any, Any]) -> Dict[Any, Any]:
         request.state.test = 1
         assert request.state.test == 1
-        return request.state.dict()
+        return request.state.dict()  # type: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -352,7 +352,7 @@ def test_request_state() -> None:
 def test_request_cookies() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
 
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:
             response = Response(content=mycookie, media_type="text/plain")
@@ -371,7 +371,7 @@ def test_request_cookies() -> None:
 
 def test_chunked_encoding() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope, receive)
+        request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         response = Response(content={"body": body.decode()})
         await response(scope, receive, send)
@@ -391,7 +391,7 @@ def test_request_send_push_promise() -> None:
         # the server is push-enabled
         scope["extensions"]["http.response.push"] = {}  # type: ignore
 
-        request = Request[Any, Any](scope, receive, send)
+        request = Request[Any, Any, Any](scope, receive, send)
         await request.send_push_promise("/style.css")
 
         response = Response(content={"json": "OK"})
@@ -409,7 +409,7 @@ def test_request_send_push_promise_without_push_extension() -> None:
     """
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        request = Request[Any, Any](scope)
+        request = Request[Any, Any, Any](scope)
         await request.send_push_promise("/style.css")
 
         response = Response(content={"json": "OK"})
@@ -431,7 +431,7 @@ def test_request_send_push_promise_without_setting_send() -> None:
         scope["extensions"]["http.response.push"] = {}  # type: ignore
 
         data = "OK"
-        request = Request[Any, Any](scope)
+        request = Request[Any, Any, Any](scope)
         try:
             await request.send_push_promise("/style.css")
         except RuntimeError:

@@ -72,7 +72,7 @@ from starlite import Starlite, Request, get
 
 
 @get("/some-path")
-def route_handler(request: Request[Any, Any]) -> None:
+def route_handler(request: Request[Any, Any, Any]) -> None:
     @get("/sub-path")
     def sub_path_handler() -> None:
         ...
