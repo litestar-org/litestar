@@ -1,7 +1,7 @@
 site_name: Starlite
-repo_url: https://github.com/ThinksFast/starlite
-repo_name: ThinksFast/starlite
-site_url: https://thinksfast.github.io/starlite
+repo_url: https://github.com/starlite-api/starlite
+repo_name: starlite-api/starlite
+site_url: https://starlite-api.github.io/starlite
 theme:
   name: material
   custom_dir: docs_theme/overrides
