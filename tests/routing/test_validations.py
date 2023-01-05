@@ -33,7 +33,7 @@ def test_supports_websocket_and_http_handlers() -> None:
         return {"hello": "world"}
 
     @websocket(path="/")
-    async def websocket_handler(socket: "WebSocket[Any, Any]") -> None:
+    async def websocket_handler(socket: "WebSocket[Any, Any, Any]") -> None:
         await socket.accept()
         await socket.send_json({"hello": "world"})
         await socket.close()
@@ -59,7 +59,7 @@ def test_controller_supports_websocket_and_http_handlers() -> None:
             return {"hello": "world"}
 
         @websocket()
-        async def websocket_handler(self, socket: "WebSocket[Any, Any]") -> None:
+        async def websocket_handler(self, socket: "WebSocket[Any, Any, Any]") -> None:
             await socket.accept()
             await socket.send_json({"hello": "world"})
             await socket.close()

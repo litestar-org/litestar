@@ -70,7 +70,7 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope, receive=receive, send=send)
+        request: "Request[Any, Any, Any]" = scope["app"].request_class(scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
 
         if route_handler.resolve_guards():
@@ -104,7 +104,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_for_request(
         self,
         scope: "Scope",
-        request: Request[Any, Any],
+        request: Request[Any, Any, Any],
         route_handler: "HTTPRouteHandler",
         parameter_model: "KwargsModel",
     ) -> "ASGIApp":

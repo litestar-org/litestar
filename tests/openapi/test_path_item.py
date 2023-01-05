@@ -1,4 +1,4 @@
-from typing import Tuple, cast
+from typing import Any, Tuple, cast
 
 import pytest
 
@@ -35,7 +35,7 @@ def route_with_multiple_methods() -> HTTPRoute:
         path = "/"
 
         @HTTPRouteHandler("/", http_method=["GET", "HEAD"])
-        async def root(self, *, request: Request[str, str]) -> None:
+        async def root(self, *, request: Request[str, str, Any]) -> None:
             pass
 
     app = Starlite(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
