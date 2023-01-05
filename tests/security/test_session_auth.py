@@ -29,15 +29,15 @@ def test_authentication() -> None:
     )
 
     @post("/login")
-    def login_handler(request: Request[Any, Any], data: User) -> None:
+    def login_handler(request: Request[Any, Any, Any], data: User) -> None:
         request.set_session(data.dict())
 
     @delete("/user/{user_id:str}")
-    def delete_user_handler(request: Request[User, Any]) -> None:
+    def delete_user_handler(request: Request[User, Any, Any]) -> None:
         request.clear_session()
 
     @get("/user/{user_id:str}")
-    def get_user_handler(request: Request[User, Any]) -> User:
+    def get_user_handler(request: Request[User, Any, Any]) -> User:
         return request.user
 
     with create_test_client(

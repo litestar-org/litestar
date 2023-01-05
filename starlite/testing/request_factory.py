@@ -213,7 +213,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a :class:`Request <starlite.connection.Request>` instance that has body (data)
 
         Args:
@@ -282,7 +282,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a GET :class:`Request <starlite.connection.Request>` instance.
 
         Args:
@@ -333,7 +333,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a POST :class:`Request <starlite.connection.Request>` instance.
 
         Args:
@@ -388,7 +388,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a PUT :class:`Request <starlite.connection.Request>` instance.
 
         Args:
@@ -443,7 +443,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a PATCH :class:`Request <starlite.connection.Request>` instance.
 
         Args:
@@ -496,7 +496,7 @@ class RequestFactory:
         path_params: Optional[Dict[str, str]] = None,
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
-    ) -> Request[Any, Any]:
+    ) -> Request[Any, Any, Any]:
         """Create a POST :class:`Request <starlite.connection.Request>` instance.
 
         Args:
