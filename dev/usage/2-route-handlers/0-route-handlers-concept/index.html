@@ -3944,6 +3944,7 @@ kwargs are inspected by Starlite and then injected into the request handler.</p>
 <li><code>scope</code>: injects the ASGI scope dictionary.</li>
 <li><code>socket</code>: injects the <a class="autorefs autorefs-internal" href="../../../reference/connection/2-websocket/#starlite.connection.websocket.WebSocket"><code>WebSocket</code></a> instance. Available only for <a href="../2-websocket-route-handlers/">websocket handlers</a></li>
 <li><code>state</code>: injects a copy of the application <code>state</code>.</li>
+<li><code>body</code>: the raw request body. Available only for <a href="../1-http-route-handlers/">http route handlers</a></li>
 </ul>
 <p>For example:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Python 3.8+</label><label for="__tabbed_1_2">Python 3.9+</label></div>
