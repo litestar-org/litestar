@@ -94,6 +94,7 @@ Additionally, you can specify the following special kwargs, what's called "reser
 - `scope`: injects the ASGI scope dictionary.
 - `socket`: injects the [`WebSocket`][starlite.connection.WebSocket] instance. Available only for [websocket handlers](2-websocket-route-handlers.md)
 - `state`: injects a copy of the application `state`.
+- `body`: the raw request body. Available only for [http route handlers](1-http-route-handlers.md)
 
 For example:
 
