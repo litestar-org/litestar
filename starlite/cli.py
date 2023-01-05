@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import inspect
 import sys
 from dataclasses import dataclass
@@ -210,6 +211,8 @@ def _autodiscover_app(app_path: Optional[str]) -> LoadedApp:
         return _load_app_from_path(app_path)
 
     cwd = Path().cwd()
+    sys.path.append(str(cwd))
+
     for name in AUTODISCOVER_PATHS:
         path = cwd / name
         if not path.exists():
