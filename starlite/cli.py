@@ -81,6 +81,7 @@ class StarliteEnv:
     app_path: str
     debug: bool
     app: Starlite
+    cwd: Path
     host: Optional[str] = None
     port: Optional[int] = None
     reload: Optional[bool] = None
@@ -92,6 +93,11 @@ class StarliteEnv:
 
         If `python-dotenv` is installed, use it to populate environment first
         """
+        cwd = Path().cwd()
+        cwd_str_path = str(cwd)
+        if cwd_str_path not in sys.path:
+            sys.path.append(cwd_str_path)
+
         try:
             import dotenv
 
@@ -100,7 +106,7 @@ class StarliteEnv:
             pass
 
         if not app_path:
-            loaded_app = _autodiscover_app(getenv("STARLITE_APP"))
+            loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd)
         else:
             loaded_app = _load_app_from_path(app_path)
 
@@ -114,6 +120,7 @@ class StarliteEnv:
             port=int(port) if port else None,
             reload=_bool_from_env("STARLITE_RELOAD"),
             is_app_factory=loaded_app.is_factory,
+            cwd=cwd,
         )
 
 
@@ -205,13 +212,10 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: Optional[str]) -> LoadedApp:
+def _autodiscover_app(app_path: Optional[str], cwd: Path) -> LoadedApp:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
         return _load_app_from_path(app_path)
-
-    cwd = Path().cwd()
-    sys.path.append(str(cwd))
 
     for name in AUTODISCOVER_PATHS:
         path = cwd / name
