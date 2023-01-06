@@ -79,7 +79,7 @@ class WebSocketTestSession:
                     headers_list.extend(headers)
                     self.scope["headers"] = headers_list
                 subprotocols = cast("Optional[str]", message.get("subprotocols"))
-                if subprotocols:
+                if subprotocols:  # pragma: no cover
                     self.scope["subprotocols"].append(subprotocols)
             self.send_queue.put(message)
 

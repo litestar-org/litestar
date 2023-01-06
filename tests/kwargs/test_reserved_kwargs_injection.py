@@ -256,3 +256,28 @@ def test_scope(decorator: Any, http_method: Any, expected_status_code: Any) -> N
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "decorator, http_method, expected_status_code",
+    [
+        (get, HttpMethod.GET, HTTP_200_OK),
+        (post, HttpMethod.POST, HTTP_201_CREATED),
+        (put, HttpMethod.PUT, HTTP_200_OK),
+        (patch, HttpMethod.PATCH, HTTP_200_OK),
+        (delete, HttpMethod.DELETE, HTTP_204_NO_CONTENT),
+    ],
+)
+def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> None:
+    test_path = "/person"
+
+    class MyController(Controller):
+        path = test_path
+
+        @decorator()
+        async def test_method(self, request: Request[Any, Any], body: bytes) -> None:
+            assert body == await request.body()
+
+    with create_test_client(MyController) as client:
+        response = client.request(http_method, test_path)
+        assert response.status_code == expected_status_code

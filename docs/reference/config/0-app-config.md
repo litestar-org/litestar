@@ -40,4 +40,5 @@
             - static_files_config
             - tags
             - template_config
+            - type_encoders
             - websocket_class

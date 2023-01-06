@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-68-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-73-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -99,7 +99,7 @@ this piece of history with it.
 Starlite is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
 
 You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests),
-or read more about it [here](https://starlite-api.github.io/starlite/benchmarks) in our documentation.
+or read more about it [here](https://starlite-api.github.io/starlite/latest/benchmarks) in our documentation.
 
 ### JSON Benchmarks
 
@@ -350,7 +350,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="http://mookrs.com"><img src="https://avatars.githubusercontent.com/u/985439?v=4?s=100" width="100px;" alt="mookrs"/><br /><sub><b>mookrs</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=mookrs" title="Documentation">📖</a></td>
       <td align="center"><a href="http://mike.depalatis.net"><img src="https://avatars.githubusercontent.com/u/2805515?v=4?s=100" width="100px;" alt="Mike DePalatis"/><br /><sub><b>Mike DePalatis</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=mivade" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/pemocarlo"><img src="https://avatars.githubusercontent.com/u/7297323?v=4?s=100" width="100px;" alt="Carlos Alberto Pérez-Molano"/><br /><sub><b>Carlos Alberto Pérez-Molano</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=pemocarlo" title="Documentation">📖</a></td>
-      <td align="center"><a href="https://www.bestcryptocodes.com"><img src="https://avatars.githubusercontent.com/u/114229148?v=4?s=100" width="100px;" alt="ThinksFast"/><br /><sub><b>ThinksFast</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ThinksFast" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://www.bestcryptocodes.com"><img src="https://avatars.githubusercontent.com/u/114229148?v=4?s=100" width="100px;" alt="ThinksFast"/><br /><sub><b>ThinksFast</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ThinksFast" title="Tests">⚠️</a> <a href="https://github.com/starlite-api/starlite/commits?author=ThinksFast" title="Documentation">📖</a></td>
     </tr>
     <tr>
       <td align="center"><a href="https://github.com/ottermata"><img src="https://avatars.githubusercontent.com/u/9451844?v=4?s=100" width="100px;" alt="Christopher Krause"/><br /><sub><b>Christopher Krause</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ottermata" title="Code">💻</a></td>
@@ -366,7 +366,14 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center"><a href="http://asomethings.com"><img src="https://avatars.githubusercontent.com/u/16171942?v=4?s=100" width="100px;" alt="asomethings"/><br /><sub><b>asomethings</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=asomethings" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/garburator"><img src="https://avatars.githubusercontent.com/u/14207857?v=4?s=100" width="100px;" alt="Garry Bullock"/><br /><sub><b>Garry Bullock</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=garburator" title="Documentation">📖</a></td>
       <td align="center"><a href="https://github.com/NiclasHaderer"><img src="https://avatars.githubusercontent.com/u/109728711?v=4?s=100" width="100px;" alt="Niclas Haderer"/><br /><sub><b>Niclas Haderer</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=NiclasHaderer" title="Code">💻</a></td>
-      <td align="center"><a href="https://github.com/dialvarezs"><img src="https://avatars.githubusercontent.com/u/13831919?v=4?s=100" width="100px;" alt="Diego Alvarez"/><br /><sub><b>Diego Alvarez</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=dialvarezs" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/dialvarezs"><img src="https://avatars.githubusercontent.com/u/13831919?v=4?s=100" width="100px;" alt="Diego Alvarez"/><br /><sub><b>Diego Alvarez</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=dialvarezs" title="Documentation">📖</a> <a href="https://github.com/starlite-api/starlite/commits?author=dialvarezs" title="Code">💻</a></td>
+      <td align="center"><a href="https://www.rgare.com"><img src="https://avatars.githubusercontent.com/u/51208317?v=4?s=100" width="100px;" alt="Jason Nance"/><br /><sub><b>Jason Nance</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=rgajason" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://github.com/spikenn"><img src="https://avatars.githubusercontent.com/u/32995595?v=4?s=100" width="100px;" alt="Igor Kapadze"/><br /><sub><b>Igor Kapadze</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=spikenn" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://jarmos.vercel.app"><img src="https://avatars.githubusercontent.com/u/31373860?v=4?s=100" width="100px;" alt="Somraj Saha"/><br /><sub><b>Somraj Saha</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Jarmos-san" title="Documentation">📖</a></td>
+      <td align="center"><a href="http://skulason.me"><img src="https://avatars.githubusercontent.com/u/11139514?v=4?s=100" width="100px;" alt="Magnús Ágúst Skúlason"/><br /><sub><b>Magnús Ágúst Skúlason</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=maggias" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=maggias" title="Documentation">📖</a></td>
+      <td align="center"><a href="https://alessioparma.xyz/"><img src="https://avatars.githubusercontent.com/u/4697032?v=4?s=100" width="100px;" alt="Alessio Parma"/><br /><sub><b>Alessio Parma</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=pomma89" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

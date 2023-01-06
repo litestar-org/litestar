@@ -23,7 +23,7 @@ def controller() -> Type[Controller]:
         path = "/controller"
         tags = ["controller"]
 
-        @get(tags=["handler"])
+        @get(tags=["handler", "a"])
         def _handler(self) -> Any:
             ...
 
@@ -50,8 +50,8 @@ def test_openapi_schema_handler_tags(openapi_schema: "OpenAPI") -> None:
 
 
 def test_openapi_schema_controller_tags(openapi_schema: "OpenAPI") -> None:
-    assert set(openapi_schema.paths["/controller"].get.tags) == {"handler", "controller"}  # type: ignore
+    assert openapi_schema.paths["/controller"].get.tags == ["a", "controller", "handler"]  # type: ignore
 
 
 def test_openapi_schema_router_tags(openapi_schema: "OpenAPI") -> None:
-    assert set(openapi_schema.paths["/router/controller"].get.tags) == {"handler", "controller", "router"}  # type: ignore
+    assert openapi_schema.paths["/router/controller"].get.tags == ["a", "controller", "handler", "router"]  # type: ignore

@@ -78,7 +78,7 @@ repos:
             --wrap-summaries=120,
           ]
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
+    rev: 6.2.2
     hooks:
       - id: pydocstyle
         exclude: "test*|examples*"
@@ -104,12 +104,8 @@ repos:
             "flake8-use-fstring",
             "flake8-use-pathlib",
           ]
-  - repo: https://github.com/johnfraney/flake8-markdown
-    rev: v0.4.0
-    hooks:
-      - id: flake8-markdown
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.1
+    rev: v0.16.3
     hooks:
       - id: slotscheck
         exclude: "test_*"
@@ -184,7 +180,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.285
+    rev: v1.1.287
     hooks:
       - id: pyright
         exclude: "test_apps|tools"

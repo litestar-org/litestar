@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.47.0"
+version = "1.48.1"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -99,6 +99,19 @@ rich = "*"
 python-dotenv = "*"
 pytest-mock = "*"
 uvicorn = "*"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "*"
+mkdocs-material = "^9.0.1"
+mkdocstrings = {extras = ["python"], version = "^0.19.1"}
+black = "^22.12.0"
+httpx = "^0.23.2"
+uvicorn = "^0.20.0"
+auto-pytabs = {git = "https://github.com/provinzkraut/AutoPyTabs.git"}
+mike = "^1.1.2"
 
 [tool.poetry.extras]
 brotli = ["brotli"]

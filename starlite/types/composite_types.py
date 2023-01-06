@@ -59,3 +59,4 @@ Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
 ]
 MaybePartial = Union[T, partial]
+TypeEncodersMap = Dict[Any, Callable[[Any], Any]]

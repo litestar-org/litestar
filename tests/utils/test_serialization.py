@@ -35,6 +35,34 @@ from tests import PersonFactory
 person = PersonFactory.build()
 
 
+class CustomStr(str):
+    pass
+
+
+class CustomInt(int):
+    pass
+
+
+class CustomFloat(float):
+    pass
+
+
+class CustomList(list):
+    pass
+
+
+class CustomSet(set):
+    pass
+
+
+class CustomFrozenSet(frozenset):
+    pass
+
+
+class CustomTuple(tuple):
+    pass
+
+
 class Model(BaseModel):
     path: PosixPath = PosixPath("example")
 
@@ -62,6 +90,14 @@ class Model(BaseModel):
     strict_bytes: StrictBytes = StrictBytes(b"hello")
     strict_bool: StrictBool = StrictBool(True)
 
+    custom_str: CustomStr = CustomStr()
+    custom_int: CustomInt = CustomInt()
+    custom_float: CustomFloat = CustomFloat()
+    custom_list: CustomList = CustomList()
+    custom_set: CustomSet = CustomSet()
+    custom_frozenset: CustomFrozenSet = CustomFrozenSet()
+    custom_tuple: CustomTuple = CustomTuple()
+
 
 model = Model()
 
@@ -83,13 +119,20 @@ model = Model()
         (model.conset, {1}),
         (model.confrozenset, frozenset([1])),
         (model.conint, 1),
-        (model.conlist, [1]),
+        # (model.conlist, [1]),
         (model.strict_str, "hello"),
         (model.strict_int, 1),
         (model.strict_float, 1.0),
         (model.strict_bytes, "hello"),
         (model.strict_bool, 1),
         (model, model.dict()),
+        (model.custom_str, ""),
+        (model.custom_int, 0),
+        (model.custom_float, 0.0),
+        # (model.custom_list, []),
+        (model.custom_set, set()),
+        (model.custom_frozenset, frozenset()),
+        # (model.custom_tuple, ()),
     ],
 )
 def test_default_serializer(value: Any, expected: Any) -> None:

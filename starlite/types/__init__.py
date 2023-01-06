@@ -67,6 +67,7 @@ from .composite_types import (
     ResponseCookies,
     ResponseHeadersMap,
     Scopes,
+    TypeEncodersMap,
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
@@ -159,6 +160,7 @@ __all__ = (
     "Serializer",
     "SingleOrList",
     "SyncOrAsyncUnion",
+    "TypeEncodersMap",
     "WebSocketAcceptEvent",
     "WebSocketCloseEvent",
     "WebSocketConnectEvent",

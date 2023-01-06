@@ -84,7 +84,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
                 "sessionCookie": SecurityScheme(
                     type="apiKey",
                     name=self.session_backend_config.key,
-                    security_scheme_in="cookie",
+                    security_scheme_in="cookie",  # pyright: ignore
                     description="Session cookie authentication.",
                 )
             }

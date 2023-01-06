@@ -48,13 +48,11 @@ consult the theme docs as a first step.
 
 ### Running the Docs Locally
 
-To run the docs locally, simply use the `docker-compose` configuration in place by executing `docker compose up`.
-On the first run it will pull and build the image, but afterwards this should be quite fast.
+To run or build the docs locally, you need to first install the required dependencies:
 
-Note: if you want your terminal back use `docker compose up --detach` but then you will need to bring the docs down
-with `docker compose down` rather than ctrl+C.
+`poetry install --with docs`
 
-Another option is to build the docs locally: `poetry run tox -e docs`. The docs will reside under the `site/` directory.
+Then you can serve the documentation with `mkdocs serve`, or build them with `mkdocs build`
 
 ### Writing and Editing Docs
 
@@ -175,7 +173,7 @@ against different python versions. To achieve this you can use the `tox` config 
 4. Restart shell.
 5. Remove any existing poetry environment: `$ poetry env remove python`
 6. Tell poetry to use system python: `$ poetry env use system`
-7. Install the dependencies `$ poetry install --extras testing`
+7. Install the dependencies `$ poetry install`
 
 ### Tox Commands
 
