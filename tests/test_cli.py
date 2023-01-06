@@ -1,9 +1,8 @@
 import importlib
 import shutil
 import sys
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Generator, List, Optional, Union
+from typing import Callable, Generator, List, Optional, Protocol, Union
 from unittest.mock import MagicMock
 
 import pytest
@@ -27,21 +26,6 @@ from starlite.cli import (
 from starlite.cli import cli as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
-
-
-@pytest.fixture
-def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
-    def patcher(paths: List[str]) -> None:
-        old_paths = starlite.cli.AUTODISCOVER_PATHS[::]
-        starlite.cli.AUTODISCOVER_PATHS[:] = paths
-
-        def finalizer() -> None:
-            starlite.cli.AUTODISCOVER_PATHS[:] = old_paths
-
-        request.addfinalizer(finalizer)
-
-    return patcher
-
 
 APP_FILE_CONTENT = """
 from starlite import Starlite
@@ -72,31 +56,68 @@ def any_name() -> "Starlite":
 """
 
 
-@contextmanager
+@pytest.fixture
+def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
+    def patcher(paths: List[str]) -> None:
+        old_paths = starlite.cli.AUTODISCOVER_PATHS[::]
+        starlite.cli.AUTODISCOVER_PATHS[:] = paths
+
+        def finalizer() -> None:
+            starlite.cli.AUTODISCOVER_PATHS[:] = old_paths
+
+        request.addfinalizer(finalizer)
+
+    return patcher
+
+
+@fixture
+def tmp_project_dir(monkeypatch: MonkeyPatch, tmp_path: Path) -> Path:
+    path = tmp_path / "project_dir"
+    path.mkdir(exist_ok=True)
+    monkeypatch.chdir(path)
+    return path
+
+
+class CreateAppFileFixture(Protocol):
+    def __call__(
+        self,
+        file: Union[str, Path],
+        directory: Optional[Union[str, Path]] = None,
+        content: Optional[str] = None,
+    ) -> Path:
+        ...
+
+
+@fixture
 def create_app_file(
-    file: Union[str, Path], directory: Optional[Union[str, Path]] = None, content: Optional[str] = None
-) -> Generator[Path, None, None]:
-    base = Path.cwd()
-    if directory:
-        base = base / directory
-        base.mkdir()
-
-    tmp_app_file = base / file
-    tmp_app_file.write_text(
-        content
-        or """
-from starlite import Starlite
-app = Starlite([])
-"""
-    )
-
-    try:
-        yield tmp_app_file
-    finally:
+    tmp_project_dir: Path,
+    request: FixtureRequest,
+) -> CreateAppFileFixture:
+    def _create_app_file(
+        file: Union[str, Path],
+        directory: Optional[Union[str, Path]] = None,
+        content: Optional[str] = None,
+    ) -> Path:
+        base = tmp_project_dir
         if directory:
-            shutil.rmtree(directory)
+            base = base / directory
+            base.mkdir()
+
+        tmp_app_file = base / file
+        tmp_app_file.write_text(content or APP_FILE_CONTENT)
+
+        if directory:
+            request.addfinalizer(lambda: shutil.rmtree(directory))  # type: ignore[arg-type]
         else:
-            tmp_app_file.unlink()
+            request.addfinalizer(tmp_app_file.unlink)
+        return tmp_app_file
+
+    return _create_app_file
+
+
+@fixture
+def app_file(create_app_file: CreateAppFileFixture) -> Path:
+    return create_app_file("asgi.py")
 
 
 @fixture
@@ -107,12 +128,6 @@ def runner() -> CliRunner:
 @fixture
 def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("uvicorn.run")
-
-
-@fixture
-def app_file() -> Generator[Path, None, None]:
-    with create_app_file("asgi.py") as path:
-        yield path
 
 
 @fixture
@@ -192,21 +207,23 @@ def test_starlite_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) ->
     ],
 )
 @pytest.mark.parametrize("path", AUTODISCOVER_PATHS)
-def test_env_from_env_autodiscover_from_files(path: str, file_content: str) -> None:
+def test_env_from_env_autodiscover_from_files(
+    path: str, file_content: str, create_app_file: CreateAppFileFixture
+) -> None:
     directory = None
     if "/" in path:
         directory, path = path.split("/", 1)
 
-    with create_app_file(path, directory, content=file_content) as tmp_file_path:
-        env = StarliteEnv.from_env(None)
+    tmp_file_path = create_app_file(path, directory, content=file_content)
+    env = StarliteEnv.from_env(None)
 
     assert isinstance(env.app, Starlite)
     assert env.app_path == f"{_path_to_dotted_path(tmp_file_path.relative_to(Path.cwd()))}:app"
 
 
-def test_autodiscover_not_found() -> None:
+def test_autodiscover_not_found(tmp_project_dir: Path) -> None:
     with pytest.raises(StarliteCLIException):
-        _autodiscover_app(None)
+        _autodiscover_app(None, tmp_project_dir)
 
 
 def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) -> None:
@@ -231,6 +248,7 @@ def test_run_command(
     port: Optional[int],
     host: Optional[str],
     custom_app_file: Optional[Path],
+    create_app_file: CreateAppFileFixture,
     set_in_env: bool,
 ) -> None:
     mock_show_app_info = mocker.patch("starlite.cli._show_app_info")
@@ -264,9 +282,9 @@ def test_run_command(
     else:
         host = "127.0.0.1"
 
-    with create_app_file(custom_app_file or "asgi.py") as path:
+    path = create_app_file(custom_app_file or "asgi.py")
 
-        result = runner.invoke(cli_command, args)
+    result = runner.invoke(cli_command, args)
 
     assert result.exception is None
     assert result.exit_code == 0
@@ -297,11 +315,12 @@ def test_run_command_with_autodiscover_app_factory(
     file_content: str,
     factory_name: str,
     patch_autodiscovery_paths: Callable[[List[str]], None],
+    create_app_file: CreateAppFileFixture,
 ) -> None:
 
     patch_autodiscovery_paths([file_name])
-    with create_app_file(file_name, content=file_content) as path:
-        result = runner.invoke(cli_command, "run")
+    path = create_app_file(file_name, content=file_content)
+    result = runner.invoke(cli_command, "run")
 
     assert result.exception is None
     assert result.exit_code == 0
@@ -318,11 +337,12 @@ def test_run_command_with_autodiscover_app_factory(
 def test_run_command_with_app_factory(
     runner: CliRunner,
     mock_uvicorn_run: MagicMock,
+    create_app_file: CreateAppFileFixture,
 ) -> None:
 
-    with create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT) as path:
-        app_path = f"{path.stem}:create_app"
-        result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
+    app_path = f"{path.stem}:create_app"
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
 
     assert result.exception is None
     assert result.exit_code == 0
