@@ -1,10 +1,6 @@
 Welcome to Starlite's documentation!
 ====================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 
 Starlite is a powerful, flexible, highly performant and opinionated ASGI framework,
 offering first class typing support and a full `Pydantic <https://github.com/samuelcolvin/pydantic>`_
@@ -249,3 +245,11 @@ License
 ^^^^^^^
 
 .. include:: ../LICENSE
+
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    migration/index.rst
+    changelog

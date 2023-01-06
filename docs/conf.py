@@ -17,6 +17,7 @@ release = "1.48.1"
 extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_design",
+    "myst_parser"
 ]
 
 templates_path = ["_templates"]
