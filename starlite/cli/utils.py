@@ -32,7 +32,7 @@ from starlite.utils import get_name, is_class_and_subclass
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
 else:
-    from importlib_metadata import entry_points
+    from importlib_metadata import entry_points  # pragma: no cover
 
 
 if TYPE_CHECKING:
