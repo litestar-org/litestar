@@ -2,7 +2,7 @@
 
 #
 
-<img alt="Starlite logo" src="./images/SVG/starlite-banner.svg" width="100%" height="auto">
+<img alt="Starlite logo" src="../docs/images/SVG/starlite-banner.svg" width="100%" height="auto">
 
 <center>
 

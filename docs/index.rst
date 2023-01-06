@@ -251,5 +251,6 @@ License
     :maxdepth: 2
     :hidden:
 
-    migration/index.rst
+    migration/index
+    benchmarks
     changelog

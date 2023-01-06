@@ -23,11 +23,11 @@
 Serializing a d
 dictionary into JSON
 
-![RPS JSON](./images/benchmarks/rps_json.svg)
+![RPS JSON](../docs/images/benchmarks/rps_json.svg)
 
 ### Files
 
-![RPS files](./images/benchmarks/rps_files.svg)
+![RPS files](../docs/images/benchmarks/rps_files.svg)
 
 
 
@@ -40,7 +40,7 @@ _All responses return "No Content"_
 - Query params: Single query parameter, coerced into an integer
 - Mixed params: A path and a query parameters, coerced into integers
 
-![RPS path and query parameters](./images/benchmarks/rps_params.svg)
+![RPS path and query parameters](../docs/images/benchmarks/rps_params.svg)
 
 
 ### Dependency injection
@@ -51,18 +51,18 @@ _All responses return "No Content"_
 - Resolving 3 nested asynchronous dependencies (only supported by `Starlite` and `FastAPI`)
 - Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by `Starlite` and `FastAPI`)
 
-![RPS Dependency injection](./images/benchmarks/rps_dependency-injection.svg)
+![RPS Dependency injection](../docs/images/benchmarks/rps_dependency-injection.svg)
 
 
 ### Modifying responses
 
 _All responses return "No Content"_
 
-![RPS dynamic responses](./images/benchmarks/rps_dynamic-response.svg)
+![RPS dynamic responses](../docs/images/benchmarks/rps_dynamic-response.svg)
 
 ### Plaintext
 
-![RPS Plaintext](./images/benchmarks/rps_plaintext.svg)
+![RPS Plaintext](../docs/images/benchmarks/rps_plaintext.svg)
 
 
 ## Interpreting the results
