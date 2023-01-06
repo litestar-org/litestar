@@ -14,7 +14,10 @@ release = "1.48.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.intersphinx", "sphinx_togglebutton"]
+extensions = [
+    "sphinx.ext.intersphinx",
+    "sphinx_design",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

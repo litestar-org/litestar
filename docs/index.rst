@@ -25,8 +25,8 @@ Installation
    pip install starlite
 
 
-.. admonition:: Extras
-    :class: dropdown
+.. dropdown:: Extras
+    :icon: star
 
     [Brotli Compression Middleware](usage/7-middleware/builtin-middlewares#brotli):
         :code:`pip install starlite[brotli]`
@@ -163,10 +163,10 @@ Example Applications
 --------------------
 
 
-* `starlite-pg-redis-docker <https://github.com/starlite-api/starlite-pg-redis-docker>`_\ : In addition to Starlite, this
+* `starlite-pg-redis-docker <https://github.com/starlite-api/starlite-pg-redis-docker>`_ : In addition to Starlite, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Starlite projects, this application is open to contributions, big and small.
-* `starlite-hello-world <https://github.com/starlite-api/starlite-hello-world>`_\ : A bare-minimum application setup. Great
+* `starlite-hello-world <https://github.com/starlite-api/starlite-hello-world>`_: A bare-minimum application setup. Great
   for testing and POC work.
 
 About Starlite
@@ -189,14 +189,39 @@ Comparison with other frameworks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-
-+-----+-----+-----+
-| A   | B   | C   |
-+=====+=====+=====+
-| x   | #   | z   |
-+=====+=====+=====+
-| 1   | 2   | 3   |
-+=====+=====+=====+
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+|                             | Starlite                           | FastAPI             | Starlette        | Sanic               | Quart               |
++=============================+====================================+=====================+==================+=====================+=====================+
+| OpenAPI                     | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Automatic API documentation | Swagger, ReDoc, Stoplight Elements | Swagger, ReDoc      | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Data validation             | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Dependency Injection        | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`check`    | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Class based routing         | :octicon:`check`                   | (Through extension) | :octicon:`check` | :octicon:`check`    | :octicon:`check`    |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| ORM integration             | SQLAlchemy, Tortoise, Piccolo      | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | (Through extension) |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Templating                  | Jinja, Mako                        | Jinja               | Jinja            | Jinja               | Jinja               |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| MessagePack                 | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| CORS                        | :octicon:`check`                   | :octicon:`check`    | :octicon:`check` | :octicon:`check`    | (Through extension) |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| CSRF                        | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Rate-limiting               | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | (Through extension) | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| JWT                         | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Sessions                    | :octicon:`check`                   | Client-side         | Client-side      | :octicon:`dash`     | Client-side         |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Authentication              | JWT / Session based                | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
+| Caching                     | :octicon:`check`                   |  :octicon:`dash`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
++-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
 
 
 
