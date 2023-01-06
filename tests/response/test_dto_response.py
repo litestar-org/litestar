@@ -41,6 +41,7 @@ else:
 @pytest.mark.parametrize(
     "data, annotation",
     (
+        (PersonFactory.batch(0), List[PersonDTO]),  # type: ignore
         (PersonFactory.batch(5), List[PersonDTO]),  # type: ignore
         ([p.dict() for p in PersonFactory.batch(5)], List[PersonDTO]),  # type: ignore
         (PersonFactory.batch(5), Tuple[PersonDTO, ...]),
@@ -58,7 +59,8 @@ def test_dto_list_response(data: Any, annotation: Any) -> None:
     with create_test_client(handler) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert [PersonDTO(**p) for p in response.json()]
+        results = [PersonDTO(**p) for p in response.json()]
+        assert results == data
 
 
 def test_dto_response_with_the_sqla_plugin() -> None:
