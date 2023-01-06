@@ -8,7 +8,7 @@ from ipaddress import (
     IPv6Interface,
     IPv6Network,
 )
-from pathlib import PurePosixPath
+from pathlib import Path, PurePath
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
@@ -29,7 +29,8 @@ if TYPE_CHECKING:
     from starlite.types import TypeEncodersMap
 
 DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
-    PurePosixPath: str,
+    Path: str,
+    PurePath: str,
     # pydantic specific types
     BaseModel: lambda m: m.dict(),
     ByteSize: lambda b: b.real,
