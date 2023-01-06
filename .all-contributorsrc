@@ -672,6 +672,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "pomma89",
+      "name": "Alessio Parma",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4697032?v=4",
+      "profile": "https://alessioparma.xyz/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
