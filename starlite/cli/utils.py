@@ -1,5 +1,4 @@
 import importlib
-import importlib.util
 import inspect
 import sys
 from dataclasses import dataclass
@@ -20,31 +19,15 @@ from typing import (
     cast,
 )
 
-from click import (
-    ClickException,
-    Command,
-    Context,
-    Group,
-    argument,
-    group,
-    option,
-    pass_context,
-    style,
-)
+from click import ClickException, Command, Context, Group, pass_context, style
 from rich.console import Console
-from rich.prompt import Confirm
 from rich.table import Table
-from rich.tree import Tree
 from typing_extensions import Concatenate, ParamSpec
 
-from starlite import DefineMiddleware, HTTPRoute, Starlite, WebSocketRoute
+from starlite import DefineMiddleware, Starlite
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import ServerSideBackend
 from starlite.utils import get_name, is_class_and_subclass
-from starlite.utils.helpers import unwrap_partial
-
-if TYPE_CHECKING:
-    from starlite.types import AnyCallable
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -52,9 +35,12 @@ else:
     from importlib_metadata import entry_points
 
 
+if TYPE_CHECKING:
+    from starlite.types import AnyCallable
+
+
 P = ParamSpec("P")
 T = TypeVar("T")
-console = Console()
 
 
 AUTODISCOVER_PATHS = [
@@ -64,6 +50,8 @@ AUTODISCOVER_PATHS = [
     "app/__init__.py",
     "application/__init__.py",
 ]
+
+console = Console()
 
 
 class StarliteCLIException(ClickException):
@@ -187,6 +175,30 @@ class StarliteExtensionGroup(StarliteGroup):
             self.add_command(command, entry_point.name)
 
 
+def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
+    """Inject the app instance into a `Command`"""
+    params = inspect.signature(func).parameters
+
+    @wraps(func)
+    def wrapped(ctx: Context, /, *args: P.args, **kwargs: P.kwargs) -> T:
+        env = ctx.ensure_object(StarliteEnv)
+        if "app" in params:
+            kwargs["app"] = env.app
+        if "env" in params:
+            kwargs["env"] = env
+        return func(*args, **kwargs)
+
+    return pass_context(wrapped)
+
+
+def _wrap_commands(commands: Iterable[Command]) -> None:
+    for command in commands:
+        if isinstance(command, Group):
+            _wrap_commands(command.commands.values())
+        elif command.callback:
+            command.callback = _inject_args(command.callback)
+
+
 def _bool_from_env(key: str, default: bool = False) -> bool:
     value = getenv(key)
     if not value:
@@ -248,30 +260,6 @@ def _autodiscover_app(app_path: Optional[str], cwd: Path) -> LoadedApp:
     raise StarliteCLIException("Could not find a Starlite app or factory")
 
 
-def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
-    """Inject the app instance into a `Command`"""
-    params = inspect.signature(func).parameters
-
-    @wraps(func)
-    def wrapped(ctx: Context, /, *args: P.args, **kwargs: P.kwargs) -> T:
-        env = ctx.ensure_object(StarliteEnv)
-        if "app" in params:
-            kwargs["app"] = env.app
-        if "env" in params:
-            kwargs["env"] = env
-        return func(*args, **kwargs)
-
-    return pass_context(wrapped)
-
-
-def _wrap_commands(commands: Iterable[Command]) -> None:
-    for command in commands:
-        if isinstance(command, Group):
-            _wrap_commands(command.commands.values())
-        elif command.callback:
-            command.callback = _inject_args(command.callback)
-
-
 def _format_is_enabled(value: Any) -> str:
     """Return a coloured string `"Enabled" if `value` is truthy, else "Disabled"."""
     if value:
@@ -279,19 +267,7 @@ def _format_is_enabled(value: Any) -> str:
     return "[red]Disabled[/]"
 
 
-def _get_session_backend(app: Starlite) -> ServerSideBackend:
-    for middleware in app.middleware:
-        if isinstance(middleware, DefineMiddleware):
-            if not is_class_and_subclass(middleware.middleware, SessionMiddleware):
-                continue
-            backend = middleware.kwargs["backend"]
-            if not isinstance(backend, ServerSideBackend):
-                raise StarliteCLIException("Only server-side backends are supported")
-            return backend
-    raise StarliteCLIException("Session middleware not installed")
-
-
-def _show_app_info(app: Starlite) -> None:  # pragma: no cover
+def show_app_info(app: Starlite) -> None:  # pragma: no cover
     """Display basic information about the application and its configuration."""
 
     table = Table(show_header=False)
@@ -345,128 +321,14 @@ def _show_app_info(app: Starlite) -> None:  # pragma: no cover
     console.print(table)
 
 
-@group(cls=StarliteExtensionGroup)
-@option("--app", "app_path", help="Module path to a Starlite application")
-@pass_context
-def cli(ctx: Context, app_path: Optional[str]) -> None:
-    """Starlite CLI."""
-
-    ctx.obj = StarliteEnv.from_env(app_path)
-
-
-@cli.command(name="info")
-def info_command(app: Starlite) -> None:
-    """Show information about the detected Starlite app."""
-
-    _show_app_info(app)
-
-
-@cli.command()
-@option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
-@option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
-@option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
-@option("--debug", help="Run app in debug mode", is_flag=True)
-def run(
-    reload: bool,
-    port: int,
-    host: str,
-    debug: bool,
-    env: StarliteEnv,
-    app: Starlite,
-) -> None:
-    """Run a Starlite app.
-
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
-    set as an environment variable STARLITE_APP with the same format or automatically discovered from one of these
-    canonical paths: app.py, asgi.py, application.py or app/__init__.py. When autodiscovering application factories,
-    functions with the name `create_app` are considered, or functions that are annotated as returning a `Starlite`
-    instance.
-    """
-
-    try:
-        import uvicorn
-    except ImportError:
-        raise StarliteCLIException("Uvicorn needs to be installed to run an app")  # pylint: disable=W0707
-
-    if debug or env.debug:
-        app.debug = True
-
-    _show_app_info(app)
-
-    console.rule("[yellow]Starting server process", align="left")
-
-    uvicorn.run(
-        env.app_path,
-        reload=env.reload or reload,
-        host=env.host or host,
-        port=env.port or port,
-        factory=env.is_app_factory,
-    )
-
-
-@cli.command()
-def routes(app: Starlite) -> None:  # pragma: no cover
-    """Display information about the application's routes."""
-
-    tree = Tree("", hide_root=True)
-
-    for route in sorted(app.routes, key=lambda r: r.path):
-        if isinstance(route, HTTPRoute):
-            branch = tree.add(f"[green]{route.path}[/green] (HTTP)")
-            for handler in route.route_handlers:
-                handler_info = [
-                    f"[blue]{handler.name or handler.handler_name}[/blue]",
-                ]
-
-                if inspect.iscoroutinefunction(unwrap_partial(handler.fn.value)):
-                    handler_info.append("[magenta]async[/magenta]")
-                else:
-                    handler_info.append("[yellow]sync[/yellow]")
-
-                handler_info.append(f'[cyan]{", ".join(sorted(handler.http_methods))}[/cyan]')
-
-                if len(handler.paths) > 1:
-                    for path in handler.paths:
-                        branch.add(" ".join([f"[green]{path}[green]", *handler_info]))
-                else:
-                    branch.add(" ".join(handler_info))
-
-        else:
-            if isinstance(route, WebSocketRoute):
-                route_type = "WS"
-            else:
-                route_type = "ASGI"
-            branch = tree.add(f"[green]{route.path}[/green] ({route_type})")
-            branch.add(f"[blue]{route.route_handler.name or route.route_handler.handler_name}[/blue]")
-
-    console.print(tree)
-
-
-@cli.group()
-def sessions() -> None:
-    """Manage server-side sessions."""
-
-
-@sessions.command("delete")
-@argument("session-id")
-def delete_session(session_id: str, app: Starlite) -> None:
-    """Delete a specific session."""
-    import anyio
-
-    backend = _get_session_backend(app)
-
-    if Confirm.ask(f"Delete session {session_id!r}?"):
-        anyio.run(backend.delete, session_id)
-        console.print(f"[green]Deleted session {session_id!r}")
-
-
-@sessions.command("clear")
-def clear_sessions(app: Starlite) -> None:
-    """Delete all sessions."""
-    import anyio
-
-    backend = _get_session_backend(app)
-
-    if Confirm.ask("[red]Delete all sessions?"):
-        anyio.run(backend.delete_all)
-        console.print("[green]All active sessions deleted")
+def get_session_backend(app: Starlite) -> ServerSideBackend:
+    """Get the session backend used by a `Starlite` app."""
+    for middleware in app.middleware:
+        if isinstance(middleware, DefineMiddleware):
+            if not is_class_and_subclass(middleware.middleware, SessionMiddleware):
+                continue
+            backend = middleware.kwargs["backend"]
+            if not isinstance(backend, ServerSideBackend):
+                raise StarliteCLIException("Only server-side backends are supported")
+            return backend
+    raise StarliteCLIException("Session middleware not installed")

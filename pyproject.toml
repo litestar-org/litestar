@@ -140,7 +140,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-starlite = {callable = "starlite.cli:cli", extras = ["cli"] }
+starlite = {callable = "starlite:cli.main.cli", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
