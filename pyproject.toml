@@ -112,6 +112,9 @@ httpx = "^0.23.2"
 uvicorn = "^0.20.0"
 auto-pytabs = {git = "https://github.com/provinzkraut/AutoPyTabs.git"}
 mike = "^1.1.2"
+sphinx = "^6.1.0"
+furo = "^2022.12.7"
+sphinx-autobuild = "^2021.3.14"
 
 [tool.poetry.extras]
 brotli = ["brotli"]

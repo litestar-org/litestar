@@ -26,3 +26,4 @@ target/
 .python-version
 coverage.*
 setup.py
+/docs/_build/
