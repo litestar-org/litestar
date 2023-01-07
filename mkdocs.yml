@@ -298,7 +298,6 @@ plugins:
             show_if_no_docstring: true
             line_length: 100
   - mike:
-      alias_type: symlink
       canonical_version: latest
 hooks:
   - tools/run_examples.py
