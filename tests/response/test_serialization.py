@@ -1,6 +1,6 @@
 import enum
 from json import loads
-from pathlib import PurePath
+from pathlib import Path, PurePath
 from typing import Any, Dict, List
 
 import msgspec
@@ -20,6 +20,7 @@ from tests import (
 person = PersonFactory.build()
 secret = SecretStr("secret_text")
 pure_path = PurePath("/path/to/file")
+path = Path("/path/to/file")
 
 
 class _TestEnum(enum.Enum):
@@ -40,6 +41,7 @@ class _TestEnum(enum.Enum):
         [{"enum": _TestEnum.A}, Dict[str, _TestEnum]],
         [{"secret": secret}, Dict[str, SecretStr]],
         [{"pure_path": pure_path}, Dict[str, PurePath]],
+        [{"path": path}, Dict[str, PurePath]],
     ],
 )
 def test_response_serialization_structured_types(content: Any, response_type: Any, media_type: MediaType) -> None:
@@ -56,6 +58,8 @@ def test_response_serialization_structured_types(content: Any, response_type: An
         assert content.__class__(**value)["secret"] == str(content["secret"])
     elif isinstance(value, dict) and "pure_path" in value:
         assert content.__class__(**value)["pure_path"] == str(content["pure_path"])
+    elif isinstance(value, dict) and "path" in value:
+        assert content.__class__(**value)["path"] == str(content["path"])
     elif isinstance(value, dict):
 
         assert content.__class__(**value) == content
