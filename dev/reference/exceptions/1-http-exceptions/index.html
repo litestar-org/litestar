@@ -2551,6 +2551,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#starlite.exceptions.ClientException" class="md-nav__link">
+    ClientException
+  </a>
+  
+    <nav class="md-nav" aria-label="ClientException">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#starlite.exceptions.http_exceptions.ClientException.status_code" class="md-nav__link">
+    status_code
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#starlite.exceptions.HTTPException" class="md-nav__link">
     HTTPException
   </a>
@@ -2763,19 +2783,6 @@
   <a href="#starlite.exceptions.ValidationException" class="md-nav__link">
     ValidationException
   </a>
-  
-    <nav class="md-nav" aria-label="ValidationException">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#starlite.exceptions.http_exceptions.ValidationException.status_code" class="md-nav__link">
-    status_code
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -4039,6 +4046,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#starlite.exceptions.ClientException" class="md-nav__link">
+    ClientException
+  </a>
+  
+    <nav class="md-nav" aria-label="ClientException">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#starlite.exceptions.http_exceptions.ClientException.status_code" class="md-nav__link">
+    status_code
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#starlite.exceptions.HTTPException" class="md-nav__link">
     HTTPException
   </a>
@@ -4252,19 +4279,6 @@
     ValidationException
   </a>
   
-    <nav class="md-nav" aria-label="ValidationException">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#starlite.exceptions.http_exceptions.ValidationException.status_code" class="md-nav__link">
-    status_code
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -4288,6 +4302,67 @@
 
 <h1 id="http-exceptions">HTTP Exceptions</h1>
 
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="starlite.exceptions.ClientException" class="doc doc-heading">
+        <span class="doc doc-object-name doc-class-name">starlite.exceptions.ClientException</span>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+
+  
+      <p>Client error.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="starlite.exceptions.http_exceptions.ClientException.status_code" class="doc doc-heading">
+        <span class="doc doc-object-name doc-attribute-name">status_code</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -4566,7 +4641,7 @@
   </span>
 
 </h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">status_code</span> <span class="o">=</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -4597,7 +4672,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code></p>
 
   
       <p>Server knows the request method, but the target resource doesn't support this method.</p>
@@ -4658,7 +4733,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code></p>
 
   
       <p>Request lacks valid authentication credentials for the requested resource.</p>
@@ -4743,7 +4818,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code>, <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code>, <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code></p>
 
   
       <p>Cannot find the requested resource.</p>
@@ -4804,7 +4879,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code></p>
 
   
       <p>Request understood, but not authorized.</p>
@@ -4865,7 +4940,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.InternalServerException" href="#starlite.exceptions.InternalServerException">InternalServerException</a></code></p>
 
   
       <p>Server is not ready to handle the request.</p>
@@ -4999,7 +5074,7 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code></p>
 
   
       <p>Request limits have been exceeded.</p>
@@ -5060,49 +5135,12 @@
 
   <div class="doc doc-contents first">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.HTTPException" href="#starlite.exceptions.HTTPException">HTTPException</a></code>, <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code></p>
+        Bases: <code><a class="autorefs autorefs-internal" title="starlite.exceptions.http_exceptions.ClientException" href="#starlite.exceptions.ClientException">ClientException</a></code>, <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></code></p>
 
   
-      <p>Client error.</p>
+      <p>Client data validation error.</p>
 
 
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="starlite.exceptions.http_exceptions.ValidationException.status_code" class="doc doc-heading">
-        <span class="doc doc-object-name doc-attribute-name">status_code</span>
-
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
-  </span>
-
-</h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">status_code</span> <span class="o">=</span> <span class="n">HTTP_400_BAD_REQUEST</span>
-</code></pre></div>
-
-  <div class="doc doc-contents ">
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
 
   </div>
 
