@@ -17,7 +17,12 @@ from starlite import (
     put,
 )
 from starlite.datastructures.state import ImmutableState
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlite.status_codes import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+)
 from starlite.testing import create_test_client
 from starlite.types import Scope
 from tests import Person, PersonFactory
@@ -119,6 +124,17 @@ def test_data_using_list_of_models(decorator: Any, http_method: Any, expected_st
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path, json=[p.dict() for p in people])
         assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize("media_type", [MediaType.JSON, MediaType.MESSAGEPACK])
+def test_request_with_invalid_data(media_type: MediaType) -> None:
+    @post()
+    def test_handler(data: Any) -> Any:
+        return data
+
+    with create_test_client(test_handler) as client:
+        response = client.post("/", content=b"abc", headers={"Content-Type": media_type})
+        assert response.status_code == HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.parametrize(
