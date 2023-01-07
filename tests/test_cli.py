@@ -14,7 +14,8 @@ from pytest_mock import MockerFixture
 import starlite.cli.main
 import starlite.cli.utils
 from starlite import Starlite
-from starlite.cli.main import cli as cli_command
+from starlite.cli.commands.sessions import get_session_backend
+from starlite.cli.main import starlite_group as cli_command
 from starlite.cli.utils import (
     AUTODISCOVER_PATHS,
     LoadedApp,
@@ -23,7 +24,6 @@ from starlite.cli.utils import (
     _autodiscover_app,
     _format_is_enabled,
     _path_to_dotted_path,
-    get_session_backend,
 )
 from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
@@ -228,7 +228,7 @@ def test_autodiscover_not_found(tmp_project_dir: Path) -> None:
 
 
 def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) -> None:
-    mock = mocker.patch("starlite.cli.main.show_app_info")
+    mock = mocker.patch("starlite.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
 
     assert result.exception is None
@@ -252,7 +252,7 @@ def test_run_command(
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
 ) -> None:
-    mock_show_app_info = mocker.patch("starlite.cli.main.show_app_info")
+    mock_show_app_info = mocker.patch("starlite.cli.commands.core.show_app_info")
 
     args = ["run"]
 
@@ -446,7 +446,7 @@ def test_register_commands_from_entrypoint(mocker: MockerFixture, runner: CliRun
         mocker.patch("importlib.metadata.entry_points", return_value=[mock_entry_point])
 
     importlib.reload(starlite.cli.utils)
-    cli_command = importlib.reload(starlite.cli.main).cli
+    cli_command = importlib.reload(starlite.cli.main).starlite_group
 
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
 

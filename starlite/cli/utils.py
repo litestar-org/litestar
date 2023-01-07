@@ -25,9 +25,7 @@ from rich.table import Table
 from typing_extensions import Concatenate, ParamSpec
 
 from starlite import DefineMiddleware, Starlite
-from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.base import ServerSideBackend
-from starlite.utils import get_name, is_class_and_subclass
+from starlite.utils import get_name
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -122,7 +120,11 @@ class LoadedApp:
 
 
 class StarliteGroup(Group):
-    """`click.Group` subclass that automatically injects `app` and `env` kwargs into commands that request it."""
+    """`click.Group` subclass that automatically injects `app` and `env` kwargs into commands that request it.
+
+    Use this as the `cls` for `click.Group` if you're extending the internal CLI with a group. For `command`s added
+    directly to the root group this is not needed.
+    """
 
     def __init__(
         self,
@@ -158,7 +160,10 @@ class StarliteGroup(Group):
 
 
 class StarliteExtensionGroup(StarliteGroup):
-    """`StarliteGroup` subclass that will load Starlite-CLI extensions from the `starlite.commands` entry_point."""
+    """`StarliteGroup` subclass that will load Starlite-CLI extensions from the `starlite.commands` entry_point.
+
+    This group class should not be used on any group besides the root `starlite_group`.
+    """
 
     def __init__(
         self,
@@ -319,16 +324,3 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
         table.add_row("Middlewares", ", ".join(middlewares))
 
     console.print(table)
-
-
-def get_session_backend(app: Starlite) -> ServerSideBackend:
-    """Get the session backend used by a `Starlite` app."""
-    for middleware in app.middleware:
-        if isinstance(middleware, DefineMiddleware):
-            if not is_class_and_subclass(middleware.middleware, SessionMiddleware):
-                continue
-            backend = middleware.kwargs["backend"]
-            if not isinstance(backend, ServerSideBackend):
-                raise StarliteCLIException("Only server-side backends are supported")
-            return backend
-    raise StarliteCLIException("Session middleware not installed")
