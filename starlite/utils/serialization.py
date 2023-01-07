@@ -124,7 +124,7 @@ def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_seri
         if default is None or default is default_serializer:
             return _msgspec_json_encoder.encode(obj)
         return msgspec.json.encode(obj, enc_hook=default)
-    except msgspec.EncodeError as msgspec_error:
+    except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
@@ -163,7 +163,7 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
         if enc_hook is None or enc_hook is default_serializer:
             return _msgspec_msgpack_encoder.encode(obj)
         return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
-    except msgspec.EncodeError as msgspec_error:
+    except (TypeError, msgspec.EncodeError) as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
