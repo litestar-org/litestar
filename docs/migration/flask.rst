@@ -38,12 +38,12 @@ Routing
 
             @app.route("/")
             def index():
-               return "Index Page"
+                return "Index Page"
 
 
             @app.route("/hello")
             def hello():
-               return "Hello, World"
+                return "Hello, World"
 
 
     .. tab-item:: Starlite
@@ -56,12 +56,12 @@ Routing
 
             @get("/")
             def index() -> str:
-               return "Index Page"
+                return "Index Page"
 
 
             @get("/hello")
             def hello() -> str:
-               return "Hello, World"
+                return "Hello, World"
 
 
             app = Starlite([index, hello])
@@ -84,17 +84,17 @@ Path parameters
 
             @app.route("/user/<username>")
             def show_user_profile(username):
-               return f"User {username}"
+                return f"User {username}"
 
 
             @app.route("/post/<int:post_id>")
             def show_post(post_id):
-               return f"Post {post_id}"
+                return f"Post {post_id}"
 
 
             @app.route("/path/<path:subpath>")
             def show_subpath(subpath):
-               return f"Subpath {subpath}"
+                return f"Subpath {subpath}"
 
 
 
@@ -109,17 +109,17 @@ Path parameters
 
             @get("/user/{username:str}")
             def show_user_profile(username: str) -> str:
-               return f"User {username}"
+                return f"User {username}"
 
 
             @get("/post/{post_id:int}")
             def show_post(post_id: int) -> str:
-               return f"Post {post_id}"
+                return f"Post {post_id}"
 
 
             @get("/path/{subpath:path}")
             def show_subpath(subpath: Path) -> str:
-               return f"Subpath {subpath}"
+                return f"Subpath {subpath}"
 
 
             app = Starlite([show_user_profile, show_post, show_subpath])
@@ -151,7 +151,7 @@ the request can be accessed through an optional parameter in the handler functio
 
             @app.get("/")
             def index():
-               print(request.method)
+                print(request.method)
 
 
 
@@ -165,7 +165,7 @@ the request can be accessed through an optional parameter in the handler functio
 
             @get("/")
             def index(request: Request) -> None:
-               print(request.method)
+                print(request.method)
 
 
 Request methods
@@ -305,7 +305,7 @@ In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_
 
             @app.route("/hello/<name>")
             def hello(name):
-               return render_template("hello.html", name=name)
+                return render_template("hello.html", name=name)
 
 
 
@@ -320,12 +320,12 @@ In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_
 
             @get("/hello/{name:str}")
             def hello(name: str) -> Template:
-               return Template(name="hello.html", context={"name": name})
+                return Template(name="hello.html", context={"name": name})
 
 
             app = Starlite(
-               [hello],
-               template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
+                [hello],
+                template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
             )
 
 
@@ -347,12 +347,13 @@ Setting cookies and headers
 
             app = Flask(_name_)
 
+
             @app.get("/")
             def index():
-               response = make_response("hello")
-               response.set_cookie("my-cookie", "cookie-value")
-               response.headers["my-header"] = "header-value"
-               return response
+                response = make_response("hello")
+                response.set_cookie("my-cookie", "cookie-value")
+                response.headers["my-header"] = "header-value"
+                return response
 
 
 
@@ -363,24 +364,25 @@ Setting cookies and headers
 
             from starlite import Starlite, get, ResponseHeader, Cookie, Response
 
+
             @get(
-               "/static",
-               response_headers={"my-header": ResponseHeader(value="header-value")},
-               response_cookies=[Cookie("my-cookie", "cookie-value")],
+                "/static",
+                response_headers={"my-header": ResponseHeader(value="header-value")},
+                response_cookies=[Cookie("my-cookie", "cookie-value")],
             )
             def static() -> str:
-               # you can set headers and cookies when defining handlers
-               ...
+                # you can set headers and cookies when defining handlers
+                ...
 
 
             @get("/dynamic")
             def dynamic() -> Response[str]:
-               # or dynamically, by returning an instance of Response
-               return Response(
-                   "hello",
-                   headers={"my-header": "header-value"},
-                   cookies=[Cookie("my-cookie", "cookie-value")],
-               )
+                # or dynamically, by returning an instance of Response
+                return Response(
+                    "hello",
+                    headers={"my-header": "header-value"},
+                    cookies=[Cookie("my-cookie", "cookie-value")],
+                )
 
 
 ..  seealso::
@@ -409,12 +411,12 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             @app.get("/")
             def index():
-               return "hello"
+                return "hello"
 
 
             @app.get("/hello")
             def hello():
-               return redirect(url_for("index"))
+                return redirect(url_for("index"))
 
 
 
@@ -428,12 +430,12 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             @get("/")
             def index() -> str:
-               return "hello"
+                return "hello"
 
 
             @get("/hello")
             def hello() -> Redirect:
-               return Redirect(path="index")
+                return Redirect(path="index")
 
 
             app = Starlite([index, hello])
@@ -458,7 +460,7 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
             @app.get("/")
             def index():
-               abort(400, "this did not work")
+                abort(400, "this did not work")
 
 
 
@@ -472,7 +474,7 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
             @get("/")
             def index() -> None:
-               raise HTTPException(status_code=400, detail="this did not work")
+                raise HTTPException(status_code=400, detail="this did not work")
 
 
             app = Starlite([index])
@@ -499,7 +501,7 @@ Setting status codes
 
             @app.get("/")
             def index():
-               return "not found", 404
+                return "not found", 404
 
 
 
@@ -513,12 +515,12 @@ Setting status codes
 
             @get("/static", status_code=404)
             def static_status() -> str:
-               return "not found"
+                return "not found"
 
 
             @get("/dynamic")
             def dynamic_status() -> Response[str]:
-               return Response("not found", status_code=404)
+                return Response("not found", status_code=404)
 
 
             app = Starlite([static_status, dynamic_status])
@@ -545,17 +547,17 @@ the data returned is intended to be serialized into JSON and will do so unless t
 
             @app.get("/json")
             def get_json():
-               return {"hello": "world"}
+                return {"hello": "world"}
 
 
             @app.get("/text")
             def get_text():
-               return "hello, world!"
+                return "hello, world!"
 
 
             @app.get("/html")
             def get_html():
-               return Response("<strong>hello, world</strong>", mimetype="text/html")
+                return Response("<strong>hello, world</strong>", mimetype="text/html")
 
 
 
@@ -569,17 +571,17 @@ the data returned is intended to be serialized into JSON and will do so unless t
 
             @get("/json")
             def get_json() -> dict[str, str]:
-               return {"hello": "world"}
+                return {"hello": "world"}
 
 
             @get("/text", media_type=MediaType.TEXT)
             def get_text() -> str:
-               return "hello, world"
+                return "hello, world"
 
 
             @get("/html", media_type=MediaType.HTML)
             def get_html() -> str:
-               return "<strong>hello, world</strong>"
+                return "<strong>hello, world</strong>"
 
 
             app = Starlite([get_json, get_text, get_html])
@@ -599,13 +601,12 @@ Error handling
             from werkzeug.exceptions import HTTPException
 
 
-
             app = Flask(_name_)
 
 
             @app.errorhandler(HTTPException)
             def handle_exception(e):
-               ...
+                ...
 
 
 
@@ -616,8 +617,9 @@ Error handling
 
             from starlite import Starlite, HTTPException, Request, Response
 
+
             def handle_exception(request: Request, exception: Exception) -> Response:
-               ...
+                ...
 
 
             app = Starlite([], exception_handlers={HTTPException: handle_exception})

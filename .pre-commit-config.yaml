@@ -92,12 +92,12 @@ repos:
     rev: v0.16.3
     hooks:
       - id: slotscheck
-        exclude: "test_*"
+        exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
     rev: "v2.15.9"
     hooks:
       - id: pylint
-        exclude: "tests|examples|test_apps"
+        exclude: "tests|examples|test_apps|docs"
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
@@ -129,7 +129,7 @@ repos:
     rev: "v0.991"
     hooks:
       - id: mypy
-        exclude: "test_apps"
+        exclude: "test_apps|docs"
         additional_dependencies:
           [
             aiomcache,
@@ -167,7 +167,7 @@ repos:
     rev: v1.1.287
     hooks:
       - id: pyright
-        exclude: "test_apps|tools"
+        exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
             aiomcache,

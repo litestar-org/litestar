@@ -24,7 +24,7 @@ on an application or router instance.
 
             @app.get("/")
             async def index() -> dict[str, str]:
-               ...
+                ...
 
     .. tab-item:: Starlette
         :sync: starlette
@@ -37,7 +37,7 @@ on an application or router instance.
 
 
             async def index(request):
-            ...
+                ...
 
 
             routes = [Route("/", endpoint=index)]
@@ -50,6 +50,7 @@ on an application or router instance.
         .. code-block:: python
 
            from starlite import Starlite, get
+
 
            @get("/")
            async def index() -> dict[str, str]:
@@ -200,7 +201,7 @@ is extending AbstractAuthenticationMiddleware`` <usage/8-security/0-intro.md>`_.
 
 
             async def authenticate(request: Request) -> None:
-               ...
+                ...
 
 
             app = FastAPI()
@@ -208,7 +209,7 @@ is extending AbstractAuthenticationMiddleware`` <usage/8-security/0-intro.md>`_.
 
             @app.get("/", dependencies=[Depends(authenticate)])
             async def index() -> dict[str, str]:
-               ...
+                ...
 
 
     .. tab-item:: Starlite
@@ -220,14 +221,14 @@ is extending AbstractAuthenticationMiddleware`` <usage/8-security/0-intro.md>`_.
 
 
             async def authenticate(
-               connection: ASGIConnection, route_handler: BaseRouteHandler
+                connection: ASGIConnection, route_handler: BaseRouteHandler
             ) -> None:
-               ...
+                ...
 
 
             @get("/", guards=[authenticate])
             async def index() -> dict[str, str]:
-               ...
+                ...
 
 
 ..  seealso::
