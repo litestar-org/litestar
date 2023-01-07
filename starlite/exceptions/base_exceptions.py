@@ -30,3 +30,7 @@ class MissingDependencyException(StarLiteException):
 
     This exception is raised only when a module depends on a dependency that has not been installed.
     """
+
+
+class SerializationException(StarLiteException):
+    """Encoding or decoding of an object failed."""

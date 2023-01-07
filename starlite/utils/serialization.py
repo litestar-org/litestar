@@ -25,6 +25,8 @@ from pydantic import (
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
+from starlite.exceptions import SerializationException
+
 if TYPE_CHECKING:
     from starlite.types import TypeEncodersMap
 
@@ -114,10 +116,16 @@ def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_seri
 
     Returns:
         JSON as bytes
+
+    Raises:
+        SerializationException: If error encoding `obj`.
     """
-    if default is None or default is default_serializer:
-        return _msgspec_json_encoder.encode(obj)
-    return msgspec.json.encode(obj, enc_hook=default)
+    try:
+        if default is None or default is default_serializer:
+            return _msgspec_json_encoder.encode(obj)
+        return msgspec.json.encode(obj, enc_hook=default)
+    except msgspec.EncodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def decode_json(raw: Union[str, bytes]) -> Any:
@@ -128,8 +136,14 @@ def decode_json(raw: Union[str, bytes]) -> Any:
 
     Returns:
         An object
+
+    Raises:
+        SerializationException: If error decoding `raw`.
     """
-    return _msgspec_json_decoder.decode(raw)
+    try:
+        return _msgspec_json_decoder.decode(raw)
+    except msgspec.DecodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
@@ -141,10 +155,16 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
 
     Returns:
         MessagePack as bytes
+
+    Raises:
+        SerializationException: If error encoding `obj`.
     """
-    if enc_hook is None or enc_hook is default_serializer:
-        return _msgspec_msgpack_encoder.encode(obj)
-    return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+    try:
+        if enc_hook is None or enc_hook is default_serializer:
+            return _msgspec_msgpack_encoder.encode(obj)
+        return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+    except msgspec.EncodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def decode_msgpack(raw: bytes) -> Any:
@@ -155,5 +175,11 @@ def decode_msgpack(raw: bytes) -> Any:
 
     Returns:
         An object
+
+    Raises:
+        SerializationException: If error decoding `raw`.
     """
-    return _msgspec_msgpack_decoder.decode(raw)
+    try:
+        return _msgspec_msgpack_decoder.decode(raw)
+    except msgspec.DecodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
