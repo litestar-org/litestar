@@ -41,7 +41,7 @@ class TypeScriptContainer(TypeScriptElement):
         raise NotImplementedError("")
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptIntersection(TypeScriptElement):
     """A class representing a TypeScript intersection type."""
 
@@ -59,7 +59,7 @@ class TypeScriptIntersection(TypeScriptElement):
         return " & ".join(t.write() for t in self.types)
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptUnion(TypeScriptElement):
     """A class representing a TypeScript union type."""
 
@@ -77,7 +77,7 @@ class TypeScriptUnion(TypeScriptElement):
         return " | ".join(t.write() for t in self.types)
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptPrimitive(TypeScriptElement):
     """A class representing a TypeScript primitive type."""
 
@@ -95,7 +95,7 @@ class TypeScriptPrimitive(TypeScriptElement):
         return self.type
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptLiteral(TypeScriptElement):
     """A class representing a TypeScript literal type."""
 
@@ -113,7 +113,7 @@ class TypeScriptLiteral(TypeScriptElement):
         return _as_string(self.value)
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptArray(TypeScriptElement):
     """A class representing a TypeScript array type."""
 
@@ -128,10 +128,15 @@ class TypeScriptArray(TypeScriptElement):
         Returns:
             A typescript string
         """
-        return f"{self.item_type.write()}[]"
+        value = (
+            f"({self.item_type.write()})"
+            if isinstance(self.item_type, (TypeScriptUnion, TypeScriptIntersection))
+            else self.item_type.write()
+        )
+        return f"{value}[]"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptProperty(TypeScriptElement):
     """A class representing a TypeScript interface property."""
 
@@ -152,7 +157,7 @@ class TypeScriptProperty(TypeScriptElement):
         return f"{self.key}{':' if self.required else '?:'} {self.value.write()};"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptAnonymousInterface(TypeScriptElement):
     """A class representing a TypeScript anonymous interface."""
 
@@ -170,11 +175,11 @@ class TypeScriptAnonymousInterface(TypeScriptElement):
         Returns:
             A typescript string
         """
-        props = "\n\t".join([prop.write() for prop in sorted(self.properties, key=lambda prop: prop.key)])
+        props = "\t" + "\n\t".join([prop.write() for prop in sorted(self.properties, key=lambda prop: prop.key)])
         return f"{{\n{props}\n}}"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptInterface(TypeScriptContainer):
     """A class representing a TypeScript interface."""
 
@@ -197,7 +202,7 @@ class TypeScriptInterface(TypeScriptContainer):
         return f"export interface {self.name} {interface.write()};"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptEnum(TypeScriptContainer):
     """A class representing a TypeScript enum."""
 
@@ -216,13 +221,13 @@ class TypeScriptEnum(TypeScriptContainer):
         Returns:
             A typescript string
         """
-        members = "\n\t".join(
+        members = "\t" + "\n\t".join(
             [f"{key} = {_as_string(value)}," for key, value in sorted(self.values, key=lambda member: member[0])]
         )
         return f"export enum {self.name} {{\n{members}\n}};"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptType(TypeScriptContainer):
     """A class representing a TypeScript type."""
 
@@ -241,12 +246,12 @@ class TypeScriptType(TypeScriptContainer):
         return f"export type {self.name} = {self.value.write()};"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptConst(TypeScriptContainer):
     """A class representing a TypeScript const."""
 
     name: str
-    value: TypeScriptElement
+    value: Union[TypeScriptPrimitive, TypeScriptLiteral]
 
     def write(self) -> str:
         """Write a typescript const.
@@ -257,10 +262,10 @@ class TypeScriptConst(TypeScriptContainer):
         Returns:
             A typescript string
         """
-        return f"export const {self.name} = {self.value.write()};"
+        return f"export const {self.name}: {self.value.write()};"
 
 
-@dataclass(frozen=True, unsafe_hash=True)
+@dataclass(unsafe_hash=True)
 class TypeScriptNamespace(TypeScriptElement):
     """A class representing a TypeScript namespace."""
 
@@ -278,7 +283,7 @@ class TypeScriptNamespace(TypeScriptElement):
         Returns:
             A typescript string
         """
-        members = "\n\n\t".join([value.write() for value in sorted(self.values, key=lambda el: el.name)])
+        members = "\t" + "\n\n\t".join([value.write() for value in sorted(self.values, key=lambda el: el.name)])
         return f"export namespace {self.name} {{\n{members}\n}};"
 
 
