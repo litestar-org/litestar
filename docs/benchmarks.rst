@@ -23,7 +23,7 @@ Results
 JSON
 ~~~~
 
-Serializing a d dictionary into JSON
+Serializing a dictionary into JSON
 
 .. figure:: images/benchmarks/rps_json.svg
    :alt: RPS JSON
@@ -56,7 +56,7 @@ Path and query parameter handling
 Dependency injection
 ~~~~~~~~~~~~~~~~~~~~
 
-\ *(not supported by ``Starlette``)*\
+*(not supported by* ``Starlette`` *)*
 
 -  Resolving 3 nested synchronous dependencies
 -  Resolving 3 nested asynchronous dependencies (only supported by ``Starlite`` and ``FastAPI``)
