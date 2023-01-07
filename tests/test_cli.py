@@ -11,19 +11,20 @@ from click.testing import CliRunner
 from pytest import FixtureRequest, MonkeyPatch, fixture
 from pytest_mock import MockerFixture
 
-import starlite.cli
+import starlite.cli.main
+import starlite.cli.utils
 from starlite import Starlite
-from starlite.cli import (
+from starlite.cli.commands.sessions import get_session_backend
+from starlite.cli.main import starlite_group as cli_command
+from starlite.cli.utils import (
     AUTODISCOVER_PATHS,
     LoadedApp,
     StarliteCLIException,
     StarliteEnv,
     _autodiscover_app,
     _format_is_enabled,
-    _get_session_backend,
     _path_to_dotted_path,
 )
-from starlite.cli import cli as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
@@ -59,11 +60,11 @@ def any_name() -> "Starlite":
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
     def patcher(paths: List[str]) -> None:
-        old_paths = starlite.cli.AUTODISCOVER_PATHS[::]
-        starlite.cli.AUTODISCOVER_PATHS[:] = paths
+        old_paths = starlite.cli.utils.AUTODISCOVER_PATHS[::]
+        starlite.cli.utils.AUTODISCOVER_PATHS[:] = paths
 
         def finalizer() -> None:
-            starlite.cli.AUTODISCOVER_PATHS[:] = old_paths
+            starlite.cli.utils.AUTODISCOVER_PATHS[:] = old_paths
 
         request.addfinalizer(finalizer)
 
@@ -132,7 +133,7 @@ def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
 
 @fixture
 def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
-    yield mocker.patch("starlite.cli.Confirm.ask", return_value=True)
+    yield mocker.patch("rich.prompt.Confirm.ask", return_value=True)
 
 
 def test_format_is_enabled() -> None:
@@ -154,7 +155,7 @@ def test_get_session_backend() -> None:
         ],
     )
 
-    assert _get_session_backend(app) is session_middleware.kwargs["backend"]
+    assert get_session_backend(app) is session_middleware.kwargs["backend"]
 
 
 @pytest.mark.parametrize("env_name,attr_name", [("STARLITE_DEBUG", "debug"), ("STARLITE_RELOAD", "reload")])
@@ -227,7 +228,7 @@ def test_autodiscover_not_found(tmp_project_dir: Path) -> None:
 
 
 def test_info_command(mocker: MockerFixture, runner: CliRunner, app_file: Path) -> None:
-    mock = mocker.patch("starlite.cli._show_app_info")
+    mock = mocker.patch("starlite.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
 
     assert result.exception is None
@@ -251,7 +252,7 @@ def test_run_command(
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
 ) -> None:
-    mock_show_app_info = mocker.patch("starlite.cli._show_app_info")
+    mock_show_app_info = mocker.patch("starlite.cli.commands.core.show_app_info")
 
     args = ["run"]
 
@@ -359,7 +360,7 @@ def test_run_command_with_app_factory(
 def test_run_command_force_debug(app_file: Path, mocker: MockerFixture, runner: CliRunner) -> None:
     mock_app = MagicMock()
     mocker.patch(
-        "starlite.cli._autodiscover_app",
+        "starlite.cli.utils._autodiscover_app",
         return_value=LoadedApp(app=mock_app, app_path=str(app_file), is_factory=False),
     )
 
@@ -443,7 +444,9 @@ def test_register_commands_from_entrypoint(mocker: MockerFixture, runner: CliRun
         mocker.patch("importlib_metadata.entry_points", return_value=[mock_entry_point])
     else:
         mocker.patch("importlib.metadata.entry_points", return_value=[mock_entry_point])
-    cli_command = importlib.reload(starlite.cli).cli
+
+    importlib.reload(starlite.cli.utils)
+    cli_command = importlib.reload(starlite.cli.main).starlite_group
 
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
 
