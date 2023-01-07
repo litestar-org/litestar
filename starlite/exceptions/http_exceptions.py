@@ -64,14 +64,14 @@ class HTTPException(StarLiteException):
         return f"{self.status_code} - {self.__class__.__name__} - {self.detail}"
 
 
+class ImproperlyConfiguredException(HTTPException, ValueError):
+    """Application has improper configuration."""
+
+
 class ClientException(HTTPException):
     """Client error."""
 
     status_code: int = HTTP_400_BAD_REQUEST
-
-
-class ImproperlyConfiguredException(HTTPException, ValueError):
-    """Application has improper configuration."""
 
 
 class ValidationException(ClientException, ValueError):
