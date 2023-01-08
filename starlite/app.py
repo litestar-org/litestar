@@ -255,7 +255,7 @@ class Starlite(Router):
                 application shutdown.
             on_startup: A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during
                 application startup.
-            openapi_config: Defaults to :ref:`DEFAULT_OPENAPI_CONFIG <starlite.app.DEFAULT_OPENAPI_CONFIG>`
+            openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
             opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever you
                 have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             parameters: A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all

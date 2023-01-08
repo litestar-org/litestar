@@ -16,6 +16,7 @@ release = "1.48.1"
 
 extensions = [
     "sphinx.ext.intersphinx",
+    "sphinx.ext.autosectionlabel",
     # "sphinx_toolbox",
     # "sphinx_toolbox.more_autodoc.genericalias",
     "sphinx.ext.autodoc",
@@ -53,6 +54,8 @@ autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 # autodoc_typehints = "description"
 autodoc_type_aliases = {"Scope": "starlite.type.asgi_types.Scope"}
+
+autosectionlabel_prefix_document = True
 
 
 # -- Options for HTML output -------------------------------------------------

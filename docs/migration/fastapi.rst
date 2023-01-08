@@ -182,7 +182,7 @@ and to easily access dependencies from higher levels.
 ..  seealso::
 
     To learn more about dependency injection, check out this chapter
-    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`_
+    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`__
 
 Authentication
 ^^^^^^^^^^^^^^
