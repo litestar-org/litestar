@@ -3,8 +3,9 @@ API reference
 
 
 .. toctree::
-    :titlesonly:
+   :titlesonly:
 
-    app
-    router
-    types
+   app
+   router
+   types
+   datastructures/index

@@ -2,11 +2,12 @@ import re
 import sys
 from pathlib import Path
 
-from utils import RGX_CODE_BLOCK, get_indentation, indent
+from utils import get_indentation, indent
 
 INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
+RGX_CODE_BLOCK = re.compile(r" *```python([\w\W]+?)```")
 
 
 def fix_inline_code(content: str) -> str:
@@ -63,11 +64,13 @@ def fix_file(path: Path) -> None:
 
 def main(path: Path) -> None:
     if path.is_dir():
-        for file in path.rglob(".py"):
+        for file in path.rglob("*.py"):
+            if file.is_dir():
+                continue
             fix_file(file)
     else:
         fix_file(path)
 
 
 if __name__ == "__main__":
-    fix_file(Path.cwd() / sys.argv[1])
+    main(Path.cwd() / sys.argv[1])

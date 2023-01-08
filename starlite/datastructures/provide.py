@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 class Provide:
-    """A wrapper class for dependency injection."""
+    """Wrapper class for dependency injection"""
 
     __slots__ = (
         "dependency",
@@ -60,7 +60,7 @@ class Provide:
         self.has_sync_callable = not is_async_callable(self.dependency.value)
 
     async def __call__(self, **kwargs: Any) -> Any:
-        """Proxy a call to 'self.proxy'."""
+        """Proxy a call to ``self.proxy``."""
 
         if self.use_cache and self.value is not Empty:
             return self.value
@@ -133,9 +133,9 @@ class DependencyCleanupGroup:
         return AsyncCallable(wrapped)
 
     async def cleanup(self) -> None:
-        """Execute cleanup by calling `next` / `anext` on all generators.
+        """Execute cleanup by calling :func:`next` / :func:`anext` on all generators.
 
-        If there are multiple generators to be called, they will be executed in a `TaskGroup`.
+        If there are multiple generators to be called, they will be executed in a :class:`anyio.TaskGroup`.
 
         Returns:
             None

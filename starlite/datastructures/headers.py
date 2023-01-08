@@ -47,7 +47,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
     """
 
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
-        """Initialize `Headers`.
+        """Initialize ``Headers``.
 
         Args:
             headers: Initial value.
@@ -76,7 +76,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             Headers
 
         Raises:
-            ValueError: If the message does not have a `headers` key
+            ValueError: If the message does not have a ``headers`` key
         """
         if "_headers" not in scope:
             scope["_headers"] = parse_headers(tuple(scope["headers"]))  # type: ignore
@@ -88,7 +88,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Returns:
             A list of tuples contain the header and header-value as bytes
         """
-        # Since `Headers` are immutable, this can be cached
+        # Since ``Headers`` are immutable, this can be cached
         header_list = self._header_list
         if not header_list:
             header_list = self._header_list = _encode_headers(
@@ -100,11 +100,11 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 class MutableScopeHeaders(MutableMapping):
     """A case-insensitive, multidict-like structure that can be used to mutate headers within a.
 
-    [Scope][starlite.types.Scope]
+    :class:`Scope <starlite.types.Scope>`
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
-        """Initialize `MutableScopeHeaders` from a `HeaderScope`.
+        """Initialize ``MutableScopeHeaders`` from a ``HeaderScope``.
 
         Args:
             scope: The ASGI connection scope.
@@ -123,13 +123,13 @@ class MutableScopeHeaders(MutableMapping):
         """Construct a header from a message object.
 
         Args:
-            message: [Message][starlite.types.Message].
+            message: :class:`Message <starlite.types.Message>`.
 
         Returns:
             MutableScopeHeaders.
 
         Raises:
-            ValueError: If the message does not have a `headers` key.
+            ValueError: If the message does not have a ``headers`` key.
         """
         if "headers" not in message:
             raise ValueError(f"Invalid message type: {message['type']!r}")
@@ -156,13 +156,13 @@ class MutableScopeHeaders(MutableMapping):
 
         Args:
             key: Header key.
-            default: Default value to return if `name` is not found.
+            default: Default value to return if ``name`` is not found.
 
         Returns:
             A list of strings.
 
         Raises:
-            KeyError: if no header for `name` was found and `default` is not given.
+            KeyError: if no header for ``name`` was found and ``default`` is not given.
         """
         name = key.lower()
         values = [
@@ -196,7 +196,7 @@ class MutableScopeHeaders(MutableMapping):
         self[key] = value
 
     def __getitem__(self, key: str) -> str:
-        """Get the first header matching `name`"""
+        """Get the first header matching ``name``"""
         name = key.lower()
         for header in self.headers:
             if header[0].decode("latin-1").lower() == name:
@@ -220,7 +220,7 @@ class MutableScopeHeaders(MutableMapping):
             self.headers[indices[0]] = (name_encoded, value_encoded)
 
     def __delitem__(self, key: str) -> None:
-        """Delete all headers matching `name`"""
+        """Delete all headers matching ``name``"""
         indices = self._find_indices(key)
         for i in indices[::-1]:
             del self.headers[i]
@@ -267,7 +267,7 @@ class Header(BaseModel, ABC):
         Args:
             include_header_name: should include the header name in the return value. If set to false
                 the return value will only include the header value. if set to true the return value
-                will be: `<header name>: <header value>`. Defaults to false.
+                will be: ``<header name>: <header value>``. Defaults to false.
         """
 
         if not self.HEADER_NAME:
@@ -277,34 +277,34 @@ class Header(BaseModel, ABC):
 
 
 class CacheControlHeader(Header):
-    """A `cache-control` header."""
+    """A ``cache-control`` header."""
 
     HEADER_NAME: ClassVar[str] = "cache-control"
 
     max_age: Optional[int] = None
-    """Accessor for the `max-age` directive."""
+    """Accessor for the ``max-age`` directive."""
     s_maxage: Optional[int] = None
-    """Accessor for the `s-maxage` directive."""
+    """Accessor for the ``s-maxage`` directive."""
     no_cache: Optional[bool] = None
-    """Accessor for the `no-cache` directive."""
+    """Accessor for the ``no-cache`` directive."""
     no_store: Optional[bool] = None
-    """Accessor for the `no-store` directive."""
+    """Accessor for the ``no-store`` directive."""
     private: Optional[bool] = None
-    """Accessor for the `private` directive."""
+    """Accessor for the ``private`` directive."""
     public: Optional[bool] = None
-    """Accessor for the `public` directive."""
+    """Accessor for the ``public`` directive."""
     no_transform: Optional[bool] = None
-    """Accessor for the `no-transform` directive."""
+    """Accessor for the ``no-transform`` directive."""
     must_revalidate: Optional[bool] = None
-    """Accessor for the `must-revalidate` directive."""
+    """Accessor for the ``must-revalidate`` directive."""
     proxy_revalidate: Optional[bool] = None
-    """Accessor for the `proxy-revalidate` directive."""
+    """Accessor for the ``proxy-revalidate`` directive."""
     must_understand: Optional[bool] = None
-    """Accessor for the `must-understand` directive."""
+    """Accessor for the ``must-understand`` directive."""
     immutable: Optional[bool] = None
-    """Accessor for the `immutable` directive."""
+    """Accessor for the ``immutable`` directive."""
     stale_while_revalidate: Optional[int] = None
-    """Accessor for the `stale-while-revalidate` directive."""
+    """Accessor for the ``stale-while-revalidate`` directive."""
 
     def _get_header_value(self) -> str:
         """Get the header value as string."""
@@ -319,13 +319,13 @@ class CacheControlHeader(Header):
 
     @classmethod
     def from_header(cls, header_value: str) -> "CacheControlHeader":
-        """Create a `CacheControlHeader` instance from the header value.
+        """Create a ``CacheControlHeader`` instance from the header value.
 
         Args:
             header_value: the header value as string
 
         Returns:
-            An instance of `CacheControlHeader`
+            An instance of ``CacheControlHeader``
         """
 
         cc_items = [v.strip() for v in header_value.split(",")]
@@ -346,7 +346,7 @@ class CacheControlHeader(Header):
 
     @classmethod
     def prevent_storing(cls) -> "CacheControlHeader":
-        """Create a `cache-control` header with the `no-store` directive which indicates that any caches of any kind
+        """Create a ``cache-control`` header with the ``no-store`` directive which indicates that any caches of any kind
         (private or shared) should not store this response.
         """
 
@@ -354,7 +354,7 @@ class CacheControlHeader(Header):
 
 
 class ETag(Header):
-    """An `etag` header."""
+    """An ``etag`` header."""
 
     HEADER_NAME: ClassVar[str] = "etag"
 
@@ -369,7 +369,7 @@ class ETag(Header):
 
     @classmethod
     def from_header(cls, header_value: str) -> "ETag":
-        """Construct an `etag` header from its string representation.
+        """Construct an ``etag`` header from its string representation.
 
         Note that this will unquote etag-values
         """
