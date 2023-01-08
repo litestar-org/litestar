@@ -195,3 +195,11 @@ repos:
             structlog,
             uvicorn,
           ]
+  - repo: local
+    hooks:
+      - id: sphinx-lint
+        name: sphinx-lint
+        language: python
+        entry: sphinx-lint
+        additional_dependencies: [sphinx-lint]
+        types: [rst]
