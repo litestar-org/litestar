@@ -106,35 +106,29 @@ You can also use dataclasses (standard library and Pydantic),
     class UserController(Controller):
         path = "/users"
 
+        @post()
+        async def create_user(self, data: User) -> User:
+            ...
 
-    @post()
-    async def create_user(self, data: User) -> User:
-        ...
+        @get()
+        async def list_users(self) -> List[User]:
+            ...
 
+        @patch(path="/{user_id:uuid}")
+        async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
+            ...
 
-    @get()
-    async def list_users(self) -> List[User]:
-        ...
+        @put(path="/{user_id:uuid}")
+        async def update_user(self, user_id: UUID4, data: User) -> User:
+            ...
 
+        @get(path="/{user_id:uuid}")
+        async def get_user(self, user_id: UUID4) -> User:
+            ...
 
-    @patch(path="/{user_id:uuid}")
-    async def partial_update_user(self, user_id: UUID4, data: Partial[User]) -> User:
-        ...
-
-
-    @put(path="/{user_id:uuid}")
-    async def update_user(self, user_id: UUID4, data: User) -> User:
-        ...
-
-
-    @get(path="/{user_id:uuid}")
-    async def get_user(self, user_id: UUID4) -> User:
-        ...
-
-
-    @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> None:
-        ...
+        @delete(path="/{user_id:uuid}")
+        async def delete_user(self, user_id: UUID4) -> None:
+            ...
 
 
 When instantiating your app, import your *controller* into your application's
@@ -252,5 +246,6 @@ License
     :hidden:
 
     migration/index
+    reference/index
     benchmarks
     changelog

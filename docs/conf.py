@@ -14,7 +14,15 @@ release = "1.48.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.intersphinx", "sphinx_design", "myst_parser"]
+extensions = [
+    "sphinx.ext.intersphinx",
+    # "sphinx_toolbox",
+    # "sphinx_toolbox.more_autodoc.genericalias",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_design",
+    "myst_parser",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -24,6 +32,27 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "msgspec": ("https://jcristharif.com/msgspec/", None),
 }
+
+
+napoleon_google_docstring = True
+# napoleon_include_init_with_doc = False
+# napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_admonition_for_notes = True
+napoleon_use_admonition_for_references = False
+# napoleon_use_ivar = False
+# napoleon_use_param = True
+# napoleon_use_rtype = True
+# napoleon_preprocess_types = False
+# napoleon_type_aliases = None
+napoleon_attr_annotations = True
+
+autoclass_content = "init"
+autodoc_member_order = "bysource"
+autodoc_typehints_format = "short"
+# autodoc_typehints = "description"
+autodoc_type_aliases = {"Scope": "starlite.type.asgi_types.Scope"}
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -50,4 +79,5 @@ html_theme_options = {
     "source_repository": "https://github.com/starlite-api/starlite",
     "source_branch": "main",
     "source_directory": "docs/",
+    "dark_css_variables": {"color-sidebar-background": "#1d2433", "color-background-primary": "#0c101a"},
 }
