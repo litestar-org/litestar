@@ -2,14 +2,15 @@ import re
 import sys
 from pathlib import Path
 
+from utils import RGX_CODE_BLOCK, get_indentation, indent
+
 INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
-CODE_BLOCK_RGX = re.compile(r" *```python([\w\W]+?)```")
 
 
 def fix_inline_code(content: str) -> str:
-    return INLINE_CODE_RGX.sub("``\g<1>``", content)
+    return INLINE_CODE_RGX.sub(r"``\g<1>``", content)
 
 
 def fix_references_in_docstring(content: str) -> str:
@@ -34,20 +35,8 @@ def fix_references_in_docstring(content: str) -> str:
     return content
 
 
-def get_indentation(text: str) -> tuple[str, int]:
-    if match := re.match("^[ \t]+", text):
-        indentation = match.group()
-        indent_char = indentation[0]
-        return indent_char, len(indentation)
-    return " ", 0
-
-
-def indent(string: str, indent_char: str = " ", level: int = 4) -> str:
-    return "\n".join((indent_char * level) + line for line in string.splitlines())
-
-
 def fix_code_blocks(content: str) -> str:
-    for match in CODE_BLOCK_RGX.finditer(content):
+    for match in RGX_CODE_BLOCK.finditer(content):
         block = match.group(0)
         code = match.group(1)
         indent_char, indent_level = get_indentation(block)
