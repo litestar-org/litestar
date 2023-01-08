@@ -227,6 +227,25 @@ def socket_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> No
     values["socket"] = connection
 
 
+def body_extractor(
+    values: Dict[str, Any],
+    connection: "Request[Any, Any]",
+) -> None:
+    """Extract the body from the request instance.
+
+    Notes:
+        - this extractor sets a Coroutine as the value in the kwargs. These are resolved at a later stage.
+
+    Args:
+        connection: The ASGI connection instance.
+        values: The kwargs that are extracted from the connection and will be injected into the handler.
+
+    Returns:
+        The Body value.
+    """
+    values["body"] = connection.body()
+
+
 async def json_extractor(
     connection: "Request[Any, Any]",
 ) -> Any:
@@ -312,9 +331,7 @@ def create_url_encoded_data_extractor(
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
             connection.scope["_form"]  # type: ignore[typeddict-item]
             if "_form" in connection.scope
-            else parse_url_encoded_form_data(
-                await connection.body(), encoding=connection.content_type[-1].get("charset", "utf-8")
-            )
+            else parse_url_encoded_form_data(await connection.body())
         )
         return form_values if form_values or not is_data_optional else None
 

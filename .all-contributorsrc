@@ -522,7 +522,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/114229148?v=4",
       "profile": "https://www.bestcryptocodes.com",
       "contributions": [
-        "test"
+        "test",
+        "doc"
       ]
     },
     {
@@ -624,6 +625,62 @@
       "profile": "https://github.com/NiclasHaderer",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "dialvarezs",
+      "name": "Diego Alvarez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13831919?v=4",
+      "profile": "https://github.com/dialvarezs",
+      "contributions": [
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "rgajason",
+      "name": "Jason Nance",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51208317?v=4",
+      "profile": "https://www.rgare.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "spikenn",
+      "name": "Igor Kapadze",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32995595?v=4",
+      "profile": "https://github.com/spikenn",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Jarmos-san",
+      "name": "Somraj Saha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31373860?v=4",
+      "profile": "https://jarmos.vercel.app",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "maggias",
+      "name": "Magnús Ágúst Skúlason",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11139514?v=4",
+      "profile": "http://skulason.me",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "pomma89",
+      "name": "Alessio Parma",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4697032?v=4",
+      "profile": "https://alessioparma.xyz/",
+      "contributions": [
+        "doc"
       ]
     }
   ],

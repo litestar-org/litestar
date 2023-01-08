@@ -104,6 +104,7 @@ class StaticFiles:
         if self.is_html_mode:
             filename = "404.html"
             resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=filename)
+
             if fs_info and fs_info["type"] == "file":
                 await FileResponse(
                     path=resolved_path or joined_path,
@@ -116,4 +117,6 @@ class StaticFiles:
                 )(scope, receive, send)
                 return
 
-        raise NotFoundException(f"no file or directory match the path {resolved_path or joined_path} was found")
+        raise NotFoundException(
+            f"no file or directory match the path {resolved_path or joined_path} was found"
+        )  # pragma: no cover

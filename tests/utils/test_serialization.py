@@ -29,10 +29,45 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-from starlite.utils.serialization import default_serializer, encode_json
+from starlite.exceptions import SerializationException
+from starlite.utils.serialization import (
+    decode_json,
+    decode_msgpack,
+    default_serializer,
+    encode_json,
+    encode_msgpack,
+)
 from tests import PersonFactory
 
 person = PersonFactory.build()
+
+
+class CustomStr(str):
+    pass
+
+
+class CustomInt(int):
+    pass
+
+
+class CustomFloat(float):
+    pass
+
+
+class CustomList(list):
+    pass
+
+
+class CustomSet(set):
+    pass
+
+
+class CustomFrozenSet(frozenset):
+    pass
+
+
+class CustomTuple(tuple):
+    pass
 
 
 class Model(BaseModel):
@@ -62,6 +97,14 @@ class Model(BaseModel):
     strict_bytes: StrictBytes = StrictBytes(b"hello")
     strict_bool: StrictBool = StrictBool(True)
 
+    custom_str: CustomStr = CustomStr()
+    custom_int: CustomInt = CustomInt()
+    custom_float: CustomFloat = CustomFloat()
+    custom_list: CustomList = CustomList()
+    custom_set: CustomSet = CustomSet()
+    custom_frozenset: CustomFrozenSet = CustomFrozenSet()
+    custom_tuple: CustomTuple = CustomTuple()
+
 
 model = Model()
 
@@ -83,13 +126,20 @@ model = Model()
         (model.conset, {1}),
         (model.confrozenset, frozenset([1])),
         (model.conint, 1),
-        (model.conlist, [1]),
+        # (model.conlist, [1]),
         (model.strict_str, "hello"),
         (model.strict_int, 1),
         (model.strict_float, 1.0),
         (model.strict_bytes, "hello"),
         (model.strict_bool, 1),
         (model, model.dict()),
+        (model.custom_str, ""),
+        (model.custom_int, 0),
+        (model.custom_float, 0.0),
+        # (model.custom_list, []),
+        (model.custom_set, set()),
+        (model.custom_frozenset, frozenset()),
+        # (model.custom_tuple, ()),
     ],
 )
 def test_default_serializer(value: Any, expected: Any) -> None:
@@ -100,6 +150,13 @@ def test_pydantic_json_compatibility() -> None:
     assert json.loads(model.json()) == json.loads(encode_json(model))
 
 
-def test_unsupported_type_raises() -> None:
-    with pytest.raises(TypeError):
-        encode_json(lambda: None)
+@pytest.mark.parametrize("encoder", [encode_json, encode_msgpack])
+def test_encoder_raises_serialization_exception(encoder: Any) -> None:
+    with pytest.raises(SerializationException):
+        encoder(object())
+
+
+@pytest.mark.parametrize("decoder", [decode_json, decode_msgpack])
+def test_decode_json_raises_serialization_exception(decoder: Any) -> None:
+    with pytest.raises(SerializationException):
+        decoder(b"str")

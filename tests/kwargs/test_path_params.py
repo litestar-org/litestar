@@ -7,8 +7,15 @@ from uuid import UUID, uuid1, uuid4
 import pytest
 from pydantic import UUID4
 
-from starlite import ImproperlyConfiguredException, Parameter, Starlite, get
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite import (
+    ImproperlyConfiguredException,
+    MediaType,
+    Parameter,
+    Starlite,
+    get,
+    post,
+)
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
 
@@ -151,3 +158,21 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
     with create_test_client(handler) as client:
         response = client.get("/some/test/path/" + str(value))
         assert response.status_code == HTTP_200_OK
+
+
+def test_differently_named_path_params_on_same_level() -> None:
+    @get("/{name:str}", media_type=MediaType.TEXT)
+    def get_greeting(name: str) -> str:
+        return f"Hello, {name}!"
+
+    @post("/{title:str}", media_type=MediaType.TEXT)
+    def post_greeting(title: str) -> str:
+        return f"Hello, {title}!"
+
+    with create_test_client(route_handlers=[get_greeting, post_greeting]) as client:
+        response = client.get("/Moishe")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello, Moishe!"
+        response = client.post("/Moishe")
+        assert response.status_code == HTTP_201_CREATED
+        assert response.text == "Hello, Moishe!"

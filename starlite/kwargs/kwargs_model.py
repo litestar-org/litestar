@@ -35,6 +35,7 @@ from starlite.kwargs.dependencies import (
     resolve_dependency,
 )
 from starlite.kwargs.extractors import (
+    body_extractor,
     cookies_extractor,
     create_connection_value_extractor,
     create_data_extractor,
@@ -142,6 +143,7 @@ class KwargsModel:
             "headers": headers_extractor,
             "cookies": cookies_extractor,
             "query": query_extractor,
+            "body": body_extractor,  # type: ignore
         }
 
         extractors: List[Callable[[Dict[str, Any], "ASGIConnection"], None]] = [

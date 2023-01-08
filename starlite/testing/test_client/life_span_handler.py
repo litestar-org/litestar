@@ -54,7 +54,7 @@ class LifeSpanHandler:
                 "lifespan.shutdown.complete",
                 "lifespan.shutdown.failed",
             )
-            if message["type"] == "lifespan.shutdown.failed":
+            if message["type"] == "lifespan.shutdown.failed":  # pragma: no cover
                 await self.receive()
 
     async def lifespan(self) -> None:

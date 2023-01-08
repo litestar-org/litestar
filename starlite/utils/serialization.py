@@ -1,49 +1,66 @@
-from pathlib import PurePosixPath
-from typing import Any, Callable, Dict, Optional, Union
+from collections import deque
+from decimal import Decimal
+from ipaddress import (
+    IPv4Address,
+    IPv4Interface,
+    IPv4Network,
+    IPv6Address,
+    IPv6Interface,
+    IPv6Network,
+)
+from pathlib import Path, PurePath
+from re import Pattern
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
 import msgspec
 from pydantic import (
-    AnyUrl,
     BaseModel,
     ByteSize,
     ConstrainedBytes,
     ConstrainedDate,
-    ConstrainedDecimal,
-    ConstrainedFloat,
-    ConstrainedFrozenSet,
-    ConstrainedInt,
-    ConstrainedList,
-    ConstrainedSet,
-    ConstrainedStr,
-    EmailStr,
     NameEmail,
-    PaymentCardNumber,
     SecretField,
     StrictBool,
 )
 from pydantic.color import Color
+from pydantic.json import decimal_encoder
 
-DEFAULT_TYPE_ENCODERS: Dict[Any, Callable[[Any], Any]] = {
-    PurePosixPath: str,
+from starlite.exceptions import SerializationException
+
+if TYPE_CHECKING:
+    from starlite.types import TypeEncodersMap
+
+DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
+    Path: str,
+    PurePath: str,
     # pydantic specific types
     BaseModel: lambda m: m.dict(),
     ByteSize: lambda b: b.real,
-    EmailStr: str,
     NameEmail: str,
     Color: str,
-    AnyUrl: str,
     SecretField: str,
-    ConstrainedInt: int,
-    ConstrainedFloat: float,
-    ConstrainedStr: str,
     ConstrainedBytes: lambda b: b.decode("utf-8"),
-    ConstrainedList: list,
-    ConstrainedSet: set,
-    ConstrainedFrozenSet: frozenset,
-    ConstrainedDecimal: float,
     ConstrainedDate: lambda d: d.isoformat(),
-    PaymentCardNumber: str,
-    StrictBool: int,  # pydantic compatibility
+    IPv4Address: str,
+    IPv4Interface: str,
+    IPv4Network: str,
+    IPv6Address: str,
+    IPv6Interface: str,
+    IPv6Network: str,
+    # pydantic compatibility
+    deque: list,
+    Decimal: decimal_encoder,
+    StrictBool: int,
+    Pattern: lambda o: o.pattern,
+    # support subclasses of stdlib types, If no previous type matched, these will be
+    # the last type in the mro, so we use this to (attempt to) convert a subclass into
+    # its base class. # see https://github.com/jcrist/msgspec/issues/248
+    # and https://github.com/starlite-api/starlite/issues/1003
+    str: str,
+    int: int,
+    float: float,
+    set: set,
+    frozenset: frozenset,
 }
 
 
@@ -90,19 +107,25 @@ _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
 _msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
-def encode_json(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
+def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
     """Encode a value into JSON.
 
     Args:
         obj: Value to encode
-        enc_hook: Optional callable to support non-natively supported types
+        default: Optional callable to support non-natively supported types.
 
     Returns:
         JSON as bytes
+
+    Raises:
+        SerializationException: If error encoding `obj`.
     """
-    if enc_hook is None or enc_hook is default_serializer:
-        return _msgspec_json_encoder.encode(obj)
-    return msgspec.json.encode(obj, enc_hook=enc_hook)
+    try:
+        if default is None or default is default_serializer:
+            return _msgspec_json_encoder.encode(obj)
+        return msgspec.json.encode(obj, enc_hook=default)
+    except (TypeError, msgspec.EncodeError) as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def decode_json(raw: Union[str, bytes]) -> Any:
@@ -113,8 +136,14 @@ def decode_json(raw: Union[str, bytes]) -> Any:
 
     Returns:
         An object
+
+    Raises:
+        SerializationException: If error decoding `raw`.
     """
-    return _msgspec_json_decoder.decode(raw)
+    try:
+        return _msgspec_json_decoder.decode(raw)
+    except msgspec.DecodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
@@ -126,10 +155,16 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
 
     Returns:
         MessagePack as bytes
+
+    Raises:
+        SerializationException: If error encoding `obj`.
     """
-    if enc_hook is None or enc_hook is default_serializer:
-        return _msgspec_msgpack_encoder.encode(obj)
-    return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+    try:
+        if enc_hook is None or enc_hook is default_serializer:
+            return _msgspec_msgpack_encoder.encode(obj)
+        return msgspec.msgpack.encode(obj, enc_hook=enc_hook)
+    except (TypeError, msgspec.EncodeError) as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
 def decode_msgpack(raw: bytes) -> Any:
@@ -140,5 +175,11 @@ def decode_msgpack(raw: bytes) -> Any:
 
     Returns:
         An object
+
+    Raises:
+        SerializationException: If error decoding `raw`.
     """
-    return _msgspec_msgpack_decoder.decode(raw)
+    try:
+        return _msgspec_msgpack_decoder.decode(raw)
+    except msgspec.DecodeError as msgspec_error:
+        raise SerializationException(str(msgspec_error)) from msgspec_error

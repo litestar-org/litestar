@@ -11,7 +11,7 @@ def test_schema_generation() -> None:
             "paths": {
                 "/id": {
                     "get": {
-                        "operationId": "Retrieve Id Handler",
+                        "operationId": "IdRetrieveIdHandler",
                         "responses": {
                             "200": {
                                 "description": "Request fulfilled, document follows",

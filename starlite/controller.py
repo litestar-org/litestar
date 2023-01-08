@@ -22,6 +22,7 @@ if TYPE_CHECKING:
         ResponseCookies,
         ResponseHeadersMap,
         ResponseType,
+        TypeEncodersMap,
     )
 
 
@@ -49,6 +50,7 @@ class Controller:
         "response_headers",
         "security",
         "tags",
+        "type_encoders",
     )
 
     after_request: Optional["AfterRequestHookHandler"]
@@ -116,6 +118,8 @@ class Controller:
     """A list of string tags that will be appended to the schema of all route handlers under the controller."""
     security: Optional[List["SecurityRequirement"]]
     """A list of dictionaries that to the schema of all route handlers under the controller."""
+    type_encoders: Optional["TypeEncodersMap"]
+    """A mapping of types to callables that transform them into types supported for serialization."""
 
     def __init__(self, owner: "Router") -> None:
         """Initialize a controller.

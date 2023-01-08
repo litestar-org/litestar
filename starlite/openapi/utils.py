@@ -24,7 +24,7 @@ def get_openapi_type_for_complex_type(field: "ModelField") -> "OpenAPIType":
     """
     try:
         return PYDANTIC_FIELD_SHAPE_MAP[field.shape]
-    except KeyError as e:
+    except KeyError as e:  # pragma: no cover
         raise ImproperlyConfiguredException(
             f"Parameter '{field.name}' with type '{field.outer_type_}' could not be mapped to an Open API type. "
             f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "

@@ -34,14 +34,14 @@ class AllowedHostsMiddleware(AbstractMiddleware):
             rf".*\.{host.replace('*.', '')}$" if host.startswith("*.") else host for host in config.allowed_hosts
         }
 
-        self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))
+        self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))  # pyright: ignore
 
         if config.www_redirect:
             redirect_domains: Set[str] = {
                 host.replace("www.", "") for host in config.allowed_hosts if host.startswith("www.")
             }
             if redirect_domains:
-                self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))
+                self.redirect_domains = re.compile("|".join(sorted(redirect_domains)))  # pyright: ignore
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """ASGI callable.

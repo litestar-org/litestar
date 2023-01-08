@@ -55,8 +55,8 @@ ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
 PathType = Union[Path, PathLike, str]
 Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
-
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
 ]
 MaybePartial = Union[T, partial]
+TypeEncodersMap = Dict[Any, Callable[[Any], Any]]

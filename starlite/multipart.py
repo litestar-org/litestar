@@ -29,9 +29,8 @@ from email.utils import decode_rfc2231
 from typing import Any, DefaultDict, Dict, List, Tuple
 from urllib.parse import unquote
 
-from msgspec import DecodeError
-
 from starlite.datastructures.upload_file import UploadFile
+from starlite.exceptions import SerializationException
 from starlite.utils.serialization import decode_json
 
 _token, _quoted = r"([\w!#$%&'*+\-.^_`|~]+)", r'"([^"]*)"'
@@ -121,7 +120,7 @@ def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
                 else:
                     try:
                         fields[field_name].append(decode_json(post_data))
-                    except DecodeError:
+                    except SerializationException:
                         fields[field_name].append(post_data.decode(content_charset))
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}

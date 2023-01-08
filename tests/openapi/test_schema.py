@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Generic, TypeVar
 from unittest.mock import MagicMock
 
@@ -124,3 +125,15 @@ def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) ->
     get_schema_for_field_type(M.__fields__["data"], [])
     convert_typeddict_to_model_mock.assert_called_once_with(TypedDictPerson)
     openapi_310_pydantic_schema_mock.assert_called_once_with(schema_class=return_value_mock)
+
+
+def test_get_schema_for_field_type_enum() -> None:
+    class Opts(str, Enum):
+        opt1 = "opt1"
+        opt2 = "opt2"
+
+    class M(BaseModel):
+        opt: Opts
+
+    schema = get_schema_for_field_type(M.__fields__["opt"], [])
+    assert schema.enum == ["opt1", "opt2"]

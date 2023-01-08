@@ -303,7 +303,7 @@ class OpenAPIController(Controller):
         """
         schema = self.get_schema_from_request(request)
         # Note: Fix for Swagger rejection OpenAPI >=3.1
-        if not self._dumped_schema:
+        if not self._dumped_modified_schema:
             schema_copy = schema.copy()
             schema_copy.openapi = "3.0.3"
 
