@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Iterable, Literal, Tuple, Union
+from typing import Any, List, Literal, Tuple, Union
 
 
 def _as_string(value: Any) -> str:
@@ -45,7 +45,7 @@ class TypeScriptContainer(TypeScriptElement):
 class TypeScriptIntersection(TypeScriptElement):
     """A class representing a TypeScript intersection type."""
 
-    types: Iterable[TypeScriptElement]
+    types: List[TypeScriptElement]
 
     def write(self) -> str:
         """Write a typescript intersection value.
@@ -63,7 +63,7 @@ class TypeScriptIntersection(TypeScriptElement):
 class TypeScriptUnion(TypeScriptElement):
     """A class representing a TypeScript union type."""
 
-    types: Iterable[TypeScriptElement]
+    types: List[TypeScriptElement]
 
     def write(self) -> str:
         """Write a typescript union value.
@@ -161,7 +161,7 @@ class TypeScriptProperty(TypeScriptElement):
 class TypeScriptAnonymousInterface(TypeScriptElement):
     """A class representing a TypeScript anonymous interface."""
 
-    properties: Iterable[TypeScriptProperty]
+    properties: List[TypeScriptProperty]
 
     def write(self) -> str:
         """Write a typescript interface object, without a name.
@@ -184,7 +184,7 @@ class TypeScriptInterface(TypeScriptContainer):
     """A class representing a TypeScript interface."""
 
     name: str
-    properties: Iterable[TypeScriptProperty]
+    properties: List[TypeScriptProperty]
 
     def write(self) -> str:
         """Write a typescript interface.
@@ -207,7 +207,7 @@ class TypeScriptEnum(TypeScriptContainer):
     """A class representing a TypeScript enum."""
 
     name: str
-    values: Union[Iterable[Tuple[str, str]], Iterable[Tuple[str, Union[int, float]]]]
+    values: Union[List[Tuple[str, str]], List[Tuple[str, Union[int, float]]]]
 
     def write(self) -> str:
         """Write a typescript enum.
@@ -270,7 +270,7 @@ class TypeScriptNamespace(TypeScriptElement):
     """A class representing a TypeScript namespace."""
 
     name: str
-    values: Iterable[TypeScriptContainer]
+    values: List[TypeScriptContainer]
 
     def write(self) -> str:
         """Write a typescript namespace.
@@ -287,40 +287,7 @@ class TypeScriptNamespace(TypeScriptElement):
         return f"export namespace {self.name} {{\n{members}\n}};"
 
 
-#
-# TypeScriptType = Union[TypeScriptIntersection, TypeScriptUnion, TypeScriptArray, TypeScriptInterface, TypeScriptEnum]
-#
-#
-# def is_schema_value(value: Any) -> TypeGuard[Schema]:
-#     return isinstance(value, Schema)
-#
-#
-# def create_any_of(any_of: List[Schema]) -> TypeScriptUnion:
-#     num_of_permutations = len(any_of)
-#     parsed_schemas = [parse_schema(s) for s in any_of]
-#     variants: List[TypeScriptType] = [*parsed_schemas]
-#
-#     while num_of_permutations > 1:
-#         variants.extend(
-#             TypeScriptIntersection(permutation) for permutation in permutations(parsed_schemas, num_of_permutations)
-#         )
-#         num_of_permutations -= 1
-#
-#     return TypeScriptUnion(tuple(variants))
-#
-#
-# def parse_schema(schema: Schema) -> TypeScriptType:
-#     if all_of := is_schema_value(schema.allOf):
-#         return TypeScriptIntersection(tuple(parse_schema(s) for s in all_of))
-#     if one_of := is_schema_value(schema.oneOf):
-#         return TypeScriptUnion(tuple(parse_schema(s) for s in one_of))
-#     if any_of := is_schema_value(schema.anyOf):
-#         return create_any_of(any_of)
-#     if items := is_schema_value(schema.items):
-#         return TypeScriptType(python_container=list, typescript_container=parse_schema(items))
-#
-#
-# def parse_response(response: Response) -> List[Tuple[str, TypeScriptType]]:
+# def parse_response(response: Response) -> TypeScriptNamespace:
 #     if response.content:
 #
 #         response_type = parse_schema(response.content)
