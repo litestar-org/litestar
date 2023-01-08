@@ -1,2 +1,2 @@
 #!/bin/sh
-sphinx-autobuild docs docs/_build/html
+sphinx-autobuild docs docs/_build/ -a -j auto

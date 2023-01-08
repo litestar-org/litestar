@@ -50,17 +50,6 @@ repos:
       - id: bandit
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
-    hooks:
-      - id: docformatter
-        args:
-          [
-            --in-place,
-            --close-quotes-on-newline,
-            --wrap-descriptions=120,
-            --wrap-summaries=120,
-          ]
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.2.2
     hooks:

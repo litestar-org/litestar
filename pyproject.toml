@@ -114,6 +114,7 @@ sphinx-autobuild = "^2021.3.14"
 sphinx-design = "^0.3.0"
 sphinx = "^5.3.0"
 myst-parser = "^0.18.1"
+sphinx-toolbox = "^3.2.0"
 
 [tool.poetry.extras]
 brotli = ["brotli"]
