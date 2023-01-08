@@ -29,7 +29,14 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-from starlite.utils.serialization import default_serializer, encode_json
+from starlite.exceptions import SerializationException
+from starlite.utils.serialization import (
+    decode_json,
+    decode_msgpack,
+    default_serializer,
+    encode_json,
+    encode_msgpack,
+)
 from tests import PersonFactory
 
 person = PersonFactory.build()
@@ -143,6 +150,13 @@ def test_pydantic_json_compatibility() -> None:
     assert json.loads(model.json()) == json.loads(encode_json(model))
 
 
-def test_unsupported_type_raises() -> None:
-    with pytest.raises(TypeError):
-        encode_json(lambda: None)
+@pytest.mark.parametrize("encoder", [encode_json, encode_msgpack])
+def test_encoder_raises_serialization_exception(encoder: Any) -> None:
+    with pytest.raises(SerializationException):
+        encoder(object())
+
+
+@pytest.mark.parametrize("decoder", [decode_json, decode_msgpack])
+def test_decode_json_raises_serialization_exception(decoder: Any) -> None:
+    with pytest.raises(SerializationException):
+        decoder(b"str")

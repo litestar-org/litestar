@@ -19,6 +19,7 @@ import httpx
 import uvicorn
 
 from starlite import Starlite
+from tools.utils import RGX_CODE_BLOCK, get_indentation, indent
 
 if TYPE_CHECKING:
     from mkdocs.config.base import Config as MkDocsConfig
@@ -26,8 +27,6 @@ if TYPE_CHECKING:
 
 RGX_RUN = re.compile(r"# +?run:(.*)")
 RGX_SNIPPET = re.compile(r'--8<-- "(.*)"')
-RGX_CODE_BLOCK = re.compile(r" *```py[\w\W]+?```")
-
 
 AVAILABLE_PORTS = list(range(9000, 9999))
 
@@ -42,18 +41,6 @@ class RunConfig:
     args: List[List[str]]
     code_block: str
     updated_code_block: str
-
-
-def indent(string: str, indent_char: str = " ", level: int = 4) -> str:
-    return "\n".join((indent_char * level) + line for line in string.splitlines())
-
-
-def get_indentation(text: str) -> Tuple[str, int]:
-    if match := re.match("^[ \t]+", text):
-        indentation = match.group()
-        indent_char = indentation[0]
-        return indent_char, len(indentation)
-    return " ", 0
 
 
 def _load_app_from_path(path: Path) -> Starlite:
