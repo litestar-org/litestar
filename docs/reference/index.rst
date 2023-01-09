@@ -3,9 +3,13 @@ API reference
 
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
+    :maxdepth: 1
 
-   app
-   router
-   types
-   datastructures/index
+    app
+    router
+    controller
+    datastructures/index
+    dto
+    exceptions/index
+    types

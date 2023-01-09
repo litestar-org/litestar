@@ -40,11 +40,7 @@ def _encode_headers(headers: Iterable[Tuple[str, str]]) -> "RawHeadersList":
 
 
 class Headers(CIMultiDictProxy[str], MultiMixin[str]):
-    """An immutable, case-insensitive for HTTP headers.
-
-    Notes:
-        - This class inherits from [multidict](https://multidict.aio-libs.org/en/stable/multidict.html#cimultidictproxy).
-    """
+    """An immutable, case-insensitive for HTTP headers."""
 
     def __init__(self, headers: Optional[Union[Mapping[str, str], "RawHeaders", MultiMapping]] = None) -> None:
         """Initialize ``Headers``.
@@ -98,9 +94,8 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to mutate headers within a.
-
-    :class:`Scope <starlite.types.Scope>`
+    """A case-insensitive, multidict-like structure that can be used to mutate headers
+    within a :class:`Scope <starlite.types.Scope>`
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:

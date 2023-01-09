@@ -14,7 +14,7 @@ class WebSocketException(StarLiteException):
     """
 
     def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:
-        """Initialize `WebSocketException`.
+        """Initialize ``WebSocketException``.
 
         Args:
             *args: Any exception args.
@@ -29,7 +29,7 @@ class WebSocketDisconnect(WebSocketException):
     """Exception class for websocket disconnect events."""
 
     def __init__(self, *args: Any, detail: str, code: int = WS_1000_NORMAL_CLOSURE) -> None:
-        """Initialize `WebSocketDisconnect`.
+        """Initialize ``WebSocketDisconnect``.
 
         Args:
             *args: Any exception args.

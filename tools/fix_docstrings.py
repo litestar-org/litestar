@@ -21,6 +21,8 @@ def fix_references_in_docstring(content: str) -> str:
         label = match.group(1)
         target = match.group(2)
 
+        label = label.replace("`", "")
+
         target_kind = "ref"
         target_parts = target.split(".")
         if target_parts[-1][0].islower():
