@@ -15,4 +15,5 @@ API reference
     exceptions/index
     enums
     config
+    connection/index
     types

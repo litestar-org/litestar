@@ -8,10 +8,15 @@ INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
 RGX_CODE_BLOCK = re.compile(r" *```python([\w\W]+?)```")
+RGX_SINGLE_QUOTES = re.compile(r"'(\w+?)'")
 
 
 def fix_inline_code(content: str) -> str:
     return INLINE_CODE_RGX.sub(r"``\g<1>``", content)
+
+
+def fix_single_quoted_ref(content: str) -> str:
+    return RGX_SINGLE_QUOTES.sub(r"``\g<1>``", content)
 
 
 def fix_references_in_docstring(content: str) -> str:
@@ -30,6 +35,7 @@ def fix_references_in_docstring(content: str) -> str:
                 target_kind = "func"
         elif target_parts[-1][1].islower():
             target_kind = "class"
+
         replacements[source] = f":{target_kind}:`{label} <{target}>`"
 
     for source, replacement in replacements.items():
@@ -52,6 +58,7 @@ def fix_code_blocks(content: str) -> str:
 def fix_docstrings(content: str) -> str:
     for docstring in DOCSTRING_RGX.findall(content):
         fixed_docstring = fix_references_in_docstring(docstring)
+        fixed_docstring = fix_single_quoted_ref(fixed_docstring)
         fixed_docstring = fix_code_blocks(fixed_docstring)
         content = content.replace(docstring, fixed_docstring)
 
