@@ -3,11 +3,11 @@ Welcome to Starlite's documentation!
 
 
 Starlite is a powerful, flexible, highly performant and opinionated ASGI framework,
-offering first class typing support and a full `Pydantic <https://github.com/samuelcolvin/pydantic>`_
+offering first class typing support and a full `Pydantic <https://docs.pydantic.dev>`_
 integration.
 
 The Starlite framework supports `plugins <usage/10-plugins/0-plugins-intro.md>`_ , ships
-with `dependency injection <usage/6-dependency-injection/0-dependency-injection-intro.md>`,
+with `dependency injection <usage/6-dependency-injection/0-dependency-injection-intro.md>`_,
 `security primitives <usage/8-security/0-intro.md>`_ ,
 `OpenAPI specifications-generation <usage/12-openapi/0-openapi-intro.md>`_ ,
 `MessagePack <https://msgpack.org/>`_ support – among other common API-framework components such
@@ -245,6 +245,7 @@ License
     :maxdepth: 2
     :hidden:
 
+    usage/index
     migration/index
     reference/index
     benchmarks
