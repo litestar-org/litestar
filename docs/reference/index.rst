@@ -7,6 +7,7 @@ API reference
     :maxdepth: 1
 
     app
+    cache/index
     router
     controller
     datastructures/index

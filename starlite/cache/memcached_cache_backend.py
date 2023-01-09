@@ -26,7 +26,7 @@ class MemcachedCacheBackendConfig(BaseModel):
     pool_size: Optional[int] = None
     """Maximum number of memcached open connections (optional, defaults to 2)"""
     pool_minsize: Optional[int] = None
-    """memcached minimum pool size (optional, by default set to `pool_size`)"""
+    """memcached minimum pool size (optional, by default set to ``pool_size``)"""
     serialize: Callable[[Any], bytes] = pickle.dumps
     """A callable to serialize data that goes into the cache from an object to bytes, defaults to `pickle.dumps`"""
     deserialize: Callable[[bytes], Any] = pickle.loads
@@ -39,7 +39,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
     _client: Client
 
     def __init__(self, config: MemcachedCacheBackendConfig) -> None:
-        """Initialize `MemcachedCacheBackend`.
+        """Initialize ``MemcachedCacheBackend``.
 
         Args:
             config: required configuration to connect to memcached.
@@ -60,7 +60,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
             key: name of cached value.
 
         Returns:
-            Cached value if existing else `None`.
+            Cached value if existing else ``None``.
         """
 
         if value := await self._memcached_client.get(key=key.encode("utf-8")):
@@ -71,7 +71,7 @@ class MemcachedCacheBackend(CacheBackendProtocol):
         """Set sa value in cache for a given key for a duration determined by expiration.
 
         Args:
-            key: key to cache `value` under.
+            key: key to cache ``value`` under.
             value: the value to be cached.
             expiration: expiration of cached value in seconds.
 
