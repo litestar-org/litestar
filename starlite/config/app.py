@@ -137,7 +137,7 @@ class AppConfig(BaseModel):
     openapi_config: Optional[OpenAPIConfig]
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <starlite.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: Dict[str, Any]
-    """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or 
+    """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
     wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
 
     Can be overridden by routers and router handlers.
