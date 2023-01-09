@@ -8,7 +8,7 @@ from starlite.middleware.compression import CompressionMiddleware
 class CompressionConfig(BaseModel):
     """Configuration for response compression.
 
-    To enable response compression, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor
+    To enable response compression, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor
     using the 'compression_config' key.
     """
 

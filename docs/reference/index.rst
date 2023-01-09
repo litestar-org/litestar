@@ -14,4 +14,5 @@ API reference
     dto
     exceptions/index
     enums
+    config
     types

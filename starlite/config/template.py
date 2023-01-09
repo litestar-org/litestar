@@ -23,7 +23,7 @@ T = TypeVar("T", bound=TemplateEngineProtocol)
 class TemplateConfig(Generic[T], GenericModel):
     """Configuration for Templating.
 
-    To enable templating, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using the
+    To enable templating, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using the
     'template_config' key.
     """
 
@@ -33,7 +33,7 @@ class TemplateConfig(Generic[T], GenericModel):
     directory: Optional[Union[DirectoryPath, List[DirectoryPath]]] = None
     """A directory or list of directories from which to serve templates."""
     engine: Union[Type[T], T]
-    """A template engine adhering to the [TemplateEngineProtocol][starlite.template.base.TemplateEngineProtocol]."""
+    """A template engine adhering to the :class:`TemplateEngineProtocol <starlite.template.base.TemplateEngineProtocol>`."""
     engine_callback: Optional[Callable[[T], None]] = None
     """A callback function that allows modifying the instantiated templating protocol."""
     _engine_instance: T = PrivateAttr()
