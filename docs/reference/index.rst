@@ -12,4 +12,5 @@ API reference
     datastructures/index
     dto
     exceptions/index
+    enums
     types
