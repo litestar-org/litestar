@@ -2,11 +2,11 @@
 Usage Guidelines
 ================
 
-.. TODO: Add a brief introduction to using Starlite in a production environment.
+Learn how to use Starlite & create a complete functioning application in the following
+sections:
 
 .. toctree::
    :titlesonly:
-   :hidden:
 
    starlite-app
    asgi-events
