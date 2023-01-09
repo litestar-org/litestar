@@ -16,4 +16,5 @@ API reference
     enums
     config
     connection/index
+    contrib/index
     types

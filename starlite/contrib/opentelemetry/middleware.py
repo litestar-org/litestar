@@ -23,8 +23,8 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:
-            app: The 'next' ASGI app to call.
-            config: An instance of [OpenTelemetryConfig][starlite.contrib.opentelemetry.OpenTelemetryConfig]
+            app: The ``next`` ASGI app to call.
+            config: An instance of :class:`OpenTelemetryConfig <starlite.contrib.opentelemetry.OpenTelemetryConfig>`
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self.open_telemetry_middleware = OpenTelemetryMiddleware(
