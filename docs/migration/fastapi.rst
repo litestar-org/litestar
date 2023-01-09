@@ -182,14 +182,14 @@ and to easily access dependencies from higher levels.
 ..  seealso::
 
     To learn more about dependency injection, check out this chapter
-    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`_
+    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`__
 
 Authentication
 ^^^^^^^^^^^^^^
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
 preferred way of handling this
-is extending AbstractAuthenticationMiddleware`` <usage/8-security/0-intro.md>`_.
+is extending `AbstractAuthenticationMiddleware <usage/8-security/0-intro.md>`_.
 
 .. tab-set::
     .. tab-item:: FastAPI
@@ -261,5 +261,6 @@ Middleware
 
 Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
 that make use of FastAPI/Starlette specific middleware features such as
-Starlette’s BaseHTTPMiddleware`` <https://www.starlette.io/middleware/#basehttpmiddleware>`_ are not compatible,
-but can be easily replaced by making use of AbstractMiddleware`` <usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/>`_
+Starlette’s `BaseHTTPMiddleware <https://www.starlette.io/middleware/#basehttpmiddleware>`_ are not compatible,
+but can be easily replaced by making use of `AbstractMiddleware
+<usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/>`_

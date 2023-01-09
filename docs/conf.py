@@ -16,6 +16,7 @@ release = "1.48.1"
 
 extensions = [
     "sphinx.ext.intersphinx",
+    "sphinx.ext.autosectionlabel",
     # "sphinx_toolbox",
     # "sphinx_toolbox.more_autodoc.genericalias",
     "sphinx.ext.autodoc",
@@ -31,6 +32,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "msgspec": ("https://jcristharif.com/msgspec/", None),
+    "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
 }
 
 
@@ -48,11 +50,17 @@ napoleon_use_admonition_for_references = False
 # napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
-autoclass_content = "init"
+autoclass_content = "class"
+autodoc_class_signature = "separated"
+autodoc_default_options = {
+    "special-members": "__init__",
+}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 # autodoc_typehints = "description"
 autodoc_type_aliases = {"Scope": "starlite.type.asgi_types.Scope"}
+
+autosectionlabel_prefix_document = True
 
 
 # -- Options for HTML output -------------------------------------------------
