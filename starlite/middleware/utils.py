@@ -40,7 +40,7 @@ def should_bypass_middleware(
     Args:
         scope: The ASGI scope.
         scopes: A set with the ASGI scope types that are supported by the middleware.
-        exclude_opt_key: Key in `opt` with which a route handler can "opt-out" of a middleware.
+        exclude_opt_key: Key in ``opt`` with which a route handler can "opt-out" of a middleware.
         exclude_path_pattern: If this pattern matches scope["path"], the middleware should
             be bypassed.
 

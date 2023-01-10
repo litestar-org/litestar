@@ -18,4 +18,5 @@ API reference
     connection/index
     contrib/index
     handlers/index
+    middleware/index
     types

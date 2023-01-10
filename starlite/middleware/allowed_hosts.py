@@ -15,10 +15,10 @@ class AllowedHostsMiddleware(AbstractMiddleware):
     """Middleware ensuring the host of a request originated in a trusted host."""
 
     def __init__(self, app: "ASGIApp", config: "AllowedHostsConfig"):
-        """Initialize `AllowedHostsMiddleware`.
+        """Initialize ``AllowedHostsMiddleware``.
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             config: An instance of AllowedHostsConfig.
         """
 

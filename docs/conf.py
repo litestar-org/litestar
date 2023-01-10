@@ -34,6 +34,7 @@ intersphinx_mapping = {
     "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
 }
 
 
