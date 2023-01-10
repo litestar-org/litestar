@@ -25,4 +25,5 @@ API reference
     response
     security/index
     template
+    testing
     types
