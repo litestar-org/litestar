@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from .client import TestClient
-from .transport import TestClientTransport
 from .websocket_test_session import WebSocketTestSession
 
-__all__ = ("TestClient", "WebSocketTestSession", "TestClientTransport")
+__all__ = ("TestClient", "WebSocketTestSession")

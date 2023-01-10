@@ -1,18 +1,20 @@
+from io import BytesIO
 from types import GeneratorType
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
+from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 from typing_extensions import TypedDict
+
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.testing.sync_test_client.websocket_test_session import (
+    WebSocketTestSession,
+)
 
 if TYPE_CHECKING:
     from httpx import Request
 
-    from starlite.testing.async_test_client.client import AsyncTestClient
-    from starlite.testing.sync_test_client.client import TestClient
-    from starlite.testing.sync_test_client.websocket_test_session import (
-        WebSocketTestSession,
-    )
     from starlite.types import (
         HTTPDisconnectEvent,
         HTTPRequestEvent,
@@ -20,7 +22,10 @@ if TYPE_CHECKING:
         Receive,
         ReceiveMessage,
         Send,
+        WebSocketScope,
     )
+
+T = TypeVar("T")
 
 
 class ConnectionUpgradeException(Exception):
@@ -37,10 +42,10 @@ class SendReceiveContext(TypedDict):
     context: Optional[Any]
 
 
-class BaseClientTransport:
+class TestClientTransport(AsyncBaseTransport, BaseTransport, Generic[T]):
     def __init__(
         self,
-        client: Union["TestClient", "AsyncTestClient"],
+        client: T,
         raise_server_exceptions: bool = True,
         root_path: str = "",
     ) -> None:
@@ -77,18 +82,19 @@ class BaseClientTransport:
     def create_send(request: "Request", context: SendReceiveContext) -> "Send":
         async def send(message: "Message") -> None:
             if message["type"] == "http.response.start":
-                if context["response_started"]:
-                    raise AssertionError('Received multiple "http.response.start" messages.')
+                assert not context["response_started"], 'Received multiple "http.response.start" messages.'  # noqa
                 context["raw_kwargs"]["status_code"] = message["status"]
                 context["raw_kwargs"]["headers"] = [
                     (k.decode("utf-8"), v.decode("utf-8")) for k, v in message.get("headers", [])
                 ]
                 context["response_started"] = True
             elif message["type"] == "http.response.body":
-                if not context["response_started"]:
-                    raise AssertionError('Received "http.response.body" without "http.response.start".')
-                if context["response_complete"].is_set():
-                    raise AssertionError('Received "http.response.body" after response completed.')
+                assert context[  # noqa
+                    "response_started"
+                ], 'Received "http.response.body" without "http.response.start".'
+                assert not context[  # noqa
+                    "response_complete"
+                ].is_set(), 'Received "http.response.body" after response completed.'
                 body = message.get("body", b"")
                 more_body = message.get("more_body", False)
                 if request.method != "HEAD":
@@ -132,3 +138,56 @@ class BaseClientTransport:
             "client": ("testclient", 50000),
             "server": (host, port),
         }
+
+    def handle_request(self, request: "Request") -> "Response":
+        scope = self.parse_request(request=request)
+        if scope["type"] == "websocket":
+            scope.update(
+                subprotocols=[value.strip() for value in request.headers.get("sec-websocket-protocol", "").split(",")]
+            )
+            session = WebSocketTestSession(client=self.client, scope=cast("WebSocketScope", scope))  # type: ignore [arg-type]
+            raise ConnectionUpgradeException(session)
+
+        scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
+
+        raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
+
+        try:
+            with self.client.portal() as portal:  # type: ignore [attr-defined]
+                response_complete = portal.call(Event)
+                context: SendReceiveContext = {
+                    "response_complete": response_complete,
+                    "request_complete": False,
+                    "raw_kwargs": raw_kwargs,
+                    "response_started": False,
+                    "template": None,
+                    "context": None,
+                }
+                portal.call(
+                    self.client.app,  # type: ignore [attr-defined]
+                    scope,
+                    self.create_receive(request=request, context=context),
+                    self.create_send(request=request, context=context),
+                )
+        except BaseException as exc:  # pragma: no cover # pylint: disable=W0703
+            if self.raise_server_exceptions:
+                raise exc
+            return Response(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+            )
+        else:
+            if not context["response_started"]:  # pragma: no cover
+                if self.raise_server_exceptions:
+                    assert context["response_started"], "TestClient did not receive any response."  # noqa
+                return Response(
+                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+                )
+
+            stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
+            response = Response(**raw_kwargs, stream=stream, request=request)
+            setattr(response, "template", context["template"])  # noqa: B010
+            setattr(response, "context", context["context"])  # noqa: B010
+            return response
+
+    async def handle_async_request(self, request: "Request") -> "Response":
+        return self.handle_request(request=request)

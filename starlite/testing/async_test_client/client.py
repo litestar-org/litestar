@@ -1,17 +1,19 @@
 from contextlib import AsyncExitStack
 from http.cookiejar import CookieJar
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, Generic, Mapping, Optional, TypeVar, Union
 
 from starlite import HttpMethod
 from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
-from starlite.testing.async_test_client.life_span_handler import LifeSpanHandler
-from starlite.testing.async_test_client.transport import AsyncTestClientTransport
 from starlite.testing.base.client_base import (
     BaseTestClient,
     fake_asgi_connection,
     fake_http_send_message,
 )
+from starlite.testing.life_span_handler import LifeSpanHandler
+
+# from starlite.testing.async_test_client.transport import AsyncTestClientTransport
+from starlite.testing.transport import TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
 
 try:
@@ -72,7 +74,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=AsyncTestClientTransport(
+            transport=TestClientTransport(
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,
@@ -113,7 +115,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Optional[Union["AuthTypes", "UseClientDefault"]] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a request.
 
@@ -162,7 +164,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a GET request.
 
@@ -201,7 +203,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends an OPTIONS request.
 
@@ -240,7 +242,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a HEAD request.
 
@@ -283,7 +285,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a POST request.
 
@@ -334,7 +336,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a PUT request.
 
@@ -385,7 +387,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a PATCH request.
 
@@ -432,7 +434,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
         follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
         timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Dict[str, Any]] = None,
+        extensions: Optional[Mapping[str, Any]] = None,
     ) -> Response:
         """Sends a DELETE request.
 

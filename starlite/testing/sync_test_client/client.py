@@ -22,11 +22,8 @@ from starlite.testing.base.client_base import (
     fake_asgi_connection,
     fake_http_send_message,
 )
-from starlite.testing.sync_test_client.life_span_handler import LifeSpanHandler
-from starlite.testing.sync_test_client.transport import (
-    ConnectionUpgradeException,
-    TestClientTransport,
-)
+from starlite.testing.life_span_handler import LifeSpanHandler
+from starlite.testing.transport import ConnectionUpgradeException, TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
 from starlite.utils import deprecated
 
@@ -116,28 +113,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):
                 f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
             )
         return self.session_backend
-
-    # @property
-    # def session_backend(self) -> "BaseSessionBackend":
-    #     if not self._session_backend:
-    #         raise ImproperlyConfiguredException(
-    #             "Session has not been initialized for this TestClient instance. You can"
-    #             "do so by passing a configuration object to TestClient: TestClient(app=app, session_config=...)"
-    #         )
-    #     return self._session_backend
-
-    # @contextmanager
-    # def portal(self) -> Generator["BlockingPortal", None, None]:
-    #     """Get a BlockingPortal.
-
-    #     Returns:
-    #         A contextmanager for a BlockingPortal.
-    #     """
-    #     if hasattr(self, "blocking_portal"):
-    #         yield self.blocking_portal
-    #     else:
-    #         with start_blocking_portal(backend=self.backend, backend_options=self.backend_options) as portal:
-    #             yield portal
 
     def __enter__(self) -> "TestClient[T]":
         with ExitStack() as stack:

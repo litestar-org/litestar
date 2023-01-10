@@ -1,6 +1,6 @@
 import warnings
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Dict, Generator, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Dict, Generator, Generic, Optional, TypeVar, cast
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
@@ -50,7 +50,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnectio
     )
 
 
-class BaseTestClient:
+class BaseTestClient(Generic[T]):
     __test__ = False
     blocking_portal: "BlockingPortal"
 

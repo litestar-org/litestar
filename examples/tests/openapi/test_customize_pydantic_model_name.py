@@ -4,7 +4,7 @@ from starlite.testing import TestClient
 
 def test_schema_generation() -> None:
     with TestClient(app=customize_pydantic_model_name.app) as client:
-        assert client.app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
+        assert client.app.openapi_schema.dict(exclude_none=True) == {
             "openapi": "3.1.0",
             "info": {"title": "Starlite API", "version": "1.0.0"},
             "servers": [{"url": "/"}],
