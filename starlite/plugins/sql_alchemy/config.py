@@ -140,7 +140,7 @@ class SQLAlchemyEngineConfig(BaseModel):
 
 
 class SQLAlchemyConfig(BaseModel):
-    """Configuration for SQLAlchemy's :class:`sessionmaker <sqlalchemy.orm.sessionmaker>.
+    """Configuration for SQLAlchemy's :class:`sessionmaker <sqlalchemy.orm.sessionmaker>`.
 
     For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
     """
@@ -152,8 +152,8 @@ class SQLAlchemyConfig(BaseModel):
     """Database connection string in one of the formats supported by SQLAlchemy.
 
     Notes:
-    - For async connections, the connection string must include the correct async prefix.
-      e.g. ``'postgresql+asyncpg://...'`` instead of ``'postgresql://'``, and for sync connections its the opposite.
+        - For async connections, the connection string must include the correct async prefix.
+          e.g. ``'postgresql+asyncpg://...'`` instead of ``'postgresql://'``, and for sync connections its the opposite.
 
     """
     use_async_engine: bool = True
